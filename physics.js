@@ -1,14 +1,35 @@
 /**
- * physics.js
- * A small physics library for JavaScript
- * Inspired by https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
+ * physics.js - A lightweight 3D physics engine for the web
+ *
+ * Copyright (c) 2012 Stefan Hedman (steffe.se)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * The Software shall be used for Good, not Evil.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
  */
 
-// Our namespace
 var PHYSICS = new Object();
 
 /**
  * The physics world
+ * @class World
  */
 PHYSICS.World = function(){
 
@@ -44,7 +65,7 @@ PHYSICS.World.prototype.numObjects = function(){
 };
 
 /**
- * Add a rigid body to the simulation
+ * Add a rigid body to the simulation.
  * @param RigidBody body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
@@ -208,7 +229,7 @@ PHYSICS.World.prototype.add = function(body){
 };
 
 /**
- * Set the broadphase collision detector for the world.
+ * Get/set the broadphase collision detector for the world.
  * @param BroadPhase broadphase
  * @return BroadPhase
  */
@@ -220,7 +241,7 @@ PHYSICS.World.prototype.broadphase = function(broadphase){
 };
 
 /**
- * Set the number of iterations
+ * Get/set the number of iterations
  * @param int n
  * @return int
  */
@@ -237,7 +258,10 @@ PHYSICS.World.prototype.iterations = function(n){
  * @return Vec3
  */
 PHYSICS.World.prototype.gravity = function(g){
-  this.gravity = g;
+  if(g==undefined)
+    return this.gravity;
+  else
+    this.gravity = g;
 };
 
 /**
@@ -722,6 +746,17 @@ PHYSICS.World.prototype.step = function(dt){
 
 /**
  * Rigid body base class
+ * @class RigidBody
+ * @param type
+ * @param Vec3 position
+ * @param float mass
+ * @param object geodata
+ * @param Vec3 velocity
+ * @param Vec3 force
+ * @param Vec3 rotvelo
+ * @param Quaternion quat
+ * @param Vec3 tau
+ * @param Vec3 inertia
  */
 PHYSICS.RigidBody = function(type,position,mass,geodata,velocity,force,rotvelo,quat,tau,inertia){
   this.position = position;
@@ -738,6 +773,9 @@ PHYSICS.RigidBody = function(type,position,mass,geodata,velocity,force,rotvelo,q
   this.inertia = inertia || new PHYSICS.Vec3(1,1,1);
 };
 
+/**
+ * Enum for object types: SPHERE, PLANE
+ */
 PHYSICS.RigidBody.prototype.types = {
   SPHERE:1,
   PLANE:2
@@ -745,6 +783,7 @@ PHYSICS.RigidBody.prototype.types = {
 
 /**
  * Spherical rigid body
+ * @class Sphere
  * @param Vec3 position
  * @param float radius
  * @param float mass
@@ -766,8 +805,10 @@ PHYSICS.Sphere = function(position,radius,mass){
 
 /**
  * Spherical rigid body
+ * @class Plane
  * @param Vec3 position
  * @param Vec3 normal
+ * @todo Should be able to create it using only scalar+vector
  */
 PHYSICS.Plane = function(position, normal){
   normal.normalize();
@@ -784,6 +825,7 @@ PHYSICS.Plane = function(position, normal){
 
 /**
  * 4-dimensional quaternion
+ * @class Quaternion
  * @param float x
  * @param float y
  * @param float z 
@@ -796,6 +838,12 @@ PHYSICS.Quaternion = function(x,y,z,w){
   this.w = w;
 };
 
+/**
+ * Quaternion multiplication
+ * @param Quaternion q
+ * @param Quaternion target Optional.
+ * @return Quaternion
+ */ 
 PHYSICS.Quaternion.prototype.mult = function(q,target){
   if(target==undefined)
     target = new PHYSICS.Quaternion();
@@ -811,6 +859,9 @@ PHYSICS.Quaternion.prototype.mult = function(q,target){
   return target;
 };
 
+/**
+ * Normalize the quaternion. Note that this changes the values of the quaternion.
+ */
 PHYSICS.Quaternion.prototype.normalize = function(){
   var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
   if ( l === 0 ) {
@@ -829,6 +880,7 @@ PHYSICS.Quaternion.prototype.normalize = function(){
 
 /**
  * 3-dimensional vector
+ * @class Vec3
  * @param float x
  * @param float y
  * @param float z
@@ -839,10 +891,11 @@ PHYSICS.Vec3 = function(x,y,z){
   this.z = z;
 };
 
-PHYSICS.Vec3.prototype.log = function(name){
-  console.log(name,this);
-};
-
+/**
+ * Vector cross product
+ * @param Vec3 v
+ * @return Vec3
+ */
 PHYSICS.Vec3.prototype.cross = function(v){
   var A = [this.x, this.y, this.z];
   var B = [v.x, v.y, v.z];
@@ -867,6 +920,9 @@ PHYSICS.Vec3.prototype.set = function(x,y,z){
     
 /**
  * Vector addition
+ * @param Vec3 v
+ * @param Vec3 target Optional.
+ * @return Vec3
  */
 PHYSICS.Vec3.prototype.vadd = function(v,target){
   if(target){
@@ -881,7 +937,10 @@ PHYSICS.Vec3.prototype.vadd = function(v,target){
 };
     
 /**
- * Vector subition
+ * Vector subtraction
+ * @param v
+ * @param target Optional. Target to save in.
+ * @return Vec3
  */
 PHYSICS.Vec3.prototype.vsub = function(v,target){
   if(target){
@@ -897,6 +956,8 @@ PHYSICS.Vec3.prototype.vsub = function(v,target){
 
 /**
  * Produce a 3x3 matrix. Columns first!
+ * @class Mat3
+ * @param elements
  */
 PHYSICS.Mat3 = function(elements){
   if(elements)
@@ -905,6 +966,11 @@ PHYSICS.Mat3 = function(elements){
     this.elements = new Float32Array(9);
 };
 
+/**
+ * Sets the matrix to identity
+ * @todo Should perhaps be renamed to setIdentity() to be more clear.
+ * @todo Create another function that immediately creates an identity matrix eg. eye()
+ */
 PHYSICS.Mat3.prototype.identity = function(){
   this.elements[0] = 1;
   this.elements[1] = 0;
@@ -921,7 +987,8 @@ PHYSICS.Mat3.prototype.identity = function(){
 
 /**
  * Matrix-Vector multiplication
- * @todo
+ * @param Vec3 v The vector to multiply with
+ * @param Vec3 target Optional, target to save the result in.
  */
 PHYSICS.Mat3.prototype.vmult = function(v,target){
   if(target===undefined)
@@ -940,7 +1007,8 @@ PHYSICS.Mat3.prototype.vmult = function(v,target){
 };
 
 /**
- * Scalar multiplication
+ * Matrix-scalar multiplication
+ * @param float s
  */
 PHYSICS.Mat3.prototype.smult = function(s){
   for(var i=0; i<this.elements.length; i++)
@@ -949,6 +1017,8 @@ PHYSICS.Mat3.prototype.smult = function(s){
 
 /**
  * Matrix multiplication
+ * @param Mat3 m
+ * @return Mat3
  */
 PHYSICS.Mat3.prototype.mmult = function(m){
   var r = new PHYSICS.Mat3();
@@ -964,6 +1034,7 @@ PHYSICS.Mat3.prototype.mmult = function(m){
 
 /**
  * Solve Ax=b
+ * @return Vec3 The solution x
  */
 PHYSICS.Mat3.prototype.solve = function(b){
   var equations = $M([
@@ -986,6 +1057,7 @@ PHYSICS.Mat3.prototype.solve = function(b){
  * Get the cross product matrix a_cross from a vector, such that
  *   a x b = a_cross * b = c
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
+ * @return Mat3
  */
 PHYSICS.Vec3.prototype.crossmat = function(){
   return new PHYSICS.Mat3([      0,  -this.z,   this.y,
@@ -1017,6 +1089,7 @@ PHYSICS.Vec3.prototype.norm = function(){
  * Multiply the vector with a scalar
  * @param float scalar
  * @param Vec3 saveinme
+ * @return Vec3
  */
 PHYSICS.Vec3.prototype.mult = function(scalar,saveinme){
   if(!saveinme)
@@ -1038,11 +1111,17 @@ PHYSICS.Vec3.prototype.dot = function(v){
 
 /**
  * @class BroadPhase
+ * @todo Make it a base class for broadphase implementations
  */
 PHYSICS.BroadPhase = function(){
   
 };
 
+/**
+ * Get all the collision pairs in a physics world
+ * @param World world
+ * @todo Should be placed in a subclass to BroadPhase
+ */
 PHYSICS.BroadPhase.prototype.collisionPairs = function(world){
   var pairs1 = [];
   var pairs2 = [];
