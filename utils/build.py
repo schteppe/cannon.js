@@ -10,7 +10,7 @@ except ImportError:
 import os
 import tempfile
 import sys
-import JSCompress
+from JSCompress import JSCompressor
 
 COMMON_FILES = ['physics.js']
 EXTRAS_FILES = []
@@ -27,28 +27,39 @@ def output(text, filename):
 		f.write(text)
 
 def compress(text):
-	"""
-	in_tuple = tempfile.mkstemp()
-	with os.fdopen(in_tuple[0], 'w') as handle:
-		handle.write(text)
-
-	out_tuple = tempfile.mkstemp()
-
-	# os.system("java -jar compiler/compiler.jar --language_in=ECMASCRIPT5_STRICT --js %s --js_output_file %s" % (in_tuple[1], out_tuple[1]))
-
-	with os.fdopen(out_tuple[0], 'r') as handle:
-		compressed = handle.read()
-
-	os.unlink(in_tuple[1])
-	os.unlink(out_tuple[1])
-	"""
 	compressor = JSCompressor()
 	return compressor.compress(text)
 
 def addHeader(text, endFilename):
 	with open(os.path.join('..', 'REVISION'), 'r') as handle:
 		revision = handle.read().rstrip()
-	return ("// %s r%s - http://github.com/mrdoob/physics.js\n" % (endFilename, revision)) + text
+	return (("/**\n"+
+		 " * %s r%s - A lightweight 3D physics engine for the web\n"+
+		 " * \n"+
+		 " * http://github.com/schteppe/physics.js\n"+
+		 " * \n"+
+		 " * Copyright (c) 2012 Stefan Hedman (steffe.se)\n"+
+		 " * \n" +
+		 " * Permission is hereby granted, free of charge, to any person obtaining a copy\n"+
+		 " * of this software and associated documentation files (the \"Software\"), to deal\n"+
+		 " * in the Software without restriction, including without limitation the rights\n"+
+		 " * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"+
+		 " * copies of the Software, and to permit persons to whom the Software is\n"+
+		 " * furnished to do so, subject to the following conditions:\n"+
+		 " *\n"+
+		 " * The above copyright notice and this permission notice shall be included in\n"+
+		 " * all copies or substantial portions of the Software.\n"+
+		 " *\n"+
+		 " * The Software shall be used for Good, not Evil.\n"+
+		 " *\n"+
+		 " * THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"+
+		 " * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"+
+		 " * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"+
+		 " * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"+
+		 " * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"+
+		 " * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"+
+		 " * SOFTWARE.\n"+
+		 " */\n\n") % (endFilename, revision)) + text
 
 def makeDebug(text):
 	position = 0
