@@ -112,10 +112,10 @@ function createScene( ) {
   scene.add( ground );
 
   var plane = new PHYSICS.Plane(new PHYSICS.Vec3(0,0,0), new PHYSICS.Vec3(0,0,1));
-  var plane_xmin = new PHYSICS.Plane(new PHYSICS.Vec3(0,-7,0), new PHYSICS.Vec3(0,1,0));
-  var plane_xmax = new PHYSICS.Plane(new PHYSICS.Vec3(0,7,0), new PHYSICS.Vec3(0,-1,0));
-  var plane_ymin = new PHYSICS.Plane(new PHYSICS.Vec3(-7,0,0), new PHYSICS.Vec3(1,0,0));
-  var plane_ymax = new PHYSICS.Plane(new PHYSICS.Vec3(7,0,0), new PHYSICS.Vec3(-1,0,0));
+  var plane_xmin = new PHYSICS.Plane(new PHYSICS.Vec3(0,-5,0), new PHYSICS.Vec3(0,1,0));
+  var plane_xmax = new PHYSICS.Plane(new PHYSICS.Vec3(0,5,0), new PHYSICS.Vec3(0,-1,0));
+  var plane_ymin = new PHYSICS.Plane(new PHYSICS.Vec3(-5,0,0), new PHYSICS.Vec3(1,0,0));
+  var plane_ymax = new PHYSICS.Plane(new PHYSICS.Vec3(5,0,0), new PHYSICS.Vec3(-1,0,0));
   world.add(plane);
   world.add(plane_xmin);
   world.add(plane_xmax);
@@ -125,9 +125,9 @@ function createScene( ) {
   var sphere_geometry = new THREE.SphereGeometry( 1, 8, 8);
   var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
   THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
-  var nx = 5;
-  var ny = 5;
-  var nz = 5;
+  var nx = 4;
+  var ny = 4;
+  var nz = 10;
   var rand = 0.01;
   var h = 5;
   for(var i=0; i<nx; i++){
