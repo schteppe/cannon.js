@@ -12,7 +12,8 @@ import tempfile
 import sys
 from JSCompress import JSCompressor
 
-COMMON_FILES = ['physics.js']
+COMMON_FILES = ['physics.js',
+		'sylvester.js']
 
 def merge(files):
 	buffer = []
