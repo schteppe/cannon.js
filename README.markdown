@@ -16,7 +16,7 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
     world.add(plane);
     
     // Create a box
-    var sphere = new PHYSICS.Sphere(pos,1,5);
+    var sphere = new PHYSICS.Sphere(new PHYSICS.Vec3(0,0,2),1,5);
     world.add(sphere);
     
     // Step the simulation
