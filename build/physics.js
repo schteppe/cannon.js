@@ -359,7 +359,6 @@ PHYSICS.Quaternion.prototype.mult = function(q,target){
   var va = new PHYSICS.Vec3(this.x,this.y,this.z);
   var vb = new PHYSICS.Vec3(q.x,q.y,q.z);
   target.w = this.w*q.w - va.dot(vb);
-  console.log(q);
   vaxvb = va.cross(vb);
   target.x = this.w * vb.x + q.w*va.x + vaxvb.x;
   target.y = this.w * vb.y + q.w*va.y + vaxvb.y;
@@ -1653,19 +1652,19 @@ var $P = Plane.create;
  * @param Vec3 tau
  * @param Vec3 inertia
  */
-PHYSICS.RigidBody = function(type,position,mass,geodata,velocity,force,rotvelo,quat,tau,inertia){
-  this.position = position;
-  this.velocity = velocity;
-  this.force = force;
-  this.tau = tau||new PHYSICS.Vec3(0,0,0);
-  this.quaternion = quat;
-  this.rotvelo = rotvelo;
+PHYSICS.RigidBody = function(type){
   this.type = type;
-  this.mass = mass;
-  this.geodata = geodata;
+  this.position = new PHYSICS.Vec3();
+  this.velocity = new PHYSICS.Vec3();
+  this.force = new PHYSICS.Vec3();
+  this.tau = new PHYSICS.Vec3();
+  this.quaternion = new PHYSICS.Quaternion();
+  this.rotvelo = new PHYSICS.Vec3();
+  this.mass = 1.0;
+  this.geodata = {};
   this.id = -1;
   this.world = null;
-  this.inertia = inertia || new PHYSICS.Vec3(1,1,1);
+  this.inertia = new PHYSICS.Vec3(1,1,1);
 };
 
 /**
@@ -1674,7 +1673,8 @@ PHYSICS.RigidBody = function(type,position,mass,geodata,velocity,force,rotvelo,q
 PHYSICS.RigidBody.prototype.types = {
   SPHERE:1,
   PLANE:2
-};/**
+};
+/**
  * Spherical rigid body
  * @class Sphere
  * @param Vec3 position
@@ -1682,18 +1682,13 @@ PHYSICS.RigidBody.prototype.types = {
  * @param float mass
  */
 PHYSICS.Sphere = function(position,radius,mass){
-  var I = 2.0*mass*radius*radius/5.0;
   PHYSICS.RigidBody.apply(this,
-			  [PHYSICS.RigidBody.prototype.types.SPHERE,
-			   position,
-			   mass,
-                           {radius:radius},
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Vec3(0,10,0), // rotvelo
-			   new PHYSICS.Quaternion(1,0,0,0),
-			   new PHYSICS.Vec3(0,0,0), // tau
-			   new PHYSICS.Vec3(I,I,I)]);
+			  [PHYSICS.RigidBody.prototype.types.SPHERE]);
+  this.position = position;
+  this.mass = mass;
+  this.geodata = {radius:radius};
+  var I = 2.0*mass*radius*radius/5.0;
+  this.inertia = new PHYSICS.Vec3(I,I,I);
 };
 /**
  * Plane
@@ -1704,15 +1699,11 @@ PHYSICS.Sphere = function(position,radius,mass){
  */
 PHYSICS.Plane = function(position, normal){
   normal.normalize();
-  PHYSICS.RigidBody.apply(this,		
-			  [PHYSICS.RigidBody.prototype.types.PLANE,
-			   position,
-			   0,
-                           {normal:normal},
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Quaternion(1,0,0,0)]);
+  PHYSICS.RigidBody.apply(this,
+			  [PHYSICS.RigidBody.prototype.types.PLANE]);
+  this.position = position;
+  this.mass = 0.0;
+  this.geodata = {normal:normal};
 };
 
 /**
@@ -1761,6 +1752,8 @@ PHYSICS.World.prototype.numObjects = function(){
 PHYSICS.World.prototype.add = function(body){
   if(!body)
     return;
+
+  console.log(body);
 
   var n = this.numObjects();
 

@@ -6,16 +6,11 @@
  * @param float mass
  */
 PHYSICS.Sphere = function(position,radius,mass){
-  var I = 2.0*mass*radius*radius/5.0;
   PHYSICS.RigidBody.apply(this,
-			  [PHYSICS.RigidBody.prototype.types.SPHERE,
-			   position,
-			   mass,
-                           {radius:radius},
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Vec3(0,10,0), // rotvelo
-			   new PHYSICS.Quaternion(1,0,0,0),
-			   new PHYSICS.Vec3(0,0,0), // tau
-			   new PHYSICS.Vec3(I,I,I)]);
+			  [PHYSICS.RigidBody.prototype.types.SPHERE]);
+  this.position = position;
+  this.mass = mass;
+  this.geodata = {radius:radius};
+  var I = 2.0*mass*radius*radius/5.0;
+  this.inertia = new PHYSICS.Vec3(I,I,I);
 };

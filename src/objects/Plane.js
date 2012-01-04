@@ -7,14 +7,10 @@
  */
 PHYSICS.Plane = function(position, normal){
   normal.normalize();
-  PHYSICS.RigidBody.apply(this,		
-			  [PHYSICS.RigidBody.prototype.types.PLANE,
-			   position,
-			   0,
-                           {normal:normal},
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Vec3(0,0,0),
-			   new PHYSICS.Quaternion(1,0,0,0)]);
+  PHYSICS.RigidBody.apply(this,
+			  [PHYSICS.RigidBody.prototype.types.PLANE]);
+  this.position = position;
+  this.mass = 0.0;
+  this.geodata = {normal:normal};
 };
 

@@ -45,6 +45,8 @@ PHYSICS.World.prototype.add = function(body){
   if(!body)
     return;
 
+  console.log(body);
+
   var n = this.numObjects();
 
   old_x = this.x;

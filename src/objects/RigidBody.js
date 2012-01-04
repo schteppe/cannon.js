@@ -12,19 +12,19 @@
  * @param Vec3 tau
  * @param Vec3 inertia
  */
-PHYSICS.RigidBody = function(type,position,mass,geodata,velocity,force,rotvelo,quat,tau,inertia){
-  this.position = position;
-  this.velocity = velocity;
-  this.force = force;
-  this.tau = tau||new PHYSICS.Vec3(0,0,0);
-  this.quaternion = quat;
-  this.rotvelo = rotvelo;
+PHYSICS.RigidBody = function(type){
   this.type = type;
-  this.mass = mass;
-  this.geodata = geodata;
+  this.position = new PHYSICS.Vec3();
+  this.velocity = new PHYSICS.Vec3();
+  this.force = new PHYSICS.Vec3();
+  this.tau = new PHYSICS.Vec3();
+  this.quaternion = new PHYSICS.Quaternion();
+  this.rotvelo = new PHYSICS.Vec3();
+  this.mass = 1.0;
+  this.geodata = {};
   this.id = -1;
   this.world = null;
-  this.inertia = inertia || new PHYSICS.Vec3(1,1,1);
+  this.inertia = new PHYSICS.Vec3(1,1,1);
 };
 
 /**

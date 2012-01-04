@@ -26,7 +26,6 @@ PHYSICS.Quaternion.prototype.mult = function(q,target){
   var va = new PHYSICS.Vec3(this.x,this.y,this.z);
   var vb = new PHYSICS.Vec3(q.x,q.y,q.z);
   target.w = this.w*q.w - va.dot(vb);
-  console.log(q);
   vaxvb = va.cross(vb);
   target.x = this.w * vb.x + q.w*va.x + vaxvb.x;
   target.y = this.w * vb.y + q.w*va.y + vaxvb.y;
