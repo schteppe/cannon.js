@@ -26,11 +26,11 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
     
 ## Features
 
-* 100% JavaScript
+* 100% JavaScript, written from scratch
 * Uses typed arrays for fast number crunching
 * Supports solid spheres and static planes
 * Simple collision detection
-* Lightweight - less than 30Kb uncompressed and with documentation. For comparison: ammo.js uses 1.12Mb when compressed.
+* Lightweight - less than 20Kb compressed. For comparison: ammo.js uses 1.12Mb when compressed.
 * Uses an iterative Gauss-Seidel solver to solve for contact constraints
 * Uses [SPOOK](https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf) for time stepping
 
