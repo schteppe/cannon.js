@@ -1,7 +1,7 @@
 /**
- * physics.js v0.1.0 - A lightweight 3D physics engine for the web
+ * cannon.js v0.1.1 - A lightweight 3D physics engine for the web
  * 
- * http://github.com/schteppe/physics.js
+ * http://github.com/schteppe/cannon.js
  * 
  * Copyright (c) 2012 Stefan Hedman (steffe.se)
  * 

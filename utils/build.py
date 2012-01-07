@@ -12,7 +12,7 @@ import tempfile
 import sys
 from JSCompress import JSCompressor
 
-COMMON_FILES = ['Physics.js',
+COMMON_FILES = ['Cannon.js',
 		'collision/BroadPhase.js',
 		'math/Mat3.js',
 		'math/Vec3.js',
@@ -44,9 +44,9 @@ def addHeader(text):
 	with open(os.path.join('..', 'VERSION'), 'r') as handle:
 		revision = handle.read().rstrip()
 	return (("/**\n"+
-		 " * physics.js v%s - A lightweight 3D physics engine for the web\n"+
+		 " * cannon.js v%s - A lightweight 3D physics engine for the web\n"+
 		 " * \n"+
-		 " * http://github.com/schteppe/physics.js\n"+
+		 " * http://github.com/schteppe/cannon.js\n"+
 		 " * \n"+
 		 " * Copyright (c) 2012 Stefan Hedman (steffe.se)\n"+
 		 " * \n" +
@@ -86,11 +86,11 @@ def buildLib(files, minified, filename):
 
 def parse_args():
 	if ap:
-		parser = argparse.ArgumentParser(description='Build and compress Physics.js')
+		parser = argparse.ArgumentParser(description='Build and compress cannon.js')
 		args = parser.parse_args()
 
 	else:
-		parser = optparse.OptionParser(description='Build and compress Physics.js')
+		parser = optparse.OptionParser(description='Build and compress cannon.js')
 		args, remainder = parser.parse_args()
 
 	# If no arguments have been passed, show the help message and exit
@@ -103,8 +103,8 @@ def parse_args():
 
 def main(argv=None):
 	args = parse_args()
-	buildLib(COMMON_FILES, False, 'physics')
-	buildLib(COMMON_FILES, True,  'physics.min')
+	buildLib(COMMON_FILES, False, 'cannon')
+	buildLib(COMMON_FILES, True,  'cannon.min')
 
 if __name__ == "__main__":
 	main()
