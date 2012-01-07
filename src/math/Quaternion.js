@@ -7,10 +7,14 @@
  * @param float w
  */
 PHYSICS.Quaternion = function(x,y,z,w){
-  this.x = x;
-  this.y = y;
-  this.z = z;
-  this.w = w;
+  this.x = x==undefined ? x : 1;
+  this.y = y==undefined ? y : 0;
+  this.z = z==undefined ? z : 0;
+  this.w = w==undefined ? w : 0;
+};
+
+PHYSICS.Quaternion.prototype.toString = function(){
+  return this.x+","+this.y+","+this.z+","+this.w;
 };
 
 /**

@@ -1,0 +1,20 @@
+/**
+ * Any matrix size class
+ */
+PHYSICS.MatN = function(cols,rows,elements){
+  if(elements)
+    this.elements = new Float32Array(elements);
+  else
+    this.elements = new Float32Array(cols*rows);
+};
+
+/**
+ * Sets the matrix to identity
+ * @todo Should perhaps be renamed to setIdentity() to be more clear.
+ * @todo Create another function that immediately creates an identity matrix eg. eye()
+ */
+PHYSICS.MatN.prototype.identity = function(){
+  for(var i=0; i<this.cols; i++)
+      for(var j=0; j<this.rows; j++)
+	this.elements[0] = i==j ? 1 : 0;
+};

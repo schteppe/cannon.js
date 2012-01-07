@@ -20,7 +20,9 @@ COMMON_FILES = ['Physics.js',
 		'math/sylvester.js',
 		'objects/RigidBody.js',
 		'objects/Sphere.js',
+		'objects/Box.js',
 		'objects/Plane.js',
+		'solver/Solver.js',
 		'world/World.js']
 
 def merge(files):

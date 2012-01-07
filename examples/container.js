@@ -1,6 +1,6 @@
 // Physics
 var world = new PHYSICS.World();
-world.gravity(new PHYSICS.Vec3(0,0,-50));
+world.gravity(new PHYSICS.Vec3(0,0,-30));
 var bp = new PHYSICS.BroadPhase();
 world.broadphase(bp);
 world.iterations(10);
@@ -9,7 +9,8 @@ var phys_bodies = [];
 var phys_visuals = [];
 var phys_startpositions = [];
 
-if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+if ( ! Detector.webgl )
+  Detector.addGetWebGLMessage();
 
 var SHADOW_MAP_WIDTH = 1024, SHADOW_MAP_HEIGHT = 1024;
 var MARGIN = 0;
@@ -42,7 +43,7 @@ function init() {
   camera.position.x = 0;
   camera.position.y = 30;
   camera.position.z = 12;
-
+ 
   // SCENE
   scene = new THREE.Scene();
   scene.fog = new THREE.Fog( 0xffffff, 1000, FAR );
@@ -58,6 +59,7 @@ function init() {
   if(shadowsOn)
     light.castShadow = true;
   scene.add( light );
+  scene.add( camera );
   createScene();
 
   // RENDERER
@@ -98,7 +100,7 @@ function createScene( ) {
 
   // GROUND
   var geometry = new THREE.PlaneGeometry( 100, 100 );
-  var planeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+  var planeMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff } );
   THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
   var ground = new THREE.Mesh( geometry, planeMaterial );
   ground.position.set( 0, 0, 0 );
@@ -122,27 +124,27 @@ function createScene( ) {
   world.add(plane_ymin);
   world.add(plane_ymax);
 
-  var sphere_geometry = new THREE.SphereGeometry( 1, 8, 8);
+  var sphere_geometry = new THREE.SphereGeometry( 1, 16, 8);
   var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
   THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
+
+  // Sphere on plane
   var nx = 4;
   var ny = 4;
   var nz = 10;
-  var rand = 0.01;
-  var h = 5;
+  var rand = 0.005;
+  var h = 0;
   for(var i=0; i<nx; i++){
     for(var j=0; j<ny; j++){
       for(var k=0; k<nz; k++){
 	var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
-	spheremesh.position.set( 0, 0, 10 );
-	
 	if(shadowsOn){
 	  spheremesh.castShadow = true;
 	  spheremesh.receiveShadow = true;
 	}
 	scene.add( spheremesh );
-	var pos = new PHYSICS.Vec3((j-nx*0.5)*2 + (Math.random()-0.5)*rand,
-				   (i-ny*0.5)*2 + (Math.random()-0.5)*rand,
+	var pos = new PHYSICS.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
+				   j*2-ny*0.5 + (Math.random()-0.5)*rand,
 				   1+k*2+h+(i+j)*0.2);
 	var sphere = new PHYSICS.Sphere(pos,1,5);
 	spheremesh.useQuaternion = true;
@@ -153,8 +155,33 @@ function createScene( ) {
       }
     }
   }
+  
+  /*
+  // Sphere on sphere
+  var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
+  spheremesh.position.set( 2, 0, 4 );
+  scene.add( spheremesh );
+  var pos = new PHYSICS.Vec3(2,0,5);
+  var sphere = new PHYSICS.Sphere(pos,1,5);
+  spheremesh.useQuaternion = true;
+  phys_bodies.push(sphere);
+  phys_visuals.push(spheremesh);
+  phys_startpositions.push(pos);
+  world.add(sphere);
+  
+  var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
+  spheremesh.position.set( 2, 0, 2 );
+  scene.add( spheremesh );
+  pos = new PHYSICS.Vec3(2,0,2);
+  var sphere = new PHYSICS.Sphere(pos,1,0);
+  spheremesh.useQuaternion = true;
+  phys_bodies.push(sphere);
+  phys_visuals.push(spheremesh);
+  phys_startpositions.push(pos);
+  world.add(sphere);
+*/
+ 
 }
-
 var t = 0, newTime, delta;
 
 function animate(){
@@ -166,18 +193,19 @@ function animate(){
 
 function updatePhysics(){
   // Step world
-  world.step(1/60);
-
-  // Read position data into visuals
-  for(var i=0; i<phys_bodies.length; i++){
-    phys_visuals[i].position.x = phys_bodies[i].position.x;
-    phys_visuals[i].position.y = phys_bodies[i].position.y;
-    phys_visuals[i].position.z = phys_bodies[i].position.z;
-
-    phys_visuals[i].quaternion.x = phys_bodies[i].quaternion.x;
-    phys_visuals[i].quaternion.y = phys_bodies[i].quaternion.y;
-    phys_visuals[i].quaternion.z = phys_bodies[i].quaternion.z;
-    phys_visuals[i].quaternion.w = phys_bodies[i].quaternion.w;
+  if(!world.paused){
+    world.step(1.0/60.0);
+    
+    // Read position data into visuals
+    for(var i=0; i<phys_bodies.length; i++){
+      phys_visuals[i].position.x = phys_bodies[i].position.x;
+      phys_visuals[i].position.y = phys_bodies[i].position.y;
+      phys_visuals[i].position.z = phys_bodies[i].position.z; 
+      phys_visuals[i].quaternion.x = phys_bodies[i].quaternion.x;
+      phys_visuals[i].quaternion.y = phys_bodies[i].quaternion.y;
+      phys_visuals[i].quaternion.z = phys_bodies[i].quaternion.z;
+      phys_visuals[i].quaternion.w = phys_bodies[i].quaternion.w;
+    }
   }
 }
 
@@ -207,12 +235,12 @@ document.addEventListener('keypress',function(e){
 	}
 	break;
       case 43:
-	world.iterations(world.iterations()+1);
-	console.log("Number of iterations: "+world.iterations());
+	world.solver.iter++;
+	console.log("Number of iterations: "+world.solver.iter);
 	break;
       case 45:
-	world.iterations(world.iterations()-1);
-	console.log("Number of iterations: "+world.iterations());
+	world.solver.iter>1 ? world.solver.iter-- : "";
+	console.log("Number of iterations: "+world.solver.iter);
 	break;
       case 112: // p
 	world.togglepause();
