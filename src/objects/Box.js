@@ -9,5 +9,5 @@ PHYSICS.Box = function(halfExtents,mass){
   PHYSICS.RigidBody.apply(this,
 			  [PHYSICS.RigidBody.types.BOX]);
   this._halfExtents = halfExtents;
-  this.mass = mass || 1;
-}
+  this.mass = mass!=undefined ? mass : 0;
+};

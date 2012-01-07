@@ -318,19 +318,16 @@ PHYSICS.World.prototype.step = function(dt){
   }
 
   // Resolve impulses
-  /*
   for(var k=0; k<p1.length; k++){
-
+    
     // Get current collision indeces
     var i = p1[k];
     var j = p2[k];
+    
+    // sphere-plane impulse
+    if((types[i]==SPHERE && types[j]==PLANE) ||
+       (types[i]==PLANE &&  types[j]==SPHERE)){
       
-    // sphere-plane collision
-    if((types[i]==SPHERE &&
-	types[j]==PLANE) ||
-       (types[i]==PLANE &&
-	types[j]==SPHERE)){
-	
       // Identify what is what
       var pi, si;
       if(types[i]==SPHERE){
@@ -373,8 +370,8 @@ PHYSICS.World.prototype.step = function(dt){
 	if(u.dot(n)<0.0)
 	  cmatrix(si,pi,1);
 	var r_star = r.crossmat();
-	
 	var invm = this.invm;
+
 	// Collision matrix:
 	// K = eye(3,3)/body(n).m - r_star*body(n).Iinv*r_star;
 	var K = new PHYSICS.Mat3();
@@ -428,8 +425,8 @@ PHYSICS.World.prototype.step = function(dt){
       else if(q>0)
 	cmatrix(si,pi,0); // No penetration any more- set no contact
 
-    } else if(types[i]==SPHERE &&
-	      types[j]==SPHERE){
+      // Sphere-sphere impulse
+    } else if(types[i]==SPHERE && types[j]==SPHERE){
 
       var n = new PHYSICS.Vec3(x[i]-x[j],
 			       y[i]-y[j],
@@ -460,205 +457,203 @@ PHYSICS.World.prototype.step = function(dt){
 	var ri = n.mult(world.geodata[i].radius);
 	var rj = n.mult(world.geodata[j].radius);
 
-//            % Collide with core
-//                r = dR;
-//                rn = -body(n).r_core * normal;
-//                rm = body(m).r_core * normal;
-//                v = (body(n).V(1:3) + cr(body(n).V(4:6)',rn)') - (body(m).V(1:3) + cr(body(m).V(4:6)',rm)');
-//                if v*r > 0 
-//                    COLLISION_MATRIX(n,m) = 1;
-//                    break                                                  % No impact for separating contacts
-//                end
-//                r_star = getSTAR2(r);
-//                rn_star = getSTAR2(rn);
-//                rm_star = getSTAR2(rm);
+	//            % Collide with core
+	//                r = dR;
+	//                rn = -body(n).r_core * normal;
+	//                rm = body(m).r_core * normal;
+	//                v = (body(n).V(1:3) + cr(body(n).V(4:6)',rn)') - (body(m).V(1:3) + cr(body(m).V(4:6)',rm)');
+	//                if v*r > 0 
+	//                    COLLISION_MATRIX(n,m) = 1;
+	//                    break                                                  % No impact for separating contacts
+	//                end
+	//                r_star = getSTAR2(r);
+	//                rn_star = getSTAR2(rn);
+	//                rm_star = getSTAR2(rm);
 
 	var r_star = r.crossmat();
 	var ri_star = ri.crossmat();
 	var rj_star = rj.crossmat();
 
 	//K = eye(3,3)/body(n).m + eye(3,3)/body(m).m - rn_star*body(m).Iinv*rn_star - rm_star*body(n).Iinv*rm_star; 
-//                % First assume stick friction
-//                v_f = - e_pair * (v*normal) * normal';               % Final velocity if stick
-//                impulse_vec =  K\(v_f - v)';
-//                % Check if slide mode (J_t > J_n) - outside friction cone
-//                if MU>0
-//                    J_n = (impulse_vec'*normal) * normal;
-//                    J_t = impulse_vec - J_n;
-//                    if norm(J_t) > norm(MU*J_n)                    
-//                            v_tang = v' - (v*normal)*normal;
-//                            tangent =  v_tang/(norm(v_tang) + 10^(-6));
-//                            impulse = -(1+e_pair)*(v*normal)/(normal' * K * (normal - MU*tangent));
-//                            impulse_vec = impulse * normal - MU * impulse * tangent;
-//                    end
-//                end
-//                 bodyTotmass = body(n).m + body(m).m;
-//                 body(n).V(1:3) = body(n).V(1:3) +  1/body(n).m * impulse_vec';
-//                 body(n).V(4:6) = body(n).V(4:6) + (body(n).Iinv*cr(impulse_vec,rn))';
-//                 %body(n).x(1:3) = body(n).x(1:3) + penetration*normal * (body(n).m/bodyTotmass);
-//                 body(n).L = body(n).I*body(n).V(4:6)';
-//                 body(m).V(1:3) = body(m).V(1:3) -  1/body(m).m * impulse_vec';
-//                 body(m).V(4:6) = body(m).V(4:6) + (body(m).Iinv*cr(impulse_vec,rm))';
-//                 %body(m).x(1:3) = body(m).x(1:3) - penetration*normal * (body(m).m/bodyTotmass);
-//                 body(m).L = body(m).I*body(m).V(4:6)';
+	//                % First assume stick friction
+	//                v_f = - e_pair * (v*normal) * normal';               % Final velocity if stick
+	//                impulse_vec =  K\(v_f - v)';
+	//                % Check if slide mode (J_t > J_n) - outside friction cone
+	//                if MU>0
+	//                    J_n = (impulse_vec'*normal) * normal;
+	//                    J_t = impulse_vec - J_n;
+	//                    if norm(J_t) > norm(MU*J_n)                    
+	//                            v_tang = v' - (v*normal)*normal;
+	//                            tangent =  v_tang/(norm(v_tang) + 10^(-6));
+	//                            impulse = -(1+e_pair)*(v*normal)/(normal' * K * (normal - MU*tangent));
+	//                            impulse_vec = impulse * normal - MU * impulse * tangent;
+	//                    end
+	//                end
+	//                 bodyTotmass = body(n).m + body(m).m;
+	//                 body(n).V(1:3) = body(n).V(1:3) +  1/body(n).m * impulse_vec';
+	//                 body(n).V(4:6) = body(n).V(4:6) + (body(n).Iinv*cr(impulse_vec,rn))';
+	//                 %body(n).x(1:3) = body(n).x(1:3) + penetration*normal * (body(n).m/bodyTotmass);
+	//                 body(n).L = body(n).I*body(n).V(4:6)';
+	//                 body(m).V(1:3) = body(m).V(1:3) -  1/body(m).m * impulse_vec';
+	//                 body(m).V(4:6) = body(m).V(4:6) + (body(m).Iinv*cr(impulse_vec,rm))';
+	//                 %body(m).x(1:3) = body(m).x(1:3) - penetration*normal * (body(m).m/bodyTotmass);
+	//                 body(m).L = body(m).I*body(m).V(4:6)';
 
 
       }
     }
   } // End of impulse solve
-  */
-
 
   /*
   // Iterate over contacts
   for(var l=0; l<this.iterations(); l++){
-    for(var k=0; k<p1.length; k++){
+  for(var k=0; k<p1.length; k++){
 
-      // Get current collision indeces
-      var i = p1[k];
-      var j = p2[k];
+  // Get current collision indeces
+  var i = p1[k];
+  var j = p2[k];
       
-      // sphere-plane collision
-      if((types[i]==SPHERE &&
-	  types[j]==PLANE) ||
-	 (types[i]==PLANE &&
-	  types[j]==SPHERE)){
+  // sphere-plane collision
+  if((types[i]==SPHERE &&
+  types[j]==PLANE) ||
+  (types[i]==PLANE &&
+  types[j]==SPHERE)){
 	
-	// Identify what is what
-	var pi, si;
-	if(types[i]==SPHERE){
-	  si=i;
-	  pi=j;
-	} else {
-	  si=j;
-	  pi=i;
-	}
-	
-	// Collision normal
-	var n = world.geodata[pi].normal;
-	
-	// Check if penetration
-	var r = new PHYSICS.Vec3(x[si]-x[pi],
-				 y[si]-y[pi],
-				 z[si]-z[pi]);
-	var q = (r.dot(n)-world.geodata[si].radius)*2;
-	var v_sphere = new PHYSICS.Vec3(vx[si],
-					vy[si],
-					vz[si]);
-	
-	var u = n.mult(v_sphere.dot(n));
-	
-	// Action if penetration
-	if(q<0.0){
-
-	  var old_lambda = lambdas[k];
-	  var fs = new PHYSICS.Vec3(fx[si],
-				    fy[si],
-				    fz[si]);
-	  var new_deltalambda = (- q*world.spook_a(dt)
-				 - u.dot(n)*world.spook_b
-				 - (fs.dot(n)*world.invm[si])*dt
-				 - old_lambda*world.spook_eps(dt))/(world.invm[si]
-								    + 1/(world.mass[si]*Math.pow(world.geodata[si].radius,2.0/5.0))
-								    + world.spook_eps(dt));
-	  
-	  var new_lambda = new_deltalambda - old_lambda; // + ?
-	
-	  // Check sign of lambdas and fix
-	  if(new_lambda<0){
-	    new_deltalambda = -new_lambda;
-	    new_lambda = 0;
-	  }
-	  
-	  // save for next timestep
-	  lambdas[k] = new_lambda;
-	  
-	  // Accumulate velocities
-	  vx_lambda[si] += n.x * new_deltalambda * world.invm[si];
-	  vy_lambda[si] += n.y * new_deltalambda * world.invm[si];
-	  vz_lambda[si] += n.z * new_deltalambda * world.invm[si];
-	  
-	  // --- Friction constraint ---
-	  // First assume stick friction
-	  var old_lambda_t1 = lambdas_t1[k];
-	  var old_lambda_t2 = lambdas_t2[k];
-	  
-	  // Construct tangents
-	  var t1 = new PHYSICS.Vec3();
-	  var t2 = new PHYSICS.Vec3();
-	  n.tangents(t1,t2);
-
-	  
-	}
-      } else if(types[i]==SPHERE &&
-		types[j]==SPHERE){
-	var r = new PHYSICS.Vec3(x[i]-x[j],
-				 y[i]-y[j],
-				 z[i]-z[j]);
-	var nlen = r.norm();
-	var n = new PHYSICS.Vec3(x[i]-x[j],
-				 y[i]-y[j],
-				 z[i]-z[j]);
-	n.normalize();
-	var q = (nlen - (world.geodata[i].radius+world.geodata[j].radius))*2;
-	var u = new PHYSICS.Vec3(vx[i]-vx[j],
-				 vy[i]-vy[j],
-				 vz[i]-vz[j]);
-	u = n.mult(u.dot(n));
-	if(q<0.0){
-
-	  // Solve for lambda
-	  var old_lambda = lambdas[k];
-	  var fi = new PHYSICS.Vec3(fx[i],
-				    fy[i],
-				    fz[i]);
-	  var fj = new PHYSICS.Vec3(fx[j],
-				    fy[j],
-				    fz[j]);
-	  var new_deltalambda = (- q*world.spook_a(dt)
-				 - u.dot(n)*world.spook_b
-				 - (fi.dot(n)*world.invm[i] + fj.dot(n)*world.invm[j])*dt
-				 - old_lambda*world.spook_eps(dt))/(world.invm[i]
-								    + world.invm[j]
-								    + world.spook_eps(dt));
-	
-	  var new_lambda = new_deltalambda - old_lambda;
-	
-	  // Check sign of lambdas and fix
-	  if(new_lambda < 0.0){
-	    new_deltalambda = - new_lambda;
-	    new_lambda = 0;
-	  }
-	
-	  // save for next timestep
-	  lambdas[k] = new_lambda;
-	
-	  // Accumulate velocities
-	  vx_lambda[i] += n.x * new_deltalambda * world.invm[i];
-	  vy_lambda[i] += n.y * new_deltalambda * world.invm[i];
-	  vz_lambda[i] += n.z * new_deltalambda * world.invm[i];
-	  vx_lambda[j] -= n.x * new_deltalambda * world.invm[j];
-	  vy_lambda[j] -= n.y * new_deltalambda * world.invm[j];
-	  vz_lambda[j] -= n.z * new_deltalambda * world.invm[j];
-
-	  // Accumulate rotational velocities
-	  // I.inv() is just the mass for spheres
-	  // w_lambda[ij] = w_lambda[ij] +- I[ij].inv() * dlambda * (r x n)
-	  var rxn = r.cross(n);
-	  var Iinvi = world.mass[i];
-	  var Iinvj = world.mass[j];
-	  
-	  wx_lambda[i] += Iinvi * new_deltalambda * rxn.x;
-	  wy_lambda[i] += Iinvi * new_deltalambda * rxn.y;
-	  wz_lambda[i] += Iinvi * new_deltalambda * rxn.z;
-	  wx_lambda[j] -= Iinvj * new_deltalambda * rxn.x;
-	  wy_lambda[j] -= Iinvj * new_deltalambda * rxn.y;
-	  wz_lambda[j] -= Iinvj * new_deltalambda * rxn.z;
-	}
-      }
-    }
+  // Identify what is what
+  var pi, si;
+  if(types[i]==SPHERE){
+  si=i;
+  pi=j;
+  } else {
+  si=j;
+  pi=i;
   }
-*/
+	
+  // Collision normal
+  var n = world.geodata[pi].normal;
+	
+  // Check if penetration
+  var r = new PHYSICS.Vec3(x[si]-x[pi],
+  y[si]-y[pi],
+  z[si]-z[pi]);
+  var q = (r.dot(n)-world.geodata[si].radius)*2;
+  var v_sphere = new PHYSICS.Vec3(vx[si],
+  vy[si],
+  vz[si]);
+	
+  var u = n.mult(v_sphere.dot(n));
+	
+  // Action if penetration
+  if(q<0.0){
+
+  var old_lambda = lambdas[k];
+  var fs = new PHYSICS.Vec3(fx[si],
+  fy[si],
+  fz[si]);
+  var new_deltalambda = (- q*world.spook_a(dt)
+  - u.dot(n)*world.spook_b
+  - (fs.dot(n)*world.invm[si])*dt
+  - old_lambda*world.spook_eps(dt))/(world.invm[si]
+  + 1/(world.mass[si]*Math.pow(world.geodata[si].radius,2.0/5.0))
+  + world.spook_eps(dt));
+	  
+  var new_lambda = new_deltalambda - old_lambda; // + ?
+	
+  // Check sign of lambdas and fix
+  if(new_lambda<0){
+  new_deltalambda = -new_lambda;
+  new_lambda = 0;
+  }
+	  
+  // save for next timestep
+  lambdas[k] = new_lambda;
+	  
+  // Accumulate velocities
+  vx_lambda[si] += n.x * new_deltalambda * world.invm[si];
+  vy_lambda[si] += n.y * new_deltalambda * world.invm[si];
+  vz_lambda[si] += n.z * new_deltalambda * world.invm[si];
+	  
+  // --- Friction constraint ---
+  // First assume stick friction
+  var old_lambda_t1 = lambdas_t1[k];
+  var old_lambda_t2 = lambdas_t2[k];
+	  
+  // Construct tangents
+  var t1 = new PHYSICS.Vec3();
+  var t2 = new PHYSICS.Vec3();
+  n.tangents(t1,t2);
+
+	  
+  }
+  } else if(types[i]==SPHERE &&
+  types[j]==SPHERE){
+  var r = new PHYSICS.Vec3(x[i]-x[j],
+  y[i]-y[j],
+  z[i]-z[j]);
+  var nlen = r.norm();
+  var n = new PHYSICS.Vec3(x[i]-x[j],
+  y[i]-y[j],
+  z[i]-z[j]);
+  n.normalize();
+  var q = (nlen - (world.geodata[i].radius+world.geodata[j].radius))*2;
+  var u = new PHYSICS.Vec3(vx[i]-vx[j],
+  vy[i]-vy[j],
+  vz[i]-vz[j]);
+  u = n.mult(u.dot(n));
+  if(q<0.0){
+
+  // Solve for lambda
+  var old_lambda = lambdas[k];
+  var fi = new PHYSICS.Vec3(fx[i],
+  fy[i],
+  fz[i]);
+  var fj = new PHYSICS.Vec3(fx[j],
+  fy[j],
+  fz[j]);
+  var new_deltalambda = (- q*world.spook_a(dt)
+  - u.dot(n)*world.spook_b
+  - (fi.dot(n)*world.invm[i] + fj.dot(n)*world.invm[j])*dt
+  - old_lambda*world.spook_eps(dt))/(world.invm[i]
+  + world.invm[j]
+  + world.spook_eps(dt));
+	
+  var new_lambda = new_deltalambda - old_lambda;
+	
+  // Check sign of lambdas and fix
+  if(new_lambda < 0.0){
+  new_deltalambda = - new_lambda;
+  new_lambda = 0;
+  }
+	
+  // save for next timestep
+  lambdas[k] = new_lambda;
+	
+  // Accumulate velocities
+  vx_lambda[i] += n.x * new_deltalambda * world.invm[i];
+  vy_lambda[i] += n.y * new_deltalambda * world.invm[i];
+  vz_lambda[i] += n.z * new_deltalambda * world.invm[i];
+  vx_lambda[j] -= n.x * new_deltalambda * world.invm[j];
+  vy_lambda[j] -= n.y * new_deltalambda * world.invm[j];
+  vz_lambda[j] -= n.z * new_deltalambda * world.invm[j];
+
+  // Accumulate rotational velocities
+  // I.inv() is just the mass for spheres
+  // w_lambda[ij] = w_lambda[ij] +- I[ij].inv() * dlambda * (r x n)
+  var rxn = r.cross(n);
+  var Iinvi = world.mass[i];
+  var Iinvj = world.mass[j];
+	  
+  wx_lambda[i] += Iinvi * new_deltalambda * rxn.x;
+  wy_lambda[i] += Iinvi * new_deltalambda * rxn.y;
+  wz_lambda[i] += Iinvi * new_deltalambda * rxn.z;
+  wx_lambda[j] -= Iinvj * new_deltalambda * rxn.x;
+  wy_lambda[j] -= Iinvj * new_deltalambda * rxn.y;
+  wz_lambda[j] -= Iinvj * new_deltalambda * rxn.z;
+  }
+  }
+  }
+  }
+  */
 
   // Add gravity to all objects
   for(var i=0; i<world.numObjects(); i++){
@@ -677,10 +672,8 @@ PHYSICS.World.prototype.step = function(dt){
     var j = p2[k];
       
     // sphere-plane collision
-    if((types[i]==SPHERE &&
-	types[j]==PLANE) ||
-       (types[i]==PLANE &&
-	types[j]==SPHERE)){
+    if((types[i]==SPHERE && types[j]==PLANE) ||
+       (types[i]==PLANE  && types[j]==SPHERE)){
       // Identify what is what
       var pi, si;
       if(types[i]==SPHERE){
@@ -719,8 +712,8 @@ PHYSICS.World.prototype.step = function(dt){
 				  xp.z - z[si] - rsi.z);
       var q = qvec.dot(n);
       /*
-      var q = (world.geodata[si].radius - r.norm());
-      var qvec = n.mult(q);
+	var q = (world.geodata[si].radius - r.norm());
+	var qvec = n.mult(q);
       */
       var v_sphere = new PHYSICS.Vec3(vx[si],vy[si],vz[si]);
       var w_sphere = new PHYSICS.Vec3(wx[si],wy[si],wz[si]);
@@ -729,21 +722,6 @@ PHYSICS.World.prototype.step = function(dt){
 	
       // Action if penetration
       if(q<0.0){
-	/*
-	console.log("plane-sphere",
-		    x[pi]-x[si],
-		    y[pi]-y[si],
-		    z[pi]-z[si],
-		    "plane",
-		    x[pi],
-		    y[pi],
-		    z[pi],
-		    "sphere",
-		    x[si],
-		    y[si],
-		    z[si]);
-	*/
-	//console.log("r",r.x,r.y,r.z,"radius:",world.geodata[si].radius,"violation:",q,"r.length()",r.norm());
 	var iM = world.invm[si];
 	var iI = world.inertiax[si] > 0 ? 1.0/world.inertiax[si] : 0; // Sphere - same for all dims
 	//console.log("sphere-plane");
@@ -772,10 +750,10 @@ PHYSICS.World.prototype.step = function(dt){
 			  0,0,0,
 			  0,0,0],
 			 /*
-			 [vx[si],vy[si],vz[si],
-			  wx[si],wy[si],wz[si],
-			  0,0,0,
-			  0,0,0],*/
+			   [vx[si],vy[si],vz[si],
+			   wx[si],wy[si],wz[si],
+			   0,0,0,
+			   0,0,0],*/
 			 
 			 // External force - forces & torques
 			 [fx[si],fy[si],fz[si],
@@ -865,9 +843,9 @@ PHYSICS.World.prototype.step = function(dt){
 			 
 			 // qdot - motion along penetration normal
 			 /*			 [-u.x,-u.y,-u.z,
-			  0,0,0,
-			  u.x,u.y,u.z,
-			  0,0,0],*/
+						 0,0,0,
+						 u.x,u.y,u.z,
+						 0,0,0],*/
 			 [vx[i],vy[i],vz[i],
 			  wx[i],wy[i],wz[i],
 			  vx[j],vy[j],vz[j],
@@ -892,25 +870,25 @@ PHYSICS.World.prototype.step = function(dt){
 
     // Apply constraint velocities
     /*
-    for(var l=0; l<this.solver.n; l++){
+      for(var l=0; l<this.solver.n; l++){
       var i = p1[l];
       var j = p2[l];
       if(!world.fixed[i]){
-	vx[i] += this.solver.result[0+cid[l]*12];
-	vy[i] += this.solver.result[1+cid[l]*12];
-	vz[i] += this.solver.result[2+cid[l]*12];
-	wx[i] += this.solver.result[3+cid[l]*12];
-	wy[i] += this.solver.result[4+cid[l]*12];
-	wz[i] += this.solver.result[5+cid[l]*12];
+      vx[i] += this.solver.result[0+cid[l]*12];
+      vy[i] += this.solver.result[1+cid[l]*12];
+      vz[i] += this.solver.result[2+cid[l]*12];
+      wx[i] += this.solver.result[3+cid[l]*12];
+      wy[i] += this.solver.result[4+cid[l]*12];
+      wz[i] += this.solver.result[5+cid[l]*12];
       }
 
       if(!world.fixed[j]){
-	vx[j] += this.solver.result[6+cid[l]*12];
-	vy[j] += this.solver.result[7+cid[l]*12];
-	vz[j] += this.solver.result[8+cid[l]*12];
-	wx[j] += this.solver.result[9+cid[l]*12];
-	wy[j] += this.solver.result[10+cid[l]*12];
-	wz[j] += this.solver.result[11+cid[l]*12];
+      vx[j] += this.solver.result[6+cid[l]*12];
+      vy[j] += this.solver.result[7+cid[l]*12];
+      vz[j] += this.solver.result[8+cid[l]*12];
+      wx[j] += this.solver.result[9+cid[l]*12];
+      wy[j] += this.solver.result[10+cid[l]*12];
+      wz[j] += this.solver.result[11+cid[l]*12];
       }
       }*/
     for(var i=0; i<world.numObjects(); i++){
@@ -924,13 +902,13 @@ PHYSICS.World.prototype.step = function(dt){
   }
 
   /*
-  if(this.solver.n)
+    if(this.solver.n)
     this.solver.solve();
-  if(this.solver.result){
+    if(this.solver.result){
     console.log("v_lambda",vx_lambda,vy_lambda,vz_lambda);
     console.log("new v_lambda:",this.solver.result);
     this.togglepause();
-  }
+    }
   */
   // --- End of new solver test ---
 

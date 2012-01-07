@@ -32,5 +32,6 @@ PHYSICS.RigidBody = function(type){
  */
 PHYSICS.RigidBody.prototype.types = {
   SPHERE:1,
-  PLANE:2
+  PLANE:2,
+  BOX:4
 };
