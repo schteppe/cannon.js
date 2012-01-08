@@ -1,5 +1,6 @@
 '''
 a regex-based JavaScript code compression kludge
+originally from: http://code.activestate.com/recipes/496882-javascript-code-compression/
 '''
 import re
 
