@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.1.3 - A lightweight 3D physics engine for the web
+ * cannon.js v0.1.4 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -540,19 +540,10 @@ CANNON.Quaternion.prototype.normalize = function(){
  * Rigid body base class
  * @class RigidBody
  * @param type
- * @param Vec3 position
- * @param float mass
- * @param object geodata
- * @param Vec3 velocity
- * @param Vec3 force
- * @param Vec3 rotvelo
- * @param Quaternion quat
- * @param Vec3 tau
- * @param Vec3 inertia
  */
 CANNON.RigidBody = function(type){
   this.type = type;
-  this.position = new CANNON.Vec3();
+  this._position = new CANNON.Vec3();
   this.velocity = new CANNON.Vec3();
   this.force = new CANNON.Vec3();
   this.tau = new CANNON.Vec3();
@@ -560,13 +551,49 @@ CANNON.RigidBody = function(type){
   this.rotvelo = new CANNON.Vec3();
   this.mass = 1.0;
   this.geodata = {};
-  this.id = -1;
   this.world = null;
   this.inertia = new CANNON.Vec3(1,1,1);
+
+  /**
+   * Equals -1 before added to the world. After adding, it is the world index
+   */
+  this._id = -1;
 };
 
 /**
- * Enum for object types: SPHERE, PLANE
+ * Sets the center of mass position of the object
+ */
+CANNON.RigidBody.prototype.setPosition = function(x,y,z){
+  if(this._id!=-1){
+    this.world.x[this._id] = x;
+    this.world.y[this._id] = y;
+    this.world.z[this._id] = z;
+  } else {
+    this._position.x = x;
+    this._position.y = y;
+    this._position.z = z;
+  }
+};
+
+/**
+ * Sets the center of mass position of the object
+ */
+CANNON.RigidBody.prototype.getPosition = function(target){
+  target = target || new CANNON.Vec3();
+  if(this._id!=-1){
+    target.x = this.world.x[this._id];
+    target.y = this.world.y[this._id];
+    target.z = this.world.z[this._id];
+  } else {
+    target.x = this._position.x;
+    target.y = this._position.y;
+    target.z = this._position.z;
+  }
+  return target;
+};
+
+/**
+ * Enum for object types
  */
 CANNON.RigidBody.prototype.types = {
   SPHERE:1,
@@ -581,15 +608,16 @@ CANNON.RigidBody.prototype.types = {
  * @param float mass
  */
 CANNON.Sphere = function(position,radius,mass){
-  CANNON.RigidBody.apply(this,
-			  [CANNON.RigidBody.prototype.types.SPHERE]);
-  this.position = position;
+  CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.SPHERE]);
+  //this.position = position;
   this.mass = mass;
   this.geodata = {radius:radius};
   var I = 2.0*mass*radius*radius/5.0;
   this.inertia = new CANNON.Vec3(I,I,I);
 };
-/**
+
+CANNON.Sphere.prototype = new CANNON.RigidBody();
+CANNON.Sphere.prototype.constructor = CANNON.Sphere;/**
  * Box
  * @param Vec3 halfExtents
  * @param float mass
@@ -597,8 +625,8 @@ CANNON.Sphere = function(position,radius,mass){
  */
 CANNON.Box = function(halfExtents,mass){
   // Extend rigid body class
-  CANNON.RigidBody.apply(this,
-			  [CANNON.RigidBody.types.BOX]);
+  CANNON.RigidBody.apply(this,[CANNON.RigidBody.types.BOX]);
+  CANNON.Box.prototype = CANNON.RigidBody.prototype;
   this._halfExtents = halfExtents;
   this.mass = mass!=undefined ? mass : 0;
 };
@@ -611,14 +639,14 @@ CANNON.Box = function(halfExtents,mass){
  */
 CANNON.Plane = function(position, normal){
   normal.normalize();
-  CANNON.RigidBody.apply(this,
-			  [CANNON.RigidBody.prototype.types.PLANE]);
-  this.position = position;
+  CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.PLANE]);
+  //this.position = position;
   this.mass = 0.0;
   this.geodata = {normal:normal};
 };
 
-/**
+CANNON.Plane.prototype = new CANNON.RigidBody();
+CANNON.Plane.prototype.constructor = CANNON.Plane;/**
  * Constraint solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
@@ -1005,9 +1033,9 @@ CANNON.World.prototype.add = function(body){
   }
 
   // Add one more
-  this.x[n] = body.position.x;
-  this.y[n] = body.position.y;
-  this.z[n] = body.position.z;
+  this.x[n] = body._position.x;
+  this.y[n] = body._position.y;
+  this.z[n] = body._position.z;
   
   this.vx[n] = body.velocity.x;
   this.vy[n] = body.velocity.y;
@@ -1041,7 +1069,7 @@ CANNON.World.prototype.add = function(body){
   this.inertiay[n] = body.inertia.y;
   this.inertiaz[n] = body.inertia.z;
 
-  body.id = n-1; // give id as index in table
+  body._id = n; // give id as index in table
   body.world = this;
 
   // Create collision matrix
@@ -1810,9 +1838,11 @@ CANNON.World.prototype.step = function(dt){
 
   // Read all data into object references again
   for(var i=0; i<world.numObjects(); i++){
+    /*
     world.body[i].position.x = x[i];
     world.body[i].position.y = y[i];
     world.body[i].position.z = z[i];
+    */
 
     world.body[i].velocity.x = vx[i];
     world.body[i].velocity.y = vy[i];

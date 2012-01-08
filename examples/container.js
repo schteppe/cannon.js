@@ -115,9 +115,13 @@ function createScene( ) {
 
   var plane = new CANNON.Plane(new CANNON.Vec3(0,0,0), new CANNON.Vec3(0,0,1));
   var plane_xmin = new CANNON.Plane(new CANNON.Vec3(0,-5,0), new CANNON.Vec3(0,1,0));
+  plane_xmin.setPosition(0,-5,0);
   var plane_xmax = new CANNON.Plane(new CANNON.Vec3(0,5,0), new CANNON.Vec3(0,-1,0));
+  plane_xmax.setPosition(0,5,0);
   var plane_ymin = new CANNON.Plane(new CANNON.Vec3(-5,0,0), new CANNON.Vec3(1,0,0));
+  plane_ymin.setPosition(-5,0,0);
   var plane_ymax = new CANNON.Plane(new CANNON.Vec3(5,0,0), new CANNON.Vec3(-1,0,0));
+  plane_ymax.setPosition(5,0,0);
   world.add(plane);
   world.add(plane_xmin);
   world.add(plane_xmax);
@@ -144,9 +148,10 @@ function createScene( ) {
 	}
 	scene.add( spheremesh );
 	var pos = new CANNON.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
-				   j*2-ny*0.5 + (Math.random()-0.5)*rand,
-				   1+k*2+h+(i+j)*0.2);
+				  j*2-ny*0.5 + (Math.random()-0.5)*rand,
+				  1+k*2+h+(i+j)*0.2);
 	var sphere = new CANNON.Sphere(pos,1,5);
+	sphere.setPosition(pos.x,pos.y,pos.z);
 	spheremesh.useQuaternion = true;
 	phys_bodies.push(sphere);
 	phys_visuals.push(spheremesh);
@@ -198,9 +203,7 @@ function updatePhysics(){
     
     // Read position data into visuals
     for(var i=0; i<phys_bodies.length; i++){
-      phys_visuals[i].position.x = phys_bodies[i].position.x;
-      phys_visuals[i].position.y = phys_bodies[i].position.y;
-      phys_visuals[i].position.z = phys_bodies[i].position.z; 
+      phys_bodies[i].getPosition(phys_visuals[i].position);
       phys_visuals[i].quaternion.x = phys_bodies[i].quaternion.x;
       phys_visuals[i].quaternion.y = phys_bodies[i].quaternion.y;
       phys_visuals[i].quaternion.z = phys_bodies[i].quaternion.z;
@@ -229,9 +232,9 @@ document.addEventListener('keypress',function(e){
       switch(e.keyCode){
       case 32:
 	for(var i=0; i<phys_bodies.length; i++){
-	  phys_bodies[i].position.x = phys_startpositions[i].x;
-	  phys_bodies[i].position.y = phys_startpositions[i].y;
-	  phys_bodies[i].position.z = phys_startpositions[i].z;
+	  phys_bodies[i].setPosition(phys_startpositions[i].x,
+				     phys_startpositions[i].y,
+				     phys_startpositions[i].z);
 	}
 	break;
       case 43:

@@ -164,9 +164,9 @@ CANNON.World.prototype.add = function(body){
   }
 
   // Add one more
-  this.x[n] = body.position.x;
-  this.y[n] = body.position.y;
-  this.z[n] = body.position.z;
+  this.x[n] = body._position.x;
+  this.y[n] = body._position.y;
+  this.z[n] = body._position.z;
   
   this.vx[n] = body.velocity.x;
   this.vy[n] = body.velocity.y;
@@ -200,7 +200,7 @@ CANNON.World.prototype.add = function(body){
   this.inertiay[n] = body.inertia.y;
   this.inertiaz[n] = body.inertia.z;
 
-  body.id = n-1; // give id as index in table
+  body._id = n; // give id as index in table
   body.world = this;
 
   // Create collision matrix
@@ -969,9 +969,11 @@ CANNON.World.prototype.step = function(dt){
 
   // Read all data into object references again
   for(var i=0; i<world.numObjects(); i++){
+    /*
     world.body[i].position.x = x[i];
     world.body[i].position.y = y[i];
     world.body[i].position.z = z[i];
+    */
 
     world.body[i].velocity.x = vx[i];
     world.body[i].velocity.y = vy[i];

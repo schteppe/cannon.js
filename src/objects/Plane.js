@@ -7,10 +7,11 @@
  */
 CANNON.Plane = function(position, normal){
   normal.normalize();
-  CANNON.RigidBody.apply(this,
-			  [CANNON.RigidBody.prototype.types.PLANE]);
-  this.position = position;
+  CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.PLANE]);
+  //this.position = position;
   this.mass = 0.0;
   this.geodata = {normal:normal};
 };
 
+CANNON.Plane.prototype = new CANNON.RigidBody();
+CANNON.Plane.prototype.constructor = CANNON.Plane;

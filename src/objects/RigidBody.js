@@ -2,19 +2,10 @@
  * Rigid body base class
  * @class RigidBody
  * @param type
- * @param Vec3 position
- * @param float mass
- * @param object geodata
- * @param Vec3 velocity
- * @param Vec3 force
- * @param Vec3 rotvelo
- * @param Quaternion quat
- * @param Vec3 tau
- * @param Vec3 inertia
  */
 CANNON.RigidBody = function(type){
   this.type = type;
-  this.position = new CANNON.Vec3();
+  this._position = new CANNON.Vec3();
   this.velocity = new CANNON.Vec3();
   this.force = new CANNON.Vec3();
   this.tau = new CANNON.Vec3();
@@ -22,13 +13,49 @@ CANNON.RigidBody = function(type){
   this.rotvelo = new CANNON.Vec3();
   this.mass = 1.0;
   this.geodata = {};
-  this.id = -1;
   this.world = null;
   this.inertia = new CANNON.Vec3(1,1,1);
+
+  /**
+   * Equals -1 before added to the world. After adding, it is the world index
+   */
+  this._id = -1;
 };
 
 /**
- * Enum for object types: SPHERE, PLANE
+ * Sets the center of mass position of the object
+ */
+CANNON.RigidBody.prototype.setPosition = function(x,y,z){
+  if(this._id!=-1){
+    this.world.x[this._id] = x;
+    this.world.y[this._id] = y;
+    this.world.z[this._id] = z;
+  } else {
+    this._position.x = x;
+    this._position.y = y;
+    this._position.z = z;
+  }
+};
+
+/**
+ * Sets the center of mass position of the object
+ */
+CANNON.RigidBody.prototype.getPosition = function(target){
+  target = target || new CANNON.Vec3();
+  if(this._id!=-1){
+    target.x = this.world.x[this._id];
+    target.y = this.world.y[this._id];
+    target.z = this.world.z[this._id];
+  } else {
+    target.x = this._position.x;
+    target.y = this._position.y;
+    target.z = this._position.z;
+  }
+  return target;
+};
+
+/**
+ * Enum for object types
  */
 CANNON.RigidBody.prototype.types = {
   SPHERE:1,
