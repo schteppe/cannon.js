@@ -3,7 +3,7 @@ var world = new CANNON.World();
 world.gravity(new CANNON.Vec3(0,0,-30));
 var bp = new CANNON.BroadPhase();
 world.broadphase(bp);
-world.iterations(10);
+world.iterations(3);
 
 var phys_bodies = [];
 var phys_visuals = [];
@@ -147,9 +147,9 @@ function createScene( ) {
   THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
 
   // Sphere on plane
-  var nx = 3;
-  var ny = 3;
-  var nz = 3;
+  var nx = 4;
+  var ny = 4;
+  var nz = 4;
   var rand = 0.005;
   var h = 0;
   var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory

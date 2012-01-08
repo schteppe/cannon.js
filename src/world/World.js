@@ -187,7 +187,6 @@ CANNON.World.prototype.add = function(body){
   this.qw[n] = body._quaternion.w;
 
   this.type[n] = body._shape.type;
-  console.log(body._shape.type);
   this.body[n] = body; // Keep reference to body
   this.fixed[n] = body._mass<=0.0 ? 1 : 0;
   this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;

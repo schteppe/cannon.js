@@ -540,6 +540,11 @@ CANNON.Quaternion.prototype.normalize = function(){
  * @author schteppe / http://github.com/schteppe
  */
 CANNON.Shape = function(){
+
+  /**
+   * The type of this shape. Must be set to an int > 0 by subclasses.
+   * @see Cannon.Shape.types
+   */
   this.type = 0;
 };
 
@@ -549,6 +554,11 @@ CANNON.Shape.prototype.boundingSphereRadius = function(){
   throw "boundingSphereRadius not implemented for shape type "+this.type;
 };
 
+/**
+ * Calculates the inertia in the local frame for this shape.
+ * @return Vec3
+ * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
+ */
 CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
   throw "calculateLocalInertia not implemented for shape type "+this.type;
 };
@@ -1313,7 +1323,6 @@ CANNON.World.prototype.add = function(body){
   this.qw[n] = body._quaternion.w;
 
   this.type[n] = body._shape.type;
-  console.log(body._shape.type);
   this.body[n] = body; // Keep reference to body
   this.fixed[n] = body._mass<=0.0 ? 1 : 0;
   this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
