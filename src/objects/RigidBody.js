@@ -9,7 +9,7 @@ CANNON.RigidBody = function(mass,shape){
   this._velocity = new CANNON.Vec3();
   this._force = new CANNON.Vec3();
   this._tau = new CANNON.Vec3();
-  this._quaternion = new CANNON.Quaternion();
+  this._quaternion = new CANNON.Quaternion(1,0,0,0);
   this._rotvelo = new CANNON.Vec3();
   this._mass = mass;
   this._shape = shape;
@@ -108,16 +108,18 @@ CANNON.RigidBody.prototype.getPosition = function(target){
  * Sets the orientation of the object
  */
 CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
+  var q = new CANNON.Quaternion(x,y,z,w);
+  q.normalize();
   if(this._id!=-1){
-    this._world.qx[this._id] = x;
-    this._world.qy[this._id] = y;
-    this._world.qz[this._id] = z;
-    this._world.qw[this._id] = w;
+    this._world.qx[this._id] = q.x;
+    this._world.qy[this._id] = q.y;
+    this._world.qz[this._id] = q.z;
+    this._world.qw[this._id] = q.w;
   } else {
-    this._quaternion.x = x;
-    this._quaternion.y = y;
-    this._quaternion.z = z;
-    this._quaternion.w = w;
+    this._quaternion.x = q.x;
+    this._quaternion.y = q.y;
+    this._quaternion.z = q.z;
+    this._quaternion.w = q.w;
   }
 };
 
@@ -139,6 +141,7 @@ CANNON.RigidBody.prototype.getOrientation = function(target){
     target.z = this._quaternion.z;
     target.w = this._quaternion.w;
   }
+  target.normalize();
   return target;
 };
 

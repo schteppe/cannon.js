@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.2.0 - A lightweight 3D physics engine for the web
+ * cannon.js v0.3.0 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -496,7 +496,16 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
  */
 CANNON.Vec3.prototype.toString = function(){
   return this.x+","+this.y+","+this.z;
-};/**
+};
+
+CANNON.Vec3.prototype.copy = function(target){
+  target = target || new CANNON.Vec3();
+  target.x = this.x;
+  target.y = this.y;
+  target.z = this.z;
+  return target;
+};
+/**
  * 4-dimensional quaternion
  * @class Quaternion
  * @param float x
@@ -505,10 +514,10 @@ CANNON.Vec3.prototype.toString = function(){
  * @param float w
  */
 CANNON.Quaternion = function(x,y,z,w){
-  this.x = x==undefined ? x : 1;
-  this.y = y==undefined ? y : 0;
-  this.z = z==undefined ? z : 0;
-  this.w = w==undefined ? w : 0;
+  this.x = x!=undefined ? x : 1;
+  this.y = y!=undefined ? y : 0;
+  this.z = z!=undefined ? z : 0;
+  this.w = w!=undefined ? w : 0;
 };
 
 /**
@@ -558,6 +567,40 @@ CANNON.Quaternion.prototype.normalize = function(){
 };
 
 /**
+ * Multiply the quaternion by a vector
+ * @param Vec3 v
+ * @param Vec3 target Optional
+ * @return Vec3
+ */
+CANNON.Quaternion.prototype.vmult = function(v,target){
+  target = target || new CANNON.Vec3();
+  var x = v.x,
+      y = v.y,
+      z = v.z;
+
+  var qx = this.x,
+      qy = this.y,
+      qz = this.z,
+      qw = this.w;
+
+  // q*v
+  var ix =  qw * x + qy * z - qz * y,
+      iy =  qw * y + qz * x - qx * z,
+      iz =  qw * z + qx * y - qy * x,
+      iw = -qx * x - qy * y - qz * z;
+  
+  target.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+  target.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+  target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+
+  // Version 2...
+  /*
+  target.x = (qw*qw+qx*qx-qy*qy-qz*qz)*x + (2*qx*qy-2*qw*qz)*y + (2*qx*qz+2*qw*qy)*z;
+  target.y = (2*qx*qy+2*qw*qz) * x + (qw*qw-qx*qx+qy*qy-qz*qz) * y + (2*qy*qz+2*qw*qx) * z;
+  target.z = (2*qx*qz-2*qw*qy) * x + (2*qy*qz-2*qw*qx) * y + (qw*qw-qx*qx-qy*qy+qz*qz) * z;
+  */
+  return target;
+};/**
  * @class Shape
  * @author schteppe / http://github.com/schteppe
  */
@@ -602,7 +645,7 @@ CANNON.RigidBody = function(mass,shape){
   this._velocity = new CANNON.Vec3();
   this._force = new CANNON.Vec3();
   this._tau = new CANNON.Vec3();
-  this._quaternion = new CANNON.Quaternion();
+  this._quaternion = new CANNON.Quaternion(1,0,0,0);
   this._rotvelo = new CANNON.Vec3();
   this._mass = mass;
   this._shape = shape;
@@ -701,16 +744,18 @@ CANNON.RigidBody.prototype.getPosition = function(target){
  * Sets the orientation of the object
  */
 CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
+  var q = new CANNON.Quaternion(x,y,z,w);
+  q.normalize();
   if(this._id!=-1){
-    this._world.qx[this._id] = x;
-    this._world.qy[this._id] = y;
-    this._world.qz[this._id] = z;
-    this._world.qw[this._id] = w;
+    this._world.qx[this._id] = q.x;
+    this._world.qy[this._id] = q.y;
+    this._world.qz[this._id] = q.z;
+    this._world.qw[this._id] = q.w;
   } else {
-    this._quaternion.x = x;
-    this._quaternion.y = y;
-    this._quaternion.z = z;
-    this._quaternion.w = w;
+    this._quaternion.x = q.x;
+    this._quaternion.y = q.y;
+    this._quaternion.z = q.z;
+    this._quaternion.w = q.w;
   }
 };
 
@@ -732,6 +777,7 @@ CANNON.RigidBody.prototype.getOrientation = function(target){
     target.z = this._quaternion.z;
     target.w = this._quaternion.w;
   }
+  target.normalize();
   return target;
 };
 
@@ -1414,6 +1460,7 @@ CANNON.World.prototype.step = function(dt){
   // Get references to things that are accessed often. Will save some lookup time.
   var SPHERE = CANNON.Shape.types.SPHERE;
   var PLANE = CANNON.Shape.types.PLANE;
+  var BOX = CANNON.Shape.types.BOX;
   var types = world.type;
   var x = world.x;
   var y = world.y;
@@ -1819,7 +1866,6 @@ CANNON.World.prototype.step = function(dt){
     fz[i] += world.gravity.z * world.mass[i];
   }
 
-  // --- Testing new solver ---
   this.solver.reset(world.numObjects());
   var cid = new Int16Array(p1.length); // For saving constraint refs
   for(var k=0; k<p1.length; k++){
@@ -1922,8 +1968,7 @@ CANNON.World.prototype.step = function(dt){
 			 si,
 			 pi);
       }
-    } else if(types[i]==SPHERE &&
-	      types[j]==SPHERE){
+    } else if(types[i]==SPHERE && types[j]==SPHERE){
 
       // Penetration constraint:
       var ri = new CANNON.Vec3(x[j]-x[i],
@@ -2018,6 +2063,126 @@ CANNON.World.prototype.step = function(dt){
 			 i,
 			 j);
       }
+    } else if((types[i]==BOX && types[j]==PLANE) || 
+	      (types[i]==PLANE && types[j]==BOX)){
+      
+      // Identify what is what
+      var pi, bi;
+      if(types[i]==BOX){
+	bi=i;
+	pi=j;
+      } else {
+	bi=j;
+	pi=i;
+      }
+      
+      // Collision normal
+      var n = world.body[pi]._shape.normal.copy();
+      n.negate(n); // We are working with the box as body i!
+
+      var xi = new CANNON.Vec3(world.x[bi],
+			       world.y[bi],
+			       world.z[bi]);
+
+      // Compute inertia in the world frame
+      var quat = new CANNON.Quaternion(qx[bi],qy[bi],qz[bi],qw[bi]);
+      quat.normalize();
+      var localInertia = new CANNON.Vec3(world.inertiax[bi],
+					 world.inertiay[bi],
+					 world.inertiaz[bi]);
+      // @todo Is this rotation OK? Check!
+      var worldInertia = quat.vmult(localInertia);
+      worldInertia.x = Math.abs(worldInertia.x);
+      worldInertia.y = Math.abs(worldInertia.y);
+      worldInertia.z = Math.abs(worldInertia.z);
+
+      var corners = [];
+      var ex = world.body[bi]._shape.halfExtents;
+      corners.push(new CANNON.Vec3(  ex.x,  ex.y,  ex.z));
+      corners.push(new CANNON.Vec3( -ex.x,  ex.y,  ex.z));
+      corners.push(new CANNON.Vec3( -ex.x, -ex.y,  ex.z));
+      corners.push(new CANNON.Vec3( -ex.x, -ex.y, -ex.z));
+      corners.push(new CANNON.Vec3(  ex.x, -ex.y, -ex.z));
+      corners.push(new CANNON.Vec3(  ex.x,  ex.y, -ex.z));
+      corners.push(new CANNON.Vec3( -ex.x,  ex.y, -ex.z));
+      corners.push(new CANNON.Vec3(  ex.x, -ex.y,  ex.z)); 
+      
+      // Loop through each corner
+      var numcontacts = 0;
+      for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
+
+	var ri = corners[idx];
+
+	// Compute penetration corner in the world frame
+	quat.vmult(ri,ri);
+
+	var rixn = ri.cross(n);
+
+	// Project down corner to plane to get xj
+	var point_on_plane_to_corner = new CANNON.Vec3(xi.x+ri.x*0.5-x[pi],
+						       xi.y+ri.y*0.5-y[pi],
+						       xi.z+ri.z*0.5-z[pi]); // 0.5???
+	var plane_to_corner = n.mult(n.dot(point_on_plane_to_corner));
+
+	var xj = xi.vsub(plane_to_corner);
+	
+	// Pseudo name: box index = i
+	// g = ( xj + rj - xi - ri ) .dot ( ni )
+	var qvec = new CANNON.Vec3(xj.x - x[bi] - ri.x*0.5, // 0.5???
+				   xj.y - y[bi] - ri.y*0.5,
+				   xj.z - z[bi] - ri.z*0.5);
+	var q = qvec.dot(n);
+	n.mult(q,qvec);
+	
+	// Action if penetration
+	if(q<0.0){
+
+	  numcontacts++;
+
+	  var v_box = new CANNON.Vec3(vx[bi],vy[bi],vz[bi]);
+	  var w_box = new CANNON.Vec3(wx[bi],wy[bi],wz[bi]);
+
+	  var v_contact = w_box.cross(ri);
+	  var u = v_box.vadd(w_box.cross(ri));
+
+	  var iM = world.invm[bi];
+	  cid[k] = this.solver
+	    .addConstraint( // Non-penetration constraint jacobian
+			   [-n.x,-n.y,-n.z,
+			    -rixn.x,-rixn.y,-rixn.z,
+			    0,0,0,
+			    0,0,0],
+			   
+			   // Inverse mass matrix
+			   [iM,iM,iM,
+			    1.0/worldInertia.x, 1.0/worldInertia.y, 1.0/worldInertia.z,
+			    0,0,0,   // Static plane -> infinite mass
+			    0,0,0],
+			   
+			   // q - constraint violation
+			   [-qvec.x,-qvec.y,-qvec.z,
+			    0,0,0,
+			    0,0,0,
+			    0,0,0],
+			   
+			   // qdot - motion along penetration normal
+			   [v_box.x, v_box.y, v_box.z,
+			    w_box.x, w_box.y, w_box.z,
+			    0,0,0,
+			    0,0,0],
+			   
+			   // External force - forces & torques
+			   [fx[bi],fy[bi],fz[bi],
+			    taux[bi],tauy[bi],tauz[bi],
+			    fx[pi],fy[pi],fz[pi],
+			    taux[pi],tauy[pi],tauz[pi]],
+
+			   0,
+			   'inf',
+			   bi,
+			   pi);
+	}
+      }
     }
   }
 
@@ -2089,8 +2254,9 @@ CANNON.World.prototype.step = function(dt){
       
       var q = new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]);
       var w = new CANNON.Quaternion(wx[i],wy[i],wz[i],0);
+
       var wq = w.mult(q);
-      
+
       qx[i] += dt * 0.5 * wq.x;
       qy[i] += dt * 0.5 * wq.y;
       qz[i] += dt * 0.5 * wq.z;
@@ -2100,7 +2266,9 @@ CANNON.World.prototype.step = function(dt){
       q.y = qy[i];
       q.z = qz[i];
       q.w = qw[i];
+
       q.normalize();
+
       qx[i]=q.x;
       qy[i]=q.y;
       qz[i]=q.z;

@@ -7,10 +7,10 @@
  * @param float w
  */
 CANNON.Quaternion = function(x,y,z,w){
-  this.x = x==undefined ? x : 1;
-  this.y = y==undefined ? y : 0;
-  this.z = z==undefined ? z : 0;
-  this.w = w==undefined ? w : 0;
+  this.x = x!=undefined ? x : 1;
+  this.y = y!=undefined ? y : 0;
+  this.z = z!=undefined ? z : 0;
+  this.w = w!=undefined ? w : 0;
 };
 
 /**
@@ -59,3 +59,38 @@ CANNON.Quaternion.prototype.normalize = function(){
   }
 };
 
+/**
+ * Multiply the quaternion by a vector
+ * @param Vec3 v
+ * @param Vec3 target Optional
+ * @return Vec3
+ */
+CANNON.Quaternion.prototype.vmult = function(v,target){
+  target = target || new CANNON.Vec3();
+  var x = v.x,
+      y = v.y,
+      z = v.z;
+
+  var qx = this.x,
+      qy = this.y,
+      qz = this.z,
+      qw = this.w;
+
+  // q*v
+  var ix =  qw * x + qy * z - qz * y,
+      iy =  qw * y + qz * x - qx * z,
+      iz =  qw * z + qx * y - qy * x,
+      iw = -qx * x - qy * y - qz * z;
+  
+  target.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+  target.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+  target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+
+  // Version 2...
+  /*
+  target.x = (qw*qw+qx*qx-qy*qy-qz*qz)*x + (2*qx*qy-2*qw*qz)*y + (2*qx*qz+2*qw*qy)*z;
+  target.y = (2*qx*qy+2*qw*qz) * x + (qw*qw-qx*qx+qy*qy-qz*qz) * y + (2*qy*qz+2*qw*qx) * z;
+  target.z = (2*qx*qz-2*qw*qy) * x + (2*qy*qz-2*qw*qx) * y + (qw*qw-qx*qx-qy*qy+qz*qz) * z;
+  */
+  return target;
+};

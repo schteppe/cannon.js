@@ -179,3 +179,11 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
 CANNON.Vec3.prototype.toString = function(){
   return this.x+","+this.y+","+this.z;
 };
+
+CANNON.Vec3.prototype.copy = function(target){
+  target = target || new CANNON.Vec3();
+  target.x = this.x;
+  target.y = this.y;
+  target.z = this.z;
+  return target;
+};
