@@ -1,17 +1,19 @@
 /**
- * Plane
  * @class Plane
- * @param Vec3 position
  * @param Vec3 normal
- * @todo Should be able to create it using only scalar+vector
+ * @author schteppe / http://github.com/schteppe
  */
-CANNON.Plane = function(position, normal){
+CANNON.Plane = function(normal){
+  CANNON.Shape.call(this);
   normal.normalize();
-  CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.PLANE]);
-  //this.position = position;
-  this._mass = 0.0;
-  this.geodata = {normal:normal};
+  this.normal = normal;
+  this.type = CANNON.Shape.types.PLANE;
 };
 
-CANNON.Plane.prototype = new CANNON.RigidBody();
+CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;
+
+CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
+  target = target || new CANNON.Vec3();
+  return target;
+};

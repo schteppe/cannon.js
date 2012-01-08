@@ -1,18 +1,23 @@
 /**
  * Spherical rigid body
  * @class Sphere
- * @param Vec3 position
  * @param float radius
- * @param float mass
+ * @author schteppe / http://github.com/schteppe
  */
-CANNON.Sphere = function(position,radius,mass){
-  CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.SPHERE]);
-  //this.position = position;
-  this._mass = mass;
-  this.geodata = {radius:radius};
-  var I = 2.0*mass*radius*radius/5.0;
-  this._inertia = new CANNON.Vec3(I,I,I);
+CANNON.Sphere = function(radius){
+  CANNON.Shape.call(this);
+  this.radius = radius!=undefined ? radius : 1.0;
+  this.type = CANNON.Shape.types.SPHERE;
 };
 
-CANNON.Sphere.prototype = new CANNON.RigidBody();
+CANNON.Sphere.prototype = new CANNON.Shape();
 CANNON.Sphere.prototype.constructor = CANNON.Sphere;
+
+CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
+  target = target || new CANNON.Vec3();
+  var I = 2.0*mass*this.radius*this.radius/5.0;
+  target.x = I;
+  target.y = I;
+  target.z = I;
+  return target;
+};

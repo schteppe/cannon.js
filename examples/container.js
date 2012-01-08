@@ -113,20 +113,34 @@ function createScene( ) {
   }
   scene.add( ground );
 
-  var plane = new CANNON.Plane(new CANNON.Vec3(0,0,0), new CANNON.Vec3(0,0,1));
-  var plane_xmin = new CANNON.Plane(new CANNON.Vec3(0,-5,0), new CANNON.Vec3(0,1,0));
-  plane_xmin.setPosition(0,-5,0);
-  var plane_xmax = new CANNON.Plane(new CANNON.Vec3(0,5,0), new CANNON.Vec3(0,-1,0));
-  plane_xmax.setPosition(0,5,0);
-  var plane_ymin = new CANNON.Plane(new CANNON.Vec3(-5,0,0), new CANNON.Vec3(1,0,0));
-  plane_ymin.setPosition(-5,0,0);
-  var plane_ymax = new CANNON.Plane(new CANNON.Vec3(5,0,0), new CANNON.Vec3(-1,0,0));
-  plane_ymax.setPosition(5,0,0);
-  world.add(plane);
-  world.add(plane_xmin);
-  world.add(plane_xmax);
-  world.add(plane_ymin);
-  world.add(plane_ymax);
+  // ground plane
+  var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+  var groundBody = new CANNON.RigidBody(0,groundShape);
+  world.add(groundBody);
+
+  // plane -x
+  var planeShapeXmin = new CANNON.Plane(new CANNON.Vec3(0,1,0));
+  var planeXmin = new CANNON.RigidBody(0, planeShapeXmin);
+  planeXmin.setPosition(0,-5,0);
+  world.add(planeXmin);
+
+  // Plane +x
+  var planeShapeXmax = new CANNON.Plane(new CANNON.Vec3(0,-1,0));
+  var planeXmax = new CANNON.RigidBody(0, planeShapeXmax);
+  planeXmax.setPosition(0,5,0);
+  world.add(planeXmax);
+
+  // Plane -y
+  var planeShapeYmin = new CANNON.Plane(new CANNON.Vec3(1,0,0));
+  var planeYmin = new CANNON.RigidBody(0, planeShapeYmin);
+  planeYmin.setPosition(-5,0,0);
+  world.add(planeYmin);
+
+  // Plane +y
+  var planeShapeYmax = new CANNON.Plane(new CANNON.Vec3(-1,0,0));
+  var planeYmax = new CANNON.RigidBody(0, planeShapeYmax);
+  planeYmax.setPosition(5,0,0);
+  world.add(planeYmax);
 
   var sphere_geometry = new THREE.SphereGeometry( 1, 16, 8);
   var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
@@ -138,25 +152,31 @@ function createScene( ) {
   var nz = 3;
   var rand = 0.005;
   var h = 0;
+  var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
   for(var i=0; i<nx; i++){
     for(var j=0; j<ny; j++){
       for(var k=0; k<nz; k++){
+	// THREE.js
 	var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
 	if(shadowsOn){
 	  spheremesh.castShadow = true;
 	  spheremesh.receiveShadow = true;
 	}
 	scene.add( spheremesh );
+	spheremesh.useQuaternion = true;
+
+	// Physics
+	var sphereBody = new CANNON.RigidBody(5,sphereShape);
 	var pos = new CANNON.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
 				  j*2-ny*0.5 + (Math.random()-0.5)*rand,
 				  1+k*2+h+(i+j)*0.2);
-	var sphere = new CANNON.Sphere(pos,1,5);
-	sphere.setPosition(pos.x,pos.y,pos.z);
-	spheremesh.useQuaternion = true;
-	phys_bodies.push(sphere);
+	sphereBody.setPosition(pos.x,pos.y,pos.z);
+	
+	// Save initial positions for later
+	phys_bodies.push(sphereBody);
 	phys_visuals.push(spheremesh);
 	phys_startpositions.push(pos);
-	world.add(sphere);
+	world.add(sphereBody);
       }
     }
   }

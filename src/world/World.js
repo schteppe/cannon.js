@@ -81,7 +81,6 @@ CANNON.World.prototype.add = function(body){
   old_qw = this.qw;
 
   old_type = this.type;
-  old_geodata = this.geodata;
   old_body = this.body;
   old_fixed = this.fixed;
   old_invm = this.invm;
@@ -116,7 +115,6 @@ CANNON.World.prototype.add = function(body){
   this.qw = new Float32Array(n+1);
 
   this.type = new Int16Array(n+1);
-  this.geodata = [];
   this.body = [];
   this.fixed = new Int16Array(n+1);
   this.mass = new Float32Array(n+1);
@@ -153,7 +151,6 @@ CANNON.World.prototype.add = function(body){
     this.qw[i] = old_qw[i];
 
     this.type[i] = old_type[i];
-    this.geodata[i] = old_geodata[i];
     this.body[i] = old_body[i];
     this.fixed[i] = old_fixed[i];
     this.invm[i] = old_invm[i];
@@ -189,8 +186,8 @@ CANNON.World.prototype.add = function(body){
   this.qz[n] = body._quaternion.z;
   this.qw[n] = body._quaternion.w;
 
-  this.type[n] = body.type;
-  this.geodata[n] = body.geodata;
+  this.type[n] = body._shape.type;
+  console.log(body._shape.type);
   this.body[n] = body; // Keep reference to body
   this.fixed[n] = body._mass<=0.0 ? 1 : 0;
   this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
@@ -257,8 +254,8 @@ CANNON.World.prototype.step = function(dt){
   var p2 = pairs[1];
 
   // Get references to things that are accessed often. Will save some lookup time.
-  var SPHERE = CANNON.RigidBody.prototype.types.SPHERE;
-  var PLANE = CANNON.RigidBody.prototype.types.PLANE;
+  var SPHERE = CANNON.Shape.types.SPHERE;
+  var PLANE = CANNON.Shape.types.PLANE;
   var types = world.type;
   var x = world.x;
   var y = world.y;
@@ -341,14 +338,14 @@ CANNON.World.prototype.step = function(dt){
       // @todo apply the notation at http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
       
       // Collision normal
-      var n = world.geodata[pi].normal;
+      var n = world.body[pi]._shape.normal;
 	
       // Check if penetration
       var r = new CANNON.Vec3(x[si]-x[pi],
 			       y[si]-y[pi],
 			       z[si]-z[pi]);
       r = n.mult(r.dot(n));
-      var q = (r.dot(n)-world.geodata[si].radius);
+      var q = (r.dot(n)-world.body[si]._shape.radius);
 
       var w_sphere = new CANNON.Vec3(wx[si], wy[si], wz[si]);
       var v_sphere = new CANNON.Vec3(vx[si], vy[si], vz[si]);
@@ -435,7 +432,7 @@ CANNON.World.prototype.step = function(dt){
 			       z[i]-z[j]);
       var nlen = n.norm();
       n.normalize();
-      var q = (nlen - (world.geodata[i].radius+world.geodata[j].radius));
+      var q = (nlen - (world.body[i]._shape.radius+world.body[j]._shape.radius));
       var u = new CANNON.Vec3(vx[i]-vx[j],
 			       vy[i]-vy[j],
 			       vz[i]-vz[j]);
@@ -456,8 +453,8 @@ CANNON.World.prototype.step = function(dt){
 	var r = new CANNON.Vec3(x[i]-x[j],
 				 y[i]-y[j],
 				 z[i]-z[j]);
-	var ri = n.mult(world.geodata[i].radius);
-	var rj = n.mult(world.geodata[j].radius);
+	var ri = n.mult(world.body[i]._shape.radius);
+	var rj = n.mult(world.body[j]._shape.radius);
 
 	//            % Collide with core
 	//                r = dR;
@@ -687,13 +684,13 @@ CANNON.World.prototype.step = function(dt){
       }
       
       // Collision normal
-      var n = new CANNON.Vec3(world.geodata[pi].normal.x,
-			      world.geodata[pi].normal.y,
-			      world.geodata[pi].normal.z);
+      var n = new CANNON.Vec3(world.body[pi]._shape.normal.x,
+			      world.body[pi]._shape.normal.y,
+			      world.body[pi]._shape.normal.z);
       n.negate(n); // We are working with the sphere as body i!
 
       // Vector from sphere center to contact point
-      var rsi = n.mult(world.geodata[si].radius);
+      var rsi = n.mult(world.body[si]._shape.radius);
       var rsixn = rsi.cross(n);
 
       // Project down shpere on plane???
@@ -779,12 +776,12 @@ CANNON.World.prototype.step = function(dt){
 			       z[i]-z[j]);
       var nlen = r.norm();
       ri.normalize();
-      ri.mult(world.geodata[i].radius,ri);
+      ri.mult(world.body[i]._shape.radius,ri);
       var rj = new CANNON.Vec3(x[i]-x[j],
 				y[i]-y[j],
 				z[i]-z[j]);
       rj.normalize();
-      rj.mult(world.geodata[j].radius,rj);
+      rj.mult(world.body[j]._shape.radius,rj);
       var ni = new CANNON.Vec3(x[j]-x[i],
 				y[j]-y[i],
 				z[j]-z[i]);

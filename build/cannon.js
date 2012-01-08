@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.1.4 - A lightweight 3D physics engine for the web
+ * cannon.js v0.2.0 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -58,14 +58,14 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
   var n = world.numObjects();
 
   // Local fast access
-  var SPHERE = CANNON.RigidBody.prototype.types.SPHERE;
-  var PLANE =  CANNON.RigidBody.prototype.types.PLANE;
-  var BOX =    CANNON.RigidBody.prototype.types.BOX;
+  var SPHERE = CANNON.Shape.types.SPHERE;
+  var PLANE =  CANNON.Shape.types.PLANE;
+  var BOX =    CANNON.Shape.types.BOX;
   var x = world.x;
   var y = world.y;
   var z = world.z;
-  var geodata = world.geodata;
   var type = world.type;
+  var body = world.body;
 
   // Naive N^2 ftw!
   for(var i=0; i<n; i++){
@@ -73,7 +73,7 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
 
       // Sphere-sphere
       if(type[i]==SPHERE && type[j]==SPHERE){
-	var r2 = (geodata[i].radius + geodata[j].radius);
+	var r2 = (body[i]._shape.radius + body[j]._shape.radius);
 	if(Math.abs(x[i]-x[j]) < r2 && 
 	   Math.abs(y[i]-y[j]) < r2 && 
 	   Math.abs(z[i]-z[j]) < r2){
@@ -89,10 +89,10 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
 	
 	// Rel. position
 	var r = new CANNON.Vec3(x[si]-x[pi],
-				 y[si]-y[pi],
-				 z[si]-z[pi]);
-	var normal = geodata[pi].normal;
-	var q = r.dot(normal)-geodata[si].radius;
+				y[si]-y[pi],
+				z[si]-z[pi]);
+	var normal = body[pi]._shape.normal;
+	var q = r.dot(normal)-body[si]._shape.radius;
 	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);
@@ -108,9 +108,9 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
 	var r = new CANNON.Vec3(x[bi]-x[pi],
 				y[bi]-y[pi],
 				z[bi]-z[pi]);
-	var normal = geodata[pi].normal;
+	var normal = body[pi]._shape.normal;
 	var d = r.dot(normal); // Distance from box center to plane
-	var boundingRadius = world.body.halfExtents.norm();
+	var boundingRadius = body[bi]._shape.halfExtents.norm();
 	var q = d - boundingRadius;
 	if(q<0.0){
 	  pairs1.push(i);
@@ -119,7 +119,6 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
       }
     }
   }
-
   return [pairs1,pairs2];
 };
 /**
@@ -537,11 +536,35 @@ CANNON.Quaternion.prototype.normalize = function(){
 };
 
 /**
+ * @class Shape
+ * @author schteppe / http://github.com/schteppe
+ */
+CANNON.Shape = function(){
+  this.type = 0;
+};
+
+CANNON.Shape.prototype.constructor = CANNON.Shape;
+
+CANNON.Shape.prototype.boundingSphereRadius = function(){
+  throw "boundingSphereRadius not implemented for shape type "+this.type;
+};
+
+CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
+  throw "calculateLocalInertia not implemented for shape type "+this.type;
+};
+
+CANNON.Shape.types = {
+  SPHERE:1,
+  PLANE:2,
+  BOX:4
+};
+
+/**
  * Rigid body base class
  * @class RigidBody
  * @param type
  */
-CANNON.RigidBody = function(type){
+CANNON.RigidBody = function(mass,shape){
   // Local variables
   this._position = new CANNON.Vec3();
   this._velocity = new CANNON.Vec3();
@@ -549,30 +572,24 @@ CANNON.RigidBody = function(type){
   this._tau = new CANNON.Vec3();
   this._quaternion = new CANNON.Quaternion();
   this._rotvelo = new CANNON.Vec3();
-  this._mass = 1.0;
-  this._inertia = new CANNON.Vec3(1,1,1);
+  this._mass = mass;
+  this._shape = shape;
+  this._inertia = shape.calculateLocalInertia(mass);
 
   /// Reference to the world the body is living in
   this._world = null;
 
   /// Equals -1 before added to the world. After adding, it is the world body index
   this._id = -1;
-
-  /// @deprecated
-  this.geodata = {};
-
-  /// @deprecated
-  this.type = type;
 };
 
-/**
- * Enum for object types
- */
+/*
 CANNON.RigidBody.prototype.types = {
   SPHERE:1,
   PLANE:2,
   BOX:4
 };
+*/
 
 /**
  * Get/set mass. Note: When changing mass, you should change the inertia too.
@@ -592,6 +609,25 @@ CANNON.RigidBody.prototype.mass = function(m){
       this._world.invm[this._id] = 1.0/m;
     } else
       this._mass = m;
+  }
+};
+
+/**
+ * Get/set shape.
+ * @param Shape s
+ * @return Shape
+ */
+CANNON.RigidBody.prototype.shape = function(s){
+  if(s==undefined){
+    // Get
+    return this._shape;
+  } else {
+    // Set
+    this._shape = s;
+    if(this._id!=-1){
+      // @todo More things to update here when changing shape?
+      this._world.type[this._id] = shape.type;
+    }
   }
 };
 
@@ -804,52 +840,70 @@ CANNON.RigidBody.prototype.getTorque = function(target){
 };/**
  * Spherical rigid body
  * @class Sphere
- * @param Vec3 position
  * @param float radius
- * @param float mass
+ * @author schteppe / http://github.com/schteppe
  */
-CANNON.Sphere = function(position,radius,mass){
-  CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.SPHERE]);
-  //this.position = position;
-  this._mass = mass;
-  this.geodata = {radius:radius};
-  var I = 2.0*mass*radius*radius/5.0;
-  this._inertia = new CANNON.Vec3(I,I,I);
+CANNON.Sphere = function(radius){
+  CANNON.Shape.call(this);
+  this.radius = radius!=undefined ? radius : 1.0;
+  this.type = CANNON.Shape.types.SPHERE;
 };
 
-CANNON.Sphere.prototype = new CANNON.RigidBody();
-CANNON.Sphere.prototype.constructor = CANNON.Sphere;/**
+CANNON.Sphere.prototype = new CANNON.Shape();
+CANNON.Sphere.prototype.constructor = CANNON.Sphere;
+
+CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
+  target = target || new CANNON.Vec3();
+  var I = 2.0*mass*this.radius*this.radius/5.0;
+  target.x = I;
+  target.y = I;
+  target.z = I;
+  return target;
+};
+/**
  * Box
  * @param Vec3 halfExtents
- * @param float mass
  * @author schteppe
  */
-CANNON.Box = function(halfExtents,mass){
-  // Extend rigid body class
-  CANNON.RigidBody.apply(this,[CANNON.RigidBody.types.BOX]);
-  this._halfExtents = halfExtents;
-  this._mass = mass!=undefined ? mass : 0;
+CANNON.Box = function(halfExtents){
+  CANNON.Shape.call(this);
+  this.halfExtents = halfExtents;
+  this.type = CANNON.Shape.types.BOX;
 };
 
-CANNON.Box.prototype = new CANNON.RigidBody();
+CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
+
+CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
+  target = target || new CANNON.Vec3();
+  target.x = 1.0 / 12.0 * mass * (   this.halfExtents.y*this.halfExtents.y
+				   + this.halfExtents.z*this.halfExtents.z );
+  target.y = 1.0 / 12.0 * mass * (   this.halfExtents.x*this.halfExtents.x
+				   + this.halfExtents.z*this.halfExtents.z );
+  target.z = 1.0 / 12.0 * mass * (   this.halfExtents.y*this.halfExtents.y
+				   + this.halfExtents.x*this.halfExtents.x );
+  return target;
+};
 /**
- * Plane
  * @class Plane
- * @param Vec3 position
  * @param Vec3 normal
- * @todo Should be able to create it using only scalar+vector
+ * @author schteppe / http://github.com/schteppe
  */
-CANNON.Plane = function(position, normal){
+CANNON.Plane = function(normal){
+  CANNON.Shape.call(this);
   normal.normalize();
-  CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.PLANE]);
-  //this.position = position;
-  this._mass = 0.0;
-  this.geodata = {normal:normal};
+  this.normal = normal;
+  this.type = CANNON.Shape.types.PLANE;
 };
 
-CANNON.Plane.prototype = new CANNON.RigidBody();
-CANNON.Plane.prototype.constructor = CANNON.Plane;/**
+CANNON.Plane.prototype = new CANNON.Shape();
+CANNON.Plane.prototype.constructor = CANNON.Plane;
+
+CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
+  target = target || new CANNON.Vec3();
+  return target;
+};
+/**
  * Constraint solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
@@ -1153,7 +1207,6 @@ CANNON.World.prototype.add = function(body){
   old_qw = this.qw;
 
   old_type = this.type;
-  old_geodata = this.geodata;
   old_body = this.body;
   old_fixed = this.fixed;
   old_invm = this.invm;
@@ -1188,7 +1241,6 @@ CANNON.World.prototype.add = function(body){
   this.qw = new Float32Array(n+1);
 
   this.type = new Int16Array(n+1);
-  this.geodata = [];
   this.body = [];
   this.fixed = new Int16Array(n+1);
   this.mass = new Float32Array(n+1);
@@ -1225,7 +1277,6 @@ CANNON.World.prototype.add = function(body){
     this.qw[i] = old_qw[i];
 
     this.type[i] = old_type[i];
-    this.geodata[i] = old_geodata[i];
     this.body[i] = old_body[i];
     this.fixed[i] = old_fixed[i];
     this.invm[i] = old_invm[i];
@@ -1261,8 +1312,8 @@ CANNON.World.prototype.add = function(body){
   this.qz[n] = body._quaternion.z;
   this.qw[n] = body._quaternion.w;
 
-  this.type[n] = body.type;
-  this.geodata[n] = body.geodata;
+  this.type[n] = body._shape.type;
+  console.log(body._shape.type);
   this.body[n] = body; // Keep reference to body
   this.fixed[n] = body._mass<=0.0 ? 1 : 0;
   this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
@@ -1329,8 +1380,8 @@ CANNON.World.prototype.step = function(dt){
   var p2 = pairs[1];
 
   // Get references to things that are accessed often. Will save some lookup time.
-  var SPHERE = CANNON.RigidBody.prototype.types.SPHERE;
-  var PLANE = CANNON.RigidBody.prototype.types.PLANE;
+  var SPHERE = CANNON.Shape.types.SPHERE;
+  var PLANE = CANNON.Shape.types.PLANE;
   var types = world.type;
   var x = world.x;
   var y = world.y;
@@ -1413,14 +1464,14 @@ CANNON.World.prototype.step = function(dt){
       // @todo apply the notation at http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
       
       // Collision normal
-      var n = world.geodata[pi].normal;
+      var n = world.body[pi]._shape.normal;
 	
       // Check if penetration
       var r = new CANNON.Vec3(x[si]-x[pi],
 			       y[si]-y[pi],
 			       z[si]-z[pi]);
       r = n.mult(r.dot(n));
-      var q = (r.dot(n)-world.geodata[si].radius);
+      var q = (r.dot(n)-world.body[si]._shape.radius);
 
       var w_sphere = new CANNON.Vec3(wx[si], wy[si], wz[si]);
       var v_sphere = new CANNON.Vec3(vx[si], vy[si], vz[si]);
@@ -1507,7 +1558,7 @@ CANNON.World.prototype.step = function(dt){
 			       z[i]-z[j]);
       var nlen = n.norm();
       n.normalize();
-      var q = (nlen - (world.geodata[i].radius+world.geodata[j].radius));
+      var q = (nlen - (world.body[i]._shape.radius+world.body[j]._shape.radius));
       var u = new CANNON.Vec3(vx[i]-vx[j],
 			       vy[i]-vy[j],
 			       vz[i]-vz[j]);
@@ -1528,8 +1579,8 @@ CANNON.World.prototype.step = function(dt){
 	var r = new CANNON.Vec3(x[i]-x[j],
 				 y[i]-y[j],
 				 z[i]-z[j]);
-	var ri = n.mult(world.geodata[i].radius);
-	var rj = n.mult(world.geodata[j].radius);
+	var ri = n.mult(world.body[i]._shape.radius);
+	var rj = n.mult(world.body[j]._shape.radius);
 
 	//            % Collide with core
 	//                r = dR;
@@ -1759,13 +1810,13 @@ CANNON.World.prototype.step = function(dt){
       }
       
       // Collision normal
-      var n = new CANNON.Vec3(world.geodata[pi].normal.x,
-			      world.geodata[pi].normal.y,
-			      world.geodata[pi].normal.z);
+      var n = new CANNON.Vec3(world.body[pi]._shape.normal.x,
+			      world.body[pi]._shape.normal.y,
+			      world.body[pi]._shape.normal.z);
       n.negate(n); // We are working with the sphere as body i!
 
       // Vector from sphere center to contact point
-      var rsi = n.mult(world.geodata[si].radius);
+      var rsi = n.mult(world.body[si]._shape.radius);
       var rsixn = rsi.cross(n);
 
       // Project down shpere on plane???
@@ -1851,12 +1902,12 @@ CANNON.World.prototype.step = function(dt){
 			       z[i]-z[j]);
       var nlen = r.norm();
       ri.normalize();
-      ri.mult(world.geodata[i].radius,ri);
+      ri.mult(world.body[i]._shape.radius,ri);
       var rj = new CANNON.Vec3(x[i]-x[j],
 				y[i]-y[j],
 				z[i]-z[j]);
       rj.normalize();
-      rj.mult(world.geodata[j].radius,rj);
+      rj.mult(world.body[j]._shape.radius,rj);
       var ni = new CANNON.Vec3(x[j]-x[i],
 				y[j]-y[i],
 				z[j]-z[i]);

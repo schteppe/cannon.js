@@ -3,7 +3,7 @@
  * @class RigidBody
  * @param type
  */
-CANNON.RigidBody = function(type){
+CANNON.RigidBody = function(mass,shape){
   // Local variables
   this._position = new CANNON.Vec3();
   this._velocity = new CANNON.Vec3();
@@ -11,30 +11,24 @@ CANNON.RigidBody = function(type){
   this._tau = new CANNON.Vec3();
   this._quaternion = new CANNON.Quaternion();
   this._rotvelo = new CANNON.Vec3();
-  this._mass = 1.0;
-  this._inertia = new CANNON.Vec3(1,1,1);
+  this._mass = mass;
+  this._shape = shape;
+  this._inertia = shape.calculateLocalInertia(mass);
 
   /// Reference to the world the body is living in
   this._world = null;
 
   /// Equals -1 before added to the world. After adding, it is the world body index
   this._id = -1;
-
-  /// @deprecated
-  this.geodata = {};
-
-  /// @deprecated
-  this.type = type;
 };
 
-/**
- * Enum for object types
- */
+/*
 CANNON.RigidBody.prototype.types = {
   SPHERE:1,
   PLANE:2,
   BOX:4
 };
+*/
 
 /**
  * Get/set mass. Note: When changing mass, you should change the inertia too.
@@ -54,6 +48,25 @@ CANNON.RigidBody.prototype.mass = function(m){
       this._world.invm[this._id] = 1.0/m;
     } else
       this._mass = m;
+  }
+};
+
+/**
+ * Get/set shape.
+ * @param Shape s
+ * @return Shape
+ */
+CANNON.RigidBody.prototype.shape = function(s){
+  if(s==undefined){
+    // Get
+    return this._shape;
+  } else {
+    // Set
+    this._shape = s;
+    if(this._id!=-1){
+      // @todo More things to update here when changing shape?
+      this._world.type[this._id] = shape.type;
+    }
   }
 };
 

@@ -18,14 +18,14 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
   var n = world.numObjects();
 
   // Local fast access
-  var SPHERE = CANNON.RigidBody.prototype.types.SPHERE;
-  var PLANE =  CANNON.RigidBody.prototype.types.PLANE;
-  var BOX =    CANNON.RigidBody.prototype.types.BOX;
+  var SPHERE = CANNON.Shape.types.SPHERE;
+  var PLANE =  CANNON.Shape.types.PLANE;
+  var BOX =    CANNON.Shape.types.BOX;
   var x = world.x;
   var y = world.y;
   var z = world.z;
-  var geodata = world.geodata;
   var type = world.type;
+  var body = world.body;
 
   // Naive N^2 ftw!
   for(var i=0; i<n; i++){
@@ -33,7 +33,7 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
 
       // Sphere-sphere
       if(type[i]==SPHERE && type[j]==SPHERE){
-	var r2 = (geodata[i].radius + geodata[j].radius);
+	var r2 = (body[i]._shape.radius + body[j]._shape.radius);
 	if(Math.abs(x[i]-x[j]) < r2 && 
 	   Math.abs(y[i]-y[j]) < r2 && 
 	   Math.abs(z[i]-z[j]) < r2){
@@ -49,10 +49,10 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
 	
 	// Rel. position
 	var r = new CANNON.Vec3(x[si]-x[pi],
-				 y[si]-y[pi],
-				 z[si]-z[pi]);
-	var normal = geodata[pi].normal;
-	var q = r.dot(normal)-geodata[si].radius;
+				y[si]-y[pi],
+				z[si]-z[pi]);
+	var normal = body[pi]._shape.normal;
+	var q = r.dot(normal)-body[si]._shape.radius;
 	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);
@@ -68,9 +68,9 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
 	var r = new CANNON.Vec3(x[bi]-x[pi],
 				y[bi]-y[pi],
 				z[bi]-z[pi]);
-	var normal = geodata[pi].normal;
+	var normal = body[pi]._shape.normal;
 	var d = r.dot(normal); // Distance from box center to plane
-	var boundingRadius = world.body.halfExtents.norm();
+	var boundingRadius = body[bi]._shape.halfExtents.norm();
 	var q = d - boundingRadius;
 	if(q<0.0){
 	  pairs1.push(i);
@@ -79,6 +79,5 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
       }
     }
   }
-
   return [pairs1,pairs2];
 };
