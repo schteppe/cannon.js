@@ -168,40 +168,40 @@ CANNON.World.prototype.add = function(body){
   this.y[n] = body._position.y;
   this.z[n] = body._position.z;
   
-  this.vx[n] = body.velocity.x;
-  this.vy[n] = body.velocity.y;
-  this.vz[n] = body.velocity.z;
+  this.vx[n] = body._velocity.x;
+  this.vy[n] = body._velocity.y;
+  this.vz[n] = body._velocity.z;
   
-  this.fx[n] = body.force.x;
-  this.fy[n] = body.force.y;
-  this.fz[n] = body.force.z;
+  this.fx[n] = body._force.x;
+  this.fy[n] = body._force.y;
+  this.fz[n] = body._force.z;
   
-  this.taux[n] = body.tau.x;
-  this.tauy[n] = body.tau.y;
-  this.tauz[n] = body.tau.z;
+  this.taux[n] = body._tau.x;
+  this.tauy[n] = body._tau.y;
+  this.tauz[n] = body._tau.z;
 
-  this.wx[n] = body.rotvelo.x;
-  this.wy[n] = body.rotvelo.y;
-  this.wz[n] = body.rotvelo.z;
+  this.wx[n] = body._rotvelo.x;
+  this.wy[n] = body._rotvelo.y;
+  this.wz[n] = body._rotvelo.z;
   
-  this.qx[n] = body.quaternion.x;
-  this.qy[n] = body.quaternion.y;
-  this.qz[n] = body.quaternion.z;
-  this.qw[n] = body.quaternion.w;
+  this.qx[n] = body._quaternion.x;
+  this.qy[n] = body._quaternion.y;
+  this.qz[n] = body._quaternion.z;
+  this.qw[n] = body._quaternion.w;
 
   this.type[n] = body.type;
   this.geodata[n] = body.geodata;
   this.body[n] = body; // Keep reference to body
-  this.fixed[n] = body.mass<=0.0 ? 1 : 0;
-  this.invm[n] = body.mass>0 ? 1.0/body.mass : 0;
-  this.mass[n] = body.mass;
+  this.fixed[n] = body._mass<=0.0 ? 1 : 0;
+  this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
+  this.mass[n] = body._mass;
 
-  this.inertiax[n] = body.inertia.x;
-  this.inertiay[n] = body.inertia.y;
-  this.inertiaz[n] = body.inertia.z;
+  this.inertiax[n] = body._inertia.x;
+  this.inertiay[n] = body._inertia.y;
+  this.inertiaz[n] = body._inertia.z;
 
   body._id = n; // give id as index in table
-  body.world = this;
+  body._world = this;
 
   // Create collision matrix
   this.collision_matrix = new Int16Array((n+1)*(n+1));
@@ -966,27 +966,5 @@ CANNON.World.prototype.step = function(dt){
   // Update world time
   world.time += dt;
   world.stepnumber += 1;
-
-  // Read all data into object references again
-  for(var i=0; i<world.numObjects(); i++){
-    /*
-    world.body[i].position.x = x[i];
-    world.body[i].position.y = y[i];
-    world.body[i].position.z = z[i];
-    */
-
-    world.body[i].velocity.x = vx[i];
-    world.body[i].velocity.y = vy[i];
-    world.body[i].velocity.z = vz[i];
-
-    world.body[i].rotvelo.x = wx[i];
-    world.body[i].rotvelo.y = wy[i];
-    world.body[i].rotvelo.z = wz[i];
-
-    world.body[i].quaternion.x = qx[i];
-    world.body[i].quaternion.y = qy[i];
-    world.body[i].quaternion.z = qz[i];
-    world.body[i].quaternion.w = qw[i];
-  }  
 };
 

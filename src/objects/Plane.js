@@ -9,7 +9,7 @@ CANNON.Plane = function(position, normal){
   normal.normalize();
   CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.PLANE]);
   //this.position = position;
-  this.mass = 0.0;
+  this._mass = 0.0;
   this.geodata = {normal:normal};
 };
 

@@ -204,10 +204,13 @@ function updatePhysics(){
     // Read position data into visuals
     for(var i=0; i<phys_bodies.length; i++){
       phys_bodies[i].getPosition(phys_visuals[i].position);
+      phys_bodies[i].getOrientation(phys_visuals[i].quaternion);
+      /*
       phys_visuals[i].quaternion.x = phys_bodies[i].quaternion.x;
       phys_visuals[i].quaternion.y = phys_bodies[i].quaternion.y;
       phys_visuals[i].quaternion.z = phys_bodies[i].quaternion.z;
       phys_visuals[i].quaternion.w = phys_bodies[i].quaternion.w;
+      */
     }
   }
 }

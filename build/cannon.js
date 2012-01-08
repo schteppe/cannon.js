@@ -542,54 +542,27 @@ CANNON.Quaternion.prototype.normalize = function(){
  * @param type
  */
 CANNON.RigidBody = function(type){
-  this.type = type;
+  // Local variables
   this._position = new CANNON.Vec3();
-  this.velocity = new CANNON.Vec3();
-  this.force = new CANNON.Vec3();
-  this.tau = new CANNON.Vec3();
-  this.quaternion = new CANNON.Quaternion();
-  this.rotvelo = new CANNON.Vec3();
-  this.mass = 1.0;
-  this.geodata = {};
-  this.world = null;
-  this.inertia = new CANNON.Vec3(1,1,1);
+  this._velocity = new CANNON.Vec3();
+  this._force = new CANNON.Vec3();
+  this._tau = new CANNON.Vec3();
+  this._quaternion = new CANNON.Quaternion();
+  this._rotvelo = new CANNON.Vec3();
+  this._mass = 1.0;
+  this._inertia = new CANNON.Vec3(1,1,1);
 
-  /**
-   * Equals -1 before added to the world. After adding, it is the world index
-   */
+  /// Reference to the world the body is living in
+  this._world = null;
+
+  /// Equals -1 before added to the world. After adding, it is the world body index
   this._id = -1;
-};
 
-/**
- * Sets the center of mass position of the object
- */
-CANNON.RigidBody.prototype.setPosition = function(x,y,z){
-  if(this._id!=-1){
-    this.world.x[this._id] = x;
-    this.world.y[this._id] = y;
-    this.world.z[this._id] = z;
-  } else {
-    this._position.x = x;
-    this._position.y = y;
-    this._position.z = z;
-  }
-};
+  /// @deprecated
+  this.geodata = {};
 
-/**
- * Sets the center of mass position of the object
- */
-CANNON.RigidBody.prototype.getPosition = function(target){
-  target = target || new CANNON.Vec3();
-  if(this._id!=-1){
-    target.x = this.world.x[this._id];
-    target.y = this.world.y[this._id];
-    target.z = this.world.z[this._id];
-  } else {
-    target.x = this._position.x;
-    target.y = this._position.y;
-    target.z = this._position.z;
-  }
-  return target;
+  /// @deprecated
+  this.type = type;
 };
 
 /**
@@ -600,7 +573,235 @@ CANNON.RigidBody.prototype.types = {
   PLANE:2,
   BOX:4
 };
+
 /**
+ * Get/set mass. Note: When changing mass, you should change the inertia too.
+ * @param float m
+ */
+CANNON.RigidBody.prototype.mass = function(m){
+  if(m==undefined){
+    // Get
+    if(this._id!=-1)
+      return this._world.mass[this._id];
+    else
+      return this._mass;
+  } else {
+    // Set
+    if(this._id!=-1){
+      this._world.mass[this._id] = m;
+      this._world.invm[this._id] = 1.0/m;
+    } else
+      this._mass = m;
+  }
+};
+
+/**
+ * Sets the center of mass position of the object
+ */
+CANNON.RigidBody.prototype.setPosition = function(x,y,z){
+  if(this._id!=-1){
+    this._world.x[this._id] = x;
+    this._world.y[this._id] = y;
+    this._world.z[this._id] = z;
+  } else {
+    this._position.x = x;
+    this._position.y = y;
+    this._position.z = z;
+  }
+};
+
+/**
+ * Gets the center of mass position of the object
+ * @param Vec3 target Optional.
+ * @return Vec3
+ */
+CANNON.RigidBody.prototype.getPosition = function(target){
+  target = target || new CANNON.Vec3();
+  if(this._id!=-1){
+    target.x = this._world.x[this._id];
+    target.y = this._world.y[this._id];
+    target.z = this._world.z[this._id];
+  } else {
+    target.x = this._position.x;
+    target.y = this._position.y;
+    target.z = this._position.z;
+  }
+  return target;
+};
+
+/**
+ * Sets the orientation of the object
+ */
+CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
+  if(this._id!=-1){
+    this._world.qx[this._id] = x;
+    this._world.qy[this._id] = y;
+    this._world.qz[this._id] = z;
+    this._world.qw[this._id] = w;
+  } else {
+    this._quaternion.x = x;
+    this._quaternion.y = y;
+    this._quaternion.z = z;
+    this._quaternion.w = w;
+  }
+};
+
+/**
+ * Gets the orientation of the object
+ * @param Quaternion target Optional.
+ * @return Quaternion
+ */
+CANNON.RigidBody.prototype.getOrientation = function(target){
+  target = target || new CANNON.Quaternion();
+  if(this._id!=-1){
+    target.x = this._world.qx[this._id];
+    target.y = this._world.qy[this._id];
+    target.z = this._world.qz[this._id];
+    target.w = this._world.qw[this._id];
+  } else {
+    target.x = this._quaternion.x;
+    target.y = this._quaternion.y;
+    target.z = this._quaternion.z;
+    target.w = this._quaternion.w;
+  }
+  return target;
+};
+
+/**
+ * Sets the velocity of the object
+ */
+CANNON.RigidBody.prototype.setVelocity = function(x,y,z){
+  if(this._id!=-1){
+    this._world.vx[this._id] = x;
+    this._world.vy[this._id] = y;
+    this._world.vz[this._id] = z;
+  } else {
+    this._velocity.x = x;
+    this._velocity.y = y;
+    this._velocity.z = z;
+  }
+};
+
+/**
+ * Gets the velocity of the object
+ * @param Vec3 target Optional.
+ * @return Vec3
+ */
+CANNON.RigidBody.prototype.getVelocity = function(target){
+  target = target || new CANNON.Vec3();
+  if(this._id!=-1){
+    target.x = this._world.x[this._id];
+    target.y = this._world.y[this._id];
+    target.z = this._world.z[this._id];
+  } else {
+    target.x = this._velocity.x;
+    target.y = this._velocity.y;
+    target.z = this._velocity.z;
+  }
+  return target;
+};
+
+/**
+ * Sets the angularvelocity of the object
+ */
+CANNON.RigidBody.prototype.setAngularVelocity = function(x,y,z){
+  if(this._id!=-1){
+    this._world.wx[this._id] = x;
+    this._world.wy[this._id] = y;
+    this._world.wz[this._id] = z;
+  } else {
+    this._rotvelo.x = x;
+    this._rotvelo.y = y;
+    this._rotvelo.z = z;
+  }
+};
+
+/**
+ * Gets the angularvelocity of the object
+ * @param Vec3 target Optional.
+ * @return Vec3
+ */
+CANNON.RigidBody.prototype.getAngularvelocity = function(target){
+  target = target || new CANNON.Vec3();
+  if(this._id!=-1){
+    target.x = this._world.wx[this._id];
+    target.y = this._world.wy[this._id];
+    target.z = this._world.wz[this._id];
+  } else {
+    target.x = this._rotvelo.x;
+    target.y = this._rotvelo.y;
+    target.z = this._rotvelo.z;
+  }
+  return target;
+};
+
+/**
+ * Sets the force on the object
+ */
+CANNON.RigidBody.prototype.setForce = function(x,y,z){
+  if(this._id!=-1){
+    this._world.fx[this._id] = x;
+    this._world.fy[this._id] = y;
+    this._world.fz[this._id] = z;
+  } else {
+    this._force.x = x;
+    this._force.y = y;
+    this._force.z = z;
+  }
+};
+
+/**
+ * Gets the force of the object
+ * @param Vec3 target Optional.
+ * @return Vec3
+ */
+CANNON.RigidBody.prototype.getForce = function(target){
+  target = target || new CANNON.Vec3();
+  if(this._id!=-1){
+    target.x = this._world.fx[this._id];
+    target.y = this._world.fy[this._id];
+    target.z = this._world.fz[this._id];
+  } else {
+    target.x = this._force.x;
+    target.y = this._force.y;
+    target.z = this._force.z;
+  }
+  return target;
+};
+
+/**
+ * Sets the torque on the object
+ */
+CANNON.RigidBody.prototype.setTorque = function(x,y,z){
+  if(this._id!=-1){
+    this._world.taux[this._id] = x;
+    this._world.tauy[this._id] = y;
+    this._world.tauz[this._id] = z;
+  } else {
+    this._tau.x = x;
+    this._tau.y = y;
+    this._tau.z = z;
+  }
+};
+
+/**
+ * Gets the torque of the object
+ * @param Vec3 target Optional.
+ * @return Vec3
+ */
+CANNON.RigidBody.prototype.getTorque = function(target){
+  target = target || new CANNON.Vec3();
+  if(this._id!=-1){
+    target.x = this._world.taux[this._id];
+    target.y = this._world.tauy[this._id];
+    target.z = this._world.tauz[this._id];
+  } else {
+    target.x = this._torque.x;
+    target.y = this._torque.y;
+    target.z = this._torque.z;
+  }
+  return target;
+};/**
  * Spherical rigid body
  * @class Sphere
  * @param Vec3 position
@@ -610,10 +811,10 @@ CANNON.RigidBody.prototype.types = {
 CANNON.Sphere = function(position,radius,mass){
   CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.SPHERE]);
   //this.position = position;
-  this.mass = mass;
+  this._mass = mass;
   this.geodata = {radius:radius};
   var I = 2.0*mass*radius*radius/5.0;
-  this.inertia = new CANNON.Vec3(I,I,I);
+  this._inertia = new CANNON.Vec3(I,I,I);
 };
 
 CANNON.Sphere.prototype = new CANNON.RigidBody();
@@ -626,10 +827,12 @@ CANNON.Sphere.prototype.constructor = CANNON.Sphere;/**
 CANNON.Box = function(halfExtents,mass){
   // Extend rigid body class
   CANNON.RigidBody.apply(this,[CANNON.RigidBody.types.BOX]);
-  CANNON.Box.prototype = CANNON.RigidBody.prototype;
   this._halfExtents = halfExtents;
-  this.mass = mass!=undefined ? mass : 0;
+  this._mass = mass!=undefined ? mass : 0;
 };
+
+CANNON.Box.prototype = new CANNON.RigidBody();
+CANNON.Box.prototype.constructor = CANNON.Box;
 /**
  * Plane
  * @class Plane
@@ -641,7 +844,7 @@ CANNON.Plane = function(position, normal){
   normal.normalize();
   CANNON.RigidBody.apply(this,[CANNON.RigidBody.prototype.types.PLANE]);
   //this.position = position;
-  this.mass = 0.0;
+  this._mass = 0.0;
   this.geodata = {normal:normal};
 };
 
@@ -1037,40 +1240,40 @@ CANNON.World.prototype.add = function(body){
   this.y[n] = body._position.y;
   this.z[n] = body._position.z;
   
-  this.vx[n] = body.velocity.x;
-  this.vy[n] = body.velocity.y;
-  this.vz[n] = body.velocity.z;
+  this.vx[n] = body._velocity.x;
+  this.vy[n] = body._velocity.y;
+  this.vz[n] = body._velocity.z;
   
-  this.fx[n] = body.force.x;
-  this.fy[n] = body.force.y;
-  this.fz[n] = body.force.z;
+  this.fx[n] = body._force.x;
+  this.fy[n] = body._force.y;
+  this.fz[n] = body._force.z;
   
-  this.taux[n] = body.tau.x;
-  this.tauy[n] = body.tau.y;
-  this.tauz[n] = body.tau.z;
+  this.taux[n] = body._tau.x;
+  this.tauy[n] = body._tau.y;
+  this.tauz[n] = body._tau.z;
 
-  this.wx[n] = body.rotvelo.x;
-  this.wy[n] = body.rotvelo.y;
-  this.wz[n] = body.rotvelo.z;
+  this.wx[n] = body._rotvelo.x;
+  this.wy[n] = body._rotvelo.y;
+  this.wz[n] = body._rotvelo.z;
   
-  this.qx[n] = body.quaternion.x;
-  this.qy[n] = body.quaternion.y;
-  this.qz[n] = body.quaternion.z;
-  this.qw[n] = body.quaternion.w;
+  this.qx[n] = body._quaternion.x;
+  this.qy[n] = body._quaternion.y;
+  this.qz[n] = body._quaternion.z;
+  this.qw[n] = body._quaternion.w;
 
   this.type[n] = body.type;
   this.geodata[n] = body.geodata;
   this.body[n] = body; // Keep reference to body
-  this.fixed[n] = body.mass<=0.0 ? 1 : 0;
-  this.invm[n] = body.mass>0 ? 1.0/body.mass : 0;
-  this.mass[n] = body.mass;
+  this.fixed[n] = body._mass<=0.0 ? 1 : 0;
+  this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
+  this.mass[n] = body._mass;
 
-  this.inertiax[n] = body.inertia.x;
-  this.inertiay[n] = body.inertia.y;
-  this.inertiaz[n] = body.inertia.z;
+  this.inertiax[n] = body._inertia.x;
+  this.inertiay[n] = body._inertia.y;
+  this.inertiaz[n] = body._inertia.z;
 
   body._id = n; // give id as index in table
-  body.world = this;
+  body._world = this;
 
   // Create collision matrix
   this.collision_matrix = new Int16Array((n+1)*(n+1));
@@ -1835,27 +2038,5 @@ CANNON.World.prototype.step = function(dt){
   // Update world time
   world.time += dt;
   world.stepnumber += 1;
-
-  // Read all data into object references again
-  for(var i=0; i<world.numObjects(); i++){
-    /*
-    world.body[i].position.x = x[i];
-    world.body[i].position.y = y[i];
-    world.body[i].position.z = z[i];
-    */
-
-    world.body[i].velocity.x = vx[i];
-    world.body[i].velocity.y = vy[i];
-    world.body[i].velocity.z = vz[i];
-
-    world.body[i].rotvelo.x = wx[i];
-    world.body[i].rotvelo.y = wy[i];
-    world.body[i].rotvelo.z = wz[i];
-
-    world.body[i].quaternion.x = qx[i];
-    world.body[i].quaternion.y = qy[i];
-    world.body[i].quaternion.z = qz[i];
-    world.body[i].quaternion.w = qw[i];
-  }  
 };
 
