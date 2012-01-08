@@ -2,7 +2,7 @@
  * The physics world
  * @class World
  */
-PHYSICS.World = function(){
+CANNON.World = function(){
 
   // Some default values
   this.paused = false;
@@ -18,7 +18,7 @@ PHYSICS.World = function(){
   this.spook_b = (4.0 * this.spook_d) / (1 + 4 * this.spook_d);
   this.spook_eps = function(h){ return 4.0 / (h * h * th.spook_k * (1 + 4 * th.spook_d)); };
 
-  this.solver = new PHYSICS.Solver(this.spook_a(1.0/60.0),
+  this.solver = new CANNON.Solver(this.spook_a(1.0/60.0),
 				   this.spook_b,
 				   this.spook_eps(1.0/60.0),
 				   this.spook_k,
@@ -31,7 +31,7 @@ PHYSICS.World = function(){
  * Get number of objects in the world.
  * @return int
  */
-PHYSICS.World.prototype.togglepause = function(){
+CANNON.World.prototype.togglepause = function(){
   this.paused = !this.paused;
 };
 
@@ -39,7 +39,7 @@ PHYSICS.World.prototype.togglepause = function(){
  * Get number of objects in the world.
  * @return int
  */
-PHYSICS.World.prototype.numObjects = function(){
+CANNON.World.prototype.numObjects = function(){
   return this.x ? this.x.length : 0;
 };
 
@@ -49,7 +49,7 @@ PHYSICS.World.prototype.numObjects = function(){
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
-PHYSICS.World.prototype.add = function(body){
+CANNON.World.prototype.add = function(body){
   if(!body)
     return;
 
@@ -212,7 +212,7 @@ PHYSICS.World.prototype.add = function(body){
  * @param BroadPhase broadphase
  * @return BroadPhase
  */
-PHYSICS.World.prototype.broadphase = function(broadphase){
+CANNON.World.prototype.broadphase = function(broadphase){
   if(broadphase){
     this._broadphase = broadphase;
   } else
@@ -224,7 +224,7 @@ PHYSICS.World.prototype.broadphase = function(broadphase){
  * @param int n
  * @return int
  */
-PHYSICS.World.prototype.iterations = function(n){
+CANNON.World.prototype.iterations = function(n){
   if(n)
     this.iter = parseInt(n);
   else
@@ -236,7 +236,7 @@ PHYSICS.World.prototype.iterations = function(n){
  * @param Vec3
  * @return Vec3
  */
-PHYSICS.World.prototype.gravity = function(g){
+CANNON.World.prototype.gravity = function(g){
   if(g==undefined)
     return this.gravity;
   else
@@ -247,7 +247,7 @@ PHYSICS.World.prototype.gravity = function(g){
  * Step the simulation
  * @param float dt
  */
-PHYSICS.World.prototype.step = function(dt){
+CANNON.World.prototype.step = function(dt){
   if(this.paused)
     return;
 
@@ -257,8 +257,8 @@ PHYSICS.World.prototype.step = function(dt){
   var p2 = pairs[1];
 
   // Get references to things that are accessed often. Will save some lookup time.
-  var SPHERE = PHYSICS.RigidBody.prototype.types.SPHERE;
-  var PLANE = PHYSICS.RigidBody.prototype.types.PLANE;
+  var SPHERE = CANNON.RigidBody.prototype.types.SPHERE;
+  var PLANE = CANNON.RigidBody.prototype.types.PLANE;
   var types = world.type;
   var x = world.x;
   var y = world.y;
@@ -337,26 +337,28 @@ PHYSICS.World.prototype.step = function(dt){
 	si=j;
 	pi=i;
       }
+
+      // @todo apply the notation at http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
       
       // Collision normal
       var n = world.geodata[pi].normal;
 	
       // Check if penetration
-      var r = new PHYSICS.Vec3(x[si]-x[pi],
+      var r = new CANNON.Vec3(x[si]-x[pi],
 			       y[si]-y[pi],
 			       z[si]-z[pi]);
       r = n.mult(r.dot(n));
       var q = (r.dot(n)-world.geodata[si].radius);
 
-      var w_sphere = new PHYSICS.Vec3(wx[si], wy[si], wz[si]);
-      var v_sphere = new PHYSICS.Vec3(vx[si], vy[si], vz[si]);
+      var w_sphere = new CANNON.Vec3(wx[si], wy[si], wz[si]);
+      var v_sphere = new CANNON.Vec3(vx[si], vy[si], vz[si]);
       // Contact velocity
       // v = (body(n).V(1:3) + cr(body(n).V(4:6)',rn)') - (body(m).V(1:3) + cr(body(m).V(4:6)',rm)'); % m is plane
       // @todo
 
       var v_contact = v_sphere.vadd(r.cross(w_sphere));
 
-      //var v_contact = new PHYSICS.Vec3(vx[si]+cr.x,
+      //var v_contact = new CANNON.Vec3(vx[si]+cr.x,
       //vy[si]+cr.y,
       //vz[si]+cr.z);
      
@@ -374,7 +376,7 @@ PHYSICS.World.prototype.step = function(dt){
 
 	// Collision matrix:
 	// K = eye(3,3)/body(n).m - r_star*body(n).Iinv*r_star;
-	var K = new PHYSICS.Mat3();
+	var K = new CANNON.Mat3();
 	K.identity();
 	K.elements[0] *= invm[si];
 	K.elements[4] *= invm[si];
@@ -428,13 +430,13 @@ PHYSICS.World.prototype.step = function(dt){
       // Sphere-sphere impulse
     } else if(types[i]==SPHERE && types[j]==SPHERE){
 
-      var n = new PHYSICS.Vec3(x[i]-x[j],
+      var n = new CANNON.Vec3(x[i]-x[j],
 			       y[i]-y[j],
 			       z[i]-z[j]);
       var nlen = n.norm();
       n.normalize();
       var q = (nlen - (world.geodata[i].radius+world.geodata[j].radius));
-      var u = new PHYSICS.Vec3(vx[i]-vx[j],
+      var u = new CANNON.Vec3(vx[i]-vx[j],
 			       vy[i]-vy[j],
 			       vz[i]-vz[j]);
       u = n.mult(u.dot(n));
@@ -451,7 +453,7 @@ PHYSICS.World.prototype.step = function(dt){
 	vz[j] -= e*(u_new.z - u.z)*world.invm[i];
 
 	// Todo, implement below things. They are general impulses from granular.m
-	var r = new PHYSICS.Vec3(x[i]-x[j],
+	var r = new CANNON.Vec3(x[i]-x[j],
 				 y[i]-y[j],
 				 z[i]-z[j]);
 	var ri = n.mult(world.geodata[i].radius);
@@ -533,11 +535,11 @@ PHYSICS.World.prototype.step = function(dt){
   var n = world.geodata[pi].normal;
 	
   // Check if penetration
-  var r = new PHYSICS.Vec3(x[si]-x[pi],
+  var r = new CANNON.Vec3(x[si]-x[pi],
   y[si]-y[pi],
   z[si]-z[pi]);
   var q = (r.dot(n)-world.geodata[si].radius)*2;
-  var v_sphere = new PHYSICS.Vec3(vx[si],
+  var v_sphere = new CANNON.Vec3(vx[si],
   vy[si],
   vz[si]);
 	
@@ -547,7 +549,7 @@ PHYSICS.World.prototype.step = function(dt){
   if(q<0.0){
 
   var old_lambda = lambdas[k];
-  var fs = new PHYSICS.Vec3(fx[si],
+  var fs = new CANNON.Vec3(fx[si],
   fy[si],
   fz[si]);
   var new_deltalambda = (- q*world.spook_a(dt)
@@ -579,24 +581,24 @@ PHYSICS.World.prototype.step = function(dt){
   var old_lambda_t2 = lambdas_t2[k];
 	  
   // Construct tangents
-  var t1 = new PHYSICS.Vec3();
-  var t2 = new PHYSICS.Vec3();
+  var t1 = new CANNON.Vec3();
+  var t2 = new CANNON.Vec3();
   n.tangents(t1,t2);
 
 	  
   }
   } else if(types[i]==SPHERE &&
   types[j]==SPHERE){
-  var r = new PHYSICS.Vec3(x[i]-x[j],
+  var r = new CANNON.Vec3(x[i]-x[j],
   y[i]-y[j],
   z[i]-z[j]);
   var nlen = r.norm();
-  var n = new PHYSICS.Vec3(x[i]-x[j],
+  var n = new CANNON.Vec3(x[i]-x[j],
   y[i]-y[j],
   z[i]-z[j]);
   n.normalize();
   var q = (nlen - (world.geodata[i].radius+world.geodata[j].radius))*2;
-  var u = new PHYSICS.Vec3(vx[i]-vx[j],
+  var u = new CANNON.Vec3(vx[i]-vx[j],
   vy[i]-vy[j],
   vz[i]-vz[j]);
   u = n.mult(u.dot(n));
@@ -604,10 +606,10 @@ PHYSICS.World.prototype.step = function(dt){
 
   // Solve for lambda
   var old_lambda = lambdas[k];
-  var fi = new PHYSICS.Vec3(fx[i],
+  var fi = new CANNON.Vec3(fx[i],
   fy[i],
   fz[i]);
-  var fj = new PHYSICS.Vec3(fx[j],
+  var fj = new CANNON.Vec3(fx[j],
   fy[j],
   fz[j]);
   var new_deltalambda = (- q*world.spook_a(dt)
@@ -685,7 +687,7 @@ PHYSICS.World.prototype.step = function(dt){
       }
       
       // Collision normal
-      var n = new PHYSICS.Vec3(world.geodata[pi].normal.x,
+      var n = new CANNON.Vec3(world.geodata[pi].normal.x,
 			       world.geodata[pi].normal.y,
 			       world.geodata[pi].normal.z);
       n.negate(); // We are working with the sphere as body i!
@@ -695,10 +697,10 @@ PHYSICS.World.prototype.step = function(dt){
       var rsixn = rsi.cross(n);
 
       // Project down shpere on plane???
-      var point_on_plane_to_sphere = new PHYSICS.Vec3(x[si]-x[pi],
+      var point_on_plane_to_sphere = new CANNON.Vec3(x[si]-x[pi],
 						      y[si]-y[pi],
 						      z[si]-z[pi]);
-      var xs = new PHYSICS.Vec3((x[si]),
+      var xs = new CANNON.Vec3((x[si]),
 				(y[si]),
 				(z[si]));
       var plane_to_sphere = n.mult(n.dot(point_on_plane_to_sphere));
@@ -707,7 +709,7 @@ PHYSICS.World.prototype.step = function(dt){
       // Pseudo name si := i
       // g = ( xj + rj - xi - ri ) .dot ( ni )
       // xj is in this case the penetration point on the plane, and rj=0
-      var qvec = new PHYSICS.Vec3(xp.x - x[si] - rsi.x,
+      var qvec = new CANNON.Vec3(xp.x - x[si] - rsi.x,
 				  xp.y - y[si] - rsi.y,
 				  xp.z - z[si] - rsi.z);
       var q = qvec.dot(n);
@@ -715,8 +717,8 @@ PHYSICS.World.prototype.step = function(dt){
 	var q = (world.geodata[si].radius - r.norm());
 	var qvec = n.mult(q);
       */
-      var v_sphere = new PHYSICS.Vec3(vx[si],vy[si],vz[si]);
-      var w_sphere = new PHYSICS.Vec3(wx[si],wy[si],wz[si]);
+      var v_sphere = new CANNON.Vec3(vx[si],vy[si],vz[si]);
+      var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
       var v_contact = w_sphere.cross(rsi);
       var u = v_sphere.vadd(w_sphere.cross(rsi));
 	
@@ -769,26 +771,26 @@ PHYSICS.World.prototype.step = function(dt){
 	      types[j]==SPHERE){
 
       // Penetration constraint:
-      var ri = new PHYSICS.Vec3(x[j]-x[i],
+      var ri = new CANNON.Vec3(x[j]-x[i],
 				y[j]-y[i],
 				z[j]-z[i]);
-      var r = new PHYSICS.Vec3(x[i]-x[j],
+      var r = new CANNON.Vec3(x[i]-x[j],
 			       y[i]-y[j],
 			       z[i]-z[j]);
       var nlen = r.norm();
       ri.normalize();
       ri.mult(world.geodata[i].radius,ri);
-      var rj = new PHYSICS.Vec3(x[i]-x[j],
+      var rj = new CANNON.Vec3(x[i]-x[j],
 				y[i]-y[j],
 				z[i]-z[j]);
       rj.normalize();
       rj.mult(world.geodata[j].radius,rj);
-      var ni = new PHYSICS.Vec3(x[j]-x[i],
+      var ni = new CANNON.Vec3(x[j]-x[i],
 				y[j]-y[i],
 				z[j]-z[i]);
       ni.normalize();
       // g = ( xj + rj - xi - ri ) .dot ( ni )
-      var q_vec = new PHYSICS.Vec3(x[j]+rj.x-x[i]-ri.x,
+      var q_vec = new CANNON.Vec3(x[j]+rj.x-x[i]-ri.x,
 				   y[j]+rj.y-y[i]-ri.y,
 				   z[j]+rj.z-z[i]-ri.z);
       var q = q_vec.dot(ni);
@@ -798,19 +800,19 @@ PHYSICS.World.prototype.step = function(dt){
 
 	// gdot = ( vj + wj x rj - vi - wi x ri ) .dot ( ni )
 	// => W = ( vj + wj x rj - vi - wi x ri )
-	var v_sphere_i = new PHYSICS.Vec3(vx[i],vy[i],vz[i]);
-	var v_sphere_j = new PHYSICS.Vec3(vx[j],vy[j],vz[j]);
-	var w_sphere_i = new PHYSICS.Vec3(wx[i],wy[i],wz[i]);
-	var w_sphere_j = new PHYSICS.Vec3(wx[j],wy[j],wz[j]);
+	var v_sphere_i = new CANNON.Vec3(vx[i],vy[i],vz[i]);
+	var v_sphere_j = new CANNON.Vec3(vx[j],vy[j],vz[j]);
+	var w_sphere_i = new CANNON.Vec3(wx[i],wy[i],wz[i]);
+	var w_sphere_j = new CANNON.Vec3(wx[j],wy[j],wz[j]);
 	v_sphere_i.vadd(w_sphere_i.cross(ri));
 	v_sphere_j.vadd(w_sphere_j.cross(rj));
 	
 	var u = v_sphere_j.vsub(v_sphere_i);
 
-	var fi = new PHYSICS.Vec3(fx[i],
+	var fi = new CANNON.Vec3(fx[i],
 				  fy[i],
 				  fz[i]);
-	var fj = new PHYSICS.Vec3(fx[j],
+	var fj = new CANNON.Vec3(fx[j],
 				  fy[j],
 				  fz[j]);
 
@@ -930,8 +932,8 @@ PHYSICS.World.prototype.step = function(dt){
       y[i] += vy[i] * dt;
       z[i] += vz[i] * dt;
       
-      var q = new PHYSICS.Quaternion(qx[i],qy[i],qz[i],qw[i]);
-      var w = new PHYSICS.Quaternion(wx[i],wy[i],wz[i],0);
+      var q = new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]);
+      var w = new CANNON.Quaternion(wx[i],wy[i],wz[i],0);
       var wq = w.mult(q);
       
       qx[i] += dt * 0.5 * wq.x;

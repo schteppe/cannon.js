@@ -2,7 +2,7 @@
  * @class BroadPhase
  * @todo Make it a base class for broadphase implementations, and rename this one to NaiveBroadphase
  */
-PHYSICS.BroadPhase = function(){
+CANNON.BroadPhase = function(){
   
 };
 
@@ -11,15 +11,15 @@ PHYSICS.BroadPhase = function(){
  * @param World world
  * @todo Should be placed in a subclass to BroadPhase
  */
-PHYSICS.BroadPhase.prototype.collisionPairs = function(world){
+CANNON.BroadPhase.prototype.collisionPairs = function(world){
   var pairs1 = [];
   var pairs2 = [];
   var n = world.numObjects();
 
   // Local fast access
-  var SPHERE = PHYSICS.RigidBody.prototype.types.SPHERE;
-  var PLANE =  PHYSICS.RigidBody.prototype.types.PLANE;
-  var BOX =    PHYSICS.RigidBody.prototype.types.BOX;
+  var SPHERE = CANNON.RigidBody.prototype.types.SPHERE;
+  var PLANE =  CANNON.RigidBody.prototype.types.PLANE;
+  var BOX =    CANNON.RigidBody.prototype.types.BOX;
   var x = world.x;
   var y = world.y;
   var z = world.z;
@@ -47,7 +47,7 @@ PHYSICS.BroadPhase.prototype.collisionPairs = function(world){
 	var pi = type[i]==PLANE ? i : j;
 	
 	// Rel. position
-	var r = new PHYSICS.Vec3(x[si]-x[pi],
+	var r = new CANNON.Vec3(x[si]-x[pi],
 				 y[si]-y[pi],
 				 z[si]-z[pi]);
 	var normal = geodata[pi].normal;
@@ -64,9 +64,9 @@ PHYSICS.BroadPhase.prototype.collisionPairs = function(world){
 	var pi = type[i]==PLANE ? i : j;
 	
 	// Rel. position
-	var r = new PHYSICS.Vec3(x[bi]-x[pi],
-				 y[bi]-y[pi],
-				 z[bi]-z[pi]);
+	var r = new CANNON.Vec3(x[bi]-x[pi],
+				y[bi]-y[pi],
+				z[bi]-z[pi]);
 	var normal = geodata[pi].normal;
 	var d = r.dot(normal); // Distance from box center to plane
 	var boundingRadius = world.body.halfExtents.norm();

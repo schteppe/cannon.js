@@ -1,7 +1,7 @@
 /**
  * Constraint solver.
  */
-PHYSICS.Solver = function(a,b,eps,k,d,iter,h){
+CANNON.Solver = function(a,b,eps,k,d,iter,h){
   this.iter = iter || 10;
   this.h = h || 1.0/60.0;
   this.a = a;
@@ -16,7 +16,7 @@ PHYSICS.Solver = function(a,b,eps,k,d,iter,h){
     console.log("a:",a,"b",b,"eps",eps,"k",k,"d",d);
 };
 
-PHYSICS.Solver.prototype.reset = function(numbodies){
+CANNON.Solver.prototype.reset = function(numbodies){
   this.G = [];
   this.MinvTrace = [];
   this.Fext = [];
@@ -43,7 +43,7 @@ PHYSICS.Solver.prototype.reset = function(numbodies){
  * @param array G Jacobian vector, 12 elements (6 dof per body)
  * @param array MinvTrace The trace of the Inverse mass matrix (12 elements). The mass matrix is 12x12 elements from the beginning and 6x6 matrix per body (mass matrix and inertia matrix).
  */
-PHYSICS.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,upper,body_i,body_j){
+CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,upper,body_i,body_j){
   if(this.debug){
     console.log("Adding constraint ",this.n);
     console.log("G:",G);
@@ -74,7 +74,7 @@ PHYSICS.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,
   return this.n - 1; 
 };
 
-PHYSICS.Solver.prototype.solve = function(){
+CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
   var n = this.n;
   var lambda = new Float32Array(n);

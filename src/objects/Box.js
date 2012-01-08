@@ -4,10 +4,10 @@
  * @param float mass
  * @author schteppe
  */
-PHYSICS.Box = function(halfExtents,mass){
+CANNON.Box = function(halfExtents,mass){
   // Extend rigid body class
-  PHYSICS.RigidBody.apply(this,
-			  [PHYSICS.RigidBody.types.BOX]);
+  CANNON.RigidBody.apply(this,
+			  [CANNON.RigidBody.types.BOX]);
   this._halfExtents = halfExtents;
   this.mass = mass!=undefined ? mass : 0;
 };

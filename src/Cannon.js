@@ -2,7 +2,7 @@
  * Our main namespace
  * @author schteppe
  */
-var PHYSICS = PHYSICS || {};
+var CANNON = CANNON || {};
 
 // Maintain compatibility with older browsers
 if(!self.Int32Array){

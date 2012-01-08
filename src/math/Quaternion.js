@@ -6,14 +6,14 @@
  * @param float z 
  * @param float w
  */
-PHYSICS.Quaternion = function(x,y,z,w){
+CANNON.Quaternion = function(x,y,z,w){
   this.x = x==undefined ? x : 1;
   this.y = y==undefined ? y : 0;
   this.z = z==undefined ? z : 0;
   this.w = w==undefined ? w : 0;
 };
 
-PHYSICS.Quaternion.prototype.toString = function(){
+CANNON.Quaternion.prototype.toString = function(){
   return this.x+","+this.y+","+this.z+","+this.w;
 };
 
@@ -23,12 +23,12 @@ PHYSICS.Quaternion.prototype.toString = function(){
  * @param Quaternion target Optional.
  * @return Quaternion
  */ 
-PHYSICS.Quaternion.prototype.mult = function(q,target){
+CANNON.Quaternion.prototype.mult = function(q,target){
   if(target==undefined)
-    target = new PHYSICS.Quaternion();
+    target = new CANNON.Quaternion();
   
-  var va = new PHYSICS.Vec3(this.x,this.y,this.z);
-  var vb = new PHYSICS.Vec3(q.x,q.y,q.z);
+  var va = new CANNON.Vec3(this.x,this.y,this.z);
+  var vb = new CANNON.Vec3(q.x,q.y,q.z);
   target.w = this.w*q.w - va.dot(vb);
   vaxvb = va.cross(vb);
   target.x = this.w * vb.x + q.w*va.x + vaxvb.x;
@@ -40,7 +40,7 @@ PHYSICS.Quaternion.prototype.mult = function(q,target){
 /**
  * Normalize the quaternion. Note that this changes the values of the quaternion.
  */
-PHYSICS.Quaternion.prototype.normalize = function(){
+CANNON.Quaternion.prototype.normalize = function(){
   var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
   if ( l === 0 ) {
     this.x = 0;

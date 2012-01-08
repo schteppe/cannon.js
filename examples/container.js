@@ -1,7 +1,7 @@
 // Physics
-var world = new PHYSICS.World();
-world.gravity(new PHYSICS.Vec3(0,0,-30));
-var bp = new PHYSICS.BroadPhase();
+var world = new CANNON.World();
+world.gravity(new CANNON.Vec3(0,0,-30));
+var bp = new CANNON.BroadPhase();
 world.broadphase(bp);
 world.iterations(10);
 
@@ -113,11 +113,11 @@ function createScene( ) {
   }
   scene.add( ground );
 
-  var plane = new PHYSICS.Plane(new PHYSICS.Vec3(0,0,0), new PHYSICS.Vec3(0,0,1));
-  var plane_xmin = new PHYSICS.Plane(new PHYSICS.Vec3(0,-5,0), new PHYSICS.Vec3(0,1,0));
-  var plane_xmax = new PHYSICS.Plane(new PHYSICS.Vec3(0,5,0), new PHYSICS.Vec3(0,-1,0));
-  var plane_ymin = new PHYSICS.Plane(new PHYSICS.Vec3(-5,0,0), new PHYSICS.Vec3(1,0,0));
-  var plane_ymax = new PHYSICS.Plane(new PHYSICS.Vec3(5,0,0), new PHYSICS.Vec3(-1,0,0));
+  var plane = new CANNON.Plane(new CANNON.Vec3(0,0,0), new CANNON.Vec3(0,0,1));
+  var plane_xmin = new CANNON.Plane(new CANNON.Vec3(0,-5,0), new CANNON.Vec3(0,1,0));
+  var plane_xmax = new CANNON.Plane(new CANNON.Vec3(0,5,0), new CANNON.Vec3(0,-1,0));
+  var plane_ymin = new CANNON.Plane(new CANNON.Vec3(-5,0,0), new CANNON.Vec3(1,0,0));
+  var plane_ymax = new CANNON.Plane(new CANNON.Vec3(5,0,0), new CANNON.Vec3(-1,0,0));
   world.add(plane);
   world.add(plane_xmin);
   world.add(plane_xmax);
@@ -129,9 +129,9 @@ function createScene( ) {
   THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
 
   // Sphere on plane
-  var nx = 4;
-  var ny = 4;
-  var nz = 10;
+  var nx = 3;
+  var ny = 3;
+  var nz = 3;
   var rand = 0.005;
   var h = 0;
   for(var i=0; i<nx; i++){
@@ -143,10 +143,10 @@ function createScene( ) {
 	  spheremesh.receiveShadow = true;
 	}
 	scene.add( spheremesh );
-	var pos = new PHYSICS.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
+	var pos = new CANNON.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
 				   j*2-ny*0.5 + (Math.random()-0.5)*rand,
 				   1+k*2+h+(i+j)*0.2);
-	var sphere = new PHYSICS.Sphere(pos,1,5);
+	var sphere = new CANNON.Sphere(pos,1,5);
 	spheremesh.useQuaternion = true;
 	phys_bodies.push(sphere);
 	phys_visuals.push(spheremesh);
@@ -161,8 +161,8 @@ function createScene( ) {
   var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
   spheremesh.position.set( 2, 0, 4 );
   scene.add( spheremesh );
-  var pos = new PHYSICS.Vec3(2,0,5);
-  var sphere = new PHYSICS.Sphere(pos,1,5);
+  var pos = new CANNON.Vec3(2,0,5);
+  var sphere = new CANNON.Sphere(pos,1,5);
   spheremesh.useQuaternion = true;
   phys_bodies.push(sphere);
   phys_visuals.push(spheremesh);
@@ -172,8 +172,8 @@ function createScene( ) {
   var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
   spheremesh.position.set( 2, 0, 2 );
   scene.add( spheremesh );
-  pos = new PHYSICS.Vec3(2,0,2);
-  var sphere = new PHYSICS.Sphere(pos,1,0);
+  pos = new CANNON.Vec3(2,0,2);
+  var sphere = new CANNON.Sphere(pos,1,0);
   spheremesh.useQuaternion = true;
   phys_bodies.push(sphere);
   phys_visuals.push(spheremesh);

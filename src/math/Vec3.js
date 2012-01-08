@@ -5,7 +5,7 @@
  * @param float y
  * @param float z
  */
-PHYSICS.Vec3 = function(x,y,z){
+CANNON.Vec3 = function(x,y,z){
   this.x = x||0.0;
   this.y = y||0.0;
   this.z = z||0.0;
@@ -16,9 +16,9 @@ PHYSICS.Vec3 = function(x,y,z){
  * @param Vec3 v
  * @return Vec3
  */
-PHYSICS.Vec3.prototype.cross = function(v,target){
+CANNON.Vec3.prototype.cross = function(v,target){
   if(target==undefined)
-    target = new PHYSICS.Vec3();
+    target = new CANNON.Vec3();
   var A = [this.x, this.y, this.z];
   var B = [v.x, v.y, v.z];
   
@@ -35,7 +35,7 @@ PHYSICS.Vec3.prototype.cross = function(v,target){
  * @param float y
  * @param float z
  */
-PHYSICS.Vec3.prototype.set = function(x,y,z){
+CANNON.Vec3.prototype.set = function(x,y,z){
   this.x = x;
   this.y = y;
   this.z = z;
@@ -47,13 +47,13 @@ PHYSICS.Vec3.prototype.set = function(x,y,z){
  * @param Vec3 target Optional.
  * @return Vec3
  */
-PHYSICS.Vec3.prototype.vadd = function(v,target){
+CANNON.Vec3.prototype.vadd = function(v,target){
   if(target){
     target.x += v.x;
     target.y += v.y;
     target.z += v.z;
   } else {
-    return new PHYSICS.Vec3(this.x+v.x,
+    return new CANNON.Vec3(this.x+v.x,
 			    this.y+v.y,
 			    this.z+v.z);
   }  
@@ -65,13 +65,13 @@ PHYSICS.Vec3.prototype.vadd = function(v,target){
  * @param target Optional. Target to save in.
  * @return Vec3
  */
-PHYSICS.Vec3.prototype.vsub = function(v,target){
+CANNON.Vec3.prototype.vsub = function(v,target){
   if(target){
     target.x -= v.x;
     target.y -= v.y;
     target.z -= v.z;
   } else {
-    return new PHYSICS.Vec3(this.x-v.x,
+    return new CANNON.Vec3(this.x-v.x,
 			    this.y-v.y,
 			    this.z-v.z);
   }  
@@ -83,8 +83,8 @@ PHYSICS.Vec3.prototype.vsub = function(v,target){
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
  * @return Mat3
  */
-PHYSICS.Vec3.prototype.crossmat = function(){
-  return new PHYSICS.Mat3([      0,  -this.z,   this.y,
+CANNON.Vec3.prototype.crossmat = function(){
+  return new CANNON.Mat3([      0,  -this.z,   this.y,
 			    this.z,        0,  -this.x,
 			   -this.y,   this.x,        0]);
 };
@@ -93,7 +93,7 @@ PHYSICS.Vec3.prototype.crossmat = function(){
  * Normalize the vector. Note that this changes the values in the vector.
  * @return float Returns the norm of the vector
  */
-PHYSICS.Vec3.prototype.normalize = function(){
+CANNON.Vec3.prototype.normalize = function(){
   var n = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
   if(n>0.0){
     this.x /= n;
@@ -112,7 +112,7 @@ PHYSICS.Vec3.prototype.normalize = function(){
  * Get the 2-norm (length) of the vector
  * @return float
  */
-PHYSICS.Vec3.prototype.norm = function(){
+CANNON.Vec3.prototype.norm = function(){
   return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
 };
 
@@ -122,9 +122,9 @@ PHYSICS.Vec3.prototype.norm = function(){
  * @param Vec3 saveinme
  * @return Vec3
  */
-PHYSICS.Vec3.prototype.mult = function(scalar,saveinme){
+CANNON.Vec3.prototype.mult = function(scalar,saveinme){
   if(!saveinme)
-    saveinme = new PHYSICS.Vec3();
+    saveinme = new CANNON.Vec3();
   saveinme.x = scalar*this.x;
   saveinme.y = scalar*this.y;
   saveinme.z = scalar*this.z;
@@ -136,28 +136,28 @@ PHYSICS.Vec3.prototype.mult = function(scalar,saveinme){
  * @param Vec3 v
  * @return float
  */
-PHYSICS.Vec3.prototype.dot = function(v,target){
+CANNON.Vec3.prototype.dot = function(v,target){
   return (this.x * v.x + this.y * v.y + this.z * v.z);
 };
 
-PHYSICS.Vec3.prototype.negate = function(v,target){
+CANNON.Vec3.prototype.negate = function(v,target){
   this.x = - this.x;
   this.y = - this.y;
   this.z = - this.z;
 };
 
-PHYSICS.Vec3.prototype.tangents = function(t1,t2){
+CANNON.Vec3.prototype.tangents = function(t1,t2){
   var norm = this.norm();
-  var n = new PHYSICS.Vec3(this.x/norm,
+  var n = new CANNON.Vec3(this.x/norm,
 			   this.y/norm,
 			   this.z/norm);
   if(n.x<0.9)
-    n.cross(new PHYSICS.Vec3(1,0,0),t1);
+    n.cross(new CANNON.Vec3(1,0,0),t1);
   else
-    n.cross(new PHYSICS.Vec3(0,1,0),t1);
+    n.cross(new CANNON.Vec3(0,1,0),t1);
   n.cross(t1,t2);
 };
 
-PHYSICS.Vec3.prototype.toString = function(){
+CANNON.Vec3.prototype.toString = function(){
   return this.x+","+this.y+","+this.z;
 };
