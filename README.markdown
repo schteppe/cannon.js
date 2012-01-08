@@ -7,7 +7,7 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 ## Features
 
 * Lightweight - less than 30Kb compressed. For comparison: ammo.js uses 1.12Mb when compressed.
-* Supports solid spheres and static planes at the moment
+* Supports solid spheres and static planes at the moment - soon also boxes
 * 100% open source JavaScript, written from scratch
 * Uses typed arrays for fast number crunching
 * Uses an iterative Gauss-Seidel solver to solve generic constraints
@@ -35,6 +35,6 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 
 ## Todo
 
-* 3D box support
+* Friction constraints for spheres and boxes
 * Better collision detection - spatial hashing or similar
 * Debug app that uses three.js or scenejs
