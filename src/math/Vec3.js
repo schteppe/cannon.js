@@ -4,6 +4,7 @@
  * @param float x
  * @param float y
  * @param float z
+ * @author schteppe / http://github.com/schteppe
  */
 CANNON.Vec3 = function(x,y,z){
   this.x = x||0.0;
@@ -14,6 +15,7 @@ CANNON.Vec3 = function(x,y,z){
 /**
  * Vector cross product
  * @param Vec3 v
+ * @param Vec3 target Optional. Target to save in.
  * @return Vec3
  */
 CANNON.Vec3.prototype.cross = function(v,target){
@@ -136,16 +138,28 @@ CANNON.Vec3.prototype.mult = function(scalar,saveinme){
  * @param Vec3 v
  * @return float
  */
-CANNON.Vec3.prototype.dot = function(v,target){
+CANNON.Vec3.prototype.dot = function(v){
   return (this.x * v.x + this.y * v.y + this.z * v.z);
 };
 
-CANNON.Vec3.prototype.negate = function(v,target){
-  this.x = - this.x;
-  this.y = - this.y;
-  this.z = - this.z;
+/**
+ * Make the vector point in the opposite direction.
+ * @param Vec3 target Optional target to save in
+ * @return Vec3
+ */
+CANNON.Vec3.prototype.negate = function(target){
+  target = target || new CANNON.Vec3();
+  target.x = - this.x;
+  target.y = - this.y;
+  target.z = - this.z;
+  return target;
 };
 
+/**
+ * Compute two artificial tangents to the vector
+ * @param Vec3 t1 Vector object to save the first tangent in
+ * @param Vec3 t2 Vector object to save the second tangent in
+ */
 CANNON.Vec3.prototype.tangents = function(t1,t2){
   var norm = this.norm();
   var n = new CANNON.Vec3(this.x/norm,
@@ -158,6 +172,10 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
   n.cross(t1,t2);
 };
 
+/**
+ * Converts to a more readable format
+ * @return string
+ */
 CANNON.Vec3.prototype.toString = function(){
   return this.x+","+this.y+","+this.z;
 };

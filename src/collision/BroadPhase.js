@@ -1,5 +1,6 @@
 /**
  * @class BroadPhase
+ * @author schteppe / https://github.com/schteppe
  * @todo Make it a base class for broadphase implementations, and rename this one to NaiveBroadphase
  */
 CANNON.BroadPhase = function(){

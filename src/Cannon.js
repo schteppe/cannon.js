@@ -1,7 +1,8 @@
 /**
- * Our main namespace
- * @author schteppe
+ * Our main namespace definition
+ * @author schteppe / https://github.com/schteppe
  */
+
 var CANNON = CANNON || {};
 
 // Maintain compatibility with older browsers

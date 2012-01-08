@@ -688,9 +688,9 @@ CANNON.World.prototype.step = function(dt){
       
       // Collision normal
       var n = new CANNON.Vec3(world.geodata[pi].normal.x,
-			       world.geodata[pi].normal.y,
-			       world.geodata[pi].normal.z);
-      n.negate(); // We are working with the sphere as body i!
+			      world.geodata[pi].normal.y,
+			      world.geodata[pi].normal.z);
+      n.negate(n); // We are working with the sphere as body i!
 
       // Vector from sphere center to contact point
       var rsi = n.mult(world.geodata[si].radius);

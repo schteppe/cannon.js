@@ -1,5 +1,7 @@
 /**
  * Constraint solver.
+ * @todo The spook parameters should be specified for each constraint, not globally.
+ * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
   this.iter = iter || 10;
@@ -16,6 +18,10 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
     console.log("a:",a,"b",b,"eps",eps,"k",k,"d",d);
 };
 
+/**
+ * Resets the solver, removes all constraints and prepares for a new round of solving
+ * @param int numbodies The number of bodies in the new system
+ */
 CANNON.Solver.prototype.reset = function(numbodies){
   this.G = [];
   this.MinvTrace = [];
@@ -40,8 +46,17 @@ CANNON.Solver.prototype.reset = function(numbodies){
 };
 
 /**
+ * Add a constraint to the solver
  * @param array G Jacobian vector, 12 elements (6 dof per body)
  * @param array MinvTrace The trace of the Inverse mass matrix (12 elements). The mass matrix is 12x12 elements from the beginning and 6x6 matrix per body (mass matrix and inertia matrix).
+ * @param array q The constraint violation vector in generalized coordinates (12 elements)
+ * @param array qdot The time-derivative of the constraint violation vector q.
+ * @param array Fext External forces (12 elements)
+ * @param float lower Lower constraint force bound
+ * @param float upper Upper constraint force bound
+ * @param int body_i The first rigid body index
+ * @param int body_j The second rigid body index - set to -1 if none
+ * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */
 CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,upper,body_i,body_j){
   if(this.debug){
@@ -74,6 +89,9 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
   return this.n - 1; 
 };
 
+/**
+ * Solves the system
+ */
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
   var n = this.n;

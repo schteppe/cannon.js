@@ -2,6 +2,7 @@
  * Produce a 3x3 matrix. Columns first!
  * @class Mat3
  * @param elements
+ * @author schteppe / http://github.com/schteppe
  */
 CANNON.Mat3 = function(elements){
   if(elements)
@@ -145,7 +146,10 @@ CANNON.Mat3.prototype.solve = function(b,target){
 };
 
 /**
- * Get an element in the matrix by index
+ * Get an element in the matrix by index. Index starts at 0, not 1!!!
+ * @param int i
+ * @param int j
+ * @param float value Optional. If provided, the matrix element will be set to this value.
  */
 CANNON.Mat3.prototype.e = function(i,j,value){
   if(value==undefined)
@@ -156,13 +160,14 @@ CANNON.Mat3.prototype.e = function(i,j,value){
   }
 };
 
+/**
+ * Copy the matrix
+ * @param Mat3 target Optional. Target to save the copy in.
+ * @return Mat3
+ */
 CANNON.Mat3.prototype.copy = function(target){
   target = target || new Mat3();
   for(var i=0; i<this.elements.length; i++)
     target.elements[i] = this.elements[i];
-};
-
-CANNON.Mat3.prototype.toRightUpperTriangular = function(target){
-  target = target || new CANNON.Mat3();
-  this.copy(target);
+  return target;
 };

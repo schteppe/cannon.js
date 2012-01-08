@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.1.1 - A lightweight 3D physics engine for the web
+ * cannon.js v0.1.3 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -27,9 +27,10 @@
  */
 
 /**
- * Our main namespace
- * @author schteppe
+ * Our main namespace definition
+ * @author schteppe / https://github.com/schteppe
  */
+
 var CANNON = CANNON || {};
 
 // Maintain compatibility with older browsers
@@ -39,6 +40,7 @@ if(!self.Int32Array){
 }
 /**
  * @class BroadPhase
+ * @author schteppe / https://github.com/schteppe
  * @todo Make it a base class for broadphase implementations, and rename this one to NaiveBroadphase
  */
 CANNON.BroadPhase = function(){
@@ -124,6 +126,7 @@ CANNON.BroadPhase.prototype.collisionPairs = function(world){
  * Produce a 3x3 matrix. Columns first!
  * @class Mat3
  * @param elements
+ * @author schteppe / http://github.com/schteppe
  */
 CANNON.Mat3 = function(elements){
   if(elements)
@@ -267,7 +270,10 @@ CANNON.Mat3.prototype.solve = function(b,target){
 };
 
 /**
- * Get an element in the matrix by index
+ * Get an element in the matrix by index. Index starts at 0, not 1!!!
+ * @param int i
+ * @param int j
+ * @param float value Optional. If provided, the matrix element will be set to this value.
  */
 CANNON.Mat3.prototype.e = function(i,j,value){
   if(value==undefined)
@@ -278,15 +284,16 @@ CANNON.Mat3.prototype.e = function(i,j,value){
   }
 };
 
+/**
+ * Copy the matrix
+ * @param Mat3 target Optional. Target to save the copy in.
+ * @return Mat3
+ */
 CANNON.Mat3.prototype.copy = function(target){
   target = target || new Mat3();
   for(var i=0; i<this.elements.length; i++)
     target.elements[i] = this.elements[i];
-};
-
-CANNON.Mat3.prototype.toRightUpperTriangular = function(target){
-  target = target || new CANNON.Mat3();
-  this.copy(target);
+  return target;
 };
 /**
  * 3-dimensional vector
@@ -294,6 +301,7 @@ CANNON.Mat3.prototype.toRightUpperTriangular = function(target){
  * @param float x
  * @param float y
  * @param float z
+ * @author schteppe / http://github.com/schteppe
  */
 CANNON.Vec3 = function(x,y,z){
   this.x = x||0.0;
@@ -304,6 +312,7 @@ CANNON.Vec3 = function(x,y,z){
 /**
  * Vector cross product
  * @param Vec3 v
+ * @param Vec3 target Optional. Target to save in.
  * @return Vec3
  */
 CANNON.Vec3.prototype.cross = function(v,target){
@@ -426,16 +435,28 @@ CANNON.Vec3.prototype.mult = function(scalar,saveinme){
  * @param Vec3 v
  * @return float
  */
-CANNON.Vec3.prototype.dot = function(v,target){
+CANNON.Vec3.prototype.dot = function(v){
   return (this.x * v.x + this.y * v.y + this.z * v.z);
 };
 
-CANNON.Vec3.prototype.negate = function(v,target){
-  this.x = - this.x;
-  this.y = - this.y;
-  this.z = - this.z;
+/**
+ * Make the vector point in the opposite direction.
+ * @param Vec3 target Optional target to save in
+ * @return Vec3
+ */
+CANNON.Vec3.prototype.negate = function(target){
+  target = target || new CANNON.Vec3();
+  target.x = - this.x;
+  target.y = - this.y;
+  target.z = - this.z;
+  return target;
 };
 
+/**
+ * Compute two artificial tangents to the vector
+ * @param Vec3 t1 Vector object to save the first tangent in
+ * @param Vec3 t2 Vector object to save the second tangent in
+ */
 CANNON.Vec3.prototype.tangents = function(t1,t2){
   var norm = this.norm();
   var n = new CANNON.Vec3(this.x/norm,
@@ -448,6 +469,10 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
   n.cross(t1,t2);
 };
 
+/**
+ * Converts to a more readable format
+ * @return string
+ */
 CANNON.Vec3.prototype.toString = function(){
   return this.x+","+this.y+","+this.z;
 };/**
@@ -465,6 +490,9 @@ CANNON.Quaternion = function(x,y,z,w){
   this.w = w==undefined ? w : 0;
 };
 
+/**
+ * Convert to a readable format
+ */
 CANNON.Quaternion.prototype.toString = function(){
   return this.x+","+this.y+","+this.z+","+this.w;
 };
@@ -507,6 +535,7 @@ CANNON.Quaternion.prototype.normalize = function(){
     this.w *= l;
   }
 };
+
 /**
  * Rigid body base class
  * @class RigidBody
@@ -591,6 +620,8 @@ CANNON.Plane = function(position, normal){
 
 /**
  * Constraint solver.
+ * @todo The spook parameters should be specified for each constraint, not globally.
+ * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
   this.iter = iter || 10;
@@ -607,6 +638,10 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
     console.log("a:",a,"b",b,"eps",eps,"k",k,"d",d);
 };
 
+/**
+ * Resets the solver, removes all constraints and prepares for a new round of solving
+ * @param int numbodies The number of bodies in the new system
+ */
 CANNON.Solver.prototype.reset = function(numbodies){
   this.G = [];
   this.MinvTrace = [];
@@ -631,8 +666,17 @@ CANNON.Solver.prototype.reset = function(numbodies){
 };
 
 /**
+ * Add a constraint to the solver
  * @param array G Jacobian vector, 12 elements (6 dof per body)
  * @param array MinvTrace The trace of the Inverse mass matrix (12 elements). The mass matrix is 12x12 elements from the beginning and 6x6 matrix per body (mass matrix and inertia matrix).
+ * @param array q The constraint violation vector in generalized coordinates (12 elements)
+ * @param array qdot The time-derivative of the constraint violation vector q.
+ * @param array Fext External forces (12 elements)
+ * @param float lower Lower constraint force bound
+ * @param float upper Upper constraint force bound
+ * @param int body_i The first rigid body index
+ * @param int body_j The second rigid body index - set to -1 if none
+ * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */
 CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,upper,body_i,body_j){
   if(this.debug){
@@ -665,6 +709,9 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
   return this.n - 1; 
 };
 
+/**
+ * Solves the system
+ */
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
   var n = this.n;
@@ -1482,9 +1529,9 @@ CANNON.World.prototype.step = function(dt){
       
       // Collision normal
       var n = new CANNON.Vec3(world.geodata[pi].normal.x,
-			       world.geodata[pi].normal.y,
-			       world.geodata[pi].normal.z);
-      n.negate(); // We are working with the sphere as body i!
+			      world.geodata[pi].normal.y,
+			      world.geodata[pi].normal.z);
+      n.negate(n); // We are working with the sphere as body i!
 
       // Vector from sphere center to contact point
       var rsi = n.mult(world.geodata[si].radius);

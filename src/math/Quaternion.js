@@ -13,6 +13,9 @@ CANNON.Quaternion = function(x,y,z,w){
   this.w = w==undefined ? w : 0;
 };
 
+/**
+ * Convert to a readable format
+ */
 CANNON.Quaternion.prototype.toString = function(){
   return this.x+","+this.y+","+this.z+","+this.w;
 };
@@ -55,3 +58,4 @@ CANNON.Quaternion.prototype.normalize = function(){
     this.w *= l;
   }
 };
+
