@@ -13,7 +13,8 @@ import sys
 from JSCompress import JSCompressor
 
 COMMON_FILES = ['Cannon.js',
-		'collision/BroadPhase.js',
+		'collision/Broadphase.js',
+		'collision/NaiveBroadphase.js',
 		'math/Mat3.js',
 		'math/Vec3.js',
 		'math/Quaternion.js',

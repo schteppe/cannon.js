@@ -1,18 +1,21 @@
 /**
- * @class BroadPhase
- * @author schteppe / https://github.com/schteppe
- * @todo Make it a base class for broadphase implementations, and rename this one to NaiveBroadphase
+ * Naive broadphase implementation, used in lack of better ones and for
+ * comparisons in performance tests.
  */
-CANNON.BroadPhase = function(){
+CANNON.NaiveBroadphase = function(){
   
 };
+
+CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
+CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
 /**
  * Get all the collision pairs in a physics world
  * @param World world
  * @todo Should be placed in a subclass to BroadPhase
  */
-CANNON.BroadPhase.prototype.collisionPairs = function(world){
+CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
+  var world = this.world;
   var pairs1 = [];
   var pairs2 = [];
   var n = world.numObjects();

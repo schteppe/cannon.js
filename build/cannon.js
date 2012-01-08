@@ -39,20 +39,42 @@ if(!self.Int32Array){
   self.Float32Array = Array;
 }
 /**
- * @class BroadPhase
+ * @class Broadphase
  * @author schteppe / https://github.com/schteppe
  * @todo Make it a base class for broadphase implementations, and rename this one to NaiveBroadphase
  */
-CANNON.BroadPhase = function(){
+CANNON.Broadphase = function(){
+  /// The world to search for collisions in.
+  this.world = null;
+};
+
+CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
+
+/**
+ * @return array
+ */
+CANNON.Broadphase.prototype.collisionPairs = function(){
+  throw "collisionPairs not implemented for this BroadPhase class!";
+};
+
+/**
+ * Naive broadphase implementation, used in lack of better ones and for
+ * comparisons in performance tests.
+ */
+CANNON.NaiveBroadphase = function(){
   
 };
+
+CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
+CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
 /**
  * Get all the collision pairs in a physics world
  * @param World world
  * @todo Should be placed in a subclass to BroadPhase
  */
-CANNON.BroadPhase.prototype.collisionPairs = function(world){
+CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
+  var world = this.world;
   var pairs1 = [];
   var pairs2 = [];
   var n = world.numObjects();
@@ -1347,6 +1369,7 @@ CANNON.World.prototype.add = function(body){
 CANNON.World.prototype.broadphase = function(broadphase){
   if(broadphase){
     this._broadphase = broadphase;
+    broadphase.world = this;
   } else
     return this._broadphase;
 };

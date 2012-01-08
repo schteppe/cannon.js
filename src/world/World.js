@@ -211,6 +211,7 @@ CANNON.World.prototype.add = function(body){
 CANNON.World.prototype.broadphase = function(broadphase){
   if(broadphase){
     this._broadphase = broadphase;
+    broadphase.world = this;
   } else
     return this._broadphase;
 };
