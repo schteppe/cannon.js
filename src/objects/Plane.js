@@ -1,0 +1,19 @@
+/**
+ * @class Plane
+ * @param Vec3 normal
+ * @author schteppe / http://github.com/schteppe
+ */
+CANNON.Plane = function(normal){
+  CANNON.Shape.call(this);
+  normal.normalize();
+  this.normal = normal;
+  this.type = CANNON.Shape.types.PLANE;
+};
+
+CANNON.Plane.prototype = new CANNON.Shape();
+CANNON.Plane.prototype.constructor = CANNON.Plane;
+
+CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
+  target = target || new CANNON.Vec3();
+  return target;
+};
