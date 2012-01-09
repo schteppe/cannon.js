@@ -40,18 +40,50 @@
         <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
     </div>
 
-    <h1><a href="https://github.com/schteppe/cannon.js">physics.js</a>
+    <h1><a href="https://github.com/schteppe/cannon.js">cannon.js</a>
       <span class="small">by <a href="https://github.com/schteppe">schteppe</a></span></h1>
 
     <div class="description">
       A lightweight and simple 3D physics engine for the web.
     </div>
     
-    <h2>Authors</h2>
-    <p>Stefan Hedman (schteppe@gmail.com)</p>
+    <h2>Examples</h2>
+    Coming up soon.
     
-    <h2>Contact</h2>
-    <p>Stefan Hedman (schteppe@gmail.com)</p>
+    <h2>Features</h2>
+    <ul>
+    <li>Lightweight - less than 30Kb compressed. For comparison: ammo.js uses 1.12Mb when compressed.</li>
+    <li>Supports solid spheres and static planes at the moment - soon also boxes</li>
+    <li>100% open source JavaScript, written from scratch</li>
+    <li>Uses typed arrays for fast number crunching</li>
+    <li>Uses an iterative Gauss-Seidel solver to solve generic constraints</li>
+    <li>Uses SPOOK for time stepping</li>
+    </ul>
+    
+    <h2>Example</h2>
+    <pre>
+    // Setup our world
+    var world = new PHYSICS.World();
+    world.gravity(new PHYSICS.Vec3(0,0,-50));
+    var bp = new PHYSICS.BroadPhase();
+    world.broadphase(bp);
+
+    // Create a plane
+    var plane = new PHYSICS.Plane(new PHYSICS.Vec3(0,0,0), new PHYSICS.Vec3(0,0,1));
+    world.add(plane);
+
+    // Create a sphere
+    var sphere = new PHYSICS.Sphere(new PHYSICS.Vec3(0,0,2),1,5);
+    world.add(sphere);
+
+    // Step the simulation
+    setInterval(function(){
+      world.step(1.0/60.0);
+    }, 1000.0/60.0);
+    </pre>
+    
+    <h2>Authors</h2>
+    <p><a href="http://github.com/schteppe">schteppe</a></p>
     
     <h2>Download</h2>
     <p>
