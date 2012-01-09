@@ -35,6 +35,9 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 
 ## Todo
 
+* Material and ContactMaterial classes
+* Impulses should be applied when two objects are overlapping and approaching each other - then contact constraint solving if we still have contact
 * Friction constraints for spheres and boxes
 * Better collision detection - spatial hashing or similar
 * Debug app that uses three.js or scenejs
+* Parallel solver that uses Web Workers - splits the system and adds to a subsolver (may be any other solver)
