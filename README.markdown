@@ -1,6 +1,6 @@
 # cannon.js - a lightweight 3D physics engine for the web
 
-<img src="http://granular.cs.umu.se/browserphysics/wp-content/uploads/2012/01/myphysicslib_javascript.png" width="300">
+<a href="http://schteppe.github.com/cannon.js"> Click here for examples >><br><img src="http://granular.cs.umu.se/browserphysics/wp-content/uploads/2012/01/myphysicslib_javascript.png" width="300"></a>
 
 Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https://github.com/kripken/ammo.js), and driven by the fact that the web lacks a physics engine, here comes cannon.js.
     
