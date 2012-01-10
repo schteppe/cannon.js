@@ -41,3 +41,18 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 * Better collision detection - spatial hashing, octrees or similar
 * Debug app that uses three.js or scenejs
 * Parallel solver that uses Web Workers - splits the system and adds to a subsolver (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
+* Performance stats collector class
+
+# Developer instructions
+
+## Build
+
+When a new version of the software has been made, a new build needs to be made. Run <code>cd cannon.js/utils/; ./build.py;</code> to do this. The version number will be read from <code>cannon.js/VERSION</code> and put into the built files, so update VERSION first.
+
+## Examples
+
+To be able to view the examples on the web using Github Pages, the code need to be copied to that public branch. The master branch is therefore being merged into the gh-pages branch now and then, eg <code>git checkout gh-pages; git merge master;</code>. This way we can use file references in the examples transparently.
+
+## Version numbering
+
+The software versioning should follow the Semantic Version Specification: http://semver.org/
