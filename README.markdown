@@ -33,17 +33,17 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
       world.step(1.0/60.0);
     }, 1000.0/60.0);
 
+
+# Developer instructions
+
 ## Todo
 
 * Material and ContactMaterial classes
 * Impulses should be applied when two objects are overlapping and approaching each other - then contact constraint solving if we still have contact
 * Friction constraints for spheres and boxes
 * Better collision detection - spatial hashing, octrees or similar
-* Debug app that uses three.js or scenejs
+* Debug render app that uses three.js or scenejs
 * Parallel solver that uses Web Workers - splits the system and adds to a subsolver (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
-* Performance stats collector class
-
-# Developer instructions
 
 ## Build
 
@@ -56,3 +56,8 @@ To be able to view the examples on the web using Github Pages, the code need to 
 ## Version numbering
 
 The software versioning should follow the Semantic Version Specification: http://semver.org/
+
+## Profiling / optimizing the code
+
+Use the FireBug profiling function <code>console.profile();</code> before the <code>world.step();</code> and <code>console.profileEnd();</code> afterwards. Open FireBug and you'll see execution times for each function. All entries will be on anonymous functions, but you can always look up the corresponding function in the code.
+Hopefully, profiling will be integrated in the future debug renderer so it can be used by pressing a button.
