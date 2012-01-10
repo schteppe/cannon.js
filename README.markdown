@@ -15,17 +15,17 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 
 ## Example
     // Setup our world
-    var world = new PHYSICS.World();
-    world.gravity(new PHYSICS.Vec3(0,0,-50));
-    var bp = new PHYSICS.BroadPhase();
+    var world = new CANNON.World();
+    world.gravity(new CANNON.Vec3(0,0,-50));
+    var bp = new CANNON.BroadPhase();
     world.broadphase(bp);
     
     // Create a plane
-    var plane = new PHYSICS.Plane(new PHYSICS.Vec3(0,0,0), new PHYSICS.Vec3(0,0,1));
+    var plane = new CANNON.Plane(new CANNON.Vec3(0,0,0), new CANNON.Vec3(0,0,1));
     world.add(plane);
     
     // Create a sphere
-    var sphere = new PHYSICS.Sphere(new PHYSICS.Vec3(0,0,2),1,5);
+    var sphere = new CANNON.Sphere(new CANNON.Vec3(0,0,2),1,5);
     world.add(sphere);
     
     // Step the simulation
