@@ -151,7 +151,7 @@ function createScene( ) {
   var ny = 4;
   var nz = 4;
   var rand = 0.005;
-  var h = 0;
+  var h = 1;
   var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
   for(var i=0; i<nx; i++){
     for(var j=0; j<ny; j++){

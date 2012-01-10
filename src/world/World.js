@@ -44,6 +44,20 @@ CANNON.World.prototype.numObjects = function(){
 };
 
 /**
+ * Clear the contact state for a body.
+ * @param RigidBody body
+ */
+CANNON.World.prototype.clearCollisionState = function(body){
+  var n = this.numObjects();
+  var i = body._id;
+  for(var idx=0; idx<n; idx++){
+    var j = idx;
+    if(i>j) this.collision_matrix[j+i*n] = 0;
+    else    this.collision_matrix[i+j*n] = 0;
+  }
+};
+
+/**
  * Add a rigid body to the simulation.
  * @param RigidBody body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
@@ -302,6 +316,9 @@ CANNON.World.prototype.step = function(dt){
   }
 
   var that = this;
+  var IMPACT = -1,
+      CONTACT = 1,
+      NOCONTACT = 0;
   function cmatrix(i,j,newval){
     if(i>j){
       var temp = j;
@@ -310,12 +327,12 @@ CANNON.World.prototype.step = function(dt){
     }
     if(newval===undefined)
       return that.collision_matrix[i+j*that.numObjects()];
-    else {
+    else
       that.collision_matrix[i+j*that.numObjects()] = parseInt(newval);
-    }
   }
 
-  // Resolve impulses
+  // Resolve impulses - old
+  /*
   for(var k=0; k<p1.length; k++){
     
     // Get current collision indeces
@@ -366,9 +383,9 @@ CANNON.World.prototype.step = function(dt){
       var u = n.mult(v_sphere.dot(n));
       
       // Action if penetration
-      if(q<=0.0 && cmatrix(si,pi)==0){ // No impact for separating contacts
+      if(q<=0.0 && cmatrix(si,pi)==NOCONTACT){ // No impact for separating contacts
 	if(u.dot(n)<0.0)
-	  cmatrix(si,pi,1);
+	  cmatrix(si,pi,CONTACT);
 	var r_star = r.crossmat();
 	var invm = this.invm;
 
@@ -419,11 +436,11 @@ CANNON.World.prototype.step = function(dt){
 	wy[si] += wadd.y;
 	wz[si] += wadd.z;
 	
-	cmatrix(si,pi,-1); // Just applied impulse - set impact
-      } else if(q<=0 & cmatrix(si,pi)==-1)
-	cmatrix(si,pi,1); // Last step was impact and we are still penetrated- set contact
+	cmatrix(si,pi,IMPACT); // Just applied impulse - set impact
+      } else if(q<=0 & cmatrix(si,pi)==IMPACT)
+	cmatrix(si,pi,CONTACT); // Last step was impact and we are still penetrated- set contact
       else if(q>0)
-	cmatrix(si,pi,0); // No penetration any more- set no contact
+	cmatrix(si,pi,NOCONTACT); // No penetration any more- set no contact
 
       // Sphere-sphere impulse
     } else if(types[i]==SPHERE && types[j]==SPHERE){
@@ -503,6 +520,7 @@ CANNON.World.prototype.step = function(dt){
       }
     }
   } // End of impulse solve
+  */
 
   /*
   // Iterate over contacts
@@ -695,11 +713,9 @@ CANNON.World.prototype.step = function(dt){
 
       // Project down shpere on plane???
       var point_on_plane_to_sphere = new CANNON.Vec3(x[si]-x[pi],
-						      y[si]-y[pi],
-						      z[si]-z[pi]);
-      var xs = new CANNON.Vec3((x[si]),
-				(y[si]),
-				(z[si]));
+						     y[si]-y[pi],
+						     z[si]-z[pi]);
+      var xs = new CANNON.Vec3(x[si],y[si],z[si]);
       var plane_to_sphere = n.mult(n.dot(point_on_plane_to_sphere));
       var xp = xs.vsub(plane_to_sphere);
 
@@ -707,63 +723,129 @@ CANNON.World.prototype.step = function(dt){
       // g = ( xj + rj - xi - ri ) .dot ( ni )
       // xj is in this case the penetration point on the plane, and rj=0
       var qvec = new CANNON.Vec3(xp.x - x[si] - rsi.x,
-				  xp.y - y[si] - rsi.y,
-				  xp.z - z[si] - rsi.z);
+				 xp.y - y[si] - rsi.y,
+				 xp.z - z[si] - rsi.z);
       var q = qvec.dot(n);
-      /*
-	var q = (world.geodata[si].radius - r.norm());
-	var qvec = n.mult(q);
-      */
-      var v_sphere = new CANNON.Vec3(vx[si],vy[si],vz[si]);
-      var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
-      var v_contact = w_sphere.cross(rsi);
-      var u = v_sphere.vadd(w_sphere.cross(rsi));
 	
       // Action if penetration
       if(q<0.0){
-	var iM = world.invm[si];
-	var iI = world.inertiax[si] > 0 ? 1.0/world.inertiax[si] : 0; // Sphere - same for all dims
-	//console.log("sphere-plane");
-	cid[k] = this.solver
-	  .addConstraint( // Non-penetration constraint jacobian
-			 [-n.x,-n.y,-n.z,
-			  0,0,0,
-			  0,0,0,
-			  0,0,0],
+	var v_sphere = new CANNON.Vec3(vx[si],vy[si],vz[si]);
+	var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
+	var v_contact = w_sphere.cross(rsi);
+	var u = v_sphere;//.vadd(w_sphere.cross(rsi));
+
+	cmatrix(si,pi,CONTACT); // quick fix before build... fixme!
+
+	// Which collision state?
+	if(cmatrix(si,pi)==NOCONTACT){
+
+	  if(u.dot(n)<0.0){
+	    cmatrix(si,pi,NOCONTACT);
+	  } else 
+	    cmatrix(si,pi,CONTACT);
+
+	  var r_star = rsi.crossmat();
+	  var invm = this.invm;
+
+	  // Collision matrix:
+	  // K = eye(3,3)/body(n).m - r_star*body(n).Iinv*r_star;
+	  var K = new CANNON.Mat3();
+	  K.identity();
+	  K.elements[0] *= invm[si];
+	  K.elements[4] *= invm[si];
+	  K.elements[8] *= invm[si];
+
+	  var rIr = r_star.mmult(K.mmult(r_star));
+	  for(var el = 0; el<9; el++)
+	    K.elements[el] -= rIr.elements[el];
+	
+	  // First assume stick friction
+	  var e = 0.5;
+
+	  // Final velocity if stick
+	  var v_f = n.mult(-(e) * u.dot(n));
+
+	  var impulse_vec =  K.solve(v_f.vsub(u));
+	  //console.log("u",u.toString(),"v_f",v_f.toString(),"impulse_vec",impulse_vec.z*invm[si]);
+	
+	  // Check if slide mode (J_t > J_n) - outside friction cone
+	  var mu = 0.3; // quick fix
+	  if(mu>0){
+	    var J_n = n.mult(impulse_vec.dot(n));
+	    var J_t = impulse_vec.vsub(J_n);
+	    if(J_t.norm() > J_n.mult(mu).norm()){
+	      var v_tang = v_sphere.vsub(n.mult(v_sphere.dot(n)));
+	      var tangent = v_tang.mult(1/(v_tang.norm() + 0.0001));
+	      var impulse = -(1+e)*(v_sphere.dot(n))/(n.dot(K.vmult((n.vsub(tangent.mult(mu))))));
+	      impulse_vec = n.mult(impulse).vsub(tangent.mult(mu * impulse));
+	    }
+	  }
+
+	  // Add to velocity
+	  // todo: add to angular velocity as below
+	  var add = impulse_vec.mult(invm[si]);
+
+	  vx[si] += add.x;
+	  vy[si] += add.y;
+	  vz[si] += add.z;
+
+	  var cr = impulse_vec.cross(rsi);
+	  var wadd = cr.mult(1.0/world.inertiax[si]);
+
+	  wx[si] += wadd.x; //body(n).V(4:6) = body(n).V(4:6) + (body(n).Iinv*cr(impulse_vec,r))';
+	  wy[si] += wadd.y;
+	  wz[si] += wadd.z;
+
+	  // --- Add impulses here ---
+	  u.x = vx[si];
+	  u.y = vy[si];
+	  u.z = vz[si];
+
+	} else if(cmatrix(si,pi)==CONTACT){
+
+	  // --- Solve for contacts ---
+
+	  var iM = world.invm[si];
+	  var iI = world.inertiax[si] > 0 ? 1.0/world.inertiax[si] : 0; // Sphere - same for all dims
+	  cid[k] = this.solver
+	    .addConstraint( // Non-penetration constraint jacobian
+			   [-n.x,-n.y,-n.z,
+			    0,0,0,
+			    0,0,0,
+			    0,0,0],
 			 
-			 // Inverse mass matrix
-			 [iM,iM,iM,
-			  iI,iI,iI,
-			  0,0,0,   // Static plane -> infinite mass
-			  0,0,0],
+			   // Inverse mass matrix
+			   [iM,iM,iM,
+			    iI,iI,iI,
+			    0,0,0,   // Static plane -> infinite mass
+			    0,0,0],
 			 
-			 // q - constraint violation
-			 [-qvec.x,-qvec.y,-qvec.z,
-			  0,0,0,
-			  0,0,0,
-			  0,0,0],
+			   // q - constraint violation
+			   [-qvec.x,-qvec.y,-qvec.z,
+			    0,0,0,
+			    0,0,0,
+			    0,0,0],
 			 
-			 // qdot - motion along penetration normal
-			 [v_sphere.x, v_sphere.y, v_sphere.z,
-			  0,0,0,
-			  0,0,0,
-			  0,0,0],
-			 /*
-			   [vx[si],vy[si],vz[si],
-			   wx[si],wy[si],wz[si],
-			   0,0,0,
-			   0,0,0],*/
+			   // qdot - motion along penetration normal
+			   [v_sphere.x, v_sphere.y, v_sphere.z,
+			    0,0,0,
+			    0,0,0,
+			    0,0,0],
 			 
-			 // External force - forces & torques
-			 [fx[si],fy[si],fz[si],
-			  taux[si],tauy[si],tauz[si],
-			  fx[pi],fy[pi],fz[pi],
-			  taux[pi],tauy[pi],tauz[pi]],
-			 0,
-			 'inf',
-			 si,
-			 pi);
+			   // External force - forces & torques
+			   [fx[si],fy[si],fz[si],
+			    taux[si],tauy[si],tauz[si],
+			    fx[pi],fy[pi],fz[pi],
+			    taux[pi],tauy[pi],tauz[pi]],
+			   0,
+			   'inf',
+			   si,
+			   pi);
+	}
+      } else {// q>0 - not penetrating anymore
+	cmatrix(si,pi,NOCONTACT);
       }
+
     } else if(types[i]==SPHERE && types[j]==SPHERE){
 
       // Penetration constraint:
@@ -845,9 +927,9 @@ CANNON.World.prototype.step = function(dt){
 						 u.x,u.y,u.z,
 						 0,0,0],*/
 			 [vx[i],vy[i],vz[i],
-			  wx[i],wy[i],wz[i],
+			  0,0,0,
 			  vx[j],vy[j],vz[j],
-			  wx[j],wy[j],wz[j]],
+			  0,0,0],
 			 
 			 // External force - forces & torques
 			 [fx[i],fy[i],fz[i],

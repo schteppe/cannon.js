@@ -22,14 +22,6 @@ CANNON.RigidBody = function(mass,shape){
   this._id = -1;
 };
 
-/*
-CANNON.RigidBody.prototype.types = {
-  SPHERE:1,
-  PLANE:2,
-  BOX:4
-};
-*/
-
 /**
  * Get/set mass. Note: When changing mass, you should change the inertia too.
  * @param float m
@@ -78,6 +70,7 @@ CANNON.RigidBody.prototype.setPosition = function(x,y,z){
     this._world.x[this._id] = x;
     this._world.y[this._id] = y;
     this._world.z[this._id] = z;
+    this._world.clearCollisionState(this);
   } else {
     this._position.x = x;
     this._position.y = y;
