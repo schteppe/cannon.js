@@ -3,7 +3,6 @@ var world = new CANNON.World();
 world.gravity(new CANNON.Vec3(0,0,-30));
 var bp = new CANNON.NaiveBroadphase();
 world.broadphase(bp);
-world.iterations(3);
 
 var phys_bodies = [];
 var phys_visuals = [];
