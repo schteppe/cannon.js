@@ -8,7 +8,7 @@ CANNON.World = function(){
   this.paused = false;
   this.time = 0.0;
   this.stepnumber = 0;
-  this.iter = 10;
+  this.iter = 5;
 
   this.spook_k = 3000.0;
   this.spook_d = 3.0;
@@ -316,11 +316,19 @@ CANNON.World.prototype.step = function(dt){
   }
 
   var that = this;
-  var IMPACT = -1,
-      CONTACT = 1,
-      NOCONTACT = 0;
-  function cmatrix(i,j,newval){
-    if(i>j){
+
+  /**
+   * Keep track of contacts for current and previous timesteps
+   * @param int i Body index
+   * @param int j Body index
+   * @param int which 0 means current, -1 one timestep behind, -2 two behind etc
+   * @param int newval New contact status
+   */
+  function cmatrix(i,j,which,newval){
+    // i == column
+    // j == row
+    if((which==0 && i<j) || // Current uses upper part of the matrix
+       (which==-1 && i>j)){ // Previous uses lower part of the matrix
       var temp = j;
       j = i;
       i = temp;
@@ -330,6 +338,14 @@ CANNON.World.prototype.step = function(dt){
     else
       that.collision_matrix[i+j*that.numObjects()] = parseInt(newval);
   }
+
+  // Begin with transferring old contact data to the right place
+  for(var i=0; i<this.numObjects(); i++)
+    for(var j=0; j<i; j++){
+      cmatrix(i,j,-1, cmatrix(i,j,0));
+      cmatrix(i,j,0,0);
+    }
+      
 
   // Resolve impulses - old
   /*
@@ -729,33 +745,29 @@ CANNON.World.prototype.step = function(dt){
 	
       // Action if penetration
       if(q<0.0){
+	cmatrix(si,pi,0,1); // Set current contact state to contact
 	var v_sphere = new CANNON.Vec3(vx[si],vy[si],vz[si]);
 	var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
 	var v_contact = w_sphere.cross(rsi);
-	var u = v_sphere;//.vadd(w_sphere.cross(rsi));
-
-	cmatrix(si,pi,CONTACT); // quick fix before build... fixme!
+	var u = v_sphere.vadd(w_sphere.cross(rsi));
 
 	// Which collision state?
-	if(cmatrix(si,pi)==NOCONTACT){
-
-	  if(u.dot(n)<0.0){
-	    cmatrix(si,pi,NOCONTACT);
-	  } else 
-	    cmatrix(si,pi,CONTACT);
+	if(cmatrix(si,pi,-1)==0){ // No contact last timestep -> impulse
 
 	  var r_star = rsi.crossmat();
 	  var invm = this.invm;
 
+	  // Inverse inertia matrix
+	  var Iinv = new CANNON.Mat3([1.0/world.inertiax[si],0.0,0.0,
+				      0.0,1.0/world.inertiay[si],0.0,
+				      0,0.0,1.0/world.inertiaz[si]]);
 	  // Collision matrix:
-	  // K = eye(3,3)/body(n).m - r_star*body(n).Iinv*r_star;
-	  var K = new CANNON.Mat3();
-	  K.identity();
-	  K.elements[0] *= invm[si];
-	  K.elements[4] *= invm[si];
-	  K.elements[8] *= invm[si];
-
-	  var rIr = r_star.mmult(K.mmult(r_star));
+	  // K = 1/mi - r_star*I_inv*r_star;
+	  var im = invm[si];
+	  var K = new CANNON.Mat3([im,0,0,
+				   0,im,0,
+				   0,0,im]);
+	  var rIr = r_star.mmult(Iinv.mmult(r_star));
 	  for(var el = 0; el<9; el++)
 	    K.elements[el] -= rIr.elements[el];
 	
@@ -763,20 +775,19 @@ CANNON.World.prototype.step = function(dt){
 	  var e = 0.5;
 
 	  // Final velocity if stick
-	  var v_f = n.mult(-(e) * u.dot(n));
+	  var v_f = n.mult(-e * u.dot(n));
 
 	  var impulse_vec =  K.solve(v_f.vsub(u));
-	  //console.log("u",u.toString(),"v_f",v_f.toString(),"impulse_vec",impulse_vec.z*invm[si]);
-	
+
 	  // Check if slide mode (J_t > J_n) - outside friction cone
 	  var mu = 0.3; // quick fix
 	  if(mu>0){
 	    var J_n = n.mult(impulse_vec.dot(n));
 	    var J_t = impulse_vec.vsub(J_n);
 	    if(J_t.norm() > J_n.mult(mu).norm()){
-	      var v_tang = v_sphere.vsub(n.mult(v_sphere.dot(n)));
-	      var tangent = v_tang.mult(1/(v_tang.norm() + 0.0001));
-	      var impulse = -(1+e)*(v_sphere.dot(n))/(n.dot(K.vmult((n.vsub(tangent.mult(mu))))));
+	      var v_tang = u.vsub(n.mult(u.dot(n)));//v_sphere instead of u?
+	      var tangent = v_tang.mult(1.0/(v_tang.norm() + 0.0001));
+	      var impulse = -(1+e)*(u.dot(n))/(n.dot(K.vmult((n.vsub(tangent.mult(mu))))));
 	      impulse_vec = n.mult(impulse).vsub(tangent.mult(mu * impulse));
 	    }
 	  }
@@ -796,15 +807,8 @@ CANNON.World.prototype.step = function(dt){
 	  wy[si] += wadd.y;
 	  wz[si] += wadd.z;
 
-	  // --- Add impulses here ---
-	  u.x = vx[si];
-	  u.y = vy[si];
-	  u.z = vz[si];
-
-	} else if(cmatrix(si,pi)==CONTACT){
-
+	} else if(cmatrix(si,pi,-1)==1){ // Last contact was also overlapping - contact
 	  // --- Solve for contacts ---
-
 	  var iM = world.invm[si];
 	  var iI = world.inertiax[si] > 0 ? 1.0/world.inertiax[si] : 0; // Sphere - same for all dims
 	  cid[k] = this.solver
@@ -842,8 +846,6 @@ CANNON.World.prototype.step = function(dt){
 			   si,
 			   pi);
 	}
-      } else {// q>0 - not penetrating anymore
-	cmatrix(si,pi,NOCONTACT);
       }
 
     } else if(types[i]==SPHERE && types[j]==SPHERE){
