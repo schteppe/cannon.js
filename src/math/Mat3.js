@@ -144,8 +144,7 @@ CANNON.Mat3.prototype.solve = function(b,target){
   target.x = (eqns[0*nc+3] - eqns[0*nc+2]*target.z - eqns[0*nc+1]*target.y) / eqns[0*nc+0];
 
   if(isNaN(target.x) || isNaN(target.y) || isNaN(target.z) ||
-     target.x==Infinity || target.y==Infinity || target.z==Infinity
-     )
+     target.x==Infinity || target.y==Infinity || target.z==Infinity)
     throw "Could not solve equation!";
 
   return target;

@@ -146,11 +146,11 @@ function createScene( ) {
   THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
 
   // Sphere on plane
-  var nx = 4;
-  var ny = 4;
-  var nz = 4;
+  var nx = 1;
+  var ny = 2;
+  var nz = 5;
   var rand = 0.005;
-  var h = 3;
+  var h = 5;
   var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
   for(var i=0; i<nx; i++){
     for(var j=0; j<ny; j++){
@@ -168,7 +168,7 @@ function createScene( ) {
 	var sphereBody = new CANNON.RigidBody(5,sphereShape);
 	var pos = new CANNON.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
 				  j*2-ny*0.5 + (Math.random()-0.5)*rand,
-				  1+k*2+h+(i+j)*0.2);
+				  1+k*2.1+h+(i+j)*0.2);
 	sphereBody.setPosition(pos.x,pos.y,pos.z);
 	
 	// Save initial positions for later
