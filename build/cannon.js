@@ -51,6 +51,7 @@ CANNON.Broadphase = function(){
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 
 /**
+ * Get the collision pairs from the world
  * @return array
  */
 CANNON.Broadphase.prototype.collisionPairs = function(){
@@ -60,6 +61,9 @@ CANNON.Broadphase.prototype.collisionPairs = function(){
 /**
  * Naive broadphase implementation, used in lack of better ones and for
  * comparisons in performance tests.
+ *
+ * The naive broadphase looks at all possible pairs without restriction,
+ * therefore it has complexity N^2 (which is really bad)
  */
 CANNON.NaiveBroadphase = function(){
   
@@ -627,6 +631,10 @@ CANNON.Shape = function(){
 
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
+/**
+ * Get the bounding sphere radius from this shape
+ * @return float
+ */
 CANNON.Shape.prototype.boundingSphereRadius = function(){
   throw "boundingSphereRadius not implemented for shape type "+this.type;
 };
@@ -649,7 +657,9 @@ CANNON.Shape.types = {
 /**
  * Rigid body base class
  * @class RigidBody
- * @param type
+ * @param mass
+ * @param shape
+ * @todo Motion state also? Like dynamic, kinematic, static...
  */
 CANNON.RigidBody = function(mass,shape){
   // Local variables
@@ -673,6 +683,7 @@ CANNON.RigidBody = function(mass,shape){
 /**
  * Get/set mass. Note: When changing mass, you should change the inertia too.
  * @param float m
+ * @return float
  */
 CANNON.RigidBody.prototype.mass = function(m){
   if(m==undefined){
@@ -712,6 +723,9 @@ CANNON.RigidBody.prototype.shape = function(s){
 
 /**
  * Sets the center of mass position of the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setPosition = function(x,y,z){
   if(this._id!=-1){
@@ -747,6 +761,10 @@ CANNON.RigidBody.prototype.getPosition = function(target){
 
 /**
  * Sets the orientation of the object
+ * @param float x
+ * @param float y
+ * @param float z
+ * @param float w
  */
 CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
   var q = new CANNON.Quaternion(x,y,z,w);
@@ -856,6 +874,9 @@ CANNON.RigidBody.prototype.getAngularvelocity = function(target){
 
 /**
  * Sets the force on the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setForce = function(x,y,z){
   if(this._id!=-1){
@@ -890,6 +911,9 @@ CANNON.RigidBody.prototype.getForce = function(target){
 
 /**
  * Sets the torque on the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setTorque = function(x,y,z){
   if(this._id!=-1){
@@ -1009,6 +1033,7 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
 /**
  * Resets the solver, removes all constraints and prepares for a new round of solving
  * @param int numbodies The number of bodies in the new system
+ * @todo vlambda does not need to be instantiated again if the number of bodies is the same. Set to zero instead.
  */
 CANNON.Solver.prototype.reset = function(numbodies){
   this.G = [];
@@ -1078,7 +1103,7 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 };
 
 /**
- * Solves the system
+ * Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
@@ -1213,35 +1238,125 @@ CANNON.Solver.prototype.solve = function(){
  */
 CANNON.World = function(){
 
-  // Some default values
+  /// @deprecated The application GUI should take care of pausing
   this.paused = false;
-  this.time = 0.0;
-  this.stepnumber = 0;
-  this.iter = 5;
 
+  /// The wall-clock time since simulation start
+  this.time = 0.0;
+
+  /// Number of timesteps taken since start
+  this.stepnumber = 0;
+
+  /// Spring constant
   this.spook_k = 3000.0;
+
+  /// Stabilization parameter (number of timesteps until stabilization)
   this.spook_d = 3.0;
 
   var th = this;
+
+  /// Contact solver parameters, @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
   this.spook_a = function(h){ return 4.0 / (h * (1 + 4 * th.spook_d)); };
   this.spook_b = (4.0 * this.spook_d) / (1 + 4 * this.spook_d);
   this.spook_eps = function(h){ return 4.0 / (h * h * th.spook_k * (1 + 4 * th.spook_d)); };
 
+  /// The contact solver
   this.solver = new CANNON.Solver(this.spook_a(1.0/60.0),
-				   this.spook_b,
-				   this.spook_eps(1.0/60.0),
-				   this.spook_k,
-				   this.spook_d,
-				   this.iter,
-				   1.0/60.0);
+				  this.spook_b,
+				  this.spook_eps(1.0/60.0),
+				  this.spook_k,
+				  this.spook_d,
+				  5,
+				  1.0/60.0);
 };
 
 /**
- * Get number of objects in the world.
- * @return int
+ * Toggle pause mode. When pause is enabled, step() won't do anything.
+ * @todo Pausing is the simulation gui's responsibility, should remove this.
  */
 CANNON.World.prototype.togglepause = function(){
   this.paused = !this.paused;
+};
+
+/**
+ * Add an impulse to the colliding bodies i and j
+ * @param int i Body number 1
+ * @param int i Body number 2
+ * @param Vec3 ri Vector from body 1's center of mass to the contact point on its surface
+ * @param Vec3 ri Vector from body 1's center of mass to the contact point on its surface
+ * @param Vec3 ui The relative velocity eg. vj+wj*rj - (vi+wj*rj)
+ * @param Vec3 ni The contact normal pointing out from body i.
+ * @param float e The coefficient of restitution
+ * @param float mu The contact friction
+ * @todo Use it in the code!
+ */
+CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
+  var ri_star = ri.crossmat();
+  var rj_star = rj.crossmat();
+  
+  // Inverse inertia matrices
+  var ii = 1.0/this.inertiax[i];
+  var Iinv_i = new CANNON.Mat3([ii,0,0,
+				0,ii,0,
+				0,0,ii]);
+  ii = 1.0/world.inertiax[i];
+  var Iinv_j = new CANNON.Mat3([ii,0,0,
+				0,ii,0,
+				0,0,ii]);
+  // Collision matrix:
+  // K = 1/mi + 1/mj - ri_star*I_inv_i*ri_star - ri_star*I_inv_i*ri_star;
+  var im = this.invm[i] + this.invm[j];
+  var K = new CANNON.Mat3([im,0,0,
+			   0,im,0,
+			   0,0,im]);
+  var rIr_i = ri_star.mmult(Iinv_i.mmult(ri_star));
+  var rIr_j = rj_star.mmult(Iinv_j.mmult(rj_star));
+  for(var el = 0; el<9; el++)
+    K.elements[el] -= rIr_i.elements[el] + rIr_j.elements[el];
+	
+  // First assume stick friction
+  // Final velocity if stick:
+  var v_f = ni.mult(-e * u.dot(ni));
+
+  var impulse_vec =  K.solve(v_f.vsub(u));
+	  
+  // Check if slide mode (J_t > J_n) - outside friction cone
+  var mu = 0.3; // quick fix
+  if(mu>0){
+    var J_n = ni.mult(impulse_vec.dot(ni));
+    var J_t = impulse_vec.vsub(J_n);
+    if(J_t.norm() > J_n.mult(mu).norm()){
+
+      // j = -(1+e)u_n / nK(n-mu*t)
+      console.log(impulse_vec.toString());
+      var v_tang = u.vsub(ni.mult(u.dot(ni)));
+      var tangent = v_tang.mult(1.0/(v_tang.norm() + 0.0001));
+      var impulse = -(1+e)*(u.dot(ni))/(ni.dot(K.vmult((ni.vsub(tangent.mult(mu))))));
+      impulse_vec = ni.mult(impulse).vsub(tangent.mult(mu * impulse));
+      if(impulse_vec.norm()>200)
+	console.log("large! tan=",tangent.toString(),"v_tang=",v_tang.toString());
+    }
+  }
+
+  // Add to velocities
+  this.vx[i] += impulse_vec.x * invm[i] * 0.5;
+  this.vy[i] += impulse_vec.y * invm[i] * 0.5;
+  this.vz[i] += impulse_vec.z * invm[i] * 0.5;
+  this.vx[j] -= impulse_vec.x * invm[j] * 0.5;
+  this.vy[j] -= impulse_vec.y * invm[j] * 0.5;
+  this.vz[j] -= impulse_vec.z * invm[j] * 0.5;
+
+  var cr = impulse_vec.cross(ri);
+  var wadd = cr.mult(1.0/world.inertiax[i]);
+
+  this.wx[i] += wadd.x;
+  this.wy[i] += wadd.y;
+  this.wz[i] += wadd.z;
+  cr = impulse_vec.cross(rj);
+  wadd = cr.mult(1.0/world.inertiax[j]); // @todo fix to suit nonsymmetric
+  this.wx[j] += wadd.x;
+  this.wy[j] += wadd.y;
+  this.wz[j] += wadd.z;
 };
 
 /**
@@ -1446,9 +1561,9 @@ CANNON.World.prototype.broadphase = function(broadphase){
  */
 CANNON.World.prototype.iterations = function(n){
   if(n)
-    this.iter = parseInt(n);
+    this.solver.iter = parseInt(n);
   else
-    return this.iter;
+    return this.solver.iter;
 };
 
 /**
