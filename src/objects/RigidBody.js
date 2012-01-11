@@ -1,7 +1,9 @@
 /**
  * Rigid body base class
  * @class RigidBody
- * @param type
+ * @param mass
+ * @param shape
+ * @todo Motion state also? Like dynamic, kinematic, static...
  */
 CANNON.RigidBody = function(mass,shape){
   // Local variables
@@ -25,6 +27,7 @@ CANNON.RigidBody = function(mass,shape){
 /**
  * Get/set mass. Note: When changing mass, you should change the inertia too.
  * @param float m
+ * @return float
  */
 CANNON.RigidBody.prototype.mass = function(m){
   if(m==undefined){
@@ -64,6 +67,9 @@ CANNON.RigidBody.prototype.shape = function(s){
 
 /**
  * Sets the center of mass position of the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setPosition = function(x,y,z){
   if(this._id!=-1){
@@ -99,6 +105,10 @@ CANNON.RigidBody.prototype.getPosition = function(target){
 
 /**
  * Sets the orientation of the object
+ * @param float x
+ * @param float y
+ * @param float z
+ * @param float w
  */
 CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
   var q = new CANNON.Quaternion(x,y,z,w);
@@ -208,6 +218,9 @@ CANNON.RigidBody.prototype.getAngularvelocity = function(target){
 
 /**
  * Sets the force on the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setForce = function(x,y,z){
   if(this._id!=-1){
@@ -242,6 +255,9 @@ CANNON.RigidBody.prototype.getForce = function(target){
 
 /**
  * Sets the torque on the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setTorque = function(x,y,z){
   if(this._id!=-1){

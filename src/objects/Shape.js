@@ -13,6 +13,10 @@ CANNON.Shape = function(){
 
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
+/**
+ * Get the bounding sphere radius from this shape
+ * @return float
+ */
 CANNON.Shape.prototype.boundingSphereRadius = function(){
   throw "boundingSphereRadius not implemented for shape type "+this.type;
 };

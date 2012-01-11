@@ -1,6 +1,9 @@
 /**
  * Naive broadphase implementation, used in lack of better ones and for
  * comparisons in performance tests.
+ *
+ * The naive broadphase looks at all possible pairs without restriction,
+ * therefore it has complexity N^2 (which is really bad)
  */
 CANNON.NaiveBroadphase = function(){
   

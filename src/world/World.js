@@ -19,17 +19,17 @@ CANNON.World = function(){
   this.spook_eps = function(h){ return 4.0 / (h * h * th.spook_k * (1 + 4 * th.spook_d)); };
 
   this.solver = new CANNON.Solver(this.spook_a(1.0/60.0),
-				   this.spook_b,
-				   this.spook_eps(1.0/60.0),
-				   this.spook_k,
-				   this.spook_d,
-				   this.iter,
-				   1.0/60.0);
+				  this.spook_b,
+				  this.spook_eps(1.0/60.0),
+				  this.spook_k,
+				  this.spook_d,
+				  this.iter,
+				  1.0/60.0);
 };
 
 /**
- * Get number of objects in the world.
- * @return int
+ * Toggle pause mode. When pause is enabled, step() won't do anything.
+ * @todo Pausing is the simulation gui's responsibility, should remove this.
  */
 CANNON.World.prototype.togglepause = function(){
   this.paused = !this.paused;
@@ -237,9 +237,9 @@ CANNON.World.prototype.broadphase = function(broadphase){
  */
 CANNON.World.prototype.iterations = function(n){
   if(n)
-    this.iter = parseInt(n);
+    this.solver.iter = parseInt(n);
   else
-    return this.iter;
+    return this.solver.iter;
 };
 
 /**
