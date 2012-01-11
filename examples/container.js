@@ -146,11 +146,11 @@ function createScene( ) {
   THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
 
   // Sphere on plane
-  var nx = 1;
-  var ny = 2;
-  var nz = 5;
-  var rand = 0.005;
-  var h = 5;
+  var nx = 4;
+  var ny = 4;
+  var nz = 8;
+  var rand = 0.01;
+  var h = 0;
   var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
   for(var i=0; i<nx; i++){
     for(var j=0; j<ny; j++){
@@ -166,10 +166,11 @@ function createScene( ) {
 
 	// Physics
 	var sphereBody = new CANNON.RigidBody(5,sphereShape);
-	var pos = new CANNON.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
+	var pos = new CANNON.Vec3(i*2.4-nx*0.5 + (Math.random()-0.5)*rand,
 				  j*2-ny*0.5 + (Math.random()-0.5)*rand,
-				  1+k*2.1+h+(i+j)*0.2);
+				  1+k*2.1+h+(i+j)*0.0);
 	sphereBody.setPosition(pos.x,pos.y,pos.z);
+	sphereBody.setVelocity(2,0,0);
 	
 	// Save initial positions for later
 	phys_bodies.push(sphereBody);
@@ -179,32 +180,6 @@ function createScene( ) {
       }
     }
   }
-  
-  /*
-  // Sphere on sphere
-  var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
-  spheremesh.position.set( 2, 0, 4 );
-  scene.add( spheremesh );
-  var pos = new CANNON.Vec3(2,0,5);
-  var sphere = new CANNON.Sphere(pos,1,5);
-  spheremesh.useQuaternion = true;
-  phys_bodies.push(sphere);
-  phys_visuals.push(spheremesh);
-  phys_startpositions.push(pos);
-  world.add(sphere);
-  
-  var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
-  spheremesh.position.set( 2, 0, 2 );
-  scene.add( spheremesh );
-  pos = new CANNON.Vec3(2,0,2);
-  var sphere = new CANNON.Sphere(pos,1,0);
-  spheremesh.useQuaternion = true;
-  phys_bodies.push(sphere);
-  phys_visuals.push(spheremesh);
-  phys_startpositions.push(pos);
-  world.add(sphere);
-*/
- 
 }
 var t = 0, newTime, delta;
 
@@ -224,12 +199,6 @@ function updatePhysics(){
     for(var i=0; i<phys_bodies.length; i++){
       phys_bodies[i].getPosition(phys_visuals[i].position);
       phys_bodies[i].getOrientation(phys_visuals[i].quaternion);
-      /*
-      phys_visuals[i].quaternion.x = phys_bodies[i].quaternion.x;
-      phys_visuals[i].quaternion.y = phys_bodies[i].quaternion.y;
-      phys_visuals[i].quaternion.z = phys_bodies[i].quaternion.z;
-      phys_visuals[i].quaternion.w = phys_bodies[i].quaternion.w;
-      */
     }
   }
 }

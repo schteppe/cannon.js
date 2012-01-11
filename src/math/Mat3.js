@@ -145,7 +145,7 @@ CANNON.Mat3.prototype.solve = function(b,target){
 
   if(isNaN(target.x) || isNaN(target.y) || isNaN(target.z) ||
      target.x==Infinity || target.y==Infinity || target.z==Infinity)
-    throw "Could not solve equation!";
+    throw "Could not solve equation! Got x=["+target.toString()+"], b=["+b.toString()+"], A=["+this.toString()+"]";
 
   return target;
 };

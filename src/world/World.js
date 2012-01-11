@@ -57,72 +57,90 @@ CANNON.World.prototype.togglepause = function(){
  * @todo Use it in the code!
  */
 CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
+
+  //console.log(i,j,ri.toString(),rj.toString(),ui.toString(),ni.toString(),0.5,0.3);
+
   var ri_star = ri.crossmat();
   var rj_star = rj.crossmat();
   
   // Inverse inertia matrices
-  var ii = 1.0/this.inertiax[i];
+  var ii = this.inertiax[i]>0 ? 1.0/this.inertiax[i] : 0.0;
   var Iinv_i = new CANNON.Mat3([ii,0,0,
 				0,ii,0,
 				0,0,ii]);
-  ii = 1.0/world.inertiax[i];
+  ii = this.inertiax[j]>0 ? 1.0/this.inertiax[j] : 0.0;
   var Iinv_j = new CANNON.Mat3([ii,0,0,
 				0,ii,0,
 				0,0,ii]);
+
   // Collision matrix:
-  // K = 1/mi + 1/mj - ri_star*I_inv_i*ri_star - ri_star*I_inv_i*ri_star;
+  // K = 1/mi + 1/mj - ri_star*I_inv_i*ri_star - rj_star*I_inv_j*rj_star;
   var im = this.invm[i] + this.invm[j];
   var K = new CANNON.Mat3([im,0,0,
 			   0,im,0,
 			   0,0,im]);
   var rIr_i = ri_star.mmult(Iinv_i.mmult(ri_star));
   var rIr_j = rj_star.mmult(Iinv_j.mmult(rj_star));
+  /*
   for(var el = 0; el<9; el++)
-    K.elements[el] -= rIr_i.elements[el] + rIr_j.elements[el];
+    K.elements[el] -= (rIr_i.elements[el] + rIr_j.elements[el]);
+  */
 	
   // First assume stick friction
   // Final velocity if stick:
-  var v_f = ni.mult(-e * u.dot(ni));
+  var v_f = ni.mult(-e * ui.dot(ni));
+  console.log("predicted:",v_f.toString());
 
-  var impulse_vec =  K.solve(v_f.vsub(u));
-	  
+  var J =  K.solve(v_f.vsub(ui));
+
   // Check if slide mode (J_t > J_n) - outside friction cone
-  var mu = 0.3; // quick fix
+  var mu = 0.0; // quick fix
   if(mu>0){
-    var J_n = ni.mult(impulse_vec.dot(ni));
-    var J_t = impulse_vec.vsub(J_n);
+    var J_n = ni.mult(J.dot(ni));
+    var J_t = J.vsub(J_n);
     if(J_t.norm() > J_n.mult(mu).norm()){
 
       // j = -(1+e)u_n / nK(n-mu*t)
-      console.log(impulse_vec.toString());
-      var v_tang = u.vsub(ni.mult(u.dot(ni)));
+      console.log(J.toString());
+      var v_tang = ui.vsub(ni.mult(ui.dot(ni)));
       var tangent = v_tang.mult(1.0/(v_tang.norm() + 0.0001));
-      var impulse = -(1+e)*(u.dot(ni))/(ni.dot(K.vmult((ni.vsub(tangent.mult(mu))))));
-      impulse_vec = ni.mult(impulse).vsub(tangent.mult(mu * impulse));
-      if(impulse_vec.norm()>200)
+      var impulse = -(1+e)*(ui.dot(ni))/(ni.dot(K.vmult((ni.vsub(tangent.mult(mu))))));
+      J = ni.mult(impulse).vsub(tangent.mult(mu * impulse));
+      if(J.norm()>200)
 	console.log("large! tan=",tangent.toString(),"v_tang=",v_tang.toString());
     }
   }
 
   // Add to velocities
-  this.vx[i] += impulse_vec.x * invm[i] * 0.5;
-  this.vy[i] += impulse_vec.y * invm[i] * 0.5;
-  this.vz[i] += impulse_vec.z * invm[i] * 0.5;
-  this.vx[j] -= impulse_vec.x * invm[j] * 0.5;
-  this.vy[j] -= impulse_vec.y * invm[j] * 0.5;
-  this.vz[j] -= impulse_vec.z * invm[j] * 0.5;
+  var imi = this.invm[i]; // *0 (this.fixed[j] ? 1 : 0.4);
+  var imj = this.invm[j]; //1.0/this.inertiax[j];// * (this.fixed[i] ? 1 : 0.4);
 
-  var cr = impulse_vec.cross(ri);
-  var wadd = cr.mult(1.0/world.inertiax[i]);
+  // du = KJ = uprim - u
+  //   => uprim = du + u
+  //var du = K.vmult(J);
+  //console.log("adding:",J.mult(imi).toString());
+
+  this.vx[i] += J.x * imi - (this.vx[j] - ui.x);
+  this.vy[i] += J.y * imi - (this.vy[j] - ui.y);
+  this.vz[i] += J.z * imi - (this.vz[j] - ui.z);
+  this.vx[j] -= J.x * imj - (this.vx[i] - ui.x);
+  this.vy[j] -= J.y * imj - (this.vy[i] - ui.y);
+  this.vz[j] -= J.z * imj - (this.vz[i] - ui.z);
+
+  /*
+  var cr = ri.cross(J);
+  var wadd = cr.mult(1.0/this.inertiax[i]);
 
   this.wx[i] += wadd.x;
   this.wy[i] += wadd.y;
   this.wz[i] += wadd.z;
-  cr = impulse_vec.cross(rj);
-  wadd = cr.mult(1.0/world.inertiax[j]); // @todo fix to suit nonsymmetric
+  cr = rj.cross(J);
+  wadd = cr.mult(1.0/this.inertiax[j]); // @todo fix to suit nonsymmetric
   this.wx[j] += wadd.x;
   this.wy[j] += wadd.y;
   this.wz[j] += wadd.z;
+  //console.log("impulse:",J.toString());
+  */
 };
 
 /**
@@ -436,349 +454,6 @@ CANNON.World.prototype.step = function(dt){
       cmatrix(i,j,-1, cmatrix(i,j,0));
       cmatrix(i,j,0,0);
     }
-      
-
-  // Resolve impulses - old
-  /*
-  for(var k=0; k<p1.length; k++){
-    
-    // Get current collision indeces
-    var i = p1[k];
-    var j = p2[k];
-    
-    // sphere-plane impulse
-    if((types[i]==SPHERE && types[j]==PLANE) ||
-       (types[i]==PLANE &&  types[j]==SPHERE)){
-      
-      // Identify what is what
-      var pi, si;
-      if(types[i]==SPHERE){
-	si=i;
-	pi=j;
-      } else {
-	si=j;
-	pi=i;
-      }
-
-      // @todo apply the notation at http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
-      
-      // Collision normal
-      var n = world.body[pi]._shape.normal;
-	
-      // Check if penetration
-      var r = new CANNON.Vec3(x[si]-x[pi],
-			       y[si]-y[pi],
-			       z[si]-z[pi]);
-      r = n.mult(r.dot(n));
-      var q = (r.dot(n)-world.body[si]._shape.radius);
-
-      var w_sphere = new CANNON.Vec3(wx[si], wy[si], wz[si]);
-      var v_sphere = new CANNON.Vec3(vx[si], vy[si], vz[si]);
-      // Contact velocity
-      // v = (body(n).V(1:3) + cr(body(n).V(4:6)',rn)') - (body(m).V(1:3) + cr(body(m).V(4:6)',rm)'); % m is plane
-      // @todo
-
-      var v_contact = v_sphere.vadd(r.cross(w_sphere));
-
-      //var v_contact = new CANNON.Vec3(vx[si]+cr.x,
-      //vy[si]+cr.y,
-      //vz[si]+cr.z);
-     
-      //v_sphere.vadd(w_sphere.cross(r),v_contact);
-
-      // Relative velocity
-      var u = n.mult(v_sphere.dot(n));
-      
-      // Action if penetration
-      if(q<=0.0 && cmatrix(si,pi)==NOCONTACT){ // No impact for separating contacts
-	if(u.dot(n)<0.0)
-	  cmatrix(si,pi,CONTACT);
-	var r_star = r.crossmat();
-	var invm = this.invm;
-
-	// Collision matrix:
-	// K = eye(3,3)/body(n).m - r_star*body(n).Iinv*r_star;
-	var K = new CANNON.Mat3();
-	K.identity();
-	K.elements[0] *= invm[si];
-	K.elements[4] *= invm[si];
-	K.elements[8] *= invm[si];
-
-	var rIr = r_star.mmult(K.mmult(r_star));
-	for(var el = 0; el<9; el++)
-	  K.elements[el] -= rIr.elements[el];
-	
-	// First assume stick friction
-	var e = 0.5;
-
-	// Final velocity if stick
-	var v_f = n.mult(-e * (v_contact.dot(n))); 
-
-	var impulse_vec =  K.solve(v_f.vsub(v_contact));
-	
-	// Check if slide mode (J_t > J_n) - outside friction cone
-	var mu = 0.3; // quick fix
-	if(mu>0){
-	  var J_n = n.mult(impulse_vec.dot(n));
-	  var J_t = impulse_vec.vsub(J_n);
-	  if(J_t.norm() > J_n.mult(mu).norm()){
-	    var v_tang = v_sphere.vsub(n.mult(v_sphere.dot(n)));
-	    var tangent = v_tang.mult(1/(v_tang.norm() + 0.0001));
-	    var impulse = -(1+e)*(v_sphere.dot(n))/(n.dot(K.vmult((n.vsub(tangent.mult(mu))))));
-	    impulse_vec = n.mult(impulse).vsub(tangent.mult(mu * impulse));
-	  }
-	}
-
-	// Add to velocity
-	// todo: add to angular velocity as below
-	var add = impulse_vec.mult(invm[si]);
-	vx[si] += add.x;
-	vy[si] += add.y;
-	vz[si] += add.z;
-
-	var cr = impulse_vec.cross(r);
-	var wadd = cr.mult(1.0/world.inertiax[si]);
-
-	wx[si] += wadd.x; //body(n).V(4:6) = body(n).V(4:6) + (body(n).Iinv*cr(impulse_vec,r))';
-	wy[si] += wadd.y;
-	wz[si] += wadd.z;
-	
-	cmatrix(si,pi,IMPACT); // Just applied impulse - set impact
-      } else if(q<=0 & cmatrix(si,pi)==IMPACT)
-	cmatrix(si,pi,CONTACT); // Last step was impact and we are still penetrated- set contact
-      else if(q>0)
-	cmatrix(si,pi,NOCONTACT); // No penetration any more- set no contact
-
-      // Sphere-sphere impulse
-    } else if(types[i]==SPHERE && types[j]==SPHERE){
-
-      var n = new CANNON.Vec3(x[i]-x[j],
-			       y[i]-y[j],
-			       z[i]-z[j]);
-      var nlen = n.norm();
-      n.normalize();
-      var q = (nlen - (world.body[i]._shape.radius+world.body[j]._shape.radius));
-      var u = new CANNON.Vec3(vx[i]-vx[j],
-			       vy[i]-vy[j],
-			       vz[i]-vz[j]);
-      u = n.mult(u.dot(n));
-      if(q<0.0 && u.dot(n)<0){
-	var e = 0.5;
-	var u_new = n.mult(-(u.dot(n)*e));
-	
-	vx[i] += e*(u_new.x - u.x)*world.invm[j];
-	vy[i] += e*(u_new.y - u.y)*world.invm[j];
-	vz[i] += e*(u_new.z - u.z)*world.invm[j];
-
-	vx[j] -= e*(u_new.x - u.x)*world.invm[i];
-	vy[j] -= e*(u_new.y - u.y)*world.invm[i];
-	vz[j] -= e*(u_new.z - u.z)*world.invm[i];
-
-	// Todo, implement below things. They are general impulses from granular.m
-	var r = new CANNON.Vec3(x[i]-x[j],
-				 y[i]-y[j],
-				 z[i]-z[j]);
-	var ri = n.mult(world.body[i]._shape.radius);
-	var rj = n.mult(world.body[j]._shape.radius);
-
-	//            % Collide with core
-	//                r = dR;
-	//                rn = -body(n).r_core * normal;
-	//                rm = body(m).r_core * normal;
-	//                v = (body(n).V(1:3) + cr(body(n).V(4:6)',rn)') - (body(m).V(1:3) + cr(body(m).V(4:6)',rm)');
-	//                if v*r > 0 
-	//                    COLLISION_MATRIX(n,m) = 1;
-	//                    break                                                  % No impact for separating contacts
-	//                end
-	//                r_star = getSTAR2(r);
-	//                rn_star = getSTAR2(rn);
-	//                rm_star = getSTAR2(rm);
-
-	var r_star = r.crossmat();
-	var ri_star = ri.crossmat();
-	var rj_star = rj.crossmat();
-
-	//K = eye(3,3)/body(n).m + eye(3,3)/body(m).m - rn_star*body(m).Iinv*rn_star - rm_star*body(n).Iinv*rm_star; 
-	//                % First assume stick friction
-	//                v_f = - e_pair * (v*normal) * normal';               % Final velocity if stick
-	//                impulse_vec =  K\(v_f - v)';
-	//                % Check if slide mode (J_t > J_n) - outside friction cone
-	//                if MU>0
-	//                    J_n = (impulse_vec'*normal) * normal;
-	//                    J_t = impulse_vec - J_n;
-	//                    if norm(J_t) > norm(MU*J_n)                    
-	//                            v_tang = v' - (v*normal)*normal;
-	//                            tangent =  v_tang/(norm(v_tang) + 10^(-6));
-	//                            impulse = -(1+e_pair)*(v*normal)/(normal' * K * (normal - MU*tangent));
-	//                            impulse_vec = impulse * normal - MU * impulse * tangent;
-	//                    end
-	//                end
-	//                 bodyTotmass = body(n).m + body(m).m;
-	//                 body(n).V(1:3) = body(n).V(1:3) +  1/body(n).m * impulse_vec';
-	//                 body(n).V(4:6) = body(n).V(4:6) + (body(n).Iinv*cr(impulse_vec,rn))';
-	//                 %body(n).x(1:3) = body(n).x(1:3) + penetration*normal * (body(n).m/bodyTotmass);
-	//                 body(n).L = body(n).I*body(n).V(4:6)';
-	//                 body(m).V(1:3) = body(m).V(1:3) -  1/body(m).m * impulse_vec';
-	//                 body(m).V(4:6) = body(m).V(4:6) + (body(m).Iinv*cr(impulse_vec,rm))';
-	//                 %body(m).x(1:3) = body(m).x(1:3) - penetration*normal * (body(m).m/bodyTotmass);
-	//                 body(m).L = body(m).I*body(m).V(4:6)';
-
-
-      }
-    }
-  } // End of impulse solve
-  */
-
-  /*
-  // Iterate over contacts
-  for(var l=0; l<this.iterations(); l++){
-  for(var k=0; k<p1.length; k++){
-
-  // Get current collision indeces
-  var i = p1[k];
-  var j = p2[k];
-      
-  // sphere-plane collision
-  if((types[i]==SPHERE &&
-  types[j]==PLANE) ||
-  (types[i]==PLANE &&
-  types[j]==SPHERE)){
-	
-  // Identify what is what
-  var pi, si;
-  if(types[i]==SPHERE){
-  si=i;
-  pi=j;
-  } else {
-  si=j;
-  pi=i;
-  }
-	
-  // Collision normal
-  var n = world.geodata[pi].normal;
-	
-  // Check if penetration
-  var r = new CANNON.Vec3(x[si]-x[pi],
-  y[si]-y[pi],
-  z[si]-z[pi]);
-  var q = (r.dot(n)-world.geodata[si].radius)*2;
-  var v_sphere = new CANNON.Vec3(vx[si],
-  vy[si],
-  vz[si]);
-	
-  var u = n.mult(v_sphere.dot(n));
-	
-  // Action if penetration
-  if(q<0.0){
-
-  var old_lambda = lambdas[k];
-  var fs = new CANNON.Vec3(fx[si],
-  fy[si],
-  fz[si]);
-  var new_deltalambda = (- q*world.spook_a(dt)
-  - u.dot(n)*world.spook_b
-  - (fs.dot(n)*world.invm[si])*dt
-  - old_lambda*world.spook_eps(dt))/(world.invm[si]
-  + 1/(world.mass[si]*Math.pow(world.geodata[si].radius,2.0/5.0))
-  + world.spook_eps(dt));
-	  
-  var new_lambda = new_deltalambda - old_lambda; // + ?
-	
-  // Check sign of lambdas and fix
-  if(new_lambda<0){
-  new_deltalambda = -new_lambda;
-  new_lambda = 0;
-  }
-	  
-  // save for next timestep
-  lambdas[k] = new_lambda;
-	  
-  // Accumulate velocities
-  vx_lambda[si] += n.x * new_deltalambda * world.invm[si];
-  vy_lambda[si] += n.y * new_deltalambda * world.invm[si];
-  vz_lambda[si] += n.z * new_deltalambda * world.invm[si];
-	  
-  // --- Friction constraint ---
-  // First assume stick friction
-  var old_lambda_t1 = lambdas_t1[k];
-  var old_lambda_t2 = lambdas_t2[k];
-	  
-  // Construct tangents
-  var t1 = new CANNON.Vec3();
-  var t2 = new CANNON.Vec3();
-  n.tangents(t1,t2);
-
-	  
-  }
-  } else if(types[i]==SPHERE &&
-  types[j]==SPHERE){
-  var r = new CANNON.Vec3(x[i]-x[j],
-  y[i]-y[j],
-  z[i]-z[j]);
-  var nlen = r.norm();
-  var n = new CANNON.Vec3(x[i]-x[j],
-  y[i]-y[j],
-  z[i]-z[j]);
-  n.normalize();
-  var q = (nlen - (world.geodata[i].radius+world.geodata[j].radius))*2;
-  var u = new CANNON.Vec3(vx[i]-vx[j],
-  vy[i]-vy[j],
-  vz[i]-vz[j]);
-  u = n.mult(u.dot(n));
-  if(q<0.0){
-
-  // Solve for lambda
-  var old_lambda = lambdas[k];
-  var fi = new CANNON.Vec3(fx[i],
-  fy[i],
-  fz[i]);
-  var fj = new CANNON.Vec3(fx[j],
-  fy[j],
-  fz[j]);
-  var new_deltalambda = (- q*world.spook_a(dt)
-  - u.dot(n)*world.spook_b
-  - (fi.dot(n)*world.invm[i] + fj.dot(n)*world.invm[j])*dt
-  - old_lambda*world.spook_eps(dt))/(world.invm[i]
-  + world.invm[j]
-  + world.spook_eps(dt));
-	
-  var new_lambda = new_deltalambda - old_lambda;
-	
-  // Check sign of lambdas and fix
-  if(new_lambda < 0.0){
-  new_deltalambda = - new_lambda;
-  new_lambda = 0;
-  }
-	
-  // save for next timestep
-  lambdas[k] = new_lambda;
-	
-  // Accumulate velocities
-  vx_lambda[i] += n.x * new_deltalambda * world.invm[i];
-  vy_lambda[i] += n.y * new_deltalambda * world.invm[i];
-  vz_lambda[i] += n.z * new_deltalambda * world.invm[i];
-  vx_lambda[j] -= n.x * new_deltalambda * world.invm[j];
-  vy_lambda[j] -= n.y * new_deltalambda * world.invm[j];
-  vz_lambda[j] -= n.z * new_deltalambda * world.invm[j];
-
-  // Accumulate rotational velocities
-  // I.inv() is just the mass for spheres
-  // w_lambda[ij] = w_lambda[ij] +- I[ij].inv() * dlambda * (r x n)
-  var rxn = r.cross(n);
-  var Iinvi = world.mass[i];
-  var Iinvj = world.mass[j];
-	  
-  wx_lambda[i] += Iinvi * new_deltalambda * rxn.x;
-  wy_lambda[i] += Iinvi * new_deltalambda * rxn.y;
-  wz_lambda[i] += Iinvi * new_deltalambda * rxn.z;
-  wx_lambda[j] -= Iinvj * new_deltalambda * rxn.x;
-  wy_lambda[j] -= Iinvj * new_deltalambda * rxn.y;
-  wz_lambda[j] -= Iinvj * new_deltalambda * rxn.z;
-  }
-  }
-  }
-  }
-  */
 
   // Add gravity to all objects
   for(var i=0; i<world.numObjects(); i++){
@@ -809,9 +484,7 @@ CANNON.World.prototype.step = function(dt){
       }
       
       // Collision normal
-      var n = new CANNON.Vec3(world.body[pi]._shape.normal.x,
-			      world.body[pi]._shape.normal.y,
-			      world.body[pi]._shape.normal.z);
+      var n = world.body[pi]._shape.normal.copy();
       n.negate(n); // We are working with the sphere as body i!
 
       // Vector from sphere center to contact point
@@ -825,6 +498,12 @@ CANNON.World.prototype.step = function(dt){
       var xs = new CANNON.Vec3(x[si],y[si],z[si]);
       var plane_to_sphere = n.mult(n.dot(point_on_plane_to_sphere));
       var xp = xs.vsub(plane_to_sphere);
+      var rj = new CANNON.Vec3(xp.x-x[pi],
+			       xp.y-y[pi],
+			       xp.z-z[pi]);
+      var xj = new CANNON.Vec3(x[pi],
+			       y[pi],
+			       z[pi]);
 
       // Pseudo name si := i
       // g = ( xj + rj - xi - ri ) .dot ( ni )
@@ -840,18 +519,24 @@ CANNON.World.prototype.step = function(dt){
 	var v_sphere = new CANNON.Vec3(vx[si],vy[si],vz[si]);
 	var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
 	var v_contact = w_sphere.cross(rsi);
-	var u = v_sphere.vadd(w_sphere.cross(rsi));
+	var u = v_sphere;//.vadd(w_sphere.cross(rsi));
 
 	// Which collision state?
 	if(cmatrix(si,pi,-1)==0){ // No contact last timestep -> impulse
 
-	  var r_star = rsi.crossmat();
-	  var invm = this.invm;
-
 	  // Inverse inertia matrix
+	  console.log("sphere-plane...");
+	  this._addImpulse(si,pi,rsi,rj,u,n,0.5,0.3);
+
+	  /*
+
 	  var Iinv = new CANNON.Mat3([1.0/world.inertiax[si],0.0,0.0,
 				      0.0,1.0/world.inertiay[si],0.0,
 				      0,0.0,1.0/world.inertiaz[si]]);
+
+	  var r_star = rsi.crossmat();
+	  var invm = this.invm;
+
 	  // Collision matrix:
 	  // K = 1/mi - r_star*I_inv*r_star;
 	  var im = invm[si];
@@ -897,6 +582,7 @@ CANNON.World.prototype.step = function(dt){
 	  wx[si] += wadd.x; //body(n).V(4:6) = body(n).V(4:6) + (body(n).Iinv*cr(impulse_vec,r))';
 	  wy[si] += wadd.y;
 	  wz[si] += wadd.z;
+	  */
 
 	} else if(cmatrix(si,pi,-1)==1){ // Last contact was also overlapping - contact
 	  // --- Solve for contacts ---
@@ -946,14 +632,11 @@ CANNON.World.prototype.step = function(dt){
       var nlen = ri.norm();
       ri.normalize();
       ri.mult(world.body[i]._shape.radius,ri);
-      var rj = new CANNON.Vec3(x[i]-x[j],
-			       y[i]-y[j],
-			       z[i]-z[j]);
       rj.normalize();
       rj.mult(world.body[j]._shape.radius,rj);
       var ni = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
+			       y[j]-y[i],
+			       z[j]-z[i]);
       ni.normalize();
       // g = ( xj + rj - xi - ri ) .dot ( ni )
       var q_vec = new CANNON.Vec3(x[j]+rj.x-x[i]-ri.x,
@@ -971,13 +654,16 @@ CANNON.World.prototype.step = function(dt){
 	var v_sphere_j = new CANNON.Vec3(vx[j],vy[j],vz[j]);
 	var w_sphere_i = new CANNON.Vec3(wx[i],wy[i],wz[i]);
 	var w_sphere_j = new CANNON.Vec3(wx[j],wy[j],wz[j]);
-	v_sphere_i.vadd(w_sphere_i.cross(ri));
-	v_sphere_j.vadd(w_sphere_j.cross(rj));
+	v_sphere_i.vadd(ri.cross(w_sphere_i));
+	v_sphere_j.vadd(rj.cross(w_sphere_j));
 	  
-	var u = v_sphere_j.vsub(v_sphere_i);
+	var u = v_sphere_j.vsub(v_sphere_i); // ???
 
-	if(cmatrix(i,j,-1)==0 && false){ // No contact last timestep -> impulse
+	if(cmatrix(i,j,-1)==0){ // No contact last timestep -> impulse
+	  console.log("sphere-sphere...");
+	  this._addImpulse(i,j,ri,rj,u,ni,0.5,0.3);
 
+	  /*
 	  var ri_star = ri.crossmat();
 	  var rj_star = rj.crossmat();
 
@@ -1050,6 +736,8 @@ CANNON.World.prototype.step = function(dt){
 	  wx[j] += wadd.x;
 	  wy[j] += wadd.y;
 	  wz[j] += wadd.z;
+	  */
+
 
 	  /*
 	  // old.......
