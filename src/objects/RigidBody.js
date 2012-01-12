@@ -5,7 +5,7 @@
  * @param shape
  * @todo Motion state also? Like dynamic, kinematic, static...
  */
-CANNON.RigidBody = function(mass,shape){
+CANNON.RigidBody = function(mass,shape,material){
   // Local variables
   this._position = new CANNON.Vec3();
   this._velocity = new CANNON.Vec3();
@@ -16,6 +16,7 @@ CANNON.RigidBody = function(mass,shape){
   this._mass = mass;
   this._shape = shape;
   this._inertia = shape.calculateLocalInertia(mass);
+  this._material = material;
 
   /// Reference to the world the body is living in
   this._world = null;

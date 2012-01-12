@@ -661,7 +661,7 @@ CANNON.Shape.types = {
  * @param shape
  * @todo Motion state also? Like dynamic, kinematic, static...
  */
-CANNON.RigidBody = function(mass,shape){
+CANNON.RigidBody = function(mass,shape,material){
   // Local variables
   this._position = new CANNON.Vec3();
   this._velocity = new CANNON.Vec3();
@@ -672,6 +672,7 @@ CANNON.RigidBody = function(mass,shape){
   this._mass = mass;
   this._shape = shape;
   this._inertia = shape.calculateLocalInertia(mass);
+  this._material = material;
 
   /// Reference to the world the body is living in
   this._world = null;
@@ -1238,6 +1239,7 @@ CANNON.Solver.prototype.solve = function(){
  */
 CANNON.Material = function(name){
   this.name = name;
+  this._id = -1;
 };
 
 /**
@@ -1305,6 +1307,16 @@ CANNON.World = function(){
 				  this.spook_d,
 				  5,
 				  1.0/60.0);
+
+  this._materials = [];
+  this._material_contactmaterial_refs = [];
+  /// ContactMaterial objects
+  this._contactmaterials = [];
+  this._contact_material1 = [];
+  this._contact_material2 = [];
+  this._contact_friction_k = [];
+  this._contact_friction_s = [];
+  this._contact_restitution = [];
 };
 
 /**
@@ -1313,6 +1325,24 @@ CANNON.World = function(){
  */
 CANNON.World.prototype.togglepause = function(){
   this.paused = !this.paused;
+};
+
+/**
+ * Get the contact material between bodies bi and bj
+ */
+CANNON.World.prototype._getContactMaterialId = function(bi,bj){
+  if(this.material[bi]>=0 && this.material[bj]>=0){
+    // Material found
+    var i = this._materials[this.material[bi]]._id;
+    var j = this._materials[this.material[bj]]._id;
+    if(i<j){
+      var temp = i;
+      i = j;
+      j = temp;
+    }
+    return this._material_contactmaterial_refs[i+j*this._materials.length];
+  }
+  return -1;
 };
 
 /**
@@ -1587,7 +1617,7 @@ CANNON.World.prototype.add = function(body){
   this.fixed[n] = body._mass<=0.0 ? 1 : 0;
   this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
   this.mass[n] = body._mass;
-  this.material[n] = body._material;
+  this.material[n] = body._material!=undefined ? body._material._id : -1;
 
   this.inertiax[n] = body._inertia.x;
   this.inertiay[n] = body._inertia.y;
@@ -1605,22 +1635,41 @@ CANNON.World.prototype.add = function(body){
  * @param ContactMaterial cmat
  */
 CANNON.World.prototype.addContactMaterial = function(cmat) {
-  // Add the materials
+
+  // Expand old arrays
+
+  // Two more contact material rows+cols
+  var newcm = new Int16Array((this._materials.length+2)
+			     * (this._materials.length+2));
+  for(var i=0; i<newcm.length; i++)
+    newcm[i] = -1;
+  for(var i=0; i<this._materials.length; i++)
+    for(var j=0; j<this._materials.length; j++)
+      newcm[i+this._materials.length*j] = this._material_contactmaterial_refs[i+this._materials.length*j];
+  this._material_contactmaterial_refs = newcm;
+  
+  // Add the materials to an array for access later
   for(var i=0; i<2; i++){
-    this._materials.push(cmat.materials[i]);
-    cmat.materials[i]._id = this.materials.length-1;
+    if(cmat.materials[i]._id==-1){
+      this._materials.push(cmat.materials[i]);
+      cmat.materials[i]._id = this._materials.length-1;
+    }
   }
   
   // Save (material1,material2) -> (contact material) reference for easy access later
-  var i = this.materials.length,
-      j = i+1;
-  this._material_contactmaterial_refs[i+this.materials.length*j] = (this.contact_material1.length);
+  var i = cmat.materials[0]._id;
+  var j = cmat.materials[1]._id; // Make sure i>j, ie upper right matrix
+  
+  this._material_contactmaterial_refs[i+this._materials.length*j]
+    = (this._contact_material1.length); // The index of the contact material
 
   // Add the contact material properties
+  this._contactmaterials.push(cmat);
   this._contact_material1.push(cmat.materials[0]._id);
   this._contact_material2.push(cmat.materials[1]._id);
   this._contact_friction_k.push(cmat.kinematic_friction);
   this._contact_friction_s.push(cmat.static_friction);
+  this._contact_restitution.push(cmat.restitution);
 };
 
 /**
@@ -1825,7 +1874,14 @@ CANNON.World.prototype.step = function(dt){
 
 	  // Inverse inertia matrix
 	  //console.log("sphere-plane...");
-	  this._addImpulse(si,pi,rsi,rj,u,n,0.3,0.3);
+	  var mu_s = 0.3, mu_k = 0.3, e = 0.3;
+	  var cm = this._getContactMaterialId(si,bi);
+	  if(cm!=-1){
+	    mu_s = this._contact_friction_s[cm];
+	    mu_k = this._contact_friction_k[cm];
+	    e = this._contact_restitution[cm];
+	  }
+	  this._addImpulse(si,pi,rsi,rj,u,n,mu_s,e);
 
 	} else if(cmatrix(si,pi,-1)==1){ // Last contact was also overlapping - contact
 	  // --- Solve for contacts ---

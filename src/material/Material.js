@@ -4,5 +4,6 @@
  */
 CANNON.Material = function(name){
   this.name = name;
+  this._id = -1;
 };
 
