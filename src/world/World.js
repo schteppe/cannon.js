@@ -206,6 +206,7 @@ CANNON.World.prototype.add = function(body){
   old_fixed = this.fixed;
   old_invm = this.invm;
   old_mass = this.mass;
+  old_material = this.material;
   old_inertiax = this.inertiax;
   old_inertiay = this.inertiay;
   old_inertiaz = this.inertiaz;
@@ -239,6 +240,8 @@ CANNON.World.prototype.add = function(body){
   this.body = [];
   this.fixed = new Int16Array(n+1);
   this.mass = new Float32Array(n+1);
+  /// References to material for each body
+  this.material = new Int16Array(n+1);
   this.inertiax = new Float32Array(n+1);
   this.inertiay = new Float32Array(n+1);
   this.inertiaz = new Float32Array(n+1);
@@ -276,6 +279,7 @@ CANNON.World.prototype.add = function(body){
     this.fixed[i] = old_fixed[i];
     this.invm[i] = old_invm[i];
     this.mass[i] = old_mass[i];
+    this.material[i] = old_material[i];
     this.inertiax[i] = old_inertiax[i];
     this.inertiay[i] = old_inertiay[i];
     this.inertiaz[i] = old_inertiaz[i];
@@ -312,6 +316,7 @@ CANNON.World.prototype.add = function(body){
   this.fixed[n] = body._mass<=0.0 ? 1 : 0;
   this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
   this.mass[n] = body._mass;
+  this.material[n] = body._material;
 
   this.inertiax[n] = body._inertia.x;
   this.inertiay[n] = body._inertia.y;
@@ -322,6 +327,29 @@ CANNON.World.prototype.add = function(body){
 
   // Create collision matrix
   this.collision_matrix = new Int16Array((n+1)*(n+1));
+};
+
+/**
+ * Adds a contact material to the world
+ * @param ContactMaterial cmat
+ */
+CANNON.World.prototype.addContactMaterial = function(cmat) {
+  // Add the materials
+  for(var i=0; i<2; i++){
+    this._materials.push(cmat.materials[i]);
+    cmat.materials[i]._id = this.materials.length-1;
+  }
+  
+  // Save (material1,material2) -> (contact material) reference for easy access later
+  var i = this.materials.length,
+      j = i+1;
+  this._material_contactmaterial_refs[i+this.materials.length*j] = (this.contact_material1.length);
+
+  // Add the contact material properties
+  this._contact_material1.push(cmat.materials[0]._id);
+  this._contact_material2.push(cmat.materials[1]._id);
+  this._contact_friction_k.push(cmat.kinematic_friction);
+  this._contact_friction_s.push(cmat.static_friction);
 };
 
 /**
@@ -526,7 +554,7 @@ CANNON.World.prototype.step = function(dt){
 
 	  // Inverse inertia matrix
 	  //console.log("sphere-plane...");
-	  this._addImpulse(si,pi,rsi,rj,u,n,0.5,0.3);
+	  this._addImpulse(si,pi,rsi,rj,u,n,0.3,0.3);
 
 	} else if(cmatrix(si,pi,-1)==1){ // Last contact was also overlapping - contact
 	  // --- Solve for contacts ---
@@ -605,7 +633,7 @@ CANNON.World.prototype.step = function(dt){
 
 	if(cmatrix(i,j,-1)==0){ // No contact last timestep -> impulse
 	  //console.log("sphere-sphere...");
-	  this._addImpulse(i,j,ri,rj,u,ni,0.5,0.3);
+	  this._addImpulse(i,j,ri,rj,u,ni,0.3,0.3);
 	  
 	} else { // Contact in last timestep -> contact solve
 	  // gdot = ( vj + wj x rj - vi - wi x ri ) .dot ( ni )
