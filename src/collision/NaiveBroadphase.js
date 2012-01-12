@@ -82,6 +82,19 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
+
+      } else if((type[i]==BOX && type[j]==BOX) ||
+		(type[i]==BOX && type[j]==BOX)){
+	// Rel. position
+	var r = new CANNON.Vec3(x[j]-x[i],
+				y[j]-y[i],
+				z[j]-z[i]);
+	var boundingRadius1 = body[i]._shape.halfExtents.norm();
+	var boundingRadius2 = body[j]._shape.halfExtents.norm();
+	if(r.norm()<(boundingRadius1+boundingRadius2)){
+	  pairs1.push(i);
+	  pairs2.push(j);
+	}
       }
     }
   }
