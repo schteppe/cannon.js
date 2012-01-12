@@ -166,7 +166,7 @@ function createScene( ) {
 
 	// Physics
 	var sphereBody = new CANNON.RigidBody(5,sphereShape);
-	var pos = new CANNON.Vec3(i*2.4-nx*0.5 + (Math.random()-0.5)*rand,
+	var pos = new CANNON.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
 				  j*2-ny*0.5 + (Math.random()-0.5)*rand,
 				  1+k*2.1+h+(i+j)*0.0);
 	sphereBody.setPosition(pos.x,pos.y,pos.z);

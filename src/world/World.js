@@ -484,6 +484,7 @@ CANNON.World.prototype.step = function(dt){
       
       // Collision normal
       var n = world.body[pi]._shape.normal.copy();
+      n.normalize();
       n.negate(n); // We are working with the sphere as body i!
 
       // Vector from sphere center to contact point
@@ -496,7 +497,7 @@ CANNON.World.prototype.step = function(dt){
 						     z[si]-z[pi]);
       var xs = new CANNON.Vec3(x[si],y[si],z[si]);
       var plane_to_sphere = n.mult(n.dot(point_on_plane_to_sphere));
-      var xp = xs.vsub(plane_to_sphere);
+      var xp = xs.vsub(plane_to_sphere); // The sphere position projected to plane
       var rj = new CANNON.Vec3(xp.x-x[pi],
 			       xp.y-y[pi],
 			       xp.z-z[pi]);
@@ -507,9 +508,9 @@ CANNON.World.prototype.step = function(dt){
       // Pseudo name si := i
       // g = ( xj + rj - xi - ri ) .dot ( ni )
       // xj is in this case the penetration point on the plane, and rj=0
-      var qvec = new CANNON.Vec3(xp.x - x[si] - rsi.x,
-				 xp.y - y[si] - rsi.y,
-				 xp.z - z[si] - rsi.z);
+      var qvec = new CANNON.Vec3(xj.x + rj.x - x[si] - rsi.x,
+				 xj.y + rj.y - y[si] - rsi.y,
+				 xj.z + rj.z - z[si] - rsi.z);
       var q = qvec.dot(n);
 	
       // Action if penetration
@@ -545,7 +546,7 @@ CANNON.World.prototype.step = function(dt){
 			    0,0,0],
 			 
 			   // q - constraint violation
-			   [-qvec.x,-qvec.y,-qvec.z,
+			   [-qvec.x*2,-qvec.y*2,-qvec.z*2, // why *2 ?
 			    0,0,0,
 			    0,0,0,
 			    0,0,0],
@@ -559,8 +560,8 @@ CANNON.World.prototype.step = function(dt){
 			   // External force - forces & torques
 			   [fx[si],fy[si],fz[si],
 			    taux[si],tauy[si],tauz[si],
-			    fx[pi],fy[pi],fz[pi],
-			    taux[pi],tauy[pi],tauz[pi]],
+			    0,0,0,
+			    0,0,0],
 			   0,
 			   'inf',
 			   si,
