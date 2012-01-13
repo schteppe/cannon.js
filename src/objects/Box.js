@@ -22,3 +22,17 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
 				   + this.halfExtents.x*this.halfExtents.x );
   return target;
 };
+
+CANNON.Box.prototype.getCorners = function(){
+  var corners = [];
+  var ex = this.halfExtents;
+  corners.push(new CANNON.Vec3(  ex.x,  ex.y,  ex.z));
+  corners.push(new CANNON.Vec3( -ex.x,  ex.y,  ex.z));
+  corners.push(new CANNON.Vec3( -ex.x, -ex.y,  ex.z));
+  corners.push(new CANNON.Vec3( -ex.x, -ex.y, -ex.z));
+  corners.push(new CANNON.Vec3(  ex.x, -ex.y, -ex.z));
+  corners.push(new CANNON.Vec3(  ex.x,  ex.y, -ex.z));
+  corners.push(new CANNON.Vec3( -ex.x,  ex.y, -ex.z));
+  corners.push(new CANNON.Vec3(  ex.x, -ex.y,  ex.z));
+  return corners;
+};

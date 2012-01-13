@@ -862,6 +862,120 @@ CANNON.World.prototype.step = function(dt){
 			   pi);
 	}
       }
+
+    } else if((types[i]==BOX && types[j]==SPHERE) || 
+	      (types[i]==SPHERE && types[j]==BOX)){
+
+      // --- Box-sphere collision ---
+      // We have several scenarios here... But obviously we can only have 1 contact point
+      // 1. One of the 8 corners penetrate - normal is the sphere center-->corner vector
+      // 2. Sphere is penetrating one of the 6 box side - normal is the box side
+      // 3. Sphere collides with one of the 12 box edges
+
+      // Identify what is what
+      var si, bi;
+      if(types[i]==BOX){
+	si=i;
+	pi=j;
+      } else {
+	si=j;
+	pi=i;
+      }
+      
+      // we refer to the box as body i
+      var xi = new CANNON.Vec3(world.x[bi],world.y[bi],world.z[bi]);
+      var xj = new CANNON.Vec3(world.x[si],world.y[si],world.z[si]);
+
+      // Scenario 1: Corner collision
+      var corners = world.body[bi]._shape.getCorners();
+
+      // Loop through each corner
+      var numcontacts = 0;
+      for(var idx=0; idx<corners.length && numcontacts<=1; idx++){ // max 1 corner
+
+	var ri = corners[idx];
+
+	// Rotate corner into the world frame
+	quat.vmult(ri,ri);
+
+	var rj = new CANNON.Vec3(x[bi] + ri.x - x[si],
+				 y[bi] + ri.y - y[si],
+				 z[bi] + ri.z - z[si]);
+	
+	// Pseudo name: box index = i
+	// g = ( xj + rj - xi - ri ) .dot ( ni )
+	var qvec = new CANNON.Vec3(xj.x + rj.x - xi.x - ri.x,
+				   xj.y + rj.y - xi.y - ri.y,
+				   xj.z + rj.z - xi.z - ri.z);
+	var q = qvec.dot(n);
+	n.mult(q,qvec);
+	
+	// Action if penetration
+	if(q<0.0){
+
+	  var rixn = ri.cross(n);
+
+	  numcontacts++;
+
+	  var v_box = new CANNON.Vec3(vx[bi],vy[bi],vz[bi]);
+	  var w_box = new CANNON.Vec3(wx[bi],wy[bi],wz[bi]);
+	  var v_sphere = new CANNON.Vec3(vx[si],vy[si],vz[si]);
+	  var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
+	  var u = v_sphere.vadd(w_sphere.cross(rj)).vsub(v_box.vadd(w_box.cross(ri)));
+
+	  var iMi = world.invm[bi];
+	  var iMj = world.invm[si];
+
+	  var iIbx = 1.0/worldInertia.x,
+  	      iIby = 1.0/worldInertia.y,
+	      iIbz = 1.0/worldInertia.z;
+	  cid[k] = this.solver
+	    .addConstraint( // Non-penetration constraint jacobian
+			   [-n.x,-n.y,-n.z,
+			    -rixn.x,-rixn.y,-rixn.z,
+			    0,0,0,
+			    0,0,0],
+			   
+			   // Inverse mass matrix
+			   [iMi,iMi,iMi,
+			    iIbx,iIby,iIbz,
+			    iMj,iMj,iMj,
+			    Is,Is,Is], // Symmetric for sphere
+			   
+			   // q - constraint violation
+			   [-qvec.x,-qvec.y,-qvec.z,
+			    0,0,0,
+			    qvec.x,qvec.y,qvec.z,
+			    0,0,0],
+			   
+			   // qdot - motion along penetration normal
+			   [v_box.x, v_box.y, v_box.z,
+			    w_box.x, w_box.y, w_box.z,
+			    0,0,0,
+			    0,0,0],
+			   
+			   // External force - forces & torques
+			   [fx[bi],fy[bi],fz[bi],
+			    taux[bi],tauy[bi],tauz[bi],
+			    fx[pi],fy[pi],fz[pi],
+			    taux[pi],tauy[pi],tauz[pi]],
+
+			   0,
+			   'inf',
+			   bi,
+			   pi);
+	}
+      }
+
+      // Still no contacts? Check scenario 2 - the 6 box sides
+      if(numcontacts==0){
+	// @todo
+      }
+
+      // Still no contacts? Check scenario 3 - the 12 box edges
+      if(numcontacts==0){
+	// @todo
+      }
     }
   }
 
