@@ -1062,13 +1062,22 @@ CANNON.Solver.prototype.reset = function(numbodies){
   this.haslower = [];
   this.i = []; // To keep track of body id's
   this.j = [];
-  if(numbodies){
+  if(numbodies && (this.vxlambda==undefined || this.vxlambda.length!=numbodies)){
     this.vxlambda = new Float32Array(numbodies);
     this.vylambda = new Float32Array(numbodies);
     this.vzlambda = new Float32Array(numbodies);
     this.wxlambda = new Float32Array(numbodies);
     this.wylambda = new Float32Array(numbodies);
     this.wzlambda = new Float32Array(numbodies);
+  } else if(this.vxlambda!=undefined && this.vxlambda.length==numbodies){
+    for(var i=0; i<this.vxlambda.length; i++){
+      this.vxlambda[i] = 0.0;
+      this.vylambda[i] = 0.0;
+      this.vzlambda[i] = 0.0;
+      this.wxlambda[i] = 0.0;
+      this.wylambda[i] = 0.0;
+      this.wzlambda[i] = 0.0;
+    }
   }
 };
 
