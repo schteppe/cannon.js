@@ -47,7 +47,6 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 * ParallelSolver that uses Web Workers - splits the system into islands and then adds to subsolvers (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
 * Remove objects during simulation
 * Caching of bounding sphere radius
-* Investigate usage of Float32Arrays in Vec3 and Quaternion classes in an .elements property. Is this faster than .x, .y and .z?
 * Shapes: Cone, cylinder, compound
 
 ## Build
