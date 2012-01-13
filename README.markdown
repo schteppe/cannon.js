@@ -38,24 +38,25 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 
 ## Todo
 
-* Material and ContactMaterial
-* Friction constraints for spheres and boxes
+* Box/box collision
+* Box/sphere collision
+* Friction constraints
 * Better collision detection - spatial hashing, octrees or similar
 * Debug render app that uses three.js or scenejs
-* Parallel solver that uses Web Workers - splits the system into islands and then adds to a subsolver (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
-* Remove objects dynamically during simulation
+* Rename the current Solver class to GSSolver, and make the Solver class to a base class
+* ParallelSolver that uses Web Workers - splits the system into islands and then adds to subsolvers (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
+* Remove objects during simulation
+* Caching of bounding sphere radius
+* Investigate usage of Float32Arrays in Vec3 and Quaternion classes in an .elements property. Is this faster than .x, .y and .z?
+* Shapes: Cone, cylinder, compound
 
 ## Build
 
-When a new version of the software has been made, a new build needs to be made. Run <code>cd cannon.js/utils/; ./build.py;</code> to do this. The version number will be read from <code>cannon.js/VERSION</code> and put into the built files, so update VERSION first.
+When a new version of the software has been made, a new build needs to be made. Run <code>cd cannon.js/utils/; ./build.py;</code> to do this. The version number will be read from <code>cannon.js/VERSION</code> and put into the built files, so update VERSION first. The software versioning should follow the Semantic Version Specification: http://semver.org/
 
 ## Examples
 
 To be able to view the examples on the web using Github Pages, the code need to be copied to that public branch. The master branch is therefore being merged into the gh-pages branch now and then, eg <code>git checkout gh-pages; git merge master;</code>. This way we can use file references in the examples transparently.
-
-## Version numbering
-
-The software versioning should follow the Semantic Version Specification: http://semver.org/
 
 ## Profiling / optimizing the code
 
