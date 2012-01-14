@@ -236,9 +236,14 @@ CANNON.World.prototype.add = function(body){
   old_invm = this.invm;
   old_mass = this.mass;
   old_material = this.material;
+
   old_inertiax = this.inertiax;
   old_inertiay = this.inertiay;
   old_inertiaz = this.inertiaz;
+
+  old_iinertiax = this.iinertiax;
+  old_iinertiay = this.iinertiay;
+  old_iinertiaz = this.iinertiaz;
 
   this.x = new Float32Array(n+1);
   this.y = new Float32Array(n+1);
@@ -274,6 +279,9 @@ CANNON.World.prototype.add = function(body){
   this.inertiax = new Float32Array(n+1);
   this.inertiay = new Float32Array(n+1);
   this.inertiaz = new Float32Array(n+1);
+  this.iinertiax = new Float32Array(n+1);
+  this.iinertiay = new Float32Array(n+1);
+  this.iinertiaz = new Float32Array(n+1);
   this.invm = new Float32Array(n+1);
   
   // Add old data to new array
@@ -312,6 +320,9 @@ CANNON.World.prototype.add = function(body){
     this.inertiax[i] = old_inertiax[i];
     this.inertiay[i] = old_inertiay[i];
     this.inertiaz[i] = old_inertiaz[i];
+    this.iinertiax[i] = old_iinertiax[i];
+    this.iinertiay[i] = old_iinertiay[i];
+    this.iinertiaz[i] = old_iinertiaz[i];
   }
 
   // Add one more
@@ -350,6 +361,9 @@ CANNON.World.prototype.add = function(body){
   this.inertiax[n] = body._inertia.x;
   this.inertiay[n] = body._inertia.y;
   this.inertiaz[n] = body._inertia.z;
+  this.iinertiax[n] = body._inertia.x > 0 ? 1.0/body._inertia.x : 0.0;
+  this.iinertiay[n] = body._inertia.y > 0 ? 1.0/body._inertia.y : 0.0;
+  this.iinertiaz[n] = body._inertia.z > 0 ? 1.0/body._inertia.z : 0.0;
 
   body._id = n; // give id as index in table
   body._world = this;
@@ -901,12 +915,48 @@ CANNON.World.prototype.step = function(dt){
 	  penetrating_sides.push(idx);
       }
 
+
+      var iMi = new CANNON.Vec3(world.invm[bi],
+				world.invm[bi],
+				world.invm[bi]);
+      var iMj = new CANNON.Vec3(world.invm[si],
+				world.invm[si],
+				world.invm[si]);
+      var iIi = new CANNON.Vec3(world.iinertiax[bi],
+				world.iinertiay[bi],
+				world.iinertiaz[bi]); // @todo rotate into world frame
+      var iIj = new CANNON.Vec3(world.iinertiax[si],
+				world.iinertiay[si],
+				world.iinertiaz[si]);
+      var vi = new CANNON.Vec3(vx[bi],vy[bi],vz[bi]);
+      var vj = new CANNON.Vec3(vx[si],vy[si],vz[si]);
+      var wi = new CANNON.Vec3(wx[bi],wy[bi],wz[bi]);
+      var wj = new CANNON.Vec3(wx[si],wy[si],wz[si]);
+
+      var fi = new CANNON.Vec3(fx[bi],fy[bi],fz[bi]);
+      var fj = new CANNON.Vec3(fx[si],fy[si],fz[si]);
+
+      var taui = new CANNON.Vec3(taux[bi],tauy[bi],tauz[bi]);
+      var tauj = new CANNON.Vec3(taux[si],tauy[si],tauz[si]);
+
       // Identify collision type
       if(penetrating_sides.length==1){
 	// "Flat" collision against one side, normal is the side normal
 	var axis = penetrating_sides[0];
-	var ni = sides[axis];
-	// @todo add contact constraint
+	var h = sides[axis];
+	var ni = h.copy();
+	ni.normalize();
+	var r = xj.vsub(xi.vadd(h)); // center of box side to center of sphere
+	var t1 = sides[(axis+1)%3];
+	var t2 = sides[(axis+2)%3];
+	t1.normalize();
+	t2.normalize();
+	var ri = h.vsub(t1.mult(r.dot(t1))).vsub(t2.mult(r.dot(t2)));
+	var rj = ni.copy();
+	rj.normalize();
+	rj.mult(-R,rj);
+	this.solver
+	  .addNonPenetrationConstraint(bi,si,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj);
       } else if(penetrating_sides.length==2){
 	// Contact with edge
 	// normal is the edge-sphere unit vector, orthogonal to the edge
@@ -921,9 +971,10 @@ CANNON.World.prototype.step = function(dt){
 	rj.normalize();
 	rj.mult(R);
 	var ni = rj.copy();
-	ni.negate();
+	ni.negate(ni);
 	ni.normalize();
-	// @todo add contact constraint
+	this.solver
+	  .addNonPenetrationConstraint(bi,si,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj);
       } else if(penetrating_sides.length==3){
 	// Corner collision
 	var s1 = sides[penetrating_sides[0]];

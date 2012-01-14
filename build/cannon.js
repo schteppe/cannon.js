@@ -516,9 +516,9 @@ CANNON.Vec3.prototype.dot = function(v){
  */
 CANNON.Vec3.prototype.negate = function(target){
   target = target || new CANNON.Vec3();
-  target.x = - this.x;
-  target.y = - this.y;
-  target.z = - this.z;
+  target.x = -this.x;
+  target.y = -this.y;
+  target.z = -this.z;
   return target;
 };
 
@@ -1210,17 +1210,21 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
  * @param Vec3 w2
  */
 CANNON.Solver.prototype.addNonPenetrationConstraint
-  = function(i,j,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
+  = function(i,j,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
   
   var rxn = ri.cross(ni);
-  var u = vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
-  var iM = world.invm[bi];
+  var u = vj.vsub(vi); // vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
 
   // g = ( xj + rj - xi - ri ) .dot ( ni )
-  var qvec = xj.vadd(rj).vsub(xi).vsub(xj);
+  var qvec = xj.vadd(rj).vsub(xi.vadd(ri));
   var q = qvec.dot(ni);
 
   if(q<0.0){
+    if(this.debug){
+      console.log("i:",i,"j",j,"xi",xi.toString(),"xj",xj.toString());
+      console.log("ni",ni.toString(),"ri",ri.toString(),"rj",rj.toString());
+      console.log("iMi",iMi.toString(),"iMj",iMj.toString(),"iIi",iIi.toString(),"iIj",iIj.toString(),"vi",vi.toString(),"vj",vj.toString(),"wi",wi.toString(),"wj",wj.toString(),"fi",fi.toString(),"fj",fj.toString(),"taui",taui.toString(),"tauj",tauj.toString());
+    }
     this.addConstraint( // Non-penetration constraint jacobian
 			[ -ni.x,  -ni.y,  -ni.z,
 			  -rxn.x, -rxn.y, -rxn.z,
@@ -1236,27 +1240,26 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 			// q - constraint violation
 			[-qvec.x,-qvec.y,-qvec.z,
 			 0,0,0,
-			 0,0,0,
+			 qvec.x,qvec.y,qvec.z,
 			 0,0,0],
 			
 			// qdot - motion along penetration normal
-			[v_box.x, v_box.y, v_box.z,
-			 w_box.x, w_box.y, w_box.z,
+			[-u.x, -u.y, -u.z,
 			 0,0,0,
+			 u.x, u.y, u.z,
 			 0,0,0],
 			
 			// External force - forces & torques
-			[fx[bi],fy[bi],fz[bi],
-			 taux[bi],tauy[bi],tauz[bi],
-			 fx[pi],fy[pi],fz[pi],
-			 taux[pi],tauy[pi],tauz[pi]],
+			[fi.x,fi.y,fi.z,
+			 taui.x,taui.y,taui.z,
+			 fj.x,fj.y,fj.z,
+			 tauj.x,tauj.y,tauj.z],
 			
 			0,
 			'inf',
-			bi,
-			pi);
-}
-
+			i,
+			j);
+  }
 };
 
 /**
@@ -1665,9 +1668,14 @@ CANNON.World.prototype.add = function(body){
   old_invm = this.invm;
   old_mass = this.mass;
   old_material = this.material;
+
   old_inertiax = this.inertiax;
   old_inertiay = this.inertiay;
   old_inertiaz = this.inertiaz;
+
+  old_iinertiax = this.iinertiax;
+  old_iinertiay = this.iinertiay;
+  old_iinertiaz = this.iinertiaz;
 
   this.x = new Float32Array(n+1);
   this.y = new Float32Array(n+1);
@@ -1703,6 +1711,9 @@ CANNON.World.prototype.add = function(body){
   this.inertiax = new Float32Array(n+1);
   this.inertiay = new Float32Array(n+1);
   this.inertiaz = new Float32Array(n+1);
+  this.iinertiax = new Float32Array(n+1);
+  this.iinertiay = new Float32Array(n+1);
+  this.iinertiaz = new Float32Array(n+1);
   this.invm = new Float32Array(n+1);
   
   // Add old data to new array
@@ -1741,6 +1752,9 @@ CANNON.World.prototype.add = function(body){
     this.inertiax[i] = old_inertiax[i];
     this.inertiay[i] = old_inertiay[i];
     this.inertiaz[i] = old_inertiaz[i];
+    this.iinertiax[i] = old_iinertiax[i];
+    this.iinertiay[i] = old_iinertiay[i];
+    this.iinertiaz[i] = old_iinertiaz[i];
   }
 
   // Add one more
@@ -1779,6 +1793,9 @@ CANNON.World.prototype.add = function(body){
   this.inertiax[n] = body._inertia.x;
   this.inertiay[n] = body._inertia.y;
   this.inertiaz[n] = body._inertia.z;
+  this.iinertiax[n] = body._inertia.x > 0 ? 1.0/body._inertia.x : 0.0;
+  this.iinertiay[n] = body._inertia.y > 0 ? 1.0/body._inertia.y : 0.0;
+  this.iinertiaz[n] = body._inertia.z > 0 ? 1.0/body._inertia.z : 0.0;
 
   body._id = n; // give id as index in table
   body._world = this;
@@ -2330,12 +2347,48 @@ CANNON.World.prototype.step = function(dt){
 	  penetrating_sides.push(idx);
       }
 
+
+      var iMi = new CANNON.Vec3(world.invm[bi],
+				world.invm[bi],
+				world.invm[bi]);
+      var iMj = new CANNON.Vec3(world.invm[si],
+				world.invm[si],
+				world.invm[si]);
+      var iIi = new CANNON.Vec3(world.iinertiax[bi],
+				world.iinertiay[bi],
+				world.iinertiaz[bi]); // @todo rotate into world frame
+      var iIj = new CANNON.Vec3(world.iinertiax[si],
+				world.iinertiay[si],
+				world.iinertiaz[si]);
+      var vi = new CANNON.Vec3(vx[bi],vy[bi],vz[bi]);
+      var vj = new CANNON.Vec3(vx[si],vy[si],vz[si]);
+      var wi = new CANNON.Vec3(wx[bi],wy[bi],wz[bi]);
+      var wj = new CANNON.Vec3(wx[si],wy[si],wz[si]);
+
+      var fi = new CANNON.Vec3(fx[bi],fy[bi],fz[bi]);
+      var fj = new CANNON.Vec3(fx[si],fy[si],fz[si]);
+
+      var taui = new CANNON.Vec3(taux[bi],tauy[bi],tauz[bi]);
+      var tauj = new CANNON.Vec3(taux[si],tauy[si],tauz[si]);
+
       // Identify collision type
       if(penetrating_sides.length==1){
 	// "Flat" collision against one side, normal is the side normal
 	var axis = penetrating_sides[0];
-	var ni = sides[axis];
-	// @todo add contact constraint
+	var h = sides[axis];
+	var ni = h.copy();
+	ni.normalize();
+	var r = xj.vsub(xi.vadd(h)); // center of box side to center of sphere
+	var t1 = sides[(axis+1)%3];
+	var t2 = sides[(axis+2)%3];
+	t1.normalize();
+	t2.normalize();
+	var ri = h.vsub(t1.mult(r.dot(t1))).vsub(t2.mult(r.dot(t2)));
+	var rj = ni.copy();
+	rj.normalize();
+	rj.mult(-R,rj);
+	this.solver
+	  .addNonPenetrationConstraint(bi,si,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj);
       } else if(penetrating_sides.length==2){
 	// Contact with edge
 	// normal is the edge-sphere unit vector, orthogonal to the edge
@@ -2350,9 +2403,10 @@ CANNON.World.prototype.step = function(dt){
 	rj.normalize();
 	rj.mult(R);
 	var ni = rj.copy();
-	ni.negate();
+	ni.negate(ni);
 	ni.normalize();
-	// @todo add contact constraint
+	this.solver
+	  .addNonPenetrationConstraint(bi,si,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj);
       } else if(penetrating_sides.length==3){
 	// Corner collision
 	var s1 = sides[penetrating_sides[0]];

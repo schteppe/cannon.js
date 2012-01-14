@@ -149,9 +149,9 @@ CANNON.Vec3.prototype.dot = function(v){
  */
 CANNON.Vec3.prototype.negate = function(target){
   target = target || new CANNON.Vec3();
-  target.x = - this.x;
-  target.y = - this.y;
-  target.z = - this.z;
+  target.x = -this.x;
+  target.y = -this.y;
+  target.z = -this.z;
   return target;
 };
 

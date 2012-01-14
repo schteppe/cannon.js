@@ -116,17 +116,21 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
  * @param Vec3 w2
  */
 CANNON.Solver.prototype.addNonPenetrationConstraint
-  = function(i,j,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
+  = function(i,j,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
   
   var rxn = ri.cross(ni);
-  var u = vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
-  var iM = world.invm[bi];
+  var u = vj.vsub(vi); // vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
 
   // g = ( xj + rj - xi - ri ) .dot ( ni )
-  var qvec = xj.vadd(rj).vsub(xi).vsub(xj);
+  var qvec = xj.vadd(rj).vsub(xi.vadd(ri));
   var q = qvec.dot(ni);
 
   if(q<0.0){
+    if(this.debug){
+      console.log("i:",i,"j",j,"xi",xi.toString(),"xj",xj.toString());
+      console.log("ni",ni.toString(),"ri",ri.toString(),"rj",rj.toString());
+      console.log("iMi",iMi.toString(),"iMj",iMj.toString(),"iIi",iIi.toString(),"iIj",iIj.toString(),"vi",vi.toString(),"vj",vj.toString(),"wi",wi.toString(),"wj",wj.toString(),"fi",fi.toString(),"fj",fj.toString(),"taui",taui.toString(),"tauj",tauj.toString());
+    }
     this.addConstraint( // Non-penetration constraint jacobian
 			[ -ni.x,  -ni.y,  -ni.z,
 			  -rxn.x, -rxn.y, -rxn.z,
@@ -142,27 +146,26 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 			// q - constraint violation
 			[-qvec.x,-qvec.y,-qvec.z,
 			 0,0,0,
-			 0,0,0,
+			 qvec.x,qvec.y,qvec.z,
 			 0,0,0],
 			
 			// qdot - motion along penetration normal
-			[v_box.x, v_box.y, v_box.z,
-			 w_box.x, w_box.y, w_box.z,
+			[-u.x, -u.y, -u.z,
 			 0,0,0,
+			 u.x, u.y, u.z,
 			 0,0,0],
 			
 			// External force - forces & torques
-			[fx[bi],fy[bi],fz[bi],
-			 taux[bi],tauy[bi],tauz[bi],
-			 fx[pi],fy[pi],fz[pi],
-			 taux[pi],tauy[pi],tauz[pi]],
+			[fi.x,fi.y,fi.z,
+			 taui.x,taui.y,taui.z,
+			 fj.x,fj.y,fj.z,
+			 tauj.x,tauj.y,tauj.z],
 			
 			0,
 			'inf',
-			bi,
-			pi);
-}
-
+			i,
+			j);
+  }
 };
 
 /**

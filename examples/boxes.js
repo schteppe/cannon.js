@@ -1,9 +1,9 @@
 // Physics
 var world = new CANNON.World();
-world.gravity(new CANNON.Vec3(0,0,-10));
+world.gravity(new CANNON.Vec3(0,0,-1));
 var bp = new CANNON.NaiveBroadphase();
 world.broadphase(bp);
-world.iterations(3);
+world.iterations(5);
 
 var phys_bodies = [];
 var phys_visuals = [];
@@ -116,7 +116,10 @@ function createScene( ) {
   var groundBody = new CANNON.RigidBody(0,groundShape);
   world.add(groundBody);
 
-  var box_geometry = new THREE.CubeGeometry( 4, 4, 2 ); // extents, not half extents
+  var bx = 2;
+  var by = 2;
+  var bz = 1;
+  var box_geometry = new THREE.CubeGeometry( bx*2, by*2, bz*2 ); // extents, not half extents
   var boxMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
   THREE.ColorUtils.adjustHSV( boxMaterial.color, 0, 0, 0.9 );
 
@@ -124,9 +127,9 @@ function createScene( ) {
   var nx = 1;
   var ny = 1;
   var nz = 1;
-  var rand = 0.005;
+  var rand = 0.0;
   var h = 1;
-  var boxShape = new CANNON.Box(new CANNON.Vec3(2,2,1)); // half extents
+  var boxShape = new CANNON.Box(new CANNON.Vec3(bx,by,bz));
   for(var i=0; i<nx; i++){
     for(var j=0; j<ny; j++){
       for(var k=0; k<nz; k++){
@@ -141,11 +144,11 @@ function createScene( ) {
 
 	// Physics
 	var boxBody = new CANNON.RigidBody(5,boxShape);
-	var pos = new CANNON.Vec3(i-nx*0.5 + (Math.random()-0.5)*rand,
-				  j-ny*0.5 + (Math.random()-0.5)*rand,
-				  1+k*2+h);
+	var pos = new CANNON.Vec3(2*bx*i + (Math.random()-0.5)*rand,
+				  2*by*j + (Math.random()-0.5)*rand,
+				  1+2*k*bz+h);
 	boxBody.setPosition(pos.x,pos.y,pos.z);
-	boxBody.setAngularVelocity(0,1,0);
+	boxBody.setVelocity(0,0,1);
 	boxBody.setOrientation(1,0,0,0.0);
 	
 	// Save initial positions for later
@@ -173,8 +176,8 @@ spheremesh.useQuaternion = true;
 // Physics
 var sphereShape = new CANNON.Sphere(1);
 var sphereBody = new CANNON.RigidBody(5,sphereShape);
-var pos = new CANNON.Vec3(0,0,5);
-sphereBody.setPosition(0,0,5);
+var pos = new CANNON.Vec3(2,0,5);
+sphereBody.setPosition(2,0,5);
 
 // Save initial positions for later
 phys_bodies.push(sphereBody);
