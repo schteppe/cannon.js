@@ -109,6 +109,7 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
   var rIr_j = rj_star.mmult(Iinv_j.mmult(rj_star));
 
   /*
+  // @todo add back when this works
   for(var el = 0; el<9; el++)
     K.elements[el] -= (rIr_i.elements[el] + rIr_j.elements[el]);
   */
@@ -543,7 +544,19 @@ CANNON.World.prototype.step = function(dt){
     // Get current collision indeces
     var i = p1[k];
     var j = p2[k];
-      
+    
+    // Check last step stats
+    var lastCollisionState = cmatrix(i,j,-1);
+    
+    // Get collision properties
+    var mu_s = 0.3, mu_k = 0.3, e = 0.2;
+    var cm = this._getContactMaterialId(i,j);
+    if(cm!=-1){
+      mu_s = this._contact_friction_s[cm];
+      mu_k = this._contact_friction_k[cm];
+      e = this._contact_restitution[cm];
+    }
+    
     // sphere-plane collision
     if((types[i]==SPHERE && types[j]==PLANE) ||
        (types[i]==PLANE  && types[j]==SPHERE)){
@@ -556,7 +569,7 @@ CANNON.World.prototype.step = function(dt){
 	si=j;
 	pi=i;
       }
-      
+
       // Collision normal
       var n = world.body[pi]._shape.normal.copy();
       n.normalize();
@@ -597,20 +610,13 @@ CANNON.World.prototype.step = function(dt){
 	var u = v_sphere;//.vadd(w_sphere.cross(rsi));
 
 	// Which collision state?
-	if(cmatrix(si,pi,-1)==0){ // No contact last timestep -> impulse
+	if(lastCollisionState==0){ // No contact last timestep -> impulse
 
 	  // Inverse inertia matrix
 	  //console.log("sphere-plane...");
-	  var mu_s = 0.3, mu_k = 0.3, e = 0.3;
-	  var cm = this._getContactMaterialId(si,bi);
-	  if(cm!=-1){
-	    mu_s = this._contact_friction_s[cm];
-	    mu_k = this._contact_friction_k[cm];
-	    e = this._contact_restitution[cm];
-	  }
 	  this._addImpulse(si,pi,rsi,rj,u,n,mu_s,e);
 
-	} else if(cmatrix(si,pi,-1)==1){ // Last contact was also overlapping - contact
+	} else if(lastCollisionState==1){ // Last contact was also overlapping - contact
 	  // --- Solve for contacts ---
 	  var iM = world.invm[si];
 	  var iI = world.inertiax[si] > 0 ? 1.0/world.inertiax[si] : 0; // Sphere - same for all dims
@@ -685,16 +691,14 @@ CANNON.World.prototype.step = function(dt){
 	  
 	var u = v_sphere_j.vsub(v_sphere_i);
 
-	if(cmatrix(i,j,-1)==0){ // No contact last timestep -> impulse
-	  //console.log("sphere-sphere...");
-	  this._addImpulse(i,j,ri,rj,u,ni,0.3,0.3);
+	if(lastCollisionState == 0){ // No contact last timestep -> impulse
+	  //console.log("sphere-sphere impulse...");
+	  this._addImpulse(i,j,ri,rj,u,ni,mu_s,e);
 	  
 	} else { // Contact in last timestep -> contact solve
+	  //console.log("sphere-sphere contact...");
 	  // gdot = ( vj + wj x rj - vi - wi x ri ) .dot ( ni )
 	  // => W = ( vj + wj x rj - vi - wi x ri )
-	  
-	  var fi = new CANNON.Vec3(fx[i],fy[i],fz[i]);
-	  var fj = new CANNON.Vec3(fx[j],fy[j],fz[j]);
 	  
 	  var iM_i = !world.fixed[i] ? world.invm[i] : 0;
 	  var iI_i = !world.fixed[i] ? 1.0/world.inertiax[i] : 0;
@@ -721,11 +725,6 @@ CANNON.World.prototype.step = function(dt){
 			    q_vec.x,q_vec.y,q_vec.z,
 			    0,0,0],
 			   
-			   // qdot - motion along penetration normal
-			   /*			 [-u.x,-u.y,-u.z,
-						 0,0,0,
-						 u.x,u.y,u.z,
-						 0,0,0],*/
 			   [vx[i],vy[i],vz[i],
 			    0,0,0,
 			    vx[j],vy[j],vz[j],
@@ -775,16 +774,7 @@ CANNON.World.prototype.step = function(dt){
       worldInertia.y = Math.abs(worldInertia.y);
       worldInertia.z = Math.abs(worldInertia.z);
 
-      var corners = [];
-      var ex = world.body[bi]._shape.halfExtents;
-      corners.push(new CANNON.Vec3(  ex.x,  ex.y,  ex.z));
-      corners.push(new CANNON.Vec3( -ex.x,  ex.y,  ex.z));
-      corners.push(new CANNON.Vec3( -ex.x, -ex.y,  ex.z));
-      corners.push(new CANNON.Vec3( -ex.x, -ex.y, -ex.z));
-      corners.push(new CANNON.Vec3(  ex.x, -ex.y, -ex.z));
-      corners.push(new CANNON.Vec3(  ex.x,  ex.y, -ex.z));
-      corners.push(new CANNON.Vec3( -ex.x,  ex.y, -ex.z));
-      corners.push(new CANNON.Vec3(  ex.x, -ex.y,  ex.z)); 
+      var corners = world.body[bi]._shape.getCorners();
       
       // Loop through each corner
       var numcontacts = 0;
@@ -866,11 +856,19 @@ CANNON.World.prototype.step = function(dt){
     } else if((types[i]==BOX && types[j]==SPHERE) || 
 	      (types[i]==SPHERE && types[j]==BOX)){
 
-      // --- Box-sphere collision ---
-      // We have several scenarios here... But obviously we can only have 1 contact point
-      // 1. One of the 8 corners penetrate - normal is the sphere center-->corner vector
-      // 2. Sphere is penetrating one of the 6 box side - normal is the box side
-      // 3. Sphere collides with one of the 12 box edges
+      /*
+	--- Box-sphere collision ---
+	We have several scenarios here... But obviously we can only have 1 contact point
+	- One of the 8 corners penetrate - normal is the sphere center-->corner vector
+	- Sphere is penetrating one of the 6 box side - normal is the box side
+	- Sphere collides with one of the 12 box edges
+	
+	To identify scenario, we project the vector from the box center to the
+	sphere center onto each of the 6 box side normals, penetration if r*n<h+rs
+	3 side penetrations => corner
+	2 side penetrations => edge
+	1 side penetrations => side
+      */
 
       // Identify what is what
       var si, bi;
@@ -885,7 +883,63 @@ CANNON.World.prototype.step = function(dt){
       // we refer to the box as body i
       var xi = new CANNON.Vec3(world.x[bi],world.y[bi],world.z[bi]);
       var xj = new CANNON.Vec3(world.x[si],world.y[si],world.z[si]);
+      var xixj = xj.vsub(xi);
 
+      var qi = new CANNON.Quaternion(world.qx[bi],world.qy[bi],world.qz[bi],world.qw[bi]);
+      var sides = world.body[bi]._shape.getSides(true,qi);
+      var R = world.body[si]._shape.radius;
+
+      var penetrating_sides = [];
+      for(var idx=0; idx<sides.length && numcontacts<=3; idx++){ // Max 3 penetrating sides
+	// Need vector from side center to sphere center, r
+	var ns = sides[idx].copy();
+	var h = ns.norm();
+	var r = xixj.vsub(ns);
+	ns.normalize();
+	var dot = ns.dot(r);
+	if(dot<h+R && dot>0)
+	  penetrating_sides.push(idx);
+      }
+
+      // Identify collision type
+      if(numcontacts==1){
+	// "Flat" collision against one side, normal is the side normal
+	var axis = penetrating_sides[0];
+	var ni = sides[axis];
+	// @todo add contact constraint
+      } else if(numcontacts==2){
+	// Contact with edge
+	// normal is the edge-sphere unit vector, orthogonal to the edge
+	var axis1 = penetrating_sides[0];
+	var axis2 = penetrating_sides[1];
+	var edgeCenter = sides[axis1].vadd(sides[axis2]);
+	var edgeTangent = sides[axis1].cross(sides[axis2]);
+	edgeTangent.normalize();
+	var r = xj.vsub(edgeCenter.vadd(xi));
+	var ri = edgeCenter.vadd(edgeTangent.mult(r.dot(edgeTangent)));
+	var rj = xi.vadd(ri).vsub(xj);
+	rj.normalize();
+	rj.mult(R);
+	var ni = rj.copy();
+	ni.negate();
+	ni.normalize();
+	// @todo add contact constraint
+      } else if(numcontacts==3){
+	// Corner collision
+	var s1 = sides[penetrating_sides[0]];
+	var s2 = sides[penetrating_sides[1]];
+	var s3 = sides[penetrating_sides[2]];
+	var corner = s1.vadd(s2).vadd(s3);
+	var ri = corner;
+	var ni = corner.vadd(xi).vsub(xj);
+	ni.normalize();
+	var rj = ni.mult(-R);
+	// @todo add contact constraint
+      } else {
+	// No contact...
+      }
+
+      /*
       // Scenario 1: Corner collision
       var corners = world.body[bi]._shape.getCorners();
 
@@ -969,6 +1023,8 @@ CANNON.World.prototype.step = function(dt){
 
       // Still no contacts? Check scenario 2 - the 6 box sides
       if(numcontacts==0){
+	// Idea: get the 6 side normals
+
 	// @todo
       }
 
@@ -976,6 +1032,7 @@ CANNON.World.prototype.step = function(dt){
       if(numcontacts==0){
 	// @todo
       }
+      */
     }
   }
 

@@ -23,7 +23,13 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
   return target;
 };
 
-CANNON.Box.prototype.getCorners = function(){
+/**
+ * Get the box corners
+ * @param Quaternion quat Orientation to apply to the corner vectors. If not provided,
+ * the vectors will be in respect to the local frame.
+ * @return array
+ */
+CANNON.Box.prototype.getCorners = function(quat){
   var corners = [];
   var ex = this.halfExtents;
   corners.push(new CANNON.Vec3(  ex.x,  ex.y,  ex.z));
@@ -34,5 +40,34 @@ CANNON.Box.prototype.getCorners = function(){
   corners.push(new CANNON.Vec3(  ex.x,  ex.y, -ex.z));
   corners.push(new CANNON.Vec3( -ex.x,  ex.y, -ex.z));
   corners.push(new CANNON.Vec3(  ex.x, -ex.y,  ex.z));
+
+  for(var i=0; quat!=undefined && i<corners.length; i++)
+    quat.vmult(corners[i],corners[i]);
+
   return corners;
+};
+
+/**
+ * Get the box 6 side normals
+ * @param bool includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
+ * @param Quaternion quat Orientation to apply to the normal vectors. If not provided,
+ * the vectors will be in respect to the local frame.
+ * @return array
+ */
+CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
+  var sides = [];
+  var ex = this.halfExtents;
+  sides.push(new CANNON.Vec3(  ex.x,     0,     0));
+  sides.push(new CANNON.Vec3(     0,  ex.y,     0));
+  sides.push(new CANNON.Vec3(     0,     0,  ex.z));
+  if(includeNegative!=undefined && includeNegative){
+    sides.push(new CANNON.Vec3( -ex.x,     0,     0));
+    sides.push(new CANNON.Vec3(     0, -ex.y,     0));
+    sides.push(new CANNON.Vec3(     0,     0, -ex.z));
+  }
+
+  for(var i=0; quat!=undefined && i<sides.length; i++)
+    quat.vmult(sides[i],sides[i]);
+
+  return sides;
 };

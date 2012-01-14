@@ -102,6 +102,70 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 };
 
 /**
+ * Add a non-penetration constraint to the solver
+ * @param Vec3 ni
+ * @param Vec3 ri
+ * @param Vec3 rj
+ * @param Vec3 iMi
+ * @param Vec3 iMj
+ * @param Vec3 iIi
+ * @param Vec3 iIj
+ * @param Vec3 v1
+ * @param Vec3 v2
+ * @param Vec3 w1
+ * @param Vec3 w2
+ */
+CANNON.Solver.prototype.addNonPenetrationConstraint
+  = function(i,j,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
+  
+  var rxn = ri.cross(ni);
+  var u = vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
+  var iM = world.invm[bi];
+
+  // g = ( xj + rj - xi - ri ) .dot ( ni )
+  var qvec = xj.vadd(rj).vsub(xi).vsub(xj);
+  var q = qvec.dot(ni);
+
+  if(q<0.0){
+    this.addConstraint( // Non-penetration constraint jacobian
+			[ -ni.x,  -ni.y,  -ni.z,
+			  -rxn.x, -rxn.y, -rxn.z,
+			  ni.x,   ni.y,   ni.z,
+			  rxn.x,  rxn.y,  rxn.z],
+			
+			// Inverse mass matrix & inertia
+			[iMi.x, iMi.y, iMi.z,
+			 iIi.z, iIi.y, iIi.z,
+			 iMj.x, iMj.y, iMj.z,
+			 iIj.z, iIj.y, iIj.z],
+			
+			// q - constraint violation
+			[-qvec.x,-qvec.y,-qvec.z,
+			 0,0,0,
+			 0,0,0,
+			 0,0,0],
+			
+			// qdot - motion along penetration normal
+			[v_box.x, v_box.y, v_box.z,
+			 w_box.x, w_box.y, w_box.z,
+			 0,0,0,
+			 0,0,0],
+			
+			// External force - forces & torques
+			[fx[bi],fy[bi],fz[bi],
+			 taux[bi],tauy[bi],tauz[bi],
+			 fx[pi],fy[pi],fz[pi],
+			 taux[pi],tauy[pi],tauz[pi]],
+			
+			0,
+			'inf',
+			bi,
+			pi);
+}
+
+};
+
+/**
  * Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){

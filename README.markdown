@@ -48,6 +48,7 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 * Remove objects during simulation
 * Caching of bounding sphere radius
 * Shapes: Cone, cylinder, compound
+* Search for "@todo" if you want to find more things to do
 
 ## Build
 
