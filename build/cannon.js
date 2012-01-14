@@ -97,7 +97,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
 
-      // Sphere-sphere
+      // --- Sphere-sphere ---
       if(type[i]==SPHERE && type[j]==SPHERE){
 	var r2 = (body[i]._shape.radius + body[j]._shape.radius);
 	if(Math.abs(x[i]-x[j]) < r2 && 
@@ -107,7 +107,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 
-	// Sphere-plane
+      // --- Sphere-plane ---
       } else if((type[i]==SPHERE && type[j]==PLANE) ||
 		(type[i]==PLANE &&  type[j]==SPHERE)){
 	var si = type[i]==SPHERE ? i : j;
@@ -124,7 +124,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 	
-	// Box-plane
+	// --- Box-plane ---
       } else if((type[i]==BOX && type[j]==PLANE) ||
 		(type[i]==PLANE &&  type[j]==BOX)){
 	var bi = type[i]==BOX   ? i : j;
@@ -143,6 +143,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 
+	// --- Box-box ---
       } else if((type[i]==BOX && type[j]==BOX) ||
 		(type[i]==BOX && type[j]==BOX)){
 	// Rel. position
@@ -156,6 +157,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 
+	// --- box-sphere ---
       } else if((type[i]==BOX && type[j]==SPHERE) ||
 		(type[i]==SPHERE && type[j]==BOX)){
 	// Rel. position
@@ -984,7 +986,7 @@ CANNON.RigidBody.prototype.getTorque = function(target){
  */
 CANNON.Sphere = function(radius){
   CANNON.Shape.call(this);
-  this.radius = radius!=undefined ? radius : 1.0;
+  this.radius = radius!=undefined ? Number(radius) : 1.0;
   this.type = CANNON.Shape.types.SPHERE;
 };
 
@@ -2300,11 +2302,11 @@ CANNON.World.prototype.step = function(dt){
       // Identify what is what
       var si, bi;
       if(types[i]==BOX){
-	si=i;
-	pi=j;
-      } else {
+	bi=i;
 	si=j;
-	pi=i;
+      } else {
+	bi=j;
+	si=i;
       }
       
       // we refer to the box as body i
@@ -2313,11 +2315,11 @@ CANNON.World.prototype.step = function(dt){
       var xixj = xj.vsub(xi);
 
       var qi = new CANNON.Quaternion(world.qx[bi],world.qy[bi],world.qz[bi],world.qw[bi]);
-      var sides = world.body[bi]._shape.getSides(true,qi);
+      var sides = world.body[bi]._shape.getSideNormals(true,qi);
       var R = world.body[si]._shape.radius;
 
       var penetrating_sides = [];
-      for(var idx=0; idx<sides.length && numcontacts<=3; idx++){ // Max 3 penetrating sides
+      for(var idx=0; idx<sides.length && penetrating_sides.length<=3; idx++){ // Max 3 penetrating sides
 	// Need vector from side center to sphere center, r
 	var ns = sides[idx].copy();
 	var h = ns.norm();
@@ -2329,12 +2331,12 @@ CANNON.World.prototype.step = function(dt){
       }
 
       // Identify collision type
-      if(numcontacts==1){
+      if(penetrating_sides.length==1){
 	// "Flat" collision against one side, normal is the side normal
 	var axis = penetrating_sides[0];
 	var ni = sides[axis];
 	// @todo add contact constraint
-      } else if(numcontacts==2){
+      } else if(penetrating_sides.length==2){
 	// Contact with edge
 	// normal is the edge-sphere unit vector, orthogonal to the edge
 	var axis1 = penetrating_sides[0];
@@ -2351,7 +2353,7 @@ CANNON.World.prototype.step = function(dt){
 	ni.negate();
 	ni.normalize();
 	// @todo add contact constraint
-      } else if(numcontacts==3){
+      } else if(penetrating_sides.length==3){
 	// Corner collision
 	var s1 = sides[penetrating_sides[0]];
 	var s2 = sides[penetrating_sides[1]];

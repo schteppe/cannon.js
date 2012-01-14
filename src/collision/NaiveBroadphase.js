@@ -37,7 +37,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
 
-      // Sphere-sphere
+      // --- Sphere-sphere ---
       if(type[i]==SPHERE && type[j]==SPHERE){
 	var r2 = (body[i]._shape.radius + body[j]._shape.radius);
 	if(Math.abs(x[i]-x[j]) < r2 && 
@@ -47,7 +47,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 
-	// Sphere-plane
+      // --- Sphere-plane ---
       } else if((type[i]==SPHERE && type[j]==PLANE) ||
 		(type[i]==PLANE &&  type[j]==SPHERE)){
 	var si = type[i]==SPHERE ? i : j;
@@ -64,7 +64,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 	
-	// Box-plane
+	// --- Box-plane ---
       } else if((type[i]==BOX && type[j]==PLANE) ||
 		(type[i]==PLANE &&  type[j]==BOX)){
 	var bi = type[i]==BOX   ? i : j;
@@ -83,6 +83,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 
+	// --- Box-box ---
       } else if((type[i]==BOX && type[j]==BOX) ||
 		(type[i]==BOX && type[j]==BOX)){
 	// Rel. position
@@ -96,6 +97,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 
+	// --- box-sphere ---
       } else if((type[i]==BOX && type[j]==SPHERE) ||
 		(type[i]==SPHERE && type[j]==BOX)){
 	// Rel. position

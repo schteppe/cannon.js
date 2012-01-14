@@ -873,11 +873,11 @@ CANNON.World.prototype.step = function(dt){
       // Identify what is what
       var si, bi;
       if(types[i]==BOX){
-	si=i;
-	pi=j;
-      } else {
+	bi=i;
 	si=j;
-	pi=i;
+      } else {
+	bi=j;
+	si=i;
       }
       
       // we refer to the box as body i
@@ -886,11 +886,11 @@ CANNON.World.prototype.step = function(dt){
       var xixj = xj.vsub(xi);
 
       var qi = new CANNON.Quaternion(world.qx[bi],world.qy[bi],world.qz[bi],world.qw[bi]);
-      var sides = world.body[bi]._shape.getSides(true,qi);
+      var sides = world.body[bi]._shape.getSideNormals(true,qi);
       var R = world.body[si]._shape.radius;
 
       var penetrating_sides = [];
-      for(var idx=0; idx<sides.length && numcontacts<=3; idx++){ // Max 3 penetrating sides
+      for(var idx=0; idx<sides.length && penetrating_sides.length<=3; idx++){ // Max 3 penetrating sides
 	// Need vector from side center to sphere center, r
 	var ns = sides[idx].copy();
 	var h = ns.norm();
@@ -902,12 +902,12 @@ CANNON.World.prototype.step = function(dt){
       }
 
       // Identify collision type
-      if(numcontacts==1){
+      if(penetrating_sides.length==1){
 	// "Flat" collision against one side, normal is the side normal
 	var axis = penetrating_sides[0];
 	var ni = sides[axis];
 	// @todo add contact constraint
-      } else if(numcontacts==2){
+      } else if(penetrating_sides.length==2){
 	// Contact with edge
 	// normal is the edge-sphere unit vector, orthogonal to the edge
 	var axis1 = penetrating_sides[0];
@@ -924,7 +924,7 @@ CANNON.World.prototype.step = function(dt){
 	ni.negate();
 	ni.normalize();
 	// @todo add contact constraint
-      } else if(numcontacts==3){
+      } else if(penetrating_sides.length==3){
 	// Corner collision
 	var s1 = sides[penetrating_sides[0]];
 	var s2 = sides[penetrating_sides[1]];

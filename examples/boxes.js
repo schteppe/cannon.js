@@ -3,7 +3,7 @@ var world = new CANNON.World();
 world.gravity(new CANNON.Vec3(0,0,-10));
 var bp = new CANNON.NaiveBroadphase();
 world.broadphase(bp);
-world.iterations(10);
+world.iterations(3);
 
 var phys_bodies = [];
 var phys_visuals = [];
@@ -116,17 +116,17 @@ function createScene( ) {
   var groundBody = new CANNON.RigidBody(0,groundShape);
   world.add(groundBody);
 
-  var box_geometry = new THREE.CubeGeometry( 2, 2, 2 );
+  var box_geometry = new THREE.CubeGeometry( 4, 4, 2 ); // extents, not half extents
   var boxMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
   THREE.ColorUtils.adjustHSV( boxMaterial.color, 0, 0, 0.9 );
 
   // Box on plane
-  var nx = 3;
-  var ny = 3;
+  var nx = 1;
+  var ny = 1;
   var nz = 1;
   var rand = 0.005;
   var h = 1;
-  var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+  var boxShape = new CANNON.Box(new CANNON.Vec3(2,2,1)); // half extents
   for(var i=0; i<nx; i++){
     for(var j=0; j<ny; j++){
       for(var k=0; k<nz; k++){
@@ -141,12 +141,12 @@ function createScene( ) {
 
 	// Physics
 	var boxBody = new CANNON.RigidBody(5,boxShape);
-	var pos = new CANNON.Vec3(i*2.1-nx*0.5 + (Math.random()-0.5)*rand,
-				  j*2.1-ny*0.5 + (Math.random()-0.5)*rand,
+	var pos = new CANNON.Vec3(i-nx*0.5 + (Math.random()-0.5)*rand,
+				  j-ny*0.5 + (Math.random()-0.5)*rand,
 				  1+k*2+h);
 	boxBody.setPosition(pos.x,pos.y,pos.z);
 	boxBody.setAngularVelocity(0,1,0);
-	boxBody.setOrientation(1,1,0,0.05);
+	boxBody.setOrientation(1,0,0,0.0);
 	
 	// Save initial positions for later
 	phys_bodies.push(boxBody);
@@ -157,6 +157,31 @@ function createScene( ) {
     }
   }
 }
+
+var sphere_geometry = new THREE.SphereGeometry( 1, 16, 16 );
+var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
+
+var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
+if(shadowsOn){
+  spheremesh.castShadow = true;
+  spheremesh.receiveShadow = true;
+}
+scene.add( spheremesh );
+spheremesh.useQuaternion = true;
+
+// Physics
+var sphereShape = new CANNON.Sphere(1);
+var sphereBody = new CANNON.RigidBody(5,sphereShape);
+var pos = new CANNON.Vec3(0,0,5);
+sphereBody.setPosition(0,0,5);
+
+// Save initial positions for later
+phys_bodies.push(sphereBody);
+phys_visuals.push(spheremesh);
+phys_startpositions.push(pos);
+world.add(sphereBody);
+
 var t = 0, newTime, delta;
 
 function animate(){

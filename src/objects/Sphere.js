@@ -6,7 +6,7 @@
  */
 CANNON.Sphere = function(radius){
   CANNON.Shape.call(this);
-  this.radius = radius!=undefined ? radius : 1.0;
+  this.radius = radius!=undefined ? Number(radius) : 1.0;
   this.type = CANNON.Shape.types.SPHERE;
 };
 
