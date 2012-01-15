@@ -456,7 +456,10 @@ CANNON.World.prototype.gravity = function(g){
  * @param float dt
  */
 CANNON.World.prototype.step = function(dt){
-  if(this.paused)
+
+  var world = this;
+
+  if(world.paused)
     return;
 
   // 1. Collision detection
