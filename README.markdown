@@ -3,13 +3,13 @@
 <a href="http://schteppe.github.com/cannon.js"> Click here for examples >><br><img src="http://granular.cs.umu.se/browserphysics/wp-content/uploads/2012/01/myphysicslib_javascript.png" width="300"></a>
 
 Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https://github.com/kripken/ammo.js), and driven by the fact that the web lacks a physics engine, here comes cannon.js.
-    
+
 ## Features
 
-* Lightweight - less than 40Kb compressed. For comparison: ammo.js uses 1.12Mb when compressed.
+* Lightweight - less than 40Kb compressed. For comparison: [ammo.js](https://github.com/kripken/ammo.js/) uses 1.12Mb when compressed.
 * Supports solid spheres and static planes at the moment - soon also boxes
 * 100% open source JavaScript, written from scratch
-* Uses typed arrays for fast number crunching
+* Uses typed arrays for [fast number crunching](http://granular.cs.umu.se/browserphysics/?p=729)
 * Uses an iterative Gauss-Seidel solver to solve generic constraints
 * Uses [SPOOK](https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf) for time stepping
 
