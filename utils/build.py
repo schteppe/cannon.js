@@ -24,7 +24,10 @@ COMMON_FILES = ['Cannon.js',
 		'objects/Box.js',
 		'objects/Plane.js',
 		'solver/Solver.js',
+		'material/Material.js',
+		'material/ContactMaterial.js',
 		'world/World.js']
+DEMO_FILES = ['demo/Demo.js']
 
 def merge(files):
 	buffer = []
@@ -106,6 +109,7 @@ def main(argv=None):
 	args = parse_args()
 	buildLib(COMMON_FILES, False, 'cannon')
 	buildLib(COMMON_FILES, True,  'cannon.min')
+	buildLib(DEMO_FILES, False,  'cannon.demo')
 
 if __name__ == "__main__":
 	main()

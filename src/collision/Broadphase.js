@@ -11,6 +11,7 @@ CANNON.Broadphase = function(){
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 
 /**
+ * Get the collision pairs from the world
  * @return array
  */
 CANNON.Broadphase.prototype.collisionPairs = function(){

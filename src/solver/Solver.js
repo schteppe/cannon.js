@@ -21,6 +21,7 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
 /**
  * Resets the solver, removes all constraints and prepares for a new round of solving
  * @param int numbodies The number of bodies in the new system
+ * @todo vlambda does not need to be instantiated again if the number of bodies is the same. Set to zero instead.
  */
 CANNON.Solver.prototype.reset = function(numbodies){
   this.G = [];
@@ -35,13 +36,24 @@ CANNON.Solver.prototype.reset = function(numbodies){
   this.haslower = [];
   this.i = []; // To keep track of body id's
   this.j = [];
-  if(numbodies){
+
+  // Create new arrays or reuse the ones that exists?
+  if(numbodies && (this.vxlambda==undefined || this.vxlambda.length!=numbodies)){
     this.vxlambda = new Float32Array(numbodies);
     this.vylambda = new Float32Array(numbodies);
     this.vzlambda = new Float32Array(numbodies);
     this.wxlambda = new Float32Array(numbodies);
     this.wylambda = new Float32Array(numbodies);
     this.wzlambda = new Float32Array(numbodies);
+  } else if(this.vxlambda!=undefined && this.vxlambda.length==numbodies){
+    for(var i=0; i<this.vxlambda.length; i++){
+      this.vxlambda[i] = 0.0;
+      this.vylambda[i] = 0.0;
+      this.vzlambda[i] = 0.0;
+      this.wxlambda[i] = 0.0;
+      this.wylambda[i] = 0.0;
+      this.wzlambda[i] = 0.0;
+    }
   }
 };
 
@@ -90,7 +102,74 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 };
 
 /**
- * Solves the system
+ * Add a non-penetration constraint to the solver
+ * @param Vec3 ni
+ * @param Vec3 ri
+ * @param Vec3 rj
+ * @param Vec3 iMi
+ * @param Vec3 iMj
+ * @param Vec3 iIi
+ * @param Vec3 iIj
+ * @param Vec3 v1
+ * @param Vec3 v2
+ * @param Vec3 w1
+ * @param Vec3 w2
+ */
+CANNON.Solver.prototype.addNonPenetrationConstraint
+  = function(i,j,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
+  
+  var rxn = ri.cross(ni);
+  var u = vj.vsub(vi); // vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
+
+  // g = ( xj + rj - xi - ri ) .dot ( ni )
+  var qvec = xj.vadd(rj).vsub(xi.vadd(ri));
+  var q = qvec.dot(ni);
+
+  if(q<0.0){
+    if(this.debug){
+      console.log("i:",i,"j",j,"xi",xi.toString(),"xj",xj.toString());
+      console.log("ni",ni.toString(),"ri",ri.toString(),"rj",rj.toString());
+      console.log("iMi",iMi.toString(),"iMj",iMj.toString(),"iIi",iIi.toString(),"iIj",iIj.toString(),"vi",vi.toString(),"vj",vj.toString(),"wi",wi.toString(),"wj",wj.toString(),"fi",fi.toString(),"fj",fj.toString(),"taui",taui.toString(),"tauj",tauj.toString());
+    }
+    this.addConstraint( // Non-penetration constraint jacobian
+			[ -ni.x,  -ni.y,  -ni.z,
+			  -rxn.x, -rxn.y, -rxn.z,
+			  ni.x,   ni.y,   ni.z,
+			  rxn.x,  rxn.y,  rxn.z],
+			
+			// Inverse mass matrix & inertia
+			[iMi.x, iMi.y, iMi.z,
+			 iIi.z, iIi.y, iIi.z,
+			 iMj.x, iMj.y, iMj.z,
+			 iIj.z, iIj.y, iIj.z],
+			
+			// q - constraint violation
+			[-qvec.x,-qvec.y,-qvec.z,
+			 0,0,0,
+			 qvec.x,qvec.y,qvec.z,
+			 0,0,0],
+			
+			// qdot - motion along penetration normal
+			[-u.x, -u.y, -u.z,
+			 0,0,0,
+			 u.x, u.y, u.z,
+			 0,0,0],
+			
+			// External force - forces & torques
+			[fi.x,fi.y,fi.z,
+			 taui.x,taui.y,taui.z,
+			 fj.x,fj.y,fj.z,
+			 tauj.x,tauj.y,tauj.z],
+			
+			0,
+			'inf',
+			i,
+			j);
+  }
+};
+
+/**
+ * Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);

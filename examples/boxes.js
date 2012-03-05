@@ -3,7 +3,7 @@ var world = new CANNON.World();
 world.gravity(new CANNON.Vec3(0,0,-10));
 var bp = new CANNON.NaiveBroadphase();
 world.broadphase(bp);
-world.iterations(10);
+world.iterations(5);
 
 var phys_bodies = [];
 var phys_visuals = [];
@@ -45,11 +45,11 @@ function init() {
  
   // SCENE
   scene = new THREE.Scene();
-  scene.fog = new THREE.Fog( 0xffffff, 1000, FAR );
-  THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
+  scene.fog = new THREE.Fog( 0x222222, 1000, FAR );
+  //THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
 
   // LIGHTS
-  var ambient = new THREE.AmbientLight( 0x555555 );
+  var ambient = new THREE.AmbientLight( 0x222222 );
   scene.add( ambient );
 
   light = new THREE.SpotLight( 0xffffff );
@@ -116,7 +116,10 @@ function createScene( ) {
   var groundBody = new CANNON.RigidBody(0,groundShape);
   world.add(groundBody);
 
-  var box_geometry = new THREE.CubeGeometry( 2, 2, 2 );
+  var bx = 1;
+  var by = 1;
+  var bz = 1;
+  var box_geometry = new THREE.CubeGeometry( bx*2, by*2, bz*2 );
   var boxMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
   THREE.ColorUtils.adjustHSV( boxMaterial.color, 0, 0, 0.9 );
 
@@ -124,9 +127,9 @@ function createScene( ) {
   var nx = 3;
   var ny = 3;
   var nz = 1;
-  var rand = 0.005;
+  var rand = 0.0;
   var h = 1;
-  var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+  var boxShape = new CANNON.Box(new CANNON.Vec3(bx,by,bz));
   for(var i=0; i<nx; i++){
     for(var j=0; j<ny; j++){
       for(var k=0; k<nz; k++){
@@ -141,12 +144,12 @@ function createScene( ) {
 
 	// Physics
 	var boxBody = new CANNON.RigidBody(5,boxShape);
-	var pos = new CANNON.Vec3(i*2.1-nx*0.5 + (Math.random()-0.5)*rand,
-				  j*2.1-ny*0.5 + (Math.random()-0.5)*rand,
-				  1+k*2+h);
+	var pos = new CANNON.Vec3(3*bx*i + (Math.random()-0.5)*rand,
+				  3*by*j + (Math.random()-0.5)*rand,
+				  1+2*k*bz+h);
 	boxBody.setPosition(pos.x,pos.y,pos.z);
-	boxBody.setAngularVelocity(0,1,0);
-	boxBody.setOrientation(1,1,0,0.05);
+	boxBody.setVelocity(0,0,1);
+	boxBody.setOrientation(1,0,0,0.0);
 	
 	// Save initial positions for later
 	phys_bodies.push(boxBody);
@@ -157,6 +160,33 @@ function createScene( ) {
     }
   }
 }
+
+/*
+var sphere_geometry = new THREE.SphereGeometry( 1, 16, 16 );
+var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
+
+var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
+if(shadowsOn){
+  spheremesh.castShadow = true;
+  spheremesh.receiveShadow = true;
+}
+scene.add( spheremesh );
+spheremesh.useQuaternion = true;
+
+// Physics
+var sphereShape = new CANNON.Sphere(1);
+var sphereBody = new CANNON.RigidBody(5,sphereShape);
+var pos = new CANNON.Vec3(2,0,5);
+sphereBody.setPosition(2,0,5);
+
+// Save initial positions for later
+phys_bodies.push(sphereBody);
+phys_visuals.push(spheremesh);
+phys_startpositions.push(pos);
+world.add(sphereBody);
+*/
+
 var t = 0, newTime, delta;
 
 function animate(){

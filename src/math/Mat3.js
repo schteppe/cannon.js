@@ -142,6 +142,11 @@ CANNON.Mat3.prototype.solve = function(b,target){
   target.z = eqns[2*nc+3] / eqns[2*nc+2];
   target.y = (eqns[1*nc+3] - eqns[1*nc+2]*target.z) / eqns[1*nc+1];
   target.x = (eqns[0*nc+3] - eqns[0*nc+2]*target.z - eqns[0*nc+1]*target.y) / eqns[0*nc+0];
+
+  if(isNaN(target.x) || isNaN(target.y) || isNaN(target.z) ||
+     target.x==Infinity || target.y==Infinity || target.z==Infinity)
+    throw "Could not solve equation! Got x=["+target.toString()+"], b=["+b.toString()+"], A=["+this.toString()+"]";
+
   return target;
 };
 
@@ -170,4 +175,12 @@ CANNON.Mat3.prototype.copy = function(target){
   for(var i=0; i<this.elements.length; i++)
     target.elements[i] = this.elements[i];
   return target;
+};
+
+CANNON.Mat3.prototype.toString = function(){
+  var r = "";
+  var sep = ",";
+  for(var i=0; i<9; i++)
+    r += this.elements[i] + sep;
+  return r;
 };

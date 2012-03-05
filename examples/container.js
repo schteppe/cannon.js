@@ -1,9 +1,18 @@
 // Physics
 var world = new CANNON.World();
-world.gravity(new CANNON.Vec3(0,0,-30));
+world.gravity(new CANNON.Vec3(0,0,-40));
 var bp = new CANNON.NaiveBroadphase();
 world.broadphase(bp);
-world.iterations(3);
+world.iterations(2);
+
+var stone = new CANNON.Material('stone');
+var stone_stone = new CANNON.ContactMaterial(stone,
+					     stone,
+					     0.3, // Static friction
+					     0.3, // Kinetic friction
+					     0.3  // Restitution
+					     );
+world.addContactMaterial(stone_stone);
 
 var phys_bodies = [];
 var phys_visuals = [];
@@ -46,11 +55,11 @@ function init() {
  
   // SCENE
   scene = new THREE.Scene();
-  scene.fog = new THREE.Fog( 0xffffff, 1000, FAR );
-  THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
+  scene.fog = new THREE.Fog( 0x222222, 1000, FAR );
+  //THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
 
   // LIGHTS
-  var ambient = new THREE.AmbientLight( 0x555555 );
+  var ambient = new THREE.AmbientLight( 0x222222 );
   scene.add( ambient );
 
   light = new THREE.SpotLight( 0xffffff );
@@ -115,30 +124,30 @@ function createScene( ) {
 
   // ground plane
   var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
-  var groundBody = new CANNON.RigidBody(0,groundShape);
+  var groundBody = new CANNON.RigidBody(0,groundShape,stone);
   world.add(groundBody);
 
   // plane -x
   var planeShapeXmin = new CANNON.Plane(new CANNON.Vec3(0,1,0));
-  var planeXmin = new CANNON.RigidBody(0, planeShapeXmin);
+  var planeXmin = new CANNON.RigidBody(0, planeShapeXmin,stone);
   planeXmin.setPosition(0,-5,0);
   world.add(planeXmin);
 
   // Plane +x
   var planeShapeXmax = new CANNON.Plane(new CANNON.Vec3(0,-1,0));
-  var planeXmax = new CANNON.RigidBody(0, planeShapeXmax);
+  var planeXmax = new CANNON.RigidBody(0, planeShapeXmax,stone);
   planeXmax.setPosition(0,5,0);
   world.add(planeXmax);
 
   // Plane -y
   var planeShapeYmin = new CANNON.Plane(new CANNON.Vec3(1,0,0));
-  var planeYmin = new CANNON.RigidBody(0, planeShapeYmin);
+  var planeYmin = new CANNON.RigidBody(0, planeShapeYmin,stone);
   planeYmin.setPosition(-5,0,0);
   world.add(planeYmin);
 
   // Plane +y
   var planeShapeYmax = new CANNON.Plane(new CANNON.Vec3(-1,0,0));
-  var planeYmax = new CANNON.RigidBody(0, planeShapeYmax);
+  var planeYmax = new CANNON.RigidBody(0, planeShapeYmax, stone);
   planeYmax.setPosition(5,0,0);
   world.add(planeYmax);
 
@@ -149,8 +158,8 @@ function createScene( ) {
   // Sphere on plane
   var nx = 4;
   var ny = 4;
-  var nz = 4;
-  var rand = 0.005;
+  var nz = 8;
+  var rand = 0.01;
   var h = 0;
   var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
   for(var i=0; i<nx; i++){
@@ -166,11 +175,12 @@ function createScene( ) {
 	spheremesh.useQuaternion = true;
 
 	// Physics
-	var sphereBody = new CANNON.RigidBody(5,sphereShape);
+	var sphereBody = new CANNON.RigidBody(5,sphereShape,stone);
 	var pos = new CANNON.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
 				  j*2-ny*0.5 + (Math.random()-0.5)*rand,
-				  1+k*2+h+(i+j)*0.2);
+				  1+k*2.1+h+(i+j)*0.0);
 	sphereBody.setPosition(pos.x,pos.y,pos.z);
+	sphereBody.setVelocity(2,0,0);
 	
 	// Save initial positions for later
 	phys_bodies.push(sphereBody);
@@ -180,32 +190,6 @@ function createScene( ) {
       }
     }
   }
-  
-  /*
-  // Sphere on sphere
-  var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
-  spheremesh.position.set( 2, 0, 4 );
-  scene.add( spheremesh );
-  var pos = new CANNON.Vec3(2,0,5);
-  var sphere = new CANNON.Sphere(pos,1,5);
-  spheremesh.useQuaternion = true;
-  phys_bodies.push(sphere);
-  phys_visuals.push(spheremesh);
-  phys_startpositions.push(pos);
-  world.add(sphere);
-  
-  var spheremesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
-  spheremesh.position.set( 2, 0, 2 );
-  scene.add( spheremesh );
-  pos = new CANNON.Vec3(2,0,2);
-  var sphere = new CANNON.Sphere(pos,1,0);
-  spheremesh.useQuaternion = true;
-  phys_bodies.push(sphere);
-  phys_visuals.push(spheremesh);
-  phys_startpositions.push(pos);
-  world.add(sphere);
-*/
- 
 }
 var t = 0, newTime, delta;
 
@@ -225,12 +209,6 @@ function updatePhysics(){
     for(var i=0; i<phys_bodies.length; i++){
       phys_bodies[i].getPosition(phys_visuals[i].position);
       phys_bodies[i].getOrientation(phys_visuals[i].quaternion);
-      /*
-      phys_visuals[i].quaternion.x = phys_bodies[i].quaternion.x;
-      phys_visuals[i].quaternion.y = phys_bodies[i].quaternion.y;
-      phys_visuals[i].quaternion.z = phys_bodies[i].quaternion.z;
-      phys_visuals[i].quaternion.w = phys_bodies[i].quaternion.w;
-      */
     }
   }
 }

@@ -1,9 +1,12 @@
 /**
  * Rigid body base class
  * @class RigidBody
- * @param type
+ * @param mass
+ * @param shape
+ * @todo Motion state? Like dynamic, kinematic, static...
+ * @todo Viscous damping property
  */
-CANNON.RigidBody = function(mass,shape){
+CANNON.RigidBody = function(mass,shape,material){
   // Local variables
   this._position = new CANNON.Vec3();
   this._velocity = new CANNON.Vec3();
@@ -14,6 +17,9 @@ CANNON.RigidBody = function(mass,shape){
   this._mass = mass;
   this._shape = shape;
   this._inertia = shape.calculateLocalInertia(mass);
+  this._material = material;
+  this._linearDamping = 0.01;
+  this._angularDamping = 0.01;
 
   /// Reference to the world the body is living in
   this._world = null;
@@ -22,17 +28,44 @@ CANNON.RigidBody = function(mass,shape){
   this._id = -1;
 };
 
-/*
-CANNON.RigidBody.prototype.types = {
-  SPHERE:1,
-  PLANE:2,
-  BOX:4
+/**
+ * Get or set linear damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
+ * @param float d Optional. If not provided, current damping is returned.
+ * @return float
+ */
+CANNON.RigidBody.prototype.linearDamping = function(d){
+  if(d==undefined)
+    return this._linearDamping;
+  else {
+    d = Number(d);
+    if(!isNaN(d) && d>=0.0 && d<=1.0)
+      this._linearDamping = d;
+    else
+      throw "Damping must be a number between 0 and 1";
+  }
 };
-*/
+
+/**
+ * Get or set angular damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
+ * @param float d Optional. If not provided, current damping is returned.
+ * @return float
+ */
+CANNON.RigidBody.prototype.angularDamping = function(d){
+  if(d==undefined)
+    return this._angularDamping;
+  else {
+    d = Number(d);
+    if(!isNaN(d) && d>=0.0 && d<=1.0)
+      this._angularDamping = d;
+    else
+      throw "Damping must be a number between 0 and 1";
+  }
+};
 
 /**
  * Get/set mass. Note: When changing mass, you should change the inertia too.
  * @param float m
+ * @return float
  */
 CANNON.RigidBody.prototype.mass = function(m){
   if(m==undefined){
@@ -72,12 +105,16 @@ CANNON.RigidBody.prototype.shape = function(s){
 
 /**
  * Sets the center of mass position of the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setPosition = function(x,y,z){
   if(this._id!=-1){
     this._world.x[this._id] = x;
     this._world.y[this._id] = y;
     this._world.z[this._id] = z;
+    this._world.clearCollisionState(this);
   } else {
     this._position.x = x;
     this._position.y = y;
@@ -106,6 +143,10 @@ CANNON.RigidBody.prototype.getPosition = function(target){
 
 /**
  * Sets the orientation of the object
+ * @param float x
+ * @param float y
+ * @param float z
+ * @param float w
  */
 CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
   var q = new CANNON.Quaternion(x,y,z,w);
@@ -215,6 +256,9 @@ CANNON.RigidBody.prototype.getAngularvelocity = function(target){
 
 /**
  * Sets the force on the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setForce = function(x,y,z){
   if(this._id!=-1){
@@ -249,6 +293,9 @@ CANNON.RigidBody.prototype.getForce = function(target){
 
 /**
  * Sets the torque on the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setTorque = function(x,y,z){
   if(this._id!=-1){

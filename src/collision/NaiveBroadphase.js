@@ -1,6 +1,9 @@
 /**
  * Naive broadphase implementation, used in lack of better ones and for
  * comparisons in performance tests.
+ *
+ * The naive broadphase looks at all possible pairs without restriction,
+ * therefore it has complexity N^2 (which is really bad)
  */
 CANNON.NaiveBroadphase = function(){
   
@@ -34,7 +37,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
 
-      // Sphere-sphere
+      // --- Sphere-sphere ---
       if(type[i]==SPHERE && type[j]==SPHERE){
 	var r2 = (body[i]._shape.radius + body[j]._shape.radius);
 	if(Math.abs(x[i]-x[j]) < r2 && 
@@ -44,7 +47,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 
-	// Sphere-plane
+      // --- Sphere-plane ---
       } else if((type[i]==SPHERE && type[j]==PLANE) ||
 		(type[i]==PLANE &&  type[j]==SPHERE)){
 	var si = type[i]==SPHERE ? i : j;
@@ -61,7 +64,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	  pairs2.push(j);
 	}
 	
-	// Box-plane
+	// --- Box-plane ---
       } else if((type[i]==BOX && type[j]==PLANE) ||
 		(type[i]==PLANE &&  type[j]==BOX)){
 	var bi = type[i]==BOX   ? i : j;
@@ -76,6 +79,39 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	var boundingRadius = body[bi]._shape.halfExtents.norm();
 	var q = d - boundingRadius;
 	if(q<0.0){
+	  pairs1.push(i);
+	  pairs2.push(j);
+	}
+
+	// --- Box-box ---
+      } else if((type[i]==BOX && type[j]==BOX) ||
+		(type[i]==BOX && type[j]==BOX)){
+	// Rel. position
+	var r = new CANNON.Vec3(x[j]-x[i],
+				y[j]-y[i],
+				z[j]-z[i]);
+	var boundingRadius1 = body[i]._shape.halfExtents.norm();
+	var boundingRadius2 = body[j]._shape.halfExtents.norm();
+	if(r.norm()<(boundingRadius1+boundingRadius2)){
+	  pairs1.push(i);
+	  pairs2.push(j);
+	}
+
+	// --- box-sphere ---
+      } else if((type[i]==BOX && type[j]==SPHERE) ||
+		(type[i]==SPHERE && type[j]==BOX)){
+	// Rel. position
+	var r = new CANNON.Vec3(x[j]-x[i],
+				y[j]-y[i],
+				z[j]-z[i]);
+	if(type[i]==BOX){
+	  boundingRadius1 = body[i]._shape.halfExtents.norm();
+	  boundingRadius2 = body[j]._shape.radius;
+	} else {
+	  boundingRadius1 = body[j]._shape.halfExtents.norm();
+	  boundingRadius2 = body[i]._shape.radius;
+	}
+	if(r.norm()<(boundingRadius1+boundingRadius2)){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
