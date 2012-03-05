@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.3.4 - A lightweight 3D physics engine for the web
+ * cannon.js v0.3.6 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -90,11 +90,11 @@ CANNON.Demo.prototype.start = function(){
     // SCENE
     scene = new THREE.Scene();
     that._scene = scene;
-    scene.fog = new THREE.Fog( 0xffffff, 1000, FAR );
-    THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
+    scene.fog = new THREE.Fog( 0x222222, 1000, FAR );
+    //THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
 
     // LIGHTS
-    var ambient = new THREE.AmbientLight( 0x555555 );
+    var ambient = new THREE.AmbientLight( 0x222222 );
     scene.add( ambient );
 
     light = new THREE.SpotLight( 0xffffff );
@@ -233,9 +233,11 @@ CANNON.Demo.prototype._buildScene = function(n){
     that._phys_startpositions.pop();
     var mesh = that._phys_visuals.pop();
     that._scene.remove(mesh);
-    that._scene.removeObject(mesh);
+    //that._scene.removeObject(mesh);
   }
  
+  var materialColor = 0xdddddd;
+
   // Get new scene information
   that._scenes[n]({
       addVisual:function(body){
@@ -246,14 +248,14 @@ CANNON.Demo.prototype._buildScene = function(n){
 
 	case CANNON.Shape.types.SPHERE:
 	  var sphere_geometry = new THREE.SphereGeometry( 1, 16, 16);
-	  var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+	  var sphereMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
 	  THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
 	  mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
 	  break;
 
 	case CANNON.Shape.types.PLANE:
 	  var geometry = new THREE.PlaneGeometry( 100, 100 );
-	  var planeMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+	  var planeMaterial = new THREE.MeshBasicMaterial( { color: materialColor } );
 	  THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
 	  var submesh = new THREE.Object3D();
 	  var ground = new THREE.Mesh( geometry, planeMaterial );
@@ -265,7 +267,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 
 	case CANNON.Shape.types.BOX:
 	  var box_geometry = new THREE.CubeGeometry( body._shape.halfExtents.x*2, body._shape.halfExtents.y*2, body._shape.halfExtents.z*2 );
-	  var boxMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+	  var boxMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
 	  THREE.ColorUtils.adjustHSV( boxMaterial.color, 0, 0, 0.9 );
 	  mesh = new THREE.Mesh( box_geometry, boxMaterial );
 	  break;

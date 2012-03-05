@@ -1,6 +1,6 @@
 // Physics
 var world = new CANNON.World();
-world.gravity(new CANNON.Vec3(0,0,-1));
+world.gravity(new CANNON.Vec3(0,0,-10));
 var bp = new CANNON.NaiveBroadphase();
 world.broadphase(bp);
 world.iterations(5);
@@ -45,11 +45,11 @@ function init() {
  
   // SCENE
   scene = new THREE.Scene();
-  scene.fog = new THREE.Fog( 0xffffff, 1000, FAR );
-  THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
+  scene.fog = new THREE.Fog( 0x222222, 1000, FAR );
+  //THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
 
   // LIGHTS
-  var ambient = new THREE.AmbientLight( 0x555555 );
+  var ambient = new THREE.AmbientLight( 0x222222 );
   scene.add( ambient );
 
   light = new THREE.SpotLight( 0xffffff );
@@ -116,16 +116,16 @@ function createScene( ) {
   var groundBody = new CANNON.RigidBody(0,groundShape);
   world.add(groundBody);
 
-  var bx = 2;
-  var by = 2;
+  var bx = 1;
+  var by = 1;
   var bz = 1;
-  var box_geometry = new THREE.CubeGeometry( bx*2, by*2, bz*2 ); // extents, not half extents
+  var box_geometry = new THREE.CubeGeometry( bx*2, by*2, bz*2 );
   var boxMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
   THREE.ColorUtils.adjustHSV( boxMaterial.color, 0, 0, 0.9 );
 
   // Box on plane
-  var nx = 1;
-  var ny = 1;
+  var nx = 3;
+  var ny = 3;
   var nz = 1;
   var rand = 0.0;
   var h = 1;
@@ -144,8 +144,8 @@ function createScene( ) {
 
 	// Physics
 	var boxBody = new CANNON.RigidBody(5,boxShape);
-	var pos = new CANNON.Vec3(2*bx*i + (Math.random()-0.5)*rand,
-				  2*by*j + (Math.random()-0.5)*rand,
+	var pos = new CANNON.Vec3(3*bx*i + (Math.random()-0.5)*rand,
+				  3*by*j + (Math.random()-0.5)*rand,
 				  1+2*k*bz+h);
 	boxBody.setPosition(pos.x,pos.y,pos.z);
 	boxBody.setVelocity(0,0,1);
@@ -161,6 +161,7 @@ function createScene( ) {
   }
 }
 
+/*
 var sphere_geometry = new THREE.SphereGeometry( 1, 16, 16 );
 var sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff } );
 THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
@@ -184,6 +185,7 @@ phys_bodies.push(sphereBody);
 phys_visuals.push(spheremesh);
 phys_startpositions.push(pos);
 world.add(sphereBody);
+*/
 
 var t = 0, newTime, delta;
 

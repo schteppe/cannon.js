@@ -1105,6 +1105,18 @@ CANNON.World.prototype.step = function(dt){
     }
   }
 
+  // Apply damping
+  for(var i=0; i<world.numObjects(); i++){
+    var ld = 1.0 - this.body[i].linearDamping();
+    var ad = 1.0 - this.body[i].angularDamping();
+    vx[i] *= ld;
+    vy[i] *= ld;
+    vz[i] *= ld;
+    wx[i] *= ad;
+    wy[i] *= ad;
+    wz[i] *= ad;
+  }
+
   // Leap frog
   // vnew = v + h*f/m
   // xnew = x + h*vnew

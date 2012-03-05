@@ -55,11 +55,11 @@ function init() {
  
   // SCENE
   scene = new THREE.Scene();
-  scene.fog = new THREE.Fog( 0xffffff, 1000, FAR );
-  THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
+  scene.fog = new THREE.Fog( 0x222222, 1000, FAR );
+  //THREE.ColorUtils.adjustHSV( scene.fog.color, 0.02, -0.15, -0.65 );
 
   // LIGHTS
-  var ambient = new THREE.AmbientLight( 0x555555 );
+  var ambient = new THREE.AmbientLight( 0x222222 );
   scene.add( ambient );
 
   light = new THREE.SpotLight( 0xffffff );

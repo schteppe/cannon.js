@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.3.4 - A lightweight 3D physics engine for the web
+ * cannon.js v0.3.6 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -692,7 +692,8 @@ CANNON.Shape.types = {
  * @class RigidBody
  * @param mass
  * @param shape
- * @todo Motion state also? Like dynamic, kinematic, static...
+ * @todo Motion state? Like dynamic, kinematic, static...
+ * @todo Viscous damping property
  */
 CANNON.RigidBody = function(mass,shape,material){
   // Local variables
@@ -706,12 +707,48 @@ CANNON.RigidBody = function(mass,shape,material){
   this._shape = shape;
   this._inertia = shape.calculateLocalInertia(mass);
   this._material = material;
+  this._linearDamping = 0.01;
+  this._angularDamping = 0.01;
 
   /// Reference to the world the body is living in
   this._world = null;
 
   /// Equals -1 before added to the world. After adding, it is the world body index
   this._id = -1;
+};
+
+/**
+ * Get or set linear damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
+ * @param float d Optional. If not provided, current damping is returned.
+ * @return float
+ */
+CANNON.RigidBody.prototype.linearDamping = function(d){
+  if(d==undefined)
+    return this._linearDamping;
+  else {
+    d = Number(d);
+    if(!isNaN(d) && d>=0.0 && d<=1.0)
+      this._linearDamping = d;
+    else
+      throw "Damping must be a number between 0 and 1";
+  }
+};
+
+/**
+ * Get or set angular damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
+ * @param float d Optional. If not provided, current damping is returned.
+ * @return float
+ */
+CANNON.RigidBody.prototype.angularDamping = function(d){
+  if(d==undefined)
+    return this._angularDamping;
+  else {
+    d = Number(d);
+    if(!isNaN(d) && d>=0.0 && d<=1.0)
+      this._angularDamping = d;
+    else
+      throw "Damping must be a number between 0 and 1";
+  }
 };
 
 /**
@@ -2535,6 +2572,18 @@ CANNON.World.prototype.step = function(dt){
       wy[i] += this.solver.wylambda[i];
       wz[i] += this.solver.wzlambda[i];
     }
+  }
+
+  // Apply damping
+  for(var i=0; i<world.numObjects(); i++){
+    var ld = 1.0 - this.body[i].linearDamping();
+    var ad = 1.0 - this.body[i].angularDamping();
+    vx[i] *= ld;
+    vy[i] *= ld;
+    vz[i] *= ld;
+    wx[i] *= ad;
+    wy[i] *= ad;
+    wz[i] *= ad;
   }
 
   // Leap frog
