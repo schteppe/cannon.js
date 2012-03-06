@@ -33,6 +33,7 @@ CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
 CANNON.Shape.types = {
   SPHERE:1,
   PLANE:2,
-  BOX:4
+  BOX:4,
+  COMPOUND:8
 };
 
