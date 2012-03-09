@@ -71,3 +71,7 @@ CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
 
   return sides;
 };
+
+CANNON.Box.prototype.volume = function(){
+  return 2.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
+};

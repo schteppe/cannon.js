@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.3.6 - A lightweight 3D physics engine for the web
+ * cannon.js v0.3.7 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -669,7 +669,15 @@ CANNON.Shape.prototype.constructor = CANNON.Shape;
  * @return float
  */
 CANNON.Shape.prototype.boundingSphereRadius = function(){
-  throw "boundingSphereRadius not implemented for shape type "+this.type;
+  throw "boundingSphereRadius() not implemented for shape type "+this.type;
+};
+
+/**
+ * Get the volume of this shape
+ * @return float
+ */
+CANNON.Shape.prototype.volume = function(){
+  throw "volume() not implemented for shape type "+this.type;
 };
 
 /**
@@ -678,7 +686,28 @@ CANNON.Shape.prototype.boundingSphereRadius = function(){
  * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
  */
 CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
-  throw "calculateLocalInertia not implemented for shape type "+this.type;
+  throw "calculateLocalInertia() not implemented for shape type "+this.type;
+};
+
+/**
+ * Calculates inertia in a specified frame for this shape.
+ * @return Vec3
+ */
+CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
+  if(target==undefined)
+    target = new CANNON.Vec3();
+
+  // Compute inertia in the world frame
+  quat.normalize();
+  var localInertia = this.calculateLocalInertia(mass);
+
+  // @todo Is this rotation OK? Check!
+  var worldInertia = quat.vmult(localInertia);
+  target.x = Math.abs(worldInertia.x);
+  target.y = Math.abs(worldInertia.y);
+  target.z = Math.abs(worldInertia.z);
+  return target;
+  //throw "calculateInertia() not implemented for shape type "+this.type;
 };
 
 CANNON.Shape.types = {
@@ -1039,7 +1068,10 @@ CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
   target.z = I;
   return target;
 };
-/**
+
+CANNON.Sphere.prototype.volume = function(){
+  return 4.0 * Math.PI * this.radius / 3.0;
+};/**
  * Box
  * @param Vec3 halfExtents
  * @author schteppe
@@ -1111,6 +1143,10 @@ CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
     quat.vmult(sides[i],sides[i]);
 
   return sides;
+};
+
+CANNON.Box.prototype.volume = function(){
+  return 2.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
 };/**
  * @class Plane
  * @param Vec3 normal
@@ -1130,7 +1166,10 @@ CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
   return target;
 };
-/**
+
+CANNON.Plane.prototype.volume = function(){
+  return Infinity; // The plane is infinite...
+};/**
  * Compound shape
  * @author schteppe - https://github.com/schteppe
  */
@@ -1157,6 +1196,13 @@ CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
   this.childOrientations.push(orientation);
 };
 
+CANNON.Compound.prototype.volume = function(){
+  var r = 0.0;
+  for(var i = 0; i<this.childShapes.length; i++)
+    r += this.childShapes[i].volume();
+  return r;
+};
+
 /**
  * Calculate the inertia in the local frame.
  * @todo Implement me! Loop over all sub bodies and add to inertia.
@@ -1164,22 +1210,30 @@ CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
  */
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
-  
+
+  // Calculate the total volume, we will spread out this objects' mass on the sub shapes
+  var V = this.volume();
+
   for(var i = 0; i<this.childShapes.length; i++){
+    // Get child information
     var b = this.childShapes[i];
     var o = this.childOffsets[i];
     var q = this.childOrientations[i];
-    // @todo 
-    // 1. Get the child inertia
-    // 2. Transform the inertia so it's relative to this local frame
-    // 3. Add its inertia using the parallell axis theorem, i.e.
-    //    I += I_child;
-    //    I += m_child * r^2
-    // Question: how do we know the weight of the individual shapes? Split according to volume perhaps?
+    var m = b.volume() / V * mass;
+
+    // Get the child inertia, transformed relative to local frame
+    var inertia = b.calculateTransformedInertia(m,q);
+
+    // Add its inertia using the parallel axis theorem, i.e.
+    // I += I_child;    
+    // I += m_child * r^2
+
+    target.vadd(inertia,target);
+    var mr2 = new CANNON.Vec3(m*o.x*o.x,
+			      m*o.y*o.y,
+			      m*o.z*o.z);
+    target.vadd(mr2,target);
   }
-
-  throw "calculateLocalInertia not implemented for Compound shape!";
-
   return target;
 };
 

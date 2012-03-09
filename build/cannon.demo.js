@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.3.6 - A lightweight 3D physics engine for the web
+ * cannon.js v0.3.7 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 

@@ -18,7 +18,15 @@ CANNON.Shape.prototype.constructor = CANNON.Shape;
  * @return float
  */
 CANNON.Shape.prototype.boundingSphereRadius = function(){
-  throw "boundingSphereRadius not implemented for shape type "+this.type;
+  throw "boundingSphereRadius() not implemented for shape type "+this.type;
+};
+
+/**
+ * Get the volume of this shape
+ * @return float
+ */
+CANNON.Shape.prototype.volume = function(){
+  throw "volume() not implemented for shape type "+this.type;
 };
 
 /**
@@ -27,7 +35,28 @@ CANNON.Shape.prototype.boundingSphereRadius = function(){
  * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
  */
 CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
-  throw "calculateLocalInertia not implemented for shape type "+this.type;
+  throw "calculateLocalInertia() not implemented for shape type "+this.type;
+};
+
+/**
+ * Calculates inertia in a specified frame for this shape.
+ * @return Vec3
+ */
+CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
+  if(target==undefined)
+    target = new CANNON.Vec3();
+
+  // Compute inertia in the world frame
+  quat.normalize();
+  var localInertia = this.calculateLocalInertia(mass);
+
+  // @todo Is this rotation OK? Check!
+  var worldInertia = quat.vmult(localInertia);
+  target.x = Math.abs(worldInertia.x);
+  target.y = Math.abs(worldInertia.y);
+  target.z = Math.abs(worldInertia.z);
+  return target;
+  //throw "calculateInertia() not implemented for shape type "+this.type;
 };
 
 CANNON.Shape.types = {
