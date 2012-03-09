@@ -17,3 +17,7 @@ CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
   return target;
 };
+
+CANNON.Plane.prototype.volume = function(){
+  return Infinity; // The plane is infinite...
+};

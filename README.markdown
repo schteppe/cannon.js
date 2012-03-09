@@ -23,12 +23,14 @@ var bp = new CANNON.BroadPhase();
 world.broadphase(bp);
     
 // Create a plane
-var plane = new CANNON.Plane(new CANNON.Vec3(0,0,0), new CANNON.Vec3(0,0,1));
-world.add(plane);
+var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+var groundBody = new CANNON.RigidBody(0,groundShape);
+world.add(groundBody);
     
 // Create a sphere
-var sphere = new CANNON.Sphere(new CANNON.Vec3(0,0,2),1,5);
-world.add(sphere);
+var sphereShape = new CANNON.Sphere(1);
+var sphereBody = new CANNON.RigidBody(5,sphereShape);
+world.add(sphereBody);
     
 // Step the simulation
 setInterval(function(){
@@ -55,6 +57,10 @@ setInterval(function(){
 ## Build
 
 When a new version of the software has been made, a new build needs to be made. Run <code>cd cannon.js/utils/; ./build.py;</code> to do this. The version number will be read from <code>cannon.js/VERSION</code> and put into the built files, so update VERSION first. The software versioning should follow the Semantic Version Specification: http://semver.org/
+
+## Documentation
+
+The documentation is made using Doxygen-style blocks before each class, method and property.
 
 ## Examples
 
