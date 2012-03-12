@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.3.7 - A lightweight 3D physics engine for the web
+ * cannon.js v0.3.8 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -84,9 +84,10 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   var n = world.numObjects();
 
   // Local fast access
-  var SPHERE = CANNON.Shape.types.SPHERE;
-  var PLANE =  CANNON.Shape.types.PLANE;
-  var BOX =    CANNON.Shape.types.BOX;
+  var SPHERE =   CANNON.Shape.types.SPHERE;
+  var PLANE =    CANNON.Shape.types.PLANE;
+  var BOX =      CANNON.Shape.types.BOX;
+  var COMPOUND = CANNON.Shape.types.COMPOUND;
   var x = world.x;
   var y = world.y;
   var z = world.z;
@@ -97,81 +98,47 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
 
-      // --- Sphere-sphere ---
-      if(type[i]==SPHERE && type[j]==SPHERE){
-	var r2 = (body[i]._shape.radius + body[j]._shape.radius);
-	if(Math.abs(x[i]-x[j]) < r2 && 
-	   Math.abs(y[i]-y[j]) < r2 && 
-	   Math.abs(z[i]-z[j]) < r2){
+      // --- Box / sphere / compound collision ---
+      if((type[i]==BOX      && type[j]==BOX) ||
+	 (type[i]==BOX      && type[j]==COMPOUND) ||
+	 (type[i]==BOX      && type[j]==SPHERE) ||
+	 (type[i]==SPHERE   && type[j]==BOX) ||
+	 (type[i]==SPHERE   && type[j]==SPHERE) ||
+	 (type[i]==SPHERE   && type[j]==COMPOUND) ||
+	 (type[i]==COMPOUND && type[j]==COMPOUND) ||
+	 (type[i]==COMPOUND && type[j]==SPHERE) ||
+	 (type[i]==COMPOUND && type[j]==BOX)){
+	// Rel. position
+	var r = new CANNON.Vec3(x[j]-x[i],
+				y[j]-y[i],
+				z[j]-z[i]);
+	var boundingRadius1 = body[i]._shape.boundingSphereRadius();
+	var boundingRadius2 = body[j]._shape.boundingSphereRadius();
+	if(r.norm()<(boundingRadius1+boundingRadius2)){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
 
-      // --- Sphere-plane ---
+      // --- Sphere/box/compound versus plane ---
       } else if((type[i]==SPHERE && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==SPHERE)){
-	var si = type[i]==SPHERE ? i : j;
-	var pi = type[i]==PLANE ? i : j;
-	
-	// Rel. position
-	var r = new CANNON.Vec3(x[si]-x[pi],
-				y[si]-y[pi],
-				z[si]-z[pi]);
-	var normal = body[pi]._shape.normal;
-	var q = r.dot(normal)-body[si]._shape.radius;
-	if(q<0.0){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
-	
-	// --- Box-plane ---
-      } else if((type[i]==BOX && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==BOX)){
-	var bi = type[i]==BOX   ? i : j;
-	var pi = type[i]==PLANE ? i : j;
-	
-	// Rel. position
-	var r = new CANNON.Vec3(x[bi]-x[pi],
-				y[bi]-y[pi],
-				z[bi]-z[pi]);
-	var normal = body[pi]._shape.normal;
-	var d = r.dot(normal); // Distance from box center to plane
-	var boundingRadius = body[bi]._shape.halfExtents.norm();
-	var q = d - boundingRadius;
-	if(q<0.0){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
+		(type[i]==PLANE &&  type[j]==SPHERE) ||
 
-	// --- Box-box ---
-      } else if((type[i]==BOX && type[j]==BOX) ||
-		(type[i]==BOX && type[j]==BOX)){
-	// Rel. position
-	var r = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
-	var boundingRadius1 = body[i]._shape.halfExtents.norm();
-	var boundingRadius2 = body[j]._shape.halfExtents.norm();
-	if(r.norm()<(boundingRadius1+boundingRadius2)){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
+		(type[i]==BOX && type[j]==PLANE) ||
+		(type[i]==PLANE &&  type[j]==BOX) ||
 
-	// --- box-sphere ---
-      } else if((type[i]==BOX && type[j]==SPHERE) ||
-		(type[i]==SPHERE && type[j]==BOX)){
+		(type[i]==COMPOUND && type[j]==PLANE) ||
+		(type[i]==PLANE &&  type[j]==COMPOUND)){
+
+	var pi = type[i]==PLANE ? i : j; // Plane
+	var oi = type[i]!=PLANE ? i : j; // Other
+	
 	// Rel. position
-	var r = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
-	if(type[i]==BOX){
-	  boundingRadius1 = body[i]._shape.halfExtents.norm();
-	  boundingRadius2 = body[j]._shape.radius;
-	} else {
-	  boundingRadius1 = body[j]._shape.halfExtents.norm();
-	  boundingRadius2 = body[i]._shape.radius;
-	}
-	if(r.norm()<(boundingRadius1+boundingRadius2)){
+	var r = new CANNON.Vec3(x[oi]-x[pi],
+				y[oi]-y[pi],
+				z[oi]-z[pi]);
+	var normal = body[pi]._shape.normal;
+	var q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
+	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
@@ -1071,6 +1038,10 @@ CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
 
 CANNON.Sphere.prototype.volume = function(){
   return 4.0 * Math.PI * this.radius / 3.0;
+};
+
+CANNON.Sphere.prototype.boundingSphereRadius = function(){
+  return this.radius;
 };/**
  * Box
  * @param Vec3 halfExtents
@@ -1147,6 +1118,10 @@ CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
 
 CANNON.Box.prototype.volume = function(){
   return 2.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
+};
+
+CANNON.Box.prototype.boundingSphereRadius = function(){
+  return this.halfExtents.norm();
 };/**
  * @class Plane
  * @param Vec3 normal
@@ -1191,6 +1166,8 @@ CANNON.Compound.prototype.constructor = CANNON.Compound;
  * @param Quaternion orientation
  */
 CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
+  offset = offset || new CANNON.Vec3(0,0,0);
+  orientation = orientation || new CANNON.Quaternion(1,0,0,0);
   this.childShapes.push(shape);
   this.childOffsets.push(offset);
   this.childOrientations.push(orientation);
@@ -1205,7 +1182,6 @@ CANNON.Compound.prototype.volume = function(){
 
 /**
  * Calculate the inertia in the local frame.
- * @todo Implement me! Loop over all sub bodies and add to inertia.
  * @return Vec3
  */
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
@@ -1240,7 +1216,7 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
 CANNON.Compound.prototype.boundingSphereRadius = function(){
   var r = 0.0;
   for(var i = 0; i<this.childShapes.length; i++){
-    var candidate = this.childOffsets[i] + cr;
+    var candidate = this.childOffsets[i].norm() + this.childShapes[i].boundingSphereRadius();
     if(r < candidate)
       r = candidate;
   }
@@ -2056,6 +2032,7 @@ CANNON.World.prototype.step = function(dt){
   var SPHERE = CANNON.Shape.types.SPHERE;
   var PLANE = CANNON.Shape.types.PLANE;
   var BOX = CANNON.Shape.types.BOX;
+  var COMPOUND = CANNON.Shape.types.COMPOUND;
   var types = world.type;
   var x = world.x;
   var y = world.y;
@@ -2343,6 +2320,11 @@ CANNON.World.prototype.step = function(dt){
 			   j);
 	}
       }
+    } else if((types[i]==COMPOUND && types[j]==PLANE) ||
+	      (types[i]==PLANE && types[j]==COMPOUND)){
+
+      throw "Compound-plane collision is not implemented yet...";
+
     } else if((types[i]==BOX && types[j]==PLANE) || 
 	      (types[i]==PLANE && types[j]==BOX)){
       

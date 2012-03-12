@@ -471,6 +471,7 @@ CANNON.World.prototype.step = function(dt){
   var SPHERE = CANNON.Shape.types.SPHERE;
   var PLANE = CANNON.Shape.types.PLANE;
   var BOX = CANNON.Shape.types.BOX;
+  var COMPOUND = CANNON.Shape.types.COMPOUND;
   var types = world.type;
   var x = world.x;
   var y = world.y;
@@ -758,6 +759,11 @@ CANNON.World.prototype.step = function(dt){
 			   j);
 	}
       }
+    } else if((types[i]==COMPOUND && types[j]==PLANE) ||
+	      (types[i]==PLANE && types[j]==COMPOUND)){
+
+      throw "Compound-plane collision is not implemented yet...";
+
     } else if((types[i]==BOX && types[j]==PLANE) || 
 	      (types[i]==PLANE && types[j]==BOX)){
       
