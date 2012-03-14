@@ -74,9 +74,9 @@ CANNON.Vec3.prototype.vsub = function(v,target){
     target.z -= v.z;
   } else {
     return new CANNON.Vec3(this.x-v.x,
-			    this.y-v.y,
-			    this.z-v.z);
-  }  
+			   this.y-v.y,
+			   this.z-v.z);
+  }
 };
 
 /**

@@ -408,9 +408,9 @@ CANNON.Vec3.prototype.vsub = function(v,target){
     target.z -= v.z;
   } else {
     return new CANNON.Vec3(this.x-v.x,
-			    this.y-v.y,
-			    this.z-v.z);
-  }  
+			   this.y-v.y,
+			   this.z-v.z);
+  }
 };
 
 /**
@@ -2116,8 +2116,180 @@ CANNON.World.prototype.step = function(dt){
     fz[i] += world.gravity.z * world.mass[i];
   }
 
+  // Reset contact solver
   this.solver.reset(world.numObjects());
   var cid = new Int16Array(p1.length); // For saving constraint refs
+
+  /**
+   * Near phase calculation, get the contact point, normal, etc.
+   * @param array result The result one will get back with all the contact point information
+   * @param Shape si Colliding shape
+   * @param Shape sj
+   * @param Vec3 xi Position of the center of mass
+   * @param Vec3 xj
+   * @param Quaternion qi Rotation around the center of mass
+   * @param Quaternion qj
+   * @todo All collision cases
+   * @todo Replace the current nearphase with this function.
+   */
+  function nearPhase(result,si,sj,xi,xj,qi,qj){
+    var swapped=false;
+    if(si.type>sj.type){
+      var temp;
+      temp=sj;   sj=si;   si=temp;
+      temp=xj;   xj=xi;   xi=temp;
+      temp=qj;   qj=qi;   qi=temp;
+      swapped = true;
+    }
+
+    /**
+     * Make a contact object.
+     * @return object
+     */
+    function makeResult(){
+      return {
+	  ri:new CANNON.Vec3(), // Vector from body i center to contact point
+	  rj:new CANNON.Vec3(), // Vector from body j center to contact point
+	  ni:new CANNON.Vec3()  // Contact normal protruding body i
+	};
+    }
+
+    /**
+     * Swaps the body references in the contact
+     * @param object r
+     */
+    function swapResult(r){
+      var temp;
+      temp = r.ri; r.ri = r.rj; r.rj = temp;
+      temp = r.rj; r.rj = r.ri; r.ri = temp;
+      r.ni.negate();
+    }
+
+    /**
+     * Go recursive for compound shapes
+     * @param Shape si
+     * @param CompoundShape sj
+     */
+    function recurseCompound(result,si,sj,xi,xj,qi,qj){
+      for(var i=0; i<sj.childShapes.length; i++){
+	var r = [];
+	nearPhase(r,
+		  si,
+		  sj.childShapes[i],
+		  xi,
+		  xj.vadd(sj.childOffsets[i]), // Transform the shape to its local frame
+		  qi,
+		  qj.mult(sj.childOrientations[i]));
+	for(var j=0; j<r.length; j++)
+	  result.push(r[j]); // Do we have to transform back?
+      }
+    }
+
+    if(si.type==CANNON.Shape.types.SPHERE){
+      if(sj.type==CANNON.Shape.types.SPHERE){ // sphere-sphere
+
+	// We will have one contact in this case
+	var r = makeResult();
+
+	// Contact normal
+	xj.vsub(xi,r.ni);
+	r.ni.normalize();
+
+	// Contact point locations
+	r.ni.copy(r.ri);
+	r.ni.copy(r.rj);
+	r.ri.mult(si.radius,r.ri);
+	r.rj.mult(sj.radius,r.rj);
+
+      } else if(sj.type==CANNON.Shape.types.PLANE){ // sphere-plane
+
+	// We will have one contact in this case
+	var r = makeResult();
+
+	// Contact normal
+	sj.normal.copy(r.ni);
+	r.ni.negate(); // body i is the sphere, flip normal
+	r.ni.normalize();
+
+	// Vector from sphere center to contact point
+	r.ni.mult(si.radius,r.ri);
+
+	// Project down shpere on plane
+	var point_on_plane_to_sphere = xi.vsub(xj);
+	var plane_to_sphere = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
+	var xp = xi.vsub(plane_to_sphere); // The sphere position projected to plane
+	xp.vsub(plane_to_sphere,r.rj);
+	result.push(r);
+	
+      } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
+	// TODO
+	throw "sphere-box collision not implemented yet..";
+	
+      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj);
+      }
+      
+    } else if(si.type==CANNON.Shape.types.PLANE){
+      
+      if(sj.type==CANNON.Shape.types.PLANE){
+	throw "Plane-plane collision... wait what?";
+	
+      } else if(sj.type==CANNON.Shape.types.BOX){
+
+	// Collision normal
+	var n = si.normal.copy();
+
+	// Loop over corners
+	var numcontacts = 0;
+	var corners = sj.getCorners();
+	for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
+	  var r = makeResult();
+	  corners[idx].copy(r.rj);
+
+	  // Transform corner into the world frame
+	  quat.vmult(r.rj,r.rj);
+
+	  // Project down corner to plane to get xj
+	  var point_on_plane_to_corner = xj.vadd(r.rj.mult(0.5)).vsub(xi);
+	  var plane_to_corner = n.mult(n.dot(point_on_plane_to_corner));
+	  xi.vsub(plane_to_corner,r.ri);
+
+	  // Set contact normal
+	  n.copy(r.ni);
+
+	  // Add contact
+	  result.push(r);
+	}
+	
+      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj);
+      }
+      
+    } else if(si.type==CANNON.Shape.types.BOX){
+      
+      if(sj.type==CANNON.Shape.types.BOX){ // box-box
+	throw "box-box collision not implemented yet";
+      }
+      
+      if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj);
+	
+      }
+      
+    } else if(si.type==CANNON.Shape.types.COMPOUND){
+      
+      if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj);
+	
+      }
+    }
+    
+    // Swap back if we swapped bodies in the beginning
+    for(var i=0; swapped && i<result.length; i++)
+      swapResult(result[i]);
+  }
+
+  // Loop over all collisions
   for(var k=0; k<p1.length; k++){
 
     // Get current collision indeces
