@@ -6,7 +6,7 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 
 ## Features
 
-* Lightweight - less than 40Kb compressed. For comparison: [ammo.js](https://github.com/kripken/ammo.js/) uses 1.12Mb when compressed.
+* Lightweight - less than 50Kb compressed. For comparison: [ammo.js](https://github.com/kripken/ammo.js/) uses 1.12Mb when compressed.
 * Supports solid spheres and static planes at the moment - soon also boxes
 * 100% open source JavaScript, written from scratch
 * Uses typed arrays for [fast number crunching](http://granular.cs.umu.se/browserphysics/?p=729)
