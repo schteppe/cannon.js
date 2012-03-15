@@ -339,7 +339,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 	  mesh.useQuaternion = true;
 	}
       },
-	setWorld:function(w){
+      setWorld:function(w){
 	that._world = w;
       }
     });

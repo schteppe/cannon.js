@@ -661,9 +661,80 @@ CANNON.World.prototype.step = function(dt){
 	result.push(r);
 	
       } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
-	// TODO
-	throw "sphere-box collision not implemented yet..";
-	
+
+	// we refer to the box as body j
+	var xixj =  xj.vsub(xi);
+	var sides = sj.getSideNormals(true,qi);
+	var R =     si.radius;
+	var penetrating_sides = [];
+
+	for(var idx=0; idx<sides.length && penetrating_sides.length<=3; idx++){ // Max 3 penetrating sides
+	  // Need vector from side center to sphere center, r
+	  var ns = sides[idx].copy();
+	  var h = ns.norm();
+	  var r = xixj.vsub(ns);
+	  ns.normalize();
+	  var dot = ns.dot(r);
+	  if(dot<h+R && dot>0)
+	    penetrating_sides.push(idx);
+	}
+
+	// Identify collision type
+	if(penetrating_sides.length==1){
+	  var res = makeResult();
+	  // "Flat" collision against one side, normal is the side normal
+	  var axis = penetrating_sides[0];
+	  var h = sides[axis];
+	  res.ni = h.copy();
+	  res.ni.normalize();
+	  var r = xj.vsub(xi.vadd(h)); // center of box side to center of sphere
+	  var t1 = sides[(axis+1)%3];
+	  var t2 = sides[(axis+2)%3];
+	  t1.normalize();
+	  t2.normalize();
+	  res.ri = h.vsub(t1.mult(r.dot(t1))).vsub(t2.mult(r.dot(t2)));
+	  res.rj = res.ni.copy();
+	  res.rj.normalize();
+	  res.rj.mult(-R,res.rj);
+	  result.push(res);
+
+	} else if(penetrating_sides.length==2){
+	  // Contact with edge
+	  // normal is the edge-sphere unit vector, orthogonal to the edge
+	  // Warning: Here be dragons!
+	  var res = makeResult();
+	  var axis1 = penetrating_sides[0];
+	  var axis2 = penetrating_sides[1];
+	  var edgeCenter = sides[axis1].vadd(sides[axis2]);
+	  var edgeTangent = sides[axis1].cross(sides[axis2]);
+	  edgeTangent.normalize();
+	  var r = xj.vsub(edgeCenter.vadd(xi));
+	  res.ri = edgeCenter.vadd(edgeTangent.mult(r.dot(edgeTangent)));
+	  res.rj = xi.vadd(res.ri).vsub(xj);
+	  res.rj.normalize();
+	  res.rj.mult(R);
+	  res.ni = res.rj.copy();
+	  res.ni.negate(res.ni);
+	  res.ni.normalize();
+	  result.push(res);
+
+	} else if(penetrating_sides.length==3){
+	  // Corner collision
+	  var res = makeResult();
+	  var s1 = sides[penetrating_sides[0]];
+	  var s2 = sides[penetrating_sides[1]];
+	  var s3 = sides[penetrating_sides[2]];
+	  var corner = s1.vadd(s2).vadd(s3);
+	  var ri = corner;
+	  res.ni = corner.vadd(xi).vsub(xj);
+	  res.ni.normalize();
+	  res.rj = res.ni.mult(-R);
+	  result.push(res);
+
+	} else {
+	  // No contact...
+	}
+
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj);
       }
