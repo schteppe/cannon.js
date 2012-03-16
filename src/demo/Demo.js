@@ -8,17 +8,19 @@ CANNON.Demo = function(){
   this._scenes = [];
   this.paused = false;
   this.timestep = 1.0/60.0;
+  this.shadowsOn = true;
 };
 
 /**
  * Add a scene to the demo app
+ * @param function initfunc
  */
 CANNON.Demo.prototype.addScene = function(initfunc){
   this._scenes.push(initfunc);
 };
 
 /**
- * When all scenes have been added, run this
+ * When all scenes have been added, run this to launch the Demo app.
  */
 CANNON.Demo.prototype.start = function(){
 
@@ -27,16 +29,16 @@ CANNON.Demo.prototype.start = function(){
   if ( ! Detector.webgl )
     Detector.addGetWebGLMessage();
   
-  var SHADOW_MAP_WIDTH = 1024, SHADOW_MAP_HEIGHT = 1024;
+  this.SHADOW_MAP_WIDTH = 1024;
+  this.SHADOW_MAP_HEIGHT = 1024;
   var MARGIN = 0;
-  var SCREEN_WIDTH = window.innerWidth;
-  var SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
+  this.SCREEN_WIDTH = window.innerWidth;
+  this.SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
   var camera, controls, scene, renderer;
   var container, stats;
-  var NEAR = 5, FAR = 5000;
+  var NEAR = 5, FAR = 2000;
   var sceneHUD, cameraOrtho, hudMaterial;
   var light;
-  var shadowsOn = false;
 
   var mouseX = 0, mouseY = 0;
   
@@ -53,7 +55,7 @@ CANNON.Demo.prototype.start = function(){
     
     // SCENE CAMERA
 
-    camera = new THREE.PerspectiveCamera( 24, SCREEN_WIDTH / SCREEN_HEIGHT, NEAR, FAR );
+    camera = new THREE.PerspectiveCamera( 24, that.SCREEN_WIDTH / that.SCREEN_HEIGHT, NEAR, FAR );
     camera.up.set(0,0,1);
     camera.position.x = 0;
     camera.position.y = 30;
@@ -70,10 +72,20 @@ CANNON.Demo.prototype.start = function(){
     scene.add( ambient );
 
     light = new THREE.SpotLight( 0xffffff );
-    light.position.set( 0, 50, 150 );
+    light.position.set( 40, 40, 50 );
     light.target.position.set( 0, 0, 0 );
-    if(shadowsOn)
+    if(that.shadowsOn){
       light.castShadow = true;
+
+      light.shadowCameraNear = 1;
+      light.shadowCameraFar = camera.far;
+      light.shadowCameraFov = 30;
+    
+      light.shadowMapBias = 0.0039;
+      light.shadowMapDarkness = 0.5;
+      light.shadowMapWidth = that.SHADOW_MAP_WIDTH;
+      light.shadowMapHeight = that.SHADOW_MAP_HEIGHT;
+    }
     scene.add( light );
     scene.add( camera );
 
@@ -82,7 +94,7 @@ CANNON.Demo.prototype.start = function(){
     // RENDERER
     renderer = new THREE.WebGLRenderer( { clearColor: 0x000000, clearAlpha: 1, antialias: false } );
     that._renderer = renderer;
-    renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+    renderer.setSize( that.SCREEN_WIDTH, that.SCREEN_HEIGHT );
     renderer.domElement.style.position = "relative";
     renderer.domElement.style.top = MARGIN + 'px';
     container.appendChild( renderer.domElement );
@@ -92,16 +104,7 @@ CANNON.Demo.prototype.start = function(){
     renderer.setClearColor( scene.fog.color, 1 );
     renderer.autoClear = false;
 
-    if(shadowsOn){
-      renderer.shadowCameraNear = 0.1;
-      renderer.shadowCameraFar = camera.far;
-      renderer.shadowCameraFov = 25;
-    
-      renderer.shadowMapBias = 0.0039;
-      renderer.shadowMapDarkness = 0.5;
-      renderer.shadowMapWidth = SHADOW_MAP_WIDTH;
-      renderer.shadowMapHeight = SHADOW_MAP_HEIGHT;
-    
+    if(that.shadowsOn){
       renderer.shadowMapEnabled = true;
       renderer.shadowMapSoft = true;
     }
@@ -194,6 +197,11 @@ CANNON.Demo.prototype.start = function(){
     });
 };
 
+/**
+ * Build a scene.
+ * @private
+ * @param int n
+ */
 CANNON.Demo.prototype._buildScene = function(n){
   
   var that = this;
@@ -210,6 +218,7 @@ CANNON.Demo.prototype._buildScene = function(n){
  
   var materialColor = 0xdddddd;
 
+  // @todo: use this func in the addVisual() function
   function shape2mesh(shape){
     var mesh;
     switch(shape.type){
@@ -226,6 +235,12 @@ CANNON.Demo.prototype._buildScene = function(n){
       var planeMaterial = new THREE.MeshBasicMaterial( { color: materialColor } );
       THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
       var submesh = new THREE.Object3D();
+
+      if(that.shadowsOn){
+	submesh.castShadow = true;
+	submesh.receiveShadow = true;
+      }
+
       var ground = new THREE.Mesh( geometry, planeMaterial );
       ground.scale.set( 100, 100, 100 );
       ground.rotation.x = Math.PI;
@@ -258,6 +273,14 @@ CANNON.Demo.prototype._buildScene = function(n){
     default:
       throw "Visual type not recognized: "+shape.type;
     }
+
+    if(that.shadowsOn && shape.type!=CANNON.Shape.types.BOX)
+      mesh.receiveShadow = true;
+    if(that.shadowsOn)
+      mesh.castShadow = true;
+
+    console.log(mesh);
+
     return mesh;
   }
 
@@ -283,6 +306,12 @@ CANNON.Demo.prototype._buildScene = function(n){
 	  THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
 	  var submesh = new THREE.Object3D();
 	  var ground = new THREE.Mesh( geometry, planeMaterial );
+	  if(that.shadowsOn){
+	    submesh.castShadow = true;
+	    submesh.receiveShadow = true;
+	    ground.castShadow = true;
+	    ground.receiveShadow = true;
+	  }
 	  ground.scale.set( 100, 100, 100 );
 	  ground.rotation.x = Math.PI;
 	  mesh = new THREE.Object3D();
@@ -329,9 +358,16 @@ CANNON.Demo.prototype._buildScene = function(n){
 	}
 
 	if(mesh) {
+
+	  if(that.shadowsOn){
+	    mesh.castShadow = true;
+	    mesh.receiveShadow = true;
+	  }
+	  if(body._shape.type==CANNON.Shape.types.BOX)
+	    mesh.receiveShadow = false;
+
 	  // Add body
 	  that._phys_bodies.push(body);
-
 	  that._phys_visuals.push(mesh);
 	  var pos = new CANNON.Vec3();
 	  body.getPosition(pos);
