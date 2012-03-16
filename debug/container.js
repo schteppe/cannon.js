@@ -1,19 +1,34 @@
 var demo = new CANNON.Demo();
+var nx=4, ny=4;
 demo.addScene(function(app){
-    createContainer(app,4,4,4);
+    createContainer(app,nx,ny,4);
   });
 
 demo.addScene(function(app){
-    createContainer(app,4,4,8);
+    createContainer(app,nx,ny,8);
   });
 
 demo.addScene(function(app){
-    createContainer(app,4,4,15);
+    createContainer(app,nx,ny,15);
+  });
+
+demo.addScene(function(app){
+    createContainer(app,nx,ny,20);
+  });
+
+demo.addScene(function(app){
+    createContainer(app,nx,ny,25);
+  });
+
+demo.addScene(function(app){
+    createContainer(app,nx,ny,30);
   });
 
 demo.start();
 
 function createContainer(app,nx,ny,nz){
+
+  console.log((nx*ny*nz)+" spheres");
 
   // Create world
   var world = new CANNON.World();

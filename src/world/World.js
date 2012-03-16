@@ -152,14 +152,15 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
   this.vx[i] +=  J.x * imi - (this.vx[j] - ui.x);
   this.vy[i] +=  J.y * imi - (this.vy[j] - ui.y);
   this.vz[i] +=  J.z * imi - (this.vz[j] - ui.z);
-  this.vx[j] -=  J.x * imj - (this.vx[i] - ui.x);
-  this.vy[j] -=  J.y * imj - (this.vy[i] - ui.y);
-  this.vz[j] -=  J.z * imj - (this.vz[i] - ui.z);
+  this.vx[j] -=  J.x * imj + (this.vx[i] + ui.x);
+  this.vy[j] -=  J.y * imj + (this.vy[i] + ui.y);
+  this.vz[j] -=  J.z * imj + (this.vz[i] + ui.z);
 
   var cr = ri.cross(J);
   var wadd = cr.mult(1.0/this.inertiax[i]);
 
   /*
+  // Add rotational impulses
   this.wx[i] += wadd.x;
   this.wy[i] += wadd.y;
   this.wz[i] += wadd.z;
@@ -869,7 +870,7 @@ CANNON.World.prototype.step = function(dt){
 	var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
 	var v_contact = w_sphere.cross(rsi);
 	var u = v_sphere;//.vadd(w_sphere.cross(rsi));
-
+	/*
 	// Which collision state?
 	if(lastCollisionState==0){ // No contact last timestep -> impulse
 
@@ -878,6 +879,7 @@ CANNON.World.prototype.step = function(dt){
 	  this._addImpulse(si,pi,rsi,rj,u,n,mu_s,e);
 
 	} else if(lastCollisionState==1){ // Last contact was also overlapping - contact
+	*/
 	  // --- Solve for contacts ---
 	  var iM = world.invm[si];
 	  var iI = world.inertiax[si] > 0 ? 1.0/world.inertiax[si] : 0; // Sphere - same for all dims
@@ -915,7 +917,7 @@ CANNON.World.prototype.step = function(dt){
 			   'inf',
 			   si,
 			   pi);
-	}
+	  /*}*/
       }
 
     } else if(types[i]==SPHERE && types[j]==SPHERE){
