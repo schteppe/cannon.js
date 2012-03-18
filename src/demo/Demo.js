@@ -252,7 +252,6 @@ CANNON.Demo.prototype._buildScene = function(n){
  
   var materialColor = 0xdddddd;
 
-  // @todo: use this func in the addVisual() function
   function shape2mesh(shape){
     var mesh;
     switch(shape.type){
@@ -290,16 +289,31 @@ CANNON.Demo.prototype._buildScene = function(n){
       break;
 
     case CANNON.Shape.types.COMPOUND:
-
+      // @todo recursive compounds
       var o3d = new THREE.Object3D();
+      var compoundMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
       for(var i = 0; i<shape.childShapes.length; i++){
 
 	// Get child information
 	var subshape = shape.childShapes[i];
 	var o = shape.childOffsets[i];
 	var q = shape.childOrientations[i];
+	    
+	var submesh = shape2mesh(subshape);
+	submesh.position.x = o.x;
+	submesh.position.y = o.y;
+	submesh.position.z = o.z;
 	
-	mesh = new THREE.Mesh( o3d, compoundMaterial );
+	submesh.quaternion.x = q.x;
+	submesh.quaternion.y = q.y;
+	submesh.quaternion.z = q.z;
+	submesh.quaternion.w = q.w;
+	
+	submesh.useQuaternion = true;
+	
+	o3d.add(submesh);
+	
+	mesh = o3d;
       }
 
       break;
@@ -313,89 +327,23 @@ CANNON.Demo.prototype._buildScene = function(n){
     if(that.shadowsOn)
       mesh.castShadow = true;
 
-    console.log(mesh);
-
     return mesh;
   }
-
 
   // Get new scene information
   that._scenes[n]({
       addVisual:function(body){
-
 	// What geometry should be used?
-	var mesh;
-	switch(body._shape.type){
-
-	case CANNON.Shape.types.SPHERE:
-	  var sphere_geometry = new THREE.SphereGeometry( 1, 16, 16);
-	  var sphereMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
-	  THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
-	  mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
-	  break;
-
-	case CANNON.Shape.types.PLANE:
-	  var geometry = new THREE.PlaneGeometry( 100, 100 );
-	  var planeMaterial = new THREE.MeshBasicMaterial( { color: materialColor } );
-	  THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
-	  var submesh = new THREE.Object3D();
-	  var ground = new THREE.Mesh( geometry, planeMaterial );
-	  if(that.shadowsOn){
-	    submesh.castShadow = true;
-	    submesh.receiveShadow = true;
-	    ground.castShadow = true;
-	    ground.receiveShadow = true;
-	  }
-	  ground.scale.set( 100, 100, 100 );
-	  ground.rotation.x = Math.PI;
-	  mesh = new THREE.Object3D();
-	  mesh.add(ground);
-	  break;
-
-	case CANNON.Shape.types.BOX:
-	  var box_geometry = new THREE.CubeGeometry( body._shape.halfExtents.x*2, body._shape.halfExtents.y*2, body._shape.halfExtents.z*2 );
-	  var boxMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
-	  THREE.ColorUtils.adjustHSV( boxMaterial.color, 0, 0, 0.9 );
-	  mesh = new THREE.Mesh( box_geometry, boxMaterial );
-	  break;
-
-	case CANNON.Shape.types.COMPOUND:
-
-	  var o3d = new THREE.Object3D();
-	  for(var i = 0; i<body._shape.childShapes.length; i++){
-
-	    // Get child information
-	    var subshape = body._shape.childShapes[i];
-	    var o = body._shape.childOffsets[i];
-	    var q = body._shape.childOrientations[i];
-	    
-	    var submesh = shape2mesh(subshape);
-	    submesh.position.x = o.x;
-	    submesh.position.y = o.y;
-	    submesh.position.z = o.z;
-
-	    submesh.quaternion.x = q.x;
-	    submesh.quaternion.y = q.y;
-	    submesh.quaternion.z = q.z;
-	    submesh.quaternion.w = q.w;
-
-	    submesh.useQuaternion = true;
-
-	    o3d.add(submesh);
-	  }
-	  mesh = o3d;
-	  
-	  break;
-
-	default:
-	  throw "Visual type not recognized: "+body._shape.type;
-	}
-
+	var mesh = shape2mesh(body._shape);
 	if(mesh) {
-
 	  if(that.shadowsOn){
 	    mesh.castShadow = true;
 	    mesh.receiveShadow = true;
+	    if(mesh.children)
+	      for(var i=0; i<mesh.children.length; i++){
+		mesh.children[i].castShadow = true;
+		mesh.children[i].receiveShadow = true;
+	      }
 	  }
 	  if(body._shape.type==CANNON.Shape.types.BOX)
 	    mesh.receiveShadow = false;
