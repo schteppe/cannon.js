@@ -81,13 +81,12 @@ CANNON.Demo.prototype.start = function(){
     container = document.createElement( 'div' );
     document.body.appendChild( container );
     
-    // SCENE CAMERA
-
+    // Camera
     camera = new THREE.PerspectiveCamera( 24, that.SCREEN_WIDTH / that.SCREEN_HEIGHT, NEAR, FAR );
     camera.up.set(0,0,1);
     camera.position.x = 0;
     camera.position.y = 30;
-    camera.position.z = 12;
+    camera.position.z = 20;
  
     // SCENE
     scene = new THREE.Scene();
@@ -128,6 +127,7 @@ CANNON.Demo.prototype.start = function(){
     container.appendChild( renderer.domElement );
 
     document.addEventListener('mousemove',onDocumentMouseMove);
+    window.addEventListener('resize',onWindowResize);
 
     renderer.setClearColor( scene.fog.color, 1 );
     renderer.autoClear = false;
@@ -143,6 +143,22 @@ CANNON.Demo.prototype.start = function(){
     stats.domElement.style.top = '0px';
     stats.domElement.style.zIndex = 100;
     container.appendChild( stats.domElement );
+
+    // Trackball controls
+    controls = new THREE.TrackballControls( camera, renderer.domElement );
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.2;
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = false;
+    controls.dynamicDampingFactor = 0.3;
+    var radius = 100;
+    controls.minDistance = radius * 0.1;
+    controls.maxDistance = radius * 1000;
+    controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
+    controls.screen.width = that.SCREEN_WIDTH;
+    controls.screen.height = that.SCREEN_HEIGHT;
   }
 
   function createScene(){
@@ -176,12 +192,30 @@ CANNON.Demo.prototype.start = function(){
     mouseY = ( event.clientY - windowHalfY );
   }
 
+  function onWindowResize( event ) {
+    that.SCREEN_WIDTH = window.innerWidth;
+    that.SCREEN_HEIGHT = window.innerHeight;
+
+    renderer.setSize( that.SCREEN_WIDTH, that.SCREEN_HEIGHT );
+
+    camera.aspect = that.SCREEN_WIDTH / that.SCREEN_HEIGHT;
+    camera.updateProjectionMatrix();
+
+    controls.screen.width = that.SCREEN_WIDTH;
+    controls.screen.height = that.SCREEN_HEIGHT;
+
+    camera.radius = ( that.SCREEN_WIDTH + that.SCREEN_HEIGHT ) / 4;
+  }
+
   function render(){
+    /*
     camera.position.x += ( mouseX/windowHalfX*300 - camera.position.x ) * 0.05;
     camera.position.z += ( - (mouseY/windowHalfY*200) - camera.position.z ) * 0.05;
     if(camera.position.z<=1.0)
       camera.position.z = 1.0;
-    camera.lookAt( new THREE.Vector3(scene.position.x,scene.position.y,scene.position.z+5) );
+    camera.lookAt( new THREE.Vector3(scene.position.x,scene.position.y,scene.position.z+5) );*/
+
+    controls.update();
     renderer.clear();
     renderer.render( scene, camera );
   }
@@ -189,7 +223,7 @@ CANNON.Demo.prototype.start = function(){
   document.addEventListener('keypress',function(e){
       if(e.keyCode){
 	switch(e.keyCode){
-	 
+	  
 	case 32:
 	for(var i=0; i<that._phys_bodies.length; i++){
 	  that._phys_bodies[i].setPosition(that._phys_startpositions[i].x,
