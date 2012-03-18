@@ -1580,6 +1580,10 @@ CANNON.World = function(){
   /// Stabilization parameter (number of timesteps until stabilization)
   this.spook_d = 3.0;
 
+  /// Default and last timestep sizes
+  this.default_dt = 1/60;
+  this.last_dt = this.default_dt;
+
   var th = this;
 
   /// Contact solver parameters, @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
@@ -2020,9 +2024,13 @@ CANNON.World.prototype.gravity = function(g){
 CANNON.World.prototype.step = function(dt){
 
   var world = this;
-
-  if(world.paused)
-    return;
+  
+  if(dt==undefined){
+    if(this.last_dt)
+      dt = this.last_dt;
+    else
+      dt = this.default_dt;
+  }
 
   // 1. Collision detection
   var pairs = this._broadphase.collisionPairs(this);
@@ -2146,6 +2154,7 @@ CANNON.World.prototype.step = function(dt){
     /**
      * Make a contact object.
      * @return object
+     * @todo Perhaps we should make a Contact class out of this instead...
      */
     function makeResult(){
       return {
@@ -2379,7 +2388,7 @@ CANNON.World.prototype.step = function(dt){
       mu_k = this._contact_friction_k[cm];
       e = this._contact_restitution[cm];
     }
-    
+
     // sphere-plane collision
     if((types[i]==SPHERE && types[j]==PLANE) ||
        (types[i]==PLANE  && types[j]==SPHERE)){

@@ -141,21 +141,24 @@ CANNON.Demo.prototype.start = function(){
 
   function animate(){
     requestAnimationFrame( animate );
-    updatePhysics();
+    if(!that.paused){
+      updatePhysics();
+      updateVisuals();
+    }
     render();
     stats.update();
   }
 
   function updatePhysics(){
     // Step world
-    if(!that.paused){
-      that._world.step(that.timestep);
-    
-      // Read position data into visuals
-      for(var i=0; i<that._phys_bodies.length; i++){
-	that._phys_bodies[i].getPosition(that._phys_visuals[i].position);
-	that._phys_bodies[i].getOrientation(that._phys_visuals[i].quaternion);
-      }
+    that._world.step(that.timestep);
+  }
+
+  function updateVisuals(){
+    // Read position data into visuals
+    for(var i=0; i<that._phys_bodies.length; i++){
+      that._phys_bodies[i].getPosition(that._phys_visuals[i].position);
+      that._phys_bodies[i].getOrientation(that._phys_visuals[i].quaternion);
     }
   }
 
@@ -212,7 +215,11 @@ CANNON.Demo.prototype.start = function(){
 	console.log("Number of iterations: "+that._world.solver.iter);
 	break;
 	case 112: // p
-	that._world.togglepause();
+	that.paused = !that.paused;
+	break;
+	case 115: // s
+	updatePhysics();
+	updateVisuals();
 	break;
 	case 49:
 	case 50:
@@ -223,8 +230,10 @@ CANNON.Demo.prototype.start = function(){
 	case 55:
 	case 56:
 	case 57:
-	if(that._scenes.length>e.keyCode-49)
+	if(that._scenes.length>e.keyCode-49){
+	  that.paused = false;
 	  that._buildScene(e.keyCode-49);
+	}
 	break;
 	}
       }
