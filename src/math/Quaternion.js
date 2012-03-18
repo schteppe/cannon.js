@@ -40,6 +40,18 @@ CANNON.Quaternion.prototype.mult = function(q,target){
   return target;
 };
 
+CANNON.Quaternion.prototype.inverse = function(target){
+  if(target==undefined)
+    target = new CANNON.Quaternion();
+  
+  target.x = -this.x;
+  target.y = -this.y;
+  target.z = -this.z;
+  target.w = this.w;
+
+  return target;
+};
+
 /**
  * Normalize the quaternion. Note that this changes the values of the quaternion.
  */

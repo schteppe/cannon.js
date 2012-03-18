@@ -33,7 +33,7 @@ function createContainer(app,nx,ny,nz){
   // Create world
   var world = new CANNON.World();
   app.setWorld(world);
-  world.gravity(new CANNON.Vec3(0,0,-40));
+  world.gravity(new CANNON.Vec3(0,0,-60));
   var bp = new CANNON.NaiveBroadphase();
   world.broadphase(bp);
   world.iterations(2);

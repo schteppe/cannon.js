@@ -23,9 +23,10 @@ demo.addScene(function(app){
     compoundShape.addChild(sphereShape,new CANNON.Vec3(1,0,2));
     compoundShape.addChild(sphereShape,new CANNON.Vec3(-1,0,2));
 
-    var mass = 5;
+    var mass = 10;
     var body = new CANNON.RigidBody(mass,compoundShape);
     body.setPosition(0,0,6);
+    body.setOrientation(0,1,0,0.1);
     world.add(body);
     app.addVisual(body);
 

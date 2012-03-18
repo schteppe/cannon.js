@@ -69,9 +69,9 @@ CANNON.Vec3.prototype.vadd = function(v,target){
  */
 CANNON.Vec3.prototype.vsub = function(v,target){
   if(target){
-    target.x -= v.x;
-    target.y -= v.y;
-    target.z -= v.z;
+    target.x = this.x - v.x;
+    target.y = this.y - v.y;
+    target.z = this.z - v.z;
   } else {
     return new CANNON.Vec3(this.x-v.x,
 			   this.y-v.y,
