@@ -78,6 +78,15 @@ function createContainer(app,nx,ny,nz){
   planeYmax.setPosition(5,0,0);
   world.add(planeYmax);
 
+  // Box
+  /*
+  var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+  var boxBody = new CANNON.RigidBody(10,boxShape);
+  boxBody.setPosition(0,0,20);
+  world.add(boxBody);
+  app.addVisual(boxBody);
+  */
+
   // Sphere on plane
   var rand = 0.01;
   var h = 0;

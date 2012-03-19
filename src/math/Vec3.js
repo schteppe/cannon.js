@@ -51,13 +51,13 @@ CANNON.Vec3.prototype.set = function(x,y,z){
  */
 CANNON.Vec3.prototype.vadd = function(v,target){
   if(target){
-    target.x += v.x;
-    target.y += v.y;
-    target.z += v.z;
+    target.x = v.x + this.x;
+    target.y = v.y + this.y;
+    target.z = v.z + this.z;
   } else {
-    return new CANNON.Vec3(this.x+v.x,
-			    this.y+v.y,
-			    this.z+v.z);
+    return new CANNON.Vec3(this.x + v.x,
+			   this.y + v.y,
+			   this.z + v.z);
   }  
 };
     

@@ -676,89 +676,95 @@ CANNON.World.prototype.step = function(dt){
 	
       } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
 
-	// --- Box-sphere collision ---
-	// We have several scenarios here... But obviously we can only have 1 contact point
-	// - One of the 8 corners penetrate - normal is the sphere center-->corner vector
-	// - Sphere is penetrating one of the 6 box side - normal is the box side
-	// - Sphere collides with one of the 12 box edges
-	// 
-	// To identify scenario, we project the vector from the box center to the
-	// sphere center onto each of the 6 box side normals, penetration if r*n<h+rs
-	// 3 side penetrations => corner
-	// 2 side penetrations => edge
-	// 1 side penetrations => side
-
 	// we refer to the box as body j
-	var xixj =  xj.vsub(xi);
-	var sides = sj.getSideNormals(true,qi);
+	var box_to_sphere =  xi.vsub(xj);
+	var sides = sj.getSideNormals(true,qj);
 	var R =     si.radius;
 	var penetrating_sides = [];
 
-	for(var idx=0; idx<sides.length && penetrating_sides.length<=3; idx++){ // Max 3 penetrating sides
-	  // Need vector from side center to sphere center, r
+	// Check side (plane) intersections
+	var found = false;
+	for(var idx=0; idx<sides.length && !found; idx++){ // Max 3 penetrating sides
 	  var ns = sides[idx].copy();
 	  var h = ns.norm();
-	  var r = xixj.vsub(ns);
 	  ns.normalize();
-	  var dot = ns.dot(r);
-	  if(dot<h+R && dot>0)
-	    penetrating_sides.push(idx);
+	  var dot = box_to_sphere.dot(ns);
+	  if(dot<h+R && dot>0){
+	    // Intersects plane. Now check the other two dimensions
+	    var ns1 = sides[(idx+1)%3].copy();
+	    var ns2 = sides[(idx+2)%3].copy();
+	    var h1 = ns1.norm();
+	    var h2 = ns2.norm();
+	    ns1.normalize();
+	    ns2.normalize();
+	    var dot1 = box_to_sphere.dot(ns1);
+	    var dot2 = box_to_sphere.dot(ns2);
+	    if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
+	      var r = makeResult();
+	      ns.mult(-R,r.ri); // Sphere r
+	      ns.copy(r.ni);
+	      r.ni.negate(r.ni); // Normal should be out of sphere
+	      ns.mult(h,r.rj); // box
+	      result.push(r);
+	    }
+	  }
 	}
 
-	// Identify collision type
-	if(penetrating_sides.length==1){
-	  var res = makeResult();
-	  // "Flat" collision against one side, normal is the side normal
-	  var axis = penetrating_sides[0];
-	  var h = sides[axis];
-	  res.ni = h.copy();
-	  res.ni.normalize();
-	  var r = xj.vsub(xi.vadd(h)); // center of box side to center of sphere
-	  var t1 = sides[(axis+1)%3];
-	  var t2 = sides[(axis+2)%3];
-	  t1.normalize();
-	  t2.normalize();
-	  res.ri = h.vsub(t1.mult(r.dot(t1))).vsub(t2.mult(r.dot(t2)));
-	  res.rj = res.ni.copy();
-	  res.rj.normalize();
-	  res.rj.mult(-R,res.rj);
-	  result.push(res);
+	// Check corners
+	for(var j=0; j<2 && !found; j++){
+	  for(var k=0; k<2 && !found; k++){
+	    for(var l=0; l<2 && !found; l++){
+	      var corner = xj.copy();
+	      if(j) corner.vadd(sides[0],corner);
+	      else  corner.vsub(sides[0],corner);
+	      if(k) corner.vadd(sides[1],corner);
+	      else  corner.vsub(sides[1],corner);
+	      if(l) corner.vadd(sides[2],corner);
+	      else  corner.vsub(sides[2],corner);
 
-	} else if(penetrating_sides.length==2){
-	  // Contact with edge
-	  // normal is the edge-sphere unit vector, orthogonal to the edge
-	  // Warning: Here be dragons!
-	  var res = makeResult();
-	  var axis1 = penetrating_sides[0];
-	  var axis2 = penetrating_sides[1];
-	  var edgeCenter = sides[axis1].vadd(sides[axis2]);
-	  var edgeTangent = sides[axis1].cross(sides[axis2]);
-	  edgeTangent.normalize();
-	  var r = xj.vsub(edgeCenter.vadd(xi));
-	  res.ri = edgeCenter.vadd(edgeTangent.mult(r.dot(edgeTangent)));
-	  res.rj = xi.vadd(res.ri).vsub(xj);
-	  res.rj.normalize();
-	  res.rj.mult(R);
-	  res.ni = res.rj.copy();
-	  res.ni.negate(res.ni);
-	  res.ni.normalize();
-	  result.push(res);
+	      // World position of corner
+	      var sphere_to_corner = corner.vsub(xi);
+	      if(sphere_to_corner.norm()<R){
+		found = true;
+		var r = makeResult();
+		sphere_to_corner.copy(r.ri); // Sphere
+		r.ri.normalize();
+		r.ri.copy(r.ni);
+		r.ri.mult(R,r.ri);
+		corner.copy(r.rj);
+		result.push(r);
+	      }
+	    }
+	  }
+	}
 
-	} else if(penetrating_sides.length==3){
-	  // Corner collision
-	  var res = makeResult();
-	  var s1 = sides[penetrating_sides[0]];
-	  var s2 = sides[penetrating_sides[1]];
-	  var s3 = sides[penetrating_sides[2]];
-	  var corner = s1.vadd(s2).vadd(s3);
-	  var ri = corner;
-	  res.ni = corner.vadd(xi).vsub(xj);
-	  res.ni.normalize();
-	  res.rj = res.ni.mult(-R);
-	  result.push(res);
-
-	} else {
-	  // No contact...
+	// Check edges
+	found = false;
+	for(var j=0; j<sides.length && !found; j++){
+	  for(var k=0; k<sides.length && !found; k++){
+	    if(j!=k){
+	      // Get edge tangent
+	      var edgeTangent = sides[j].cross(sides[k]);
+	      edgeTangent.normalize();
+	      var edgeCenter = sides[j].vadd(sides[k]);
+	      
+	      var r = xi.vsub(edgeCenter.vadd(xj)); // r = edge center to sphere center
+	      var orthonorm = r.dot(edgeTangent);
+	      var orthogonal = edgeTangent.mult(orthonorm);
+	      var l = (j+k)%3;
+	      var dist = xi.vsub(orthogonal).vsub(edgeCenter.vadd(xj));
+	      if(orthonorm < sides[l].norm() && dist.norm()<R){
+		found = true;
+		var res = makeResult();
+		res.rj = edgeCenter.vadd(orthogonal); // box
+		res.ri = dist.negate();
+		res.ri.normalize();
+		res.ri.copy(res.ni);
+		res.ri.mult(R,r.ri);
+		result.push(res);
+	      }
+	    }
+	  }
 	}
 
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
