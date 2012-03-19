@@ -21,23 +21,28 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 ```javascript
 // Setup our world
 var world = new CANNON.World();
-world.gravity(new CANNON.Vec3(0,0,-50));
+world.gravity(new CANNON.Vec3(0,0,-9.82));
 var bp = new CANNON.BroadPhase();
 world.broadphase(bp);
     
+// Create a sphere
+var mass = 5, radius = 1;
+var sphereShape = new CANNON.Sphere(radius);
+var sphereBody = new CANNON.RigidBody(mass,sphereShape);
+sphereBody.setPosition(0,0,10);
+world.add(sphereBody);
+    
 // Create a plane
-var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+var normal = new CANNON.Vec3(0,0,1);
+var groundShape = new CANNON.Plane(normal);
 var groundBody = new CANNON.RigidBody(0,groundShape);
 world.add(groundBody);
-    
-// Create a sphere
-var sphereShape = new CANNON.Sphere(1);
-var sphereBody = new CANNON.RigidBody(5,sphereShape);
-world.add(sphereBody);
     
 // Step the simulation
 setInterval(function(){
   world.step(1.0/60.0);
+  var pos = sphereBody.getPosition();
+  console.log("Sphere z position: "+pos.x);
 }, 1000.0/60.0);
 ```
 
