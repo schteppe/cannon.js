@@ -41,6 +41,7 @@ function createBodyOnPlane(app,shape){
   var sphereBody = new CANNON.RigidBody(5,shape,stone);
   var pos = new CANNON.Vec3(0,3,2);
   sphereBody.setPosition(pos.x,pos.y,pos.z);
+  sphereBody.setOrientation(0,1,0,0.2);
   world.add(sphereBody);
   
   app.addVisual(sphereBody);

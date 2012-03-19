@@ -878,6 +878,7 @@ CANNON.World.prototype.step = function(dt){
 	var wj = new CANNON.Vec3(wx[j],wy[j],wz[j]);
 	var u = (vj.vsub(vi)); // Contact velo
 	var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+	u.vsub(uw,u);
 
 	// Get mass properties
 	var iMi = world.invm[i];
@@ -903,21 +904,15 @@ CANNON.World.prototype.step = function(dt){
 			 
 			 // Inverse mass matrix
 			 [iMi,iMi,iMi,
-			  0,0,0,
-			  iMj,iMj,iMj,   // Static plane -> infinite mass
-			  0,0,0],
+			  iIxi,iIyi,iIzi,
+			  iMj,iMj,iMj,
+			  iIxj,iIyj,iIzj],
 			 
 			 // g - constraint violation / gap
 			 [-gvec.x,-gvec.y,-gvec.z,
 			  0,0,0,
 			  gvec.x,gvec.y,gvec.z,
 			  0,0,0],
-			 
-			 // gdot - motion along penetration normal
-			 /*[-gdot.x,-gdot.y,-gdot.z,
-			  0,0,0,
-			  gdot.x,gdot.y,gdot.z,
-			  0,0,0],*/
 
 			 [-u.x,-u.y,-u.z,
 			  0,0,0,

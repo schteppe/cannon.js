@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.3.8 - A lightweight 3D physics engine for the web
+ * cannon.js v0.3.9 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -1070,12 +1070,12 @@ CANNON.Box.prototype.constructor = CANNON.Box;
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
-  target.x = 1.0 / 12.0 * mass * (   this.halfExtents.y*this.halfExtents.y
-				   + this.halfExtents.z*this.halfExtents.z );
-  target.y = 1.0 / 12.0 * mass * (   this.halfExtents.x*this.halfExtents.x
-				   + this.halfExtents.z*this.halfExtents.z );
-  target.z = 1.0 / 12.0 * mass * (   this.halfExtents.y*this.halfExtents.y
-				   + this.halfExtents.x*this.halfExtents.x );
+  target.x = 1.0 / 12.0 * mass * (   2*this.halfExtents.y*2*this.halfExtents.y
+				   + 2*this.halfExtents.z*2*this.halfExtents.z );
+  target.y = 1.0 / 12.0 * mass * (   2*this.halfExtents.x*2*this.halfExtents.x
+				   + 2*this.halfExtents.z*2*this.halfExtents.z );
+  target.z = 1.0 / 12.0 * mass * (   2*this.halfExtents.y*2*this.halfExtents.y
+				   + 2*this.halfExtents.x*2*this.halfExtents.x );
   return target;
 };
 
@@ -1424,12 +1424,14 @@ CANNON.Solver.prototype.solve = function(){
       var body_j = this.j[l];
 
       var l12 = 12*l;
+      
       if(!precomp[l]){
 	// Precompute constants c[l] and B[l] for contact l
 	var G_Minv_Gt = 0.0;
 	var Gq = 0.0;
 	var GW = 0.0;
 	var GMinvf = 0.0;
+	// Only add normal contributions here? See eq. 27 in spooknotes
 	for(var i=0; i<12; i++){
 	  var addi = l12+i;
 	  G_Minv_Gt += G[addi] * this.MinvTrace[addi] * G[addi];
@@ -1452,10 +1454,7 @@ CANNON.Solver.prototype.solve = function(){
       }
 
       var Gulambda = 0.0;
-      /*
-      for(var i=0; i<12; i++)
-	Gulambda +=  this.G[i + l12] * ulambda[i + l12];
-      */
+
       Gulambda += G[0+l12] * this.vxlambda[body_i]; // previuously calculated lambdas
       Gulambda += G[1+l12] * this.vylambda[body_i];
       Gulambda += G[2+l12] * this.vzlambda[body_i];
@@ -1491,28 +1490,18 @@ CANNON.Solver.prototype.solve = function(){
       }
 
       // Add velocity changes to keep track of them
-      /*
-      for(var i=0; i<12; i++)
-	ulambda[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-      */
       this.vxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+0] * G[l12+0];
       this.vylambda[body_i] += dlambda[l] * this.MinvTrace[l12+1] * G[l12+1];
       this.vzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+2] * G[l12+2];
       this.wxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+3] * G[l12+3];
       this.wylambda[body_i] += dlambda[l] * this.MinvTrace[l12+4] * G[l12+4];
       this.wzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+5] * G[l12+5];
-
       this.vxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+6] * G[l12+6];
       this.vylambda[body_j] += dlambda[l] * this.MinvTrace[l12+7] * G[l12+7];
       this.vzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+8] * G[l12+8];
       this.wxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+9] * G[l12+9];
       this.wylambda[body_j] += dlambda[l] * this.MinvTrace[l12+10] * G[l12+10];
       this.wzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+11] * G[l12+11];
-
-        /*
-	ulambda_i[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-	ulambda_j[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-	*/
     }
   }
 
@@ -2451,6 +2440,7 @@ CANNON.World.prototype.step = function(dt){
 	var wj = new CANNON.Vec3(wx[j],wy[j],wz[j]);
 	var u = (vj.vsub(vi)); // Contact velo
 	var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+	u.vsub(uw,u);
 
 	// Get mass properties
 	var iMi = world.invm[i];
@@ -2476,21 +2466,15 @@ CANNON.World.prototype.step = function(dt){
 			 
 			 // Inverse mass matrix
 			 [iMi,iMi,iMi,
-			  0,0,0,
-			  iMj,iMj,iMj,   // Static plane -> infinite mass
-			  0,0,0],
+			  iIxi,iIyi,iIzi,
+			  iMj,iMj,iMj,
+			  iIxj,iIyj,iIzj],
 			 
 			 // g - constraint violation / gap
 			 [-gvec.x,-gvec.y,-gvec.z,
 			  0,0,0,
 			  gvec.x,gvec.y,gvec.z,
 			  0,0,0],
-			 
-			 // gdot - motion along penetration normal
-			 /*[-gdot.x,-gdot.y,-gdot.z,
-			  0,0,0,
-			  gdot.x,gdot.y,gdot.z,
-			  0,0,0],*/
 
 			 [-u.x,-u.y,-u.z,
 			  0,0,0,
