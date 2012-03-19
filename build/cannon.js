@@ -1,5 +1,5 @@
 /**
- * cannon.js v0.3.9 - A lightweight 3D physics engine for the web
+ * cannon.js v0.3.10 - A lightweight 3D physics engine for the web
  * 
  * http://github.com/schteppe/cannon.js
  * 
@@ -699,10 +699,10 @@ CANNON.Shape.types = {
 /**
  * Rigid body base class
  * @class RigidBody
- * @param mass
- * @param shape
+ * @param float mass
+ * @param Shape shape
+ * @param Material material
  * @todo Motion state? Like dynamic, kinematic, static...
- * @todo Viscous damping property
  */
 CANNON.RigidBody = function(mass,shape,material){
   // Local variables
@@ -716,7 +716,7 @@ CANNON.RigidBody = function(mass,shape,material){
   this._shape = shape;
   this._inertia = shape.calculateLocalInertia(mass);
   this._material = material;
-  this._linearDamping = 0.01;
+  this._linearDamping = 0.01; // Perhaps default should be zero here?
   this._angularDamping = 0.01;
 
   /// Reference to the world the body is living in
@@ -886,6 +886,9 @@ CANNON.RigidBody.prototype.getOrientation = function(target){
 
 /**
  * Sets the velocity of the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setVelocity = function(x,y,z){
   if(this._id!=-1){
@@ -920,6 +923,9 @@ CANNON.RigidBody.prototype.getVelocity = function(target){
 
 /**
  * Sets the angularvelocity of the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setAngularVelocity = function(x,y,z){
   if(this._id!=-1){
@@ -2419,6 +2425,7 @@ CANNON.World.prototype.step = function(dt){
 	      new CANNON.Vec3(x[j],y[j],z[j]),
 	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
 	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
+    console.log(contacts);
 
     // Add contact constraint(s)
     for(var ci = 0; ci<contacts.length; ci++){
