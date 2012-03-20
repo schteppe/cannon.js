@@ -648,6 +648,7 @@ CANNON.Shape = function(){
    * @see Cannon.Shape.types
    */
   this.type = 0;
+  this.cachedBoundingSphereRadius = 0;
 };
 
 CANNON.Shape.prototype.constructor = CANNON.Shape;
@@ -1148,7 +1149,9 @@ CANNON.Box.prototype.volume = function(){
 };
 
 CANNON.Box.prototype.boundingSphereRadius = function(){
-  return this.halfExtents.norm();
+  if(!this.cachedBoundingSphereRadius)
+    this.cachedBoundingSphereRadius = this.halfExtents.norm();
+  return this.cachedBoundingSphereRadius;
 };/**
  * @class Plane
  * @param Vec3 normal
