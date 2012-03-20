@@ -1,5 +1,5 @@
 /**
- * For debugging different kinds of pair collisions.
+ * For debugging different kinds of pair collisions
  */
 var demo = new CANNON.Demo();
 
@@ -54,7 +54,7 @@ demo.addScene(function(app){
 
     // Box
     var b1 = new CANNON.RigidBody(5,boxShape);
-    b1.setPosition(5,0,0);
+    b1.setPosition(10,0,0);
     b1.setVelocity(-5,0,0);
     b1.setOrientation(0,0,1,Math.PI);
     world.add(b1);
@@ -62,7 +62,7 @@ demo.addScene(function(app){
 
     // Sphere
     var b2 = new CANNON.RigidBody(5,sphereShape);
-    b2.setPosition(-5,0,0);
+    b2.setPosition(0,0,0);
     b2.setVelocity(5,0,0);
     world.add(b2);
     app.addVisual(b2);
@@ -79,7 +79,12 @@ demo.addScene(function(app){
     var b1 = new CANNON.RigidBody(5,boxShape);
     b1.setPosition(5,0,0);
     b1.setVelocity(-5,0,0);
-    b1.setOrientation(0,1,1,Math.PI);
+    var q1 = new CANNON.Quaternion();
+    q1.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI*0.25);
+    var q2 = new CANNON.Quaternion();
+    q2.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI*0.25);
+    var q = q1.mult(q2);
+    b1.setOrientation(q.x,q.y,q.z,q.w);
     world.add(b1);
     app.addVisual(b1);
 

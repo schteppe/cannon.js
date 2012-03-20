@@ -533,9 +533,23 @@ CANNON.Quaternion = function(x,y,z,w){
 
 /**
  * Convert to a readable format
+ * @return string
  */
 CANNON.Quaternion.prototype.toString = function(){
   return this.x+","+this.y+","+this.z+","+this.w;
+};
+
+/**
+ * Set the quaternion components given an axis and an angle.
+ * @param Vec3 axis
+ * @param float angle
+ */
+CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
+  var s = Math.sin(angle*0.5);
+  this.x = axis.x * s;
+  this.y = axis.y * s;
+  this.z = axis.z * s;
+  this.w = Math.cos(angle*0.5);
 };
 
 /**
@@ -2263,6 +2277,7 @@ CANNON.World.prototype.step = function(dt){
 	    var dot1 = box_to_sphere.dot(ns1);
 	    var dot2 = box_to_sphere.dot(ns2);
 	    if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
+	      found = true;
 	      var r = makeResult();
 	      ns.mult(-R,r.ri); // Sphere r
 	      ns.copy(r.ni);
@@ -2294,7 +2309,7 @@ CANNON.World.prototype.step = function(dt){
 		r.ri.normalize();
 		r.ri.copy(r.ni);
 		r.ri.mult(R,r.ri);
-		corner.copy(r.rj);
+		corner.vsub(xj).copy(r.rj);
 		result.push(r);
 	      }
 	    }
@@ -2302,24 +2317,24 @@ CANNON.World.prototype.step = function(dt){
 	}
 
 	// Check edges
-	found = false;
 	for(var j=0; j<sides.length && !found; j++){
 	  for(var k=0; k<sides.length && !found; k++){
-	    if(j!=k){
+	    if(j%3!=k%3){
 	      // Get edge tangent
-	      var edgeTangent = sides[j].cross(sides[k]);
+	      var edgeTangent = sides[k].cross(sides[j]);
 	      edgeTangent.normalize();
 	      var edgeCenter = sides[j].vadd(sides[k]);
 	      
 	      var r = xi.vsub(edgeCenter.vadd(xj)); // r = edge center to sphere center
-	      var orthonorm = r.dot(edgeTangent);
-	      var orthogonal = edgeTangent.mult(orthonorm);
-	      var l = (j+k)%3;
-	      var dist = xi.vsub(orthogonal).vsub(edgeCenter.vadd(xj));
+	      var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
+	      var orthogonal = edgeTangent.mult(orthonorm); // Vector from edge center to sphere center in the tangent direction
+	      var l = 0;
+	      while(l==j%3 || l==k%3) l++;
+	      var dist = xi.vsub(orthogonal).vsub(edgeCenter.vadd(xj)); // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
 	      if(orthonorm < sides[l].norm() && dist.norm()<R){
 		found = true;
 		var res = makeResult();
-		res.rj = edgeCenter.vadd(orthogonal); // box
+		edgeCenter.vadd(orthogonal,res.rj); // box
 		res.ri = dist.negate();
 		res.ri.normalize();
 		res.ri.copy(res.ni);
@@ -2426,6 +2441,8 @@ CANNON.World.prototype.step = function(dt){
 	      new CANNON.Vec3(x[j],y[j],z[j]),
 	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
 	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
+    /*if(contacts.length!=4 && contacts.length)
+      console.log(contacts.length+" contacts, "," ni=",contacts[0].ni.toString()," ri=",contacts[0].ri.toString()," rj=",contacts[0].rj.toString());*/
 
     // Add contact constraint(s)
     for(var ci = 0; ci<contacts.length; ci++){
