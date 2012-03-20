@@ -648,7 +648,6 @@ CANNON.Shape = function(){
    * @see Cannon.Shape.types
    */
   this.type = 0;
-  this.cachedBoundingSphereRadius = 0;
 };
 
 CANNON.Shape.prototype.constructor = CANNON.Shape;
@@ -1149,9 +1148,7 @@ CANNON.Box.prototype.volume = function(){
 };
 
 CANNON.Box.prototype.boundingSphereRadius = function(){
-  if(!this.cachedBoundingSphereRadius)
-    this.cachedBoundingSphereRadius = this.halfExtents.norm();
-  return this.cachedBoundingSphereRadius;
+  return this.halfExtents.norm();
 };/**
  * @class Plane
  * @param Vec3 normal
@@ -2031,9 +2028,9 @@ CANNON.World.prototype.iterations = function(n){
  */
 CANNON.World.prototype.gravity = function(g){
   if(g==undefined)
-    return this.gravity;
+    return this._gravity;
   else
-    this.gravity = g;
+    this._gravity = g;
 };
 
 /**
@@ -2139,9 +2136,9 @@ CANNON.World.prototype.step = function(dt){
 
   // Add gravity to all objects
   for(var i=0; i<world.numObjects(); i++){
-    fx[i] += world.gravity.x * world.mass[i];
-    fy[i] += world.gravity.y * world.mass[i];
-    fz[i] += world.gravity.z * world.mass[i];
+    fx[i] += world._gravity.x * world.mass[i];
+    fy[i] += world._gravity.y * world.mass[i];
+    fz[i] += world._gravity.z * world.mass[i];
   }
 
   // Reset contact solver

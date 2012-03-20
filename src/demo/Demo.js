@@ -2,13 +2,37 @@
  * @class Demo
  */
 CANNON.Demo = function(){
+  // Global settings
+  this.settings = {
+    gx:0.0,
+    gy:0.0,
+    gz:-10.0,
+    iterations:3,
+    scene:0,
+    paused:false
+  };
+
   this._phys_bodies = [];
   this._phys_visuals = [];
   this._phys_startpositions = [];
   this._scenes = [];
+  this._gui = null;
   this.paused = false;
   this.timestep = 1.0/60.0;
   this.shadowsOn = true;
+
+  this._updategui = function(){
+    if(this._gui){
+      // First level
+      for (var i in this._gui.__controllers)
+	this._gui.__controllers[i].updateDisplay();
+
+      // Second level
+      for (var f in this._gui.__folders)
+	for (var i in this._gui.__folders[f].__controllers)
+	  this._gui.__folders[f].__controllers[i].updateDisplay();
+    }
+  };
 };
 
 /**
@@ -17,6 +41,17 @@ CANNON.Demo = function(){
  */
 CANNON.Demo.prototype.addScene = function(initfunc){
   this._scenes.push(initfunc);
+};
+
+/**
+ * Restarts the current scene
+ */
+CANNON.Demo.prototype.restartCurrentScene = function(){
+  for(var i=0; i<this._phys_bodies.length; i++){
+    this._phys_bodies[i].setPosition(this._phys_startpositions[i].x,
+				     this._phys_startpositions[i].y,
+				     this._phys_startpositions[i].z);
+  }
 };
 
 /**
@@ -199,13 +234,11 @@ CANNON.Demo.prototype.start = function(){
       if(e.keyCode){
 	switch(e.keyCode){
 	  
-	case 32:
-	for(var i=0; i<that._phys_bodies.length; i++){
-	  that._phys_bodies[i].setPosition(that._phys_startpositions[i].x,
-					   that._phys_startpositions[i].y,
-					   that._phys_startpositions[i].z);
-	}
+	case 32: // Space - restart
+	that.restartCurrentScene();
 	break;
+
+	/*
 	case 43:
 	that._world.solver.iter++;
 	console.log("Number of iterations: "+that._world.solver.iter);
@@ -213,14 +246,18 @@ CANNON.Demo.prototype.start = function(){
 	case 45:
 	that._world.solver.iter>1 ? that._world.solver.iter-- : "";
 	console.log("Number of iterations: "+that._world.solver.iter);
+	*/
 	break;
 	case 112: // p
 	that.paused = !that.paused;
+	that.settings.paused = that.paused;
+	that._updategui();
 	break;
 	case 115: // s
 	updatePhysics();
 	updateVisuals();
 	break;
+	/*
 	case 49:
 	case 50:
 	case 51:
@@ -234,10 +271,49 @@ CANNON.Demo.prototype.start = function(){
 	  that.paused = false;
 	  that._buildScene(e.keyCode-49);
 	}
+	*/
 	break;
 	}
       }
     });
+
+  if(window.dat!=undefined){
+    that._gui = new dat.GUI();
+
+    // Scene picker
+    var scenes = {};
+    for(var i=0; i<that._scenes.length; i++)
+      scenes[(i+1)+'. Scene '+(i+1)] = i;
+    that._gui.add(that.settings,'scene',scenes).onChange(function(sceneNumber){
+	that.paused = false;
+	that.settings.paused = false;
+	that._updategui();
+	that._buildScene(sceneNumber);
+      });
+
+    // World folder
+    var wf = that._gui.addFolder('World');
+    wf.add(that.settings, 'gx').step(1).onChange(function(gx){
+	that._world.gravity(new CANNON.Vec3(gx,that.settings.gy,that.settings.gz));
+      });
+    wf.add(that.settings, 'gy').step(1).onChange(function(gy){
+	that._world.gravity(new CANNON.Vec3(that.settings.gx,gy,that.settings.gz));
+      });
+    wf.add(that.settings, 'gz').step(1).onChange(function(gz){
+	that._world.gravity(new CANNON.Vec3(that.settings.gx,that.settings.gy,gz));
+      });
+
+    // Solver folder
+    var sf = that._gui.addFolder('Solver');
+    sf.add(that.settings, 'iterations').min(1).step(1).onChange(function(it){
+	that._world.solver.iter = it;
+      });
+
+    // Pause
+    wf.add(that.settings,'paused').onChange(function(p){
+	that.paused = p;
+      });
+  }
 };
 
 /**
@@ -324,7 +400,6 @@ CANNON.Demo.prototype._buildScene = function(n){
 	
 	mesh = o3d;
       }
-
       break;
 
     default:
@@ -339,7 +414,7 @@ CANNON.Demo.prototype._buildScene = function(n){
     return mesh;
   }
 
-  // Get new scene information
+  // Run the user defined "build scene" function
   that._scenes[n]({
       addVisual:function(body){
 	// What geometry should be used?
@@ -370,6 +445,12 @@ CANNON.Demo.prototype._buildScene = function(n){
 	that._world = w;
       }
     });
+
+  // Read the newly set data to the gui
+  that.settings.gx = that._world._gravity.x;
+  that.settings.gy = that._world._gravity.y;
+  that.settings.gz = that._world._gravity.z;
+  that._updategui();
 
   // Add new meshes to scene
   for(var i=0; i<that._phys_visuals.length; i++)
