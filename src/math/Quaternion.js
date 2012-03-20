@@ -15,9 +15,23 @@ CANNON.Quaternion = function(x,y,z,w){
 
 /**
  * Convert to a readable format
+ * @return string
  */
 CANNON.Quaternion.prototype.toString = function(){
   return this.x+","+this.y+","+this.z+","+this.w;
+};
+
+/**
+ * Set the quaternion components given an axis and an angle.
+ * @param Vec3 axis
+ * @param float angle
+ */
+CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
+  var s = Math.sin(angle*0.5);
+  this.x = axis.x * s;
+  this.y = axis.y * s;
+  this.z = axis.z * s;
+  this.w = Math.cos(angle*0.5);
 };
 
 /**
@@ -37,6 +51,18 @@ CANNON.Quaternion.prototype.mult = function(q,target){
   target.x = this.w * vb.x + q.w*va.x + vaxvb.x;
   target.y = this.w * vb.y + q.w*va.y + vaxvb.y;
   target.z = this.w * vb.z + q.w*va.z + vaxvb.z;
+  return target;
+};
+
+CANNON.Quaternion.prototype.inverse = function(target){
+  if(target==undefined)
+    target = new CANNON.Quaternion();
+  
+  target.x = -this.x;
+  target.y = -this.y;
+  target.z = -this.z;
+  target.w = this.w;
+
   return target;
 };
 

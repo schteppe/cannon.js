@@ -1,29 +1,24 @@
 /**
- * cannon.js v0.3.7 - A lightweight 3D physics engine for the web
+ * Copyright (c) 2012 cannon.js Authors
  * 
- * http://github.com/schteppe/cannon.js
- * 
- * Copyright (c) 2012 Stefan Hedman (steffe.se)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * The Software shall be used for Good, not Evil.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * 
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
@@ -84,9 +79,10 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   var n = world.numObjects();
 
   // Local fast access
-  var SPHERE = CANNON.Shape.types.SPHERE;
-  var PLANE =  CANNON.Shape.types.PLANE;
-  var BOX =    CANNON.Shape.types.BOX;
+  var SPHERE =   CANNON.Shape.types.SPHERE;
+  var PLANE =    CANNON.Shape.types.PLANE;
+  var BOX =      CANNON.Shape.types.BOX;
+  var COMPOUND = CANNON.Shape.types.COMPOUND;
   var x = world.x;
   var y = world.y;
   var z = world.z;
@@ -97,81 +93,47 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
 
-      // --- Sphere-sphere ---
-      if(type[i]==SPHERE && type[j]==SPHERE){
-	var r2 = (body[i]._shape.radius + body[j]._shape.radius);
-	if(Math.abs(x[i]-x[j]) < r2 && 
-	   Math.abs(y[i]-y[j]) < r2 && 
-	   Math.abs(z[i]-z[j]) < r2){
+      // --- Box / sphere / compound collision ---
+      if((type[i]==BOX      && type[j]==BOX) ||
+	 (type[i]==BOX      && type[j]==COMPOUND) ||
+	 (type[i]==BOX      && type[j]==SPHERE) ||
+	 (type[i]==SPHERE   && type[j]==BOX) ||
+	 (type[i]==SPHERE   && type[j]==SPHERE) ||
+	 (type[i]==SPHERE   && type[j]==COMPOUND) ||
+	 (type[i]==COMPOUND && type[j]==COMPOUND) ||
+	 (type[i]==COMPOUND && type[j]==SPHERE) ||
+	 (type[i]==COMPOUND && type[j]==BOX)){
+	// Rel. position
+	var r = new CANNON.Vec3(x[j]-x[i],
+				y[j]-y[i],
+				z[j]-z[i]);
+	var boundingRadius1 = body[i]._shape.boundingSphereRadius();
+	var boundingRadius2 = body[j]._shape.boundingSphereRadius();
+	if(r.norm()<(boundingRadius1+boundingRadius2)){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
 
-      // --- Sphere-plane ---
+      // --- Sphere/box/compound versus plane ---
       } else if((type[i]==SPHERE && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==SPHERE)){
-	var si = type[i]==SPHERE ? i : j;
-	var pi = type[i]==PLANE ? i : j;
-	
-	// Rel. position
-	var r = new CANNON.Vec3(x[si]-x[pi],
-				y[si]-y[pi],
-				z[si]-z[pi]);
-	var normal = body[pi]._shape.normal;
-	var q = r.dot(normal)-body[si]._shape.radius;
-	if(q<0.0){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
-	
-	// --- Box-plane ---
-      } else if((type[i]==BOX && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==BOX)){
-	var bi = type[i]==BOX   ? i : j;
-	var pi = type[i]==PLANE ? i : j;
-	
-	// Rel. position
-	var r = new CANNON.Vec3(x[bi]-x[pi],
-				y[bi]-y[pi],
-				z[bi]-z[pi]);
-	var normal = body[pi]._shape.normal;
-	var d = r.dot(normal); // Distance from box center to plane
-	var boundingRadius = body[bi]._shape.halfExtents.norm();
-	var q = d - boundingRadius;
-	if(q<0.0){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
+		(type[i]==PLANE &&  type[j]==SPHERE) ||
 
-	// --- Box-box ---
-      } else if((type[i]==BOX && type[j]==BOX) ||
-		(type[i]==BOX && type[j]==BOX)){
-	// Rel. position
-	var r = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
-	var boundingRadius1 = body[i]._shape.halfExtents.norm();
-	var boundingRadius2 = body[j]._shape.halfExtents.norm();
-	if(r.norm()<(boundingRadius1+boundingRadius2)){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
+		(type[i]==BOX && type[j]==PLANE) ||
+		(type[i]==PLANE &&  type[j]==BOX) ||
 
-	// --- box-sphere ---
-      } else if((type[i]==BOX && type[j]==SPHERE) ||
-		(type[i]==SPHERE && type[j]==BOX)){
+		(type[i]==COMPOUND && type[j]==PLANE) ||
+		(type[i]==PLANE &&  type[j]==COMPOUND)){
+
+	var pi = type[i]==PLANE ? i : j; // Plane
+	var oi = type[i]!=PLANE ? i : j; // Other
+	
 	// Rel. position
-	var r = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
-	if(type[i]==BOX){
-	  boundingRadius1 = body[i]._shape.halfExtents.norm();
-	  boundingRadius2 = body[j]._shape.radius;
-	} else {
-	  boundingRadius1 = body[j]._shape.halfExtents.norm();
-	  boundingRadius2 = body[i]._shape.radius;
-	}
-	if(r.norm()<(boundingRadius1+boundingRadius2)){
+	var r = new CANNON.Vec3(x[oi]-x[pi],
+				y[oi]-y[pi],
+				z[oi]-z[pi]);
+	var normal = body[pi]._shape.normal;
+	var q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
+	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
@@ -418,13 +380,13 @@ CANNON.Vec3.prototype.set = function(x,y,z){
  */
 CANNON.Vec3.prototype.vadd = function(v,target){
   if(target){
-    target.x += v.x;
-    target.y += v.y;
-    target.z += v.z;
+    target.x = v.x + this.x;
+    target.y = v.y + this.y;
+    target.z = v.z + this.z;
   } else {
-    return new CANNON.Vec3(this.x+v.x,
-			    this.y+v.y,
-			    this.z+v.z);
+    return new CANNON.Vec3(this.x + v.x,
+			   this.y + v.y,
+			   this.z + v.z);
   }  
 };
     
@@ -436,14 +398,14 @@ CANNON.Vec3.prototype.vadd = function(v,target){
  */
 CANNON.Vec3.prototype.vsub = function(v,target){
   if(target){
-    target.x -= v.x;
-    target.y -= v.y;
-    target.z -= v.z;
+    target.x = this.x - v.x;
+    target.y = this.y - v.y;
+    target.z = this.z - v.z;
   } else {
     return new CANNON.Vec3(this.x-v.x,
-			    this.y-v.y,
-			    this.z-v.z);
-  }  
+			   this.y-v.y,
+			   this.z-v.z);
+  }
 };
 
 /**
@@ -571,9 +533,23 @@ CANNON.Quaternion = function(x,y,z,w){
 
 /**
  * Convert to a readable format
+ * @return string
  */
 CANNON.Quaternion.prototype.toString = function(){
   return this.x+","+this.y+","+this.z+","+this.w;
+};
+
+/**
+ * Set the quaternion components given an axis and an angle.
+ * @param Vec3 axis
+ * @param float angle
+ */
+CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
+  var s = Math.sin(angle*0.5);
+  this.x = axis.x * s;
+  this.y = axis.y * s;
+  this.z = axis.z * s;
+  this.w = Math.cos(angle*0.5);
 };
 
 /**
@@ -593,6 +569,18 @@ CANNON.Quaternion.prototype.mult = function(q,target){
   target.x = this.w * vb.x + q.w*va.x + vaxvb.x;
   target.y = this.w * vb.y + q.w*va.y + vaxvb.y;
   target.z = this.w * vb.z + q.w*va.z + vaxvb.z;
+  return target;
+};
+
+CANNON.Quaternion.prototype.inverse = function(target){
+  if(target==undefined)
+    target = new CANNON.Quaternion();
+  
+  target.x = -this.x;
+  target.y = -this.y;
+  target.z = -this.z;
+  target.w = this.w;
+
   return target;
 };
 
@@ -720,10 +708,10 @@ CANNON.Shape.types = {
 /**
  * Rigid body base class
  * @class RigidBody
- * @param mass
- * @param shape
+ * @param float mass
+ * @param Shape shape
+ * @param Material material
  * @todo Motion state? Like dynamic, kinematic, static...
- * @todo Viscous damping property
  */
 CANNON.RigidBody = function(mass,shape,material){
   // Local variables
@@ -737,7 +725,7 @@ CANNON.RigidBody = function(mass,shape,material){
   this._shape = shape;
   this._inertia = shape.calculateLocalInertia(mass);
   this._material = material;
-  this._linearDamping = 0.01;
+  this._linearDamping = 0.01; // Perhaps default should be zero here?
   this._angularDamping = 0.01;
 
   /// Reference to the world the body is living in
@@ -907,6 +895,9 @@ CANNON.RigidBody.prototype.getOrientation = function(target){
 
 /**
  * Sets the velocity of the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setVelocity = function(x,y,z){
   if(this._id!=-1){
@@ -941,6 +932,9 @@ CANNON.RigidBody.prototype.getVelocity = function(target){
 
 /**
  * Sets the angularvelocity of the object
+ * @param float x
+ * @param float y
+ * @param float z
  */
 CANNON.RigidBody.prototype.setAngularVelocity = function(x,y,z){
   if(this._id!=-1){
@@ -1071,6 +1065,10 @@ CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
 
 CANNON.Sphere.prototype.volume = function(){
   return 4.0 * Math.PI * this.radius / 3.0;
+};
+
+CANNON.Sphere.prototype.boundingSphereRadius = function(){
+  return this.radius;
 };/**
  * Box
  * @param Vec3 halfExtents
@@ -1087,12 +1085,12 @@ CANNON.Box.prototype.constructor = CANNON.Box;
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
-  target.x = 1.0 / 12.0 * mass * (   this.halfExtents.y*this.halfExtents.y
-				   + this.halfExtents.z*this.halfExtents.z );
-  target.y = 1.0 / 12.0 * mass * (   this.halfExtents.x*this.halfExtents.x
-				   + this.halfExtents.z*this.halfExtents.z );
-  target.z = 1.0 / 12.0 * mass * (   this.halfExtents.y*this.halfExtents.y
-				   + this.halfExtents.x*this.halfExtents.x );
+  target.x = 1.0 / 12.0 * mass * (   2*this.halfExtents.y*2*this.halfExtents.y
+				   + 2*this.halfExtents.z*2*this.halfExtents.z );
+  target.y = 1.0 / 12.0 * mass * (   2*this.halfExtents.x*2*this.halfExtents.x
+				   + 2*this.halfExtents.z*2*this.halfExtents.z );
+  target.z = 1.0 / 12.0 * mass * (   2*this.halfExtents.y*2*this.halfExtents.y
+				   + 2*this.halfExtents.x*2*this.halfExtents.x );
   return target;
 };
 
@@ -1147,6 +1145,10 @@ CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
 
 CANNON.Box.prototype.volume = function(){
   return 2.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
+};
+
+CANNON.Box.prototype.boundingSphereRadius = function(){
+  return this.halfExtents.norm();
 };/**
  * @class Plane
  * @param Vec3 normal
@@ -1191,6 +1193,8 @@ CANNON.Compound.prototype.constructor = CANNON.Compound;
  * @param Quaternion orientation
  */
 CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
+  offset = offset || new CANNON.Vec3(0,0,0);
+  orientation = orientation || new CANNON.Quaternion(1,0,0,0);
   this.childShapes.push(shape);
   this.childOffsets.push(offset);
   this.childOrientations.push(orientation);
@@ -1205,7 +1209,6 @@ CANNON.Compound.prototype.volume = function(){
 
 /**
  * Calculate the inertia in the local frame.
- * @todo Implement me! Loop over all sub bodies and add to inertia.
  * @return Vec3
  */
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
@@ -1240,7 +1243,7 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
 CANNON.Compound.prototype.boundingSphereRadius = function(){
   var r = 0.0;
   for(var i = 0; i<this.childShapes.length; i++){
-    var candidate = this.childOffsets[i] + cr;
+    var candidate = this.childOffsets[i].norm() + this.childShapes[i].boundingSphereRadius();
     if(r < candidate)
       r = candidate;
   }
@@ -1436,12 +1439,14 @@ CANNON.Solver.prototype.solve = function(){
       var body_j = this.j[l];
 
       var l12 = 12*l;
+      
       if(!precomp[l]){
 	// Precompute constants c[l] and B[l] for contact l
 	var G_Minv_Gt = 0.0;
 	var Gq = 0.0;
 	var GW = 0.0;
 	var GMinvf = 0.0;
+	// Only add normal contributions here? See eq. 27 in spooknotes
 	for(var i=0; i<12; i++){
 	  var addi = l12+i;
 	  G_Minv_Gt += G[addi] * this.MinvTrace[addi] * G[addi];
@@ -1464,10 +1469,7 @@ CANNON.Solver.prototype.solve = function(){
       }
 
       var Gulambda = 0.0;
-      /*
-      for(var i=0; i<12; i++)
-	Gulambda +=  this.G[i + l12] * ulambda[i + l12];
-      */
+
       Gulambda += G[0+l12] * this.vxlambda[body_i]; // previuously calculated lambdas
       Gulambda += G[1+l12] * this.vylambda[body_i];
       Gulambda += G[2+l12] * this.vzlambda[body_i];
@@ -1503,28 +1505,18 @@ CANNON.Solver.prototype.solve = function(){
       }
 
       // Add velocity changes to keep track of them
-      /*
-      for(var i=0; i<12; i++)
-	ulambda[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-      */
       this.vxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+0] * G[l12+0];
       this.vylambda[body_i] += dlambda[l] * this.MinvTrace[l12+1] * G[l12+1];
       this.vzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+2] * G[l12+2];
       this.wxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+3] * G[l12+3];
       this.wylambda[body_i] += dlambda[l] * this.MinvTrace[l12+4] * G[l12+4];
       this.wzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+5] * G[l12+5];
-
       this.vxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+6] * G[l12+6];
       this.vylambda[body_j] += dlambda[l] * this.MinvTrace[l12+7] * G[l12+7];
       this.vzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+8] * G[l12+8];
       this.wxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+9] * G[l12+9];
       this.wylambda[body_j] += dlambda[l] * this.MinvTrace[l12+10] * G[l12+10];
       this.wzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+11] * G[l12+11];
-
-        /*
-	ulambda_i[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-	ulambda_j[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-	*/
     }
   }
 
@@ -1603,6 +1595,10 @@ CANNON.World = function(){
 
   /// Stabilization parameter (number of timesteps until stabilization)
   this.spook_d = 3.0;
+
+  /// Default and last timestep sizes
+  this.default_dt = 1/60;
+  this.last_dt = this.default_dt;
 
   var th = this;
 
@@ -1737,14 +1733,15 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
   this.vx[i] +=  J.x * imi - (this.vx[j] - ui.x);
   this.vy[i] +=  J.y * imi - (this.vy[j] - ui.y);
   this.vz[i] +=  J.z * imi - (this.vz[j] - ui.z);
-  this.vx[j] -=  J.x * imj - (this.vx[i] - ui.x);
-  this.vy[j] -=  J.y * imj - (this.vy[i] - ui.y);
-  this.vz[j] -=  J.z * imj - (this.vz[i] - ui.z);
+  this.vx[j] -=  J.x * imj + (this.vx[i] + ui.x);
+  this.vy[j] -=  J.y * imj + (this.vy[i] + ui.y);
+  this.vz[j] -=  J.z * imj + (this.vz[i] + ui.z);
 
   var cr = ri.cross(J);
   var wadd = cr.mult(1.0/this.inertiax[i]);
 
   /*
+  // Add rotational impulses
   this.wx[i] += wadd.x;
   this.wy[i] += wadd.y;
   this.wz[i] += wadd.z;
@@ -2031,9 +2028,9 @@ CANNON.World.prototype.iterations = function(n){
  */
 CANNON.World.prototype.gravity = function(g){
   if(g==undefined)
-    return this.gravity;
+    return this._gravity;
   else
-    this.gravity = g;
+    this._gravity = g;
 };
 
 /**
@@ -2043,9 +2040,13 @@ CANNON.World.prototype.gravity = function(g){
 CANNON.World.prototype.step = function(dt){
 
   var world = this;
-
-  if(world.paused)
-    return;
+  
+  if(dt==undefined){
+    if(this.last_dt)
+      dt = this.last_dt;
+    else
+      dt = this.default_dt;
+  }
 
   // 1. Collision detection
   var pairs = this._broadphase.collisionPairs(this);
@@ -2056,6 +2057,7 @@ CANNON.World.prototype.step = function(dt){
   var SPHERE = CANNON.Shape.types.SPHERE;
   var PLANE = CANNON.Shape.types.PLANE;
   var BOX = CANNON.Shape.types.BOX;
+  var COMPOUND = CANNON.Shape.types.COMPOUND;
   var types = world.type;
   var x = world.x;
   var y = world.y;
@@ -2134,13 +2136,284 @@ CANNON.World.prototype.step = function(dt){
 
   // Add gravity to all objects
   for(var i=0; i<world.numObjects(); i++){
-    fx[i] += world.gravity.x * world.mass[i];
-    fy[i] += world.gravity.y * world.mass[i];
-    fz[i] += world.gravity.z * world.mass[i];
+    fx[i] += world._gravity.x * world.mass[i];
+    fy[i] += world._gravity.y * world.mass[i];
+    fz[i] += world._gravity.z * world.mass[i];
   }
 
+  // Reset contact solver
   this.solver.reset(world.numObjects());
   var cid = new Int16Array(p1.length); // For saving constraint refs
+
+  /**
+   * Near phase calculation, get the contact point, normal, etc.
+   * @param array result The result one will get back with all the contact point information
+   * @param Shape si Colliding shape
+   * @param Shape sj
+   * @param Vec3 xi Position of the center of mass
+   * @param Vec3 xj
+   * @param Quaternion qi Rotation around the center of mass
+   * @param Quaternion qj
+   * @todo All collision cases
+   * @todo Replace the current nearphase with this function.
+   */
+  function nearPhase(result,si,sj,xi,xj,qi,qj){
+    var swapped = false;
+    if(si.type>sj.type){
+      var temp;
+      temp=sj;   sj=si;   si=temp;
+      temp=xj;   xj=xi;   xi=temp;
+      temp=qj;   qj=qi;   qi=temp;
+      swapped = true;
+    }
+
+    /**
+     * Make a contact object.
+     * @return object
+     * @todo Perhaps we should make a Contact class out of this instead...
+     */
+    function makeResult(){
+      return {
+	  ri:new CANNON.Vec3(), // Vector from body i center to contact point
+	  rj:new CANNON.Vec3(), // Vector from body j center to contact point
+	  ni:new CANNON.Vec3()  // Contact normal protruding body i
+	};
+    }
+
+    /**
+     * Swaps the body references in the contact
+     * @param object r
+     */
+    function swapResult(r){
+      var temp = CANNON.Vec3()
+      temp = r.ri; r.ri = r.rj; r.rj = temp;
+      r.ni.negate(r.ni);
+    }
+
+    /**
+     * Go recursive for compound shapes
+     * @param Shape si
+     * @param CompoundShape sj
+     */
+    function recurseCompound(result,si,sj,xi,xj,qi,qj){
+      for(var i=0; i<sj.childShapes.length; i++){
+	var r = [];
+	nearPhase(r,
+		  si,
+		  sj.childShapes[i],
+		  xi,
+		  xj.vadd(sj.childOffsets[i]), // Transform the shape to its local frame
+		  qi,
+		  qj.mult(sj.childOrientations[i]));
+	for(var j=0; j<r.length; j++){
+	  // transform back how?
+	  r[j].rj.vsub(sj.childOffsets[i],r[j].rj);
+	  //sj.childOrientations[i].inverse().vmult(r[j].rj,r[j].rj);
+	  //sj.childOrientations[i].vmult(r[j].ni,r[j].ni);
+	  result.push(r[j]);
+	}
+      }
+    }
+
+    if(si.type==CANNON.Shape.types.SPHERE){
+      if(sj.type==CANNON.Shape.types.SPHERE){ // sphere-sphere
+
+	// We will have one contact in this case
+	var r = makeResult();
+
+	// Contact normal
+	xj.vsub(xi,r.ni);
+	r.ni.normalize();
+
+	// Contact point locations
+	r.ni.copy(r.ri);
+	r.ni.copy(r.rj);
+	r.ri.mult(si.radius,r.ri);
+	r.rj.mult(-sj.radius,r.rj);
+	result.push(r);
+
+      } else if(sj.type==CANNON.Shape.types.PLANE){ // sphere-plane
+
+	// We will have one contact in this case
+	var r = makeResult();
+
+	// Contact normal
+	sj.normal.copy(r.ni);
+	r.ni.negate(r.ni); // body i is the sphere, flip normal
+	r.ni.normalize();
+
+	// Vector from sphere center to contact point
+	r.ni.mult(si.radius,r.ri);
+
+	// Project down shpere on plane
+	var point_on_plane_to_sphere = xi.vsub(xj);
+	var plane_to_sphere_ortho = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
+	r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
+	result.push(r);
+	
+      } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
+
+	// we refer to the box as body j
+	var box_to_sphere =  xi.vsub(xj);
+	var sides = sj.getSideNormals(true,qj);
+	var R =     si.radius;
+	var penetrating_sides = [];
+
+	// Check side (plane) intersections
+	var found = false;
+	for(var idx=0; idx<sides.length && !found; idx++){ // Max 3 penetrating sides
+	  var ns = sides[idx].copy();
+	  var h = ns.norm();
+	  ns.normalize();
+	  var dot = box_to_sphere.dot(ns);
+	  if(dot<h+R && dot>0){
+	    // Intersects plane. Now check the other two dimensions
+	    var ns1 = sides[(idx+1)%3].copy();
+	    var ns2 = sides[(idx+2)%3].copy();
+	    var h1 = ns1.norm();
+	    var h2 = ns2.norm();
+	    ns1.normalize();
+	    ns2.normalize();
+	    var dot1 = box_to_sphere.dot(ns1);
+	    var dot2 = box_to_sphere.dot(ns2);
+	    if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
+	      found = true;
+	      var r = makeResult();
+	      ns.mult(-R,r.ri); // Sphere r
+	      ns.copy(r.ni);
+	      r.ni.negate(r.ni); // Normal should be out of sphere
+	      ns.mult(h,r.rj); // box
+	      result.push(r);
+	    }
+	  }
+	}
+
+	// Check corners
+	for(var j=0; j<2 && !found; j++){
+	  for(var k=0; k<2 && !found; k++){
+	    for(var l=0; l<2 && !found; l++){
+	      var corner = xj.copy();
+	      if(j) corner.vadd(sides[0],corner);
+	      else  corner.vsub(sides[0],corner);
+	      if(k) corner.vadd(sides[1],corner);
+	      else  corner.vsub(sides[1],corner);
+	      if(l) corner.vadd(sides[2],corner);
+	      else  corner.vsub(sides[2],corner);
+
+	      // World position of corner
+	      var sphere_to_corner = corner.vsub(xi);
+	      if(sphere_to_corner.norm()<R){
+		found = true;
+		var r = makeResult();
+		sphere_to_corner.copy(r.ri); // Sphere
+		r.ri.normalize();
+		r.ri.copy(r.ni);
+		r.ri.mult(R,r.ri);
+		corner.vsub(xj).copy(r.rj);
+		result.push(r);
+	      }
+	    }
+	  }
+	}
+
+	// Check edges
+	for(var j=0; j<sides.length && !found; j++){
+	  for(var k=0; k<sides.length && !found; k++){
+	    if(j%3!=k%3){
+	      // Get edge tangent
+	      var edgeTangent = sides[k].cross(sides[j]);
+	      edgeTangent.normalize();
+	      var edgeCenter = sides[j].vadd(sides[k]);
+	      
+	      var r = xi.vsub(edgeCenter.vadd(xj)); // r = edge center to sphere center
+	      var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
+	      var orthogonal = edgeTangent.mult(orthonorm); // Vector from edge center to sphere center in the tangent direction
+	      var l = 0;
+	      while(l==j%3 || l==k%3) l++;
+	      var dist = xi.vsub(orthogonal).vsub(edgeCenter.vadd(xj)); // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
+	      if(orthonorm < sides[l].norm() && dist.norm()<R){
+		found = true;
+		var res = makeResult();
+		edgeCenter.vadd(orthogonal,res.rj); // box
+		res.ri = dist.negate();
+		res.ri.normalize();
+		res.ri.copy(res.ni);
+		res.ri.mult(R,r.ri);
+		result.push(res);
+	      }
+	    }
+	  }
+	}
+
+      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj);
+      }
+      
+    } else if(si.type==CANNON.Shape.types.PLANE){
+      
+      if(sj.type==CANNON.Shape.types.PLANE){
+	throw "Plane-plane collision... wait, you did WHAT?";
+	
+      } else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
+
+	// Collision normal
+	var n = si.normal.copy();
+
+	// Loop over corners
+	var numcontacts = 0;
+	var corners = sj.getCorners();
+	for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
+	  var r = makeResult();
+
+	  // Transform corner into the world frame
+	  var worldCorner = qj.vmult(corners[idx]); // Rotate
+	  worldCorner.copy(r.rj);
+	  worldCorner.vadd(xj,worldCorner);  // Translate
+
+	  // Project down corner to plane to get xj
+	  var point_on_plane_to_corner = worldCorner.vsub(xi);
+	  var d = n.dot(point_on_plane_to_corner);
+	  if(d<=0){
+	    var plane_to_corner = n.mult(d);
+	    point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
+	    
+	    // Set contact normal
+	    n.copy(r.ni);
+	    
+	    // Add contact
+	    result.push(r);
+	  }
+	}
+	
+      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj);
+      }
+      
+    } else if(si.type==CANNON.Shape.types.BOX){
+      
+      if(sj.type==CANNON.Shape.types.BOX){ // box-box
+	throw "box-box collision not implemented yet";
+      }
+      
+      if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj);
+	
+      }
+      
+    } else if(si.type==CANNON.Shape.types.COMPOUND){
+      
+      if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj);
+	
+      }
+    }
+    
+    // Swap back if we swapped bodies in the beginning
+    for(var i=0; swapped && i<result.length; i++)
+      swapResult(result[i]);
+  }
+
+  // Loop over all collisions
   for(var k=0; k<p1.length; k++){
 
     // Get current collision indeces
@@ -2159,519 +2432,89 @@ CANNON.World.prototype.step = function(dt){
       e = this._contact_restitution[cm];
     }
     
-    // sphere-plane collision
-    if((types[i]==SPHERE && types[j]==PLANE) ||
-       (types[i]==PLANE  && types[j]==SPHERE)){
-      // Identify what is what
-      var pi, si;
-      if(types[i]==SPHERE){
-	si=i;
-	pi=j;
-      } else {
-	si=j;
-	pi=i;
-      }
+    // Get contacts
+    var contacts = [];
+    nearPhase(contacts,
+	      world.body[i]._shape,
+	      world.body[j]._shape,
+	      new CANNON.Vec3(x[i],y[i],z[i]),
+	      new CANNON.Vec3(x[j],y[j],z[j]),
+	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
+	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
+    /*if(contacts.length!=4 && contacts.length)
+      console.log(contacts.length+" contacts, "," ni=",contacts[0].ni.toString()," ri=",contacts[0].ri.toString()," rj=",contacts[0].rj.toString());*/
 
-      // Collision normal
-      var n = world.body[pi]._shape.normal.copy();
-      n.normalize();
-      n.negate(n); // We are working with the sphere as body i!
-
-      // Vector from sphere center to contact point
-      var rsi = n.mult(world.body[si]._shape.radius);
-      var rsixn = rsi.cross(n);
-
-      // Project down shpere on plane???
-      var point_on_plane_to_sphere = new CANNON.Vec3(x[si]-x[pi],
-						     y[si]-y[pi],
-						     z[si]-z[pi]);
-      var xs = new CANNON.Vec3(x[si],y[si],z[si]);
-      var plane_to_sphere = n.mult(n.dot(point_on_plane_to_sphere));
-      var xp = xs.vsub(plane_to_sphere); // The sphere position projected to plane
-      var rj = new CANNON.Vec3(xp.x-x[pi],
-			       xp.y-y[pi],
-			       xp.z-z[pi]);
-      var xj = new CANNON.Vec3(x[pi],
-			       y[pi],
-			       z[pi]);
-
-      // Pseudo name si := i
+    // Add contact constraint(s)
+    for(var ci = 0; ci<contacts.length; ci++){
+      var c = contacts[ci];
+      
       // g = ( xj + rj - xi - ri ) .dot ( ni )
-      // xj is in this case the penetration point on the plane, and rj=0
-      var qvec = new CANNON.Vec3(xj.x + rj.x - x[si] - rsi.x,
-				 xj.y + rj.y - y[si] - rsi.y,
-				 xj.z + rj.z - z[si] - rsi.z);
-      var q = qvec.dot(n);
-	
+      var gvec = new CANNON.Vec3(x[j] + c.rj.x - x[i] - c.ri.x,
+				 y[j] + c.rj.y - y[i] - c.ri.y,
+				 z[j] + c.rj.z - z[i] - c.ri.z);
+      var g = gvec.dot(c.ni); // Gap, negative if penetration
+
       // Action if penetration
-      if(q<0.0){
-	cmatrix(si,pi,0,1); // Set current contact state to contact
-	var v_sphere = new CANNON.Vec3(vx[si],vy[si],vz[si]);
-	var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
-	var v_contact = w_sphere.cross(rsi);
-	var u = v_sphere;//.vadd(w_sphere.cross(rsi));
+      if(g<0.0){
+	//console.log(c);
+	//cmatrix(si,pi,0,1); // Set current contact state to contact
+	var vi = new CANNON.Vec3(vx[i],vy[i],vz[i]);
+	var wi = new CANNON.Vec3(wx[i],wy[i],wz[i]);
+	var vj = new CANNON.Vec3(vx[j],vy[j],vz[j]);
+	var wj = new CANNON.Vec3(wx[j],wy[j],wz[j]);
+	var u = (vj.vsub(vi)); // Contact velo
+	var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+	u.vsub(uw,u);
 
-	// Which collision state?
-	if(lastCollisionState==0){ // No contact last timestep -> impulse
+	// Get mass properties
+	var iMi = world.invm[i];
+	var iMj = world.invm[j];
+	var iIxi = world.inertiax[i] > 0 ? 1.0/world.inertiax[i] : 0;
+	var iIyi = world.inertiay[i] > 0 ? 1.0/world.inertiay[i] : 0;
+	var iIzi = world.inertiaz[i] > 0 ? 1.0/world.inertiaz[i] : 0;
+	var iIxj = world.inertiax[j] > 0 ? 1.0/world.inertiax[j] : 0;
+	var iIyj = world.inertiay[j] > 0 ? 1.0/world.inertiay[j] : 0;
+	var iIzj = world.inertiaz[j] > 0 ? 1.0/world.inertiaz[j] : 0;
 
-	  // Inverse inertia matrix
-	  //console.log("sphere-plane...");
-	  this._addImpulse(si,pi,rsi,rj,u,n,mu_s,e);
-
-	} else if(lastCollisionState==1){ // Last contact was also overlapping - contact
-	  // --- Solve for contacts ---
-	  var iM = world.invm[si];
-	  var iI = world.inertiax[si] > 0 ? 1.0/world.inertiax[si] : 0; // Sphere - same for all dims
-	  cid[k] = this.solver
-	    .addConstraint( // Non-penetration constraint jacobian
-			   [-n.x,-n.y,-n.z,
-			    0,0,0,
-			    0,0,0,
-			    0,0,0],
+	// Add contact constraint
+	var n = c.ni;
+	var rixn = c.ri.cross(n);
+	var rjxn = c.rj.cross(n);
+	var gdot = n.mult(u.dot(n));
+	cid[k] = this.solver
+	  .addConstraint( // Non-penetration constraint jacobian
+			 [-n.x,-n.y,-n.z,
+			  -rixn.x,-rixn.y,-rixn.z,
+			  n.x,n.y,n.z,
+			  rjxn.x,rjxn.y,rjxn.z],
 			 
-			   // Inverse mass matrix
-			   [iM,iM,iM,
-			    iI,iI,iI,
-			    0,0,0,   // Static plane -> infinite mass
-			    0,0,0],
+			 // Inverse mass matrix
+			 [iMi,iMi,iMi,
+			  iIxi,iIyi,iIzi,
+			  iMj,iMj,iMj,
+			  iIxj,iIyj,iIzj],
 			 
-			   // q - constraint violation
-			   [-qvec.x*2,-qvec.y*2,-qvec.z*2, // why *2 ?
-			    0,0,0,
-			    0,0,0,
-			    0,0,0],
+			 // g - constraint violation / gap
+			 [-gvec.x,-gvec.y,-gvec.z,
+			  0,0,0,
+			  gvec.x,gvec.y,gvec.z,
+			  0,0,0],
+
+			 [-u.x,-u.y,-u.z,
+			  0,0,0,
+			  u.x,u.y,u.z,
+			  0,0,0],
 			 
-			   // qdot - motion along penetration normal
-			   [v_sphere.x, v_sphere.y, v_sphere.z,
-			    0,0,0,
-			    0,0,0,
-			    0,0,0],
-			 
-			   // External force - forces & torques
-			   [fx[si],fy[si],fz[si],
-			    taux[si],tauy[si],tauz[si],
-			    0,0,0,
-			    0,0,0],
-			   0,
-			   'inf',
-			   si,
-			   pi);
-	}
+			 // External force - forces & torques
+			 [fx[i],fy[i],fz[i],
+			  taux[i],tauy[i],tauz[i],
+			  fx[j],fy[j],fz[j],
+			  taux[j],tauy[j],tauz[j]],
+			 0,
+			 'inf',
+			 i,
+			 j);
       }
-
-    } else if(types[i]==SPHERE && types[j]==SPHERE){
-
-      var ri = new CANNON.Vec3(x[j]-x[i],y[j]-y[i],z[j]-z[i]);
-      var rj = new CANNON.Vec3(x[i]-x[j],y[i]-y[j],z[i]-z[j]);
-      var nlen = ri.norm();
-      ri.normalize();
-      ri.mult(world.body[i]._shape.radius,ri);
-      rj.normalize();
-      rj.mult(world.body[j]._shape.radius,rj);
-      var ni = new CANNON.Vec3(x[j]-x[i],
-			       y[j]-y[i],
-			       z[j]-z[i]);
-      ni.normalize();
-      // g = ( xj + rj - xi - ri ) .dot ( ni )
-      var q_vec = new CANNON.Vec3(x[j]+rj.x-x[i]-ri.x,
-				  y[j]+rj.y-y[i]-ri.y,
-				  z[j]+rj.z-z[i]-ri.z);
-      var q = q_vec.dot(ni);
-
-      // Sphere contact!
-      if(q<0.0){ // Violation always < 0
-
-	// Set contact
-	cmatrix(i,j,0,1);
-	
-	var v_sphere_i = new CANNON.Vec3(vx[i],vy[i],vz[i]);
-	var v_sphere_j = new CANNON.Vec3(vx[j],vy[j],vz[j]);
-	var w_sphere_i = new CANNON.Vec3(wx[i],wy[i],wz[i]);
-	var w_sphere_j = new CANNON.Vec3(wx[j],wy[j],wz[j]);
-	v_sphere_i.vadd(ri.cross(w_sphere_i));
-	v_sphere_j.vadd(rj.cross(w_sphere_j));
-	  
-	var u = v_sphere_j.vsub(v_sphere_i);
-
-	if(lastCollisionState == 0){ // No contact last timestep -> impulse
-	  //console.log("sphere-sphere impulse...");
-	  this._addImpulse(i,j,ri,rj,u,ni,mu_s,e);
-	  
-	} else { // Contact in last timestep -> contact solve
-	  //console.log("sphere-sphere contact...");
-	  // gdot = ( vj + wj x rj - vi - wi x ri ) .dot ( ni )
-	  // => W = ( vj + wj x rj - vi - wi x ri )
-	  
-	  var iM_i = !world.fixed[i] ? world.invm[i] : 0;
-	  var iI_i = !world.fixed[i] ? 1.0/world.inertiax[i] : 0;
-	  var iM_j = !world.fixed[j] ? world.invm[j] : 0;
-	  var iI_j = !world.fixed[j] ? 1.0/world.inertiax[j] : 0;
-	  var rxni = ri.cross(ni);
-	  
-	  cid[k] = this.solver
-	    .addConstraint( // Non-penetration constraint jacobian
-			   [-ni.x,   -ni.y,   -ni.z,
-			    0,0,0,//-rxni.x, -rxni.y, -rxni.z,
-			    ni.x,   ni.y,    ni.z,
-			    0,0,0],//rxni.x, rxni.y,  rxni.z],
-			   
-			   // Inverse mass matrix
-			   [iM_i, iM_i, iM_i,
-			    iI_i, iI_i, iI_i,
-			    iM_j, iM_j, iM_j,
-			    iI_j, iI_j, iI_j],
-			   
-			   // q - constraint violation
-			   [-q_vec.x,-q_vec.y,-q_vec.z,
-			    0,0,0,
-			    q_vec.x,q_vec.y,q_vec.z,
-			    0,0,0],
-			   
-			   [vx[i],vy[i],vz[i],
-			    0,0,0,
-			    vx[j],vy[j],vz[j],
-			    0,0,0],
-			   
-			   // External force - forces & torques
-			   [fx[i],fy[i],fz[i],
-			    taux[i],tauy[i],tauz[i],
-			    fx[j],fy[j],fz[j],
-			    taux[j],tauy[j],tauz[j]],
-			   0,
-			   'inf',
-			   i,
-			   j);
-	}
-      }
-    } else if((types[i]==BOX && types[j]==PLANE) || 
-	      (types[i]==PLANE && types[j]==BOX)){
-      
-      // Identify what is what
-      var pi, bi;
-      if(types[i]==BOX){
-	bi=i;
-	pi=j;
-      } else {
-	bi=j;
-	pi=i;
-      }
-      
-      // Collision normal
-      var n = world.body[pi]._shape.normal.copy();
-      n.negate(n); // We are working with the box as body i!
-
-      var xi = new CANNON.Vec3(world.x[bi],
-			       world.y[bi],
-			       world.z[bi]);
-
-      // Compute inertia in the world frame
-      var quat = new CANNON.Quaternion(qx[bi],qy[bi],qz[bi],qw[bi]);
-      quat.normalize();
-      var localInertia = new CANNON.Vec3(world.inertiax[bi],
-					 world.inertiay[bi],
-					 world.inertiaz[bi]);
-      // @todo Is this rotation OK? Check!
-      var worldInertia = quat.vmult(localInertia);
-      worldInertia.x = Math.abs(worldInertia.x);
-      worldInertia.y = Math.abs(worldInertia.y);
-      worldInertia.z = Math.abs(worldInertia.z);
-
-      var corners = world.body[bi]._shape.getCorners();
-      
-      // Loop through each corner
-      var numcontacts = 0;
-      for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
-
-	var ri = corners[idx];
-
-	// Compute penetration corner in the world frame
-	quat.vmult(ri,ri);
-
-	var rixn = ri.cross(n);
-
-	// Project down corner to plane to get xj
-	var point_on_plane_to_corner = new CANNON.Vec3(xi.x+ri.x*0.5-x[pi],
-						       xi.y+ri.y*0.5-y[pi],
-						       xi.z+ri.z*0.5-z[pi]); // 0.5???
-	var plane_to_corner = n.mult(n.dot(point_on_plane_to_corner));
-
-	var xj = xi.vsub(plane_to_corner);
-	
-	// Pseudo name: box index = i
-	// g = ( xj + rj - xi - ri ) .dot ( ni )
-	var qvec = new CANNON.Vec3(xj.x - x[bi] - ri.x*0.5, // 0.5???
-				   xj.y - y[bi] - ri.y*0.5,
-				   xj.z - z[bi] - ri.z*0.5);
-	var q = qvec.dot(n);
-	n.mult(q,qvec);
-	
-	// Action if penetration
-	if(q<0.0){
-
-	  numcontacts++;
-
-	  var v_box = new CANNON.Vec3(vx[bi],vy[bi],vz[bi]);
-	  var w_box = new CANNON.Vec3(wx[bi],wy[bi],wz[bi]);
-
-	  var v_contact = w_box.cross(ri);
-	  var u = v_box.vadd(w_box.cross(ri));
-
-	  var iM = world.invm[bi];
-	  cid[k] = this.solver
-	    .addConstraint( // Non-penetration constraint jacobian
-			   [-n.x,-n.y,-n.z,
-			    -rixn.x,-rixn.y,-rixn.z,
-			    0,0,0,
-			    0,0,0],
-			   
-			   // Inverse mass matrix
-			   [iM,iM,iM,
-			    1.0/worldInertia.x, 1.0/worldInertia.y, 1.0/worldInertia.z,
-			    0,0,0,   // Static plane -> infinite mass
-			    0,0,0],
-			   
-			   // q - constraint violation
-			   [-qvec.x,-qvec.y,-qvec.z,
-			    0,0,0,
-			    0,0,0,
-			    0,0,0],
-			   
-			   // qdot - motion along penetration normal
-			   [v_box.x, v_box.y, v_box.z,
-			    w_box.x, w_box.y, w_box.z,
-			    0,0,0,
-			    0,0,0],
-			   
-			   // External force - forces & torques
-			   [fx[bi],fy[bi],fz[bi],
-			    taux[bi],tauy[bi],tauz[bi],
-			    fx[pi],fy[pi],fz[pi],
-			    taux[pi],tauy[pi],tauz[pi]],
-
-			   0,
-			   'inf',
-			   bi,
-			   pi);
-	}
-      }
-
-    } else if((types[i]==BOX && types[j]==SPHERE) || 
-	      (types[i]==SPHERE && types[j]==BOX)){
-
-      /*
-	--- Box-sphere collision ---
-	We have several scenarios here... But obviously we can only have 1 contact point
-	- One of the 8 corners penetrate - normal is the sphere center-->corner vector
-	- Sphere is penetrating one of the 6 box side - normal is the box side
-	- Sphere collides with one of the 12 box edges
-	
-	To identify scenario, we project the vector from the box center to the
-	sphere center onto each of the 6 box side normals, penetration if r*n<h+rs
-	3 side penetrations => corner
-	2 side penetrations => edge
-	1 side penetrations => side
-      */
-
-      // Identify what is what
-      var si, bi;
-      if(types[i]==BOX){
-	bi=i;
-	si=j;
-      } else {
-	bi=j;
-	si=i;
-      }
-      
-      // we refer to the box as body i
-      var xi = new CANNON.Vec3(world.x[bi],world.y[bi],world.z[bi]);
-      var xj = new CANNON.Vec3(world.x[si],world.y[si],world.z[si]);
-      var xixj = xj.vsub(xi);
-
-      var qi = new CANNON.Quaternion(world.qx[bi],world.qy[bi],world.qz[bi],world.qw[bi]);
-      var sides = world.body[bi]._shape.getSideNormals(true,qi);
-      var R = world.body[si]._shape.radius;
-
-      var penetrating_sides = [];
-      for(var idx=0; idx<sides.length && penetrating_sides.length<=3; idx++){ // Max 3 penetrating sides
-	// Need vector from side center to sphere center, r
-	var ns = sides[idx].copy();
-	var h = ns.norm();
-	var r = xixj.vsub(ns);
-	ns.normalize();
-	var dot = ns.dot(r);
-	if(dot<h+R && dot>0)
-	  penetrating_sides.push(idx);
-      }
-
-
-      var iMi = new CANNON.Vec3(world.invm[bi],
-				world.invm[bi],
-				world.invm[bi]);
-      var iMj = new CANNON.Vec3(world.invm[si],
-				world.invm[si],
-				world.invm[si]);
-      var iIi = new CANNON.Vec3(world.iinertiax[bi],
-				world.iinertiay[bi],
-				world.iinertiaz[bi]); // @todo rotate into world frame
-      var iIj = new CANNON.Vec3(world.iinertiax[si],
-				world.iinertiay[si],
-				world.iinertiaz[si]);
-      var vi = new CANNON.Vec3(vx[bi],vy[bi],vz[bi]);
-      var vj = new CANNON.Vec3(vx[si],vy[si],vz[si]);
-      var wi = new CANNON.Vec3(wx[bi],wy[bi],wz[bi]);
-      var wj = new CANNON.Vec3(wx[si],wy[si],wz[si]);
-
-      var fi = new CANNON.Vec3(fx[bi],fy[bi],fz[bi]);
-      var fj = new CANNON.Vec3(fx[si],fy[si],fz[si]);
-
-      var taui = new CANNON.Vec3(taux[bi],tauy[bi],tauz[bi]);
-      var tauj = new CANNON.Vec3(taux[si],tauy[si],tauz[si]);
-
-      // Identify collision type
-      if(penetrating_sides.length==1){
-	// "Flat" collision against one side, normal is the side normal
-	var axis = penetrating_sides[0];
-	var h = sides[axis];
-	var ni = h.copy();
-	ni.normalize();
-	var r = xj.vsub(xi.vadd(h)); // center of box side to center of sphere
-	var t1 = sides[(axis+1)%3];
-	var t2 = sides[(axis+2)%3];
-	t1.normalize();
-	t2.normalize();
-	var ri = h.vsub(t1.mult(r.dot(t1))).vsub(t2.mult(r.dot(t2)));
-	var rj = ni.copy();
-	rj.normalize();
-	rj.mult(-R,rj);
-	this.solver
-	  .addNonPenetrationConstraint(bi,si,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj);
-      } else if(penetrating_sides.length==2){
-	// Contact with edge
-	// normal is the edge-sphere unit vector, orthogonal to the edge
-	var axis1 = penetrating_sides[0];
-	var axis2 = penetrating_sides[1];
-	var edgeCenter = sides[axis1].vadd(sides[axis2]);
-	var edgeTangent = sides[axis1].cross(sides[axis2]);
-	edgeTangent.normalize();
-	var r = xj.vsub(edgeCenter.vadd(xi));
-	var ri = edgeCenter.vadd(edgeTangent.mult(r.dot(edgeTangent)));
-	var rj = xi.vadd(ri).vsub(xj);
-	rj.normalize();
-	rj.mult(R);
-	var ni = rj.copy();
-	ni.negate(ni);
-	ni.normalize();
-	this.solver
-	  .addNonPenetrationConstraint(bi,si,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj);
-      } else if(penetrating_sides.length==3){
-	// Corner collision
-	var s1 = sides[penetrating_sides[0]];
-	var s2 = sides[penetrating_sides[1]];
-	var s3 = sides[penetrating_sides[2]];
-	var corner = s1.vadd(s2).vadd(s3);
-	var ri = corner;
-	var ni = corner.vadd(xi).vsub(xj);
-	ni.normalize();
-	var rj = ni.mult(-R);
-	// @todo add contact constraint
-      } else {
-	// No contact...
-      }
-
-      /*
-      // Scenario 1: Corner collision
-      var corners = world.body[bi]._shape.getCorners();
-
-      // Loop through each corner
-      var numcontacts = 0;
-      for(var idx=0; idx<corners.length && numcontacts<=1; idx++){ // max 1 corner
-
-	var ri = corners[idx];
-
-	// Rotate corner into the world frame
-	quat.vmult(ri,ri);
-
-	var rj = new CANNON.Vec3(x[bi] + ri.x - x[si],
-				 y[bi] + ri.y - y[si],
-				 z[bi] + ri.z - z[si]);
-	
-	// Pseudo name: box index = i
-	// g = ( xj + rj - xi - ri ) .dot ( ni )
-	var qvec = new CANNON.Vec3(xj.x + rj.x - xi.x - ri.x,
-				   xj.y + rj.y - xi.y - ri.y,
-				   xj.z + rj.z - xi.z - ri.z);
-	var q = qvec.dot(n);
-	n.mult(q,qvec);
-	
-	// Action if penetration
-	if(q<0.0){
-
-	  var rixn = ri.cross(n);
-
-	  numcontacts++;
-
-	  var v_box = new CANNON.Vec3(vx[bi],vy[bi],vz[bi]);
-	  var w_box = new CANNON.Vec3(wx[bi],wy[bi],wz[bi]);
-	  var v_sphere = new CANNON.Vec3(vx[si],vy[si],vz[si]);
-	  var w_sphere = new CANNON.Vec3(wx[si],wy[si],wz[si]);
-	  var u = v_sphere.vadd(w_sphere.cross(rj)).vsub(v_box.vadd(w_box.cross(ri)));
-
-	  var iMi = world.invm[bi];
-	  var iMj = world.invm[si];
-
-	  var iIbx = 1.0/worldInertia.x,
-  	      iIby = 1.0/worldInertia.y,
-	      iIbz = 1.0/worldInertia.z;
-	  cid[k] = this.solver
-	    .addConstraint( // Non-penetration constraint jacobian
-			   [-n.x,-n.y,-n.z,
-			    -rixn.x,-rixn.y,-rixn.z,
-			    0,0,0,
-			    0,0,0],
-			   
-			   // Inverse mass matrix
-			   [iMi,iMi,iMi,
-			    iIbx,iIby,iIbz,
-			    iMj,iMj,iMj,
-			    Is,Is,Is], // Symmetric for sphere
-			   
-			   // q - constraint violation
-			   [-qvec.x,-qvec.y,-qvec.z,
-			    0,0,0,
-			    qvec.x,qvec.y,qvec.z,
-			    0,0,0],
-			   
-			   // qdot - motion along penetration normal
-			   [v_box.x, v_box.y, v_box.z,
-			    w_box.x, w_box.y, w_box.z,
-			    0,0,0,
-			    0,0,0],
-			   
-			   // External force - forces & torques
-			   [fx[bi],fy[bi],fz[bi],
-			    taux[bi],tauy[bi],tauz[bi],
-			    fx[pi],fy[pi],fz[pi],
-			    taux[pi],tauy[pi],tauz[pi]],
-
-			   0,
-			   'inf',
-			   bi,
-			   pi);
-	}
-      }
-
-      // Still no contacts? Check scenario 2 - the 6 box sides
-      if(numcontacts==0){
-	// Idea: get the 6 side normals
-
-	// @todo
-      }
-
-      // Still no contacts? Check scenario 3 - the 12 box edges
-      if(numcontacts==0){
-	// @todo
-      }
-      */
     }
   }
 

@@ -20,6 +20,8 @@ CANNON.Compound.prototype.constructor = CANNON.Compound;
  * @param Quaternion orientation
  */
 CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
+  offset = offset || new CANNON.Vec3(0,0,0);
+  orientation = orientation || new CANNON.Quaternion(1,0,0,0);
   this.childShapes.push(shape);
   this.childOffsets.push(offset);
   this.childOrientations.push(orientation);
@@ -34,7 +36,6 @@ CANNON.Compound.prototype.volume = function(){
 
 /**
  * Calculate the inertia in the local frame.
- * @todo Implement me! Loop over all sub bodies and add to inertia.
  * @return Vec3
  */
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
@@ -69,7 +70,7 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
 CANNON.Compound.prototype.boundingSphereRadius = function(){
   var r = 0.0;
   for(var i = 0; i<this.childShapes.length; i++){
-    var candidate = this.childOffsets[i] + cr;
+    var candidate = this.childOffsets[i].norm() + this.childShapes[i].boundingSphereRadius();
     if(r < candidate)
       r = candidate;
   }

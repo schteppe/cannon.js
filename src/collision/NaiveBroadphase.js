@@ -24,9 +24,10 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   var n = world.numObjects();
 
   // Local fast access
-  var SPHERE = CANNON.Shape.types.SPHERE;
-  var PLANE =  CANNON.Shape.types.PLANE;
-  var BOX =    CANNON.Shape.types.BOX;
+  var SPHERE =   CANNON.Shape.types.SPHERE;
+  var PLANE =    CANNON.Shape.types.PLANE;
+  var BOX =      CANNON.Shape.types.BOX;
+  var COMPOUND = CANNON.Shape.types.COMPOUND;
   var x = world.x;
   var y = world.y;
   var z = world.z;
@@ -37,81 +38,47 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
 
-      // --- Sphere-sphere ---
-      if(type[i]==SPHERE && type[j]==SPHERE){
-	var r2 = (body[i]._shape.radius + body[j]._shape.radius);
-	if(Math.abs(x[i]-x[j]) < r2 && 
-	   Math.abs(y[i]-y[j]) < r2 && 
-	   Math.abs(z[i]-z[j]) < r2){
+      // --- Box / sphere / compound collision ---
+      if((type[i]==BOX      && type[j]==BOX) ||
+	 (type[i]==BOX      && type[j]==COMPOUND) ||
+	 (type[i]==BOX      && type[j]==SPHERE) ||
+	 (type[i]==SPHERE   && type[j]==BOX) ||
+	 (type[i]==SPHERE   && type[j]==SPHERE) ||
+	 (type[i]==SPHERE   && type[j]==COMPOUND) ||
+	 (type[i]==COMPOUND && type[j]==COMPOUND) ||
+	 (type[i]==COMPOUND && type[j]==SPHERE) ||
+	 (type[i]==COMPOUND && type[j]==BOX)){
+	// Rel. position
+	var r = new CANNON.Vec3(x[j]-x[i],
+				y[j]-y[i],
+				z[j]-z[i]);
+	var boundingRadius1 = body[i]._shape.boundingSphereRadius();
+	var boundingRadius2 = body[j]._shape.boundingSphereRadius();
+	if(r.norm()<(boundingRadius1+boundingRadius2)){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
 
-      // --- Sphere-plane ---
+      // --- Sphere/box/compound versus plane ---
       } else if((type[i]==SPHERE && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==SPHERE)){
-	var si = type[i]==SPHERE ? i : j;
-	var pi = type[i]==PLANE ? i : j;
-	
-	// Rel. position
-	var r = new CANNON.Vec3(x[si]-x[pi],
-				y[si]-y[pi],
-				z[si]-z[pi]);
-	var normal = body[pi]._shape.normal;
-	var q = r.dot(normal)-body[si]._shape.radius;
-	if(q<0.0){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
-	
-	// --- Box-plane ---
-      } else if((type[i]==BOX && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==BOX)){
-	var bi = type[i]==BOX   ? i : j;
-	var pi = type[i]==PLANE ? i : j;
-	
-	// Rel. position
-	var r = new CANNON.Vec3(x[bi]-x[pi],
-				y[bi]-y[pi],
-				z[bi]-z[pi]);
-	var normal = body[pi]._shape.normal;
-	var d = r.dot(normal); // Distance from box center to plane
-	var boundingRadius = body[bi]._shape.halfExtents.norm();
-	var q = d - boundingRadius;
-	if(q<0.0){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
+		(type[i]==PLANE &&  type[j]==SPHERE) ||
 
-	// --- Box-box ---
-      } else if((type[i]==BOX && type[j]==BOX) ||
-		(type[i]==BOX && type[j]==BOX)){
-	// Rel. position
-	var r = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
-	var boundingRadius1 = body[i]._shape.halfExtents.norm();
-	var boundingRadius2 = body[j]._shape.halfExtents.norm();
-	if(r.norm()<(boundingRadius1+boundingRadius2)){
-	  pairs1.push(i);
-	  pairs2.push(j);
-	}
+		(type[i]==BOX && type[j]==PLANE) ||
+		(type[i]==PLANE &&  type[j]==BOX) ||
 
-	// --- box-sphere ---
-      } else if((type[i]==BOX && type[j]==SPHERE) ||
-		(type[i]==SPHERE && type[j]==BOX)){
+		(type[i]==COMPOUND && type[j]==PLANE) ||
+		(type[i]==PLANE &&  type[j]==COMPOUND)){
+
+	var pi = type[i]==PLANE ? i : j; // Plane
+	var oi = type[i]!=PLANE ? i : j; // Other
+	
 	// Rel. position
-	var r = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
-	if(type[i]==BOX){
-	  boundingRadius1 = body[i]._shape.halfExtents.norm();
-	  boundingRadius2 = body[j]._shape.radius;
-	} else {
-	  boundingRadius1 = body[j]._shape.halfExtents.norm();
-	  boundingRadius2 = body[i]._shape.radius;
-	}
-	if(r.norm()<(boundingRadius1+boundingRadius2)){
+	var r = new CANNON.Vec3(x[oi]-x[pi],
+				y[oi]-y[pi],
+				z[oi]-z[pi]);
+	var normal = body[pi]._shape.normal;
+	var q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
+	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}

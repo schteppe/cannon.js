@@ -14,12 +14,12 @@ CANNON.Box.prototype.constructor = CANNON.Box;
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
-  target.x = 1.0 / 12.0 * mass * (   this.halfExtents.y*this.halfExtents.y
-				   + this.halfExtents.z*this.halfExtents.z );
-  target.y = 1.0 / 12.0 * mass * (   this.halfExtents.x*this.halfExtents.x
-				   + this.halfExtents.z*this.halfExtents.z );
-  target.z = 1.0 / 12.0 * mass * (   this.halfExtents.y*this.halfExtents.y
-				   + this.halfExtents.x*this.halfExtents.x );
+  target.x = 1.0 / 12.0 * mass * (   2*this.halfExtents.y*2*this.halfExtents.y
+				   + 2*this.halfExtents.z*2*this.halfExtents.z );
+  target.y = 1.0 / 12.0 * mass * (   2*this.halfExtents.x*2*this.halfExtents.x
+				   + 2*this.halfExtents.z*2*this.halfExtents.z );
+  target.z = 1.0 / 12.0 * mass * (   2*this.halfExtents.y*2*this.halfExtents.y
+				   + 2*this.halfExtents.x*2*this.halfExtents.x );
   return target;
 };
 
@@ -74,4 +74,8 @@ CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
 
 CANNON.Box.prototype.volume = function(){
   return 2.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
+};
+
+CANNON.Box.prototype.boundingSphereRadius = function(){
+  return this.halfExtents.norm();
 };

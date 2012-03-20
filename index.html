@@ -27,7 +27,12 @@
     .download { float: right; }
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
+    .footer { text-align:center; padding-top:10px; font-style: italic; }
+    .demo_img {
+      max-height:150px;
+      box-shadow:0px 0px 10px rgba(0,0,0,1);
+      margin:10px;
+    };
   </style>
 </head>
 
@@ -54,8 +59,10 @@
     <p>
       Click on an image to show the corresponding example.
     </p>
-    <a href="examples/container.html"><img src="images/container.png" style="max-height:200px" alt="Container"></a>
-    <a href="examples/boxes.html"><img src="images/boxes.png" style="max-height:200px" alt="Boxes"></a>
+    <a href="demos/container.html"><img src="images/container2.png" class="demo_img" alt="Container"></a>
+    <a href="demos/stacks.html"><img src="images/stack.png" class="demo_img" alt="Different types of stacks"></a>
+    <a href="demos/singleBodyOnPlane.html"><img src="images/single.png" class="demo_img" alt="Single shape on a plane."></a>
+    <a href="demos/collisions.html"><img src="images/collisions.png" class="demo_img" alt="Pair collisions"></a>
     
     <div class="footer">
       Read more and download the code at <a href="https://github.com/schteppe/cannon.js">github.com/schteppe/cannon.js</a>

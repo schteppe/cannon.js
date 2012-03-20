@@ -25,3 +25,7 @@ CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
 CANNON.Sphere.prototype.volume = function(){
   return 4.0 * Math.PI * this.radius / 3.0;
 };
+
+CANNON.Sphere.prototype.boundingSphereRadius = function(){
+  return this.radius;
+};

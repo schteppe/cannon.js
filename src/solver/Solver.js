@@ -189,12 +189,14 @@ CANNON.Solver.prototype.solve = function(){
       var body_j = this.j[l];
 
       var l12 = 12*l;
+      
       if(!precomp[l]){
 	// Precompute constants c[l] and B[l] for contact l
 	var G_Minv_Gt = 0.0;
 	var Gq = 0.0;
 	var GW = 0.0;
 	var GMinvf = 0.0;
+	// Only add normal contributions here? See eq. 27 in spooknotes
 	for(var i=0; i<12; i++){
 	  var addi = l12+i;
 	  G_Minv_Gt += G[addi] * this.MinvTrace[addi] * G[addi];
@@ -217,10 +219,7 @@ CANNON.Solver.prototype.solve = function(){
       }
 
       var Gulambda = 0.0;
-      /*
-      for(var i=0; i<12; i++)
-	Gulambda +=  this.G[i + l12] * ulambda[i + l12];
-      */
+
       Gulambda += G[0+l12] * this.vxlambda[body_i]; // previuously calculated lambdas
       Gulambda += G[1+l12] * this.vylambda[body_i];
       Gulambda += G[2+l12] * this.vzlambda[body_i];
@@ -256,28 +255,18 @@ CANNON.Solver.prototype.solve = function(){
       }
 
       // Add velocity changes to keep track of them
-      /*
-      for(var i=0; i<12; i++)
-	ulambda[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-      */
       this.vxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+0] * G[l12+0];
       this.vylambda[body_i] += dlambda[l] * this.MinvTrace[l12+1] * G[l12+1];
       this.vzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+2] * G[l12+2];
       this.wxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+3] * G[l12+3];
       this.wylambda[body_i] += dlambda[l] * this.MinvTrace[l12+4] * G[l12+4];
       this.wzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+5] * G[l12+5];
-
       this.vxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+6] * G[l12+6];
       this.vylambda[body_j] += dlambda[l] * this.MinvTrace[l12+7] * G[l12+7];
       this.vzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+8] * G[l12+8];
       this.wxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+9] * G[l12+9];
       this.wylambda[body_j] += dlambda[l] * this.MinvTrace[l12+10] * G[l12+10];
       this.wzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+11] * G[l12+11];
-
-        /*
-	ulambda_i[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-	ulambda_j[i+l12] += dlambda[l] * this.MinvTrace[l12+i] * this.G[l12+i];
-	*/
     }
   }
 
