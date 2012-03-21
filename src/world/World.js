@@ -566,7 +566,6 @@ CANNON.World.prototype.step = function(dt){
 
   // Reset contact solver
   this.solver.reset(world.numObjects());
-  var cid = new Int16Array(p1.length); // For saving constraint refs
 
   /**
    * Near phase calculation, get the contact point, normal, etc.
@@ -783,7 +782,7 @@ CANNON.World.prototype.step = function(dt){
       
     } else if(si.type==CANNON.Shape.types.PLANE){
       
-      if(sj.type==CANNON.Shape.types.PLANE){
+      if(sj.type==CANNON.Shape.types.PLANE){ // plane-plane
 	throw "Plane-plane collision... wait, you did WHAT?";
 	
       } else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
@@ -873,7 +872,7 @@ CANNON.World.prototype.step = function(dt){
 	      new CANNON.Vec3(x[j],y[j],z[j]),
 	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
 	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
-
+    //console.log(contacts);
     // Add contact constraint(s)
     for(var ci = 0; ci<contacts.length; ci++){
       var c = contacts[ci];
@@ -892,9 +891,20 @@ CANNON.World.prototype.step = function(dt){
 	var wi = new CANNON.Vec3(wx[i],wy[i],wz[i]);
 	var vj = new CANNON.Vec3(vx[j],vy[j],vz[j]);
 	var wj = new CANNON.Vec3(wx[j],wy[j],wz[j]);
+
+	var n = c.ni;
+	var tangents = [new CANNON.Vec3(),new CANNON.Vec3()];
+	n.tangents(tangents[0],tangents[1]);
+
 	var u = (vj.vsub(vi)); // Contact velo
 	var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
 	u.vsub(uw,u);
+	/*
+	  .vadd(tangents[0].mult(u.dot(tangents[0])))
+	  .vadd(tangents[1].mult(u.dot(tangents[1])));*/
+	//console.log("contact velo:",u.toString());
+	//u.vsub(uw,u);
+	//console.log("contact velo with rot:",u.toString());
 
 	// Get mass properties
 	var iMi = world.invm[i];
@@ -907,11 +917,9 @@ CANNON.World.prototype.step = function(dt){
 	var iIzj = world.inertiaz[j] > 0 ? 1.0/world.inertiaz[j] : 0;
 
 	// Add contact constraint
-	var n = c.ni;
 	var rixn = c.ri.cross(n);
 	var rjxn = c.rj.cross(n);
-	var gdot = n.mult(u.dot(n));
-	cid[k] = this.solver
+	this.solver
 	  .addConstraint( // Non-penetration constraint jacobian
 			 [-n.x,-n.y,-n.z,
 			  -rixn.x,-rixn.y,-rixn.z,
@@ -931,9 +939,9 @@ CANNON.World.prototype.step = function(dt){
 			  0,0,0],
 
 			 [-u.x,-u.y,-u.z,
-			  0,0,0,
+			  -uw.x,-uw.y,-uw.z,
 			  u.x,u.y,u.z,
-			  0,0,0],
+			  uw.x,uw.y,uw.z],
 			 
 			 // External force - forces & torques
 			 [fx[i],fy[i],fz[i],
@@ -944,6 +952,53 @@ CANNON.World.prototype.step = function(dt){
 			 'inf',
 			 i,
 			 j);
+
+	// Friction constraints
+	if(false){ // until debugged
+	  //console.log("tangents:",tangents[0].toString(),tangents[1].toString());
+	  var mu = 0.3, g = 10;
+	  for(var ti=0; ti<tangents.length; ti++){
+	    var t = tangents[ti];
+	    var rixt = c.ri.cross(t);
+	    var rjxt = c.rj.cross(t);
+
+	    this.solver
+	      .addConstraint( // Non-penetration constraint jacobian
+			     [-t.x,-t.y,-t.z,
+			      -rixt.x,-rixt.y,-rixt.z,
+			      t.x,t.y,t.z,
+			      rjxt.x,rjxt.y,rjxt.z],
+			     
+			     // Inverse mass matrix
+			     [iMi,iMi,iMi,
+			      iIxi,iIyi,iIzi,
+			      iMj,iMj,iMj,
+			      iIxj,iIyj,iIzj],
+			     
+			     // g - constraint violation / gap
+			     [0,0,0,
+			      0,0,0,
+			      0,0,0,
+			      0,0,0],
+			     
+			     [-u.x,-u.y,-u.z,
+			      -uw.x,-uw.y,-uw.z,
+			      u.x,u.y,u.z,
+			      uw.x,uw.y,uw.z],
+			     
+			     // External force - forces & torques
+			     [fx[i],fy[i],fz[i],
+			      taux[i],tauy[i],tauz[i],
+			      fx[j],fy[j],fz[j],
+			      taux[j],tauy[j],tauz[j]],
+
+			     -mu*g*(world.mass[i]+world.mass[j])*0.5,
+			     mu*g*(world.mass[i]+world.mass[j])*0.5,
+
+			     i,
+			     j);
+	  }
+	}
       }
     }
   }

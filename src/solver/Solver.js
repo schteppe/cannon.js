@@ -77,6 +77,8 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
     console.log("q:",q);
     console.log("qdot:",qdot);
     console.log("Fext:",Fext);
+    console.log("lower:",lower);
+    console.log("upper:",upper);
   }
   
   for(var i=0; i<12; i++){
@@ -85,13 +87,13 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
     this.MinvTrace.push(MinvTrace[i]);
     this.G.push(G[i]);
     this.Fext.push(Fext[i]);
-
-    this.upper.push(upper);
-    this.hasupper.push(!isNaN(upper));
-    this.lower.push(lower);
-    this.haslower.push(!isNaN(lower));
   }
 
+  this.upper.push(upper);
+  this.hasupper.push(!isNaN(upper));
+  this.lower.push(lower);
+  this.haslower.push(!isNaN(lower));
+  
   this.i.push(body_i);
   this.j.push(body_j);
 
@@ -174,6 +176,8 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
   var n = this.n;
+
+  // @todo: we dont really want to create these objects every solve... reuse?
   var lambda = new Float32Array(n);
   var dlambda = new Float32Array(n);
   var ulambda = new Float32Array(12*n); // 6 dof per constraint, and 2 bodies
@@ -243,13 +247,13 @@ CANNON.Solver.prototype.solve = function(){
       // @todo check if limits are numbers
       if(this.haslower[l] && lambda[l]<this.lower[l]){
 	if(this.debug)
-	  console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to "+this.lower[l]);
+	  console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+this.lower[l]);
 	lambda[l] = this.lower[l];
 	dlambda[l] = this.lower[l]-lambda[l];
       }
       if(this.hasupper && lambda[l]>this.upper[l]){
 	if(this.debug)
-	  console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to "+this.upper[l]);
+	  console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+this.upper[l]);
 	lambda[l] = this.upper[l];
 	dlambda[l] = this.upper[l]-lambda[l];
       }
@@ -271,19 +275,12 @@ CANNON.Solver.prototype.solve = function(){
   }
 
   if(this.debug)
-    for(var l=0; l<n; l++)
-      console.log("ulambda["+l+"]=",
-		  ulambda[l*12+0],
-		  ulambda[l*12+1],
-		  ulambda[l*12+2],
-		  ulambda[l*12+3],
-		  ulambda[l*12+4],
-		  ulambda[l*12+5],
-		  ulambda[l*12+6],
-		  ulambda[l*12+7],
-		  ulambda[l*12+8],
-		  ulambda[l*12+9],
-		  ulambda[l*12+10],
-		  ulambda[l*12+11]);
-  this.result = ulambda;
+    for(var i=0; i<this.vxlambda.length; i++)
+      console.log("dv["+i+"]=",
+		  this.vxlambda[i],
+		  this.vylambda[i],
+		  this.vzlambda[i],
+		  this.wxlambda[i],
+		  this.wylambda[i],
+		  this.wzlambda[i]);
 };

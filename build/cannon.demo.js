@@ -365,7 +365,7 @@ CANNON.Demo.prototype._buildScene = function(n){
     switch(shape.type){
       
     case CANNON.Shape.types.SPHERE:
-      var sphere_geometry = new THREE.SphereGeometry( 1, 16, 16);
+      var sphere_geometry = new THREE.SphereGeometry( 1, 8, 8);
       var sphereMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
       THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
       mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );

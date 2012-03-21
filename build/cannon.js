@@ -1144,7 +1144,7 @@ CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
 };
 
 CANNON.Box.prototype.volume = function(){
-  return 2.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
+  return 8.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
 };
 
 CANNON.Box.prototype.boundingSphereRadius = function(){
@@ -1327,6 +1327,8 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
     console.log("q:",q);
     console.log("qdot:",qdot);
     console.log("Fext:",Fext);
+    console.log("lower:",lower);
+    console.log("upper:",upper);
   }
   
   for(var i=0; i<12; i++){
@@ -1335,13 +1337,13 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
     this.MinvTrace.push(MinvTrace[i]);
     this.G.push(G[i]);
     this.Fext.push(Fext[i]);
-
-    this.upper.push(upper);
-    this.hasupper.push(!isNaN(upper));
-    this.lower.push(lower);
-    this.haslower.push(!isNaN(lower));
   }
 
+  this.upper.push(upper);
+  this.hasupper.push(!isNaN(upper));
+  this.lower.push(lower);
+  this.haslower.push(!isNaN(lower));
+  
   this.i.push(body_i);
   this.j.push(body_j);
 
@@ -1424,6 +1426,8 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
   var n = this.n;
+
+  // @todo: we dont really want to create these objects every solve... reuse?
   var lambda = new Float32Array(n);
   var dlambda = new Float32Array(n);
   var ulambda = new Float32Array(12*n); // 6 dof per constraint, and 2 bodies
@@ -1493,13 +1497,13 @@ CANNON.Solver.prototype.solve = function(){
       // @todo check if limits are numbers
       if(this.haslower[l] && lambda[l]<this.lower[l]){
 	if(this.debug)
-	  console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to "+this.lower[l]);
+	  console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+this.lower[l]);
 	lambda[l] = this.lower[l];
 	dlambda[l] = this.lower[l]-lambda[l];
       }
       if(this.hasupper && lambda[l]>this.upper[l]){
 	if(this.debug)
-	  console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to "+this.upper[l]);
+	  console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+this.upper[l]);
 	lambda[l] = this.upper[l];
 	dlambda[l] = this.upper[l]-lambda[l];
       }
@@ -1521,21 +1525,14 @@ CANNON.Solver.prototype.solve = function(){
   }
 
   if(this.debug)
-    for(var l=0; l<n; l++)
-      console.log("ulambda["+l+"]=",
-		  ulambda[l*12+0],
-		  ulambda[l*12+1],
-		  ulambda[l*12+2],
-		  ulambda[l*12+3],
-		  ulambda[l*12+4],
-		  ulambda[l*12+5],
-		  ulambda[l*12+6],
-		  ulambda[l*12+7],
-		  ulambda[l*12+8],
-		  ulambda[l*12+9],
-		  ulambda[l*12+10],
-		  ulambda[l*12+11]);
-  this.result = ulambda;
+    for(var i=0; i<this.vxlambda.length; i++)
+      console.log("dv["+i+"]=",
+		  this.vxlambda[i],
+		  this.vylambda[i],
+		  this.vzlambda[i],
+		  this.wxlambda[i],
+		  this.wylambda[i],
+		  this.wzlambda[i]);
 };
 /**
  * Defines a physics material.
@@ -2143,7 +2140,6 @@ CANNON.World.prototype.step = function(dt){
 
   // Reset contact solver
   this.solver.reset(world.numObjects());
-  var cid = new Int16Array(p1.length); // For saving constraint refs
 
   /**
    * Near phase calculation, get the contact point, normal, etc.
@@ -2360,7 +2356,7 @@ CANNON.World.prototype.step = function(dt){
       
     } else if(si.type==CANNON.Shape.types.PLANE){
       
-      if(sj.type==CANNON.Shape.types.PLANE){
+      if(sj.type==CANNON.Shape.types.PLANE){ // plane-plane
 	throw "Plane-plane collision... wait, you did WHAT?";
 	
       } else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
@@ -2450,7 +2446,7 @@ CANNON.World.prototype.step = function(dt){
 	      new CANNON.Vec3(x[j],y[j],z[j]),
 	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
 	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
-
+    //console.log(contacts);
     // Add contact constraint(s)
     for(var ci = 0; ci<contacts.length; ci++){
       var c = contacts[ci];
@@ -2469,9 +2465,20 @@ CANNON.World.prototype.step = function(dt){
 	var wi = new CANNON.Vec3(wx[i],wy[i],wz[i]);
 	var vj = new CANNON.Vec3(vx[j],vy[j],vz[j]);
 	var wj = new CANNON.Vec3(wx[j],wy[j],wz[j]);
+
+	var n = c.ni;
+	var tangents = [new CANNON.Vec3(),new CANNON.Vec3()];
+	n.tangents(tangents[0],tangents[1]);
+
 	var u = (vj.vsub(vi)); // Contact velo
 	var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
 	u.vsub(uw,u);
+	/*
+	  .vadd(tangents[0].mult(u.dot(tangents[0])))
+	  .vadd(tangents[1].mult(u.dot(tangents[1])));*/
+	//console.log("contact velo:",u.toString());
+	//u.vsub(uw,u);
+	//console.log("contact velo with rot:",u.toString());
 
 	// Get mass properties
 	var iMi = world.invm[i];
@@ -2484,11 +2491,9 @@ CANNON.World.prototype.step = function(dt){
 	var iIzj = world.inertiaz[j] > 0 ? 1.0/world.inertiaz[j] : 0;
 
 	// Add contact constraint
-	var n = c.ni;
 	var rixn = c.ri.cross(n);
 	var rjxn = c.rj.cross(n);
-	var gdot = n.mult(u.dot(n));
-	cid[k] = this.solver
+	this.solver
 	  .addConstraint( // Non-penetration constraint jacobian
 			 [-n.x,-n.y,-n.z,
 			  -rixn.x,-rixn.y,-rixn.z,
@@ -2508,9 +2513,9 @@ CANNON.World.prototype.step = function(dt){
 			  0,0,0],
 
 			 [-u.x,-u.y,-u.z,
-			  0,0,0,
+			  -uw.x,-uw.y,-uw.z,
 			  u.x,u.y,u.z,
-			  0,0,0],
+			  uw.x,uw.y,uw.z],
 			 
 			 // External force - forces & torques
 			 [fx[i],fy[i],fz[i],
@@ -2521,6 +2526,53 @@ CANNON.World.prototype.step = function(dt){
 			 'inf',
 			 i,
 			 j);
+
+	// Friction constraints
+	if(false){ // until debugged
+	  //console.log("tangents:",tangents[0].toString(),tangents[1].toString());
+	  var mu = 0.3, g = 10;
+	  for(var ti=0; ti<tangents.length; ti++){
+	    var t = tangents[ti];
+	    var rixt = c.ri.cross(t);
+	    var rjxt = c.rj.cross(t);
+
+	    this.solver
+	      .addConstraint( // Non-penetration constraint jacobian
+			     [-t.x,-t.y,-t.z,
+			      -rixt.x,-rixt.y,-rixt.z,
+			      t.x,t.y,t.z,
+			      rjxt.x,rjxt.y,rjxt.z],
+			     
+			     // Inverse mass matrix
+			     [iMi,iMi,iMi,
+			      iIxi,iIyi,iIzi,
+			      iMj,iMj,iMj,
+			      iIxj,iIyj,iIzj],
+			     
+			     // g - constraint violation / gap
+			     [0,0,0,
+			      0,0,0,
+			      0,0,0,
+			      0,0,0],
+			     
+			     [-u.x,-u.y,-u.z,
+			      -uw.x,-uw.y,-uw.z,
+			      u.x,u.y,u.z,
+			      uw.x,uw.y,uw.z],
+			     
+			     // External force - forces & torques
+			     [fx[i],fy[i],fz[i],
+			      taux[i],tauy[i],tauz[i],
+			      fx[j],fy[j],fz[j],
+			      taux[j],tauy[j],tauz[j]],
+
+			     -mu*g*(world.mass[i]+world.mass[j])*0.5,
+			     mu*g*(world.mass[i]+world.mass[j])*0.5,
+
+			     i,
+			     j);
+	  }
+	}
       }
     }
   }

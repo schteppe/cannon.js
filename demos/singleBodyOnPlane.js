@@ -37,12 +37,13 @@ function createBodyOnPlane(app,shape){
   world.add(groundBody);
   app.addVisual(groundBody);
 
-  // Sphere on plane
-  var sphereBody = new CANNON.RigidBody(5,shape,stone);
-  var pos = new CANNON.Vec3(0,3,2);
-  sphereBody.setPosition(pos.x,pos.y,pos.z);
-  sphereBody.setOrientation(0,1,0,0.2);
-  world.add(sphereBody);
-  
-  app.addVisual(sphereBody);
+  // Shape on plane
+  var shapeBody = new CANNON.RigidBody(20,shape,stone);
+  var pos = new CANNON.Vec3(0,0,5);
+  shapeBody.setPosition(pos.x,pos.y,pos.z);
+  shapeBody.setOrientation(0,1,0,0.2);
+  shapeBody.setVelocity(0,0,0);
+  shapeBody.setAngularVelocity(20,0,0);
+  world.add(shapeBody);
+  app.addVisual(shapeBody);
 }
