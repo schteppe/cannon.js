@@ -2328,17 +2328,26 @@ CANNON.World.prototype.step = function(dt){
 	      var r = xi.vsub(edgeCenter.vadd(xj)); // r = edge center to sphere center
 	      var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
 	      var orthogonal = edgeTangent.mult(orthonorm); // Vector from edge center to sphere center in the tangent direction
+	      
+	      // Find the third side orthogonal to this one
 	      var l = 0;
 	      while(l==j%3 || l==k%3) l++;
-	      var dist = xi.vsub(orthogonal).vsub(edgeCenter.vadd(xj)); // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-	      if(orthonorm < sides[l].norm() && dist.norm()<R){
+
+	      // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
+	      var dist = xi.vsub(orthogonal).vsub(edgeCenter.vadd(xj));
+
+	      // Distances in tangent direction and distance in the plane orthogonal to it
+	      var tdist = Math.abs(orthonorm);
+	      var ndist = dist.norm();
+	      
+	      if(tdist < sides[l].norm() && ndist<R){
 		found = true;
 		var res = makeResult();
-		edgeCenter.vadd(orthogonal,res.rj); // box
-		res.ri = dist.negate();
+		edgeCenter.vadd(orthogonal,res.rj); // box rj
+		dist.negate(res.ri);
 		res.ri.normalize();
-		res.ri.copy(res.ni);
-		res.ri.mult(R,r.ri);
+		res.ri.copy(res.ni); // Normal is from sphere
+		res.ri.mult(R,r.ri); // ri from sphere
 		result.push(res);
 	      }
 	    }
@@ -2441,8 +2450,6 @@ CANNON.World.prototype.step = function(dt){
 	      new CANNON.Vec3(x[j],y[j],z[j]),
 	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
 	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
-    /*if(contacts.length!=4 && contacts.length)
-      console.log(contacts.length+" contacts, "," ni=",contacts[0].ni.toString()," ri=",contacts[0].ri.toString()," rj=",contacts[0].rj.toString());*/
 
     // Add contact constraint(s)
     for(var ci = 0; ci<contacts.length; ci++){
