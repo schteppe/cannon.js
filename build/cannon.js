@@ -2304,24 +2304,24 @@ CANNON.World.prototype.step = function(dt){
 	for(var j=0; j<2 && !found; j++){
 	  for(var k=0; k<2 && !found; k++){
 	    for(var l=0; l<2 && !found; l++){
-	      var corner = xj.copy();
-	      if(j) corner.vadd(sides[0],corner);
-	      else  corner.vsub(sides[0],corner);
-	      if(k) corner.vadd(sides[1],corner);
-	      else  corner.vsub(sides[1],corner);
-	      if(l) corner.vadd(sides[2],corner);
-	      else  corner.vsub(sides[2],corner);
+	      var rj = new CANNON.Vec3();
+	      if(j) rj.vadd(sides[0],rj);
+	      else  rj.vsub(sides[0],rj);
+	      if(k) rj.vadd(sides[1],rj);
+	      else  rj.vsub(sides[1],rj);
+	      if(l) rj.vadd(sides[2],rj);
+	      else  rj.vsub(sides[2],rj);
 
 	      // World position of corner
-	      var sphere_to_corner = corner.vsub(xi);
+	      var sphere_to_corner = xj.vadd(rj).vsub(xi);
 	      if(sphere_to_corner.norm()<R){
 		found = true;
 		var r = makeResult();
-		sphere_to_corner.copy(r.ri); // Sphere
+		sphere_to_corner.copy(r.ri);
 		r.ri.normalize();
 		r.ri.copy(r.ni);
 		r.ri.mult(R,r.ri);
-		corner.vsub(xj).copy(r.rj);
+		rj.copy(r.rj);
 		result.push(r);
 	      }
 	    }
@@ -2356,6 +2356,7 @@ CANNON.World.prototype.step = function(dt){
 		found = true;
 		var res = makeResult();
 		edgeCenter.vadd(orthogonal,res.rj); // box rj
+		res.rj.copy(res.rj);
 		dist.negate(res.ri);
 		res.ri.normalize();
 		res.ri.copy(res.ni); // Normal is from sphere
@@ -2382,19 +2383,17 @@ CANNON.World.prototype.step = function(dt){
 
 	// Loop over corners
 	var numcontacts = 0;
-	var corners = sj.getCorners();
+	var corners = sj.getCorners(qj);
 	for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
 	  var r = makeResult();
-
-	  // Transform corner into the world frame
-	  var worldCorner = qj.vmult(corners[idx]); // Rotate
-	  worldCorner.copy(r.rj);
-	  worldCorner.vadd(xj,worldCorner);  // Translate
+	  var worldCorner = corners[idx].vadd(xj);
+	  corners[idx].copy(r.rj);
 
 	  // Project down corner to plane to get xj
 	  var point_on_plane_to_corner = worldCorner.vsub(xi);
 	  var d = n.dot(point_on_plane_to_corner);
 	  if(d<=0){
+	    numcontacts++;
 	    var plane_to_corner = n.mult(d);
 	    point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
 	    
@@ -2507,12 +2506,15 @@ CANNON.World.prototype.step = function(dt){
 	// Add contact constraint
 	var rixn = c.ri.cross(n);
 	var rjxn = c.rj.cross(n);
+
 	rixn.normalize();
 	rjxn.normalize();
 
 	var un_rel = n.mult(u_rel.dot(n));
 	var u_rixn_rel = rixn.mult(u_rel.dot(rixn));
 	var u_rjxn_rel = rjxn.mult(u_rel.dot(rjxn));
+
+	var gn = c.ni.mult(g);
 
 	this.solver
 	  .addConstraint( // Non-penetration constraint jacobian
@@ -2528,10 +2530,10 @@ CANNON.World.prototype.step = function(dt){
 			  iIxj,iIyj,iIzj],
 			 
 			 // g - constraint violation / gap
-			 [-gvec.x,-gvec.y,-gvec.z,
-			  -gvec.x,-gvec.y,-gvec.z,
-			  gvec.x,gvec.y,gvec.z,
-			  gvec.x,gvec.y,gvec.z],
+			 [-gn.x,-gn.y,-gn.z,
+			  -gn.x,-gn.y,-gn.z,
+			  gn.x,gn.y,gn.z,
+			  gn.x,gn.y,gn.z],
 
 			 [-un_rel.x,-un_rel.y,-un_rel.z,
 			  -u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
