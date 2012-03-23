@@ -1274,6 +1274,8 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
  * @todo vlambda does not need to be instantiated again if the number of bodies is the same. Set to zero instead.
  */
 CANNON.Solver.prototype.reset = function(numbodies){
+
+  // Don't know number of constraints yet... Use dynamic arrays
   this.G = [];
   this.MinvTrace = [];
   this.Fext = [];
@@ -1287,24 +1289,13 @@ CANNON.Solver.prototype.reset = function(numbodies){
   this.i = []; // To keep track of body id's
   this.j = [];
 
-  // Create new arrays or reuse the ones that exists?
-  if(numbodies && (this.vxlambda==undefined || this.vxlambda.length!=numbodies)){
-    this.vxlambda = new Float32Array(numbodies);
-    this.vylambda = new Float32Array(numbodies);
-    this.vzlambda = new Float32Array(numbodies);
-    this.wxlambda = new Float32Array(numbodies);
-    this.wylambda = new Float32Array(numbodies);
-    this.wzlambda = new Float32Array(numbodies);
-  } else if(this.vxlambda!=undefined && this.vxlambda.length==numbodies){
-    for(var i=0; i<this.vxlambda.length; i++){
-      this.vxlambda[i] = 0.0;
-      this.vylambda[i] = 0.0;
-      this.vzlambda[i] = 0.0;
-      this.wxlambda[i] = 0.0;
-      this.wylambda[i] = 0.0;
-      this.wzlambda[i] = 0.0;
-    }
-  }
+  // We know number of bodies so we can allocate these now
+  this.vxlambda = new Float32Array(numbodies);
+  this.vylambda = new Float32Array(numbodies);
+  this.vzlambda = new Float32Array(numbodies);
+  this.wxlambda = new Float32Array(numbodies);
+  this.wylambda = new Float32Array(numbodies);
+  this.wzlambda = new Float32Array(numbodies);
 };
 
 /**
@@ -1426,8 +1417,6 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
   var n = this.n;
-
-  // @todo: we dont really want to create these objects every solve... reuse?
   var lambda = new Float32Array(n);
   var dlambda = new Float32Array(n);
   var ulambda = new Float32Array(12*n); // 6 dof per constraint, and 2 bodies
