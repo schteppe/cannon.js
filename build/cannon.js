@@ -348,8 +348,7 @@ CANNON.Vec3 = function(x,y,z){
  * @return Vec3
  */
 CANNON.Vec3.prototype.cross = function(v,target){
-  if(target==undefined)
-    target = new CANNON.Vec3();
+  target = target || new CANNON.Vec3();
   var A = [this.x, this.y, this.z];
   var B = [v.x, v.y, v.z];
   
@@ -370,6 +369,7 @@ CANNON.Vec3.prototype.set = function(x,y,z){
   this.x = x;
   this.y = y;
   this.z = z;
+  return this;
 };
     
 /**
@@ -511,14 +511,21 @@ CANNON.Vec3.prototype.negate = function(target){
  */
 CANNON.Vec3.prototype.tangents = function(t1,t2){
   var norm = this.norm();
-  var n = new CANNON.Vec3(this.x/norm,
-			   this.y/norm,
-			   this.z/norm);
-  if(n.x<0.9)
-    n.cross(new CANNON.Vec3(1,0,0),t1);
-  else
-    n.cross(new CANNON.Vec3(0,1,0),t1);
-  n.cross(t1,t2);
+  if(norm>0.0){
+    var n = new CANNON.Vec3(this.x/norm,
+			    this.y/norm,
+			    this.z/norm);
+    if(n.x<0.9){
+      var rand = Math.random();
+      n.cross(new CANNON.Vec3(rand,0.001,0).unit(),t1);
+    } else
+      n.cross(new CANNON.Vec3(0.001,rand,0).unit(),t1);
+    n.cross(t1,t2);
+  } else {
+    // The normal length is zero, make something up
+    t1.set(1,0.0001,0).normalize();
+    t2.set(0.0001,1,0).normalize();
+  }
 };
 
 /**
@@ -2543,11 +2550,12 @@ CANNON.World.prototype.step = function(dt){
 
 	// Friction constraints
 	if(false){ // until debugged
-	  var mu = 0.3, g = 10;
+	  var mu = 0.3, g = that.gravity().norm();
 	  for(var ti=0; ti<tangents.length; ti++){
 	    var t = tangents[ti];
 	    var rixt = c.ri.cross(t);
 	    var rjxt = c.rj.cross(t);
+	    //console.log("t:",t.toString(),"ri:",c.ri.toString(),"rj:",c.rj.toString(),"rixt:",rixt.toString(), "rjxt:",rjxt.toString());
 	    var ut_rel = t.mult(u_rel.dot(t));
 	    rixt.normalize();
 	    rjxt.normalize();

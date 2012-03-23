@@ -960,11 +960,12 @@ CANNON.World.prototype.step = function(dt){
 
 	// Friction constraints
 	if(false){ // until debugged
-	  var mu = 0.3, g = 10;
+	  var mu = 0.3, g = that.gravity().norm();
 	  for(var ti=0; ti<tangents.length; ti++){
 	    var t = tangents[ti];
 	    var rixt = c.ri.cross(t);
 	    var rjxt = c.rj.cross(t);
+	    //console.log("t:",t.toString(),"ri:",c.ri.toString(),"rj:",c.rj.toString(),"rixt:",rixt.toString(), "rjxt:",rjxt.toString());
 	    var ut_rel = t.mult(u_rel.dot(t));
 	    rixt.normalize();
 	    rjxt.normalize();
