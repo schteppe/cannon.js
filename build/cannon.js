@@ -440,6 +440,26 @@ CANNON.Vec3.prototype.normalize = function(){
 };
 
 /**
+ * Get the version of this vector that is of length 1.
+ * @return Vec3 Returns the unit vector
+ */
+CANNON.Vec3.prototype.unit = function(target){
+  target = target || new CANNON.Vec3();
+  var ninv = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+  if(ninv>0.0){
+    ninv = 1.0/ninv;
+    target.x = this.x * ninv;
+    target.y = this.y * ninv;
+    target.z = this.z * ninv;
+  } else {
+    target.x = 0;
+    target.y = 0;
+    target.z = 0;
+  }
+  return target;
+};
+
+/**
  * Get the 2-norm (length) of the vector
  * @return float
  */
