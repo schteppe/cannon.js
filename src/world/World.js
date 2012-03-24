@@ -898,6 +898,7 @@ CANNON.World.prototype.step = function(dt){
 	var v_contact_i = vi.vadd(wi.cross(c.ri));
 	var v_contact_j = vj.vadd(wj.cross(c.rj));
 	var u_rel = v_contact_j.vsub(v_contact_i);
+	var w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
 
 	var u = (vj.vsub(vi)); // Contact velo
 	var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
@@ -917,12 +918,9 @@ CANNON.World.prototype.step = function(dt){
 	var rixn = c.ri.cross(n);
 	var rjxn = c.rj.cross(n);
 
-	rixn.normalize();
-	rjxn.normalize();
-
 	var un_rel = n.mult(u_rel.dot(n));
-	var u_rixn_rel = rixn.mult(u_rel.dot(rixn));
-	var u_rjxn_rel = rjxn.mult(u_rel.dot(rjxn));
+	var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
+	var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
 
 	var gn = c.ni.mult(g);
 
@@ -941,9 +939,10 @@ CANNON.World.prototype.step = function(dt){
 			 
 			 // g - constraint violation / gap
 			 [-gn.x,-gn.y,-gn.z,
-			  -gn.x,-gn.y,-gn.z,
+			  0,0,0,//-gn.x,-gn.y,-gn.z,
 			  gn.x,gn.y,gn.z,
-			  gn.x,gn.y,gn.z],
+			  0,0,0//gn.x,gn.y,gn.z
+			  ],
 
 			 [-un_rel.x,-un_rel.y,-un_rel.z,
 			  -u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
@@ -967,18 +966,17 @@ CANNON.World.prototype.step = function(dt){
 	    var t = tangents[ti];
 	    var rixt = c.ri.cross(t);
 	    var rjxt = c.rj.cross(t);
-	    //console.log("t:",t.toString(),"ri:",c.ri.toString(),"rj:",c.rj.toString(),"rixt:",rixt.toString(), "rjxt:",rjxt.toString());
+
 	    var ut_rel = t.mult(u_rel.dot(t));
-	    rixt.normalize();
-	    rjxt.normalize();
-	    var u_rixt_rel = rixt.mult(u_rel.dot(rixt));
-	    var u_rjxt_rel = rjxt.mult(u_rel.dot(rjxt));
+	    var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
+	    var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
 	    this.solver
 	      .addConstraint( // Non-penetration constraint jacobian
 			     [-t.x,-t.y,-t.z,
 			      -rixt.x,-rixt.y,-rixt.z,
 			      t.x,t.y,t.z,
-			      rjxt.x,rjxt.y,rjxt.z],
+			      rjxt.x,rjxt.y,rjxt.z
+			      ],
 			     
 			     // Inverse mass matrix
 			     [iMi,iMi,iMi,
@@ -993,15 +991,17 @@ CANNON.World.prototype.step = function(dt){
 			      0,0,0],
 			     
 			     [-ut_rel.x,-ut_rel.y,-ut_rel.z,
-			      -u_rixt_rel.x,-u_rixt_rel.y,-u_rixt_rel.z,
+			      0,0,0,//-u_rixt_rel.x,-u_rixt_rel.y,-u_rixt_rel.z,
 			      ut_rel.x,ut_rel.y,ut_rel.z,
-			      u_rjxt_rel.x,u_rjxt_rel.y,u_rjxt_rel.z],
+			      0,0,0//u_rjxt_rel.x,u_rjxt_rel.y,u_rjxt_rel.z
+			      ],
 			     
 			     // External force - forces & torques
 			     [fx[i],fy[i],fz[i],
 			      taux[i],tauy[i],tauz[i],
 			      fx[j],fy[j],fz[j],
-			      taux[j],tauy[j],tauz[j]],
+			      taux[j],tauy[j],tauz[j]
+			      ],
 
 			     -mu*g*(world.mass[i]+world.mass[j]),
 			     mu*g*(world.mass[i]+world.mass[j]),
