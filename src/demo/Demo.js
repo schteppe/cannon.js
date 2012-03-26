@@ -9,7 +9,10 @@ CANNON.Demo = function(){
     gz:-10.0,
     iterations:3,
     scene:0,
-    paused:false
+    paused:false,
+    rendermode:0,
+    contacts:false,  // Contact points
+    cm2contact:false // center of mass to contact points
   };
 
   this._phys_bodies = [];
@@ -20,6 +23,14 @@ CANNON.Demo = function(){
   this.paused = false;
   this.timestep = 1.0/60.0;
   this.shadowsOn = true;
+  this._contactmeshes = [];
+
+  this.materialColor = 0xdddddd;
+
+  this.renderModes = {
+    NORMAL:0,
+    WIREFRAME:1
+  };
 
   this._updategui = function(){
     if(this._gui){
@@ -33,6 +44,49 @@ CANNON.Demo = function(){
 	  this._gui.__folders[f].__controllers[i].updateDisplay();
     }
   };
+};
+
+/**
+ * Get/set render mode
+ * @param int mode
+ * @see CANNON.Demo.renderModes
+ */
+CANNON.Demo.prototype.renderMode = function(mode){
+  var that = this;
+
+  mode = parseInt(mode);
+  switch(mode){
+    
+  case this.renderModes.NORMAL:
+    // Change all current geometries to normal
+    function setNormal(node){
+      if(node.material)
+	node.material = new THREE.MeshLambertMaterial( { color: that.materialColor } );
+      for(var i=0; i<node.children.length; i++)
+	setNormal(node.children[i]);
+    }
+    for(var i=0; i<this._phys_visuals.length; i++)
+      setNormal(this._phys_visuals[i]);
+    break;
+    
+  case this.renderModes.WIREFRAME:
+    // Change all current geometries to normal
+    function setWireframe(node){
+      if(node.material)
+	node.material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } );
+      for(var i=0; i<node.children.length; i++)
+	setWireframe(node.children[i]);
+    }
+    for(var i=0; i<this._phys_visuals.length; i++)
+      setWireframe(this._phys_visuals[i]);
+    break;
+    
+  default:
+    console.log("Could not recognize mode: "+mode);
+    break;
+  }
+  
+  this.settings.rendermode = mode;
 };
 
 /**
@@ -59,6 +113,34 @@ CANNON.Demo.prototype.updateVisuals = function(){
   for(var i=0; i<this._phys_bodies.length; i++){
     this._phys_bodies[i].getPosition(this._phys_visuals[i].position);
     this._phys_bodies[i].getOrientation(this._phys_visuals[i].quaternion);
+  }
+
+  // Render contacts
+  if(this.settings.contacts){
+    // Remove old ones
+    for(var c in this._contactmeshes)
+      this._scene.remove(this._contactmeshes[c]);
+
+    // Add new
+    var sphere_geometry = new THREE.SphereGeometry( 0.1, 8, 8);
+    var sphereMaterial = new THREE.MeshLambertMaterial({
+	color: 0xff0000,
+	wireframe:this.settings.rendermode==this.renderModes.WIREFRAME
+      });
+    for(var i=0; i<this._world.numObjects(); i++){
+      for(var j=0; j<this._world.numObjects(); j++){
+	if(this._world.contacts[i+","+j]){
+	  for(var k=0; k<this._world.contacts[i+","+j].length; k++){
+	    var mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
+	    this._scene.add(mesh);
+	    mesh.position.x = this._world.x[i] + this._world.contacts[i+","+j][k].ri.x;
+	    mesh.position.y = this._world.y[i] + this._world.contacts[i+","+j][k].ri.y;
+	    mesh.position.z = this._world.z[i] + this._world.contacts[i+","+j][k].ri.z;
+	    this._contactmeshes.push(mesh); 
+	  }
+	}
+      }
+    }
   }
 };
 
@@ -246,15 +328,16 @@ CANNON.Demo.prototype.start = function(){
   if(window.dat!=undefined){
     that._gui = new dat.GUI();
 
-    // Scene picker
-    var scenes = {};
-    for(var i=0; i<that._scenes.length; i++)
-      scenes[(i+1)+'. Scene '+(i+1)] = i;
-    that._gui.add(that.settings,'scene',scenes).onChange(function(sceneNumber){
-	that.paused = false;
-	that.settings.paused = false;
-	that._updategui();
-	that._buildScene(sceneNumber);
+    // Render mode
+    var rf = that._gui.addFolder('Rendering');
+    rf.add(that.settings,'rendermode',{normal:that.renderModes.NORMAL,wireframe:that.renderModes.WIREFRAME}).onChange(function(mode){
+	that.renderMode(mode);
+      });
+    rf.add(that.settings,'contacts').onChange(function(contacts){
+	// Do nothing... contacts are dynamically added/removed for each frame
+      });
+    rf.add(that.settings,'cm2contact').onChange(function(cm2contact){
+	
       });
 
     // World folder
@@ -279,6 +362,17 @@ CANNON.Demo.prototype.start = function(){
     wf.add(that.settings,'paused').onChange(function(p){
 	that.paused = p;
       });
+
+    // Scene picker
+    var scenes = {};
+    for(var i=0; i<that._scenes.length; i++)
+      scenes[(i+1)+'. Scene '+(i+1)] = i;
+    that._gui.add(that.settings,'scene',scenes).onChange(function(sceneNumber){
+	that.paused = false;
+	that.settings.paused = false;
+	that._updategui();
+	that._buildScene(sceneNumber);
+      });
   }
 };
 
@@ -289,7 +383,8 @@ CANNON.Demo.prototype.start = function(){
  */
 CANNON.Demo.prototype._buildScene = function(n){
   
-  var that = this;
+  var that = this,
+  materialColor = this.materialColor;
 
   // Remove old things from scene
   var num = that._phys_visuals.length;
@@ -298,25 +393,23 @@ CANNON.Demo.prototype._buildScene = function(n){
     that._phys_startpositions.pop();
     var mesh = that._phys_visuals.pop();
     that._scene.remove(mesh);
-    //that._scene.removeObject(mesh);
   }
- 
-  var materialColor = 0xdddddd;
 
   function shape2mesh(shape){
+    var wireframe = that.settings.rendermode==that.renderModes.WIREFRAME;
     var mesh;
     switch(shape.type){
       
     case CANNON.Shape.types.SPHERE:
       var sphere_geometry = new THREE.SphereGeometry( shape.radius, 8, 8);
-      var sphereMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
+      var sphereMaterial = new THREE.MeshLambertMaterial( { color: materialColor,wireframe:wireframe } );
       THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
       mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
       break;
 
     case CANNON.Shape.types.PLANE:
       var geometry = new THREE.PlaneGeometry( 100, 100 );
-      var planeMaterial = new THREE.MeshBasicMaterial( { color: materialColor } );
+      var planeMaterial = new THREE.MeshBasicMaterial( { color: materialColor,wireframe:wireframe } );
       THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
       var submesh = new THREE.Object3D();
 
@@ -334,7 +427,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 
     case CANNON.Shape.types.BOX:
       var box_geometry = new THREE.CubeGeometry( shape.halfExtents.x*2, shape.halfExtents.y*2, shape.halfExtents.z*2 );
-      var boxMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
+      var boxMaterial = new THREE.MeshLambertMaterial( { color: materialColor,wireframe:wireframe } );
       THREE.ColorUtils.adjustHSV( boxMaterial.color, 0, 0, 0.9 );
       mesh = new THREE.Mesh( box_geometry, boxMaterial );
       break;
@@ -342,7 +435,7 @@ CANNON.Demo.prototype._buildScene = function(n){
     case CANNON.Shape.types.COMPOUND:
       // @todo recursive compounds
       var o3d = new THREE.Object3D();
-      var compoundMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
+      var compoundMaterial = new THREE.MeshLambertMaterial( { color: materialColor,wireframe:wireframe } );
       for(var i = 0; i<shape.childShapes.length; i++){
 
 	// Get child information
@@ -361,9 +454,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 	submesh.quaternion.w = q.w;
 	
 	submesh.useQuaternion = true;
-	
 	o3d.add(submesh);
-	
 	mesh = o3d;
       }
       break;

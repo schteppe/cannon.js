@@ -2475,6 +2475,7 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Loop over all collisions
+  this.contacts = {}; // Preliminary. contacts["i,j"]=>contact array
   for(var k=0; k<p1.length; k++){
 
     // Get current collision indeces
@@ -2502,6 +2503,7 @@ CANNON.World.prototype.step = function(dt){
 	      new CANNON.Vec3(x[j],y[j],z[j]),
 	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
 	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
+    this.contacts[i+","+j] = contacts;
 
     // Add contact constraint(s)
     for(var ci = 0; ci<contacts.length; ci++){
