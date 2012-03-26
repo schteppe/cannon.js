@@ -1912,8 +1912,6 @@ CANNON.World.prototype.add = function(body){
 
   // Create collision matrix
   t.collision_matrix = new Int16Array((n+1)*(n+1));
-
-  console.log("num now: "+this.numObjects());
 };
 
 
@@ -1968,31 +1966,34 @@ CANNON.World.prototype.remove = function(body){
   
   // Copy old data to new arrays, without the deleted index
   for(var j=0; j<n; j++){
-    if(j!=body._id){
+    if(j!=body._id){      
       var i = j>body._id ? j-1 : j;
-      t.x[i] =    o.x[i];    t.y[i] = o.y[i];       t.z[i] = o.z[i];
-      t.vx[i] =   o.vx[i];   t.vy[i] = o.vy[i];     t.vz[i] = o.vz[i];
-      t.fx[i] =   o.fx[i];   t.fy[i] = o.fy[i];     t.fz[i] = o.fz[i];
-      t.taux[i] = o.taux[i]; t.tauy[i] = o.tauy[i]; t.tauz[i] = o.tauz[i];
-      t.wx[i] =   o.wx[i];   t.wy[i] = o.wy[i];     t.wz[i] = o.wz[i];
+      t.x[i] =    o.x[j];    t.y[i] = o.y[j];       t.z[i] = o.z[j];
+      t.vx[i] =   o.vx[j];   t.vy[i] = o.vy[j];     t.vz[i] = o.vz[j];
+      t.fx[i] =   o.fx[j];   t.fy[i] = o.fy[j];     t.fz[i] = o.fz[j];
+      t.taux[i] = o.taux[j]; t.tauy[i] = o.tauy[j]; t.tauz[i] = o.tauz[j];
+      t.wx[i] =   o.wx[j];   t.wy[i] = o.wy[j];     t.wz[i] = o.wz[j];
       
-      t.qx[i] = o.qx[i];
-      t.qy[i] = o.qy[i];
-      t.qz[i] = o.qz[i];
-      t.qw[i] = o.qw[i];
+      t.qx[i] = o.qx[j];
+      t.qy[i] = o.qy[j];
+      t.qz[i] = o.qz[j];
+      t.qw[i] = o.qw[j];
       
-      t.type[i] = o.type[i];
-      t.body[i] = o.body[i];
-      t.fixed[i] = o.fixed[i];
-      t.invm[i] = o.invm[i];
-      t.mass[i] = o.mass[i];
-      t.material[i] = o.material[i];
-      t.inertiax[i] = o.inertiax[i];
-      t.inertiay[i] = o.inertiay[i];
-      t.inertiaz[i] = o.inertiaz[i];
-      t.iinertiax[i] = o.iinertiax[i];
-      t.iinertiay[i] = o.iinertiay[i];
-      t.iinertiaz[i] = o.iinertiaz[i];
+      t.type[i] = o.type[j];
+      t.body[i] = o.body[j];
+
+      t.body[i]._id = i;
+
+      t.fixed[i] = o.fixed[j];
+      t.invm[i] = o.invm[j];
+      t.mass[i] = o.mass[j];
+      t.material[i] = o.material[j];
+      t.inertiax[i] = o.inertiax[j];
+      t.inertiay[i] = o.inertiay[j];
+      t.inertiaz[i] = o.inertiaz[j];
+      t.iinertiax[i] = o.iinertiax[j];
+      t.iinertiay[i] = o.iinertiay[j];
+      t.iinertiaz[i] = o.iinertiaz[j];
     }
   }
 
@@ -2002,8 +2003,6 @@ CANNON.World.prototype.remove = function(body){
 
   // Reset collision matrix
   t.collision_matrix = new Int16Array((n-1)*(n-1));
-
-  console.log(this.body.length+" bodies left after remove, n="+n);
 };
 
 

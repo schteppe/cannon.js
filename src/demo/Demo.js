@@ -56,7 +56,6 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
 
 CANNON.Demo.prototype.updateVisuals = function(){
   // Read position data into visuals
-  console.log(this._phys_bodies.length,this._phys_bodies);
   for(var i=0; i<this._phys_bodies.length; i++){
     this._phys_bodies[i].getPosition(this._phys_visuals[i].position);
     this._phys_bodies[i].getOrientation(this._phys_visuals[i].quaternion);
@@ -401,7 +400,6 @@ CANNON.Demo.prototype._buildScene = function(n){
 	    mesh.receiveShadow = false;
 
 	  // Add body
-	  console.log("adding...",body);
 	  that._phys_bodies.push(body);
 	  that._phys_visuals.push(mesh);
 	  var pos = new CANNON.Vec3();
@@ -415,27 +413,25 @@ CANNON.Demo.prototype._buildScene = function(n){
       },
 
       removeVisual:function(body){
-	console.log("remove ",body._id,body);
 	if(body.visualref!=undefined){
 	  var old_sp = [];
 	  var old_b = [];
 	  var old_v = [];
-	  for(var i=0; i<that._phys_startpositions.length; i++){
-	    old_b.push(that._phys_bodies.pop());
-	    old_v.push(that._phys_visuals.pop());
-	    old_sp.push(that._phys_startpositions.pop());
+	  var n = that._phys_startpositions.length;
+	  for(var i=0; i<n; i++){
+	    old_b.unshift(that._phys_bodies.pop());
+	    old_v.unshift(that._phys_visuals.pop());
+	    old_sp.unshift(that._phys_startpositions.pop());
 	  }
-	  /*
-	  that._phys_startpositions = [];
-	  that._phys_bodies = [];
-	  that._phys_visuals = [];
-	  */
-	  for(var i=0; i<old_sp.length; i++){
-	    if(i!=body.visualref.visualId){
-	      var j = i>body.visualref.visualId ? i-1 : i;
-	      that._phys_startpositions.push(old_sp[j]);
-	      that._phys_bodies.push(old_b[j]);
-	      that._phys_visuals.push(old_v[j]);
+	  var id = body.visualref.visualId;
+	  for(var j=0; j<old_sp.length; j++){
+	    if(j!=id){
+	      var i = j>id ? j-1 : j;
+	      that._phys_startpositions[i] = old_sp[j];
+	      that._phys_bodies[i] = old_b[j];
+	      that._phys_visuals[i] = old_v[j];
+	      that._phys_bodies[i].visualref = old_b[j].visualref;
+	      that._phys_bodies[i].visualref.visualId = i;
 	    }
 	  }
 	  body.visualref.visualId = null;
@@ -454,8 +450,4 @@ CANNON.Demo.prototype._buildScene = function(n){
   that.settings.gy = that._world._gravity.y;
   that.settings.gz = that._world._gravity.z;
   that._updategui();
-
-  // Add new meshes to scene
-  /*for(var i=0; i<that._phys_visuals.length; i++)
-    that._scene.add(that._phys_visuals[i]);*/
 };
