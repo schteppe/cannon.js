@@ -77,6 +77,15 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
   }
 };
 
+CANNON.Demo.prototype.updateVisuals = function(){
+  // Read position data into visuals
+  console.log(this._phys_bodies.length,this._phys_bodies);
+  for(var i=0; i<this._phys_bodies.length; i++){
+    this._phys_bodies[i].getPosition(this._phys_visuals[i].position);
+    this._phys_bodies[i].getOrientation(this._phys_visuals[i].quaternion);
+  }
+};
+
 /**
  * When all scenes have been added, run this to launch the Demo app.
  */
@@ -201,7 +210,7 @@ CANNON.Demo.prototype.start = function(){
     requestAnimationFrame( animate );
     if(!that.paused){
       updatePhysics();
-      updateVisuals();
+      that.updateVisuals();
     }
     render();
     stats.update();
@@ -210,14 +219,6 @@ CANNON.Demo.prototype.start = function(){
   function updatePhysics(){
     // Step world
     that._world.step(that.timestep);
-  }
-
-  function updateVisuals(){
-    // Read position data into visuals
-    for(var i=0; i<that._phys_bodies.length; i++){
-      that._phys_bodies[i].getPosition(that._phys_visuals[i].position);
-      that._phys_bodies[i].getOrientation(that._phys_visuals[i].quaternion);
-    }
   }
 
   function onDocumentMouseMove( event ) {
@@ -241,13 +242,6 @@ CANNON.Demo.prototype.start = function(){
   }
 
   function render(){
-    /*
-    camera.position.x += ( mouseX/windowHalfX*300 - camera.position.x ) * 0.05;
-    camera.position.z += ( - (mouseY/windowHalfY*200) - camera.position.z ) * 0.05;
-    if(camera.position.z<=1.0)
-      camera.position.z = 1.0;
-    camera.lookAt( new THREE.Vector3(scene.position.x,scene.position.y,scene.position.z+5) );*/
-
     controls.update();
     renderer.clear();
     renderer.render( scene, camera );
@@ -260,17 +254,6 @@ CANNON.Demo.prototype.start = function(){
 	case 32: // Space - restart
 	that.restartCurrentScene();
 	break;
-
-	/*
-	case 43:
-	that._world.solver.iter++;
-	console.log("Number of iterations: "+that._world.solver.iter);
-	break;
-	case 45:
-	that._world.solver.iter>1 ? that._world.solver.iter-- : "";
-	console.log("Number of iterations: "+that._world.solver.iter);
-	*/
-	break;
 	case 112: // p
 	that.paused = !that.paused;
 	that.settings.paused = that.paused;
@@ -278,23 +261,7 @@ CANNON.Demo.prototype.start = function(){
 	break;
 	case 115: // s
 	updatePhysics();
-	updateVisuals();
-	break;
-	/*
-	case 49:
-	case 50:
-	case 51:
-	case 52:
-	case 53:
-	case 54:
-	case 55:
-	case 56:
-	case 57:
-	if(that._scenes.length>e.keyCode-49){
-	  that.paused = false;
-	  that._buildScene(e.keyCode-49);
-	}
-	*/
+	that.updateVisuals();
 	break;
 	}
       }
@@ -439,6 +406,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 
   // Run the user defined "build scene" function
   that._scenes[n]({
+
       addVisual:function(body){
 	// What geometry should be used?
 	var mesh = shape2mesh(body._shape);
@@ -456,14 +424,49 @@ CANNON.Demo.prototype._buildScene = function(n){
 	    mesh.receiveShadow = false;
 
 	  // Add body
+	  console.log("adding...",body);
 	  that._phys_bodies.push(body);
 	  that._phys_visuals.push(mesh);
 	  var pos = new CANNON.Vec3();
 	  body.getPosition(pos);
 	  that._phys_startpositions.push(pos);
+	  body.visualref = mesh;
+	  body.visualref.visualId = that._phys_startpositions.length - 1;
 	  mesh.useQuaternion = true;
+	  that._scene.add(mesh);
 	}
       },
+
+      removeVisual:function(body){
+	console.log("remove ",body._id,body);
+	if(body.visualref!=undefined){
+	  var old_sp = [];
+	  var old_b = [];
+	  var old_v = [];
+	  for(var i=0; i<that._phys_startpositions.length; i++){
+	    old_b.push(that._phys_bodies.pop());
+	    old_v.push(that._phys_visuals.pop());
+	    old_sp.push(that._phys_startpositions.pop());
+	  }
+	  /*
+	  that._phys_startpositions = [];
+	  that._phys_bodies = [];
+	  that._phys_visuals = [];
+	  */
+	  for(var i=0; i<old_sp.length; i++){
+	    if(i!=body.visualref.visualId){
+	      var j = i>body.visualref.visualId ? i-1 : i;
+	      that._phys_startpositions.push(old_sp[j]);
+	      that._phys_bodies.push(old_b[j]);
+	      that._phys_visuals.push(old_v[j]);
+	    }
+	  }
+	  body.visualref.visualId = null;
+	  that._scene.remove(body.visualref);
+	  body.visualref = null;
+	}
+      },
+
       setWorld:function(w){
 	that._world = w;
       }
@@ -476,6 +479,6 @@ CANNON.Demo.prototype._buildScene = function(n){
   that._updategui();
 
   // Add new meshes to scene
-  for(var i=0; i<that._phys_visuals.length; i++)
-    that._scene.add(that._phys_visuals[i]);
+  /*for(var i=0; i<that._phys_visuals.length; i++)
+    that._scene.add(that._phys_visuals[i]);*/
 };

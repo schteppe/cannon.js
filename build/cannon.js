@@ -1795,177 +1795,217 @@ CANNON.World.prototype.clearCollisionState = function(body){
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
 CANNON.World.prototype.add = function(body){
-  if(!body)
-    return;
+  if(!body) return;
+  var t = this;
 
-  var n = this.numObjects();
+  var n = t.numObjects();
 
-  old_x = this.x;
-  old_y = this.y;
-  old_z = this.z;
-  
-  old_vx = this.vx;
-  old_vy = this.vy;
-  old_vz = this.vz;
-  
-  old_fx = this.fx;
-  old_fy = this.fy;
-  old_fz = this.fz;
-  
-  old_taux = this.taux;
-  old_tauy = this.tauy;
-  old_tauz = this.tauz;
-  
-  old_wx = this.wx;
-  old_wy = this.wy;
-  old_wz = this.wz;
-  
-  old_qx = this.qx;
-  old_qy = this.qy;
-  old_qz = this.qz;
-  old_qw = this.qw;
+  var old_x =    t.x,    old_y =  t.y,      old_z = t.z;
+  var old_vx =   t.vx,   old_vy = t.vy,     old_vz = t.vz;
+  var old_fx =   t.fx,   old_fy = t.fy,     old_fz = t.fz;
+  var old_taux = t.taux, old_tauy = t.tauy, old_tauz = t.tauz;
+  var old_wx =   t.wx,   old_wy = t.wy,     old_wz = t.wz;
+  var old_qx =   t.qx,   old_qy = t.qy,     old_qz = t.qz, old_qw = t.qw;
 
-  old_type = this.type;
-  old_body = this.body;
-  old_fixed = this.fixed;
-  old_invm = this.invm;
-  old_mass = this.mass;
-  old_material = this.material;
+  var old_type = t.type;
+  var old_body = t.body;
+  var old_fixed = t.fixed;
+  var old_invm = t.invm;
+  var old_mass = t.mass;
+  var old_material = t.material;
 
-  old_inertiax = this.inertiax;
-  old_inertiay = this.inertiay;
-  old_inertiaz = this.inertiaz;
+  var old_inertiax = t.inertiax, old_inertiay = t.inertiay, old_inertiaz = t.inertiaz;
+  var old_iinertiax = t.iinertiax, old_iinertiay = t.iinertiay, old_iinertiaz = t.iinertiaz;
 
-  old_iinertiax = this.iinertiax;
-  old_iinertiay = this.iinertiay;
-  old_iinertiaz = this.iinertiaz;
+  function f(){ return new Float32Array(n+1); };
 
-  this.x = new Float32Array(n+1);
-  this.y = new Float32Array(n+1);
-  this.z = new Float32Array(n+1);
-  
-  this.vx = new Float32Array(n+1);
-  this.vy = new Float32Array(n+1);
-  this.vz = new Float32Array(n+1);
-  
-  this.fx = new Float32Array(n+1);
-  this.fy = new Float32Array(n+1);
-  this.fz = new Float32Array(n+1);
-  
-  this.taux = new Float32Array(n+1);
-  this.tauy = new Float32Array(n+1);
-  this.tauz = new Float32Array(n+1);
-  
-  this.wx = new Float32Array(n+1);
-  this.wy = new Float32Array(n+1);
-  this.wz = new Float32Array(n+1);
-  
-  this.qx = new Float32Array(n+1);
-  this.qy = new Float32Array(n+1);
-  this.qz = new Float32Array(n+1);
-  this.qw = new Float32Array(n+1);
+  t.x = f();  t.y = f();  t.z = f();
+  t.vx = f(); t.vy = f(); t.vz = f();
+  t.fx = f(); t.fy = f(); t.fz = f();
+  t.taux = f(); t.tauy = f(); t.tauz = f();
+  t.wx = f(); t.wy = f(); t.wz = f();
+  t.qx = f(); t.qy = f(); t.qz = f(); t.qw = f();
 
-  this.type = new Int16Array(n+1);
-  this.body = [];
-  this.fixed = new Int16Array(n+1);
-  this.mass = new Float32Array(n+1);
+  t.type = new Int16Array(n+1);
+  t.body = [];
+  t.fixed = new Int16Array(n+1);
+  t.mass = f();
   /// References to material for each body
-  this.material = new Int16Array(n+1);
-  this.inertiax = new Float32Array(n+1);
-  this.inertiay = new Float32Array(n+1);
-  this.inertiaz = new Float32Array(n+1);
-  this.iinertiax = new Float32Array(n+1);
-  this.iinertiay = new Float32Array(n+1);
-  this.iinertiaz = new Float32Array(n+1);
-  this.invm = new Float32Array(n+1);
+  t.material = new Int16Array(n+1);
+  t.inertiax = f();
+  t.inertiay = f();
+  t.inertiaz = f();
+  t.iinertiax = f();
+  t.iinertiay = f();
+  t.iinertiaz = f();
+  t.invm = f();
   
   // Add old data to new array
   for(var i=0; i<n; i++){
-    this.x[i] = old_x[i];
-    this.y[i] = old_y[i];
-    this.z[i] = old_z[i];
-  
-    this.vx[i] = old_vx[i];
-    this.vy[i] = old_vy[i];
-    this.vz[i] = old_vz[i];
-  
-    this.fx[i] = old_fx[i];
-    this.fy[i] = old_fy[i];
-    this.fz[i] = old_fz[i];
-  
-    this.taux[i] = old_taux[i];
-    this.tauy[i] = old_tauy[i];
-    this.tauz[i] = old_tauz[i];
-  
-    this.wx[i] = old_wx[i];
-    this.wy[i] = old_wy[i];
-    this.wz[i] = old_wz[i];
-  
-    this.qx[i] = old_qx[i];
-    this.qy[i] = old_qy[i];
-    this.qz[i] = old_qz[i];
-    this.qw[i] = old_qw[i];
+    t.x[i] =    old_x[i];    t.y[i] = old_y[i];       t.z[i] = old_z[i];
+    t.vx[i] =   old_vx[i];   t.vy[i] = old_vy[i];     t.vz[i] = old_vz[i];
+    t.fx[i] =   old_fx[i];   t.fy[i] = old_fy[i];     t.fz[i] = old_fz[i];
+    t.taux[i] = old_taux[i]; t.tauy[i] = old_tauy[i]; t.tauz[i] = old_tauz[i];
+    t.wx[i] =   old_wx[i];   t.wy[i] = old_wy[i];     t.wz[i] = old_wz[i];
 
-    this.type[i] = old_type[i];
-    this.body[i] = old_body[i];
-    this.fixed[i] = old_fixed[i];
-    this.invm[i] = old_invm[i];
-    this.mass[i] = old_mass[i];
-    this.material[i] = old_material[i];
-    this.inertiax[i] = old_inertiax[i];
-    this.inertiay[i] = old_inertiay[i];
-    this.inertiaz[i] = old_inertiaz[i];
-    this.iinertiax[i] = old_iinertiax[i];
-    this.iinertiay[i] = old_iinertiay[i];
-    this.iinertiaz[i] = old_iinertiaz[i];
+    t.qx[i] = old_qx[i];
+    t.qy[i] = old_qy[i];
+    t.qz[i] = old_qz[i];
+    t.qw[i] = old_qw[i];
+
+    t.type[i] = old_type[i];
+    t.body[i] = old_body[i];
+    t.fixed[i] = old_fixed[i];
+    t.invm[i] = old_invm[i];
+    t.mass[i] = old_mass[i];
+    t.material[i] = old_material[i];
+    t.inertiax[i] = old_inertiax[i];
+    t.inertiay[i] = old_inertiay[i];
+    t.inertiaz[i] = old_inertiaz[i];
+    t.iinertiax[i] = old_iinertiax[i];
+    t.iinertiay[i] = old_iinertiay[i];
+    t.iinertiaz[i] = old_iinertiaz[i];
   }
 
   // Add one more
-  this.x[n] = body._position.x;
-  this.y[n] = body._position.y;
-  this.z[n] = body._position.z;
+  t.x[n] = body._position.x;
+  t.y[n] = body._position.y;
+  t.z[n] = body._position.z;
   
-  this.vx[n] = body._velocity.x;
-  this.vy[n] = body._velocity.y;
-  this.vz[n] = body._velocity.z;
+  t.vx[n] = body._velocity.x;
+  t.vy[n] = body._velocity.y;
+  t.vz[n] = body._velocity.z;
   
-  this.fx[n] = body._force.x;
-  this.fy[n] = body._force.y;
-  this.fz[n] = body._force.z;
+  t.fx[n] = body._force.x;
+  t.fy[n] = body._force.y;
+  t.fz[n] = body._force.z;
   
-  this.taux[n] = body._tau.x;
-  this.tauy[n] = body._tau.y;
-  this.tauz[n] = body._tau.z;
+  t.taux[n] = body._tau.x;
+  t.tauy[n] = body._tau.y;
+  t.tauz[n] = body._tau.z;
 
-  this.wx[n] = body._rotvelo.x;
-  this.wy[n] = body._rotvelo.y;
-  this.wz[n] = body._rotvelo.z;
+  t.wx[n] = body._rotvelo.x;
+  t.wy[n] = body._rotvelo.y;
+  t.wz[n] = body._rotvelo.z;
   
-  this.qx[n] = body._quaternion.x;
-  this.qy[n] = body._quaternion.y;
-  this.qz[n] = body._quaternion.z;
-  this.qw[n] = body._quaternion.w;
+  t.qx[n] = body._quaternion.x;
+  t.qy[n] = body._quaternion.y;
+  t.qz[n] = body._quaternion.z;
+  t.qw[n] = body._quaternion.w;
 
-  this.type[n] = body._shape.type;
-  this.body[n] = body; // Keep reference to body
-  this.fixed[n] = body._mass<=0.0 ? 1 : 0;
-  this.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
-  this.mass[n] = body._mass;
-  this.material[n] = body._material!=undefined ? body._material._id : -1;
+  t.type[n] = body._shape.type;
+  t.body[n] = body; // Keep reference to body
+  t.fixed[n] = body._mass<=0.0 ? 1 : 0;
+  t.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
+  t.mass[n] = body._mass;
+  t.material[n] = body._material!=undefined ? body._material._id : -1;
 
-  this.inertiax[n] = body._inertia.x;
-  this.inertiay[n] = body._inertia.y;
-  this.inertiaz[n] = body._inertia.z;
-  this.iinertiax[n] = body._inertia.x > 0 ? 1.0/body._inertia.x : 0.0;
-  this.iinertiay[n] = body._inertia.y > 0 ? 1.0/body._inertia.y : 0.0;
-  this.iinertiaz[n] = body._inertia.z > 0 ? 1.0/body._inertia.z : 0.0;
+  t.inertiax[n] = body._inertia.x;
+  t.inertiay[n] = body._inertia.y;
+  t.inertiaz[n] = body._inertia.z;
+  t.iinertiax[n] = body._inertia.x > 0 ? 1.0/body._inertia.x : 0.0;
+  t.iinertiay[n] = body._inertia.y > 0 ? 1.0/body._inertia.y : 0.0;
+  t.iinertiaz[n] = body._inertia.z > 0 ? 1.0/body._inertia.z : 0.0;
 
   body._id = n; // give id as index in table
-  body._world = this;
+  body._world = t;
 
   // Create collision matrix
-  this.collision_matrix = new Int16Array((n+1)*(n+1));
+  t.collision_matrix = new Int16Array((n+1)*(n+1));
+
+  console.log("num now: "+this.numObjects());
 };
+
+
+/**
+ * Remove a rigid body from the simulation.
+ * @param RigidBody body
+ */
+CANNON.World.prototype.remove = function(body){
+  if(!body) return;
+  var t = this;
+  var n = t.numObjects();
+
+  var o = {}; // save old things
+  o.x = t.x;       o.y =    t.y;    o.z = t.z;
+  o.vx = t.vx;     o.vy =   t.vy;   o.vz = t.vz;
+  o.fx = t.fx;     o.fy =   t.fy;   o.fz = t.fz;
+  o.taux = t.taux; o.tauy = t.tauy; o.tauz = t.tauz;
+  o.wx = t.wx;     o.wy =   t.wy;   o.wz = t.wz;
+  o.qx = t.qx;     o.qy =   t.qy;   o.qz = t.qz; o.qw = t.qw;
+  o.type = t.type;
+  o.body = t.body;
+  o.fixed = t.fixed;
+  o.mass = t.mass;
+  o.material =  t.material;
+  o.inertiax =  t.inertiax;  o.inertiay = t.inertiay;   o.inertiaz = t.inertiaz;
+  o.iinertiax = t.iinertiax; o.iinertiay = t.iinertiay; o.iinertiaz = t.iinertiaz;
+  o.invm =      t.invm;
+
+  function f(){ return new Float32Array(n-1); };
+
+  // Create new arrays
+  t.x = f();    t.y = f();    t.z = f();
+  t.vx = f();   t.vy = f();   t.vz = f();
+  t.fx = f();   t.fy = f();   t.fz = f();
+  t.taux = f(); t.tauy = f(); t.tauz = f();
+  t.wx = f();   t.wy = f();   t.wz = f();
+  t.qx = f();   t.qy = f();   t.qz = f(); t.qw = f();
+
+  t.type = new Int16Array(n-1);
+  t.body = [];
+  t.fixed = new Int16Array(n-1);
+  t.mass = f();
+  /// References to material for each body
+  t.material = new Int16Array(n-1);
+  t.inertiax = f();
+  t.inertiay = f();
+  t.inertiaz = f();
+  t.iinertiax = f();
+  t.iinertiay = f();
+  t.iinertiaz = f();
+  t.invm = f();
+  
+  // Copy old data to new arrays, without the deleted index
+  for(var j=0; j<n; j++){
+    if(j!=body._id){
+      var i = j>body._id ? j-1 : j;
+      t.x[i] =    o.x[i];    t.y[i] = o.y[i];       t.z[i] = o.z[i];
+      t.vx[i] =   o.vx[i];   t.vy[i] = o.vy[i];     t.vz[i] = o.vz[i];
+      t.fx[i] =   o.fx[i];   t.fy[i] = o.fy[i];     t.fz[i] = o.fz[i];
+      t.taux[i] = o.taux[i]; t.tauy[i] = o.tauy[i]; t.tauz[i] = o.tauz[i];
+      t.wx[i] =   o.wx[i];   t.wy[i] = o.wy[i];     t.wz[i] = o.wz[i];
+      
+      t.qx[i] = o.qx[i];
+      t.qy[i] = o.qy[i];
+      t.qz[i] = o.qz[i];
+      t.qw[i] = o.qw[i];
+      
+      t.type[i] = o.type[i];
+      t.body[i] = o.body[i];
+      t.fixed[i] = o.fixed[i];
+      t.invm[i] = o.invm[i];
+      t.mass[i] = o.mass[i];
+      t.material[i] = o.material[i];
+      t.inertiax[i] = o.inertiax[i];
+      t.inertiay[i] = o.inertiay[i];
+      t.inertiaz[i] = o.inertiaz[i];
+      t.iinertiax[i] = o.iinertiax[i];
+      t.iinertiay[i] = o.iinertiay[i];
+      t.iinertiaz[i] = o.iinertiaz[i];
+    }
+  }
+
+  // disconnect to the world
+  body._id = -1;
+  body._world = null;
+
+  // Reset collision matrix
+  t.collision_matrix = new Int16Array((n-1)*(n-1));
+
+  console.log(this.body.length+" bodies left after remove, n="+n);
+};
+
 
 /**
  * Adds a contact material to the world
@@ -2028,10 +2068,12 @@ CANNON.World.prototype.broadphase = function(broadphase){
  * @return int
  */
 CANNON.World.prototype.iterations = function(n){
-  if(n)
+  if(n===undefined)
+    return this.solver.iter;
+  else if(Number(n) && n>0)
     this.solver.iter = parseInt(n);
   else
-    return this.solver.iter;
+    throw "Argument must be an integer larger than 0";
 };
 
 /**
@@ -2461,7 +2503,7 @@ CANNON.World.prototype.step = function(dt){
 	      new CANNON.Vec3(x[j],y[j],z[j]),
 	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
 	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
-    //console.log(contacts);
+
     // Add contact constraint(s)
     for(var ci = 0; ci<contacts.length; ci++){
       var c = contacts[ci];
@@ -2474,8 +2516,6 @@ CANNON.World.prototype.step = function(dt){
 
       // Action if penetration
       if(g<0.0){
-	//console.log(c);
-	//cmatrix(si,pi,0,1); // Set current contact state to contact
 	var vi = new CANNON.Vec3(vx[i],vy[i],vz[i]);
 	var wi = new CANNON.Vec3(wx[i],wy[i],wz[i]);
 	var vj = new CANNON.Vec3(vx[j],vy[j],vz[j]);
@@ -2606,7 +2646,6 @@ CANNON.World.prototype.step = function(dt){
 
   if(this.solver.n){
     this.solver.solve();
-    //world.togglepause();
 
     // Apply constraint velocities
     for(var i=0; i<world.numObjects(); i++){
