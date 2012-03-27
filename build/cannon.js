@@ -569,7 +569,7 @@ CANNON.Quaternion.prototype.toString = function(){
 /**
  * Set the quaternion components given an axis and an angle.
  * @param Vec3 axis
- * @param float angle
+ * @param float angle in radians
  */
 CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
   var s = Math.sin(angle*0.5);
