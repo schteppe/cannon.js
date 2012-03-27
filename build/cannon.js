@@ -976,11 +976,11 @@ CANNON.RigidBody.prototype.setAngularVelocity = function(x,y,z){
 };
 
 /**
- * Gets the angularvelocity of the object
+ * Gets the angular velocity of the object
  * @param Vec3 target Optional.
  * @return Vec3
  */
-CANNON.RigidBody.prototype.getAngularvelocity = function(target){
+CANNON.RigidBody.prototype.getAngularVelocity = function(target){
   target = target || new CANNON.Vec3();
   if(this._id!=-1){
     target.x = this._world.wx[this._id];

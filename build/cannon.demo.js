@@ -431,7 +431,7 @@ CANNON.Demo.prototype._buildScene = function(n){
       break;
 
     case CANNON.Shape.types.PLANE:
-      var geometry = new THREE.PlaneGeometry( 100, 100 );
+      var geometry = new THREE.PlaneGeometry( 100, 100 , 100 , 100);
       var planeMaterial = new THREE.MeshBasicMaterial( { color: materialColor,wireframe:wireframe } );
       THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
       var submesh = new THREE.Object3D();
@@ -443,7 +443,27 @@ CANNON.Demo.prototype._buildScene = function(n){
 
       var ground = new THREE.Mesh( geometry, planeMaterial );
       ground.scale.set( 100, 100, 100 );
-      ground.rotation.x = Math.PI;
+
+      var q = new CANNON.Quaternion();
+      var v1 = new CANNON.Vec3(0,0,1);
+      var a = shape.normal.cross(v1);
+      if(a.norm()!=0.0)
+	q = new CANNON.Quaternion(a.x,a.y,a.z,
+				  Math.sqrt((v1.norm()*v1.norm()) * 
+					    (shape.normal.norm()*shape.normal.norm()))
+				  + v1.dot(shape.normal));
+      else
+	q = new CANNON.Quaternion(Math.sin(Math.PI*0.5),0,0,Math.cos(Math.PI*0.5));
+      q.normalize();
+
+      ground.useQuaternion = true;
+      ground.quaternion.x = q.x;
+      ground.quaternion.y = q.y;
+      ground.quaternion.z = q.z;
+      ground.quaternion.w = q.w;
+
+      //ground.rotation.x = Math.PI;
+
       mesh = new THREE.Object3D();
       mesh.add(ground);
       break;
