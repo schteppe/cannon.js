@@ -436,15 +436,20 @@ CANNON.Demo.prototype._buildScene = function(n){
       THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
       var submesh = new THREE.Object3D();
 
+      var ground = new THREE.Mesh( geometry, planeMaterial );
+      submesh.add(ground);
+      var n = shape.normal.copy();
+
       if(that.shadowsOn){
-	submesh.castShadow = true;
-	submesh.receiveShadow = true;
+	ground.castShadow = true;
+	ground.receiveShadow = true;
       }
 
-      var ground = new THREE.Mesh( geometry, planeMaterial );
-      ground.matrixAutoUpdate = false;
-      var n = shape.normal.copy();
-      var r = n.cross(new CANNON.Vec3(1,0,0));
+      // Open question: Given plane normal, how to produce a transform for the plane?
+      
+      /*
+      var r = n.cross(new CANNON.Vec3(Math.random(),1,0).vsub(n));
+      r.normalize();
       if(r.norm()<0.0001){
 	// In case of parallel
 	r = new CANNON.Vec3(0,1,0).cross(n);
@@ -453,9 +458,23 @@ CANNON.Demo.prototype._buildScene = function(n){
       ground.matrix.lookAt(new THREE.Vector3(0,0,0),
 			   new THREE.Vector3(n.x,n.y,n.z),
 			   new THREE.Vector3(r.x,r.y,r.z));
-      ground.matrix.scale(new THREE.Vector3(100,100,100));
+      */
+      
+      var z = new CANNON.Vec3(0,0,1);
+      var a = z.cross(n);
+      submesh.useQuaternion = true;
+      ground.rotation.y = Math.PI;
+      ground.scale = new THREE.Vector3(100,100,100);
+      if(a.norm()>0.0001){
+	submesh.quaternion.setFromAxisAngle(new THREE.Vector3(a.x,a.y,a.z),
+					    Math.acos(z.dot(n)));
+      } else {
+	submesh.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1),0);
+      }
+
+      //ground.matrix.scale(new THREE.Vector3(100,100,100));
       mesh = new THREE.Object3D();
-      mesh.add(ground);
+      mesh.add(submesh);
       break;
 
     case CANNON.Shape.types.BOX:

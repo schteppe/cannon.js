@@ -34,6 +34,16 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
   this.w = Math.cos(angle*0.5);
 };
 
+CANNON.Quaternion.prototype.setFromVectors = function(u,v,target){
+  target = target || new CANNON.Quaternion();
+
+  var a = u.cross(v);
+  target.x = a.x;
+  target.y = a.y;
+  target.z = a.z;
+  target.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + dotproduct(u, v);
+};
+
 /**
  * Quaternion multiplication
  * @param Quaternion q
@@ -93,30 +103,31 @@ CANNON.Quaternion.prototype.normalize = function(){
  */
 CANNON.Quaternion.prototype.vmult = function(v,target){
   target = target || new CANNON.Vec3();
-  var x = v.x,
-      y = v.y,
-      z = v.z;
+  if(this.w==0.0){
+    target.x = v.x;
+    target.y = v.y;
+    target.z = v.z;
+  } else {
+    
+    var x = v.x,
+    y = v.y,
+    z = v.z;
+    
+    var qx = this.x,
+    qy = this.y,
+    qz = this.z,
+    qw = this.w;
+    
+    // q*v
+    var ix =  qw * x + qy * z - qz * y,
+    iy =  qw * y + qz * x - qx * z,
+    iz =  qw * z + qx * y - qy * x,
+    iw = -qx * x - qy * y - qz * z;
+    
+    target.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+    target.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+    target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+  }
 
-  var qx = this.x,
-      qy = this.y,
-      qz = this.z,
-      qw = this.w;
-
-  // q*v
-  var ix =  qw * x + qy * z - qz * y,
-      iy =  qw * y + qz * x - qx * z,
-      iz =  qw * z + qx * y - qy * x,
-      iw = -qx * x - qy * y - qz * z;
-  
-  target.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-  target.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-  target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
-
-  // Version 2...
-  /*
-  target.x = (qw*qw+qx*qx-qy*qy-qz*qz)*x + (2*qx*qy-2*qw*qz)*y + (2*qx*qz+2*qw*qy)*z;
-  target.y = (2*qx*qy+2*qw*qz) * x + (qw*qw-qx*qx+qy*qy-qz*qz) * y + (2*qy*qz+2*qw*qx) * z;
-  target.z = (2*qx*qz-2*qw*qy) * x + (2*qy*qz-2*qw*qx) * y + (qw*qw-qx*qx-qy*qy+qz*qz) * z;
-  */
   return target;
 };

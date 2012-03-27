@@ -702,6 +702,8 @@ CANNON.World.prototype.step = function(dt){
 
 	// Contact normal
 	sj.normal.copy(r.ni);
+	//console.log("before:",r.ni.toString(),"q:"+qj.toString(),"result:"+qj.vmult(r.ni).toString());
+	qj.vmult(r.ni,r.ni);
 	r.ni.negate(r.ni); // body i is the sphere, flip normal
 	r.ni.normalize();
 
