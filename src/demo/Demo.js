@@ -419,28 +419,18 @@ CANNON.Demo.prototype._buildScene = function(n){
       }
 
       var ground = new THREE.Mesh( geometry, planeMaterial );
-      ground.scale.set( 100, 100, 100 );
-
-      var q = new CANNON.Quaternion();
-      var v1 = new CANNON.Vec3(0,0,1);
-      var a = shape.normal.cross(v1);
-      if(a.norm()!=0.0)
-	q = new CANNON.Quaternion(a.x,a.y,a.z,
-				  Math.sqrt((v1.norm()*v1.norm()) * 
-					    (shape.normal.norm()*shape.normal.norm()))
-				  + v1.dot(shape.normal));
-      else
-	q = new CANNON.Quaternion(Math.sin(Math.PI*0.5),0,0,Math.cos(Math.PI*0.5));
-      q.normalize();
-
-      ground.useQuaternion = true;
-      ground.quaternion.x = q.x;
-      ground.quaternion.y = q.y;
-      ground.quaternion.z = q.z;
-      ground.quaternion.w = q.w;
-
-      //ground.rotation.x = Math.PI;
-
+      ground.matrixAutoUpdate = false;
+      var n = shape.normal.copy();
+      var r = n.cross(new CANNON.Vec3(1,0,0));
+      if(r.norm()<0.0001){
+	// In case of parallel
+	r = new CANNON.Vec3(0,1,0).cross(n);
+	n.negate(n);
+      }
+      ground.matrix.lookAt(new THREE.Vector3(0,0,0),
+			   new THREE.Vector3(n.x,n.y,n.z),
+			   new THREE.Vector3(r.x,r.y,r.z));
+      ground.matrix.scale(new THREE.Vector3(100,100,100));
       mesh = new THREE.Object3D();
       mesh.add(ground);
       break;
