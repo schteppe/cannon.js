@@ -16,7 +16,7 @@ demo.addScene(function(app){
     var groundBody = new CANNON.RigidBody(0,groundShape);
     var q = new CANNON.Quaternion();
     q.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/8);
-    groundBody.setOrientation(q.x,q.y,q.z,q.w);
+    //groundBody.setOrientation(q.x,q.y,q.z,q.w); // Inclined plane
     groundBody.setPosition(0,0,0);
     world.add(groundBody);
     app.addVisual(groundBody);

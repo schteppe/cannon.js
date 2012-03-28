@@ -132,12 +132,13 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
 };
 
 CANNON.Demo.prototype.updateVisuals = function(){
+  
   // Read position data into visuals
   for(var i=0; i<this._phys_bodies.length; i++){
     this._phys_bodies[i].getPosition(this._phys_visuals[i].position);
     this._phys_bodies[i].getOrientation(this._phys_visuals[i].quaternion);
   }
-
+  
   // Render contacts
   if(this.settings.contacts){
     // Remove old ones
@@ -434,10 +435,13 @@ CANNON.Demo.prototype._buildScene = function(n){
       var geometry = new THREE.PlaneGeometry( 100, 100 , 100 , 100 );
       var planeMaterial = new THREE.MeshBasicMaterial( { color: materialColor,wireframe:wireframe } );
       THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
+      mesh = new THREE.Object3D();
       var submesh = new THREE.Object3D();
+      var subsubmesh = new THREE.Object3D();
 
       var ground = new THREE.Mesh( geometry, planeMaterial );
-      submesh.add(ground);
+      ground.scale = new THREE.Vector3(100,100,100);
+      subsubmesh.add(ground);
       var n = shape.normal.copy();
 
       if(that.shadowsOn){
@@ -445,35 +449,12 @@ CANNON.Demo.prototype._buildScene = function(n){
 	ground.receiveShadow = true;
       }
 
-      // Open question: Given plane normal, how to produce a transform for the plane?
-      
-      /*
-      var r = n.cross(new CANNON.Vec3(Math.random(),1,0).vsub(n));
-      r.normalize();
-      if(r.norm()<0.0001){
-	// In case of parallel
-	r = new CANNON.Vec3(0,1,0).cross(n);
-	n.negate(n);
-      }
-      ground.matrix.lookAt(new THREE.Vector3(0,0,0),
-			   new THREE.Vector3(n.x,n.y,n.z),
-			   new THREE.Vector3(r.x,r.y,r.z));
-      */
-      
-      var z = new CANNON.Vec3(0,0,1);
-      var a = z.cross(n);
+      // Rotate the plane according to normal
+      var q = new CANNON.Quaternion();
+      q.setFromVectors(n,new CANNON.Vec3(0,0,-1));
       submesh.useQuaternion = true;
-      ground.rotation.y = Math.PI;
-      ground.scale = new THREE.Vector3(100,100,100);
-      if(a.norm()>0.0001){
-	submesh.quaternion.setFromAxisAngle(new THREE.Vector3(a.x,a.y,a.z),
-					    Math.acos(z.dot(n)));
-      } else {
-	submesh.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1),0);
-      }
-
-      //ground.matrix.scale(new THREE.Vector3(100,100,100));
-      mesh = new THREE.Object3D();
+      submesh.quaternion.set(q.x,q.y,q.z,q.w);
+      submesh.add(subsubmesh);
       mesh.add(submesh);
       break;
 

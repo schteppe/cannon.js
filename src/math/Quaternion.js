@@ -7,10 +7,10 @@
  * @param float w
  */
 CANNON.Quaternion = function(x,y,z,w){
-  this.x = x!=undefined ? x : 1;
+  this.x = x!=undefined ? x : 0;
   this.y = y!=undefined ? y : 0;
   this.z = z!=undefined ? z : 0;
-  this.w = w!=undefined ? w : 0;
+  this.w = w!=undefined ? w : 1;
 };
 
 /**
@@ -34,14 +34,13 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
   this.w = Math.cos(angle*0.5);
 };
 
-CANNON.Quaternion.prototype.setFromVectors = function(u,v,target){
-  target = target || new CANNON.Quaternion();
-
+CANNON.Quaternion.prototype.setFromVectors = function(u,v){
   var a = u.cross(v);
-  target.x = a.x;
-  target.y = a.y;
-  target.z = a.z;
-  target.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + dotproduct(u, v);
+  this.x = a.x;
+  this.y = a.y;
+  this.z = a.z;
+  this.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + u.dot(v);
+  this.normalize();
 };
 
 /**

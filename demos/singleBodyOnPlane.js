@@ -43,8 +43,8 @@ function createBodyOnPlane(app,shape){
   var pos = new CANNON.Vec3(4,4,2*size);
   shapeBody.setPosition(pos.x,pos.y,pos.z);
   shapeBody.setOrientation(0,1,0,0.2);
-  shapeBody.setVelocity(20,0,0);
-  shapeBody.setAngularVelocity(0,1,0);
+  shapeBody.setVelocity(0,0,0);
+  shapeBody.setAngularVelocity(0,0,0);
   world.add(shapeBody);
   app.addVisual(shapeBody);
 }
