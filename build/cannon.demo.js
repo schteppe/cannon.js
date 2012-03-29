@@ -52,7 +52,13 @@ CANNON.Demo = function(){
   this._contactmeshes = [];
   this._contactlines = [];
 
+  // Material
   this.materialColor = 0xdddddd;
+  this.solidMaterial = new THREE.MeshLambertMaterial( { color: this.materialColor } );
+  THREE.ColorUtils.adjustHSV( this.solidMaterial.color, 0, 0, 0.9 );
+  this.wireframeMaterial = new THREE.MeshBasicMaterial( { color: this.materialColor, wireframe:true } );
+  this.currentMaterial = this.solidMaterial;
+  this.contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
 
   this.renderModes = {
     NORMAL:0,
@@ -85,10 +91,11 @@ CANNON.Demo.prototype.renderMode = function(mode){
   switch(mode){
     
   case this.renderModes.NORMAL:
+    that.currentMaterial = that.solidMaterial;
     // Change all current geometries to normal
     function setNormal(node){
       if(node.material)
-	node.material = new THREE.MeshLambertMaterial( { color: that.materialColor } );
+	node.material = that.solidMaterial;
       for(var i=0; i<node.children.length; i++)
 	setNormal(node.children[i]);
     }
@@ -97,10 +104,11 @@ CANNON.Demo.prototype.renderMode = function(mode){
     break;
     
   case this.renderModes.WIREFRAME:
+    that.currentMaterial = that.wireframeMaterial;
     // Change all current geometries to normal
     function setWireframe(node){
       if(node.material)
-	node.material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } );
+	node.material = that.wireframeMaterial;
       for(var i=0; i<node.children.length; i++)
 	setWireframe(node.children[i]);
     }
@@ -157,11 +165,7 @@ CANNON.Demo.prototype.updateVisuals = function(){
   if(this.settings.contacts){
 
     // Add new
-    var sphere_geometry = new THREE.SphereGeometry( 0.1, 8, 8);
-    var sphereMaterial = new THREE.MeshLambertMaterial({
-	color: 0xff0000,
-	wireframe:this.settings.rendermode==this.renderModes.WIREFRAME
-      });
+    var sphere_geometry = new THREE.SphereGeometry( 0.1, 6, 6);
     var numadded = 0;
     var old_meshes = this._contactmeshes;
     this._contactmeshes = [];
@@ -174,7 +178,7 @@ CANNON.Demo.prototype.updateVisuals = function(){
 	  mesh_i = old_meshes[numadded];
 	} else {
 	  // Create new mesh
-	  mesh_i = new THREE.Mesh( sphere_geometry, sphereMaterial );
+	  mesh_i = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
 	  this._scene.add(mesh_i);
 	}
 	this._contactmeshes.push(mesh_i);
@@ -185,7 +189,7 @@ CANNON.Demo.prototype.updateVisuals = function(){
 	  mesh_j = old_meshes[numadded];
 	} else {
 	  // Create new mesh
-	  mesh_j = new THREE.Mesh( sphere_geometry, sphereMaterial );
+	  mesh_j = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
 	  this._scene.add(mesh_j);
 	}
 	this._contactmeshes.push(mesh_j);
@@ -226,44 +230,32 @@ CANNON.Demo.prototype.updateVisuals = function(){
       for(var k=0; k<this._world.contacts[ci].length; k++){
 	var ij = ci.split(",");
 	var i=parseInt(ij[0]), j=parseInt(ij[1]);
-	var line_i, line_j, geometry_i, geometry_j;
+	var line, geometry;
 
-	if(old_lines.length){
-	  // Get mesh from prev timestep
-	  line_i = old_lines.pop();
-	  geometry_i = line_i.geometry;
-	  geometry_i.vertices.pop();
-	  geometry_i.vertices.pop();
-	} else {
-	  // Create new mesh
-	  geometry_i = new THREE.Geometry();
-	  geometry_i.dynamic = true;
-	  line_i = new THREE.Line( geometry_i, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
-	  this._scene.add(line_i);
+	for(var l=0; l<2; l++){
+	  if(old_lines.length){
+	    // Get mesh from prev timestep
+	    line = old_lines.pop();
+	    geometry = line.geometry;
+	    geometry.vertices.pop();
+	    geometry.vertices.pop();
+	  } else {
+	    // Create new mesh
+	    geometry = new THREE.Geometry();
+	    geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(0,0,0)));
+	    geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(1,1,1)));
+	    line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
+	    this._scene.add(line);
+	  }
+	  this._contactlines.push(line);
+	  var r = l==0 ? this._world.contacts[ci][k].ri : this._world.contacts[ci][k].rj;
+	  var pos_idx = l==0 ? i : j;
+	  line.scale = new THREE.Vector3(r.x,r.y,r.z);
+	  line.position.set(this._world.x[pos_idx],
+			    this._world.y[pos_idx],
+			    this._world.z[pos_idx]);
+	  this._scene.add(line);
 	}
-	this._contactlines.push(line_i);
-	geometry_i.vertices.push(new THREE.Vertex(new THREE.Vector3(this._world.x[i],
-								    this._world.y[i],
-								    this._world.z[i])));
-	geometry_i.vertices.push(new THREE.Vertex(new THREE.Vector3(this._world.x[i] + this._world.contacts[ci][k].ri.x,
-								    this._world.y[i] + this._world.contacts[ci][k].ri.y,
-								    this._world.z[i] + this._world.contacts[ci][k].ri.z)));
-	this._scene.remove(line_i);
-	this._scene.add(line_i);
-
-	/*
-	var geometry_j = new THREE.Geometry();
-	geometry_j.vertices.push( new THREE.Vertex( new THREE.Vector3(this._world.x[j],
-								      this._world.y[j],
-								      this._world.z[j] )) );
-	geometry_j.vertices.push( new THREE.Vertex( new THREE.Vector3(this._world.x[j] + this._world.contacts[ci][k].rj.x,
-								      this._world.y[j] + this._world.contacts[ci][k].rj.y,
-								      this._world.z[j] + this._world.contacts[ci][k].rj.z)));
-	var line_j = new THREE.Line( geometry_j, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
-	this._scene.add(line_j);
-	this._contactlines.push(line_j);
-	*/
-	
       }
     }
 
@@ -466,7 +458,7 @@ CANNON.Demo.prototype.start = function(){
 
     // Render mode
     var rf = that._gui.addFolder('Rendering');
-    rf.add(that.settings,'rendermode',{normal:that.renderModes.NORMAL,wireframe:that.renderModes.WIREFRAME}).onChange(function(mode){
+    rf.add(that.settings,'rendermode',{Solid:that.renderModes.NORMAL,Wireframe:that.renderModes.WIREFRAME}).onChange(function(mode){
 	that.renderMode(mode);
       });
     rf.add(that.settings,'contacts').onChange(function(contacts){
@@ -541,20 +533,16 @@ CANNON.Demo.prototype._buildScene = function(n){
       
     case CANNON.Shape.types.SPHERE:
       var sphere_geometry = new THREE.SphereGeometry( shape.radius, 8, 8);
-      var sphereMaterial = new THREE.MeshLambertMaterial( { color: materialColor,wireframe:wireframe } );
-      THREE.ColorUtils.adjustHSV( sphereMaterial.color, 0, 0, 0.9 );
-      mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
+      mesh = new THREE.Mesh( sphere_geometry, that.currentMaterial );
       break;
 
     case CANNON.Shape.types.PLANE:
       var geometry = new THREE.PlaneGeometry( 100, 100 , 100 , 100 );
-      var planeMaterial = new THREE.MeshBasicMaterial( { color: materialColor,wireframe:wireframe } );
-      THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
       mesh = new THREE.Object3D();
       var submesh = new THREE.Object3D();
       var subsubmesh = new THREE.Object3D();
 
-      var ground = new THREE.Mesh( geometry, planeMaterial );
+      var ground = new THREE.Mesh( geometry, that.currentMaterial );
       ground.scale = new THREE.Vector3(100,100,100);
       subsubmesh.add(ground);
       var n = shape.normal.copy();
@@ -575,15 +563,12 @@ CANNON.Demo.prototype._buildScene = function(n){
 
     case CANNON.Shape.types.BOX:
       var box_geometry = new THREE.CubeGeometry( shape.halfExtents.x*2, shape.halfExtents.y*2, shape.halfExtents.z*2 );
-      var boxMaterial = new THREE.MeshLambertMaterial( { color: materialColor,wireframe:wireframe } );
-      THREE.ColorUtils.adjustHSV( boxMaterial.color, 0, 0, 0.9 );
-      mesh = new THREE.Mesh( box_geometry, boxMaterial );
+      mesh = new THREE.Mesh( box_geometry, that.currentMaterial );
       break;
 
     case CANNON.Shape.types.COMPOUND:
       // @todo recursive compounds
       var o3d = new THREE.Object3D();
-      var compoundMaterial = new THREE.MeshLambertMaterial( { color: materialColor,wireframe:wireframe } );
       for(var i = 0; i<shape.childShapes.length; i++){
 
 	// Get child information
