@@ -50,6 +50,7 @@ CANNON.Demo = function(){
   this.timestep = 1.0/60.0;
   this.shadowsOn = true;
   this._contactmeshes = [];
+  this._contactlines = [];
 
   this.materialColor = 0xdddddd;
 
@@ -210,6 +211,73 @@ CANNON.Demo.prototype.updateVisuals = function(){
     for(var i=0; i<this._contactmeshes.length; i++)
       this._scene.remove(this._contactmeshes[i]);
   }
+
+  // Lines
+  if(this.settings.cm2contact){
+
+    // remove last timesteps' lines
+    /*while(this._contactlines.length)
+      this._scene.remove(this._contactlines.pop());*/
+
+    var old_lines = this._contactlines;
+    this._contactlines = [];
+
+    for(var ci in this._world.contacts){
+      for(var k=0; k<this._world.contacts[ci].length; k++){
+	var ij = ci.split(",");
+	var i=parseInt(ij[0]), j=parseInt(ij[1]);
+	var line_i, line_j, geometry_i, geometry_j;
+
+	if(old_lines.length){
+	  // Get mesh from prev timestep
+	  line_i = old_lines.pop();
+	  geometry_i = line_i.geometry;
+	  geometry_i.vertices.pop();
+	  geometry_i.vertices.pop();
+	} else {
+	  // Create new mesh
+	  geometry_i = new THREE.Geometry();
+	  geometry_i.dynamic = true;
+	  line_i = new THREE.Line( geometry_i, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
+	  this._scene.add(line_i);
+	}
+	this._contactlines.push(line_i);
+	geometry_i.vertices.push(new THREE.Vertex(new THREE.Vector3(this._world.x[i],
+								    this._world.y[i],
+								    this._world.z[i])));
+	geometry_i.vertices.push(new THREE.Vertex(new THREE.Vector3(this._world.x[i] + this._world.contacts[ci][k].ri.x,
+								    this._world.y[i] + this._world.contacts[ci][k].ri.y,
+								    this._world.z[i] + this._world.contacts[ci][k].ri.z)));
+	this._scene.remove(line_i);
+	this._scene.add(line_i);
+
+	/*
+	var geometry_j = new THREE.Geometry();
+	geometry_j.vertices.push( new THREE.Vertex( new THREE.Vector3(this._world.x[j],
+								      this._world.y[j],
+								      this._world.z[j] )) );
+	geometry_j.vertices.push( new THREE.Vertex( new THREE.Vector3(this._world.x[j] + this._world.contacts[ci][k].rj.x,
+								      this._world.y[j] + this._world.contacts[ci][k].rj.y,
+								      this._world.z[j] + this._world.contacts[ci][k].rj.z)));
+	var line_j = new THREE.Line( geometry_j, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
+	this._scene.add(line_j);
+	this._contactlines.push(line_j);
+	*/
+	
+      }
+    }
+
+    // Remove overflowing
+    while(old_lines.length)
+      this._scene.remove(old_lines.pop());
+
+  } else if(this._contactmeshes.length){
+
+    // Remove all contact lines
+    for(var i=0; i<this._contactlines.length; i++)
+      this._scene.remove(this._contactlines[i]);
+
+  }
 };
 
 /**
@@ -319,7 +387,7 @@ CANNON.Demo.prototype.start = function(){
     controls.staticMoving = false;
     controls.dynamicDampingFactor = 0.3;
     var radius = 100;
-    controls.minDistance = radius * 0.1;
+    controls.minDistance = 0.0;
     controls.maxDistance = radius * 1000;
     controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
     controls.screen.width = that.SCREEN_WIDTH;

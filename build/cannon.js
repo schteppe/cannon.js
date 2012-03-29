@@ -2592,9 +2592,10 @@ CANNON.World.prototype.step = function(dt){
 			  ],
 
 			 [-un_rel.x,-un_rel.y,-un_rel.z,
-			  -u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
+			  0,0,0,//-u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
 			  un_rel.x,un_rel.y,un_rel.z,
-			  u_rjxn_rel.x,u_rjxn_rel.y,u_rjxn_rel.z],
+			  0,0,0//u_rjxn_rel.x,u_rjxn_rel.y,u_rjxn_rel.z
+			  ],
 			 
 			 // External force - forces & torques
 			 [fx[i],fy[i],fz[i],
