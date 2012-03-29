@@ -118,9 +118,6 @@ CANNON.Demo.prototype.updateVisuals = function(){
   
   // Render contacts
   if(this.settings.contacts){
-    // Remove old ones
-    for(var c in this._contactmeshes)
-      this._scene.remove(this._contactmeshes[c]);
 
     // Add new
     var sphere_geometry = new THREE.SphereGeometry( 0.1, 8, 8);
@@ -128,20 +125,38 @@ CANNON.Demo.prototype.updateVisuals = function(){
 	color: 0xff0000,
 	wireframe:this.settings.rendermode==this.renderModes.WIREFRAME
       });
-    for(var i=0; i<this._world.numObjects(); i++){
-      for(var j=0; j<this._world.numObjects(); j++){
-	if(this._world.contacts[i+","+j]){
-	  for(var k=0; k<this._world.contacts[i+","+j].length; k++){
-	    var mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
-	    this._scene.add(mesh);
-	    mesh.position.x = this._world.x[i] + this._world.contacts[i+","+j][k].ri.x;
-	    mesh.position.y = this._world.y[i] + this._world.contacts[i+","+j][k].ri.y;
-	    mesh.position.z = this._world.z[i] + this._world.contacts[i+","+j][k].ri.z;
-	    this._contactmeshes.push(mesh); 
-	  }
+    var numadded = 0;
+    var old_meshes = this._contactmeshes;
+    this._contactmeshes = [];
+    for(var ci in this._world.contacts){
+      for(var k=0; k<this._world.contacts[ci].length; k++){
+	var ij = ci.split(",");
+	var i=parseInt(ij[0]), j=parseInt(ij[1]), mesh;
+	if(numadded<old_meshes.length){
+	  // Get mesh from prev timestep
+	  mesh = old_meshes[numadded];
+	} else {
+	  // Create new mesh
+	  mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
+	  this._scene.add(mesh);
 	}
+	this._contactmeshes.push(mesh);
+	numadded++;
+	mesh.position.x = this._world.x[i] + this._world.contacts[ci][k].ri.x;
+	mesh.position.y = this._world.y[i] + this._world.contacts[ci][k].ri.y;
+	mesh.position.z = this._world.z[i] + this._world.contacts[ci][k].ri.z;
       }
     }
+
+    // Remove overflowing
+    for(var i=numadded; i<old_meshes.length; i++)
+      this._scene.remove(old_meshes[i]);
+
+  } else if(this._contactmeshes.length){
+
+    // Remove all contact meshes
+    for(var i=0; i<this._contactmeshes.length; i++)
+      this._scene.remove(this._contactmeshes[i]);
   }
 };
 
