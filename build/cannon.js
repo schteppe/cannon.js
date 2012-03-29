@@ -2417,12 +2417,7 @@ CANNON.World.prototype.step = function(dt){
 		res.rj.copy(res.rj);
 		dist.negate(res.ni);
 		res.ni.normalize();
-		
 		res.rj.vadd(xj).vsub(xi).unit().mult(R,res.ri);
-		  /*
-		res.ri.copy(res.ni); // Normal is from sphere
-		res.ni.mult(R,r.ri); // ri from sphere
-		  */
 		result.push(res);
 	      }
 	    }

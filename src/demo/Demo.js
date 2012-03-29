@@ -18,6 +18,7 @@ CANNON.Demo = function(){
   this._phys_bodies = [];
   this._phys_visuals = [];
   this._phys_startpositions = [];
+  this._phys_startrot = [];
   this._phys_startvelocities = [];
   this._phys_startrotvelo = [];
   this._scenes = [];
@@ -113,6 +114,10 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
     this._phys_bodies[i].setAngularVelocity(this._phys_startrotvelo[i].x,
 					    this._phys_startrotvelo[i].y,
 					    this._phys_startrotvelo[i].z);
+    this._phys_bodies[i].setOrientation(this._phys_startrot[i].x,
+					this._phys_startrot[i].y,
+					this._phys_startrot[i].z,
+					this._phys_startrot[i].w);
   }
 };
 
@@ -433,6 +438,7 @@ CANNON.Demo.prototype._buildScene = function(n){
     that._phys_startpositions.pop();
     that._phys_startvelocities.pop();
     that._phys_startrotvelo.pop();
+    that._phys_startrot.pop();
     var mesh = that._phys_visuals.pop();
     that._scene.remove(mesh);
   }
@@ -546,6 +552,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 	  that._phys_visuals.push(mesh);
 	  that._phys_startpositions.push(body.getPosition());
 	  that._phys_startvelocities.push(body.getVelocity());
+	  that._phys_startrot.push(body.getOrientation());
 	  that._phys_startrotvelo.push(body.getAngularVelocity());
 	  body.visualref = mesh;
 	  body.visualref.visualId = that._phys_startpositions.length - 1;
@@ -557,6 +564,7 @@ CANNON.Demo.prototype._buildScene = function(n){
       removeVisual:function(body){
 	if(body.visualref!=undefined){
 	  var old_sp = [];
+	  var old_sq = [];
 	  var old_sv = [];
 	  var old_sw = [];
 	  var old_b = [];
@@ -568,6 +576,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 	    old_sp.unshift(that._phys_startpositions.pop());
 	    old_sv.unshift(that._phys_startvelocities.pop());
 	    old_sw.unshift(that._phys_startrotvelo.pop());
+	    old_sq.unshift(that._phys_startrot.pop());
 	  }
 	  var id = body.visualref.visualId;
 	  for(var j=0; j<old_sp.length; j++){
@@ -576,6 +585,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 	      that._phys_startpositions[i] = old_sp[j];
 	      that._phys_startvelocities[i] = old_sv[j];
 	      that._phys_startrotvelo[i] = old_sw[j];
+	      that._phys_startrot[i] = old_sq[j];
 	      that._phys_bodies[i] = old_b[j];
 	      that._phys_visuals[i] = old_v[j];
 	      that._phys_bodies[i].visualref = old_b[j].visualref;
