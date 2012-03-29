@@ -154,20 +154,36 @@ CANNON.Demo.prototype.updateVisuals = function(){
     for(var ci in this._world.contacts){
       for(var k=0; k<this._world.contacts[ci].length; k++){
 	var ij = ci.split(",");
-	var i=parseInt(ij[0]), j=parseInt(ij[1]), mesh;
+	var i=parseInt(ij[0]), j=parseInt(ij[1]), mesh_i, mesh_j;
 	if(numadded<old_meshes.length){
 	  // Get mesh from prev timestep
-	  mesh = old_meshes[numadded];
+	  mesh_i = old_meshes[numadded];
 	} else {
 	  // Create new mesh
-	  mesh = new THREE.Mesh( sphere_geometry, sphereMaterial );
-	  this._scene.add(mesh);
+	  mesh_i = new THREE.Mesh( sphere_geometry, sphereMaterial );
+	  this._scene.add(mesh_i);
 	}
-	this._contactmeshes.push(mesh);
+	this._contactmeshes.push(mesh_i);
 	numadded++;
-	mesh.position.x = this._world.x[i] + this._world.contacts[ci][k].ri.x;
-	mesh.position.y = this._world.y[i] + this._world.contacts[ci][k].ri.y;
-	mesh.position.z = this._world.z[i] + this._world.contacts[ci][k].ri.z;
+
+	if(numadded<old_meshes.length){
+	  // Get mesh from prev timestep
+	  mesh_j = old_meshes[numadded];
+	} else {
+	  // Create new mesh
+	  mesh_j = new THREE.Mesh( sphere_geometry, sphereMaterial );
+	  this._scene.add(mesh_j);
+	}
+	this._contactmeshes.push(mesh_j);
+	numadded++;
+
+	mesh_i.position.x = this._world.x[i] + this._world.contacts[ci][k].ri.x;
+	mesh_i.position.y = this._world.y[i] + this._world.contacts[ci][k].ri.y;
+	mesh_i.position.z = this._world.z[i] + this._world.contacts[ci][k].ri.z;
+
+	mesh_j.position.x = this._world.x[j] + this._world.contacts[ci][k].rj.x;
+	mesh_j.position.y = this._world.y[j] + this._world.contacts[ci][k].rj.y;
+	mesh_j.position.z = this._world.z[j] + this._world.contacts[ci][k].rj.z;
       }
     }
 
