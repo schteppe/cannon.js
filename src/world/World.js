@@ -810,10 +810,9 @@ CANNON.World.prototype.step = function(dt){
 		var res = makeResult();
 		edgeCenter.vadd(orthogonal,res.rj); // box rj
 		res.rj.copy(res.rj);
-		dist.negate(res.ri);
-		res.ri.normalize();
-		res.ri.copy(res.ni); // Normal is from sphere
-		res.ri.mult(R,r.ri); // ri from sphere
+		dist.negate(res.ni);
+		res.ni.normalize();
+		res.rj.vadd(xj).vsub(xi).unit().mult(R,res.ri);
 		result.push(res);
 	      }
 	    }
