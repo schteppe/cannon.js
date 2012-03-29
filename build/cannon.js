@@ -961,9 +961,9 @@ CANNON.RigidBody.prototype.setVelocity = function(x,y,z){
 CANNON.RigidBody.prototype.getVelocity = function(target){
   target = target || new CANNON.Vec3();
   if(this._id!=-1){
-    target.x = this._world.x[this._id];
-    target.y = this._world.y[this._id];
-    target.z = this._world.z[this._id];
+    target.x = this._world.vx[this._id];
+    target.y = this._world.vy[this._id];
+    target.z = this._world.vz[this._id];
   } else {
     target.x = this._velocity.x;
     target.y = this._velocity.y;
@@ -2352,7 +2352,7 @@ CANNON.World.prototype.step = function(dt){
 	      ns.mult(-R,r.ri); // Sphere r
 	      ns.copy(r.ni);
 	      r.ni.negate(r.ni); // Normal should be out of sphere
-	      ns.mult(h,r.rj); // box
+	      ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
 	      result.push(r);
 	    }
 	  }

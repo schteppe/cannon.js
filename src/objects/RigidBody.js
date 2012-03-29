@@ -212,9 +212,9 @@ CANNON.RigidBody.prototype.setVelocity = function(x,y,z){
 CANNON.RigidBody.prototype.getVelocity = function(target){
   target = target || new CANNON.Vec3();
   if(this._id!=-1){
-    target.x = this._world.x[this._id];
-    target.y = this._world.y[this._id];
-    target.z = this._world.z[this._id];
+    target.x = this._world.vx[this._id];
+    target.y = this._world.vy[this._id];
+    target.z = this._world.vz[this._id];
   } else {
     target.x = this._velocity.x;
     target.y = this._velocity.y;

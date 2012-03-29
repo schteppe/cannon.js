@@ -747,7 +747,7 @@ CANNON.World.prototype.step = function(dt){
 	      ns.mult(-R,r.ri); // Sphere r
 	      ns.copy(r.ni);
 	      r.ni.negate(r.ni); // Normal should be out of sphere
-	      ns.mult(h,r.rj); // box
+	      ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
 	      result.push(r);
 	    }
 	  }

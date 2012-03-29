@@ -41,6 +41,8 @@ CANNON.Demo = function(){
   this._phys_bodies = [];
   this._phys_visuals = [];
   this._phys_startpositions = [];
+  this._phys_startvelocities = [];
+  this._phys_startrotvelo = [];
   this._scenes = [];
   this._gui = null;
   this.paused = false;
@@ -128,6 +130,12 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
     this._phys_bodies[i].setPosition(this._phys_startpositions[i].x,
 				     this._phys_startpositions[i].y,
 				     this._phys_startpositions[i].z);
+    this._phys_bodies[i].setVelocity(this._phys_startvelocities[i].x,
+				     this._phys_startvelocities[i].y,
+				     this._phys_startvelocities[i].z);
+    this._phys_bodies[i].setAngularVelocity(this._phys_startrotvelo[i].x,
+					    this._phys_startrotvelo[i].y,
+					    this._phys_startrotvelo[i].z);
   }
 };
 
@@ -446,6 +454,8 @@ CANNON.Demo.prototype._buildScene = function(n){
   for(var i=0; i<num; i++){
     that._phys_bodies.pop();
     that._phys_startpositions.pop();
+    that._phys_startvelocities.pop();
+    that._phys_startrotvelo.pop();
     var mesh = that._phys_visuals.pop();
     that._scene.remove(mesh);
   }
@@ -557,9 +567,9 @@ CANNON.Demo.prototype._buildScene = function(n){
 	  // Add body
 	  that._phys_bodies.push(body);
 	  that._phys_visuals.push(mesh);
-	  var pos = new CANNON.Vec3();
-	  body.getPosition(pos);
-	  that._phys_startpositions.push(pos);
+	  that._phys_startpositions.push(body.getPosition());
+	  that._phys_startvelocities.push(body.getVelocity());
+	  that._phys_startrotvelo.push(body.getAngularVelocity());
 	  body.visualref = mesh;
 	  body.visualref.visualId = that._phys_startpositions.length - 1;
 	  mesh.useQuaternion = true;
@@ -570,6 +580,8 @@ CANNON.Demo.prototype._buildScene = function(n){
       removeVisual:function(body){
 	if(body.visualref!=undefined){
 	  var old_sp = [];
+	  var old_sv = [];
+	  var old_sw = [];
 	  var old_b = [];
 	  var old_v = [];
 	  var n = that._phys_startpositions.length;
@@ -577,12 +589,16 @@ CANNON.Demo.prototype._buildScene = function(n){
 	    old_b.unshift(that._phys_bodies.pop());
 	    old_v.unshift(that._phys_visuals.pop());
 	    old_sp.unshift(that._phys_startpositions.pop());
+	    old_sv.unshift(that._phys_startvelocities.pop());
+	    old_sw.unshift(that._phys_startrotvelo.pop());
 	  }
 	  var id = body.visualref.visualId;
 	  for(var j=0; j<old_sp.length; j++){
 	    if(j!=id){
 	      var i = j>id ? j-1 : j;
 	      that._phys_startpositions[i] = old_sp[j];
+	      that._phys_startvelocities[i] = old_sv[j];
+	      that._phys_startrotvelo[i] = old_sw[j];
 	      that._phys_bodies[i] = old_b[j];
 	      that._phys_visuals[i] = old_v[j];
 	      that._phys_bodies[i].visualref = old_b[j].visualref;
