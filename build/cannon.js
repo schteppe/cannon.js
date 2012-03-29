@@ -522,14 +522,14 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
 			    this.z/norm);
     if(n.x<0.9){
       var rand = Math.random();
-      n.cross(new CANNON.Vec3(rand,0.001,0).unit(),t1);
+      n.cross(new CANNON.Vec3(rand,0.0000001,0).unit(),t1);
     } else
-      n.cross(new CANNON.Vec3(0.001,rand,0).unit(),t1);
+      n.cross(new CANNON.Vec3(0.0000001,rand,0).unit(),t1);
     n.cross(t1,t2);
   } else {
     // The normal length is zero, make something up
-    t1.set(1,0.0001,0).normalize();
-    t2.set(0.0001,1,0).normalize();
+    t1.set(1,0,0).normalize();
+    t2.set(0,1,0).normalize();
   }
 };
 
