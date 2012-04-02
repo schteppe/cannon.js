@@ -597,11 +597,20 @@ CANNON.Demo.prototype._buildScene = function(n){
       throw "Visual type not recognized: "+shape.type;
     }
 
-    if(that.shadowsOn && shape.type!=CANNON.Shape.types.BOX)
+    if(that.shadowsOn){
       mesh.receiveShadow = true;
-    if(that.shadowsOn)
       mesh.castShadow = true;
-
+      if(mesh.children)
+	for(var i=0; i<mesh.children.length; i++){
+	  mesh.children[i].castShadow = true;
+	  mesh.children[i].receiveShadow = true;
+	  if(mesh.children[i])
+	    for(var j=0; j<mesh.children[i].length; j++){
+	      mesh.children[i].children[j].castShadow = true;
+	      mesh.children[i].children[j].receiveShadow = true;
+	    }
+	}
+    }
     return mesh;
   }
 
@@ -612,6 +621,9 @@ CANNON.Demo.prototype._buildScene = function(n){
 	// What geometry should be used?
 	var mesh = shape2mesh(body._shape);
 	if(mesh) {
+
+	  // Shadows on?
+	    /*
 	  if(that.shadowsOn){
 	    mesh.castShadow = true;
 	    mesh.receiveShadow = true;
@@ -619,10 +631,13 @@ CANNON.Demo.prototype._buildScene = function(n){
 	      for(var i=0; i<mesh.children.length; i++){
 		mesh.children[i].castShadow = true;
 		mesh.children[i].receiveShadow = true;
+		if(body._shape.type==CANNON.Shape.types.BOX)
+		  mesh.children[i].receiveShadow = false;
 	      }
 	  }
-	  if(body._shape.type==CANNON.Shape.types.BOX)
+	  if(that.shadowsOn && body._shape.type==CANNON.Shape.types.BOX)
 	    mesh.receiveShadow = false;
+	    */
 
 	  // Add body
 	  that._phys_bodies.push(body);
