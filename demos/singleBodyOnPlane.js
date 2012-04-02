@@ -26,9 +26,8 @@ function createBodyOnPlane(app,shape){
   var stone = new CANNON.Material('stone');
   var stone_stone = new CANNON.ContactMaterial(stone,
 					       stone,
-					       0.3, // Static friction
-					       0.3, // Kinetic friction
-					       0.3  // Restitution
+					       0.3, // friction
+					       0.3  // restitution
 					       );
   world.addContactMaterial(stone_stone);
 

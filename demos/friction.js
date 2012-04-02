@@ -38,9 +38,8 @@ function createFricScene(app,shape){
     var mu = (mu_max-mu_min)*(i/n)+mu_min;
     var gmat_mat = new CANNON.ContactMaterial(ground_mat,
 					      mat,
-					      mu, // Static friction
-					      mu, // Kinetic friction
-					      0.3  // Restitution
+					      mu, // friction
+					      0.3  // restitution
 					      );
     world.addContactMaterial(gmat_mat);
 
