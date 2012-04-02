@@ -15,11 +15,8 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
   /// The two materials participating in the contact
   this.materials = [m1,m2];
 
-  /// Static friction
-  this.static_friction =  static_friction!=undefined ?  Number(static_friction) :  0.3;
-
   /// Kinetic friction
-  this.kinetic_friction = kinetic_friction!=undefined ? Number(kinetic_friction) : 0.3;
+  this.friction = friction!=undefined ? Number(friction) : 0.3;
 
   /// Restitution
   this.restitution =      restitution!=undefined ?      Number(restitution) :      0.3;

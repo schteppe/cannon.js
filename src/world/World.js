@@ -63,17 +63,16 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
   if((m1 instanceof CANNON.Material) && 
      (m2 instanceof CANNON.Material)){
 
-    var i = this._materials[this.material[bi]]._id;
-    var j = this._materials[this.material[bj]]._id;
-    console.log(i,j);
+    var i = m1._id;
+    var j = m2._id;
+
     if(i<j){
       var temp = i;
       i = j;
       j = temp;
     }
-    return this._material_contactmaterial_refs[i+j*this._materials.length];
+    return this._contactmaterials[this._mats2cmat[i+j*this._materials.length]];
   }
-  return -1;
 };
 
 /**
@@ -419,9 +418,22 @@ CANNON.World.prototype.remove = function(body){
  * @param CANNON.Material m
  */
 CANNON.World.prototype.addMaterial = function(m){
-  if(m._id===undefined){
+  if(m._id==-1){
     this._materials.push(m);
     m._id = this._materials.length-1;
+
+    // Enlarge matrix
+    var newcm = new Int16Array((this._materials.length)
+			       * (this._materials.length));
+    for(var i=0; i<newcm.length; i++)
+      newcm[i] = -1;
+
+    // Copy over old values
+    for(var i=0; i<this._materials.length-1; i++)
+      for(var j=0; j<this._materials.length-1; j++)
+	newcm[i+this._materials.length*j] = this._mats2cmat[i+(this._materials.length-1)*j];
+    this._mats2cmat = newcm;
+  
   }
 };
 
@@ -435,38 +447,22 @@ CANNON.World.prototype.addContactMaterial = function(cmat) {
   this.addMaterial(cmat.materials[0]);
   this.addMaterial(cmat.materials[1]);
 
-  // Two more contact material rows+cols
-  var newcm = new Int16Array((this._materials.length+2)
-			     * (this._materials.length+2));
-  for(var i=0; i<newcm.length; i++)
-    newcm[i] = -1;
-  for(var i=0; i<this._materials.length; i++)
-    for(var j=0; j<this._materials.length; j++)
-      newcm[i+this._materials.length*j] = this._material_contactmaterial_refs[i+this._materials.length*j];
-  this._material_contactmaterial_refs = newcm;
-  
-  // Add the materials to an array for access later
-  for(var i=0; i<2; i++){
-    if(cmat.materials[i]._id==-1){
-      this._materials.push(cmat.materials[i]);
-      cmat.materials[i]._id = this._materials.length-1;
-    }
-  }
-  
   // Save (material1,material2) -> (contact material) reference for easy access later
-  var i = cmat.materials[0]._id;
-  var j = cmat.materials[1]._id; // Make sure i>j, ie upper right matrix
-  
-  this._material_contactmaterial_refs[i+this._materials.length*j]
-    = (this._contact_material1.length); // The index of the contact material
-
-  // Add the contact material properties
+  // Make sure i>j, ie upper right matrix
+  if(cmat.materials[0]._id > cmat.materials[1]._id){
+    i = cmat.materials[0]._id;
+    j = cmat.materials[1]._id;
+  } else {
+    j = cmat.materials[0]._id;
+    i = cmat.materials[1]._id;
+  }
+    
+  // Add contact material
   this._contactmaterials.push(cmat);
-  this._contact_material1.push(cmat.materials[0]._id);
-  this._contact_material2.push(cmat.materials[1]._id);
-  this._contact_friction_k.push(cmat.kinematic_friction);
-  this._contact_friction_s.push(cmat.static_friction);
-  this._contact_restitution.push(cmat.restitution);
+  cmat._id = this._contactmaterials.length-1;
+
+  // Add current contact material to the material table
+  this._mats2cmat[i+this._materials.length*j] = cmat._id; // index of the contact material
 };
 
 /**
@@ -908,12 +904,12 @@ CANNON.World.prototype.step = function(dt){
     var lastCollisionState = cmatrix(i,j,-1);
     
     // Get collision properties
-    var mu_s = 0.3, mu_k = 0.3, e = 0.2;
-    var cm = this._getContactMaterialId(i,j);
-    if(cm!=-1){
-      mu_s = this._contact_friction_s[cm];
-      mu_k = this._contact_friction_k[cm];
-      e = this._contact_restitution[cm];
+    var mu = 0.3, e = 0.2;
+    var cm = this.getContactMaterial(world.body[i]._material,
+				     world.body[j]._material);
+    if(cm){
+      mu = cm.friction;
+      e = cm.restitution;
     }
     
     // Get contacts
@@ -1014,7 +1010,7 @@ CANNON.World.prototype.step = function(dt){
 			 j);
 
 	// Friction constraints
-	if(mu_s>0.0){ // until debugged
+	if(mu>0.0){ // until debugged
 	  var g = that.gravity().norm();
 	  for(var ti=0; ti<tangents.length; ti++){
 	    var t = tangents[ti];
@@ -1057,8 +1053,8 @@ CANNON.World.prototype.step = function(dt){
 			      taux[j],tauy[j],tauz[j]
 			      ],
 
-			     -mu_s*g*(world.mass[i]+world.mass[j]),
-			     mu_s*g*(world.mass[i]+world.mass[j]),
+			     -mu*g*(world.mass[i]+world.mass[j]),
+			     mu*g*(world.mass[i]+world.mass[j]),
 
 			     i,
 			     j);
