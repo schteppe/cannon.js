@@ -20,7 +20,7 @@ function createBodyOnPlane(app,shape){
   world.gravity(new CANNON.Vec3(0,0,-40));
   var bp = new CANNON.NaiveBroadphase();
   world.broadphase(bp);
-  world.iterations(2);
+  world.iterations(10);
 
   // Materials
   var stone = new CANNON.Material('stone');

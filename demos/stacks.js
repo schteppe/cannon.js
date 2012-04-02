@@ -51,7 +51,7 @@ function setupWorld(app){
   world.gravity(new CANNON.Vec3(0,0,-50));
   var bp = new CANNON.NaiveBroadphase();
   world.broadphase(bp);
-  world.iterations(2);
+  world.iterations(10);
 
   // ground plane
   var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));

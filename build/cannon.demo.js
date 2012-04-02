@@ -25,6 +25,7 @@
  * @class Demo
  */
 CANNON.Demo = function(){
+
   // Global settings
   this.settings = {
     gx:0.0,
@@ -680,6 +681,7 @@ CANNON.Demo.prototype._buildScene = function(n){
     });
 
   // Read the newly set data to the gui
+  that.settings.iterations = that._world.solver.iter;
   that.settings.gx = that._world._gravity.x;
   that.settings.gy = that._world._gravity.y;
   that.settings.gz = that._world._gravity.z;

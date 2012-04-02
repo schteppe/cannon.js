@@ -39,33 +39,33 @@ CANNON.World = function(){
 				  5,
 				  1.0/60.0);
 
-  this._materials = [];
-  this._material_contactmaterial_refs = [];
-  /// ContactMaterial objects
-  this._contactmaterials = [];
-  this._contact_material1 = [];
-  this._contact_material2 = [];
-  this._contact_friction_k = [];
-  this._contact_friction_s = [];
-  this._contact_restitution = [];
+  // Materials
+  this._materials = []; // References to all added materials
+  this._contactmaterials = []; // All added contact materials
+  this._mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
 };
 
 /**
  * Toggle pause mode. When pause is enabled, step() won't do anything.
- * @todo Pausing is the simulation gui's responsibility, should remove this.
+ * @deprecated Pausing is the simulation gui's responsibility, should remove this.
  */
 CANNON.World.prototype.togglepause = function(){
   this.paused = !this.paused;
 };
 
 /**
- * Get the contact material between bodies bi and bj
+ * Get the contact material between materials m1 and m2
+ * @param CANNON.Material m1
+ * @param CANNON.Material m2
+ * @return CANNON.Contactmaterial The contact material if it was found.
  */
-CANNON.World.prototype._getContactMaterialId = function(bi,bj){
-  if(this.material[bi]>=0 && this.material[bj]>=0){
-    // Material found
+CANNON.World.prototype.getContactMaterial = function(m1,m2){
+  if((m1 instanceof CANNON.Material) && 
+     (m2 instanceof CANNON.Material)){
+
     var i = this._materials[this.material[bi]]._id;
     var j = this._materials[this.material[bj]]._id;
+    console.log(i,j);
     if(i<j){
       var temp = i;
       i = j;
@@ -309,7 +309,6 @@ CANNON.World.prototype.add = function(body){
   t.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
   t.mass[n] = body._mass;
   t.material[n] = body._material!=undefined ? body._material._id : -1;
-
   t.inertiax[n] = body._inertia.x;
   t.inertiay[n] = body._inertia.y;
   t.inertiaz[n] = body._inertia.z;
@@ -415,14 +414,26 @@ CANNON.World.prototype.remove = function(body){
   t.collision_matrix = new Int16Array((n-1)*(n-1));
 };
 
+/**
+ * Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
+ * @param CANNON.Material m
+ */
+CANNON.World.prototype.addMaterial = function(m){
+  if(m._id===undefined){
+    this._materials.push(m);
+    m._id = this._materials.length-1;
+  }
+};
 
 /**
- * Adds a contact material to the world
- * @param ContactMaterial cmat
+ * Adds a contact material to the World
+ * @param CANNON.ContactMaterial cmat
  */
 CANNON.World.prototype.addContactMaterial = function(cmat) {
 
-  // Expand old arrays
+  // Add materials if they aren't already added
+  this.addMaterial(cmat.materials[0]);
+  this.addMaterial(cmat.materials[1]);
 
   // Two more contact material rows+cols
   var newcm = new Int16Array((this._materials.length+2)
@@ -1003,8 +1014,8 @@ CANNON.World.prototype.step = function(dt){
 			 j);
 
 	// Friction constraints
-	if(false){ // until debugged
-	  var mu = 0.3, g = that.gravity().norm();
+	if(mu_s>0.0){ // until debugged
+	  var g = that.gravity().norm();
 	  for(var ti=0; ti<tangents.length; ti++){
 	    var t = tangents[ti];
 	    var rixt = c.ri.cross(t);
@@ -1046,8 +1057,8 @@ CANNON.World.prototype.step = function(dt){
 			      taux[j],tauy[j],tauz[j]
 			      ],
 
-			     -mu*g*(world.mass[i]+world.mass[j]),
-			     mu*g*(world.mass[i]+world.mass[j]),
+			     -mu_s*g*(world.mass[i]+world.mass[j]),
+			     mu_s*g*(world.mass[i]+world.mass[j]),
 
 			     i,
 			     j);

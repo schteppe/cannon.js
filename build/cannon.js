@@ -1667,10 +1667,13 @@ CANNON.World.prototype.togglepause = function(){
  * Get the contact material between bodies bi and bj
  */
 CANNON.World.prototype._getContactMaterialId = function(bi,bj){
-  if(this.material[bi]>=0 && this.material[bj]>=0){
+  if((this.material[bi]>=0) && 
+     (this.material[bj]>=0)){
+    console.log("here!");
     // Material found
     var i = this._materials[this.material[bi]]._id;
     var j = this._materials[this.material[bj]]._id;
+    console.log(i,j);
     if(i<j){
       var temp = i;
       i = j;
@@ -1914,7 +1917,6 @@ CANNON.World.prototype.add = function(body){
   t.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
   t.mass[n] = body._mass;
   t.material[n] = body._material!=undefined ? body._material._id : -1;
-
   t.inertiax[n] = body._inertia.x;
   t.inertiay[n] = body._inertia.y;
   t.inertiaz[n] = body._inertia.z;
@@ -2026,8 +2028,6 @@ CANNON.World.prototype.remove = function(body){
  * @param ContactMaterial cmat
  */
 CANNON.World.prototype.addContactMaterial = function(cmat) {
-
-  // Expand old arrays
 
   // Two more contact material rows+cols
   var newcm = new Int16Array((this._materials.length+2)
@@ -2608,8 +2608,8 @@ CANNON.World.prototype.step = function(dt){
 			 j);
 
 	// Friction constraints
-	if(false){ // until debugged
-	  var mu = 0.3, g = that.gravity().norm();
+	if(mu_s>0.0){ // until debugged
+	  var g = that.gravity().norm();
 	  for(var ti=0; ti<tangents.length; ti++){
 	    var t = tangents[ti];
 	    var rixt = c.ri.cross(t);
@@ -2651,8 +2651,8 @@ CANNON.World.prototype.step = function(dt){
 			      taux[j],tauy[j],tauz[j]
 			      ],
 
-			     -mu*g*(world.mass[i]+world.mass[j]),
-			     mu*g*(world.mass[i]+world.mass[j]),
+			     -mu_s*g*(world.mass[i]+world.mass[j]),
+			     mu_s*g*(world.mass[i]+world.mass[j]),
 
 			     i,
 			     j);
