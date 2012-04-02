@@ -672,14 +672,12 @@ CANNON.World.prototype.step = function(dt){
 		  si,
 		  sj.childShapes[i],
 		  xi,
-		  xj.vadd(sj.childOffsets[i]), // Transform the shape to its local frame
+		  xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
 		  qi,
 		  qj.mult(sj.childOrientations[i]));
+	// Transform back
 	for(var j=0; j<r.length; j++){
-	  // transform back how?
-	  r[j].rj.vsub(sj.childOffsets[i],r[j].rj);
-	  //sj.childOrientations[i].inverse().vmult(r[j].rj,r[j].rj);
-	  //sj.childOrientations[i].vmult(r[j].ni,r[j].ni);
+	  r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
 	  result.push(r[j]);
 	}
       }
@@ -709,7 +707,6 @@ CANNON.World.prototype.step = function(dt){
 
 	// Contact normal
 	sj.normal.copy(r.ni);
-	//console.log("before:",r.ni.toString(),"q:"+qj.toString(),"result:"+qj.vmult(r.ni).toString());
 	qj.vmult(r.ni,r.ni);
 	r.ni.negate(r.ni); // body i is the sphere, flip normal
 	r.ni.normalize();
@@ -721,7 +718,8 @@ CANNON.World.prototype.step = function(dt){
 	var point_on_plane_to_sphere = xi.vsub(xj);
 	var plane_to_sphere_ortho = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
 	r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
-	result.push(r);
+	if(plane_to_sphere_ortho.norm() <= si.radius)
+	  result.push(r);
 	
       } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
 

@@ -20,8 +20,8 @@ CANNON.Compound.prototype.constructor = CANNON.Compound;
  * @param Quaternion orientation
  */
 CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
-  offset = offset || new CANNON.Vec3(0,0,0);
-  orientation = orientation || new CANNON.Quaternion(1,0,0,0);
+  offset = offset || new CANNON.Vec3();
+  orientation = orientation || new CANNON.Quaternion();
   this.childShapes.push(shape);
   this.childOffsets.push(offset);
   this.childOrientations.push(orientation);
