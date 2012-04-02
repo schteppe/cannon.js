@@ -1,6 +1,6 @@
 /**
  * 4-dimensional quaternion
- * @class Quaternion
+ * @class CANNON.Quaternion
  * @param float x
  * @param float y
  * @param float z 
@@ -23,7 +23,7 @@ CANNON.Quaternion.prototype.toString = function(){
 
 /**
  * Set the quaternion components given an axis and an angle.
- * @param Vec3 axis
+ * @param CANNON.Vec3 axis
  * @param float angle in radians
  */
 CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
@@ -34,6 +34,11 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
   this.w = Math.cos(angle*0.5);
 };
 
+/**
+ * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
+ * @param CANNON.Vec3 u
+ * @param CANNON.Vec3 v
+ */
 CANNON.Quaternion.prototype.setFromVectors = function(u,v){
   var a = u.cross(v);
   this.x = a.x;
@@ -45,9 +50,9 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
 
 /**
  * Quaternion multiplication
- * @param Quaternion q
- * @param Quaternion target Optional.
- * @return Quaternion
+ * @param CANNON.Quaternion q
+ * @param CANNON.Quaternion target Optional.
+ * @return CANNON.Quaternion
  */ 
 CANNON.Quaternion.prototype.mult = function(q,target){
   if(target==undefined)
@@ -63,6 +68,10 @@ CANNON.Quaternion.prototype.mult = function(q,target){
   return target;
 };
 
+/**
+ * Get the inverse quaternion rotation.
+ * @param CANNON.Quaternion target
+ */
 CANNON.Quaternion.prototype.inverse = function(target){
   if(target==undefined)
     target = new CANNON.Quaternion();
@@ -96,9 +105,9 @@ CANNON.Quaternion.prototype.normalize = function(){
 
 /**
  * Multiply the quaternion by a vector
- * @param Vec3 v
- * @param Vec3 target Optional
- * @return Vec3
+ * @param CANNON.Vec3 v
+ * @param CANNON.Vec3 target Optional
+ * @return CANNON.Vec3
  */
 CANNON.Quaternion.prototype.vmult = function(v,target){
   target = target || new CANNON.Vec3();

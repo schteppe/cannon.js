@@ -15,9 +15,9 @@ CANNON.Compound.prototype.constructor = CANNON.Compound;
 
 /**
  * Add a subshape
- * @param Shape shape
- * @param Vec3 offset
- * @param Quaternion orientation
+ * @param CANNON.Shape shape
+ * @param CANNON.Vec3 offset
+ * @param CANNON.Quaternion orientation
  */
 CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
   offset = offset || new CANNON.Vec3();
@@ -36,7 +36,7 @@ CANNON.Compound.prototype.volume = function(){
 
 /**
  * Calculate the inertia in the local frame.
- * @return Vec3
+ * @return CANNON.Vec3
  */
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();

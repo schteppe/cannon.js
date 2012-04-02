@@ -1,6 +1,6 @@
 /**
  * The physics world
- * @class World
+ * @class CANNON.World
  */
 CANNON.World = function(){
 
@@ -79,10 +79,10 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
  * Add an impulse to the colliding bodies i and j
  * @param int i Body number 1
  * @param int i Body number 2
- * @param Vec3 ri Vector from body 1's center of mass to the contact point on its surface
- * @param Vec3 ri Vector from body 1's center of mass to the contact point on its surface
- * @param Vec3 ui The relative velocity eg. vj+wj*rj - (vi+wj*rj)
- * @param Vec3 ni The contact normal pointing out from body i.
+ * @param CANNON.Vec3 ri Vector from body 1's center of mass to the contact point on its surface
+ * @param CANNON.Vec3 ri Vector from body 1's center of mass to the contact point on its surface
+ * @param CANNON.Vec3 ui The relative velocity eg. vj+wj*rj - (vi+wj*rj)
+ * @param CANNON.Vec3 ni The contact normal pointing out from body i.
  * @param float e The coefficient of restitution
  * @param float mu The contact friction
  * @todo Use it in the code!
@@ -185,7 +185,7 @@ CANNON.World.prototype.numObjects = function(){
 
 /**
  * Clear the contact state for a body.
- * @param RigidBody body
+ * @param CANNON.RigidBody body
  */
 CANNON.World.prototype.clearCollisionState = function(body){
   var n = this.numObjects();
@@ -199,7 +199,7 @@ CANNON.World.prototype.clearCollisionState = function(body){
 
 /**
  * Add a rigid body to the simulation.
- * @param RigidBody body
+ * @param CANNON.RigidBody body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
@@ -325,7 +325,7 @@ CANNON.World.prototype.add = function(body){
 
 /**
  * Remove a rigid body from the simulation.
- * @param RigidBody body
+ * @param CANNON.RigidBody body
  */
 CANNON.World.prototype.remove = function(body){
   if(!body) return;
@@ -467,8 +467,8 @@ CANNON.World.prototype.addContactMaterial = function(cmat) {
 
 /**
  * Get/set the broadphase collision detector for the world.
- * @param BroadPhase broadphase
- * @return BroadPhase
+ * @param CANNON.BroadPhase broadphase
+ * @return CANNON.BroadPhase
  */
 CANNON.World.prototype.broadphase = function(broadphase){
   if(broadphase){
@@ -494,8 +494,8 @@ CANNON.World.prototype.iterations = function(n){
 
 /**
  * Set the gravity
- * @param Vec3
- * @return Vec3
+ * @param CANNON.Vec3
+ * @return CANNON.Vec3
  */
 CANNON.World.prototype.gravity = function(g){
   if(g==undefined)

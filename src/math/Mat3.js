@@ -1,7 +1,7 @@
 /**
  * Produce a 3x3 matrix. Columns first!
- * @class Mat3
- * @param elements
+ * @class CANNON.Mat3
+ * @param array elements Array of nine elements. Optional.
  * @author schteppe / http://github.com/schteppe
  */
 CANNON.Mat3 = function(elements){
@@ -32,8 +32,8 @@ CANNON.Mat3.prototype.identity = function(){
 
 /**
  * Matrix-Vector multiplication
- * @param Vec3 v The vector to multiply with
- * @param Vec3 target Optional, target to save the result in.
+ * @param CANNON.Vec3 v The vector to multiply with
+ * @param CANNON.Vec3 target Optional, target to save the result in.
  */
 CANNON.Mat3.prototype.vmult = function(v,target){
   if(target===undefined)
@@ -62,8 +62,8 @@ CANNON.Mat3.prototype.smult = function(s){
 
 /**
  * Matrix multiplication
- * @param Mat3 m
- * @return Mat3
+ * @param CANNON.Mat3 m Matrix to multiply with from left side.
+ * @return CANNON.Mat3 The result.
  */
 CANNON.Mat3.prototype.mmult = function(m){
   var r = new CANNON.Mat3();
@@ -79,8 +79,9 @@ CANNON.Mat3.prototype.mmult = function(m){
 
 /**
  * Solve Ax=b
- * @param Vec3 b The right hand side
- * @return Vec3 The solution x
+ * @param CANNON.Vec3 b The right hand side
+ * @param CANNON.Vec3 target Optional. Target vector to save in.
+ * @return CANNON.Vec3 The solution x
  */
 CANNON.Mat3.prototype.solve = function(b,target){
 
@@ -167,8 +168,8 @@ CANNON.Mat3.prototype.e = function(i,j,value){
 
 /**
  * Copy the matrix
- * @param Mat3 target Optional. Target to save the copy in.
- * @return Mat3
+ * @param CANNON.Mat3 target Optional. Target to save the copy in.
+ * @return CANNON.Mat3
  */
 CANNON.Mat3.prototype.copy = function(target){
   target = target || new Mat3();
@@ -177,6 +178,10 @@ CANNON.Mat3.prototype.copy = function(target){
   return target;
 };
 
+/**
+ * Returns a string representation of the matrix.
+ * @return string
+ */
 CANNON.Mat3.prototype.toString = function(){
   var r = "";
   var sep = ",";

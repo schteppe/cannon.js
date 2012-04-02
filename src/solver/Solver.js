@@ -96,17 +96,17 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 
 /**
  * Add a non-penetration constraint to the solver
- * @param Vec3 ni
- * @param Vec3 ri
- * @param Vec3 rj
- * @param Vec3 iMi
- * @param Vec3 iMj
- * @param Vec3 iIi
- * @param Vec3 iIj
- * @param Vec3 v1
- * @param Vec3 v2
- * @param Vec3 w1
- * @param Vec3 w2
+ * @param CANNON.Vec3 ni
+ * @param CANNON.Vec3 ri
+ * @param CANNON.Vec3 rj
+ * @param CANNON.Vec3 iMi
+ * @param CANNON.Vec3 iMj
+ * @param CANNON.Vec3 iIi
+ * @param CANNON.Vec3 iIj
+ * @param CANNON.Vec3 v1
+ * @param CANNON.Vec3 v2
+ * @param CANNON.Vec3 w1
+ * @param CANNON.Vec3 w2
  */
 CANNON.Solver.prototype.addNonPenetrationConstraint
   = function(i,j,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){

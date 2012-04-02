@@ -131,6 +131,9 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
   }
 };
 
+/**
+ * Loads body positions and orientations from the World and updates the Three.js graphics.
+ */
 CANNON.Demo.prototype.updateVisuals = function(){
   
   // Read position data into visuals
@@ -483,7 +486,7 @@ CANNON.Demo.prototype.start = function(){
 };
 
 /**
- * Build a scene.
+ * Build a stored scene.
  * @private
  * @param int n
  */

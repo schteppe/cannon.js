@@ -14,8 +14,9 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
 /**
  * Get all the collision pairs in a physics world
- * @param World world
+ * @param CANNON.World world
  * @todo Should be placed in a subclass to BroadPhase
+ * @return array An array containing two arrays of integers. The integers corresponds to the body indeces.
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   var world = this.world;

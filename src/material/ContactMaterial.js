@@ -1,8 +1,8 @@
 /**
  * Defines what happens when two materials meet.
- * @class ContactMaterial
- * @param Material m1
- * @param Material m2
+ * @class CANNON.ContactMaterial
+ * @param CANNON.Material m1
+ * @param CANNON.Material m2
  * @param float friction
  * @param float restitution
  * @todo Contact solving parameters here too?

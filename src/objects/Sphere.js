@@ -1,6 +1,6 @@
 /**
  * Spherical rigid body
- * @class Sphere
+ * @class CANNON.Sphere
  * @param float radius
  * @author schteppe / http://github.com/schteppe
  */
