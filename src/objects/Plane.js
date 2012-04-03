@@ -1,6 +1,6 @@
 /**
  * @class Plane
- * @param Vec3 normal
+ * @param CANNON.Vec3 normal
  * @author schteppe / http://github.com/schteppe
  */
 CANNON.Plane = function(normal){

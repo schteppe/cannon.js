@@ -1,11 +1,12 @@
 var demo = new CANNON.Demo();
+var size = 2;
 demo.addScene(function(app){
-    var sphereShape = new CANNON.Sphere(1);
+    var sphereShape = new CANNON.Sphere(size);
     createBodyOnPlane(app,sphereShape);
   });
 
 demo.addScene(function(app){
-    var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+    var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
     createBodyOnPlane(app,boxShape);
   });
 
@@ -19,15 +20,14 @@ function createBodyOnPlane(app,shape){
   world.gravity(new CANNON.Vec3(0,0,-40));
   var bp = new CANNON.NaiveBroadphase();
   world.broadphase(bp);
-  world.iterations(2);
+  world.iterations(10);
 
   // Materials
   var stone = new CANNON.Material('stone');
   var stone_stone = new CANNON.ContactMaterial(stone,
 					       stone,
-					       0.3, // Static friction
-					       0.3, // Kinetic friction
-					       0.3  // Restitution
+					       0.3, // friction
+					       0.3  // restitution
 					       );
   world.addContactMaterial(stone_stone);
 
@@ -37,12 +37,13 @@ function createBodyOnPlane(app,shape){
   world.add(groundBody);
   app.addVisual(groundBody);
 
-  // Sphere on plane
-  var sphereBody = new CANNON.RigidBody(5,shape,stone);
-  var pos = new CANNON.Vec3(0,3,2);
-  sphereBody.setPosition(pos.x,pos.y,pos.z);
-  sphereBody.setOrientation(0,1,0,0.2);
-  world.add(sphereBody);
-  
-  app.addVisual(sphereBody);
+  // Shape on plane
+  var shapeBody = new CANNON.RigidBody(30,shape,stone);
+  var pos = new CANNON.Vec3(0,0,size);
+  shapeBody.setPosition(pos.x,pos.y,pos.z);
+  //shapeBody.setOrientation(0,1,0,0.2);
+  shapeBody.setVelocity(0,0,0);
+  shapeBody.setAngularVelocity(0,0,0);
+  world.add(shapeBody);
+  app.addVisual(shapeBody);
 }

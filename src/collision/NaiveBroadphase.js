@@ -14,8 +14,9 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
 /**
  * Get all the collision pairs in a physics world
- * @param World world
+ * @param CANNON.World world
  * @todo Should be placed in a subclass to BroadPhase
+ * @return array An array containing two arrays of integers. The integers corresponds to the body indeces.
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   var world = this.world;
@@ -31,6 +32,10 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   var x = world.x;
   var y = world.y;
   var z = world.z;
+  var qx = world.qx;
+  var qy = world.qy;
+  var qz = world.qz;
+  var qw = world.qw;
   var type = world.type;
   var body = world.body;
 
@@ -69,15 +74,16 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 		(type[i]==COMPOUND && type[j]==PLANE) ||
 		(type[i]==PLANE &&  type[j]==COMPOUND)){
 
-	var pi = type[i]==PLANE ? i : j; // Plane
-	var oi = type[i]!=PLANE ? i : j; // Other
-	
-	// Rel. position
-	var r = new CANNON.Vec3(x[oi]-x[pi],
-				y[oi]-y[pi],
-				z[oi]-z[pi]);
-	var normal = body[pi]._shape.normal;
-	var q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
+	var pi = type[i]==PLANE ? i : j, // Plane
+	  oi = type[i]!=PLANE ? i : j, // Other
+	  
+	  // Rel. position
+	  r = new CANNON.Vec3(x[oi]-x[pi],
+			      y[oi]-y[pi],
+			      z[oi]-z[pi]),
+	  quat = new CANNON.Quaternion(qx[pi],qy[pi],qz[pi],qw[pi]),
+	  normal = quat.vmult(body[pi]._shape.normal),
+	  q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
 	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);

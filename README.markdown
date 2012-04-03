@@ -51,11 +51,9 @@ setInterval(function(){
 ## Todo
 
 * Box/box collision
-* Friction constraints
 * Better collision detection - spatial hashing, octrees or similar
 * Rename the current Solver class to GSSolver, and make the Solver class to a base class
 * ParallelSolver that uses Web Workers - splits the system into islands and then adds to subsolvers (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
-* Remove objects during simulation
 * Caching of bounding sphere radius
 * Shapes: Cone, cylinder, compound
 * Search for "@todo" if you want to find more things to do

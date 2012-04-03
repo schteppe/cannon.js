@@ -1,6 +1,9 @@
 /**
  * Any matrix size class
  * @author schteppe / http://github.com/schteppe
+ * @param int cols
+ * @param int rows
+ * @param array elements
  */
 CANNON.MatN = function(cols,rows,elements){
   if(elements)

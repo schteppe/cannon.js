@@ -59,6 +59,9 @@ CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
   //throw "calculateInertia() not implemented for shape type "+this.type;
 };
 
+/**
+ * The available shape types.
+ */
 CANNON.Shape.types = {
   SPHERE:1,
   PLANE:2,

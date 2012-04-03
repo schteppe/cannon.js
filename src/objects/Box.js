@@ -1,6 +1,6 @@
 /**
  * Box
- * @param Vec3 halfExtents
+ * @param CANNON.Vec3 halfExtents
  * @author schteppe
  */
 CANNON.Box = function(halfExtents){
@@ -25,7 +25,7 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
 
 /**
  * Get the box corners
- * @param Quaternion quat Orientation to apply to the corner vectors. If not provided,
+ * @param CANNON.Quaternion quat Orientation to apply to the corner vectors. If not provided,
  * the vectors will be in respect to the local frame.
  * @return array
  */
@@ -50,7 +50,7 @@ CANNON.Box.prototype.getCorners = function(quat){
 /**
  * Get the box 6 side normals
  * @param bool includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
- * @param Quaternion quat Orientation to apply to the normal vectors. If not provided,
+ * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided,
  * the vectors will be in respect to the local frame.
  * @return array
  */
@@ -73,7 +73,7 @@ CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
 };
 
 CANNON.Box.prototype.volume = function(){
-  return 2.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
+  return 8.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
 };
 
 CANNON.Box.prototype.boundingSphereRadius = function(){

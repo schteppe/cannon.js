@@ -14,13 +14,12 @@ CANNON.Vec3 = function(x,y,z){
 
 /**
  * Vector cross product
- * @param Vec3 v
- * @param Vec3 target Optional. Target to save in.
- * @return Vec3
+ * @param CANNON.Vec3 v
+ * @param CANNON.Vec3 target Optional. Target to save in.
+ * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.cross = function(v,target){
-  if(target==undefined)
-    target = new CANNON.Vec3();
+  target = target || new CANNON.Vec3();
   var A = [this.x, this.y, this.z];
   var B = [v.x, v.y, v.z];
   
@@ -41,13 +40,14 @@ CANNON.Vec3.prototype.set = function(x,y,z){
   this.x = x;
   this.y = y;
   this.z = z;
+  return this;
 };
     
 /**
  * Vector addition
- * @param Vec3 v
- * @param Vec3 target Optional.
- * @return Vec3
+ * @param CANNON.Vec3 v
+ * @param CANNON.Vec3 target Optional.
+ * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.vadd = function(v,target){
   if(target){
@@ -63,9 +63,9 @@ CANNON.Vec3.prototype.vadd = function(v,target){
     
 /**
  * Vector subtraction
- * @param v
- * @param target Optional. Target to save in.
- * @return Vec3
+ * @param CANNON.Vec3 v
+ * @param CANNON.Vec3 target Optional. Target to save in.
+ * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.vsub = function(v,target){
   if(target){
@@ -83,7 +83,7 @@ CANNON.Vec3.prototype.vsub = function(v,target){
  * Get the cross product matrix a_cross from a vector, such that
  *   a x b = a_cross * b = c
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
- * @return Mat3
+ * @return CANNON.Mat3
  */
 CANNON.Vec3.prototype.crossmat = function(){
   return new CANNON.Mat3([      0,  -this.z,   this.y,
@@ -111,6 +111,27 @@ CANNON.Vec3.prototype.normalize = function(){
 };
 
 /**
+ * Get the version of this vector that is of length 1.
+ * @param CANNON.Vec3 target Optional target to save in
+ * @return CANNON.Vec3 Returns the unit vector
+ */
+CANNON.Vec3.prototype.unit = function(target){
+  target = target || new CANNON.Vec3();
+  var ninv = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+  if(ninv>0.0){
+    ninv = 1.0/ninv;
+    target.x = this.x * ninv;
+    target.y = this.y * ninv;
+    target.z = this.z * ninv;
+  } else {
+    target.x = 0;
+    target.y = 0;
+    target.z = 0;
+  }
+  return target;
+};
+
+/**
  * Get the 2-norm (length) of the vector
  * @return float
  */
@@ -121,21 +142,21 @@ CANNON.Vec3.prototype.norm = function(){
 /**
  * Multiply the vector with a scalar
  * @param float scalar
- * @param Vec3 saveinme
- * @return Vec3
+ * @param CANNON.Vec3 target
+ * @return CANNON.Vec3
  */
-CANNON.Vec3.prototype.mult = function(scalar,saveinme){
-  if(!saveinme)
-    saveinme = new CANNON.Vec3();
-  saveinme.x = scalar*this.x;
-  saveinme.y = scalar*this.y;
-  saveinme.z = scalar*this.z;
-  return saveinme;
+CANNON.Vec3.prototype.mult = function(scalar,target){
+  if(!target)
+    target = new CANNON.Vec3();
+  target.x = scalar*this.x;
+  target.y = scalar*this.y;
+  target.z = scalar*this.z;
+  return target;
 };
 
 /**
  * Calculate dot product
- * @param Vec3 v
+ * @param CANNON.Vec3 v
  * @return float
  */
 CANNON.Vec3.prototype.dot = function(v){
@@ -144,8 +165,8 @@ CANNON.Vec3.prototype.dot = function(v){
 
 /**
  * Make the vector point in the opposite direction.
- * @param Vec3 target Optional target to save in
- * @return Vec3
+ * @param CANNON.Vec3 target Optional target to save in
+ * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.negate = function(target){
   target = target || new CANNON.Vec3();
@@ -157,19 +178,26 @@ CANNON.Vec3.prototype.negate = function(target){
 
 /**
  * Compute two artificial tangents to the vector
- * @param Vec3 t1 Vector object to save the first tangent in
- * @param Vec3 t2 Vector object to save the second tangent in
+ * @param CANNON.Vec3 t1 Vector object to save the first tangent in
+ * @param CANNON.Vec3 t2 Vector object to save the second tangent in
  */
 CANNON.Vec3.prototype.tangents = function(t1,t2){
   var norm = this.norm();
-  var n = new CANNON.Vec3(this.x/norm,
-			   this.y/norm,
-			   this.z/norm);
-  if(n.x<0.9)
-    n.cross(new CANNON.Vec3(1,0,0),t1);
-  else
-    n.cross(new CANNON.Vec3(0,1,0),t1);
-  n.cross(t1,t2);
+  if(norm>0.0){
+    var n = new CANNON.Vec3(this.x/norm,
+			    this.y/norm,
+			    this.z/norm);
+    if(n.x<0.9){
+      var rand = Math.random();
+      n.cross(new CANNON.Vec3(rand,0.0000001,0).unit(),t1);
+    } else
+      n.cross(new CANNON.Vec3(0.0000001,rand,0).unit(),t1);
+    n.cross(t1,t2);
+  } else {
+    // The normal length is zero, make something up
+    t1.set(1,0,0).normalize();
+    t2.set(0,1,0).normalize();
+  }
 };
 
 /**
@@ -180,6 +208,11 @@ CANNON.Vec3.prototype.toString = function(){
   return this.x+","+this.y+","+this.z;
 };
 
+/**
+ * Copy the vector.
+ * @param CANNON.Vec3 target
+ * @return CANNON.Vec3
+ */
 CANNON.Vec3.prototype.copy = function(target){
   target = target || new CANNON.Vec3();
   target.x = this.x;

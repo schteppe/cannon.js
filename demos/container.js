@@ -36,14 +36,13 @@ function createContainer(app,nx,ny,nz){
   world.gravity(new CANNON.Vec3(0,0,-60));
   var bp = new CANNON.NaiveBroadphase();
   world.broadphase(bp);
-  world.iterations(2);
+  world.iterations(10);
 
   // Materials
   var stone = new CANNON.Material('stone');
   var stone_stone = new CANNON.ContactMaterial(stone,
 					       stone,
-					       0.3, // Static friction
-					       0.3, // Kinetic friction
+					       0.3, // friction
 					       0.3  // Restitution
 					       );
   world.addContactMaterial(stone_stone);

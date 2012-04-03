@@ -54,15 +54,17 @@ demo.addScene(function(app){
 
     // Box
     var b1 = new CANNON.RigidBody(5,boxShape);
-    b1.setPosition(10,0,0);
+    b1.setPosition(5,0,0);
     b1.setVelocity(-5,0,0);
-    b1.setOrientation(0,0,1,Math.PI);
+    var q = new CANNON.Quaternion();
+    q.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI*0.25);
+    b1.setOrientation(q.x,q.y,q.z,q.w);
     world.add(b1);
     app.addVisual(b1);
 
     // Sphere
     var b2 = new CANNON.RigidBody(5,sphereShape);
-    b2.setPosition(0,0,0);
+    b2.setPosition(-5,0,0);
     b2.setVelocity(5,0,0);
     world.add(b2);
     app.addVisual(b2);

@@ -8,8 +8,7 @@ world.iterations(2);
 var stone = new CANNON.Material('stone');
 var stone_stone = new CANNON.ContactMaterial(stone,
 					     stone,
-					     0.3, // Static friction
-					     0.3, // Kinetic friction
+					     0.3, // Friction
 					     0.3  // Restitution
 					     );
 world.addContactMaterial(stone_stone);

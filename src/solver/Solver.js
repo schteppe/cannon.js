@@ -24,6 +24,8 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
  * @todo vlambda does not need to be instantiated again if the number of bodies is the same. Set to zero instead.
  */
 CANNON.Solver.prototype.reset = function(numbodies){
+
+  // Don't know number of constraints yet... Use dynamic arrays
   this.G = [];
   this.MinvTrace = [];
   this.Fext = [];
@@ -37,24 +39,13 @@ CANNON.Solver.prototype.reset = function(numbodies){
   this.i = []; // To keep track of body id's
   this.j = [];
 
-  // Create new arrays or reuse the ones that exists?
-  if(numbodies && (this.vxlambda==undefined || this.vxlambda.length!=numbodies)){
-    this.vxlambda = new Float32Array(numbodies);
-    this.vylambda = new Float32Array(numbodies);
-    this.vzlambda = new Float32Array(numbodies);
-    this.wxlambda = new Float32Array(numbodies);
-    this.wylambda = new Float32Array(numbodies);
-    this.wzlambda = new Float32Array(numbodies);
-  } else if(this.vxlambda!=undefined && this.vxlambda.length==numbodies){
-    for(var i=0; i<this.vxlambda.length; i++){
-      this.vxlambda[i] = 0.0;
-      this.vylambda[i] = 0.0;
-      this.vzlambda[i] = 0.0;
-      this.wxlambda[i] = 0.0;
-      this.wylambda[i] = 0.0;
-      this.wzlambda[i] = 0.0;
-    }
-  }
+  // We know number of bodies so we can allocate these now
+  this.vxlambda = new Float32Array(numbodies);
+  this.vylambda = new Float32Array(numbodies);
+  this.vzlambda = new Float32Array(numbodies);
+  this.wxlambda = new Float32Array(numbodies);
+  this.wylambda = new Float32Array(numbodies);
+  this.wzlambda = new Float32Array(numbodies);
 };
 
 /**
@@ -77,6 +68,8 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
     console.log("q:",q);
     console.log("qdot:",qdot);
     console.log("Fext:",Fext);
+    console.log("lower:",lower);
+    console.log("upper:",upper);
   }
   
   for(var i=0; i<12; i++){
@@ -85,13 +78,13 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
     this.MinvTrace.push(MinvTrace[i]);
     this.G.push(G[i]);
     this.Fext.push(Fext[i]);
-
-    this.upper.push(upper);
-    this.hasupper.push(!isNaN(upper));
-    this.lower.push(lower);
-    this.haslower.push(!isNaN(lower));
   }
 
+  this.upper.push(upper);
+  this.hasupper.push(!isNaN(upper));
+  this.lower.push(lower);
+  this.haslower.push(!isNaN(lower));
+  
   this.i.push(body_i);
   this.j.push(body_j);
 
@@ -103,17 +96,17 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 
 /**
  * Add a non-penetration constraint to the solver
- * @param Vec3 ni
- * @param Vec3 ri
- * @param Vec3 rj
- * @param Vec3 iMi
- * @param Vec3 iMj
- * @param Vec3 iIi
- * @param Vec3 iIj
- * @param Vec3 v1
- * @param Vec3 v2
- * @param Vec3 w1
- * @param Vec3 w2
+ * @param CANNON.Vec3 ni
+ * @param CANNON.Vec3 ri
+ * @param CANNON.Vec3 rj
+ * @param CANNON.Vec3 iMi
+ * @param CANNON.Vec3 iMj
+ * @param CANNON.Vec3 iIi
+ * @param CANNON.Vec3 iIj
+ * @param CANNON.Vec3 v1
+ * @param CANNON.Vec3 v2
+ * @param CANNON.Vec3 w1
+ * @param CANNON.Vec3 w2
  */
 CANNON.Solver.prototype.addNonPenetrationConstraint
   = function(i,j,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
@@ -243,13 +236,13 @@ CANNON.Solver.prototype.solve = function(){
       // @todo check if limits are numbers
       if(this.haslower[l] && lambda[l]<this.lower[l]){
 	if(this.debug)
-	  console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to "+this.lower[l]);
+	  console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+this.lower[l]);
 	lambda[l] = this.lower[l];
 	dlambda[l] = this.lower[l]-lambda[l];
       }
       if(this.hasupper && lambda[l]>this.upper[l]){
 	if(this.debug)
-	  console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to "+this.upper[l]);
+	  console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+this.upper[l]);
 	lambda[l] = this.upper[l];
 	dlambda[l] = this.upper[l]-lambda[l];
       }
@@ -271,19 +264,12 @@ CANNON.Solver.prototype.solve = function(){
   }
 
   if(this.debug)
-    for(var l=0; l<n; l++)
-      console.log("ulambda["+l+"]=",
-		  ulambda[l*12+0],
-		  ulambda[l*12+1],
-		  ulambda[l*12+2],
-		  ulambda[l*12+3],
-		  ulambda[l*12+4],
-		  ulambda[l*12+5],
-		  ulambda[l*12+6],
-		  ulambda[l*12+7],
-		  ulambda[l*12+8],
-		  ulambda[l*12+9],
-		  ulambda[l*12+10],
-		  ulambda[l*12+11]);
-  this.result = ulambda;
+    for(var i=0; i<this.vxlambda.length; i++)
+      console.log("dv["+i+"]=",
+		  this.vxlambda[i],
+		  this.vylambda[i],
+		  this.vzlambda[i],
+		  this.wxlambda[i],
+		  this.wylambda[i],
+		  this.wzlambda[i]);
 };
