@@ -701,22 +701,26 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
 
   return target;
 };/**
- * @class Shape
- * @author schteppe / http://github.com/schteppe
+ * @class CANNON.Shape
+ * @author schteppe
+ * @brief Base class for shapes
  */
 CANNON.Shape = function(){
 
   /**
-   * The type of this shape. Must be set to an int > 0 by subclasses.
-   * @see Cannon.Shape.types
+   * @property int type
+   * @memberof CANNON.Shape
+   * @brief The type of this shape. Must be set to an int > 0 by subclasses.
+   * @see CANNON.Shape.types
    */
   this.type = 0;
 };
-
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
 /**
- * Get the bounding sphere radius from this shape
+ * @fn boundingSphereRadius
+ * @memberof CANNON.Shape
+ * @brief Get the bounding sphere radius from this shape
  * @return float
  */
 CANNON.Shape.prototype.boundingSphereRadius = function(){
@@ -724,7 +728,9 @@ CANNON.Shape.prototype.boundingSphereRadius = function(){
 };
 
 /**
- * Get the volume of this shape
+ * @fn volume
+ * @memberof CANNON.Shape
+ * @brief Get the volume of this shape
  * @return float
  */
 CANNON.Shape.prototype.volume = function(){
@@ -732,8 +738,10 @@ CANNON.Shape.prototype.volume = function(){
 };
 
 /**
- * Calculates the inertia in the local frame for this shape.
- * @return Vec3
+ * @fn calculateLocalInertia
+ * @memberof CANNON.Shape
+ * @brief Calculates the inertia in the local frame for this shape.
+ * @return CANNON.Vec3
  * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
  */
 CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
@@ -741,8 +749,10 @@ CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
 };
 
 /**
- * Calculates inertia in a specified frame for this shape.
- * @return Vec3
+ * @fn calculateTransformedInertia
+ * @memberof CANNON.Shape
+ * @brief Calculates inertia in a specified frame for this shape.
+ * @return CANNON.Vec3
  */
 CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
   if(target==undefined)
@@ -762,7 +772,8 @@ CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
 };
 
 /**
- * The available shape types.
+ * @enum CANNON.Shape.types
+ * @brief The available shape types.
  */
 CANNON.Shape.types = {
   SPHERE:1,
@@ -1136,16 +1147,16 @@ CANNON.Sphere.prototype.volume = function(){
 CANNON.Sphere.prototype.boundingSphereRadius = function(){
   return this.radius;
 };/**
- * Box
+ * @class CANNON.Box
  * @param CANNON.Vec3 halfExtents
  * @author schteppe
+ * @extends CANNON.Shape
  */
 CANNON.Box = function(halfExtents){
   CANNON.Shape.call(this);
   this.halfExtents = halfExtents;
   this.type = CANNON.Shape.types.BOX;
 };
-
 CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
 
@@ -1161,9 +1172,10 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
 };
 
 /**
- * Get the box corners
- * @param CANNON.Quaternion quat Orientation to apply to the corner vectors. If not provided,
- * the vectors will be in respect to the local frame.
+ * @fn getCorners
+ * @memberof CANNON.Box
+ * @brief Get the box corners
+ * @param CANNON.Quaternion quat Orientation to apply to the corner vectors. If not provided, the vectors will be in respect to the local frame.
  * @return array
  */
 CANNON.Box.prototype.getCorners = function(quat){
@@ -1185,10 +1197,11 @@ CANNON.Box.prototype.getCorners = function(quat){
 };
 
 /**
- * Get the box 6 side normals
+ * @fn getSideNormals
+ * @memberof CANNON.Box
+ * @brief Get the box 6 side normals
  * @param bool includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
- * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided,
- * the vectors will be in respect to the local frame.
+ * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
  * @return array
  */
 CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
