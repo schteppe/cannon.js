@@ -147,8 +147,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   return [pairs1,pairs2];
 };
 /**
- * Produce a 3x3 matrix. Columns first!
  * @class CANNON.Mat3
+ * @brief Produce a 3x3 matrix. Columns first!
  * @param array elements Array of nine elements. Optional.
  * @author schteppe / http://github.com/schteppe
  */
@@ -160,7 +160,9 @@ CANNON.Mat3 = function(elements){
 };
 
 /**
- * Sets the matrix to identity
+ * @fn identity
+ * @memberof CANNON.Mat3
+ * @brief Sets the matrix to identity
  * @todo Should perhaps be renamed to setIdentity() to be more clear.
  * @todo Create another function that immediately creates an identity matrix eg. eye()
  */
@@ -179,7 +181,9 @@ CANNON.Mat3.prototype.identity = function(){
 };
 
 /**
- * Matrix-Vector multiplication
+ * @fn vmult
+ * @memberof CANNON.vmult
+ * @brief Matrix-Vector multiplication
  * @param CANNON.Vec3 v The vector to multiply with
  * @param CANNON.Vec3 target Optional, target to save the result in.
  */
@@ -200,7 +204,9 @@ CANNON.Mat3.prototype.vmult = function(v,target){
 };
 
 /**
- * Matrix-scalar multiplication
+ * @fn smult
+ * @memberof CANNON.Mat3
+ * @brief Matrix-scalar multiplication
  * @param float s
  */
 CANNON.Mat3.prototype.smult = function(s){
@@ -209,7 +215,9 @@ CANNON.Mat3.prototype.smult = function(s){
 };
 
 /**
- * Matrix multiplication
+ * @fn mmult
+ * @memberof CANNON.Mat3
+ * @brief Matrix multiplication
  * @param CANNON.Mat3 m Matrix to multiply with from left side.
  * @return CANNON.Mat3 The result.
  */
@@ -226,7 +234,9 @@ CANNON.Mat3.prototype.mmult = function(m){
 };
 
 /**
- * Solve Ax=b
+ * @fn solve
+ * @memberof CANNON.Mat3
+ * @brief Solve Ax=b
  * @param CANNON.Vec3 b The right hand side
  * @param CANNON.Vec3 target Optional. Target vector to save in.
  * @return CANNON.Vec3 The solution x
@@ -300,7 +310,9 @@ CANNON.Mat3.prototype.solve = function(b,target){
 };
 
 /**
- * Get an element in the matrix by index. Index starts at 0, not 1!!!
+ * @fn e
+ * @memberof CANNON.Mat3
+ * @brief Get an element in the matrix by index. Index starts at 0, not 1!!!
  * @param int i
  * @param int j
  * @param float value Optional. If provided, the matrix element will be set to this value.
@@ -315,7 +327,9 @@ CANNON.Mat3.prototype.e = function(i,j,value){
 };
 
 /**
- * Copy the matrix
+ * @fn copy
+ * @memberof CANNON.Mat3
+ * @brief Copy the matrix
  * @param CANNON.Mat3 target Optional. Target to save the copy in.
  * @return CANNON.Mat3
  */
@@ -327,7 +341,9 @@ CANNON.Mat3.prototype.copy = function(target){
 };
 
 /**
- * Returns a string representation of the matrix.
+ * @fn toString
+ * @memberof CANNON.Mat3
+ * @brief Returns a string representation of the matrix.
  * @return string
  */
 CANNON.Mat3.prototype.toString = function(){
@@ -1616,8 +1632,8 @@ CANNON.Material = function(name){
 };
 
 /**
- * Defines what happens when two materials meet.
  * @class CANNON.ContactMaterial
+ * @brief Defines what happens when two materials meet.
  * @param CANNON.Material m1
  * @param CANNON.Material m2
  * @param float friction

@@ -1,6 +1,6 @@
 /**
- * Defines what happens when two materials meet.
  * @class CANNON.ContactMaterial
+ * @brief Defines what happens when two materials meet.
  * @param CANNON.Material m1
  * @param CANNON.Material m2
  * @param float friction
