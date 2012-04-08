@@ -1,5 +1,5 @@
 /**
- * @class NaiveBroadphase
+ * @class CANNON.NaiveBroadphase
  * @brief Naive broadphase implementation, used in lack of better ones. The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
  * @extends CANNON.Broadphase
  */

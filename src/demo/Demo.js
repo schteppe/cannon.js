@@ -1,5 +1,6 @@
 /**
- * @class Demo
+ * @class CANNON.Demo
+ * @brief Demo framework class.
  */
 CANNON.Demo = function(){
 
@@ -58,7 +59,9 @@ CANNON.Demo = function(){
 };
 
 /**
- * Get/set render mode
+ * @fn renderMode
+ * @memberof CANNON.Demo
+ * @brief Get/set render mode
  * @param int mode
  * @see CANNON.Demo.renderModes
  */
@@ -103,7 +106,9 @@ CANNON.Demo.prototype.renderMode = function(mode){
 };
 
 /**
- * Add a scene to the demo app
+ * @fn addScene
+ * @memberof CANNON.Demo
+ * @brief Add a scene to the demo app
  * @param function initfunc
  */
 CANNON.Demo.prototype.addScene = function(initfunc){
@@ -111,7 +116,9 @@ CANNON.Demo.prototype.addScene = function(initfunc){
 };
 
 /**
- * Restarts the current scene
+ * @fn restartCurrentScene
+ * @memberof CANNON.Demo
+ * @brief Restarts the current scene
  */
 CANNON.Demo.prototype.restartCurrentScene = function(){
   for(var i=0; i<this._phys_bodies.length; i++){
@@ -132,7 +139,9 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
 };
 
 /**
- * Loads body positions and orientations from the World and updates the Three.js graphics.
+ * @fn updateVisuals
+ * @memberof CANNON.Demo
+ * @brief Loads body positions and orientations from the World and updates the Three.js graphics.
  */
 CANNON.Demo.prototype.updateVisuals = function(){
   
@@ -254,7 +263,9 @@ CANNON.Demo.prototype.updateVisuals = function(){
 };
 
 /**
- * When all scenes have been added, run this to launch the Demo app.
+ * @fn start
+ * @memberof CANNON.Demo
+ * @brief When all scenes have been added, run this to launch the Demo app.
  */
 CANNON.Demo.prototype.start = function(){
 
@@ -486,8 +497,10 @@ CANNON.Demo.prototype.start = function(){
 };
 
 /**
- * Build a stored scene.
  * @private
+ * @fn _buildScene
+ * @memberof CANNON.Demo
+ * @brief Build a stored scene.
  * @param int n
  */
 CANNON.Demo.prototype._buildScene = function(n){
