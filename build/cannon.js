@@ -55,23 +55,20 @@ CANNON.Broadphase.prototype.collisionPairs = function(){
 };
 
 /**
- * Naive broadphase implementation, used in lack of better ones and for
- * comparisons in performance tests.
- *
- * The naive broadphase looks at all possible pairs without restriction,
- * therefore it has complexity N^2 (which is really bad)
+ * @class NaiveBroadphase
+ * @brief Naive broadphase implementation, used in lack of better ones. The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
+ * @extends CANNON.Broadphase
  */
 CANNON.NaiveBroadphase = function(){
   
 };
-
 CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
 CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
 /**
- * Get all the collision pairs in a physics world
- * @param CANNON.World world
- * @todo Should be placed in a subclass to BroadPhase
+ * @fn collisionPairs
+ * @memberof CANNON.NaiveBroadphase
+ * @brief Get all the collision pairs in the physics world
  * @return array An array containing two arrays of integers. The integers corresponds to the body indeces.
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
