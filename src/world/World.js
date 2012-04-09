@@ -1,6 +1,6 @@
 /**
- * The physics world
  * @class CANNON.World
+ * @brief The physics world
  */
 CANNON.World = function(){
 
@@ -46,7 +46,9 @@ CANNON.World = function(){
 };
 
 /**
- * Toggle pause mode. When pause is enabled, step() won't do anything.
+ * @fn togglepause 
+ * @memberof CANNON.World
+ * @brief Toggle pause mode. When pause is enabled, step() won't do anything.
  * @deprecated Pausing is the simulation gui's responsibility, should remove this.
  */
 CANNON.World.prototype.togglepause = function(){
@@ -54,7 +56,9 @@ CANNON.World.prototype.togglepause = function(){
 };
 
 /**
- * Get the contact material between materials m1 and m2
+ * @fn getContactMaterial
+ * @memberof CANNON.World
+ * @brief Get the contact material between materials m1 and m2
  * @param CANNON.Material m1
  * @param CANNON.Material m2
  * @return CANNON.Contactmaterial The contact material if it was found.
@@ -76,7 +80,10 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
 };
 
 /**
- * Add an impulse to the colliding bodies i and j
+ * @private
+ * @fn _addImpulse
+ * @memberof CANNON.World
+ * @brief Add an impulse to the colliding bodies i and j
  * @param int i Body number 1
  * @param int i Body number 2
  * @param CANNON.Vec3 ri Vector from body 1's center of mass to the contact point on its surface
@@ -176,7 +183,9 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
 };
 
 /**
- * Get number of objects in the world.
+ * @fn numObjects
+ * @memberof CANNON.World
+ * @brief Get number of objects in the world.
  * @return int
  */
 CANNON.World.prototype.numObjects = function(){
@@ -184,7 +193,9 @@ CANNON.World.prototype.numObjects = function(){
 };
 
 /**
- * Clear the contact state for a body.
+ * @fn clearCollisionState
+ * @memberof CANNON.World
+ * @brief Clear the contact state for a body.
  * @param CANNON.RigidBody body
  */
 CANNON.World.prototype.clearCollisionState = function(body){
@@ -198,7 +209,9 @@ CANNON.World.prototype.clearCollisionState = function(body){
 };
 
 /**
- * Add a rigid body to the simulation.
+ * @fn add
+ * @memberof CANNON.World
+ * @brief Add a rigid body to the simulation.
  * @param CANNON.RigidBody body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
@@ -324,7 +337,9 @@ CANNON.World.prototype.add = function(body){
 
 
 /**
- * Remove a rigid body from the simulation.
+ * @fn remove
+ * @memberof CANNON.World
+ * @brief Remove a rigid body from the simulation.
  * @param CANNON.RigidBody body
  */
 CANNON.World.prototype.remove = function(body){
@@ -414,7 +429,9 @@ CANNON.World.prototype.remove = function(body){
 };
 
 /**
- * Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
+ * @fn addMaterial
+ * @memberof CANNON.World
+ * @brief Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
  * @param CANNON.Material m
  */
 CANNON.World.prototype.addMaterial = function(m){
@@ -438,7 +455,9 @@ CANNON.World.prototype.addMaterial = function(m){
 };
 
 /**
- * Adds a contact material to the World
+ * @fn addContactMaterial
+ * @memberof CANNON.World
+ * @brief Adds a contact material to the World
  * @param CANNON.ContactMaterial cmat
  */
 CANNON.World.prototype.addContactMaterial = function(cmat) {
@@ -466,7 +485,9 @@ CANNON.World.prototype.addContactMaterial = function(cmat) {
 };
 
 /**
- * Get/set the broadphase collision detector for the world.
+ * @fn broadphase
+ * @memberof CANNON.World
+ * @brief Get/set the broadphase collision detector for the world.
  * @param CANNON.BroadPhase broadphase
  * @return CANNON.BroadPhase
  */
@@ -479,9 +500,12 @@ CANNON.World.prototype.broadphase = function(broadphase){
 };
 
 /**
- * Get/set the number of iterations
+ * @fn iterations
+ * @memberof CANNON.World
+ * @brief Get/set the number of iterations
  * @param int n
  * @return int
+ * @deprecated This is a solver thing
  */
 CANNON.World.prototype.iterations = function(n){
   if(n===undefined)
@@ -493,9 +517,12 @@ CANNON.World.prototype.iterations = function(n){
 };
 
 /**
- * Set the gravity
+ * @fn gravity
+ * @memberof CANNON.World
+ * @brief Set the gravity
  * @param CANNON.Vec3
  * @return CANNON.Vec3
+ * @deprecated Why not just have a gravity vector? Why a function?
  */
 CANNON.World.prototype.gravity = function(g){
   if(g==undefined)
@@ -505,7 +532,9 @@ CANNON.World.prototype.gravity = function(g){
 };
 
 /**
- * Step the simulation
+ * @fn step
+ * @memberof CANNON.World
+ * @brief Step the simulation
  * @param float dt
  */
 CANNON.World.prototype.step = function(dt){

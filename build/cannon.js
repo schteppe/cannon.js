@@ -316,6 +316,7 @@ CANNON.Mat3.prototype.solve = function(b,target){
  * @param int i
  * @param int j
  * @param float value Optional. If provided, the matrix element will be set to this value.
+ * @return float
  */
 CANNON.Mat3.prototype.e = function(i,j,value){
   if(value==undefined)
@@ -353,12 +354,12 @@ CANNON.Mat3.prototype.toString = function(){
     r += this.elements[i] + sep;
   return r;
 };/**
- * 3-dimensional vector
- * @class Vec3
+ * @class CANNON.Vec3
+ * @brief 3-dimensional vector
  * @param float x
  * @param float y
  * @param float z
- * @author schteppe / http://github.com/schteppe
+ * @author schteppe
  */
 CANNON.Vec3 = function(x,y,z){
   this.x = x||0.0;
@@ -367,7 +368,9 @@ CANNON.Vec3 = function(x,y,z){
 };
 
 /**
- * Vector cross product
+ * @fn cross
+ * @memberof CANNON.Vec3
+ * @brief Vector cross product
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional. Target to save in.
  * @return CANNON.Vec3
@@ -385,10 +388,13 @@ CANNON.Vec3.prototype.cross = function(v,target){
 };
 
 /**
- * Set the vectors' 3 elements
+ * @fn set
+ * @memberof CANNON.Vec3
+ * @brief Set the vectors' 3 elements
  * @param float x
  * @param float y
  * @param float z
+ * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.set = function(x,y,z){
   this.x = x;
@@ -398,7 +404,9 @@ CANNON.Vec3.prototype.set = function(x,y,z){
 };
     
 /**
- * Vector addition
+ * @fn vadd
+ * @memberof CANNON.Vec3
+ * @brief Vector addition
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
@@ -416,7 +424,9 @@ CANNON.Vec3.prototype.vadd = function(v,target){
 };
     
 /**
- * Vector subtraction
+ * @fn vsub
+ * @memberof CANNON.Vec3
+ * @brief Vector subtraction
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional. Target to save in.
  * @return CANNON.Vec3
@@ -434,8 +444,9 @@ CANNON.Vec3.prototype.vsub = function(v,target){
 };
 
 /**
- * Get the cross product matrix a_cross from a vector, such that
- *   a x b = a_cross * b = c
+ * @fn crossmat
+ * @memberof CANNON.Vec3
+ * @brief Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
  * @return CANNON.Mat3
  */
@@ -446,7 +457,9 @@ CANNON.Vec3.prototype.crossmat = function(){
 };
 
 /**
- * Normalize the vector. Note that this changes the values in the vector.
+ * @fn normalize
+ * @memberof CANNON.Vec3
+ * @brief Normalize the vector. Note that this changes the values in the vector.
  * @return float Returns the norm of the vector
  */
 CANNON.Vec3.prototype.normalize = function(){
@@ -465,7 +478,9 @@ CANNON.Vec3.prototype.normalize = function(){
 };
 
 /**
- * Get the version of this vector that is of length 1.
+ * @fn unit
+ * @memberof CANNON.Vec3
+ * @brief Get the version of this vector that is of length 1.
  * @param CANNON.Vec3 target Optional target to save in
  * @return CANNON.Vec3 Returns the unit vector
  */
@@ -486,7 +501,9 @@ CANNON.Vec3.prototype.unit = function(target){
 };
 
 /**
- * Get the 2-norm (length) of the vector
+ * @fn norm
+ * @memberof CANNON.Vec3
+ * @brief Get the 2-norm (length) of the vector
  * @return float
  */
 CANNON.Vec3.prototype.norm = function(){
@@ -494,7 +511,9 @@ CANNON.Vec3.prototype.norm = function(){
 };
 
 /**
- * Multiply the vector with a scalar
+ * @fn mult
+ * @memberof CANNON.Vec3
+ * @brief Multiply the vector with a scalar
  * @param float scalar
  * @param CANNON.Vec3 target
  * @return CANNON.Vec3
@@ -509,7 +528,9 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
 };
 
 /**
- * Calculate dot product
+ * @fn dot
+ * @memberof CANNON.Vec3
+ * @brief Calculate dot product
  * @param CANNON.Vec3 v
  * @return float
  */
@@ -518,7 +539,9 @@ CANNON.Vec3.prototype.dot = function(v){
 };
 
 /**
- * Make the vector point in the opposite direction.
+ * @fn negate
+ * @memberof CANNON.Vec3
+ * @brief Make the vector point in the opposite direction.
  * @param CANNON.Vec3 target Optional target to save in
  * @return CANNON.Vec3
  */
@@ -531,7 +554,9 @@ CANNON.Vec3.prototype.negate = function(target){
 };
 
 /**
- * Compute two artificial tangents to the vector
+ * @fn tangents
+ * @memberof CANNON.Vec3
+ * @brief Compute two artificial tangents to the vector
  * @param CANNON.Vec3 t1 Vector object to save the first tangent in
  * @param CANNON.Vec3 t2 Vector object to save the second tangent in
  */
@@ -555,7 +580,9 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
 };
 
 /**
- * Converts to a more readable format
+ * @fn toString
+ * @memberof CANNON.Vec3
+ * @brief Converts to a more readable format
  * @return string
  */
 CANNON.Vec3.prototype.toString = function(){
@@ -563,7 +590,9 @@ CANNON.Vec3.prototype.toString = function(){
 };
 
 /**
- * Copy the vector.
+ * @fn copy
+ * @memberof CANNON.Vec3
+ * @brief Copy the vector.
  * @param CANNON.Vec3 target
  * @return CANNON.Vec3
  */
@@ -575,8 +604,8 @@ CANNON.Vec3.prototype.copy = function(target){
   return target;
 };
 /**
- * 4-dimensional quaternion
  * @class CANNON.Quaternion
+ * @brief 4-dimensional quaternion
  * @param float x
  * @param float y
  * @param float z 
@@ -590,7 +619,9 @@ CANNON.Quaternion = function(x,y,z,w){
 };
 
 /**
- * Convert to a readable format
+ * @fn toString
+ * @memberof CANNON.Quaternion
+ * @brief Convert to a readable format
  * @return string
  */
 CANNON.Quaternion.prototype.toString = function(){
@@ -598,7 +629,9 @@ CANNON.Quaternion.prototype.toString = function(){
 };
 
 /**
- * Set the quaternion components given an axis and an angle.
+ * @fn setFromAxisAngle
+ * @memberof CANNON.Quaternion
+ * @brief Set the quaternion components given an axis and an angle.
  * @param CANNON.Vec3 axis
  * @param float angle in radians
  */
@@ -611,7 +644,9 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
 };
 
 /**
- * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
+ * @fn setFromVectors
+ * @memberof CANNON.Quaternion
+ * @brief Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
  * @param CANNON.Vec3 u
  * @param CANNON.Vec3 v
  */
@@ -625,7 +660,9 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
 };
 
 /**
- * Quaternion multiplication
+ * @fn mult
+ * @memberof CANNON.Quaternion
+ * @brief Quaternion multiplication
  * @param CANNON.Quaternion q
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
@@ -645,8 +682,11 @@ CANNON.Quaternion.prototype.mult = function(q,target){
 };
 
 /**
- * Get the inverse quaternion rotation.
+ * @fn inverse
+ * @memberof CANNON.Quaternion
+ * @brief Get the inverse quaternion rotation.
  * @param CANNON.Quaternion target
+ * @return CANNON.Quaternion
  */
 CANNON.Quaternion.prototype.inverse = function(target){
   if(target==undefined)
@@ -661,7 +701,9 @@ CANNON.Quaternion.prototype.inverse = function(target){
 };
 
 /**
- * Normalize the quaternion. Note that this changes the values of the quaternion.
+ * @fn normalize
+ * @memberof CANNON.Quaternion
+ * @brief Normalize the quaternion. Note that this changes the values of the quaternion.
  */
 CANNON.Quaternion.prototype.normalize = function(){
   var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
@@ -680,7 +722,9 @@ CANNON.Quaternion.prototype.normalize = function(){
 };
 
 /**
- * Multiply the quaternion by a vector
+ * @fn vmult
+ * @memberof CANNON.Quaternion
+ * @brief Multiply the quaternion by a vector
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional
  * @return CANNON.Vec3
@@ -797,8 +841,8 @@ CANNON.Shape.types = {
 };
 
 /**
- * Rigid body base class
  * @class CANNON.RigidBody
+ * @brief Rigid body base class
  * @param float mass
  * @param CANNON.Shape shape
  * @param CANNON.Material material
@@ -827,7 +871,9 @@ CANNON.RigidBody = function(mass,shape,material){
 };
 
 /**
- * Get or set linear damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
+ * @fn linearDamping
+ * @memberof CANNON.RigidBody
+ * @brief Get or set linear damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
  * @param float d Optional. If not provided, current damping is returned.
  * @return float
  */
@@ -844,7 +890,9 @@ CANNON.RigidBody.prototype.linearDamping = function(d){
 };
 
 /**
- * Get or set angular damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
+ * @fn angularDamping
+ * @memberof CANNON.RigidBody
+ * @brief Get or set angular damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
  * @param float d Optional. If not provided, current damping is returned.
  * @return float
  */
@@ -861,7 +909,9 @@ CANNON.RigidBody.prototype.angularDamping = function(d){
 };
 
 /**
- * Get/set mass. Note: When changing mass, you should change the inertia too.
+ * @fn mass
+ * @memberof CANNON.RigidBody
+ * @brief Get/set mass. Note: When changing mass, you should change the inertia too.
  * @param float m
  * @return float
  */
@@ -883,7 +933,9 @@ CANNON.RigidBody.prototype.mass = function(m){
 };
 
 /**
- * Get/set shape.
+ * @fn shape
+ * @memberof CANNON.RigidBody
+ * @brief Get/set shape.
  * @param CANNON.Shape s
  * @return CANNON.Shape
  */
@@ -902,7 +954,9 @@ CANNON.RigidBody.prototype.shape = function(s){
 };
 
 /**
- * Sets the center of mass position of the object
+ * @fn setPosition
+ * @memberof CANNON.RigidBody
+ * @brief Sets the center of mass position of the object
  * @param float x
  * @param float y
  * @param float z
@@ -921,7 +975,9 @@ CANNON.RigidBody.prototype.setPosition = function(x,y,z){
 };
 
 /**
- * Gets the center of mass position of the object
+ * @fn getPosition
+ * @memberof CANNON.RigidBody
+ * @brief Gets the center of mass position of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -940,7 +996,9 @@ CANNON.RigidBody.prototype.getPosition = function(target){
 };
 
 /**
- * Sets the orientation of the object
+ * @fn setOrientation
+ * @memberof CANNON.RigidBody
+ * @brief Sets the orientation of the object
  * @param float x
  * @param float y
  * @param float z
@@ -963,7 +1021,9 @@ CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
 };
 
 /**
- * Gets the orientation of the object
+ * @fn getOrientation
+ * @memberof CANNON.RigidBody
+ * @brief Gets the orientation of the object
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
  */
@@ -985,7 +1045,9 @@ CANNON.RigidBody.prototype.getOrientation = function(target){
 };
 
 /**
- * Sets the velocity of the object
+ * @fn setVelocity
+ * @memberof CANNON.RigidBody
+ * @brief Sets the velocity of the object
  * @param float x
  * @param float y
  * @param float z
@@ -1003,7 +1065,9 @@ CANNON.RigidBody.prototype.setVelocity = function(x,y,z){
 };
 
 /**
- * Gets the velocity of the object
+ * @fn getVelocity
+ * @memberof CANNON.RigidBody
+ * @brief Gets the velocity of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -1022,7 +1086,9 @@ CANNON.RigidBody.prototype.getVelocity = function(target){
 };
 
 /**
- * Sets the angularvelocity of the object
+ * @fn setAngularVelocity
+ * @memberof CANNON.RigidBody
+ * @brief Sets the angularvelocity of the object
  * @param float x
  * @param float y
  * @param float z
@@ -1040,7 +1106,9 @@ CANNON.RigidBody.prototype.setAngularVelocity = function(x,y,z){
 };
 
 /**
- * Gets the angular velocity of the object
+ * @fn getAngularVelocity
+ * @memberof CANNON.RigidBody
+ * @brief Gets the angular velocity of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -1059,7 +1127,9 @@ CANNON.RigidBody.prototype.getAngularVelocity = function(target){
 };
 
 /**
- * Sets the force on the object
+ * @fn setForce
+ * @memberof CANNON.RigidBody
+ * @brief Sets the force on the object
  * @param float x
  * @param float y
  * @param float z
@@ -1077,7 +1147,9 @@ CANNON.RigidBody.prototype.setForce = function(x,y,z){
 };
 
 /**
- * Gets the force of the object
+ * @fn getForce
+ * @memberof CANNON.RigidBody
+ * @brief Gets the force of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -1096,7 +1168,9 @@ CANNON.RigidBody.prototype.getForce = function(target){
 };
 
 /**
- * Sets the torque on the object
+ * @fn setTorque
+ * @memberof CANNON.RigidBody
+ * @brief Sets the torque on the object
  * @param float x
  * @param float y
  * @param float z
@@ -1114,7 +1188,9 @@ CANNON.RigidBody.prototype.setTorque = function(x,y,z){
 };
 
 /**
- * Gets the torque of the object
+ * @fn getTorque
+ * @memberof CANNON.RigidBody
+ * @brief Gets the torque of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -1131,8 +1207,9 @@ CANNON.RigidBody.prototype.getTorque = function(target){
   }
   return target;
 };/**
- * Spherical rigid body
+ * @brief Spherical rigid body
  * @class CANNON.Sphere
+ * @extends CANNON.Shape
  * @param float radius
  * @author schteppe / http://github.com/schteppe
  */
@@ -1141,7 +1218,6 @@ CANNON.Sphere = function(radius){
   this.radius = radius!=undefined ? Number(radius) : 1.0;
   this.type = CANNON.Shape.types.SPHERE;
 };
-
 CANNON.Sphere.prototype = new CANNON.Shape();
 CANNON.Sphere.prototype.constructor = CANNON.Sphere;
 
@@ -1243,9 +1319,10 @@ CANNON.Box.prototype.volume = function(){
 CANNON.Box.prototype.boundingSphereRadius = function(){
   return this.halfExtents.norm();
 };/**
- * @class Plane
+ * @class CANNON.Plane
+ * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
- * @author schteppe / http://github.com/schteppe
+ * @author schteppe
  */
 CANNON.Plane = function(normal){
   CANNON.Shape.call(this);
@@ -1253,7 +1330,6 @@ CANNON.Plane = function(normal){
   this.normal = normal;
   this.type = CANNON.Shape.types.PLANE;
 };
-
 CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;
 
@@ -1265,8 +1341,10 @@ CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
 CANNON.Plane.prototype.volume = function(){
   return Infinity; // The plane is infinite...
 };/**
- * Compound shape
- * @author schteppe - https://github.com/schteppe
+ * @class CANNON.Compound
+ * @extends CANNON.Shape
+ * @brief Compound shape
+ * @author schteppe
  */
 CANNON.Compound = function(){
   CANNON.Shape.call(this);
@@ -1275,12 +1353,13 @@ CANNON.Compound = function(){
   this.childOffsets = [];
   this.childOrientations = [];
 };
-
 CANNON.Compound.prototype = new CANNON.Shape();
 CANNON.Compound.prototype.constructor = CANNON.Compound;
 
 /**
- * Add a subshape
+ * @fn addChild
+ * @memberof CANNON.Compound
+ * @brief Add a subshape
  * @param CANNON.Shape shape
  * @param CANNON.Vec3 offset
  * @param CANNON.Quaternion orientation
@@ -1300,10 +1379,6 @@ CANNON.Compound.prototype.volume = function(){
   return r;
 };
 
-/**
- * Calculate the inertia in the local frame.
- * @return CANNON.Vec3
- */
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
 
@@ -1342,19 +1417,67 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
   }
   return r;
 };/**
- * Constraint solver.
+ * @class CANNON.Solver
+ * @brief Constraint solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
+  /**
+   * @property int iter
+   * @memberof CANNON.Solver
+   */
   this.iter = iter || 10;
+
+  /**
+   * @property float h
+   * @brief Time step size
+   * @memberof CANNON.Solver
+   */
   this.h = h || 1.0/60.0;
+
+  /**
+   * @property float a
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.a = a;
+
+  /**
+   * @property float b
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.b = b;
+
+  /**
+   * @property float eps
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.eps = eps;
+
+  /**
+   * @property float k
+   * @brief SPOOK parameter, spring stiffness
+   * @memberof CANNON.Solver
+   */
   this.k = k;
+
+  /**
+   * @property float d
+   * @brief SPOOK parameter, similar to damping
+   * @memberof CANNON.Solver
+   */
   this.d = d;
+
   this.reset(0);
+
+  /**
+   * @property bool debug
+   * @brief Debug flag, will output solver data to console if true
+   * @memberof CANNON.Solver
+   */
   this.debug = false;
 
   if(this.debug)
@@ -1362,7 +1485,9 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
 };
 
 /**
- * Resets the solver, removes all constraints and prepares for a new round of solving
+ * @fn reset
+ * @memberof CANNON.Solver
+ * @brief Resets the solver, removes all constraints and prepares for a new round of solving
  * @param int numbodies The number of bodies in the new system
  * @todo vlambda does not need to be instantiated again if the number of bodies is the same. Set to zero instead.
  */
@@ -1392,7 +1517,9 @@ CANNON.Solver.prototype.reset = function(numbodies){
 };
 
 /**
- * Add a constraint to the solver
+ * @fn addConstraint
+ * @memberof CANNON.Solver
+ * @brief Add a constraint to the solver
  * @param array G Jacobian vector, 12 elements (6 dof per body)
  * @param array MinvTrace The trace of the Inverse mass matrix (12 elements). The mass matrix is 12x12 elements from the beginning and 6x6 matrix per body (mass matrix and inertia matrix).
  * @param array q The constraint violation vector in generalized coordinates (12 elements)
@@ -1438,7 +1565,9 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 };
 
 /**
- * Add a non-penetration constraint to the solver
+ * @fn addNonPenetrationConstraint
+ * @memberof CANNON.Solver
+ * @brief Add a non-penetration constraint to the solver
  * @param CANNON.Vec3 ni
  * @param CANNON.Vec3 ri
  * @param CANNON.Vec3 rj
@@ -1505,7 +1634,9 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 };
 
 /**
- * Solves the system, and sets the vlambda and wlambda properties of the Solver object
+ * @fn solve
+ * @memberof CANNON.Solver
+ * @brief Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
@@ -1657,8 +1788,8 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 };
 
 /**
- * The physics world
  * @class CANNON.World
+ * @brief The physics world
  */
 CANNON.World = function(){
 
@@ -1704,7 +1835,9 @@ CANNON.World = function(){
 };
 
 /**
- * Toggle pause mode. When pause is enabled, step() won't do anything.
+ * @fn togglepause 
+ * @memberof CANNON.World
+ * @brief Toggle pause mode. When pause is enabled, step() won't do anything.
  * @deprecated Pausing is the simulation gui's responsibility, should remove this.
  */
 CANNON.World.prototype.togglepause = function(){
@@ -1712,7 +1845,9 @@ CANNON.World.prototype.togglepause = function(){
 };
 
 /**
- * Get the contact material between materials m1 and m2
+ * @fn getContactMaterial
+ * @memberof CANNON.World
+ * @brief Get the contact material between materials m1 and m2
  * @param CANNON.Material m1
  * @param CANNON.Material m2
  * @return CANNON.Contactmaterial The contact material if it was found.
@@ -1734,7 +1869,10 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
 };
 
 /**
- * Add an impulse to the colliding bodies i and j
+ * @private
+ * @fn _addImpulse
+ * @memberof CANNON.World
+ * @brief Add an impulse to the colliding bodies i and j
  * @param int i Body number 1
  * @param int i Body number 2
  * @param CANNON.Vec3 ri Vector from body 1's center of mass to the contact point on its surface
@@ -1834,7 +1972,9 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
 };
 
 /**
- * Get number of objects in the world.
+ * @fn numObjects
+ * @memberof CANNON.World
+ * @brief Get number of objects in the world.
  * @return int
  */
 CANNON.World.prototype.numObjects = function(){
@@ -1842,7 +1982,9 @@ CANNON.World.prototype.numObjects = function(){
 };
 
 /**
- * Clear the contact state for a body.
+ * @fn clearCollisionState
+ * @memberof CANNON.World
+ * @brief Clear the contact state for a body.
  * @param CANNON.RigidBody body
  */
 CANNON.World.prototype.clearCollisionState = function(body){
@@ -1856,7 +1998,9 @@ CANNON.World.prototype.clearCollisionState = function(body){
 };
 
 /**
- * Add a rigid body to the simulation.
+ * @fn add
+ * @memberof CANNON.World
+ * @brief Add a rigid body to the simulation.
  * @param CANNON.RigidBody body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
@@ -1982,7 +2126,9 @@ CANNON.World.prototype.add = function(body){
 
 
 /**
- * Remove a rigid body from the simulation.
+ * @fn remove
+ * @memberof CANNON.World
+ * @brief Remove a rigid body from the simulation.
  * @param CANNON.RigidBody body
  */
 CANNON.World.prototype.remove = function(body){
@@ -2072,7 +2218,9 @@ CANNON.World.prototype.remove = function(body){
 };
 
 /**
- * Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
+ * @fn addMaterial
+ * @memberof CANNON.World
+ * @brief Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
  * @param CANNON.Material m
  */
 CANNON.World.prototype.addMaterial = function(m){
@@ -2096,7 +2244,9 @@ CANNON.World.prototype.addMaterial = function(m){
 };
 
 /**
- * Adds a contact material to the World
+ * @fn addContactMaterial
+ * @memberof CANNON.World
+ * @brief Adds a contact material to the World
  * @param CANNON.ContactMaterial cmat
  */
 CANNON.World.prototype.addContactMaterial = function(cmat) {
@@ -2124,7 +2274,9 @@ CANNON.World.prototype.addContactMaterial = function(cmat) {
 };
 
 /**
- * Get/set the broadphase collision detector for the world.
+ * @fn broadphase
+ * @memberof CANNON.World
+ * @brief Get/set the broadphase collision detector for the world.
  * @param CANNON.BroadPhase broadphase
  * @return CANNON.BroadPhase
  */
@@ -2137,9 +2289,12 @@ CANNON.World.prototype.broadphase = function(broadphase){
 };
 
 /**
- * Get/set the number of iterations
+ * @fn iterations
+ * @memberof CANNON.World
+ * @brief Get/set the number of iterations
  * @param int n
  * @return int
+ * @deprecated This is a solver thing
  */
 CANNON.World.prototype.iterations = function(n){
   if(n===undefined)
@@ -2151,9 +2306,12 @@ CANNON.World.prototype.iterations = function(n){
 };
 
 /**
- * Set the gravity
+ * @fn gravity
+ * @memberof CANNON.World
+ * @brief Set the gravity
  * @param CANNON.Vec3
  * @return CANNON.Vec3
+ * @deprecated Why not just have a gravity vector? Why a function?
  */
 CANNON.World.prototype.gravity = function(g){
   if(g==undefined)
@@ -2163,7 +2321,9 @@ CANNON.World.prototype.gravity = function(g){
 };
 
 /**
- * Step the simulation
+ * @fn step
+ * @memberof CANNON.World
+ * @brief Step the simulation
  * @param float dt
  */
 CANNON.World.prototype.step = function(dt){

@@ -1,7 +1,8 @@
 /**
- * @class Plane
+ * @class CANNON.Plane
+ * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
- * @author schteppe / http://github.com/schteppe
+ * @author schteppe
  */
 CANNON.Plane = function(normal){
   CANNON.Shape.call(this);
@@ -9,7 +10,6 @@ CANNON.Plane = function(normal){
   this.normal = normal;
   this.type = CANNON.Shape.types.PLANE;
 };
-
 CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;
 

@@ -1,6 +1,6 @@
 /**
- * Rigid body base class
  * @class CANNON.RigidBody
+ * @brief Rigid body base class
  * @param float mass
  * @param CANNON.Shape shape
  * @param CANNON.Material material
@@ -29,7 +29,9 @@ CANNON.RigidBody = function(mass,shape,material){
 };
 
 /**
- * Get or set linear damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
+ * @fn linearDamping
+ * @memberof CANNON.RigidBody
+ * @brief Get or set linear damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
  * @param float d Optional. If not provided, current damping is returned.
  * @return float
  */
@@ -46,7 +48,9 @@ CANNON.RigidBody.prototype.linearDamping = function(d){
 };
 
 /**
- * Get or set angular damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
+ * @fn angularDamping
+ * @memberof CANNON.RigidBody
+ * @brief Get or set angular damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
  * @param float d Optional. If not provided, current damping is returned.
  * @return float
  */
@@ -63,7 +67,9 @@ CANNON.RigidBody.prototype.angularDamping = function(d){
 };
 
 /**
- * Get/set mass. Note: When changing mass, you should change the inertia too.
+ * @fn mass
+ * @memberof CANNON.RigidBody
+ * @brief Get/set mass. Note: When changing mass, you should change the inertia too.
  * @param float m
  * @return float
  */
@@ -85,7 +91,9 @@ CANNON.RigidBody.prototype.mass = function(m){
 };
 
 /**
- * Get/set shape.
+ * @fn shape
+ * @memberof CANNON.RigidBody
+ * @brief Get/set shape.
  * @param CANNON.Shape s
  * @return CANNON.Shape
  */
@@ -104,7 +112,9 @@ CANNON.RigidBody.prototype.shape = function(s){
 };
 
 /**
- * Sets the center of mass position of the object
+ * @fn setPosition
+ * @memberof CANNON.RigidBody
+ * @brief Sets the center of mass position of the object
  * @param float x
  * @param float y
  * @param float z
@@ -123,7 +133,9 @@ CANNON.RigidBody.prototype.setPosition = function(x,y,z){
 };
 
 /**
- * Gets the center of mass position of the object
+ * @fn getPosition
+ * @memberof CANNON.RigidBody
+ * @brief Gets the center of mass position of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -142,7 +154,9 @@ CANNON.RigidBody.prototype.getPosition = function(target){
 };
 
 /**
- * Sets the orientation of the object
+ * @fn setOrientation
+ * @memberof CANNON.RigidBody
+ * @brief Sets the orientation of the object
  * @param float x
  * @param float y
  * @param float z
@@ -165,7 +179,9 @@ CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
 };
 
 /**
- * Gets the orientation of the object
+ * @fn getOrientation
+ * @memberof CANNON.RigidBody
+ * @brief Gets the orientation of the object
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
  */
@@ -187,7 +203,9 @@ CANNON.RigidBody.prototype.getOrientation = function(target){
 };
 
 /**
- * Sets the velocity of the object
+ * @fn setVelocity
+ * @memberof CANNON.RigidBody
+ * @brief Sets the velocity of the object
  * @param float x
  * @param float y
  * @param float z
@@ -205,7 +223,9 @@ CANNON.RigidBody.prototype.setVelocity = function(x,y,z){
 };
 
 /**
- * Gets the velocity of the object
+ * @fn getVelocity
+ * @memberof CANNON.RigidBody
+ * @brief Gets the velocity of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -224,7 +244,9 @@ CANNON.RigidBody.prototype.getVelocity = function(target){
 };
 
 /**
- * Sets the angularvelocity of the object
+ * @fn setAngularVelocity
+ * @memberof CANNON.RigidBody
+ * @brief Sets the angularvelocity of the object
  * @param float x
  * @param float y
  * @param float z
@@ -242,7 +264,9 @@ CANNON.RigidBody.prototype.setAngularVelocity = function(x,y,z){
 };
 
 /**
- * Gets the angular velocity of the object
+ * @fn getAngularVelocity
+ * @memberof CANNON.RigidBody
+ * @brief Gets the angular velocity of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -261,7 +285,9 @@ CANNON.RigidBody.prototype.getAngularVelocity = function(target){
 };
 
 /**
- * Sets the force on the object
+ * @fn setForce
+ * @memberof CANNON.RigidBody
+ * @brief Sets the force on the object
  * @param float x
  * @param float y
  * @param float z
@@ -279,7 +305,9 @@ CANNON.RigidBody.prototype.setForce = function(x,y,z){
 };
 
 /**
- * Gets the force of the object
+ * @fn getForce
+ * @memberof CANNON.RigidBody
+ * @brief Gets the force of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */
@@ -298,7 +326,9 @@ CANNON.RigidBody.prototype.getForce = function(target){
 };
 
 /**
- * Sets the torque on the object
+ * @fn setTorque
+ * @memberof CANNON.RigidBody
+ * @brief Sets the torque on the object
  * @param float x
  * @param float y
  * @param float z
@@ -316,7 +346,9 @@ CANNON.RigidBody.prototype.setTorque = function(x,y,z){
 };
 
 /**
- * Gets the torque of the object
+ * @fn getTorque
+ * @memberof CANNON.RigidBody
+ * @brief Gets the torque of the object
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
  */

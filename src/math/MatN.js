@@ -1,6 +1,7 @@
 /**
- * Any matrix size class
- * @author schteppe / http://github.com/schteppe
+ * @class CANNON.MatN
+ * @brief Any matrix size class
+ * @author schteppe
  * @param int cols
  * @param int rows
  * @param array elements
@@ -13,7 +14,9 @@ CANNON.MatN = function(cols,rows,elements){
 };
 
 /**
- * Sets the matrix to identity
+ * @fn identity
+ * @memberof CANNON.MatN
+ * @brief Sets the matrix to identity
  * @todo Should perhaps be renamed to setIdentity() to be more clear.
  * @todo Create another function that immediately creates an identity matrix eg. eye()
  */

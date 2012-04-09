@@ -1,6 +1,7 @@
 /**
- * Spherical rigid body
+ * @brief Spherical rigid body
  * @class CANNON.Sphere
+ * @extends CANNON.Shape
  * @param float radius
  * @author schteppe / http://github.com/schteppe
  */
@@ -9,7 +10,6 @@ CANNON.Sphere = function(radius){
   this.radius = radius!=undefined ? Number(radius) : 1.0;
   this.type = CANNON.Shape.types.SPHERE;
 };
-
 CANNON.Sphere.prototype = new CANNON.Shape();
 CANNON.Sphere.prototype.constructor = CANNON.Sphere;
 

@@ -168,6 +168,7 @@ CANNON.Mat3.prototype.solve = function(b,target){
  * @param int i
  * @param int j
  * @param float value Optional. If provided, the matrix element will be set to this value.
+ * @return float
  */
 CANNON.Mat3.prototype.e = function(i,j,value){
   if(value==undefined)

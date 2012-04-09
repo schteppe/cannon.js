@@ -1,10 +1,10 @@
 /**
- * 3-dimensional vector
- * @class Vec3
+ * @class CANNON.Vec3
+ * @brief 3-dimensional vector
  * @param float x
  * @param float y
  * @param float z
- * @author schteppe / http://github.com/schteppe
+ * @author schteppe
  */
 CANNON.Vec3 = function(x,y,z){
   this.x = x||0.0;
@@ -13,7 +13,9 @@ CANNON.Vec3 = function(x,y,z){
 };
 
 /**
- * Vector cross product
+ * @fn cross
+ * @memberof CANNON.Vec3
+ * @brief Vector cross product
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional. Target to save in.
  * @return CANNON.Vec3
@@ -31,10 +33,13 @@ CANNON.Vec3.prototype.cross = function(v,target){
 };
 
 /**
- * Set the vectors' 3 elements
+ * @fn set
+ * @memberof CANNON.Vec3
+ * @brief Set the vectors' 3 elements
  * @param float x
  * @param float y
  * @param float z
+ * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.set = function(x,y,z){
   this.x = x;
@@ -44,7 +49,9 @@ CANNON.Vec3.prototype.set = function(x,y,z){
 };
     
 /**
- * Vector addition
+ * @fn vadd
+ * @memberof CANNON.Vec3
+ * @brief Vector addition
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
@@ -62,7 +69,9 @@ CANNON.Vec3.prototype.vadd = function(v,target){
 };
     
 /**
- * Vector subtraction
+ * @fn vsub
+ * @memberof CANNON.Vec3
+ * @brief Vector subtraction
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional. Target to save in.
  * @return CANNON.Vec3
@@ -80,8 +89,9 @@ CANNON.Vec3.prototype.vsub = function(v,target){
 };
 
 /**
- * Get the cross product matrix a_cross from a vector, such that
- *   a x b = a_cross * b = c
+ * @fn crossmat
+ * @memberof CANNON.Vec3
+ * @brief Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
  * @return CANNON.Mat3
  */
@@ -92,7 +102,9 @@ CANNON.Vec3.prototype.crossmat = function(){
 };
 
 /**
- * Normalize the vector. Note that this changes the values in the vector.
+ * @fn normalize
+ * @memberof CANNON.Vec3
+ * @brief Normalize the vector. Note that this changes the values in the vector.
  * @return float Returns the norm of the vector
  */
 CANNON.Vec3.prototype.normalize = function(){
@@ -111,7 +123,9 @@ CANNON.Vec3.prototype.normalize = function(){
 };
 
 /**
- * Get the version of this vector that is of length 1.
+ * @fn unit
+ * @memberof CANNON.Vec3
+ * @brief Get the version of this vector that is of length 1.
  * @param CANNON.Vec3 target Optional target to save in
  * @return CANNON.Vec3 Returns the unit vector
  */
@@ -132,7 +146,9 @@ CANNON.Vec3.prototype.unit = function(target){
 };
 
 /**
- * Get the 2-norm (length) of the vector
+ * @fn norm
+ * @memberof CANNON.Vec3
+ * @brief Get the 2-norm (length) of the vector
  * @return float
  */
 CANNON.Vec3.prototype.norm = function(){
@@ -140,7 +156,9 @@ CANNON.Vec3.prototype.norm = function(){
 };
 
 /**
- * Multiply the vector with a scalar
+ * @fn mult
+ * @memberof CANNON.Vec3
+ * @brief Multiply the vector with a scalar
  * @param float scalar
  * @param CANNON.Vec3 target
  * @return CANNON.Vec3
@@ -155,7 +173,9 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
 };
 
 /**
- * Calculate dot product
+ * @fn dot
+ * @memberof CANNON.Vec3
+ * @brief Calculate dot product
  * @param CANNON.Vec3 v
  * @return float
  */
@@ -164,7 +184,9 @@ CANNON.Vec3.prototype.dot = function(v){
 };
 
 /**
- * Make the vector point in the opposite direction.
+ * @fn negate
+ * @memberof CANNON.Vec3
+ * @brief Make the vector point in the opposite direction.
  * @param CANNON.Vec3 target Optional target to save in
  * @return CANNON.Vec3
  */
@@ -177,7 +199,9 @@ CANNON.Vec3.prototype.negate = function(target){
 };
 
 /**
- * Compute two artificial tangents to the vector
+ * @fn tangents
+ * @memberof CANNON.Vec3
+ * @brief Compute two artificial tangents to the vector
  * @param CANNON.Vec3 t1 Vector object to save the first tangent in
  * @param CANNON.Vec3 t2 Vector object to save the second tangent in
  */
@@ -201,7 +225,9 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
 };
 
 /**
- * Converts to a more readable format
+ * @fn toString
+ * @memberof CANNON.Vec3
+ * @brief Converts to a more readable format
  * @return string
  */
 CANNON.Vec3.prototype.toString = function(){
@@ -209,7 +235,9 @@ CANNON.Vec3.prototype.toString = function(){
 };
 
 /**
- * Copy the vector.
+ * @fn copy
+ * @memberof CANNON.Vec3
+ * @brief Copy the vector.
  * @param CANNON.Vec3 target
  * @return CANNON.Vec3
  */
