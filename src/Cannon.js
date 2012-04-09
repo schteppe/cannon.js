@@ -1,6 +1,6 @@
 /**
- * Our main namespace definition
- * @author schteppe / https://github.com/schteppe
+ * @mainpage Cannon.js
+ * A lightweight 3D physics engine for the web. See the github page for more information: https://github.com/schteppe/cannon.js
  */
 
 var CANNON = CANNON || {};
