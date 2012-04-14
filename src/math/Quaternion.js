@@ -14,6 +14,16 @@ CANNON.Quaternion = function(x,y,z,w){
 };
 
 /**
+ * Set the value of the quaternion.
+ */
+CANNON.Quaternion.prototype.set = function(x,y,z,w){
+  this.x = x;
+  this.y = y;
+  this.z = z;
+  this.w = w;
+};
+
+/**
  * @fn toString
  * @memberof CANNON.Quaternion
  * @brief Convert to a readable format

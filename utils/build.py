@@ -74,8 +74,8 @@ def parse_args():
 		parser = optparse.OptionParser(description='Build and compress cannon.js')
 		args, remainder = parser.parse_args()
 
-	# If no arguments have been passed, show the help message and exit
 	"""
+	# If no arguments have been passed, show the help message and exit
 	if len(sys.argv) == 1:
 		parser.print_help()
 		sys.exit(1)

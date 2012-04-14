@@ -4,7 +4,11 @@
  * @extends CANNON.Broadphase
  */
 CANNON.NaiveBroadphase = function(){
-  
+  this.temp = {
+    r: new CANNON.Vec3(),
+    normal: new CANNON.Vec3(),
+    quat: new CANNON.Quaternion()
+  };
 };
 CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
 CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
@@ -36,6 +40,11 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   var type = world.type;
   var body = world.body;
 
+  // Temp vecs
+  var r = this.temp.r;
+  var normal = this.temp.normal;
+  var quat = this.temp.quat;
+
   // Naive N^2 ftw!
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
@@ -51,9 +60,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 	 (type[i]==COMPOUND && type[j]==SPHERE) ||
 	 (type[i]==COMPOUND && type[j]==BOX)){
 	// Rel. position
-	var r = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
+	r.set(x[j]-x[i],
+	      y[j]-y[i],
+	      z[j]-z[i]);
 	var boundingRadius1 = body[i]._shape.boundingSphereRadius();
 	var boundingRadius2 = body[j]._shape.boundingSphereRadius();
 	if(r.norm()<(boundingRadius1+boundingRadius2)){
@@ -72,15 +81,15 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
 		(type[i]==PLANE &&  type[j]==COMPOUND)){
 
 	var pi = type[i]==PLANE ? i : j, // Plane
-	  oi = type[i]!=PLANE ? i : j, // Other
+	  oi = type[i]!=PLANE ? i : j; // Other
 	  
 	  // Rel. position
-	  r = new CANNON.Vec3(x[oi]-x[pi],
-			      y[oi]-y[pi],
-			      z[oi]-z[pi]),
-	  quat = new CANNON.Quaternion(qx[pi],qy[pi],qz[pi],qw[pi]),
-	  normal = quat.vmult(body[pi]._shape.normal),
-	  q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
+	r.set(x[oi]-x[pi],
+	      y[oi]-y[pi],
+	      z[oi]-z[pi]);
+	quat.set(qx[pi],qy[pi],qz[pi],qw[pi]);
+	quat.vmult(body[pi]._shape.normal,normal);
+	var q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
 	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);
