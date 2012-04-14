@@ -43,6 +43,21 @@ CANNON.World = function(){
   this._materials = []; // References to all added materials
   this._contactmaterials = []; // All added contact materials
   this._mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
+
+  this.temp = {
+    gvec:new CANNON.Vec3(),
+    vi:new CANNON.Vec3(),
+    vj:new CANNON.Vec3(),
+    wi:new CANNON.Vec3(),
+    wj:new CANNON.Vec3(),
+    t1:new CANNON.Vec3(),
+    t2:new CANNON.Vec3(),
+    rixn:new CANNON.Vec3(),
+    rjxn:new CANNON.Vec3(),
+    step_q:new CANNON.Quaternion(),
+    step_w:new CANNON.Quaternion(),
+    step_wq:new CANNON.Quaternion()
+  };
 };
 
 /**
@@ -788,10 +803,11 @@ CANNON.World.prototype.step = function(dt){
 	}
 
 	// Check corners
+	var rj = new CANNON.Vec3();
 	for(var j=0; j<2 && !found; j++){
 	  for(var k=0; k<2 && !found; k++){
 	    for(var l=0; l<2 && !found; l++){
-	      var rj = new CANNON.Vec3();
+	      rj.set(0,0,0);
 	      if(j) rj.vadd(sides[0],rj);
 	      else  rj.vsub(sides[0],rj);
 	      if(k) rj.vadd(sides[1],rj);
@@ -921,6 +937,7 @@ CANNON.World.prototype.step = function(dt){
 
   // Loop over all collisions
   this.contacts = {}; // Preliminary. contacts["i,j"]=>contact array
+  var temp = this.temp;
   for(var k=0; k<p1.length; k++){
 
     // Get current collision indeces
@@ -955,20 +972,21 @@ CANNON.World.prototype.step = function(dt){
       var c = contacts[ci];
       
       // g = ( xj + rj - xi - ri ) .dot ( ni )
-      var gvec = new CANNON.Vec3(x[j] + c.rj.x - x[i] - c.ri.x,
-				 y[j] + c.rj.y - y[i] - c.ri.y,
-				 z[j] + c.rj.z - z[i] - c.ri.z);
+      var gvec = temp.gvec;
+      gvec.set(x[j] + c.rj.x - x[i] - c.ri.x,
+	       y[j] + c.rj.y - y[i] - c.ri.y,
+	       z[j] + c.rj.z - z[i] - c.ri.z);
       var g = gvec.dot(c.ni); // Gap, negative if penetration
 
       // Action if penetration
       if(g<0.0){
-	var vi = new CANNON.Vec3(vx[i],vy[i],vz[i]);
-	var wi = new CANNON.Vec3(wx[i],wy[i],wz[i]);
-	var vj = new CANNON.Vec3(vx[j],vy[j],vz[j]);
-	var wj = new CANNON.Vec3(wx[j],wy[j],wz[j]);
+	var vi = temp.vi; vi.set(vx[i],vy[i],vz[i]);
+	var wi = temp.wi; wi.set(wx[i],wy[i],wz[i]);
+	var vj = temp.vj; vj.set(vx[j],vy[j],vz[j]);
+	var wj = temp.wj; wj.set(wx[j],wy[j],wz[j]);
 
 	var n = c.ni;
-	var tangents = [new CANNON.Vec3(),new CANNON.Vec3()];
+	var tangents = [temp.t1, temp.t2];
 	n.tangents(tangents[0],tangents[1]);
 
 	var v_contact_i = vi.vadd(wi.cross(c.ri));
@@ -991,8 +1009,10 @@ CANNON.World.prototype.step = function(dt){
 	var iIzj = world.inertiaz[j] > 0 ? 1.0/world.inertiaz[j] : 0;
 
 	// Add contact constraint
-	var rixn = c.ri.cross(n);
-	var rjxn = c.rj.cross(n);
+	var rixn = temp.rixn;
+	var rjxn = temp.rjxn;
+	c.ri.cross(n,rixn);
+	c.rj.cross(n,rjxn);
 
 	var un_rel = n.mult(u_rel.dot(n));
 	var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
@@ -1037,7 +1057,7 @@ CANNON.World.prototype.step = function(dt){
 			 j);
 
 	// Friction constraints
-	if(mu>0.0){ // until debugged
+	if(mu>0.0){
 	  var g = that.gravity().norm();
 	  for(var ti=0; ti<tangents.length; ti++){
 	    var t = tangents[ti];
@@ -1120,6 +1140,9 @@ CANNON.World.prototype.step = function(dt){
   // Leap frog
   // vnew = v + h*f/m
   // xnew = x + h*vnew
+  var q = temp.step_q; 
+  var w = temp.step_w;
+  var wq = temp.step_wq;
   for(var i=0; i<world.numObjects(); i++){
     if(!world.fixed[i]){
       vx[i] += fx[i] * world.invm[i] * dt;
@@ -1135,10 +1158,9 @@ CANNON.World.prototype.step = function(dt){
       y[i] += vy[i] * dt;
       z[i] += vz[i] * dt;
       
-      var q = new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]);
-      var w = new CANNON.Quaternion(wx[i],wy[i],wz[i],0);
-
-      var wq = w.mult(q);
+      q.set(qx[i],qy[i],qz[i],qw[i]);
+      w.set(wx[i],wy[i],wz[i],0);
+      w.mult(q,wq);
 
       qx[i] += dt * 0.5 * wq.x;
       qy[i] += dt * 0.5 * wq.y;
