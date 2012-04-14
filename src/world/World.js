@@ -699,7 +699,7 @@ CANNON.World.prototype.step = function(dt){
      * @param object r
      */
     function swapResult(r){
-      var temp = CANNON.Vec3()
+      var temp = CANNON.Vec3();
       temp = r.ri; r.ri = r.rj; r.rj = temp;
       r.ni.negate(r.ni);
     }
