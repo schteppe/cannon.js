@@ -370,8 +370,20 @@ CANNON.Mat3.prototype.toString = function(){
  * @author schteppe
  */
 CANNON.Vec3 = function(x,y,z){
+  /**
+   * @property float x
+   * @memberof CANNON.Vec3
+   */
   this.x = x||0.0;
+  /**
+   * @property float y
+   * @memberof CANNON.Vec3
+   */
   this.y = y||0.0;
+  /**
+   * @property float z
+   * @memberof CANNON.Vec3
+   */
   this.z = z||0.0;
 };
 
@@ -620,9 +632,25 @@ CANNON.Vec3.prototype.copy = function(target){
  * @param float w
  */
 CANNON.Quaternion = function(x,y,z,w){
+  /**
+   * @property float x
+   * @memberof CANNON.Quaternion
+   */
   this.x = x!=undefined ? x : 0;
+  /**
+   * @property float y
+   * @memberof CANNON.Quaternion
+   */
   this.y = y!=undefined ? y : 0;
+  /**
+   * @property float z
+   * @memberof CANNON.Quaternion
+   */
   this.z = z!=undefined ? z : 0;
+  /**
+   * @property float w
+   * @memberof CANNON.Quaternion
+   */
   this.w = w!=undefined ? w : 1;
 };
 

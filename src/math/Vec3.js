@@ -7,8 +7,20 @@
  * @author schteppe
  */
 CANNON.Vec3 = function(x,y,z){
+  /**
+   * @property float x
+   * @memberof CANNON.Vec3
+   */
   this.x = x||0.0;
+  /**
+   * @property float y
+   * @memberof CANNON.Vec3
+   */
   this.y = y||0.0;
+  /**
+   * @property float z
+   * @memberof CANNON.Vec3
+   */
   this.z = z||0.0;
 };
 

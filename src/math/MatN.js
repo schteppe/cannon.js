@@ -7,6 +7,11 @@
  * @param array elements
  */
 CANNON.MatN = function(cols,rows,elements){
+  /**
+   * @property Float32Array elements
+   * @memberof CANNON.MatN
+   * @brief A vector containing all matrix elements
+   */
   if(elements)
     this.elements = new Float32Array(elements);
   else

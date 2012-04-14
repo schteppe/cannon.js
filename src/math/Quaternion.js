@@ -7,9 +7,25 @@
  * @param float w
  */
 CANNON.Quaternion = function(x,y,z,w){
+  /**
+   * @property float x
+   * @memberof CANNON.Quaternion
+   */
   this.x = x!=undefined ? x : 0;
+  /**
+   * @property float y
+   * @memberof CANNON.Quaternion
+   */
   this.y = y!=undefined ? y : 0;
+  /**
+   * @property float z
+   * @memberof CANNON.Quaternion
+   */
   this.z = z!=undefined ? z : 0;
+  /**
+   * @property float w
+   * @memberof CANNON.Quaternion
+   */
   this.w = w!=undefined ? w : 1;
 };
 
