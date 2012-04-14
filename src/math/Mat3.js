@@ -5,6 +5,11 @@
  * @author schteppe / http://github.com/schteppe
  */
 CANNON.Mat3 = function(elements){
+  /**
+   * @property Float32Array elements
+   * @memberof CANNON.Mat3
+   * @brief A vector of length 9, containing all matrix elements
+   */
   if(elements)
     this.elements = new Float32Array(elements);
   else

@@ -13,7 +13,8 @@ CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
  * @fn collisionPairs
  * @memberof CANNON.Broadphase
  * @brief Get the collision pairs from the world
- * @return array
+ * @param CANNON.World world The world to search in
+ * @return array An array with two subarrays of body indices
  */
 CANNON.Broadphase.prototype.collisionPairs = function(world){
   throw "collisionPairs not implemented for this BroadPhase class!";

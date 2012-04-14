@@ -1,6 +1,6 @@
 /**
  * @class CANNON.Demo
- * @brief Demo framework class.
+ * @brief Demo framework class. If you want to learn how to connect Cannon.js with Three.js, please look at the examples/ instead.
  */
 CANNON.Demo = function(){
 
@@ -21,7 +21,18 @@ CANNON.Demo = function(){
   this._phys_visuals = [];
   this._scenes = [];
   this._gui = null;
+
+  /**
+   * @property bool paused
+   * @memberof CANNON.Demo
+   * @brief Controls if the simulation runs or not
+   */
   this.paused = false;
+
+  /**
+   * @property float timestep
+   * @memberof CANNON.Demo
+   */
   this.timestep = 1.0/60.0;
   this.shadowsOn = true;
   this._contactmeshes = [];
@@ -107,7 +118,7 @@ CANNON.Demo.prototype.renderMode = function(mode){
  * @fn addScene
  * @memberof CANNON.Demo
  * @brief Add a scene to the demo app
- * @param function initfunc
+ * @param function A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
  */
 CANNON.Demo.prototype.addScene = function(initfunc){
   this._scenes.push(initfunc);
