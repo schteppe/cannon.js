@@ -54,6 +54,8 @@ CANNON.Demo = function(){
   this._contactmeshes = [];
   this._contactlines = [];
 
+  this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
+
   // Material
   this.materialColor = 0xdddddd;
   this.solidMaterial = new THREE.MeshLambertMaterial( { color: this.materialColor } );
@@ -178,7 +180,7 @@ CANNON.Demo.prototype.updateVisuals = function(){
   if(this.settings.contacts){
 
     // Add new
-    var sphere_geometry = new THREE.SphereGeometry( 0.1, 6, 6);
+    var sphere_geometry = this.three_contactpoint_geo;
     var numadded = 0;
     var old_meshes = this._contactmeshes;
     this._contactmeshes = [];
@@ -263,7 +265,7 @@ CANNON.Demo.prototype.updateVisuals = function(){
 	  this._contactlines.push(line);
 	  var r = l==0 ? this._world.contacts[ci][k].ri : this._world.contacts[ci][k].rj;
 	  var pos_idx = l==0 ? i : j;
-	  line.scale = new THREE.Vector3(r.x,r.y,r.z);
+	  line.scale.set(r.x,r.y,r.z);
 	  line.position.set(this._world.x[pos_idx],
 			    this._world.y[pos_idx],
 			    this._world.z[pos_idx]);
