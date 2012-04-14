@@ -164,3 +164,10 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
 
   return target;
 };
+
+CANNON.Quaternion.prototype.copy = function(target){
+  target.x = this.x;
+  target.y = this.y;
+  target.z = this.z;
+  target.w = this.w;
+};

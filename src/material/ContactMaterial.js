@@ -10,7 +10,7 @@
 CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 
   /// Contact material index in the world, -1 until added to the world
-  this._id = -1;
+  this.id = -1;
 
   /// The two materials participating in the contact
   this.materials = [m1,m2];

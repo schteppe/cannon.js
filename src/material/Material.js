@@ -10,6 +10,6 @@ CANNON.Material = function(name){
    * @memberof CANNON.Material
    */
   this.name = name;
-  this._id = -1;
+  this.id = -1;
 };
 

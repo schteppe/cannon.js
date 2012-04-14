@@ -19,10 +19,6 @@ CANNON.Demo = function(){
 
   this._phys_bodies = [];
   this._phys_visuals = [];
-  this._phys_startpositions = [];
-  this._phys_startrot = [];
-  this._phys_startvelocities = [];
-  this._phys_startrotvelo = [];
   this._scenes = [];
   this._gui = null;
   this.paused = false;
@@ -124,19 +120,10 @@ CANNON.Demo.prototype.addScene = function(initfunc){
  */
 CANNON.Demo.prototype.restartCurrentScene = function(){
   for(var i=0; i<this._phys_bodies.length; i++){
-    this._phys_bodies[i].setPosition(this._phys_startpositions[i].x,
-				     this._phys_startpositions[i].y,
-				     this._phys_startpositions[i].z);
-    this._phys_bodies[i].setVelocity(this._phys_startvelocities[i].x,
-				     this._phys_startvelocities[i].y,
-				     this._phys_startvelocities[i].z);
-    this._phys_bodies[i].setAngularVelocity(this._phys_startrotvelo[i].x,
-					    this._phys_startrotvelo[i].y,
-					    this._phys_startrotvelo[i].z);
-    this._phys_bodies[i].setOrientation(this._phys_startrot[i].x,
-					this._phys_startrot[i].y,
-					this._phys_startrot[i].z,
-					this._phys_startrot[i].w);
+    this._phys_bodies[i].initPosition.copy(this._phys_bodies[i].position);
+    this._phys_bodies[i].initVelocity.copy(this._phys_bodies[i].velocity);
+    this._phys_bodies[i].initAngularVelocity.copy(this._phys_bodies[i].angularVelocity);
+    this._phys_bodies[i].initQuaternion.copy(this._phys_bodies[i].quaternion);
   }
 };
 
@@ -149,8 +136,8 @@ CANNON.Demo.prototype.updateVisuals = function(){
   
   // Read position data into visuals
   for(var i=0; i<this._phys_bodies.length; i++){
-    this._phys_bodies[i].getPosition(this._phys_visuals[i].position);
-    this._phys_bodies[i].getOrientation(this._phys_visuals[i].quaternion);
+    this._phys_bodies[i].position.copy(this._phys_visuals[i].position);
+    this._phys_bodies[i].quaternion.copy(this._phys_visuals[i].quaternion);
   }
   
   // Render contacts
@@ -187,13 +174,13 @@ CANNON.Demo.prototype.updateVisuals = function(){
 	this._contactmeshes.push(mesh_j);
 	numadded++;
 
-	mesh_i.position.x = this._world.x[i] + this._world.contacts[ci][k].ri.x;
-	mesh_i.position.y = this._world.y[i] + this._world.contacts[ci][k].ri.y;
-	mesh_i.position.z = this._world.z[i] + this._world.contacts[ci][k].ri.z;
+	mesh_i.position.x = this._world.bodies[i].position.x + this._world.contacts[ci][k].ri.x;
+	mesh_i.position.y = this._world.bodies[i].position.y + this._world.contacts[ci][k].ri.y;
+	mesh_i.position.z = this._world.bodies[i].position.z + this._world.contacts[ci][k].ri.z;
 
-	mesh_j.position.x = this._world.x[j] + this._world.contacts[ci][k].rj.x;
-	mesh_j.position.y = this._world.y[j] + this._world.contacts[ci][k].rj.y;
-	mesh_j.position.z = this._world.z[j] + this._world.contacts[ci][k].rj.z;
+	mesh_j.position.x = this._world.bodies[j].position.x + this._world.contacts[ci][k].rj.x;
+	mesh_j.position.y = this._world.bodies[j].position.y + this._world.contacts[ci][k].rj.y;
+	mesh_j.position.z = this._world.bodies[j].position.z + this._world.contacts[ci][k].rj.z;
       }
     }
 
@@ -243,9 +230,9 @@ CANNON.Demo.prototype.updateVisuals = function(){
 	  var r = l==0 ? this._world.contacts[ci][k].ri : this._world.contacts[ci][k].rj;
 	  var pos_idx = l==0 ? i : j;
 	  line.scale.set(r.x,r.y,r.z);
-	  line.position.set(this._world.x[pos_idx],
-			    this._world.y[pos_idx],
-			    this._world.z[pos_idx]);
+	  line.position.set(this._world.bodies[pos_idx].position.x,
+			    this._world.bodies[pos_idx].position.y,
+			    this._world.bodies[pos_idx].position.z);
 	  this._scene.add(line);
 	}
       }
@@ -477,7 +464,7 @@ CANNON.Demo.prototype.start = function(){
     // Solver folder
     var sf = that._gui.addFolder('Solver');
     sf.add(that.settings, 'iterations').min(1).step(1).onChange(function(it){
-	that._world.solver.iter = it;
+	that._world.solver.iterations = it;
       });
 
     // Pause
@@ -514,10 +501,6 @@ CANNON.Demo.prototype._buildScene = function(n){
   var num = that._phys_visuals.length;
   for(var i=0; i<num; i++){
     that._phys_bodies.pop();
-    that._phys_startpositions.pop();
-    that._phys_startvelocities.pop();
-    that._phys_startrotvelo.pop();
-    that._phys_startrot.pop();
     var mesh = that._phys_visuals.pop();
     that._scene.remove(mesh);
   }
@@ -614,35 +597,13 @@ CANNON.Demo.prototype._buildScene = function(n){
 
       addVisual:function(body){
 	// What geometry should be used?
-	var mesh = shape2mesh(body._shape);
+	var mesh = shape2mesh(body.shape);
 	if(mesh) {
-
-	  // Shadows on?
-	    /*
-	  if(that.shadowsOn){
-	    mesh.castShadow = true;
-	    mesh.receiveShadow = true;
-	    if(mesh.children)
-	      for(var i=0; i<mesh.children.length; i++){
-		mesh.children[i].castShadow = true;
-		mesh.children[i].receiveShadow = true;
-		if(body._shape.type==CANNON.Shape.types.BOX)
-		  mesh.children[i].receiveShadow = false;
-	      }
-	  }
-	  if(that.shadowsOn && body._shape.type==CANNON.Shape.types.BOX)
-	    mesh.receiveShadow = false;
-	    */
-
 	  // Add body
 	  that._phys_bodies.push(body);
 	  that._phys_visuals.push(mesh);
-	  that._phys_startpositions.push(body.getPosition());
-	  that._phys_startvelocities.push(body.getVelocity());
-	  that._phys_startrot.push(body.getOrientation());
-	  that._phys_startrotvelo.push(body.getAngularVelocity());
 	  body.visualref = mesh;
-	  body.visualref.visualId = that._phys_startpositions.length - 1;
+	  body.visualref.visualId = that._phys_bodies.length - 1;
 	  mesh.useQuaternion = true;
 	  that._scene.add(mesh);
 	}
@@ -650,29 +611,17 @@ CANNON.Demo.prototype._buildScene = function(n){
 
       removeVisual:function(body){
 	if(body.visualref!=undefined){
-	  var old_sp = [];
-	  var old_sq = [];
-	  var old_sv = [];
-	  var old_sw = [];
 	  var old_b = [];
 	  var old_v = [];
-	  var n = that._phys_startpositions.length;
+	  var n = that._phys_bodies.length;
 	  for(var i=0; i<n; i++){
 	    old_b.unshift(that._phys_bodies.pop());
 	    old_v.unshift(that._phys_visuals.pop());
-	    old_sp.unshift(that._phys_startpositions.pop());
-	    old_sv.unshift(that._phys_startvelocities.pop());
-	    old_sw.unshift(that._phys_startrotvelo.pop());
-	    old_sq.unshift(that._phys_startrot.pop());
 	  }
 	  var id = body.visualref.visualId;
-	  for(var j=0; j<old_sp.length; j++){
+	  for(var j=0; j<old_b.length; j++){
 	    if(j!=id){
 	      var i = j>id ? j-1 : j;
-	      that._phys_startpositions[i] = old_sp[j];
-	      that._phys_startvelocities[i] = old_sv[j];
-	      that._phys_startrotvelo[i] = old_sw[j];
-	      that._phys_startrot[i] = old_sq[j];
 	      that._phys_bodies[i] = old_b[j];
 	      that._phys_visuals[i] = old_v[j];
 	      that._phys_bodies[i].visualref = old_b[j].visualref;
@@ -691,9 +640,9 @@ CANNON.Demo.prototype._buildScene = function(n){
     });
 
   // Read the newly set data to the gui
-  that.settings.iterations = that._world.solver.iter;
-  that.settings.gx = that._world._gravity.x;
-  that.settings.gy = that._world._gravity.y;
-  that.settings.gz = that._world._gravity.z;
+  that.settings.iterations = that._world.solver.iterations;
+  that.settings.gx = that._world.gravity.x;
+  that.settings.gy = that._world.gravity.y;
+  that.settings.gz = that._world.gravity.z;
   that._updategui();
 };

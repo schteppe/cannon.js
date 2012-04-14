@@ -17,10 +17,10 @@ function createBodyOnPlane(app,shape){
   // Create world
   var world = new CANNON.World();
   app.setWorld(world);
-  world.gravity(new CANNON.Vec3(0,0,-40));
-  var bp = new CANNON.NaiveBroadphase();
-  world.broadphase(bp);
-  world.iterations(10);
+  world.gravity.set(0,0,-40);
+  var bp = 
+  world.broadphase = new CANNON.NaiveBroadphase();
+  world.solver.iterations = 10;
 
   // Materials
   var stone = new CANNON.Material('stone');
@@ -40,10 +40,9 @@ function createBodyOnPlane(app,shape){
   // Shape on plane
   var shapeBody = new CANNON.RigidBody(30,shape,stone);
   var pos = new CANNON.Vec3(0,0,size);
-  shapeBody.setPosition(pos.x,pos.y,pos.z);
-  //shapeBody.setOrientation(0,1,0,0.2);
-  shapeBody.setVelocity(0,0,0);
-  shapeBody.setAngularVelocity(0,0,0);
+  shapeBody.position.set(0,0,size);
+  shapeBody.velocity.set(0,0,0);
+  shapeBody.angularVelocity.set(0,0,0);
   world.add(shapeBody);
   app.addVisual(shapeBody);
 }

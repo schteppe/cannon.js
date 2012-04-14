@@ -19,10 +19,9 @@ function createFricScene(app,shape){
   // Create world
   var world = new CANNON.World();
   app.setWorld(world);
-  world.gravity(new CANNON.Vec3(0,0,-60));
-  var bp = new CANNON.NaiveBroadphase();
-  world.broadphase(bp);
-  world.iterations(10);
+  world.gravity.set(0,0,-60);
+  world.broadphase = new CANNON.NaiveBroadphase();
+  world.iterations = 10;
 
   // Materials
   var ground_mat = new CANNON.Material('myGroundMaterial');
@@ -45,7 +44,7 @@ function createFricScene(app,shape){
 
     // Box
     var boxBody = new CANNON.RigidBody(10,shape,mat);
-    boxBody.setPosition(i*size*4,0,5);
+    boxBody.position.set(i*size*4,0,5);
     world.add(boxBody);
     app.addVisual(boxBody);
   }

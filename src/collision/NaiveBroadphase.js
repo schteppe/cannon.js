@@ -19,8 +19,7 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @brief Get all the collision pairs in the physics world
  * @return array An array containing two arrays of integers. The integers corresponds to the body indeces.
  */
-CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
-  var world = this.world;
+CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   var pairs1 = [];
   var pairs2 = [];
   var n = world.numObjects();
@@ -30,15 +29,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   var PLANE =    CANNON.Shape.types.PLANE;
   var BOX =      CANNON.Shape.types.BOX;
   var COMPOUND = CANNON.Shape.types.COMPOUND;
-  var x = world.x;
-  var y = world.y;
-  var z = world.z;
-  var qx = world.qx;
-  var qy = world.qy;
-  var qz = world.qz;
-  var qw = world.qw;
-  var type = world.type;
-  var body = world.body;
+  var bodies = world.bodies;
 
   // Temp vecs
   var r = this.temp.r;
@@ -49,47 +40,48 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
 
+      var bi = bodies[i], bj = bodies[j];
+      var ti = bi.shape.type, tj = bj.shape.type;
+
       // --- Box / sphere / compound collision ---
-      if((type[i]==BOX      && type[j]==BOX) ||
-	 (type[i]==BOX      && type[j]==COMPOUND) ||
-	 (type[i]==BOX      && type[j]==SPHERE) ||
-	 (type[i]==SPHERE   && type[j]==BOX) ||
-	 (type[i]==SPHERE   && type[j]==SPHERE) ||
-	 (type[i]==SPHERE   && type[j]==COMPOUND) ||
-	 (type[i]==COMPOUND && type[j]==COMPOUND) ||
-	 (type[i]==COMPOUND && type[j]==SPHERE) ||
-	 (type[i]==COMPOUND && type[j]==BOX)){
+      if((ti==BOX      && tj==BOX) ||
+	 (ti==BOX      && tj==COMPOUND) ||
+	 (ti==BOX      && tj==SPHERE) ||
+	 (ti==SPHERE   && tj==BOX) ||
+	 (ti==SPHERE   && tj==SPHERE) ||
+	 (ti==SPHERE   && tj==COMPOUND) ||
+	 (ti==COMPOUND && tj==COMPOUND) ||
+	 (ti==COMPOUND && tj==SPHERE) ||
+	 (ti==COMPOUND && tj==BOX)){
+
 	// Rel. position
-	r.set(x[j]-x[i],
-	      y[j]-y[i],
-	      z[j]-z[i]);
-	var boundingRadius1 = body[i]._shape.boundingSphereRadius();
-	var boundingRadius2 = body[j]._shape.boundingSphereRadius();
+	bj.position.vsub(bi.position,r);
+
+	var boundingRadius1 = bi.shape.boundingSphereRadius();
+	var boundingRadius2 = bj.shape.boundingSphereRadius();
 	if(r.norm()<(boundingRadius1+boundingRadius2)){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
 
       // --- Sphere/box/compound versus plane ---
-      } else if((type[i]==SPHERE && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==SPHERE) ||
+      } else if((ti==SPHERE && tj==PLANE) ||
+		(ti==PLANE &&  tj==SPHERE) ||
 
-		(type[i]==BOX && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==BOX) ||
+		(ti==BOX && tj==PLANE) ||
+		(ti==PLANE &&  tj==BOX) ||
 
-		(type[i]==COMPOUND && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==COMPOUND)){
+		(ti==COMPOUND && tj==PLANE) ||
+		(ti==PLANE &&  tj==COMPOUND)){
 
-	var pi = type[i]==PLANE ? i : j, // Plane
-	  oi = type[i]!=PLANE ? i : j; // Other
+	var pi = ti==PLANE ? i : j, // Plane
+	  oi = ti!=PLANE ? i : j; // Other
 	  
 	  // Rel. position
-	r.set(x[oi]-x[pi],
-	      y[oi]-y[pi],
-	      z[oi]-z[pi]);
-	quat.set(qx[pi],qy[pi],qz[pi],qw[pi]);
-	quat.vmult(body[pi]._shape.normal,normal);
-	var q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
+	bodies[oi].position.vsub(bodies[pi].position,r);
+	bodies[pi].quaternion.vmult(bodies[pi].shape.normal,normal);
+	
+	var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
 	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);

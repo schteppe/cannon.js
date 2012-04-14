@@ -18,8 +18,8 @@ demo.addScene(function(app){
 
     var mass = 10;
     var body = new CANNON.RigidBody(mass,compoundShape);
-    body.setPosition(0,0,6);
-    body.setOrientation(0,1,0,0.1);
+    body.position.set(0,0,6);
+    body.quaternion.set(0,1,0,0.1);
     world.add(body);
     app.addVisual(body);
 
@@ -38,8 +38,8 @@ demo.addScene(function(app){
 
     var mass = 10;
     var body = new CANNON.RigidBody(mass,compoundShape);
-    body.setPosition(0,0,6);
-    body.setOrientation(0,1,0,0.1);
+    body.position.set(0,0,6);
+    body.quaternion.set(0,1,0,0.1);
     world.add(body);
     app.addVisual(body);
 
@@ -49,10 +49,9 @@ function setupWorld(app){
   // Create world
   var world = new CANNON.World();
   app.setWorld(world);
-  world.gravity(new CANNON.Vec3(0,0,-40));
-  var bp = new CANNON.NaiveBroadphase();
-  world.broadphase(bp);
-  world.iterations(10);
+  world.gravity.set(0,0,-40);
+  world.broadphase = new CANNON.NaiveBroadphase();
+  world.solver.iterations = 10;
 
   // ground plane
   var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));

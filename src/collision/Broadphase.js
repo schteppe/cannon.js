@@ -15,7 +15,7 @@ CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
  * @brief Get the collision pairs from the world
  * @return array
  */
-CANNON.Broadphase.prototype.collisionPairs = function(){
+CANNON.Broadphase.prototype.collisionPairs = function(world){
   throw "collisionPairs not implemented for this BroadPhase class!";
 };
 

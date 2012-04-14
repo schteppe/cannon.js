@@ -6,10 +6,10 @@
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
   /**
-   * @property int iter
+   * @property int iterations
    * @memberof CANNON.Solver
    */
-  this.iter = iter || 10;
+  this.iterations = iter || 10;
 
   /**
    * @property float h
@@ -230,7 +230,7 @@ CANNON.Solver.prototype.solve = function(){
   var c = new Float32Array(n);
   var precomp = new Int16Array(n);
   var G = new Float32Array(this.G);
-  for(var k = 0; k<this.iter; k++){
+  for(var k = 0; k<this.iterations; k++){
     for(var l=0; l<n; l++){
 
       // Bodies participating in constraint
