@@ -8,7 +8,7 @@ CANNON.Demo = function(){
   this.settings = {
     gx:0.0,
     gy:0.0,
-    gz:-10.0,
+    gz:0.0,
     iterations:3,
     scene:0,
     paused:false,
@@ -462,25 +462,27 @@ CANNON.Demo.prototype.start = function(){
 
     // World folder
     var wf = that._gui.addFolder('World');
+    // Pause
+    wf.add(that.settings,'paused').onChange(function(p){
+	that.paused = p;
+      });
     wf.add(that.settings, 'gx').step(1).onChange(function(gx){
-	that._world.gravity(new CANNON.Vec3(gx,that.settings.gy,that.settings.gz));
+	if(!isNaN(gx))
+	  that._world.gravity.set(gx,that.settings.gy,that.settings.gz);
       });
     wf.add(that.settings, 'gy').step(1).onChange(function(gy){
-	that._world.gravity(new CANNON.Vec3(that.settings.gx,gy,that.settings.gz));
+	if(!isNaN(gy))
+	  that._world.gravity.set(that.settings.gx,gy,that.settings.gz);
       });
     wf.add(that.settings, 'gz').step(1).onChange(function(gz){
-	that._world.gravity(new CANNON.Vec3(that.settings.gx,that.settings.gy,gz));
+	if(!isNaN(gz))
+	  that._world.gravity.set(that.settings.gx,that.settings.gy,gz);
       });
 
     // Solver folder
     var sf = that._gui.addFolder('Solver');
     sf.add(that.settings, 'iterations').min(1).step(1).onChange(function(it){
 	that._world.solver.iterations = it;
-      });
-
-    // Pause
-    wf.add(that.settings,'paused').onChange(function(p){
-	that.paused = p;
       });
 
     // Scene picker
@@ -652,8 +654,8 @@ CANNON.Demo.prototype._buildScene = function(n){
 
   // Read the newly set data to the gui
   that.settings.iterations = that._world.solver.iterations;
-  that.settings.gx = that._world.gravity.x;
-  that.settings.gy = that._world.gravity.y;
-  that.settings.gz = that._world.gravity.z;
+  that.settings.gx = that._world.gravity.x+0.0;
+  that.settings.gy = that._world.gravity.y+0.0;
+  that.settings.gz = that._world.gravity.z+0.0;
   that._updategui();
 };
