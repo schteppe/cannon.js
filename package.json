@@ -1,0 +1,33 @@
+{
+    "name": "cannon",
+    "version": "0.4.0",
+    "description": "A lightweight 3D physics engine written in JavaScript. Perfect to use with three.js, for example.",
+    "homepage": "https://github.com/schteppe/cannon.js",
+    "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
+    "keywords": [
+        "cannon",
+        "physics",
+        "3d"
+    ],
+    "main": "./build/cannon.js",
+    "engines": {
+        "node": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/schteppe/cannon.js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/schteppe/cannon.js/issues"
+    },
+    "licenses" : [
+        {
+            "type" : "MIT"
+        }
+    ],
+    "devDependencies" : {
+        "jshint"    : "latest",
+        "uglify-js" : "latest",
+        "nodeunit"  : "latest"
+    }
+}
