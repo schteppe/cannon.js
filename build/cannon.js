@@ -2176,24 +2176,33 @@ CANNON.World.prototype.step = function(dt){
 	}
 
 	// Check edges
+	var edgeTangent = new CANNON.Vec3();
+	var edgeCenter = new CANNON.Vec3();
+	var r = new CANNON.Vec3(); // r = edge center to sphere center
+	var orthogonal = new CANNON.Vec3();
+	var dist = new CANNON.Vec3();
 	for(var j=0; j<sides.length && !found; j++){
 	  for(var k=0; k<sides.length && !found; k++){
 	    if(j%3!=k%3){
 	      // Get edge tangent
-	      var edgeTangent = sides[k].cross(sides[j]);
+	      sides[k].cross(sides[j],edgeTangent);
 	      edgeTangent.normalize();
-	      var edgeCenter = sides[j].vadd(sides[k]);
-	      
-	      var r = xi.vsub(edgeCenter.vadd(xj)); // r = edge center to sphere center
+	      sides[j].vadd(sides[k], edgeCenter);
+	      xi.copy(r);
+	      r.vsub(edgeCenter,r);
+	      r.vsub(xj,r);
 	      var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
-	      var orthogonal = edgeTangent.mult(orthonorm); // Vector from edge center to sphere center in the tangent direction
+	      edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
 	      
 	      // Find the third side orthogonal to this one
 	      var l = 0;
 	      while(l==j%3 || l==k%3) l++;
 
 	      // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-	      var dist = xi.vsub(orthogonal).vsub(edgeCenter.vadd(xj));
+	      xi.copy(dist);
+	      dist.vsub(orthogonal,dist);
+	      dist.vsub(edgeCenter,dist);
+	      dist.vsub(xj,dist);
 
 	      // Distances in tangent direction and distance in the plane orthogonal to it
 	      var tdist = Math.abs(orthonorm);
@@ -2206,7 +2215,14 @@ CANNON.World.prototype.step = function(dt){
 		res.rj.copy(res.rj);
 		dist.negate(res.ni);
 		res.ni.normalize();
-		res.rj.vadd(xj).vsub(xi).unit().mult(R,res.ri);
+
+		res.rj.copy(res.ri);
+		res.ri.vadd(xj,res.ri);
+		res.ri.vsub(xi,res.ri);
+		res.ri.normalize();
+		res.ri.mult(R,res.ri);
+		console.log("ll");
+		//res.rj.vadd(xj).vsub(xi).unit().mult(R,res.ri);
 		result.push(res);
 	      }
 	    }
