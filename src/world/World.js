@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * @class CANNON.World
  * @brief The physics world

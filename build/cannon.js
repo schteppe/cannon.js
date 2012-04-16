@@ -31,6 +31,8 @@ var CANNON = CANNON || {};
 // Maintain compatibility with older browsers
 var Int32Array = Int32Array || Array;
 var Float32Array = Float32Array || Array;
+/*global CANNON:true */
+
 /**
  * @class CANNON.Broadphase
  * @author schteppe
@@ -52,6 +54,8 @@ CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 CANNON.Broadphase.prototype.collisionPairs = function(world){
   throw "collisionPairs not implemented for this BroadPhase class!";
 };
+
+/*global CANNON:true */
 
 /**
  * @class CANNON.NaiveBroadphase
@@ -147,6 +151,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   }
   return [pairs1,pairs2];
 };
+/*global CANNON:true */
+
 /**
  * @class CANNON.Mat3
  * @brief Produce a 3x3 matrix. Columns first!
@@ -359,7 +365,9 @@ CANNON.Mat3.prototype.toString = function(){
   for(var i=0; i<9; i++)
     r += this.elements[i] + sep;
   return r;
-};/**
+};/*global CANNON:true */
+
+/**
  * @class CANNON.Vec3
  * @brief 3-dimensional vector
  * @param float x
@@ -621,6 +629,8 @@ CANNON.Vec3.prototype.copy = function(target){
   target.z = this.z;
   return target;
 };
+/*global CANNON:true */
+
 /**
  * @class CANNON.Quaternion
  * @brief 4-dimensional quaternion
@@ -809,7 +819,9 @@ CANNON.Quaternion.prototype.copy = function(target){
   target.y = this.y;
   target.z = this.z;
   target.w = this.w;
-};/**
+};/*global CANNON:true */
+
+/**
  * @class CANNON.Shape
  * @author schteppe
  * @brief Base class for shapes
@@ -890,6 +902,8 @@ CANNON.Shape.types = {
   BOX:4,
   COMPOUND:8
 };
+
+/*global CANNON:true */
 
 /**
  * @class CANNON.RigidBody
@@ -1029,6 +1043,8 @@ CANNON.RigidBody = function(mass,shape,material){
    */
   this.world = null;
 };
+/*global CANNON:true */
+
 /**
  * @brief Spherical rigid body
  * @class CANNON.Sphere
@@ -1059,7 +1075,9 @@ CANNON.Sphere.prototype.volume = function(){
 
 CANNON.Sphere.prototype.boundingSphereRadius = function(){
   return this.radius;
-};/**
+};/*global CANNON:true */
+
+/**
  * @class CANNON.Box
  * @param CANNON.Vec3 halfExtents
  * @author schteppe
@@ -1141,7 +1159,9 @@ CANNON.Box.prototype.volume = function(){
 
 CANNON.Box.prototype.boundingSphereRadius = function(){
   return this.halfExtents.norm();
-};/**
+};/*global CANNON:true */
+
+/**
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
@@ -1163,7 +1183,9 @@ CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
 
 CANNON.Plane.prototype.volume = function(){
   return Infinity; // The plane is infinite...
-};/**
+};/*global CANNON:true */
+
+/**
  * @class CANNON.Compound
  * @extends CANNON.Shape
  * @brief Compound shape
@@ -1239,7 +1261,9 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
       r = candidate;
   }
   return r;
-};/**
+};/*global CANNON:true */
+
+/**
  * @class CANNON.Solver
  * @brief Constraint solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
@@ -1570,6 +1594,8 @@ CANNON.Solver.prototype.solve = function(){
 		  this.wylambda[i],
 		  this.wzlambda[i]);
 };
+/*global CANNON:true */
+
 /**
  * @class CANNON.Material
  * @brief Defines a physics material.
@@ -1584,6 +1610,8 @@ CANNON.Material = function(name){
   this.name = name;
   this.id = -1;
 };
+
+/*global CANNON:true */
 
 /**
  * @class CANNON.ContactMaterial
@@ -1609,6 +1637,8 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
   this.restitution =      restitution!=undefined ?      Number(restitution) :      0.3;
   
 };
+
+/*global CANNON:true */
 
 /**
  * @class CANNON.World

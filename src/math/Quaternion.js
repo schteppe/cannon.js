@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * @class CANNON.Quaternion
  * @brief 4-dimensional quaternion

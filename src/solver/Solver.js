@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * @class CANNON.Solver
  * @brief Constraint solver.

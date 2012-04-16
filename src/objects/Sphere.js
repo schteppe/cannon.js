@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * @brief Spherical rigid body
  * @class CANNON.Sphere

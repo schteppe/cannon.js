@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * @class CANNON.Mat3
  * @brief Produce a 3x3 matrix. Columns first!

@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * Point to point constraint class
  * @author schteppe

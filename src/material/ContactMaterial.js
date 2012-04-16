@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * @class CANNON.ContactMaterial
  * @brief Defines what happens when two materials meet.

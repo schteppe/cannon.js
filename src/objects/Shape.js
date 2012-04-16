@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * @class CANNON.Shape
  * @author schteppe

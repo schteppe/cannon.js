@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * @class CANNON.Material
  * @brief Defines a physics material.
