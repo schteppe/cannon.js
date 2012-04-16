@@ -22,7 +22,7 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 // Setup our world
 var world = new CANNON.World();
 world.gravity.set(0,0,-9.82);
-world.broadphase = new CANNON.Broadphase();
+world.broadphase = new CANNON.NaiveBroadphase();
     
 // Create a sphere
 var mass = 5, radius = 1;
