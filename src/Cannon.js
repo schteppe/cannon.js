@@ -6,7 +6,5 @@
 var CANNON = CANNON || {};
 
 // Maintain compatibility with older browsers
-if(!self.Int32Array){
-  self.Int32Array = Array;
-  self.Float32Array = Array;
-}
+var Int32Array = Int32Array || Array;
+var Float32Array = Float32Array || Array;

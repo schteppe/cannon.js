@@ -29,10 +29,8 @@
 var CANNON = CANNON || {};
 
 // Maintain compatibility with older browsers
-if(!self.Int32Array){
-  self.Int32Array = Array;
-  self.Float32Array = Array;
-}
+var Int32Array = Int32Array || Array;
+var Float32Array = Float32Array || Array;
 /**
  * @class CANNON.Broadphase
  * @author schteppe
@@ -2540,6 +2538,12 @@ CANNON.World.prototype.step = function(dt){
   world.stepnumber += 1;
 };
 
-this.CANNON = CANNON;
+if (typeof module !== 'undefined') {
+	// export for node
+	module.exports = CANNON;
+} else {
+	// assign to window
+	this.CANNON = CANNON;
+}
 
 }).apply(this);
