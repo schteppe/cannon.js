@@ -20,7 +20,7 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
+(function () {
 /**
  * @mainpage Cannon.js
  * A lightweight 3D physics engine for the web. See the github page for more information: https://github.com/schteppe/cannon.js
@@ -2221,8 +2221,7 @@ CANNON.World.prototype.step = function(dt){
 		res.ri.vsub(xi,res.ri);
 		res.ri.normalize();
 		res.ri.mult(R,res.ri);
-		console.log("ll");
-		//res.rj.vadd(xj).vsub(xi).unit().mult(R,res.ri);
+
 		result.push(res);
 	      }
 	    }
@@ -2541,3 +2540,6 @@ CANNON.World.prototype.step = function(dt){
   world.stepnumber += 1;
 };
 
+this.CANNON = CANNON;
+
+}).apply(this);

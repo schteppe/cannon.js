@@ -1,10 +1,10 @@
 START     = LICENSE src/wrapper/Start.js
 CANNON    = src/Cannon.js
-COLLISION = src/collision/*
+COLLISION = src/collision/Broadphase.js src/collision/NaiveBroadphase.js
 MATH      = src/math/Mat3.js src/math/Vec3.js src/math/Quaternion.js
-OBJECTS   = src/objects/* 
+OBJECTS   = src/objects/Shape.js src/objects/RigidBody.js src/objects/Sphere.js src/objects/Box.js src/objects/Plane.js src/objects/Compound.js
 SOLVER    = src/solver/*
-MATERIAL  = src/material/*
+MATERIAL  = src/material/Material.js src/material/ContactMaterial.js
 WORLD     = src/world/*
 END       = src/wrapper/End.js
 
