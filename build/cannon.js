@@ -2221,8 +2221,7 @@ CANNON.World.prototype.step = function(dt){
 		res.ri.vsub(xi,res.ri);
 		res.ri.normalize();
 		res.ri.mult(R,res.ri);
-		console.log("ll");
-		//res.rj.vadd(xj).vsub(xi).unit().mult(R,res.ri);
+
 		result.push(res);
 	      }
 	    }
