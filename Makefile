@@ -40,3 +40,6 @@ size: minify
 	gzip $(CANNON_BUILD_MINIFY).temp
 	gzip -l $(CANNON_BUILD_MINIFY).temp.gz
 	rm $(CANNON_BUILD_MINIFY).temp.gz
+
+test: bundle
+	./node_modules/.bin/nodeunit ./test
