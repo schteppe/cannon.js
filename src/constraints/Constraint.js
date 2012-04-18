@@ -1,3 +1,5 @@
+/*global CANNON:true */
+
 /**
  * Constraint base class
  * @author schteppe

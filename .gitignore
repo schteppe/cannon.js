@@ -4,3 +4,9 @@
 # Temp files
 *~
 *#
+
+# Node Modules
+node_modules/*
+
+# File system
+.DS_Store
