@@ -82,16 +82,14 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
-  var pairs1 = [];
-  var pairs2 = [];
-  var n = world.numObjects();
+  var pairs1 = [], pairs2 = [];
+  var n = world.numObjects(),
+  bodies = world.bodies;
 
   // Local fast access
-  var SPHERE =   CANNON.Shape.types.SPHERE;
-  var PLANE =    CANNON.Shape.types.PLANE;
-  var BOX =      CANNON.Shape.types.BOX;
-  var COMPOUND = CANNON.Shape.types.COMPOUND;
-  var bodies = world.bodies;
+  var types = CANNON.Shape.types;
+  var BOX_SPHERE_COMPOUND = types.SPHERE | types.BOX | types.COMPOUND,
+  PLANE = types.PLANE;
 
   // Temp vecs
   var r = this.temp.r;
@@ -106,15 +104,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
       var ti = bi.shape.type, tj = bj.shape.type;
 
       // --- Box / sphere / compound collision ---
-      if((ti==BOX      && tj==BOX) ||
-	 (ti==BOX      && tj==COMPOUND) ||
-	 (ti==BOX      && tj==SPHERE) ||
-	 (ti==SPHERE   && tj==BOX) ||
-	 (ti==SPHERE   && tj==SPHERE) ||
-	 (ti==SPHERE   && tj==COMPOUND) ||
-	 (ti==COMPOUND && tj==COMPOUND) ||
-	 (ti==COMPOUND && tj==SPHERE) ||
-	 (ti==COMPOUND && tj==BOX)){
+      if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
 
 	// Rel. position
 	bj.position.vsub(bi.position,r);
@@ -127,15 +117,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	}
 
       // --- Sphere/box/compound versus plane ---
-      } else if((ti==SPHERE && tj==PLANE) ||
-		(ti==PLANE &&  tj==SPHERE) ||
-
-		(ti==BOX && tj==PLANE) ||
-		(ti==PLANE &&  tj==BOX) ||
-
-		(ti==COMPOUND && tj==PLANE) ||
-		(ti==PLANE &&  tj==COMPOUND)){
-
+      } else if((ti & BOX_SPHERE_COMPOUND) && (tj & types.PLANE) || 
+		(tj & BOX_SPHERE_COMPOUND) && (ti & types.PLANE)){
 	var pi = ti==PLANE ? i : j, // Plane
 	  oi = ti!=PLANE ? i : j; // Other
 	  
