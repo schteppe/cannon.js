@@ -1,20 +1,50 @@
+/*global CANNON:true */
+
 /**
- * 4-dimensional quaternion
  * @class CANNON.Quaternion
+ * @brief 4-dimensional quaternion
  * @param float x
  * @param float y
  * @param float z 
  * @param float w
  */
 CANNON.Quaternion = function(x,y,z,w){
+  /**
+   * @property float x
+   * @memberof CANNON.Quaternion
+   */
   this.x = x!=undefined ? x : 0;
+  /**
+   * @property float y
+   * @memberof CANNON.Quaternion
+   */
   this.y = y!=undefined ? y : 0;
+  /**
+   * @property float z
+   * @memberof CANNON.Quaternion
+   */
   this.z = z!=undefined ? z : 0;
+  /**
+   * @property float w
+   * @memberof CANNON.Quaternion
+   */
   this.w = w!=undefined ? w : 1;
 };
 
 /**
- * Convert to a readable format
+ * Set the value of the quaternion.
+ */
+CANNON.Quaternion.prototype.set = function(x,y,z,w){
+  this.x = x;
+  this.y = y;
+  this.z = z;
+  this.w = w;
+};
+
+/**
+ * @fn toString
+ * @memberof CANNON.Quaternion
+ * @brief Convert to a readable format
  * @return string
  */
 CANNON.Quaternion.prototype.toString = function(){
@@ -22,7 +52,9 @@ CANNON.Quaternion.prototype.toString = function(){
 };
 
 /**
- * Set the quaternion components given an axis and an angle.
+ * @fn setFromAxisAngle
+ * @memberof CANNON.Quaternion
+ * @brief Set the quaternion components given an axis and an angle.
  * @param CANNON.Vec3 axis
  * @param float angle in radians
  */
@@ -35,7 +67,9 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
 };
 
 /**
- * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
+ * @fn setFromVectors
+ * @memberof CANNON.Quaternion
+ * @brief Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
  * @param CANNON.Vec3 u
  * @param CANNON.Vec3 v
  */
@@ -49,7 +83,9 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
 };
 
 /**
- * Quaternion multiplication
+ * @fn mult
+ * @memberof CANNON.Quaternion
+ * @brief Quaternion multiplication
  * @param CANNON.Quaternion q
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
@@ -69,8 +105,11 @@ CANNON.Quaternion.prototype.mult = function(q,target){
 };
 
 /**
- * Get the inverse quaternion rotation.
+ * @fn inverse
+ * @memberof CANNON.Quaternion
+ * @brief Get the inverse quaternion rotation.
  * @param CANNON.Quaternion target
+ * @return CANNON.Quaternion
  */
 CANNON.Quaternion.prototype.inverse = function(target){
   if(target==undefined)
@@ -85,7 +124,9 @@ CANNON.Quaternion.prototype.inverse = function(target){
 };
 
 /**
- * Normalize the quaternion. Note that this changes the values of the quaternion.
+ * @fn normalize
+ * @memberof CANNON.Quaternion
+ * @brief Normalize the quaternion. Note that this changes the values of the quaternion.
  */
 CANNON.Quaternion.prototype.normalize = function(){
   var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
@@ -104,7 +145,9 @@ CANNON.Quaternion.prototype.normalize = function(){
 };
 
 /**
- * Multiply the quaternion by a vector
+ * @fn vmult
+ * @memberof CANNON.Quaternion
+ * @brief Multiply the quaternion by a vector
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional
  * @return CANNON.Vec3
@@ -138,4 +181,11 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
   }
 
   return target;
+};
+
+CANNON.Quaternion.prototype.copy = function(target){
+  target.x = this.x;
+  target.y = this.y;
+  target.z = this.z;
+  target.w = this.w;
 };

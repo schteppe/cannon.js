@@ -1,17 +1,67 @@
+/*global CANNON:true */
+
 /**
- * Constraint solver.
+ * @class CANNON.Solver
+ * @brief Constraint solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
-  this.iter = iter || 10;
+  /**
+   * @property int iterations
+   * @memberof CANNON.Solver
+   */
+  this.iterations = iter || 10;
+
+  /**
+   * @property float h
+   * @brief Time step size
+   * @memberof CANNON.Solver
+   */
   this.h = h || 1.0/60.0;
+
+  /**
+   * @property float a
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.a = a;
+
+  /**
+   * @property float b
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.b = b;
+
+  /**
+   * @property float eps
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.eps = eps;
+
+  /**
+   * @property float k
+   * @brief SPOOK parameter, spring stiffness
+   * @memberof CANNON.Solver
+   */
   this.k = k;
+
+  /**
+   * @property float d
+   * @brief SPOOK parameter, similar to damping
+   * @memberof CANNON.Solver
+   */
   this.d = d;
+
   this.reset(0);
+
+  /**
+   * @property bool debug
+   * @brief Debug flag, will output solver data to console if true
+   * @memberof CANNON.Solver
+   */
   this.debug = false;
 
   if(this.debug)
@@ -19,7 +69,9 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
 };
 
 /**
- * Resets the solver, removes all constraints and prepares for a new round of solving
+ * @fn reset
+ * @memberof CANNON.Solver
+ * @brief Resets the solver, removes all constraints and prepares for a new round of solving
  * @param int numbodies The number of bodies in the new system
  * @todo vlambda does not need to be instantiated again if the number of bodies is the same. Set to zero instead.
  */
@@ -49,7 +101,9 @@ CANNON.Solver.prototype.reset = function(numbodies){
 };
 
 /**
- * Add a constraint to the solver
+ * @fn addConstraint
+ * @memberof CANNON.Solver
+ * @brief Add a constraint to the solver
  * @param array G Jacobian vector, 12 elements (6 dof per body)
  * @param array MinvTrace The trace of the Inverse mass matrix (12 elements). The mass matrix is 12x12 elements from the beginning and 6x6 matrix per body (mass matrix and inertia matrix).
  * @param array q The constraint violation vector in generalized coordinates (12 elements)
@@ -95,7 +149,9 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 };
 
 /**
- * Add a non-penetration constraint to the solver
+ * @fn addNonPenetrationConstraint
+ * @memberof CANNON.Solver
+ * @brief Add a non-penetration constraint to the solver
  * @param CANNON.Vec3 ni
  * @param CANNON.Vec3 ri
  * @param CANNON.Vec3 rj
@@ -162,7 +218,9 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 };
 
 /**
- * Solves the system, and sets the vlambda and wlambda properties of the Solver object
+ * @fn solve
+ * @memberof CANNON.Solver
+ * @brief Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
@@ -174,7 +232,7 @@ CANNON.Solver.prototype.solve = function(){
   var c = new Float32Array(n);
   var precomp = new Int16Array(n);
   var G = new Float32Array(this.G);
-  for(var k = 0; k<this.iter; k++){
+  for(var k = 0; k<this.iterations; k++){
     for(var l=0; l<n; l++){
 
       // Bodies participating in constraint

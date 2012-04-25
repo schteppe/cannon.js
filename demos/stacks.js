@@ -11,13 +11,13 @@ demo.addScene(function(app){
     // Sphere 1
     var sphereShape = new CANNON.Sphere(size);
     var b1 = new CANNON.RigidBody(5,sphereShape);
-    b1.setPosition(0,0,3*size);
+    b1.position.set(0,0,3*size);
     world.add(b1);
     app.addVisual(b1);
 
     // Sphere 2
     var b2 = new CANNON.RigidBody(5,sphereShape);
-    b2.setPosition(0,0,1*size);
+    b2.position.set(0,0,1*size);
     world.add(b2);
     app.addVisual(b2);
   });
@@ -31,13 +31,13 @@ demo.addScene(function(app){
 
     // Box
     var b1 = new CANNON.RigidBody(5,boxShape);
-    b1.setPosition(0,0,1*size);
+    b1.position.set(0,0,1*size);
     world.add(b1);
     app.addVisual(b1);
 
     // Sphere
     var b2 = new CANNON.RigidBody(5,sphereShape);
-    b2.setPosition(0,0,3*size);
+    b2.position.set(0,0,3*size);
     world.add(b2);
     app.addVisual(b2);
   });
@@ -48,10 +48,9 @@ function setupWorld(app){
   // Create world
   var world = new CANNON.World();
   app.setWorld(world);
-  world.gravity(new CANNON.Vec3(0,0,-50));
-  var bp = new CANNON.NaiveBroadphase();
-  world.broadphase(bp);
-  world.iterations(10);
+  world.gravity.set(0,0,-50);
+  world.broadphase = new CANNON.NaiveBroadphase();
+  world.solver.iterations = 10;
 
   // ground plane
   var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));

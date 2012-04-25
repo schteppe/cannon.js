@@ -20,125 +20,113 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
+(function () {
 /**
- * Our main namespace definition
- * @author schteppe / https://github.com/schteppe
+ * @mainpage Cannon.js
+ * A lightweight 3D physics engine for the web. See the github page for more information: https://github.com/schteppe/cannon.js
  */
 
 var CANNON = CANNON || {};
 
 // Maintain compatibility with older browsers
-if(!self.Int32Array){
-  self.Int32Array = Array;
-  self.Float32Array = Array;
-}
+// @todo: check so ordinary Arrays work.
+if(!this.Int32Array){
+  this.Int32Array=Array;
+  this.Float32Array=Array;
+}/*global CANNON:true */
+
 /**
- * @class Broadphase
- * @author schteppe / https://github.com/schteppe
+ * @class CANNON.Broadphase
+ * @author schteppe
  * @todo Make it a base class for broadphase implementations, and rename this one to NaiveBroadphase
  */
 CANNON.Broadphase = function(){
   /// The world to search for collisions in.
   this.world = null;
 };
-
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 
 /**
- * Get the collision pairs from the world
- * @return array
+ * @fn collisionPairs
+ * @memberof CANNON.Broadphase
+ * @brief Get the collision pairs from the world
+ * @param CANNON.World world The world to search in
+ * @return array An array with two subarrays of body indices
  */
-CANNON.Broadphase.prototype.collisionPairs = function(){
+CANNON.Broadphase.prototype.collisionPairs = function(world){
   throw "collisionPairs not implemented for this BroadPhase class!";
 };
 
+/*global CANNON:true */
+
 /**
- * Naive broadphase implementation, used in lack of better ones and for
- * comparisons in performance tests.
- *
- * The naive broadphase looks at all possible pairs without restriction,
- * therefore it has complexity N^2 (which is really bad)
+ * @class CANNON.NaiveBroadphase
+ * @brief Naive broadphase implementation, used in lack of better ones. The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
+ * @extends CANNON.Broadphase
  */
 CANNON.NaiveBroadphase = function(){
-  
+  this.temp = {
+    r: new CANNON.Vec3(),
+    normal: new CANNON.Vec3(),
+    quat: new CANNON.Quaternion()
+  };
 };
-
 CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
 CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
 /**
- * Get all the collision pairs in a physics world
+ * @fn collisionPairs
+ * @memberof CANNON.NaiveBroadphase
+ * @brief Get all the collision pairs in the physics world
  * @param CANNON.World world
- * @todo Should be placed in a subclass to BroadPhase
- * @return array An array containing two arrays of integers. The integers corresponds to the body indeces.
+ * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
-CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
-  var world = this.world;
-  var pairs1 = [];
-  var pairs2 = [];
-  var n = world.numObjects();
+CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
+  var pairs1 = [], pairs2 = [];
+  var n = world.numObjects(),
+  bodies = world.bodies;
 
   // Local fast access
-  var SPHERE =   CANNON.Shape.types.SPHERE;
-  var PLANE =    CANNON.Shape.types.PLANE;
-  var BOX =      CANNON.Shape.types.BOX;
-  var COMPOUND = CANNON.Shape.types.COMPOUND;
-  var x = world.x;
-  var y = world.y;
-  var z = world.z;
-  var qx = world.qx;
-  var qy = world.qy;
-  var qz = world.qz;
-  var qw = world.qw;
-  var type = world.type;
-  var body = world.body;
+  var types = CANNON.Shape.types;
+  var BOX_SPHERE_COMPOUND = types.SPHERE | types.BOX | types.COMPOUND,
+  PLANE = types.PLANE;
+
+  // Temp vecs
+  var r = this.temp.r;
+  var normal = this.temp.normal;
+  var quat = this.temp.quat;
 
   // Naive N^2 ftw!
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
 
+      var bi = bodies[i], bj = bodies[j];
+      var ti = bi.shape.type, tj = bj.shape.type;
+
       // --- Box / sphere / compound collision ---
-      if((type[i]==BOX      && type[j]==BOX) ||
-	 (type[i]==BOX      && type[j]==COMPOUND) ||
-	 (type[i]==BOX      && type[j]==SPHERE) ||
-	 (type[i]==SPHERE   && type[j]==BOX) ||
-	 (type[i]==SPHERE   && type[j]==SPHERE) ||
-	 (type[i]==SPHERE   && type[j]==COMPOUND) ||
-	 (type[i]==COMPOUND && type[j]==COMPOUND) ||
-	 (type[i]==COMPOUND && type[j]==SPHERE) ||
-	 (type[i]==COMPOUND && type[j]==BOX)){
+      if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
+
 	// Rel. position
-	var r = new CANNON.Vec3(x[j]-x[i],
-				y[j]-y[i],
-				z[j]-z[i]);
-	var boundingRadius1 = body[i]._shape.boundingSphereRadius();
-	var boundingRadius2 = body[j]._shape.boundingSphereRadius();
+	bj.position.vsub(bi.position,r);
+
+	var boundingRadius1 = bi.shape.boundingSphereRadius();
+	var boundingRadius2 = bj.shape.boundingSphereRadius();
 	if(r.norm()<(boundingRadius1+boundingRadius2)){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
 
       // --- Sphere/box/compound versus plane ---
-      } else if((type[i]==SPHERE && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==SPHERE) ||
-
-		(type[i]==BOX && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==BOX) ||
-
-		(type[i]==COMPOUND && type[j]==PLANE) ||
-		(type[i]==PLANE &&  type[j]==COMPOUND)){
-
-	var pi = type[i]==PLANE ? i : j, // Plane
-	  oi = type[i]!=PLANE ? i : j, // Other
+      } else if((ti & BOX_SPHERE_COMPOUND) && (tj & types.PLANE) || 
+		(tj & BOX_SPHERE_COMPOUND) && (ti & types.PLANE)){
+	var pi = ti==PLANE ? i : j, // Plane
+	  oi = ti!=PLANE ? i : j; // Other
 	  
 	  // Rel. position
-	  r = new CANNON.Vec3(x[oi]-x[pi],
-			      y[oi]-y[pi],
-			      z[oi]-z[pi]),
-	  quat = new CANNON.Quaternion(qx[pi],qy[pi],qz[pi],qw[pi]),
-	  normal = quat.vmult(body[pi]._shape.normal),
-	  q = r.dot(normal)-body[oi]._shape.boundingSphereRadius();
+	bodies[oi].position.vsub(bodies[pi].position,r);
+	bodies[pi].quaternion.vmult(bodies[pi].shape.normal,normal);
+	
+	var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
 	if(q<0.0){
 	  pairs1.push(i);
 	  pairs2.push(j);
@@ -148,13 +136,20 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(){
   }
   return [pairs1,pairs2];
 };
+/*global CANNON:true */
+
 /**
- * Produce a 3x3 matrix. Columns first!
  * @class CANNON.Mat3
+ * @brief Produce a 3x3 matrix. Columns first!
  * @param array elements Array of nine elements. Optional.
  * @author schteppe / http://github.com/schteppe
  */
 CANNON.Mat3 = function(elements){
+  /**
+   * @property Float32Array elements
+   * @memberof CANNON.Mat3
+   * @brief A vector of length 9, containing all matrix elements
+   */
   if(elements)
     this.elements = new Float32Array(elements);
   else
@@ -162,7 +157,9 @@ CANNON.Mat3 = function(elements){
 };
 
 /**
- * Sets the matrix to identity
+ * @fn identity
+ * @memberof CANNON.Mat3
+ * @brief Sets the matrix to identity
  * @todo Should perhaps be renamed to setIdentity() to be more clear.
  * @todo Create another function that immediately creates an identity matrix eg. eye()
  */
@@ -181,7 +178,9 @@ CANNON.Mat3.prototype.identity = function(){
 };
 
 /**
- * Matrix-Vector multiplication
+ * @fn vmult
+ * @memberof CANNON.vmult
+ * @brief Matrix-Vector multiplication
  * @param CANNON.Vec3 v The vector to multiply with
  * @param CANNON.Vec3 target Optional, target to save the result in.
  */
@@ -202,7 +201,9 @@ CANNON.Mat3.prototype.vmult = function(v,target){
 };
 
 /**
- * Matrix-scalar multiplication
+ * @fn smult
+ * @memberof CANNON.Mat3
+ * @brief Matrix-scalar multiplication
  * @param float s
  */
 CANNON.Mat3.prototype.smult = function(s){
@@ -211,7 +212,9 @@ CANNON.Mat3.prototype.smult = function(s){
 };
 
 /**
- * Matrix multiplication
+ * @fn mmult
+ * @memberof CANNON.Mat3
+ * @brief Matrix multiplication
  * @param CANNON.Mat3 m Matrix to multiply with from left side.
  * @return CANNON.Mat3 The result.
  */
@@ -228,7 +231,9 @@ CANNON.Mat3.prototype.mmult = function(m){
 };
 
 /**
- * Solve Ax=b
+ * @fn solve
+ * @memberof CANNON.Mat3
+ * @brief Solve Ax=b
  * @param CANNON.Vec3 b The right hand side
  * @param CANNON.Vec3 target Optional. Target vector to save in.
  * @return CANNON.Vec3 The solution x
@@ -302,10 +307,13 @@ CANNON.Mat3.prototype.solve = function(b,target){
 };
 
 /**
- * Get an element in the matrix by index. Index starts at 0, not 1!!!
+ * @fn e
+ * @memberof CANNON.Mat3
+ * @brief Get an element in the matrix by index. Index starts at 0, not 1!!!
  * @param int i
  * @param int j
  * @param float value Optional. If provided, the matrix element will be set to this value.
+ * @return float
  */
 CANNON.Mat3.prototype.e = function(i,j,value){
   if(value==undefined)
@@ -317,7 +325,9 @@ CANNON.Mat3.prototype.e = function(i,j,value){
 };
 
 /**
- * Copy the matrix
+ * @fn copy
+ * @memberof CANNON.Mat3
+ * @brief Copy the matrix
  * @param CANNON.Mat3 target Optional. Target to save the copy in.
  * @return CANNON.Mat3
  */
@@ -329,7 +339,9 @@ CANNON.Mat3.prototype.copy = function(target){
 };
 
 /**
- * Returns a string representation of the matrix.
+ * @fn toString
+ * @memberof CANNON.Mat3
+ * @brief Returns a string representation of the matrix.
  * @return string
  */
 CANNON.Mat3.prototype.toString = function(){
@@ -338,22 +350,38 @@ CANNON.Mat3.prototype.toString = function(){
   for(var i=0; i<9; i++)
     r += this.elements[i] + sep;
   return r;
-};/**
- * 3-dimensional vector
- * @class Vec3
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.Vec3
+ * @brief 3-dimensional vector
  * @param float x
  * @param float y
  * @param float z
- * @author schteppe / http://github.com/schteppe
+ * @author schteppe
  */
 CANNON.Vec3 = function(x,y,z){
+  /**
+   * @property float x
+   * @memberof CANNON.Vec3
+   */
   this.x = x||0.0;
+  /**
+   * @property float y
+   * @memberof CANNON.Vec3
+   */
   this.y = y||0.0;
+  /**
+   * @property float z
+   * @memberof CANNON.Vec3
+   */
   this.z = z||0.0;
 };
 
 /**
- * Vector cross product
+ * @fn cross
+ * @memberof CANNON.Vec3
+ * @brief Vector cross product
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional. Target to save in.
  * @return CANNON.Vec3
@@ -371,10 +399,13 @@ CANNON.Vec3.prototype.cross = function(v,target){
 };
 
 /**
- * Set the vectors' 3 elements
+ * @fn set
+ * @memberof CANNON.Vec3
+ * @brief Set the vectors' 3 elements
  * @param float x
  * @param float y
  * @param float z
+ * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.set = function(x,y,z){
   this.x = x;
@@ -384,7 +415,9 @@ CANNON.Vec3.prototype.set = function(x,y,z){
 };
     
 /**
- * Vector addition
+ * @fn vadd
+ * @memberof CANNON.Vec3
+ * @brief Vector addition
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional.
  * @return CANNON.Vec3
@@ -402,7 +435,9 @@ CANNON.Vec3.prototype.vadd = function(v,target){
 };
     
 /**
- * Vector subtraction
+ * @fn vsub
+ * @memberof CANNON.Vec3
+ * @brief Vector subtraction
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional. Target to save in.
  * @return CANNON.Vec3
@@ -420,8 +455,9 @@ CANNON.Vec3.prototype.vsub = function(v,target){
 };
 
 /**
- * Get the cross product matrix a_cross from a vector, such that
- *   a x b = a_cross * b = c
+ * @fn crossmat
+ * @memberof CANNON.Vec3
+ * @brief Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
  * @return CANNON.Mat3
  */
@@ -432,7 +468,9 @@ CANNON.Vec3.prototype.crossmat = function(){
 };
 
 /**
- * Normalize the vector. Note that this changes the values in the vector.
+ * @fn normalize
+ * @memberof CANNON.Vec3
+ * @brief Normalize the vector. Note that this changes the values in the vector.
  * @return float Returns the norm of the vector
  */
 CANNON.Vec3.prototype.normalize = function(){
@@ -451,7 +489,9 @@ CANNON.Vec3.prototype.normalize = function(){
 };
 
 /**
- * Get the version of this vector that is of length 1.
+ * @fn unit
+ * @memberof CANNON.Vec3
+ * @brief Get the version of this vector that is of length 1.
  * @param CANNON.Vec3 target Optional target to save in
  * @return CANNON.Vec3 Returns the unit vector
  */
@@ -472,7 +512,9 @@ CANNON.Vec3.prototype.unit = function(target){
 };
 
 /**
- * Get the 2-norm (length) of the vector
+ * @fn norm
+ * @memberof CANNON.Vec3
+ * @brief Get the 2-norm (length) of the vector
  * @return float
  */
 CANNON.Vec3.prototype.norm = function(){
@@ -480,7 +522,9 @@ CANNON.Vec3.prototype.norm = function(){
 };
 
 /**
- * Multiply the vector with a scalar
+ * @fn mult
+ * @memberof CANNON.Vec3
+ * @brief Multiply the vector with a scalar
  * @param float scalar
  * @param CANNON.Vec3 target
  * @return CANNON.Vec3
@@ -495,7 +539,9 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
 };
 
 /**
- * Calculate dot product
+ * @fn dot
+ * @memberof CANNON.Vec3
+ * @brief Calculate dot product
  * @param CANNON.Vec3 v
  * @return float
  */
@@ -504,7 +550,9 @@ CANNON.Vec3.prototype.dot = function(v){
 };
 
 /**
- * Make the vector point in the opposite direction.
+ * @fn negate
+ * @memberof CANNON.Vec3
+ * @brief Make the vector point in the opposite direction.
  * @param CANNON.Vec3 target Optional target to save in
  * @return CANNON.Vec3
  */
@@ -517,7 +565,9 @@ CANNON.Vec3.prototype.negate = function(target){
 };
 
 /**
- * Compute two artificial tangents to the vector
+ * @fn tangents
+ * @memberof CANNON.Vec3
+ * @brief Compute two artificial tangents to the vector
  * @param CANNON.Vec3 t1 Vector object to save the first tangent in
  * @param CANNON.Vec3 t2 Vector object to save the second tangent in
  */
@@ -541,7 +591,9 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
 };
 
 /**
- * Converts to a more readable format
+ * @fn toString
+ * @memberof CANNON.Vec3
+ * @brief Converts to a more readable format
  * @return string
  */
 CANNON.Vec3.prototype.toString = function(){
@@ -549,7 +601,9 @@ CANNON.Vec3.prototype.toString = function(){
 };
 
 /**
- * Copy the vector.
+ * @fn copy
+ * @memberof CANNON.Vec3
+ * @brief Copy the vector.
  * @param CANNON.Vec3 target
  * @return CANNON.Vec3
  */
@@ -560,23 +614,53 @@ CANNON.Vec3.prototype.copy = function(target){
   target.z = this.z;
   return target;
 };
+/*global CANNON:true */
+
 /**
- * 4-dimensional quaternion
  * @class CANNON.Quaternion
+ * @brief 4-dimensional quaternion
  * @param float x
  * @param float y
  * @param float z 
  * @param float w
  */
 CANNON.Quaternion = function(x,y,z,w){
+  /**
+   * @property float x
+   * @memberof CANNON.Quaternion
+   */
   this.x = x!=undefined ? x : 0;
+  /**
+   * @property float y
+   * @memberof CANNON.Quaternion
+   */
   this.y = y!=undefined ? y : 0;
+  /**
+   * @property float z
+   * @memberof CANNON.Quaternion
+   */
   this.z = z!=undefined ? z : 0;
+  /**
+   * @property float w
+   * @memberof CANNON.Quaternion
+   */
   this.w = w!=undefined ? w : 1;
 };
 
 /**
- * Convert to a readable format
+ * Set the value of the quaternion.
+ */
+CANNON.Quaternion.prototype.set = function(x,y,z,w){
+  this.x = x;
+  this.y = y;
+  this.z = z;
+  this.w = w;
+};
+
+/**
+ * @fn toString
+ * @memberof CANNON.Quaternion
+ * @brief Convert to a readable format
  * @return string
  */
 CANNON.Quaternion.prototype.toString = function(){
@@ -584,7 +668,9 @@ CANNON.Quaternion.prototype.toString = function(){
 };
 
 /**
- * Set the quaternion components given an axis and an angle.
+ * @fn setFromAxisAngle
+ * @memberof CANNON.Quaternion
+ * @brief Set the quaternion components given an axis and an angle.
  * @param CANNON.Vec3 axis
  * @param float angle in radians
  */
@@ -597,7 +683,9 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
 };
 
 /**
- * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
+ * @fn setFromVectors
+ * @memberof CANNON.Quaternion
+ * @brief Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
  * @param CANNON.Vec3 u
  * @param CANNON.Vec3 v
  */
@@ -611,7 +699,9 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
 };
 
 /**
- * Quaternion multiplication
+ * @fn mult
+ * @memberof CANNON.Quaternion
+ * @brief Quaternion multiplication
  * @param CANNON.Quaternion q
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
@@ -631,8 +721,11 @@ CANNON.Quaternion.prototype.mult = function(q,target){
 };
 
 /**
- * Get the inverse quaternion rotation.
+ * @fn inverse
+ * @memberof CANNON.Quaternion
+ * @brief Get the inverse quaternion rotation.
  * @param CANNON.Quaternion target
+ * @return CANNON.Quaternion
  */
 CANNON.Quaternion.prototype.inverse = function(target){
   if(target==undefined)
@@ -647,7 +740,9 @@ CANNON.Quaternion.prototype.inverse = function(target){
 };
 
 /**
- * Normalize the quaternion. Note that this changes the values of the quaternion.
+ * @fn normalize
+ * @memberof CANNON.Quaternion
+ * @brief Normalize the quaternion. Note that this changes the values of the quaternion.
  */
 CANNON.Quaternion.prototype.normalize = function(){
   var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
@@ -666,7 +761,9 @@ CANNON.Quaternion.prototype.normalize = function(){
 };
 
 /**
- * Multiply the quaternion by a vector
+ * @fn vmult
+ * @memberof CANNON.Quaternion
+ * @brief Multiply the quaternion by a vector
  * @param CANNON.Vec3 v
  * @param CANNON.Vec3 target Optional
  * @return CANNON.Vec3
@@ -700,23 +797,36 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
   }
 
   return target;
-};/**
- * @class Shape
- * @author schteppe / http://github.com/schteppe
+};
+
+CANNON.Quaternion.prototype.copy = function(target){
+  target.x = this.x;
+  target.y = this.y;
+  target.z = this.z;
+  target.w = this.w;
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.Shape
+ * @author schteppe
+ * @brief Base class for shapes
  */
 CANNON.Shape = function(){
 
   /**
-   * The type of this shape. Must be set to an int > 0 by subclasses.
-   * @see Cannon.Shape.types
+   * @property int type
+   * @memberof CANNON.Shape
+   * @brief The type of this shape. Must be set to an int > 0 by subclasses.
+   * @see CANNON.Shape.types
    */
   this.type = 0;
 };
-
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
 /**
- * Get the bounding sphere radius from this shape
+ * @fn boundingSphereRadius
+ * @memberof CANNON.Shape
+ * @brief Get the bounding sphere radius from this shape
  * @return float
  */
 CANNON.Shape.prototype.boundingSphereRadius = function(){
@@ -724,7 +834,9 @@ CANNON.Shape.prototype.boundingSphereRadius = function(){
 };
 
 /**
- * Get the volume of this shape
+ * @fn volume
+ * @memberof CANNON.Shape
+ * @brief Get the volume of this shape
  * @return float
  */
 CANNON.Shape.prototype.volume = function(){
@@ -732,8 +844,10 @@ CANNON.Shape.prototype.volume = function(){
 };
 
 /**
- * Calculates the inertia in the local frame for this shape.
- * @return Vec3
+ * @fn calculateLocalInertia
+ * @memberof CANNON.Shape
+ * @brief Calculates the inertia in the local frame for this shape.
+ * @return CANNON.Vec3
  * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
  */
 CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
@@ -741,8 +855,10 @@ CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
 };
 
 /**
- * Calculates inertia in a specified frame for this shape.
- * @return Vec3
+ * @fn calculateTransformedInertia
+ * @memberof CANNON.Shape
+ * @brief Calculates inertia in a specified frame for this shape.
+ * @return CANNON.Vec3
  */
 CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
   if(target==undefined)
@@ -762,7 +878,8 @@ CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
 };
 
 /**
- * The available shape types.
+ * @enum CANNON.Shape.types
+ * @brief The available shape types.
  */
 CANNON.Shape.types = {
   SPHERE:1,
@@ -771,343 +888,152 @@ CANNON.Shape.types = {
   COMPOUND:8
 };
 
+/*global CANNON:true */
+
 /**
- * Rigid body base class
  * @class CANNON.RigidBody
+ * @brief Rigid body base class
  * @param float mass
  * @param CANNON.Shape shape
  * @param CANNON.Material material
  * @todo Motion state? Like dynamic, kinematic, static...
  */
 CANNON.RigidBody = function(mass,shape,material){
-  // Local variables
-  this._position = new CANNON.Vec3();
-  this._velocity = new CANNON.Vec3();
-  this._force = new CANNON.Vec3();
-  this._tau = new CANNON.Vec3();
-  this._quaternion = new CANNON.Quaternion(0,0,0,1);
-  this._rotvelo = new CANNON.Vec3();
-  this._mass = mass;
-  this._shape = shape;
-  this._inertia = shape.calculateLocalInertia(mass);
-  this._material = material;
-  this._linearDamping = 0.01; // Perhaps default should be zero here?
-  this._angularDamping = 0.01;
 
-  /// Reference to the world the body is living in
-  this._world = null;
+  /**
+   * @property CANNON.Vec3 position
+   * @memberof CANNON.RigidBody
+   */
+  this.position = new CANNON.Vec3();
 
-  /// Equals -1 before added to the world. After adding, it is the world body index
-  this._id = -1;
+  /**
+   * @property CANNON.Vec3 initPosition
+   * @memberof CANNON.RigidBody
+   * @brief Initial position of the body
+   */
+  this.initPosition = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 velocity
+   * @memberof CANNON.RigidBody
+   */
+  this.velocity = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 initVelocity
+   * @memberof CANNON.RigidBody
+   */
+  this.initVelocity = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 force
+   * @memberof CANNON.RigidBody
+   * @brief Linear force on the body
+   */
+  this.force = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 tau
+   * @memberof CANNON.RigidBody
+   * @brief Rotational force on the body, around center of mass
+   */
+  this.tau = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Quaternion quaternion
+   * @memberof CANNON.RigidBody
+   * @brief Orientation of the body
+   */
+  this.quaternion = new CANNON.Quaternion();
+
+  /**
+   * @property CANNON.Quaternion initQuaternion
+   * @memberof CANNON.RigidBody
+   */
+  this.initQuaternion = new CANNON.Quaternion();
+
+  /**
+   * @property CANNON.Vec3 angularVelocity
+   * @memberof CANNON.RigidBody
+   */
+  this.angularVelocity = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 initAngularVelocity
+   * @memberof CANNON.RigidBody
+   */
+  this.initAngularVelocity = new CANNON.Vec3();
+
+  /**
+   * @property float mass
+   * @memberof CANNON.RigidBody
+   */
+  this.mass = mass;
+
+  /**
+   * @property float invMass
+   * @memberof CANNON.RigidBody
+   */
+  this.invMass = mass>0 ? 1.0/mass : 0;
+
+  /**
+   * @property CANNON.Shape shape
+   * @memberof CANNON.RigidBody
+   */
+  this.shape = shape;
+
+  /**
+   * @property CANNON.Vec3 inertia
+   * @memberof CANNON.RigidBody
+   */
+  this.inertia = shape.calculateLocalInertia(mass);
+
+  /**
+   * @property CANNON.Vec3 intInertia
+   * @memberof CANNON.RigidBody
+   */
+  this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
+				    this.inertia.y>0 ? 1.0/this.inertia.y : 0,
+				    this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+
+  /**
+   * @property CANNON.Material material
+   * @memberof CANNON.RigidBody
+   */
+  this.material = material;
+
+  /**
+   * @property float linearDamping
+   * @memberof CANNON.RigidBody
+   */
+  this.linearDamping = 0.01; // Perhaps default should be zero here?
+
+  /**
+   * @property float angularDamping
+   * @memberof CANNON.RigidBody
+   */
+  this.angularDamping = 0.01;
+
+  /**
+   * @property bool fixed
+   * @memberof CANNON.RigidBody
+   * @brief True if the body is static
+   */
+  this.fixed = (mass <= 0.0);
+
+  /**
+   * @property CANNON.World world
+   * @memberof CANNON.RigidBody
+   * @brief Reference to the world the body is living in
+   */
+  this.world = null;
 };
+/*global CANNON:true */
 
 /**
- * Get or set linear damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
- * @param float d Optional. If not provided, current damping is returned.
- * @return float
- */
-CANNON.RigidBody.prototype.linearDamping = function(d){
-  if(d==undefined)
-    return this._linearDamping;
-  else {
-    d = Number(d);
-    if(!isNaN(d) && d>=0.0 && d<=1.0)
-      this._linearDamping = d;
-    else
-      throw "Damping must be a number between 0 and 1";
-  }
-};
-
-/**
- * Get or set angular damping on the body, a number between 0 and 1. If it is zero, no damping is done. If one, the body will not move.
- * @param float d Optional. If not provided, current damping is returned.
- * @return float
- */
-CANNON.RigidBody.prototype.angularDamping = function(d){
-  if(d==undefined)
-    return this._angularDamping;
-  else {
-    d = Number(d);
-    if(!isNaN(d) && d>=0.0 && d<=1.0)
-      this._angularDamping = d;
-    else
-      throw "Damping must be a number between 0 and 1";
-  }
-};
-
-/**
- * Get/set mass. Note: When changing mass, you should change the inertia too.
- * @param float m
- * @return float
- */
-CANNON.RigidBody.prototype.mass = function(m){
-  if(m==undefined){
-    // Get
-    if(this._id!=-1)
-      return this._world.mass[this._id];
-    else
-      return this._mass;
-  } else {
-    // Set
-    if(this._id!=-1){
-      this._world.mass[this._id] = m;
-      this._world.invm[this._id] = 1.0/m;
-    } else
-      this._mass = m;
-  }
-};
-
-/**
- * Get/set shape.
- * @param CANNON.Shape s
- * @return CANNON.Shape
- */
-CANNON.RigidBody.prototype.shape = function(s){
-  if(s==undefined){
-    // Get
-    return this._shape;
-  } else {
-    // Set
-    this._shape = s;
-    if(this._id!=-1){
-      // @todo More things to update here when changing shape?
-      this._world.type[this._id] = shape.type;
-    }
-  }
-};
-
-/**
- * Sets the center of mass position of the object
- * @param float x
- * @param float y
- * @param float z
- */
-CANNON.RigidBody.prototype.setPosition = function(x,y,z){
-  if(this._id!=-1){
-    this._world.x[this._id] = x;
-    this._world.y[this._id] = y;
-    this._world.z[this._id] = z;
-    this._world.clearCollisionState(this);
-  } else {
-    this._position.x = x;
-    this._position.y = y;
-    this._position.z = z;
-  }
-};
-
-/**
- * Gets the center of mass position of the object
- * @param CANNON.Vec3 target Optional.
- * @return CANNON.Vec3
- */
-CANNON.RigidBody.prototype.getPosition = function(target){
-  target = target || new CANNON.Vec3();
-  if(this._id!=-1){
-    target.x = this._world.x[this._id];
-    target.y = this._world.y[this._id];
-    target.z = this._world.z[this._id];
-  } else {
-    target.x = this._position.x;
-    target.y = this._position.y;
-    target.z = this._position.z;
-  }
-  return target;
-};
-
-/**
- * Sets the orientation of the object
- * @param float x
- * @param float y
- * @param float z
- * @param float w
- */
-CANNON.RigidBody.prototype.setOrientation = function(x,y,z,w){
-  var q = new CANNON.Quaternion(x,y,z,w);
-  q.normalize();
-  if(this._id!=-1){
-    this._world.qx[this._id] = q.x;
-    this._world.qy[this._id] = q.y;
-    this._world.qz[this._id] = q.z;
-    this._world.qw[this._id] = q.w;
-  } else {
-    this._quaternion.x = q.x;
-    this._quaternion.y = q.y;
-    this._quaternion.z = q.z;
-    this._quaternion.w = q.w;
-  }
-};
-
-/**
- * Gets the orientation of the object
- * @param CANNON.Quaternion target Optional.
- * @return CANNON.Quaternion
- */
-CANNON.RigidBody.prototype.getOrientation = function(target){
-  target = target || new CANNON.Quaternion();
-  if(this._id!=-1){
-    target.x = this._world.qx[this._id];
-    target.y = this._world.qy[this._id];
-    target.z = this._world.qz[this._id];
-    target.w = this._world.qw[this._id];
-  } else {
-    target.x = this._quaternion.x;
-    target.y = this._quaternion.y;
-    target.z = this._quaternion.z;
-    target.w = this._quaternion.w;
-  }
-  target.normalize();
-  return target;
-};
-
-/**
- * Sets the velocity of the object
- * @param float x
- * @param float y
- * @param float z
- */
-CANNON.RigidBody.prototype.setVelocity = function(x,y,z){
-  if(this._id!=-1){
-    this._world.vx[this._id] = x;
-    this._world.vy[this._id] = y;
-    this._world.vz[this._id] = z;
-  } else {
-    this._velocity.x = x;
-    this._velocity.y = y;
-    this._velocity.z = z;
-  }
-};
-
-/**
- * Gets the velocity of the object
- * @param CANNON.Vec3 target Optional.
- * @return CANNON.Vec3
- */
-CANNON.RigidBody.prototype.getVelocity = function(target){
-  target = target || new CANNON.Vec3();
-  if(this._id!=-1){
-    target.x = this._world.vx[this._id];
-    target.y = this._world.vy[this._id];
-    target.z = this._world.vz[this._id];
-  } else {
-    target.x = this._velocity.x;
-    target.y = this._velocity.y;
-    target.z = this._velocity.z;
-  }
-  return target;
-};
-
-/**
- * Sets the angularvelocity of the object
- * @param float x
- * @param float y
- * @param float z
- */
-CANNON.RigidBody.prototype.setAngularVelocity = function(x,y,z){
-  if(this._id!=-1){
-    this._world.wx[this._id] = x;
-    this._world.wy[this._id] = y;
-    this._world.wz[this._id] = z;
-  } else {
-    this._rotvelo.x = x;
-    this._rotvelo.y = y;
-    this._rotvelo.z = z;
-  }
-};
-
-/**
- * Gets the angular velocity of the object
- * @param CANNON.Vec3 target Optional.
- * @return CANNON.Vec3
- */
-CANNON.RigidBody.prototype.getAngularVelocity = function(target){
-  target = target || new CANNON.Vec3();
-  if(this._id!=-1){
-    target.x = this._world.wx[this._id];
-    target.y = this._world.wy[this._id];
-    target.z = this._world.wz[this._id];
-  } else {
-    target.x = this._rotvelo.x;
-    target.y = this._rotvelo.y;
-    target.z = this._rotvelo.z;
-  }
-  return target;
-};
-
-/**
- * Sets the force on the object
- * @param float x
- * @param float y
- * @param float z
- */
-CANNON.RigidBody.prototype.setForce = function(x,y,z){
-  if(this._id!=-1){
-    this._world.fx[this._id] = x;
-    this._world.fy[this._id] = y;
-    this._world.fz[this._id] = z;
-  } else {
-    this._force.x = x;
-    this._force.y = y;
-    this._force.z = z;
-  }
-};
-
-/**
- * Gets the force of the object
- * @param CANNON.Vec3 target Optional.
- * @return CANNON.Vec3
- */
-CANNON.RigidBody.prototype.getForce = function(target){
-  target = target || new CANNON.Vec3();
-  if(this._id!=-1){
-    target.x = this._world.fx[this._id];
-    target.y = this._world.fy[this._id];
-    target.z = this._world.fz[this._id];
-  } else {
-    target.x = this._force.x;
-    target.y = this._force.y;
-    target.z = this._force.z;
-  }
-  return target;
-};
-
-/**
- * Sets the torque on the object
- * @param float x
- * @param float y
- * @param float z
- */
-CANNON.RigidBody.prototype.setTorque = function(x,y,z){
-  if(this._id!=-1){
-    this._world.taux[this._id] = x;
-    this._world.tauy[this._id] = y;
-    this._world.tauz[this._id] = z;
-  } else {
-    this._tau.x = x;
-    this._tau.y = y;
-    this._tau.z = z;
-  }
-};
-
-/**
- * Gets the torque of the object
- * @param CANNON.Vec3 target Optional.
- * @return CANNON.Vec3
- */
-CANNON.RigidBody.prototype.getTorque = function(target){
-  target = target || new CANNON.Vec3();
-  if(this._id!=-1){
-    target.x = this._world.taux[this._id];
-    target.y = this._world.tauy[this._id];
-    target.z = this._world.tauz[this._id];
-  } else {
-    target.x = this._torque.x;
-    target.y = this._torque.y;
-    target.z = this._torque.z;
-  }
-  return target;
-};/**
- * Spherical rigid body
+ * @brief Spherical rigid body
  * @class CANNON.Sphere
+ * @extends CANNON.Shape
  * @param float radius
  * @author schteppe / http://github.com/schteppe
  */
@@ -1116,7 +1042,6 @@ CANNON.Sphere = function(radius){
   this.radius = radius!=undefined ? Number(radius) : 1.0;
   this.type = CANNON.Shape.types.SPHERE;
 };
-
 CANNON.Sphere.prototype = new CANNON.Shape();
 CANNON.Sphere.prototype.constructor = CANNON.Sphere;
 
@@ -1135,17 +1060,19 @@ CANNON.Sphere.prototype.volume = function(){
 
 CANNON.Sphere.prototype.boundingSphereRadius = function(){
   return this.radius;
-};/**
- * Box
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.Box
  * @param CANNON.Vec3 halfExtents
  * @author schteppe
+ * @extends CANNON.Shape
  */
 CANNON.Box = function(halfExtents){
   CANNON.Shape.call(this);
   this.halfExtents = halfExtents;
   this.type = CANNON.Shape.types.BOX;
 };
-
 CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
 
@@ -1161,9 +1088,10 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
 };
 
 /**
- * Get the box corners
- * @param CANNON.Quaternion quat Orientation to apply to the corner vectors. If not provided,
- * the vectors will be in respect to the local frame.
+ * @fn getCorners
+ * @memberof CANNON.Box
+ * @brief Get the box corners
+ * @param CANNON.Quaternion quat Orientation to apply to the corner vectors. If not provided, the vectors will be in respect to the local frame.
  * @return array
  */
 CANNON.Box.prototype.getCorners = function(quat){
@@ -1185,10 +1113,11 @@ CANNON.Box.prototype.getCorners = function(quat){
 };
 
 /**
- * Get the box 6 side normals
+ * @fn getSideNormals
+ * @memberof CANNON.Box
+ * @brief Get the box 6 side normals
  * @param bool includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
- * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided,
- * the vectors will be in respect to the local frame.
+ * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
  * @return array
  */
 CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
@@ -1215,10 +1144,13 @@ CANNON.Box.prototype.volume = function(){
 
 CANNON.Box.prototype.boundingSphereRadius = function(){
   return this.halfExtents.norm();
-};/**
- * @class Plane
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.Plane
+ * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
- * @author schteppe / http://github.com/schteppe
+ * @author schteppe
  */
 CANNON.Plane = function(normal){
   CANNON.Shape.call(this);
@@ -1226,7 +1158,6 @@ CANNON.Plane = function(normal){
   this.normal = normal;
   this.type = CANNON.Shape.types.PLANE;
 };
-
 CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;
 
@@ -1237,9 +1168,13 @@ CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
 
 CANNON.Plane.prototype.volume = function(){
   return Infinity; // The plane is infinite...
-};/**
- * Compound shape
- * @author schteppe - https://github.com/schteppe
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.Compound
+ * @extends CANNON.Shape
+ * @brief Compound shape
+ * @author schteppe
  */
 CANNON.Compound = function(){
   CANNON.Shape.call(this);
@@ -1248,12 +1183,13 @@ CANNON.Compound = function(){
   this.childOffsets = [];
   this.childOrientations = [];
 };
-
 CANNON.Compound.prototype = new CANNON.Shape();
 CANNON.Compound.prototype.constructor = CANNON.Compound;
 
 /**
- * Add a subshape
+ * @fn addChild
+ * @memberof CANNON.Compound
+ * @brief Add a subshape
  * @param CANNON.Shape shape
  * @param CANNON.Vec3 offset
  * @param CANNON.Quaternion orientation
@@ -1273,10 +1209,6 @@ CANNON.Compound.prototype.volume = function(){
   return r;
 };
 
-/**
- * Calculate the inertia in the local frame.
- * @return CANNON.Vec3
- */
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
 
@@ -1314,20 +1246,70 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
       r = candidate;
   }
   return r;
-};/**
- * Constraint solver.
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.Solver
+ * @brief Constraint solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
-  this.iter = iter || 10;
+  /**
+   * @property int iterations
+   * @memberof CANNON.Solver
+   */
+  this.iterations = iter || 10;
+
+  /**
+   * @property float h
+   * @brief Time step size
+   * @memberof CANNON.Solver
+   */
   this.h = h || 1.0/60.0;
+
+  /**
+   * @property float a
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.a = a;
+
+  /**
+   * @property float b
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.b = b;
+
+  /**
+   * @property float eps
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
   this.eps = eps;
+
+  /**
+   * @property float k
+   * @brief SPOOK parameter, spring stiffness
+   * @memberof CANNON.Solver
+   */
   this.k = k;
+
+  /**
+   * @property float d
+   * @brief SPOOK parameter, similar to damping
+   * @memberof CANNON.Solver
+   */
   this.d = d;
+
   this.reset(0);
+
+  /**
+   * @property bool debug
+   * @brief Debug flag, will output solver data to console if true
+   * @memberof CANNON.Solver
+   */
   this.debug = false;
 
   if(this.debug)
@@ -1335,7 +1317,9 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
 };
 
 /**
- * Resets the solver, removes all constraints and prepares for a new round of solving
+ * @fn reset
+ * @memberof CANNON.Solver
+ * @brief Resets the solver, removes all constraints and prepares for a new round of solving
  * @param int numbodies The number of bodies in the new system
  * @todo vlambda does not need to be instantiated again if the number of bodies is the same. Set to zero instead.
  */
@@ -1365,7 +1349,9 @@ CANNON.Solver.prototype.reset = function(numbodies){
 };
 
 /**
- * Add a constraint to the solver
+ * @fn addConstraint
+ * @memberof CANNON.Solver
+ * @brief Add a constraint to the solver
  * @param array G Jacobian vector, 12 elements (6 dof per body)
  * @param array MinvTrace The trace of the Inverse mass matrix (12 elements). The mass matrix is 12x12 elements from the beginning and 6x6 matrix per body (mass matrix and inertia matrix).
  * @param array q The constraint violation vector in generalized coordinates (12 elements)
@@ -1411,7 +1397,9 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 };
 
 /**
- * Add a non-penetration constraint to the solver
+ * @fn addNonPenetrationConstraint
+ * @memberof CANNON.Solver
+ * @brief Add a non-penetration constraint to the solver
  * @param CANNON.Vec3 ni
  * @param CANNON.Vec3 ri
  * @param CANNON.Vec3 rj
@@ -1478,7 +1466,9 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 };
 
 /**
- * Solves the system, and sets the vlambda and wlambda properties of the Solver object
+ * @fn solve
+ * @memberof CANNON.Solver
+ * @brief Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){
   this.i = new Int16Array(this.i);
@@ -1490,7 +1480,7 @@ CANNON.Solver.prototype.solve = function(){
   var c = new Float32Array(n);
   var precomp = new Int16Array(n);
   var G = new Float32Array(this.G);
-  for(var k = 0; k<this.iter; k++){
+  for(var k = 0; k<this.iterations; k++){
     for(var l=0; l<n; l++){
 
       // Bodies participating in constraint
@@ -1589,19 +1579,28 @@ CANNON.Solver.prototype.solve = function(){
 		  this.wylambda[i],
 		  this.wzlambda[i]);
 };
-/**
- * Defines a physics material.
- * @class Material
- * @param string name
- */
-CANNON.Material = function(name){
-  this.name = name;
-  this._id = -1;
-};
+/*global CANNON:true */
 
 /**
- * Defines what happens when two materials meet.
+ * @class CANNON.Material
+ * @brief Defines a physics material.
+ * @param string name
+ * @author schteppe
+ */
+CANNON.Material = function(name){
+  /**
+   * @property string name
+   * @memberof CANNON.Material
+   */
+  this.name = name;
+  this.id = -1;
+};
+
+/*global CANNON:true */
+
+/**
  * @class CANNON.ContactMaterial
+ * @brief Defines what happens when two materials meet.
  * @param CANNON.Material m1
  * @param CANNON.Material m2
  * @param float friction
@@ -1611,7 +1610,7 @@ CANNON.Material = function(name){
 CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 
   /// Contact material index in the world, -1 until added to the world
-  this._id = -1;
+  this.id = -1;
 
   /// The two materials participating in the contact
   this.materials = [m1,m2];
@@ -1625,13 +1624,31 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 };
 
 /**
- * The physics world
+ * ContactPoint class
+ * @brief A representation of a contact point between two bodies. Should be generated by the Narrowphase
+ * @param CANNON.Vec3 r The vector from the center of mass to the contact.
+ * @param CANNON.Vec3 n Normal vector, pointing out of the "from" body.
+ * @param CANNON.RigidBody from
+ * @param CANNON.RigidBody to
+ */
+CANNON.ContactPoint = function(from,to){
+  this.r = new CANNON.Vec3();
+  this.n = new CANNON.Vec3();
+  this.fromBody = null;
+  this.toBody = null;
+};/**
+ * ContactPoint class
+ * @brief A representation of a contact point between two bodies
+ */
+CANNON.ContactPoint = function(){
+  
+};/*global CANNON:true */
+
+/**
  * @class CANNON.World
+ * @brief The physics world
  */
 CANNON.World = function(){
-
-  /// @deprecated The application GUI should take care of pausing
-  this.paused = false;
 
   /// The wall-clock time since simulation start
   this.time = 0.0;
@@ -1648,6 +1665,11 @@ CANNON.World = function(){
   /// Default and last timestep sizes
   this.default_dt = 1/60;
   this.last_dt = this.default_dt;
+
+  this.nextId = 0;
+  this.gravity = new CANNON.Vec3();
+  this.broadphase = null;
+  this.bodies = [];
 
   var th = this;
 
@@ -1666,21 +1688,30 @@ CANNON.World = function(){
 				  1.0/60.0);
 
   // Materials
-  this._materials = []; // References to all added materials
-  this._contactmaterials = []; // All added contact materials
-  this._mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
+  this.materials = []; // References to all added materials
+  this.contactmaterials = []; // All added contact materials
+  this.mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
+
+  this.temp = {
+    gvec:new CANNON.Vec3(),
+    vi:new CANNON.Vec3(),
+    vj:new CANNON.Vec3(),
+    wi:new CANNON.Vec3(),
+    wj:new CANNON.Vec3(),
+    t1:new CANNON.Vec3(),
+    t2:new CANNON.Vec3(),
+    rixn:new CANNON.Vec3(),
+    rjxn:new CANNON.Vec3(),
+    step_q:new CANNON.Quaternion(),
+    step_w:new CANNON.Quaternion(),
+    step_wq:new CANNON.Quaternion()
+  };
 };
 
 /**
- * Toggle pause mode. When pause is enabled, step() won't do anything.
- * @deprecated Pausing is the simulation gui's responsibility, should remove this.
- */
-CANNON.World.prototype.togglepause = function(){
-  this.paused = !this.paused;
-};
-
-/**
- * Get the contact material between materials m1 and m2
+ * @fn getContactMaterial
+ * @memberof CANNON.World
+ * @brief Get the contact material between materials m1 and m2
  * @param CANNON.Material m1
  * @param CANNON.Material m2
  * @return CANNON.Contactmaterial The contact material if it was found.
@@ -1689,20 +1720,23 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
   if((m1 instanceof CANNON.Material) && 
      (m2 instanceof CANNON.Material)){
 
-    var i = m1._id;
-    var j = m2._id;
+    var i = m1.id;
+    var j = m2.id;
 
     if(i<j){
       var temp = i;
       i = j;
       j = temp;
     }
-    return this._contactmaterials[this._mats2cmat[i+j*this._materials.length]];
+    return this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
   }
 };
 
 /**
- * Add an impulse to the colliding bodies i and j
+ * @private
+ * @fn _addImpulse
+ * @memberof CANNON.World
+ * @brief Add an impulse to the colliding bodies i and j
  * @param int i Body number 1
  * @param int i Body number 2
  * @param CANNON.Vec3 ri Vector from body 1's center of mass to the contact point on its surface
@@ -1802,20 +1836,24 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
 };
 
 /**
- * Get number of objects in the world.
+ * @fn numObjects
+ * @memberof CANNON.World
+ * @brief Get number of objects in the world.
  * @return int
  */
 CANNON.World.prototype.numObjects = function(){
-  return this.x ? this.x.length : 0;
+  return this.bodies.length;
 };
 
 /**
- * Clear the contact state for a body.
+ * @fn clearCollisionState
+ * @memberof CANNON.World
+ * @brief Clear the contact state for a body.
  * @param CANNON.RigidBody body
  */
 CANNON.World.prototype.clearCollisionState = function(body){
   var n = this.numObjects();
-  var i = body._id;
+  var i = body.id;
   for(var idx=0; idx<n; idx++){
     var j = idx;
     if(i>j) this.collision_matrix[j+i*n] = 0;
@@ -1824,247 +1862,83 @@ CANNON.World.prototype.clearCollisionState = function(body){
 };
 
 /**
- * Add a rigid body to the simulation.
+ * @fn add
+ * @memberof CANNON.World
+ * @brief Add a rigid body to the simulation.
  * @param CANNON.RigidBody body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
 CANNON.World.prototype.add = function(body){
-  if(!body) return;
-  var t = this;
-
-  var n = t.numObjects();
-
-  var old_x =    t.x,    old_y =  t.y,      old_z = t.z;
-  var old_vx =   t.vx,   old_vy = t.vy,     old_vz = t.vz;
-  var old_fx =   t.fx,   old_fy = t.fy,     old_fz = t.fz;
-  var old_taux = t.taux, old_tauy = t.tauy, old_tauz = t.tauz;
-  var old_wx =   t.wx,   old_wy = t.wy,     old_wz = t.wz;
-  var old_qx =   t.qx,   old_qy = t.qy,     old_qz = t.qz, old_qw = t.qw;
-
-  var old_type = t.type;
-  var old_body = t.body;
-  var old_fixed = t.fixed;
-  var old_invm = t.invm;
-  var old_mass = t.mass;
-  var old_material = t.material;
-
-  var old_inertiax = t.inertiax, old_inertiay = t.inertiay, old_inertiaz = t.inertiaz;
-  var old_iinertiax = t.iinertiax, old_iinertiay = t.iinertiay, old_iinertiaz = t.iinertiaz;
-
-  function f(){ return new Float32Array(n+1); };
-
-  t.x = f();  t.y = f();  t.z = f();
-  t.vx = f(); t.vy = f(); t.vz = f();
-  t.fx = f(); t.fy = f(); t.fz = f();
-  t.taux = f(); t.tauy = f(); t.tauz = f();
-  t.wx = f(); t.wy = f(); t.wz = f();
-  t.qx = f(); t.qy = f(); t.qz = f(); t.qw = f();
-
-  t.type = new Int16Array(n+1);
-  t.body = [];
-  t.fixed = new Int16Array(n+1);
-  t.mass = f();
-  /// References to material for each body
-  t.material = new Int16Array(n+1);
-  t.inertiax = f();
-  t.inertiay = f();
-  t.inertiaz = f();
-  t.iinertiax = f();
-  t.iinertiay = f();
-  t.iinertiaz = f();
-  t.invm = f();
-  
-  // Add old data to new array
-  for(var i=0; i<n; i++){
-    t.x[i] =    old_x[i];    t.y[i] = old_y[i];       t.z[i] = old_z[i];
-    t.vx[i] =   old_vx[i];   t.vy[i] = old_vy[i];     t.vz[i] = old_vz[i];
-    t.fx[i] =   old_fx[i];   t.fy[i] = old_fy[i];     t.fz[i] = old_fz[i];
-    t.taux[i] = old_taux[i]; t.tauy[i] = old_tauy[i]; t.tauz[i] = old_tauz[i];
-    t.wx[i] =   old_wx[i];   t.wy[i] = old_wy[i];     t.wz[i] = old_wz[i];
-
-    t.qx[i] = old_qx[i];
-    t.qy[i] = old_qy[i];
-    t.qz[i] = old_qz[i];
-    t.qw[i] = old_qw[i];
-
-    t.type[i] = old_type[i];
-    t.body[i] = old_body[i];
-    t.fixed[i] = old_fixed[i];
-    t.invm[i] = old_invm[i];
-    t.mass[i] = old_mass[i];
-    t.material[i] = old_material[i];
-    t.inertiax[i] = old_inertiax[i];
-    t.inertiay[i] = old_inertiay[i];
-    t.inertiaz[i] = old_inertiaz[i];
-    t.iinertiax[i] = old_iinertiax[i];
-    t.iinertiay[i] = old_iinertiay[i];
-    t.iinertiaz[i] = old_iinertiaz[i];
+  if(body instanceof CANNON.RigidBody){
+    var n = this.numObjects();
+    this.bodies.push(body);
+    body.id = this.id();
+    body.world = this;
+    body.position.copy(body.initPosition);
+    body.velocity.copy(body.initVelocity);
+    body.angularVelocity.copy(body.initAngularVelocity);
+    body.quaternion.copy(body.initQuaternion);
+    
+    // Create collision matrix
+    this.collision_matrix = new Int16Array((n+1)*(n+1));
   }
-
-  // Add one more
-  t.x[n] = body._position.x;
-  t.y[n] = body._position.y;
-  t.z[n] = body._position.z;
-  
-  t.vx[n] = body._velocity.x;
-  t.vy[n] = body._velocity.y;
-  t.vz[n] = body._velocity.z;
-  
-  t.fx[n] = body._force.x;
-  t.fy[n] = body._force.y;
-  t.fz[n] = body._force.z;
-  
-  t.taux[n] = body._tau.x;
-  t.tauy[n] = body._tau.y;
-  t.tauz[n] = body._tau.z;
-
-  t.wx[n] = body._rotvelo.x;
-  t.wy[n] = body._rotvelo.y;
-  t.wz[n] = body._rotvelo.z;
-  
-  t.qx[n] = body._quaternion.x;
-  t.qy[n] = body._quaternion.y;
-  t.qz[n] = body._quaternion.z;
-  t.qw[n] = body._quaternion.w;
-
-  t.type[n] = body._shape.type;
-  t.body[n] = body; // Keep reference to body
-  t.fixed[n] = body._mass<=0.0 ? 1 : 0;
-  t.invm[n] = body._mass>0 ? 1.0/body._mass : 0;
-  t.mass[n] = body._mass;
-  t.material[n] = body._material!=undefined ? body._material._id : -1;
-  t.inertiax[n] = body._inertia.x;
-  t.inertiay[n] = body._inertia.y;
-  t.inertiaz[n] = body._inertia.z;
-  t.iinertiax[n] = body._inertia.x > 0 ? 1.0/body._inertia.x : 0.0;
-  t.iinertiay[n] = body._inertia.y > 0 ? 1.0/body._inertia.y : 0.0;
-  t.iinertiaz[n] = body._inertia.z > 0 ? 1.0/body._inertia.z : 0.0;
-
-  body._id = n; // give id as index in table
-  body._world = t;
-
-  // Create collision matrix
-  t.collision_matrix = new Int16Array((n+1)*(n+1));
 };
 
+CANNON.World.prototype.id = function(){
+  return this.nextId++;
+};
 
 /**
- * Remove a rigid body from the simulation.
+ * @fn remove
+ * @memberof CANNON.World
+ * @brief Remove a rigid body from the simulation.
  * @param CANNON.RigidBody body
  */
 CANNON.World.prototype.remove = function(body){
-  if(!body) return;
-  var t = this;
-  var n = t.numObjects();
+  if(body instanceof CANNON.RigidBody){
+    body.world = null;
+    var n = this.numObjects();
+    var bodies = this.bodies;
+    for(var i in bodies)
+      if(bodies[i].id == body.id)
+	bodies.splice(i,1);
 
-  var o = {}; // save old things
-  o.x = t.x;       o.y =    t.y;    o.z = t.z;
-  o.vx = t.vx;     o.vy =   t.vy;   o.vz = t.vz;
-  o.fx = t.fx;     o.fy =   t.fy;   o.fz = t.fz;
-  o.taux = t.taux; o.tauy = t.tauy; o.tauz = t.tauz;
-  o.wx = t.wx;     o.wy =   t.wy;   o.wz = t.wz;
-  o.qx = t.qx;     o.qy =   t.qy;   o.qz = t.qz; o.qw = t.qw;
-  o.type = t.type;
-  o.body = t.body;
-  o.fixed = t.fixed;
-  o.mass = t.mass;
-  o.material =  t.material;
-  o.inertiax =  t.inertiax;  o.inertiay = t.inertiay;   o.inertiaz = t.inertiaz;
-  o.iinertiax = t.iinertiax; o.iinertiay = t.iinertiay; o.iinertiaz = t.iinertiaz;
-  o.invm =      t.invm;
-
-  function f(){ return new Float32Array(n-1); };
-
-  // Create new arrays
-  t.x = f();    t.y = f();    t.z = f();
-  t.vx = f();   t.vy = f();   t.vz = f();
-  t.fx = f();   t.fy = f();   t.fz = f();
-  t.taux = f(); t.tauy = f(); t.tauz = f();
-  t.wx = f();   t.wy = f();   t.wz = f();
-  t.qx = f();   t.qy = f();   t.qz = f(); t.qw = f();
-
-  t.type = new Int16Array(n-1);
-  t.body = [];
-  t.fixed = new Int16Array(n-1);
-  t.mass = f();
-  /// References to material for each body
-  t.material = new Int16Array(n-1);
-  t.inertiax = f();
-  t.inertiay = f();
-  t.inertiaz = f();
-  t.iinertiax = f();
-  t.iinertiay = f();
-  t.iinertiaz = f();
-  t.invm = f();
-  
-  // Copy old data to new arrays, without the deleted index
-  for(var j=0; j<n; j++){
-    if(j!=body._id){      
-      var i = j>body._id ? j-1 : j;
-      t.x[i] =    o.x[j];    t.y[i] = o.y[j];       t.z[i] = o.z[j];
-      t.vx[i] =   o.vx[j];   t.vy[i] = o.vy[j];     t.vz[i] = o.vz[j];
-      t.fx[i] =   o.fx[j];   t.fy[i] = o.fy[j];     t.fz[i] = o.fz[j];
-      t.taux[i] = o.taux[j]; t.tauy[i] = o.tauy[j]; t.tauz[i] = o.tauz[j];
-      t.wx[i] =   o.wx[j];   t.wy[i] = o.wy[j];     t.wz[i] = o.wz[j];
-      
-      t.qx[i] = o.qx[j];
-      t.qy[i] = o.qy[j];
-      t.qz[i] = o.qz[j];
-      t.qw[i] = o.qw[j];
-      
-      t.type[i] = o.type[j];
-      t.body[i] = o.body[j];
-
-      t.body[i]._id = i;
-
-      t.fixed[i] = o.fixed[j];
-      t.invm[i] = o.invm[j];
-      t.mass[i] = o.mass[j];
-      t.material[i] = o.material[j];
-      t.inertiax[i] = o.inertiax[j];
-      t.inertiay[i] = o.inertiay[j];
-      t.inertiaz[i] = o.inertiaz[j];
-      t.iinertiax[i] = o.iinertiax[j];
-      t.iinertiay[i] = o.iinertiay[j];
-      t.iinertiaz[i] = o.iinertiaz[j];
-    }
+    // Reset collision matrix
+    this.collision_matrix = new Int16Array((n-1)*(n-1));
   }
-
-  // disconnect to the world
-  body._id = -1;
-  body._world = null;
-
-  // Reset collision matrix
-  t.collision_matrix = new Int16Array((n-1)*(n-1));
 };
 
 /**
- * Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
+ * @fn addMaterial
+ * @memberof CANNON.World
+ * @brief Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
  * @param CANNON.Material m
  */
 CANNON.World.prototype.addMaterial = function(m){
-  if(m._id==-1){
-    this._materials.push(m);
-    m._id = this._materials.length-1;
+  if(m.id==-1){
+    this.materials.push(m);
+    m.id = this.materials.length-1;
 
     // Enlarge matrix
-    var newcm = new Int16Array((this._materials.length)
-			       * (this._materials.length));
+    var newcm = new Int16Array((this.materials.length)
+			       * (this.materials.length));
     for(var i=0; i<newcm.length; i++)
       newcm[i] = -1;
 
     // Copy over old values
-    for(var i=0; i<this._materials.length-1; i++)
-      for(var j=0; j<this._materials.length-1; j++)
-	newcm[i+this._materials.length*j] = this._mats2cmat[i+(this._materials.length-1)*j];
-    this._mats2cmat = newcm;
+    for(var i=0; i<this.materials.length-1; i++)
+      for(var j=0; j<this.materials.length-1; j++)
+	newcm[i+this.materials.length*j] = this.mats2cmat[i+(this.materials.length-1)*j];
+    this.mats2cmat = newcm;
   
   }
 };
 
 /**
- * Adds a contact material to the World
+ * @fn addContactMaterial
+ * @memberof CANNON.World
+ * @brief Adds a contact material to the World
  * @param CANNON.ContactMaterial cmat
  */
 CANNON.World.prototype.addContactMaterial = function(cmat) {
@@ -2075,68 +1949,33 @@ CANNON.World.prototype.addContactMaterial = function(cmat) {
 
   // Save (material1,material2) -> (contact material) reference for easy access later
   // Make sure i>j, ie upper right matrix
-  if(cmat.materials[0]._id > cmat.materials[1]._id){
-    i = cmat.materials[0]._id;
-    j = cmat.materials[1]._id;
+  if(cmat.materials[0].id > cmat.materials[1].id){
+    i = cmat.materials[0].id;
+    j = cmat.materials[1].id;
   } else {
-    j = cmat.materials[0]._id;
-    i = cmat.materials[1]._id;
+    j = cmat.materials[0].id;
+    i = cmat.materials[1].id;
   }
     
   // Add contact material
-  this._contactmaterials.push(cmat);
-  cmat._id = this._contactmaterials.length-1;
+  this.contactmaterials.push(cmat);
+  cmat.id = this.contactmaterials.length-1;
 
   // Add current contact material to the material table
-  this._mats2cmat[i+this._materials.length*j] = cmat._id; // index of the contact material
+  this.mats2cmat[i+this.materials.length*j] = cmat.id; // index of the contact material
 };
 
 /**
- * Get/set the broadphase collision detector for the world.
- * @param CANNON.BroadPhase broadphase
- * @return CANNON.BroadPhase
- */
-CANNON.World.prototype.broadphase = function(broadphase){
-  if(broadphase){
-    this._broadphase = broadphase;
-    broadphase.world = this;
-  } else
-    return this._broadphase;
-};
-
-/**
- * Get/set the number of iterations
- * @param int n
- * @return int
- */
-CANNON.World.prototype.iterations = function(n){
-  if(n===undefined)
-    return this.solver.iter;
-  else if(Number(n) && n>0)
-    this.solver.iter = parseInt(n);
-  else
-    throw "Argument must be an integer larger than 0";
-};
-
-/**
- * Set the gravity
- * @param CANNON.Vec3
- * @return CANNON.Vec3
- */
-CANNON.World.prototype.gravity = function(g){
-  if(g==undefined)
-    return this._gravity;
-  else
-    this._gravity = g;
-};
-
-/**
- * Step the simulation
+ * @fn step
+ * @memberof CANNON.World
+ * @brief Step the simulation
  * @param float dt
  */
 CANNON.World.prototype.step = function(dt){
-
-  var world = this;
+  var world = this,
+  that = this,
+  N = this.numObjects(),
+  bodies = this.bodies;
   
   if(dt==undefined){
     if(this.last_dt)
@@ -2146,7 +1985,7 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // 1. Collision detection
-  var pairs = this._broadphase.collisionPairs(this);
+  var pairs = this.broadphase.collisionPairs(this);
   var p1 = pairs[0];
   var p2 = pairs[1];
 
@@ -2155,52 +1994,6 @@ CANNON.World.prototype.step = function(dt){
   var PLANE = CANNON.Shape.types.PLANE;
   var BOX = CANNON.Shape.types.BOX;
   var COMPOUND = CANNON.Shape.types.COMPOUND;
-  var types = world.type;
-  var x = world.x;
-  var y = world.y;
-  var z = world.z;
-  var qx = world.qx;
-  var qy = world.qy;
-  var qz = world.qz;
-  var qw = world.qw;
-  var vx = world.vx;
-  var vy = world.vy;
-  var vz = world.vz;
-  var wx = world.wx;
-  var wy = world.wy;
-  var wz = world.wz;
-  var fx = world.fx;
-  var fy = world.fy;
-  var fz = world.fz;
-  var taux = world.taux;
-  var tauy = world.tauy;
-  var tauz = world.tauz;
-  var invm = world.invm;
-
-  // @todo reuse these somehow?
-  var vx_lambda = new Float32Array(world.x.length);
-  var vy_lambda = new Float32Array(world.y.length);
-  var vz_lambda = new Float32Array(world.z.length);
-  var wx_lambda = new Float32Array(world.x.length);
-  var wy_lambda = new Float32Array(world.y.length);
-  var wz_lambda = new Float32Array(world.z.length);
-
-  var lambdas = new Float32Array(p1.length);
-  var lambdas_t1 = new Float32Array(p1.length);
-  var lambdas_t2 = new Float32Array(p1.length);
-  for(var i=0; i<lambdas.length; i++){
-    lambdas[i] = 0;
-    lambdas_t1[i] = 0;
-    lambdas_t2[i] = 0;
-    vx_lambda[i] = 0;
-    vy_lambda[i] = 0;
-    vz_lambda[i] = 0;
-    wx_lambda[i] = 0;
-    wy_lambda[i] = 0;
-    wz_lambda[i] = 0;
-  }
-
-  var that = this;
 
   /**
    * Keep track of contacts for current and previous timesteps
@@ -2225,21 +2018,22 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Begin with transferring old contact data to the right place
-  for(var i=0; i<this.numObjects(); i++)
+  for(var i in bodies)
     for(var j=0; j<i; j++){
       cmatrix(i,j,-1, cmatrix(i,j,0));
       cmatrix(i,j,0,0);
     }
 
   // Add gravity to all objects
-  for(var i=0; i<world.numObjects(); i++){
-    fx[i] += world._gravity.x * world.mass[i];
-    fy[i] += world._gravity.y * world.mass[i];
-    fz[i] += world._gravity.z * world.mass[i];
+  for(var i in bodies){
+    var f = bodies[i].force, m = bodies[i].mass;
+    f.x += world.gravity.x * m;
+    f.y += world.gravity.y * m;
+    f.z += world.gravity.z * m;
   }
 
   // Reset contact solver
-  this.solver.reset(world.numObjects());
+  this.solver.reset(N);
 
   /**
    * Near phase calculation, get the contact point, normal, etc.
@@ -2281,7 +2075,7 @@ CANNON.World.prototype.step = function(dt){
      * @param object r
      */
     function swapResult(r){
-      var temp = CANNON.Vec3()
+      var temp = CANNON.Vec3();
       temp = r.ri; r.ri = r.rj; r.rj = temp;
       r.ni.negate(r.ni);
     }
@@ -2385,10 +2179,11 @@ CANNON.World.prototype.step = function(dt){
 	}
 
 	// Check corners
+	var rj = new CANNON.Vec3();
 	for(var j=0; j<2 && !found; j++){
 	  for(var k=0; k<2 && !found; k++){
 	    for(var l=0; l<2 && !found; l++){
-	      var rj = new CANNON.Vec3();
+	      rj.set(0,0,0);
 	      if(j) rj.vadd(sides[0],rj);
 	      else  rj.vsub(sides[0],rj);
 	      if(k) rj.vadd(sides[1],rj);
@@ -2413,24 +2208,33 @@ CANNON.World.prototype.step = function(dt){
 	}
 
 	// Check edges
+	var edgeTangent = new CANNON.Vec3();
+	var edgeCenter = new CANNON.Vec3();
+	var r = new CANNON.Vec3(); // r = edge center to sphere center
+	var orthogonal = new CANNON.Vec3();
+	var dist = new CANNON.Vec3();
 	for(var j=0; j<sides.length && !found; j++){
 	  for(var k=0; k<sides.length && !found; k++){
 	    if(j%3!=k%3){
 	      // Get edge tangent
-	      var edgeTangent = sides[k].cross(sides[j]);
+	      sides[k].cross(sides[j],edgeTangent);
 	      edgeTangent.normalize();
-	      var edgeCenter = sides[j].vadd(sides[k]);
-	      
-	      var r = xi.vsub(edgeCenter.vadd(xj)); // r = edge center to sphere center
+	      sides[j].vadd(sides[k], edgeCenter);
+	      xi.copy(r);
+	      r.vsub(edgeCenter,r);
+	      r.vsub(xj,r);
 	      var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
-	      var orthogonal = edgeTangent.mult(orthonorm); // Vector from edge center to sphere center in the tangent direction
+	      edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
 	      
 	      // Find the third side orthogonal to this one
 	      var l = 0;
 	      while(l==j%3 || l==k%3) l++;
 
 	      // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-	      var dist = xi.vsub(orthogonal).vsub(edgeCenter.vadd(xj));
+	      xi.copy(dist);
+	      dist.vsub(orthogonal,dist);
+	      dist.vsub(edgeCenter,dist);
+	      dist.vsub(xj,dist);
 
 	      // Distances in tangent direction and distance in the plane orthogonal to it
 	      var tdist = Math.abs(orthonorm);
@@ -2443,7 +2247,13 @@ CANNON.World.prototype.step = function(dt){
 		res.rj.copy(res.rj);
 		dist.negate(res.ni);
 		res.ni.normalize();
-		res.rj.vadd(xj).vsub(xi).unit().mult(R,res.ri);
+
+		res.rj.copy(res.ri);
+		res.ri.vadd(xj,res.ri);
+		res.ri.vsub(xi,res.ri);
+		res.ri.normalize();
+		res.ri.mult(R,res.ri);
+
 		result.push(res);
 	      }
 	    }
@@ -2518,19 +2328,22 @@ CANNON.World.prototype.step = function(dt){
 
   // Loop over all collisions
   this.contacts = {}; // Preliminary. contacts["i,j"]=>contact array
+  var temp = this.temp;
   for(var k=0; k<p1.length; k++){
 
     // Get current collision indeces
-    var i = p1[k];
-    var j = p2[k];
+    var i = p1[k],
+      j = p2[k],
+      bi = bodies[i],
+      bj = bodies[j];
     
     // Check last step stats
     var lastCollisionState = cmatrix(i,j,-1);
     
     // Get collision properties
     var mu = 0.3, e = 0.2;
-    var cm = this.getContactMaterial(world.body[i]._material,
-				     world.body[j]._material);
+    var cm = this.getContactMaterial(bi.material,
+				     bj.material);
     if(cm){
       mu = cm.friction;
       e = cm.restitution;
@@ -2539,12 +2352,13 @@ CANNON.World.prototype.step = function(dt){
     // Get contacts
     var contacts = [];
     nearPhase(contacts,
-	      world.body[i]._shape,
-	      world.body[j]._shape,
-	      new CANNON.Vec3(x[i],y[i],z[i]),
-	      new CANNON.Vec3(x[j],y[j],z[j]),
-	      new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
-	      new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j]));
+	      bi.shape,
+	      bj.shape,
+	      bi.position,//new CANNON.Vec3(x[i],y[i],z[i]),
+	      bj.position,//new CANNON.Vec3(x[j],y[j],z[j]),
+	      bi.quaternion,//new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
+	      bj.quaternion//new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j])
+	      );
     this.contacts[i+","+j] = contacts;
 
     // Add contact constraint(s)
@@ -2552,20 +2366,21 @@ CANNON.World.prototype.step = function(dt){
       var c = contacts[ci];
       
       // g = ( xj + rj - xi - ri ) .dot ( ni )
-      var gvec = new CANNON.Vec3(x[j] + c.rj.x - x[i] - c.ri.x,
-				 y[j] + c.rj.y - y[i] - c.ri.y,
-				 z[j] + c.rj.z - z[i] - c.ri.z);
+      var gvec = temp.gvec;
+      gvec.set(bj.position.x + c.rj.x - bi.position.x - c.ri.x,
+	       bj.position.y + c.rj.y - bi.position.y - c.ri.y,
+	       bj.position.z + c.rj.z - bi.position.z - c.ri.z);
       var g = gvec.dot(c.ni); // Gap, negative if penetration
 
       // Action if penetration
       if(g<0.0){
-	var vi = new CANNON.Vec3(vx[i],vy[i],vz[i]);
-	var wi = new CANNON.Vec3(wx[i],wy[i],wz[i]);
-	var vj = new CANNON.Vec3(vx[j],vy[j],vz[j]);
-	var wj = new CANNON.Vec3(wx[j],wy[j],wz[j]);
+	var vi = bi.velocity; //temp.vi; vi.set(vx[i],vy[i],vz[i]);
+	var wi = bi.angularVelocity; //temp.wi; wi.set(wx[i],wy[i],wz[i]);
+	var vj = bj.velocity;//temp.vj; vj.set(vx[j],vy[j],vz[j]);
+	var wj = bj.angularVelocity; //temp.wj; wj.set(wx[j],wy[j],wz[j]);
 
 	var n = c.ni;
-	var tangents = [new CANNON.Vec3(),new CANNON.Vec3()];
+	var tangents = [temp.t1, temp.t2];
 	n.tangents(tangents[0],tangents[1]);
 
 	var v_contact_i = vi.vadd(wi.cross(c.ri));
@@ -2578,18 +2393,20 @@ CANNON.World.prototype.step = function(dt){
 	u.vsub(uw,u);
 
 	// Get mass properties
-	var iMi = world.invm[i];
-	var iMj = world.invm[j];
-	var iIxi = world.inertiax[i] > 0 ? 1.0/world.inertiax[i] : 0;
-	var iIyi = world.inertiay[i] > 0 ? 1.0/world.inertiay[i] : 0;
-	var iIzi = world.inertiaz[i] > 0 ? 1.0/world.inertiaz[i] : 0;
-	var iIxj = world.inertiax[j] > 0 ? 1.0/world.inertiax[j] : 0;
-	var iIyj = world.inertiay[j] > 0 ? 1.0/world.inertiay[j] : 0;
-	var iIzj = world.inertiaz[j] > 0 ? 1.0/world.inertiaz[j] : 0;
+	var iMi = bi.invMass; //world.invm[i];
+	var iMj = bj.invMass; //world.invm[j];
+	var iIxi = bi.invInertia.x;//world.inertiax[i] > 0 ? 1.0/world.inertiax[i] : 0;
+	var iIyi = bi.invInertia.y;//world.inertiay[i] > 0 ? 1.0/world.inertiay[i] : 0;
+	var iIzi = bi.invInertia.z;//world.inertiaz[i] > 0 ? 1.0/world.inertiaz[i] : 0;
+	var iIxj = bj.invInertia.x;//world.inertiax[j] > 0 ? 1.0/world.inertiax[j] : 0;
+	var iIyj = bj.invInertia.y;//world.inertiay[j] > 0 ? 1.0/world.inertiay[j] : 0;
+	var iIzj = bj.invInertia.z;//world.inertiaz[j] > 0 ? 1.0/world.inertiaz[j] : 0;
 
 	// Add contact constraint
-	var rixn = c.ri.cross(n);
-	var rjxn = c.rj.cross(n);
+	var rixn = temp.rixn;
+	var rjxn = temp.rjxn;
+	c.ri.cross(n,rixn);
+	c.rj.cross(n,rjxn);
 
 	var un_rel = n.mult(u_rel.dot(n));
 	var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
@@ -2624,18 +2441,18 @@ CANNON.World.prototype.step = function(dt){
 			  ],
 			 
 			 // External force - forces & torques
-			 [fx[i],fy[i],fz[i],
-			  taux[i],tauy[i],tauz[i],
-			  fx[j],fy[j],fz[j],
-			  taux[j],tauy[j],tauz[j]],
+			 [bi.force.x,bi.force.y,bi.force.z,
+			  bi.tau.x,bi.tau.y,bi.tau.z,
+			  bj.force.x,bj.force.y,bj.force.z,
+			  bj.tau.x,bj.tau.y,bj.tau.z],
 			 0,
 			 'inf',
 			 i,
 			 j);
 
 	// Friction constraints
-	if(mu>0.0){ // until debugged
-	  var g = that.gravity().norm();
+	if(mu>0.0){
+	  var g = that.gravity.norm();
 	  for(var ti=0; ti<tangents.length; ti++){
 	    var t = tangents[ti];
 	    var rixt = c.ri.cross(t);
@@ -2671,14 +2488,13 @@ CANNON.World.prototype.step = function(dt){
 			      ],
 			     
 			     // External force - forces & torques
-			     [fx[i],fy[i],fz[i],
-			      taux[i],tauy[i],tauz[i],
-			      fx[j],fy[j],fz[j],
-			      taux[j],tauy[j],tauz[j]
-			      ],
-
-			     -mu*g*(world.mass[i]+world.mass[j]),
-			     mu*g*(world.mass[i]+world.mass[j]),
+			     [bi.force.x,bi.force.y,bi.force.z,
+			      bi.tau.x,bi.tau.y,bi.tau.z,
+			      bj.force.x,bj.force.y,bj.force.z,
+			      bj.tau.x,bj.tau.y,bj.tau.z],
+			     
+			     -mu*g*(bi.mass+bj.mass),
+			     mu*g*(bi.mass+bj.mass),
 
 			     i,
 			     j);
@@ -2692,78 +2508,63 @@ CANNON.World.prototype.step = function(dt){
     this.solver.solve();
 
     // Apply constraint velocities
-    for(var i=0; i<world.numObjects(); i++){
-      vx[i] += this.solver.vxlambda[i];
-      vy[i] += this.solver.vylambda[i];
-      vz[i] += this.solver.vzlambda[i];
-      wx[i] += this.solver.wxlambda[i];
-      wy[i] += this.solver.wylambda[i];
-      wz[i] += this.solver.wzlambda[i];
+    for(var i in bodies){
+      var b = bodies[i];
+      b.velocity.x += this.solver.vxlambda[i];
+      b.velocity.y += this.solver.vylambda[i];
+      b.velocity.z += this.solver.vzlambda[i];
+      b.angularVelocity.x += this.solver.wxlambda[i];
+      b.angularVelocity.y += this.solver.wylambda[i];
+      b.angularVelocity.z += this.solver.wzlambda[i];
     }
   }
 
   // Apply damping
-  for(var i=0; i<world.numObjects(); i++){
-    var ld = 1.0 - this.body[i].linearDamping();
-    var ad = 1.0 - this.body[i].angularDamping();
-    vx[i] *= ld;
-    vy[i] *= ld;
-    vz[i] *= ld;
-    wx[i] *= ad;
-    wy[i] *= ad;
-    wz[i] *= ad;
+  for(var i in bodies){
+    var ld = 1.0 - bodies[i].linearDamping;
+    var ad = 1.0 - bodies[i].angularDamping;
+    bodies[i].velocity.mult(ld,bodies[i].velocity);
+    bodies[i].angularVelocity.mult(ad,bodies[i].angularVelocity);
   }
 
   // Leap frog
   // vnew = v + h*f/m
   // xnew = x + h*vnew
-  for(var i=0; i<world.numObjects(); i++){
-    if(!world.fixed[i]){
-      vx[i] += fx[i] * world.invm[i] * dt;
-      vy[i] += fy[i] * world.invm[i] * dt;
-      vz[i] += fz[i] * world.invm[i] * dt;
+  var q = temp.step_q; 
+  var w = temp.step_w;
+  var wq = temp.step_wq;
+  for(var i in bodies){
+    var b = bodies[i];
+    if(!b.fixed){
+      
+      b.velocity.x += b.force.x * b.invMass * dt;
+      b.velocity.y += b.force.y * b.invMass * dt;
+      b.velocity.z += b.force.z * b.invMass * dt;
 
-      wx[i] += taux[i] * 1.0/world.inertiax[i] * dt;
-      wy[i] += tauy[i] * 1.0/world.inertiay[i] * dt;
-      wz[i] += tauz[i] * 1.0/world.inertiaz[i] * dt;
+      b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
+      b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
+      b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
 
       // Use new velocity  - leap frog
-      x[i] += vx[i] * dt;
-      y[i] += vy[i] * dt;
-      z[i] += vz[i] * dt;
       
-      var q = new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]);
-      var w = new CANNON.Quaternion(wx[i],wy[i],wz[i],0);
+      b.position.x += b.velocity.x * dt;
+      b.position.y += b.velocity.y * dt;
+      b.position.z += b.velocity.z * dt;
 
-      var wq = w.mult(q);
+      w.set(b.angularVelocity.x,
+	    b.angularVelocity.y,
+	    b.angularVelocity.z,
+	    0);
+      w.mult(b.quaternion,wq);
 
-      qx[i] += dt * 0.5 * wq.x;
-      qy[i] += dt * 0.5 * wq.y;
-      qz[i] += dt * 0.5 * wq.z;
-      qw[i] += dt * 0.5 * wq.w;
-      
-      q.x = qx[i];
-      q.y = qy[i];
-      q.z = qz[i];
-      q.w = qw[i];
-
-      q.normalize();
-
-      qx[i]=q.x;
-      qy[i]=q.y;
-      qz[i]=q.z;
-      qw[i]=q.w;
+      b.quaternion.x += dt * 0.5 * wq.x;
+      b.quaternion.y += dt * 0.5 * wq.y;
+      b.quaternion.z += dt * 0.5 * wq.z;
+      b.quaternion.w += dt * 0.5 * wq.w;
+      b.quaternion.normalize();
     }
-  }
-
-  // Reset all forces
-  for(var i = 0; i<world.numObjects(); i++){
-    fx[i] = 0.0;
-    fy[i] = 0.0;
-    fz[i] = 0.0;
-    taux[i] = 0.0;
-    tauy[i] = 0.0;
-    tauz[i] = 0.0;
+    b.force.set(0,0,0);
+    b.tau.set(0,0,0);
   }
 
   // Update world time
@@ -2771,3 +2572,12 @@ CANNON.World.prototype.step = function(dt){
   world.stepnumber += 1;
 };
 
+if (typeof module !== 'undefined') {
+	// export for node
+	module.exports = CANNON;
+} else {
+	// assign to window
+	this.CANNON = CANNON;
+}
+
+}).apply(this);

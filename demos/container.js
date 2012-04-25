@@ -33,10 +33,9 @@ function createContainer(app,nx,ny,nz){
   // Create world
   var world = new CANNON.World();
   app.setWorld(world);
-  world.gravity(new CANNON.Vec3(0,0,-60));
-  var bp = new CANNON.NaiveBroadphase();
-  world.broadphase(bp);
-  world.iterations(10);
+  world.gravity.set(0,0,-60);
+  world.broadphase = new CANNON.NaiveBroadphase();
+  world.solver.iterations = 5;
 
   // Materials
   var stone = new CANNON.Material('stone');
@@ -56,31 +55,31 @@ function createContainer(app,nx,ny,nz){
   // plane -x
   var planeShapeXmin = new CANNON.Plane(new CANNON.Vec3(0,1,0));
   var planeXmin = new CANNON.RigidBody(0, planeShapeXmin,stone);
-  planeXmin.setPosition(0,-5,0);
+  planeXmin.position.set(0,-5,0);
   world.add(planeXmin);
 
   // Plane +x
   var planeShapeXmax = new CANNON.Plane(new CANNON.Vec3(0,-1,0));
   var planeXmax = new CANNON.RigidBody(0, planeShapeXmax,stone);
-  planeXmax.setPosition(0,5,0);
+  planeXmax.position.set(0,5,0);
   world.add(planeXmax);
 
   // Plane -y
   var planeShapeYmin = new CANNON.Plane(new CANNON.Vec3(1,0,0));
   var planeYmin = new CANNON.RigidBody(0, planeShapeYmin,stone);
-  planeYmin.setPosition(-5,0,0);
+  planeYmin.position.set(-5,0,0);
   world.add(planeYmin);
 
   // Plane +y
   var planeShapeYmax = new CANNON.Plane(new CANNON.Vec3(-1,0,0));
   var planeYmax = new CANNON.RigidBody(0, planeShapeYmax, stone);
-  planeYmax.setPosition(5,0,0);
+  planeYmax.position.set(5,0,0);
   world.add(planeYmax);
 
   // Box
   /*var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
   var boxBody = new CANNON.RigidBody(10,boxShape);
-  boxBody.setPosition(0,0,20);
+  boxBody.position.set(0,0,20);
   world.add(boxBody);
   app.addVisual(boxBody);*/
 
@@ -93,10 +92,9 @@ function createContainer(app,nx,ny,nz){
       for(var k=0; k<nz; k++){
 
 	var sphereBody = new CANNON.RigidBody(5,sphereShape,stone);
-	var pos = new CANNON.Vec3(i*2-nx*0.5 + (Math.random()-0.5)*rand,
-				  j*2-ny*0.5 + (Math.random()-0.5)*rand,
-				  1+k*2.1+h+(i+j)*0.0);
-	sphereBody.setPosition(pos.x,pos.y,pos.z);
+	sphereBody.position.set(i*2-nx*0.5 + (Math.random()-0.5)*rand,
+				j*2-ny*0.5 + (Math.random()-0.5)*rand,
+				1+k*2.1+h+(i+j)*0.0);
 	world.add(sphereBody);
 	  
 	app.addVisual(sphereBody);

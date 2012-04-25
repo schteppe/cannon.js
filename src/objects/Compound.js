@@ -1,6 +1,10 @@
+/*global CANNON:true */
+
 /**
- * Compound shape
- * @author schteppe - https://github.com/schteppe
+ * @class CANNON.Compound
+ * @extends CANNON.Shape
+ * @brief Compound shape
+ * @author schteppe
  */
 CANNON.Compound = function(){
   CANNON.Shape.call(this);
@@ -9,12 +13,13 @@ CANNON.Compound = function(){
   this.childOffsets = [];
   this.childOrientations = [];
 };
-
 CANNON.Compound.prototype = new CANNON.Shape();
 CANNON.Compound.prototype.constructor = CANNON.Compound;
 
 /**
- * Add a subshape
+ * @fn addChild
+ * @memberof CANNON.Compound
+ * @brief Add a subshape
  * @param CANNON.Shape shape
  * @param CANNON.Vec3 offset
  * @param CANNON.Quaternion orientation
@@ -34,10 +39,6 @@ CANNON.Compound.prototype.volume = function(){
   return r;
 };
 
-/**
- * Calculate the inertia in the local frame.
- * @return CANNON.Vec3
- */
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
 

@@ -1,10 +1,17 @@
+/*global CANNON:true */
+
 /**
- * Defines a physics material.
- * @class Material
+ * @class CANNON.Material
+ * @brief Defines a physics material.
  * @param string name
+ * @author schteppe
  */
 CANNON.Material = function(name){
+  /**
+   * @property string name
+   * @memberof CANNON.Material
+   */
   this.name = name;
-  this._id = -1;
+  this.id = -1;
 };
 
