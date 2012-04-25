@@ -7,15 +7,18 @@
  * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
+
   /**
    * @property int iterations
+   * @brief The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
+   * @todo write more about solver and iterations in the wiki
    * @memberof CANNON.Solver
    */
   this.iterations = iter || 10;
 
   /**
    * @property float h
-   * @brief Time step size
+   * @brief Time step size. The larger timestep, the less computationally heavy will your simulation be. But watch out, you don't want your bodies to tunnel each instead of colliding!
    * @memberof CANNON.Solver
    */
   this.h = h || 1.0/60.0;
