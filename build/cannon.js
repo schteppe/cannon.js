@@ -101,6 +101,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
     for(var j=0; j<i; j++){
 
       var bi = bodies[i], bj = bodies[j];
+      if(bi.fixed && bj.fixed)
+	continue; // We do not want to collide two static bodies
+
       var ti = bi.shape.type, tj = bj.shape.type;
 
       // --- Box / sphere / compound collision ---
@@ -1636,12 +1639,6 @@ CANNON.ContactPoint = function(from,to){
   this.n = new CANNON.Vec3();
   this.fromBody = null;
   this.toBody = null;
-};/**
- * ContactPoint class
- * @brief A representation of a contact point between two bodies
- */
-CANNON.ContactPoint = function(){
-  
 };/*global CANNON:true */
 
 /**

@@ -42,6 +42,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
     for(var j=0; j<i; j++){
 
       var bi = bodies[i], bj = bodies[j];
+      if(bi.fixed && bj.fixed)
+	continue; // We do not want to collide two static bodies
+
       var ti = bi.shape.type, tj = bj.shape.type;
 
       // --- Box / sphere / compound collision ---
