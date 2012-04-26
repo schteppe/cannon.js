@@ -103,6 +103,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
       var bi = bodies[i], bj = bodies[j];
       var ti = bi.shape.type, tj = bj.shape.type;
 
+      if(bi.fixed && bj.fixed)
+	continue;
+
       // --- Box / sphere / compound collision ---
       if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
 
@@ -1150,6 +1153,7 @@ CANNON.Box.prototype.boundingSphereRadius = function(){
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
+ * @brief An infinite plane, facing in the direction of the given normal.
  * @author schteppe
  */
 CANNON.Plane = function(normal){
@@ -1255,15 +1259,18 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
  * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
+
   /**
    * @property int iterations
+   * @brief The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
+   * @todo write more about solver and iterations in the wiki
    * @memberof CANNON.Solver
    */
   this.iterations = iter || 10;
 
   /**
    * @property float h
-   * @brief Time step size
+   * @brief Time step size. The larger timestep, the less computationally heavy will your simulation be. But watch out, you don't want your bodies to tunnel each instead of colliding!
    * @memberof CANNON.Solver
    */
   this.h = h || 1.0/60.0;
@@ -1636,12 +1643,6 @@ CANNON.ContactPoint = function(from,to){
   this.n = new CANNON.Vec3();
   this.fromBody = null;
   this.toBody = null;
-};/**
- * ContactPoint class
- * @brief A representation of a contact point between two bodies
- */
-CANNON.ContactPoint = function(){
-  
 };/*global CANNON:true */
 
 /**

@@ -44,6 +44,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
       var bi = bodies[i], bj = bodies[j];
       var ti = bi.shape.type, tj = bj.shape.type;
 
+      if(bi.fixed && bj.fixed)
+	continue;
+
       // --- Box / sphere / compound collision ---
       if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
 
