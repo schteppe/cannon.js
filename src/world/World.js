@@ -382,10 +382,13 @@ CANNON.World.prototype.step = function(dt){
 
   // Add gravity to all objects
   for(var i in bodies){
-    var f = bodies[i].force, m = bodies[i].mass;
-    f.x += world.gravity.x * m;
-    f.y += world.gravity.y * m;
-    f.z += world.gravity.z * m;
+    var bi = bodies[i];
+    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+      var f = bodies[i].force, m = bodies[i].mass;
+      f.x += world.gravity.x * m;
+      f.y += world.gravity.y * m;
+      f.z += world.gravity.z * m;
+    }
   }
 
   // Reset contact solver
@@ -710,10 +713,10 @@ CANNON.World.prototype.step = function(dt){
     nearPhase(contacts,
 	      bi.shape,
 	      bj.shape,
-	      bi.position,//new CANNON.Vec3(x[i],y[i],z[i]),
-	      bj.position,//new CANNON.Vec3(x[j],y[j],z[j]),
-	      bi.quaternion,//new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
-	      bj.quaternion//new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j])
+	      bi.position,
+	      bj.position,
+	      bi.quaternion,
+	      bj.quaternion
 	      );
     this.contacts[i+","+j] = contacts;
 
@@ -730,10 +733,10 @@ CANNON.World.prototype.step = function(dt){
 
       // Action if penetration
       if(g<0.0){
-	var vi = bi.velocity; //temp.vi; vi.set(vx[i],vy[i],vz[i]);
-	var wi = bi.angularVelocity; //temp.wi; wi.set(wx[i],wy[i],wz[i]);
-	var vj = bj.velocity;//temp.vj; vj.set(vx[j],vy[j],vz[j]);
-	var wj = bj.angularVelocity; //temp.wj; wj.set(wx[j],wy[j],wz[j]);
+	var vi = bi.velocity;
+	var wi = bi.angularVelocity;
+	var vj = bj.velocity;
+	var wj = bj.angularVelocity;
 
 	var n = c.ni;
 	var tangents = [temp.t1, temp.t2];
@@ -749,14 +752,14 @@ CANNON.World.prototype.step = function(dt){
 	u.vsub(uw,u);
 
 	// Get mass properties
-	var iMi = bi.invMass; //world.invm[i];
-	var iMj = bj.invMass; //world.invm[j];
-	var iIxi = bi.invInertia.x;//world.inertiax[i] > 0 ? 1.0/world.inertiax[i] : 0;
-	var iIyi = bi.invInertia.y;//world.inertiay[i] > 0 ? 1.0/world.inertiay[i] : 0;
-	var iIzi = bi.invInertia.z;//world.inertiaz[i] > 0 ? 1.0/world.inertiaz[i] : 0;
-	var iIxj = bj.invInertia.x;//world.inertiax[j] > 0 ? 1.0/world.inertiax[j] : 0;
-	var iIyj = bj.invInertia.y;//world.inertiay[j] > 0 ? 1.0/world.inertiay[j] : 0;
-	var iIzj = bj.invInertia.z;//world.inertiaz[j] > 0 ? 1.0/world.inertiaz[j] : 0;
+	var iMi = bi.invMass;
+	var iMj = bj.invMass;
+	var iIxi = bi.invInertia.x;
+	var iIyi = bi.invInertia.y;
+	var iIzi = bi.invInertia.z;
+	var iIxj = bj.invInertia.x;
+	var iIyj = bj.invInertia.y;
+	var iIzj = bj.invInertia.z;
 
 	// Add contact constraint
 	var rixn = temp.rixn;
@@ -860,27 +863,34 @@ CANNON.World.prototype.step = function(dt){
     }
   }
 
+  var bi;
   if(this.solver.n){
     this.solver.solve();
 
     // Apply constraint velocities
     for(var i in bodies){
-      var b = bodies[i];
-      b.velocity.x += this.solver.vxlambda[i];
-      b.velocity.y += this.solver.vylambda[i];
-      b.velocity.z += this.solver.vzlambda[i];
-      b.angularVelocity.x += this.solver.wxlambda[i];
-      b.angularVelocity.y += this.solver.wylambda[i];
-      b.angularVelocity.z += this.solver.wzlambda[i];
+      bi = bodies[i];
+      if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+	var b = bodies[i];
+	b.velocity.x += this.solver.vxlambda[i];
+	b.velocity.y += this.solver.vylambda[i];
+	b.velocity.z += this.solver.vzlambda[i];
+	b.angularVelocity.x += this.solver.wxlambda[i];
+	b.angularVelocity.y += this.solver.wylambda[i];
+	b.angularVelocity.z += this.solver.wzlambda[i];
+      }
     }
   }
 
   // Apply damping
   for(var i in bodies){
-    var ld = 1.0 - bodies[i].linearDamping;
-    var ad = 1.0 - bodies[i].angularDamping;
-    bodies[i].velocity.mult(ld,bodies[i].velocity);
-    bodies[i].angularVelocity.mult(ad,bodies[i].angularVelocity);
+    bi = bodies[i];
+    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+      var ld = 1.0 - bi.linearDamping;
+      var ad = 1.0 - bi.angularDamping;
+      bi.velocity.mult(ld,bi.velocity);
+      bi.angularVelocity.mult(ad,bi.angularVelocity);
+    }
   }
 
   // Leap frog
@@ -889,9 +899,10 @@ CANNON.World.prototype.step = function(dt){
   var q = temp.step_q; 
   var w = temp.step_w;
   var wq = temp.step_wq;
+  var DYNAMIC_OR_KINEMATIC = CANNON.RigidBody.DYNAMIC | CANNON.RigidBody.KINEMATIC;
   for(var i in bodies){
     var b = bodies[i];
-    if(!b.fixed){
+    if(b.motionstate & DYNAMIC_OR_KINEMATIC){ // Only for dynamic
       
       b.velocity.x += b.force.x * b.invMass * dt;
       b.velocity.y += b.force.y * b.invMass * dt;
