@@ -4,6 +4,7 @@
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
+ * @brief An infinite plane, facing in the direction of the given normal.
  * @author schteppe
  */
 CANNON.Plane = function(normal){

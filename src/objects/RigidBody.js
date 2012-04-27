@@ -125,11 +125,11 @@ CANNON.RigidBody = function(mass,shape,material){
   this.angularDamping = 0.01;
 
   /**
-   * @property bool fixed
+   * @property int motionstate
    * @memberof CANNON.RigidBody
-   * @brief True if the body is static
+   * @brief One of the states CANNON.RigidBody.DYNAMIC, CANNON.RigidBody.STATIC and CANNON.RigidBody.KINEMATIC
    */
-  this.fixed = (mass <= 0.0);
+  this.motionstate = (mass <= 0.0 ? CANNON.RigidBody.STATIC : CANNON.RigidBody.DYNAMIC);
 
   /**
    * @property CANNON.World world
@@ -138,3 +138,20 @@ CANNON.RigidBody = function(mass,shape,material){
    */
   this.world = null;
 };
+
+// Motionstates:
+
+/**
+ * @brief A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
+ */
+CANNON.RigidBody.DYNAMIC = 1;
+
+/**
+ * @brief A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
+ */
+CANNON.RigidBody.STATIC = 2;
+
+/**
+ * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
+ */
+CANNON.RigidBody.KINEMATIC = 4;

@@ -89,7 +89,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   // Local fast access
   var types = CANNON.Shape.types;
   var BOX_SPHERE_COMPOUND = types.SPHERE | types.BOX | types.COMPOUND,
-  PLANE = types.PLANE;
+  PLANE = types.PLANE,
+  STATIC_OR_KINEMATIC = CANNON.RigidBody.STATIC | CANNON.RigidBody.KINEMATIC;
 
   // Temp vecs
   var r = this.temp.r;
@@ -105,6 +106,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	continue; // We do not want to collide two static bodies
 
       var ti = bi.shape.type, tj = bj.shape.type;
+
+      if((bi.motionstate & STATIC_OR_KINEMATIC) && (bi.motionstate & STATIC_OR_KINEMATIC))
+	continue;
 
       // --- Box / sphere / compound collision ---
       if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
@@ -1018,11 +1022,11 @@ CANNON.RigidBody = function(mass,shape,material){
   this.angularDamping = 0.01;
 
   /**
-   * @property bool fixed
+   * @property int motionstate
    * @memberof CANNON.RigidBody
-   * @brief True if the body is static
+   * @brief One of the states CANNON.RigidBody.DYNAMIC, CANNON.RigidBody.STATIC and CANNON.RigidBody.KINEMATIC
    */
-  this.fixed = (mass <= 0.0);
+  this.motionstate = (mass <= 0.0 ? CANNON.RigidBody.STATIC : CANNON.RigidBody.DYNAMIC);
 
   /**
    * @property CANNON.World world
@@ -1031,7 +1035,23 @@ CANNON.RigidBody = function(mass,shape,material){
    */
   this.world = null;
 };
-/*global CANNON:true */
+
+// Motionstates:
+
+/**
+ * @brief A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
+ */
+CANNON.RigidBody.DYNAMIC = 1;
+
+/**
+ * @brief A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
+ */
+CANNON.RigidBody.STATIC = 2;
+
+/**
+ * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
+ */
+CANNON.RigidBody.KINEMATIC = 4;/*global CANNON:true */
 
 /**
  * @brief Spherical rigid body
@@ -1153,6 +1173,7 @@ CANNON.Box.prototype.boundingSphereRadius = function(){
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
+ * @brief An infinite plane, facing in the direction of the given normal.
  * @author schteppe
  */
 CANNON.Plane = function(normal){
@@ -1258,15 +1279,18 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
  * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(a,b,eps,k,d,iter,h){
+
   /**
    * @property int iterations
+   * @brief The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
+   * @todo write more about solver and iterations in the wiki
    * @memberof CANNON.Solver
    */
   this.iterations = iter || 10;
 
   /**
    * @property float h
-   * @brief Time step size
+   * @brief Time step size. The larger timestep, the less computationally heavy will your simulation be. But watch out, you don't want your bodies to tunnel each instead of colliding!
    * @memberof CANNON.Solver
    */
   this.h = h || 1.0/60.0;
@@ -2023,10 +2047,13 @@ CANNON.World.prototype.step = function(dt){
 
   // Add gravity to all objects
   for(var i in bodies){
-    var f = bodies[i].force, m = bodies[i].mass;
-    f.x += world.gravity.x * m;
-    f.y += world.gravity.y * m;
-    f.z += world.gravity.z * m;
+    var bi = bodies[i];
+    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+      var f = bodies[i].force, m = bodies[i].mass;
+      f.x += world.gravity.x * m;
+      f.y += world.gravity.y * m;
+      f.z += world.gravity.z * m;
+    }
   }
 
   // Reset contact solver
@@ -2351,10 +2378,10 @@ CANNON.World.prototype.step = function(dt){
     nearPhase(contacts,
 	      bi.shape,
 	      bj.shape,
-	      bi.position,//new CANNON.Vec3(x[i],y[i],z[i]),
-	      bj.position,//new CANNON.Vec3(x[j],y[j],z[j]),
-	      bi.quaternion,//new CANNON.Quaternion(qx[i],qy[i],qz[i],qw[i]),
-	      bj.quaternion//new CANNON.Quaternion(qx[j],qy[j],qz[j],qw[j])
+	      bi.position,
+	      bj.position,
+	      bi.quaternion,
+	      bj.quaternion
 	      );
     this.contacts[i+","+j] = contacts;
 
@@ -2371,10 +2398,10 @@ CANNON.World.prototype.step = function(dt){
 
       // Action if penetration
       if(g<0.0){
-	var vi = bi.velocity; //temp.vi; vi.set(vx[i],vy[i],vz[i]);
-	var wi = bi.angularVelocity; //temp.wi; wi.set(wx[i],wy[i],wz[i]);
-	var vj = bj.velocity;//temp.vj; vj.set(vx[j],vy[j],vz[j]);
-	var wj = bj.angularVelocity; //temp.wj; wj.set(wx[j],wy[j],wz[j]);
+	var vi = bi.velocity;
+	var wi = bi.angularVelocity;
+	var vj = bj.velocity;
+	var wj = bj.angularVelocity;
 
 	var n = c.ni;
 	var tangents = [temp.t1, temp.t2];
@@ -2390,14 +2417,14 @@ CANNON.World.prototype.step = function(dt){
 	u.vsub(uw,u);
 
 	// Get mass properties
-	var iMi = bi.invMass; //world.invm[i];
-	var iMj = bj.invMass; //world.invm[j];
-	var iIxi = bi.invInertia.x;//world.inertiax[i] > 0 ? 1.0/world.inertiax[i] : 0;
-	var iIyi = bi.invInertia.y;//world.inertiay[i] > 0 ? 1.0/world.inertiay[i] : 0;
-	var iIzi = bi.invInertia.z;//world.inertiaz[i] > 0 ? 1.0/world.inertiaz[i] : 0;
-	var iIxj = bj.invInertia.x;//world.inertiax[j] > 0 ? 1.0/world.inertiax[j] : 0;
-	var iIyj = bj.invInertia.y;//world.inertiay[j] > 0 ? 1.0/world.inertiay[j] : 0;
-	var iIzj = bj.invInertia.z;//world.inertiaz[j] > 0 ? 1.0/world.inertiaz[j] : 0;
+	var iMi = bi.invMass;
+	var iMj = bj.invMass;
+	var iIxi = bi.invInertia.x;
+	var iIyi = bi.invInertia.y;
+	var iIzi = bi.invInertia.z;
+	var iIxj = bj.invInertia.x;
+	var iIyj = bj.invInertia.y;
+	var iIzj = bj.invInertia.z;
 
 	// Add contact constraint
 	var rixn = temp.rixn;
@@ -2501,27 +2528,34 @@ CANNON.World.prototype.step = function(dt){
     }
   }
 
+  var bi;
   if(this.solver.n){
     this.solver.solve();
 
     // Apply constraint velocities
     for(var i in bodies){
-      var b = bodies[i];
-      b.velocity.x += this.solver.vxlambda[i];
-      b.velocity.y += this.solver.vylambda[i];
-      b.velocity.z += this.solver.vzlambda[i];
-      b.angularVelocity.x += this.solver.wxlambda[i];
-      b.angularVelocity.y += this.solver.wylambda[i];
-      b.angularVelocity.z += this.solver.wzlambda[i];
+      bi = bodies[i];
+      if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+	var b = bodies[i];
+	b.velocity.x += this.solver.vxlambda[i];
+	b.velocity.y += this.solver.vylambda[i];
+	b.velocity.z += this.solver.vzlambda[i];
+	b.angularVelocity.x += this.solver.wxlambda[i];
+	b.angularVelocity.y += this.solver.wylambda[i];
+	b.angularVelocity.z += this.solver.wzlambda[i];
+      }
     }
   }
 
   // Apply damping
   for(var i in bodies){
-    var ld = 1.0 - bodies[i].linearDamping;
-    var ad = 1.0 - bodies[i].angularDamping;
-    bodies[i].velocity.mult(ld,bodies[i].velocity);
-    bodies[i].angularVelocity.mult(ad,bodies[i].angularVelocity);
+    bi = bodies[i];
+    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+      var ld = 1.0 - bi.linearDamping;
+      var ad = 1.0 - bi.angularDamping;
+      bi.velocity.mult(ld,bi.velocity);
+      bi.angularVelocity.mult(ad,bi.angularVelocity);
+    }
   }
 
   // Leap frog
@@ -2530,9 +2564,10 @@ CANNON.World.prototype.step = function(dt){
   var q = temp.step_q; 
   var w = temp.step_w;
   var wq = temp.step_wq;
+  var DYNAMIC_OR_KINEMATIC = CANNON.RigidBody.DYNAMIC | CANNON.RigidBody.KINEMATIC;
   for(var i in bodies){
     var b = bodies[i];
-    if(!b.fixed){
+    if(b.motionstate & DYNAMIC_OR_KINEMATIC){ // Only for dynamic
       
       b.velocity.x += b.force.x * b.invMass * dt;
       b.velocity.y += b.force.y * b.invMass * dt;

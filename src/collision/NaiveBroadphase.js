@@ -30,7 +30,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   // Local fast access
   var types = CANNON.Shape.types;
   var BOX_SPHERE_COMPOUND = types.SPHERE | types.BOX | types.COMPOUND,
-  PLANE = types.PLANE;
+  PLANE = types.PLANE,
+  STATIC_OR_KINEMATIC = CANNON.RigidBody.STATIC | CANNON.RigidBody.KINEMATIC;
 
   // Temp vecs
   var r = this.temp.r;
@@ -46,6 +47,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	continue; // We do not want to collide two static bodies
 
       var ti = bi.shape.type, tj = bj.shape.type;
+
+      if((bi.motionstate & STATIC_OR_KINEMATIC) && (bi.motionstate & STATIC_OR_KINEMATIC))
+	continue;
 
       // --- Box / sphere / compound collision ---
       if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
