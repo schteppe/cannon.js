@@ -45,8 +45,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
       var bi = bodies[i], bj = bodies[j];
       var ti = bi.shape.type, tj = bj.shape.type;
 
-      if((bi.motionstate & STATIC_OR_KINEMATIC) && (bi.motionstate & STATIC_OR_KINEMATIC))
+      if((bi.motionstate & STATIC_OR_KINEMATIC) && (bi.motionstate & STATIC_OR_KINEMATIC)) {
 	continue;
+      }
 
       // --- Box / sphere / compound collision ---
       if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
@@ -62,10 +63,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	}
 
       // --- Sphere/box/compound versus plane ---
-      } else if((ti & BOX_SPHERE_COMPOUND) && (tj & types.PLANE) || 
-		(tj & BOX_SPHERE_COMPOUND) && (ti & types.PLANE)){
-	var pi = ti==PLANE ? i : j, // Plane
-	  oi = ti!=PLANE ? i : j; // Other
+      } else if((ti & BOX_SPHERE_COMPOUND) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND) && (ti & types.PLANE)){
+	var pi = (ti===PLANE) ? i : j, // Plane
+	  oi = (ti!==PLANE) ? i : j; // Other
 	  
 	  // Rel. position
 	bodies[oi].position.vsub(bodies[pi].position,r);
