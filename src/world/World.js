@@ -43,6 +43,9 @@ CANNON.World = function(){
 				  5,
 				  1.0/60.0);
 
+  // Contact generator
+  this.contactgen = new CANNON.ContactGenerator();
+
   // Materials
   this.materials = []; // References to all added materials
   this.contactmaterials = []; // All added contact materials
@@ -394,307 +397,27 @@ CANNON.World.prototype.step = function(dt){
   // Reset contact solver
   this.solver.reset(N);
 
-  /**
-   * Near phase calculation, get the contact point, normal, etc.
-   * @param array result The result one will get back with all the contact point information
-   * @param Shape si Colliding shape
-   * @param Shape sj
-   * @param Vec3 xi Position of the center of mass
-   * @param Vec3 xj
-   * @param Quaternion qi Rotation around the center of mass
-   * @param Quaternion qj
-   * @todo All collision cases
-   * @todo Replace the current nearphase with this function.
-   */
-  function nearPhase(result,si,sj,xi,xj,qi,qj){
-    var swapped = false;
-    if(si.type>sj.type){
-      var temp;
-      temp=sj;   sj=si;   si=temp;
-      temp=xj;   xj=xi;   xi=temp;
-      temp=qj;   qj=qi;   qi=temp;
-      swapped = true;
-    }
-
-    /**
-     * Make a contact object.
-     * @return object
-     * @todo Perhaps we should make a Contact class out of this instead...
-     */
-    function makeResult(){
-      return {
-	  ri:new CANNON.Vec3(), // Vector from body i center to contact point
-	  rj:new CANNON.Vec3(), // Vector from body j center to contact point
-	  ni:new CANNON.Vec3()  // Contact normal protruding body i
-	};
-    }
-
-    /**
-     * Swaps the body references in the contact
-     * @param object r
-     */
-    function swapResult(r){
-      var temp = CANNON.Vec3();
-      temp = r.ri; r.ri = r.rj; r.rj = temp;
-      r.ni.negate(r.ni);
-    }
-
-    /**
-     * Go recursive for compound shapes
-     * @param Shape si
-     * @param CompoundShape sj
-     */
-    function recurseCompound(result,si,sj,xi,xj,qi,qj){
-      for(var i=0; i<sj.childShapes.length; i++){
-	var r = [];
-	nearPhase(r,
-		  si,
-		  sj.childShapes[i],
-		  xi,
-		  xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
-		  qi,
-		  qj.mult(sj.childOrientations[i]));
-	// Transform back
-	for(var j=0; j<r.length; j++){
-	  r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
-	  result.push(r[j]);
-	}
-      }
-    }
-
-    if(si.type==CANNON.Shape.types.SPHERE){
-      if(sj.type==CANNON.Shape.types.SPHERE){ // sphere-sphere
-
-	// We will have one contact in this case
-	var r = makeResult();
-
-	// Contact normal
-	xj.vsub(xi,r.ni);
-	r.ni.normalize();
-
-	// Contact point locations
-	r.ni.copy(r.ri);
-	r.ni.copy(r.rj);
-	r.ri.mult(si.radius,r.ri);
-	r.rj.mult(-sj.radius,r.rj);
-	result.push(r);
-
-      } else if(sj.type==CANNON.Shape.types.PLANE){ // sphere-plane
-
-	// We will have one contact in this case
-	var r = makeResult();
-
-	// Contact normal
-	sj.normal.copy(r.ni);
-	qj.vmult(r.ni,r.ni);
-	r.ni.negate(r.ni); // body i is the sphere, flip normal
-	r.ni.normalize();
-
-	// Vector from sphere center to contact point
-	r.ni.mult(si.radius,r.ri);
-
-	// Project down sphere on plane
-	var point_on_plane_to_sphere = xi.vsub(xj);
-	var plane_to_sphere_ortho = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
-	r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
-	if(plane_to_sphere_ortho.norm() <= si.radius)
-	  result.push(r);
-	
-      } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
-
-	// we refer to the box as body j
-	var box_to_sphere =  xi.vsub(xj);
-	var sides = sj.getSideNormals(true,qj);
-	var R =     si.radius;
-	var penetrating_sides = [];
-
-	// Check side (plane) intersections
-	var found = false;
-	for(var idx=0; idx<sides.length && !found; idx++){ // Max 3 penetrating sides
-	  var ns = sides[idx].copy();
-	  var h = ns.norm();
-	  ns.normalize();
-	  var dot = box_to_sphere.dot(ns);
-	  if(dot<h+R && dot>0){
-	    // Intersects plane. Now check the other two dimensions
-	    var ns1 = sides[(idx+1)%3].copy();
-	    var ns2 = sides[(idx+2)%3].copy();
-	    var h1 = ns1.norm();
-	    var h2 = ns2.norm();
-	    ns1.normalize();
-	    ns2.normalize();
-	    var dot1 = box_to_sphere.dot(ns1);
-	    var dot2 = box_to_sphere.dot(ns2);
-	    if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
-	      found = true;
-	      var r = makeResult();
-	      ns.mult(-R,r.ri); // Sphere r
-	      ns.copy(r.ni);
-	      r.ni.negate(r.ni); // Normal should be out of sphere
-	      ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
-	      result.push(r);
-	    }
-	  }
-	}
-
-	// Check corners
-	var rj = new CANNON.Vec3();
-	for(var j=0; j<2 && !found; j++){
-	  for(var k=0; k<2 && !found; k++){
-	    for(var l=0; l<2 && !found; l++){
-	      rj.set(0,0,0);
-	      if(j) rj.vadd(sides[0],rj);
-	      else  rj.vsub(sides[0],rj);
-	      if(k) rj.vadd(sides[1],rj);
-	      else  rj.vsub(sides[1],rj);
-	      if(l) rj.vadd(sides[2],rj);
-	      else  rj.vsub(sides[2],rj);
-
-	      // World position of corner
-	      var sphere_to_corner = xj.vadd(rj).vsub(xi);
-	      if(sphere_to_corner.norm()<R){
-		found = true;
-		var r = makeResult();
-		sphere_to_corner.copy(r.ri);
-		r.ri.normalize();
-		r.ri.copy(r.ni);
-		r.ri.mult(R,r.ri);
-		rj.copy(r.rj);
-		result.push(r);
-	      }
-	    }
-	  }
-	}
-
-	// Check edges
-	var edgeTangent = new CANNON.Vec3();
-	var edgeCenter = new CANNON.Vec3();
-	var r = new CANNON.Vec3(); // r = edge center to sphere center
-	var orthogonal = new CANNON.Vec3();
-	var dist = new CANNON.Vec3();
-	for(var j=0; j<sides.length && !found; j++){
-	  for(var k=0; k<sides.length && !found; k++){
-	    if(j%3!=k%3){
-	      // Get edge tangent
-	      sides[k].cross(sides[j],edgeTangent);
-	      edgeTangent.normalize();
-	      sides[j].vadd(sides[k], edgeCenter);
-	      xi.copy(r);
-	      r.vsub(edgeCenter,r);
-	      r.vsub(xj,r);
-	      var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
-	      edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
-	      
-	      // Find the third side orthogonal to this one
-	      var l = 0;
-	      while(l==j%3 || l==k%3) l++;
-
-	      // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-	      xi.copy(dist);
-	      dist.vsub(orthogonal,dist);
-	      dist.vsub(edgeCenter,dist);
-	      dist.vsub(xj,dist);
-
-	      // Distances in tangent direction and distance in the plane orthogonal to it
-	      var tdist = Math.abs(orthonorm);
-	      var ndist = dist.norm();
-	      
-	      if(tdist < sides[l].norm() && ndist<R){
-		found = true;
-		var res = makeResult();
-		edgeCenter.vadd(orthogonal,res.rj); // box rj
-		res.rj.copy(res.rj);
-		dist.negate(res.ni);
-		res.ni.normalize();
-
-		res.rj.copy(res.ri);
-		res.ri.vadd(xj,res.ri);
-		res.ri.vsub(xi,res.ri);
-		res.ri.normalize();
-		res.ri.mult(R,res.ri);
-
-		result.push(res);
-	      }
-	    }
-	  }
-	}
-
-      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
-	recurseCompound(result,si,sj,xi,xj,qi,qj);
-      }
-      
-    } else if(si.type==CANNON.Shape.types.PLANE){
-      
-      if(sj.type==CANNON.Shape.types.PLANE){ // plane-plane
-	throw "Plane-plane collision... wait, you did WHAT?";
-	
-      } else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
-
-	// Collision normal
-	var n = si.normal.copy();
-
-	// Loop over corners
-	var numcontacts = 0;
-	var corners = sj.getCorners(qj);
-	for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
-	  var r = makeResult();
-	  var worldCorner = corners[idx].vadd(xj);
-	  corners[idx].copy(r.rj);
-
-	  // Project down corner to plane to get xj
-	  var point_on_plane_to_corner = worldCorner.vsub(xi);
-	  var d = n.dot(point_on_plane_to_corner);
-	  if(d<=0){
-	    numcontacts++;
-	    var plane_to_corner = n.mult(d);
-	    point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
-	    
-	    // Set contact normal
-	    n.copy(r.ni);
-	    
-	    // Add contact
-	    result.push(r);
-	  }
-	}
-	
-      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
-	recurseCompound(result,si,sj,xi,xj,qi,qj);
-      }
-      
-    } else if(si.type==CANNON.Shape.types.BOX){
-      
-      if(sj.type==CANNON.Shape.types.BOX){ // box-box
-	throw "box-box collision not implemented yet";
-      }
-      
-      if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
-	recurseCompound(result,si,sj,xi,xj,qi,qj);
-	
-      }
-      
-    } else if(si.type==CANNON.Shape.types.COMPOUND){
-      
-      if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
-	recurseCompound(result,si,sj,xi,xj,qi,qj);
-	
-      }
-    }
-    
-    // Swap back if we swapped bodies in the beginning
-    for(var i=0; swapped && i<result.length; i++)
-      swapResult(result[i]);
-  }
+  // Generate contacts
+  var oldcontacts = this.contacts;
+  this.contacts = [];
+  this.contactgen.getContacts(p1,p2,
+			      this,
+			      this.contacts,
+			      oldcontacts // To be reused
+			      );
 
   // Loop over all collisions
-  this.contacts = {}; // Preliminary. contacts["i,j"]=>contact array
   var temp = this.temp;
-  for(var k=0; k<p1.length; k++){
+  for(var k=0; k<this.contacts.length; k++){
+
+    // Current contact
+    var c = this.contacts[k];
 
     // Get current collision indeces
-    var i = p1[k],
-      j = p2[k],
-      bi = bodies[i],
-      bj = bodies[j];
+    var bi = c.bi,
+      bj = c.bj;
+    var i=bi.id,
+      j=bj.id;
     
     // Check last step stats
     var lastCollisionState = cmatrix(i,j,-1);
@@ -707,157 +430,140 @@ CANNON.World.prototype.step = function(dt){
       mu = cm.friction;
       e = cm.restitution;
     }
-    
-    // Get contacts
-    var contacts = [];
-    nearPhase(contacts,
-	      bi.shape,
-	      bj.shape,
-	      bi.position,
-	      bj.position,
-	      bi.quaternion,
-	      bj.quaternion
-	      );
-    this.contacts[i+","+j] = contacts;
-
-    // Add contact constraint(s)
-    for(var ci = 0; ci<contacts.length; ci++){
-      var c = contacts[ci];
       
-      // g = ( xj + rj - xi - ri ) .dot ( ni )
-      var gvec = temp.gvec;
-      gvec.set(bj.position.x + c.rj.x - bi.position.x - c.ri.x,
-	       bj.position.y + c.rj.y - bi.position.y - c.ri.y,
-	       bj.position.z + c.rj.z - bi.position.z - c.ri.z);
-      var g = gvec.dot(c.ni); // Gap, negative if penetration
+    // g = ( xj + rj - xi - ri ) .dot ( ni )
+    var gvec = temp.gvec;
+    gvec.set(bj.position.x + c.rj.x - bi.position.x - c.ri.x,
+	     bj.position.y + c.rj.y - bi.position.y - c.ri.y,
+	     bj.position.z + c.rj.z - bi.position.z - c.ri.z);
+    var g = gvec.dot(c.ni); // Gap, negative if penetration
+    
+    // Action if penetration
+    if(g<0.0){
+      var vi = bi.velocity;
+      var wi = bi.angularVelocity;
+      var vj = bj.velocity;
+      var wj = bj.angularVelocity;
 
-      // Action if penetration
-      if(g<0.0){
-	var vi = bi.velocity;
-	var wi = bi.angularVelocity;
-	var vj = bj.velocity;
-	var wj = bj.angularVelocity;
+      var n = c.ni;
+      var tangents = [temp.t1, temp.t2];
+      n.tangents(tangents[0],tangents[1]);
 
-	var n = c.ni;
-	var tangents = [temp.t1, temp.t2];
-	n.tangents(tangents[0],tangents[1]);
+      var v_contact_i = vi.vadd(wi.cross(c.ri));
+      var v_contact_j = vj.vadd(wj.cross(c.rj));
+      var u_rel = v_contact_j.vsub(v_contact_i);
+      var w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
 
-	var v_contact_i = vi.vadd(wi.cross(c.ri));
-	var v_contact_j = vj.vadd(wj.cross(c.rj));
-	var u_rel = v_contact_j.vsub(v_contact_i);
-	var w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
+      var u = (vj.vsub(vi)); // Contact velo
+      var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+      u.vsub(uw,u);
 
-	var u = (vj.vsub(vi)); // Contact velo
-	var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
-	u.vsub(uw,u);
+      // Get mass properties
+      var iMi = bi.invMass;
+      var iMj = bj.invMass;
+      var iIxi = bi.invInertia.x;
+      var iIyi = bi.invInertia.y;
+      var iIzi = bi.invInertia.z;
+      var iIxj = bj.invInertia.x;
+      var iIyj = bj.invInertia.y;
+      var iIzj = bj.invInertia.z;
 
-	// Get mass properties
-	var iMi = bi.invMass;
-	var iMj = bj.invMass;
-	var iIxi = bi.invInertia.x;
-	var iIyi = bi.invInertia.y;
-	var iIzi = bi.invInertia.z;
-	var iIxj = bj.invInertia.x;
-	var iIyj = bj.invInertia.y;
-	var iIzj = bj.invInertia.z;
+      // Add contact constraint
+      var rixn = temp.rixn;
+      var rjxn = temp.rjxn;
+      c.ri.cross(n,rixn);
+      c.rj.cross(n,rjxn);
 
-	// Add contact constraint
-	var rixn = temp.rixn;
-	var rjxn = temp.rjxn;
-	c.ri.cross(n,rixn);
-	c.rj.cross(n,rjxn);
+      var un_rel = n.mult(u_rel.dot(n));
+      var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
+      var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
 
-	var un_rel = n.mult(u_rel.dot(n));
-	var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
-	var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
+      var gn = c.ni.mult(g);
 
-	var gn = c.ni.mult(g);
-
-	this.solver
-	  .addConstraint( // Non-penetration constraint jacobian
-			 [-n.x,-n.y,-n.z,
-			  -rixn.x,-rixn.y,-rixn.z,
-			  n.x,n.y,n.z,
-			  rjxn.x,rjxn.y,rjxn.z],
+      this.solver
+	.addConstraint( // Non-penetration constraint jacobian
+		       [-n.x,-n.y,-n.z,
+			-rixn.x,-rixn.y,-rixn.z,
+			n.x,n.y,n.z,
+			rjxn.x,rjxn.y,rjxn.z],
 			 
-			 // Inverse mass matrix
-			 [iMi,iMi,iMi,
-			  iIxi,iIyi,iIzi,
-			  iMj,iMj,iMj,
-			  iIxj,iIyj,iIzj],
+		       // Inverse mass matrix
+		       [iMi,iMi,iMi,
+			iIxi,iIyi,iIzi,
+			iMj,iMj,iMj,
+			iIxj,iIyj,iIzj],
 			 
-			 // g - constraint violation / gap
-			 [-gn.x,-gn.y,-gn.z,
-			  0,0,0,//-gn.x,-gn.y,-gn.z,
-			  gn.x,gn.y,gn.z,
-			  0,0,0//gn.x,gn.y,gn.z
-			  ],
+		       // g - constraint violation / gap
+		       [-gn.x,-gn.y,-gn.z,
+			0,0,0,//-gn.x,-gn.y,-gn.z,
+			gn.x,gn.y,gn.z,
+			0,0,0//gn.x,gn.y,gn.z
+			],
 
-			 [-un_rel.x,-un_rel.y,-un_rel.z,
-			  0,0,0,//-u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
-			  un_rel.x,un_rel.y,un_rel.z,
-			  0,0,0//u_rjxn_rel.x,u_rjxn_rel.y,u_rjxn_rel.z
-			  ],
+		       [-un_rel.x,-un_rel.y,-un_rel.z,
+			0,0,0,//-u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
+			un_rel.x,un_rel.y,un_rel.z,
+			0,0,0//u_rjxn_rel.x,u_rjxn_rel.y,u_rjxn_rel.z
+			],
 			 
-			 // External force - forces & torques
-			 [bi.force.x,bi.force.y,bi.force.z,
-			  bi.tau.x,bi.tau.y,bi.tau.z,
-			  bj.force.x,bj.force.y,bj.force.z,
-			  bj.tau.x,bj.tau.y,bj.tau.z],
-			 0,
-			 'inf',
-			 i,
-			 j);
+		       // External force - forces & torques
+		       [bi.force.x,bi.force.y,bi.force.z,
+			bi.tau.x,bi.tau.y,bi.tau.z,
+			bj.force.x,bj.force.y,bj.force.z,
+			bj.tau.x,bj.tau.y,bj.tau.z],
+		       0,
+		       'inf',
+		       i,
+		       j);
 
-	// Friction constraints
-	if(mu>0.0){
-	  var g = that.gravity.norm();
-	  for(var ti=0; ti<tangents.length; ti++){
-	    var t = tangents[ti];
-	    var rixt = c.ri.cross(t);
-	    var rjxt = c.rj.cross(t);
+      // Friction constraints
+      if(mu>0.0){
+	var g = that.gravity.norm();
+	for(var ti=0; ti<tangents.length; ti++){
+	  var t = tangents[ti];
+	  var rixt = c.ri.cross(t);
+	  var rjxt = c.rj.cross(t);
 
-	    var ut_rel = t.mult(u_rel.dot(t));
-	    var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
-	    var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
-	    this.solver
-	      .addConstraint( // Non-penetration constraint jacobian
-			     [-t.x,-t.y,-t.z,
-			      -rixt.x,-rixt.y,-rixt.z,
-			      t.x,t.y,t.z,
-			      rjxt.x,rjxt.y,rjxt.z
-			      ],
+	  var ut_rel = t.mult(u_rel.dot(t));
+	  var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
+	  var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
+	  this.solver
+	    .addConstraint( // Non-penetration constraint jacobian
+			   [-t.x,-t.y,-t.z,
+			    -rixt.x,-rixt.y,-rixt.z,
+			    t.x,t.y,t.z,
+			    rjxt.x,rjxt.y,rjxt.z
+			    ],
 			     
-			     // Inverse mass matrix
-			     [iMi,iMi,iMi,
-			      iIxi,iIyi,iIzi,
-			      iMj,iMj,iMj,
-			      iIxj,iIyj,iIzj],
+			   // Inverse mass matrix
+			   [iMi,iMi,iMi,
+			    iIxi,iIyi,iIzi,
+			    iMj,iMj,iMj,
+			    iIxj,iIyj,iIzj],
 			     
-			     // g - constraint violation / gap
-			     [0,0,0,
-			      0,0,0,
-			      0,0,0,
-			      0,0,0],
+			   // g - constraint violation / gap
+			   [0,0,0,
+			    0,0,0,
+			    0,0,0,
+			    0,0,0],
 			     
-			     [-ut_rel.x,-ut_rel.y,-ut_rel.z,
-			      0,0,0,//-u_rixt_rel.x,-u_rixt_rel.y,-u_rixt_rel.z,
-			      ut_rel.x,ut_rel.y,ut_rel.z,
-			      0,0,0//u_rjxt_rel.x,u_rjxt_rel.y,u_rjxt_rel.z
-			      ],
+			   [-ut_rel.x,-ut_rel.y,-ut_rel.z,
+			    0,0,0,//-u_rixt_rel.x,-u_rixt_rel.y,-u_rixt_rel.z,
+			    ut_rel.x,ut_rel.y,ut_rel.z,
+			    0,0,0//u_rjxt_rel.x,u_rjxt_rel.y,u_rjxt_rel.z
+			    ],
 			     
-			     // External force - forces & torques
-			     [bi.force.x,bi.force.y,bi.force.z,
-			      bi.tau.x,bi.tau.y,bi.tau.z,
-			      bj.force.x,bj.force.y,bj.force.z,
-			      bj.tau.x,bj.tau.y,bj.tau.z],
+			   // External force - forces & torques
+			   [bi.force.x,bi.force.y,bi.force.z,
+			    bi.tau.x,bi.tau.y,bi.tau.z,
+			    bj.force.x,bj.force.y,bj.force.z,
+			    bj.tau.x,bj.tau.y,bj.tau.z],
 			     
-			     -mu*g*(bi.mass+bj.mass),
-			     mu*g*(bi.mass+bj.mass),
+			   -mu*g*(bi.mass+bj.mass),
+			   mu*g*(bi.mass+bj.mass),
 
-			     i,
-			     j);
-	  }
+			   i,
+			   j);
 	}
       }
     }

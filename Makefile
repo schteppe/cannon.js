@@ -6,19 +6,23 @@ OBJECTS   = src/objects/Shape.js src/objects/RigidBody.js src/objects/Sphere.js 
 SOLVER    = src/solver/*
 MATERIAL  = src/material/Material.js src/material/ContactMaterial.js
 WORLD     = src/world/*
+DEMO      = src/demo/*
 END       = src/wrapper/End.js
 
 ALL_CORE_FILES = $(CANNON) $(COLLISION) $(MATH) $(OBJECTS) $(SOLVER) $(MATERIAL) $(WORLD)
 ALL_FILES = $(START) $(ALL_CORE_FILES) $(END)
+DEMO_FILES = $(DEMO)
 
 CANNON_BUILD        = ./build/cannon.js
 CANNON_BUILD_MINIFY = ./build/cannon.min.js
 CANNON_BUILD_PRETTY = ./build/cannon.pretty.js
+DEMO_BUILD          = ./build/cannon.demo.js
 
 all: minify
 
 bundle:
 	cat $(ALL_FILES) > $(CANNON_BUILD)
+	cat $(DEMO) > $(DEMO_BUILD)
 
 minify: bundle
 	# 

@@ -162,39 +162,37 @@ CANNON.Demo.prototype.updateVisuals = function(){
     var old_meshes = this._contactmeshes;
     this._contactmeshes = [];
     for(var ci in this._world.contacts){
-      for(var k=0; k<this._world.contacts[ci].length; k++){
-	var ij = ci.split(",");
-	var i=parseInt(ij[0]), j=parseInt(ij[1]), mesh_i, mesh_j;
-	if(numadded<old_meshes.length){
-	  // Get mesh from prev timestep
-	  mesh_i = old_meshes[numadded];
-	} else {
-	  // Create new mesh
-	  mesh_i = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
-	  this._scene.add(mesh_i);
-	}
-	this._contactmeshes.push(mesh_i);
-	numadded++;
-
-	if(numadded<old_meshes.length){
-	  // Get mesh from prev timestep
-	  mesh_j = old_meshes[numadded];
-	} else {
-	  // Create new mesh
-	  mesh_j = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
-	  this._scene.add(mesh_j);
-	}
-	this._contactmeshes.push(mesh_j);
-	numadded++;
-
-	mesh_i.position.x = this._world.bodies[i].position.x + this._world.contacts[ci][k].ri.x;
-	mesh_i.position.y = this._world.bodies[i].position.y + this._world.contacts[ci][k].ri.y;
-	mesh_i.position.z = this._world.bodies[i].position.z + this._world.contacts[ci][k].ri.z;
-
-	mesh_j.position.x = this._world.bodies[j].position.x + this._world.contacts[ci][k].rj.x;
-	mesh_j.position.y = this._world.bodies[j].position.y + this._world.contacts[ci][k].rj.y;
-	mesh_j.position.z = this._world.bodies[j].position.z + this._world.contacts[ci][k].rj.z;
+      var c = this._world.contacts[ci];
+      var bi=c.bi, bj=c.bj, mesh_i, mesh_j;
+      if(numadded<old_meshes.length){
+	// Get mesh from prev timestep
+	mesh_i = old_meshes[numadded];
+      } else {
+	// Create new mesh
+	mesh_i = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
+	this._scene.add(mesh_i);
       }
+      this._contactmeshes.push(mesh_i);
+      numadded++;
+      
+      if(numadded<old_meshes.length){
+	// Get mesh from prev timestep
+	mesh_j = old_meshes[numadded];
+      } else {
+	// Create new mesh
+	mesh_j = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
+	this._scene.add(mesh_j);
+      }
+      this._contactmeshes.push(mesh_j);
+      numadded++;
+      
+      mesh_i.position.x = bi.position.x + c.ri.x;
+      mesh_i.position.y = bi.position.y + c.ri.y;
+      mesh_i.position.z = bi.position.z + c.ri.z;
+      
+      mesh_j.position.x = bj.position.x + c.rj.x;
+      mesh_j.position.y = bj.position.y + c.rj.y;
+      mesh_j.position.z = bj.position.z + c.rj.z;
     }
 
     // Remove overflowing
@@ -219,35 +217,32 @@ CANNON.Demo.prototype.updateVisuals = function(){
     this._contactlines = [];
 
     for(var ci in this._world.contacts){
-      for(var k=0; k<this._world.contacts[ci].length; k++){
-	var ij = ci.split(",");
-	var i=parseInt(ij[0]), j=parseInt(ij[1]);
-	var line, geometry;
+      var c = this._world.contacts[ci];
+      var bi=c.bi, bj=c.bj, mesh_i, mesh_j;
+      var i=bi.id, j=bj.id;
+      var line, geometry;
 
-	for(var l=0; l<2; l++){
-	  if(old_lines.length){
-	    // Get mesh from prev timestep
-	    line = old_lines.pop();
-	    geometry = line.geometry;
-	    geometry.vertices.pop();
-	    geometry.vertices.pop();
-	  } else {
-	    // Create new mesh
-	    geometry = new THREE.Geometry();
-	    geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(0,0,0)));
-	    geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(1,1,1)));
-	    line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
-	    this._scene.add(line);
-	  }
-	  this._contactlines.push(line);
-	  var r = l==0 ? this._world.contacts[ci][k].ri : this._world.contacts[ci][k].rj;
-	  var pos_idx = l==0 ? i : j;
-	  line.scale.set(r.x,r.y,r.z);
-	  line.position.set(this._world.bodies[pos_idx].position.x,
-			    this._world.bodies[pos_idx].position.y,
-			    this._world.bodies[pos_idx].position.z);
+      for(var l=0; l<2; l++){
+	if(old_lines.length){
+	  // Get mesh from prev timestep
+	  line = old_lines.pop();
+	  geometry = line.geometry;
+	  geometry.vertices.pop();
+	  geometry.vertices.pop();
+	} else {
+	  // Create new mesh
+	  geometry = new THREE.Geometry();
+	  geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(0,0,0)));
+	  geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(1,1,1)));
+	  line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
 	  this._scene.add(line);
 	}
+	this._contactlines.push(line);
+	var r = l==0 ? c.ri : c.rj;
+	var b = l==0 ? bi : bj;
+	line.scale.set(r.x,r.y,r.z);
+	b.position.copy(line.position);
+	this._scene.add(line);
       }
     }
 
