@@ -9,7 +9,7 @@
  */
 CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
   if(!(bi instanceof CANNON.RigidBody) || !(bj instanceof CANNON.RigidBody))
-    throw "Arguments 1 and 2 must be instances of CANNON.RigidBody.";
+    throw new Error("Arguments 1 and 2 must be instances of CANNON.RigidBody.");
 
   // Local things
   this.ri = new CANNON.Vec3();

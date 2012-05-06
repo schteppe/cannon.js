@@ -562,6 +562,15 @@ CANNON.Vec3.prototype.dot = function(v){
 };
 
 /**
+ * @fn isZero
+ * @memberof CANNON.Vec3
+ * @return bool
+ */
+CANNON.Vec3.prototype.isZero = function(){
+  return this.x===0 && this.y===0 && this.z===0;
+}
+
+/**
  * @fn negate
  * @memberof CANNON.Vec3
  * @brief Make the vector point in the opposite direction.
@@ -626,7 +635,47 @@ CANNON.Vec3.prototype.copy = function(target){
   target.z = this.z;
   return target;
 };
-/*global CANNON:true */
+
+
+/**
+ * @fn lerp
+ * @memberof CANNON.Vec3
+ * @brief Do a linear interpolation between two vectors
+ * @param CANNON.Vec3 v
+ * @param float t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
+ * @param CANNON.Vec3 target
+ */
+CANNON.Vec3.prototype.lerp = function(v,t,target){
+  target.x = this.x + (v.x-this.x)*t;
+  target.y = this.y + (v.y-this.y)*t;
+  target.z = this.z + (v.z-this.z)*t;
+};
+
+/**
+ * Check if a vector 
+ */
+CANNON.Vec3.prototype.almostEquals = function(v,precision){
+  if(precision===undefined)
+    precision = 1e-6;
+  if(Math.abs(this.x-v.x)>precision ||
+     Math.abs(this.y-v.y)>precision ||
+     Math.abs(this.z-v.z)>precision)
+    return false;
+  return true;
+}
+
+/**
+ * Check if a vector is almost zero
+ */
+CANNON.Vec3.prototype.almostZero = function(precision){
+  if(precision===undefined)
+    precision = 1e-6;
+  if(Math.abs(this.x)>precision ||
+     Math.abs(this.y)>precision ||
+     Math.abs(this.z)>precision)
+    return false;
+  return true;
+}/*global CANNON:true */
 
 /**
  * @class CANNON.Quaternion
@@ -1277,6 +1326,7 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
   return r;
 };/**
  * @class CANNON.ConvexHull
+ * @brief A set of points in space describing a convex shape.
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
  * @see http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
@@ -1310,10 +1360,19 @@ CANNON.ConvexHull = function( vertices ) {
   this.faceNormals = [];
 
   /**
+   * @property array uniqueEdges
+   * @memberof CANNON.ConvexHull
+   * @brief Array of CANNON.Vec3
+   */
+  this.uniqueEdges = [];
+
+  /**
    * @fn addPoints
    * @memberof ConvexHull
    * @brief Add points to the hull
    * @param array points An array of CANNON.Vec3's
+   * @param array faces Deprecated - fix autogenerator for these
+   * @param array normals Deprecated - fix autogenerator for these
    * @return bool
    * @todo Auto generate faces
    * @todo auto generate normals
@@ -1328,44 +1387,442 @@ CANNON.ConvexHull = function( vertices ) {
       this.vertices.push(p);
     }
 
-    // @todo auto generate?
+    // @todo auto generate. See e.g. https://projects.developer.nokia.com/gles2phys/browser/tags/v1.1.0/src/bullet/BulletCollision/CollisionShapes/btConvexPolyhedron.cpp?rev=22
     this.faces = faces;
-    this.normals = this.faceNormals;
+    this.faceNormals = normals;
+    
+    for(var i=0; i<faces.length; i++){
+      var numVertices = faces[i].length;
+      var NbTris = numVertices;
+      for(var j=0; j<NbTris; j++){
+	var k = ( j+1 ) % numVertices;
+	var edge = new CANNON.Vec3();
+	this.vertices[faces[i][j]].vsub(this.vertices[faces[i][k]],edge);
+	edge.normalize();
+	var found = false;
+	for(var p=0;p<this.uniqueEdges.length;p++){
+	  if (this.uniqueEdges[p].almostEquals(edge) || 
+	      this.uniqueEdges[p].almostEquals(edge)){
+	    found = true;
+	    break;
+	  }
+	}
+
+	// What is this for???
+	if (!found){
+	  this.uniqueEdges.push(edge);
+	}
+
+	if (edge) {
+	  edge.face1 = i;
+	} else {
+	  var ed;
+	  ed.m_face0 = i;
+	  edges.insert(vp,ed);
+	}
+      }
+    }
 
     return true;
   }
 
   /**
-   * @brief Clip the hull against a face
-   * @param float position
-   * @param CANNON.Vec3 normal
-   * @return array An array of vertices
-   * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
+   * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
+   * @param CANNON.ConvexHull hull
+   * @param CANNON.Vec3 axis
+   * @param CANNON.Vec3 pos
+   * @param CANNON.Quaternion quat
+   * @param array maxmin
    */
-  this.clipAgainstFace = function(separatingNormal,v1,v2,v3){
-    // Clip polygon to back of planes of all faces of hull A that are adjacent to witness face
+  function project(hull,axis,pos,quat,maxmin){
+    var n = hull.vertices.length;
+    var max = null;
+    var min = null;
+    var vs = hull.vertices;
+    var worldVertex = new CANNON.Vec3();
+    for(var i=0; i<n; i++){
+      quat.vmult(vs[i],worldVertex);
+      worldVertex.vadd(pos,worldVertex);
+      var val = worldVertex.dot(axis);
+      if(max===null || val>max)
+	max = val;
+      if(min===null || val<min){
+	min = val;
+      }
+    }
+
+    if(min>max){
+      // Inconsistent - swap
+      var temp = min;
+      min = max;
+      max = temp;
+    }
+    
+    // Output
+    maxmin[0] = max;
+    maxmin[1] = min;
+  }
+
+  /**
+   * @fn testSepAxis
+   * @memberof CANNON.ConvexHull
+   * @brief Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
+   * @param CANNON.Vec3 axis
+   * @param CANNON.ConvexHull hullB
+   * @param CANNON.Vec3 posA
+   * @param CANNON.Quaternion quatA
+   * @param CANNON.Vec3 posB
+   * @param CANNON.Quaternion quatB
+   * @return float The overlap depth, or FALSE if no penetration.
+   */
+  this.testSepAxis = function(axis, hullB, posA, quatA, posB, quatB){
+    var maxminA=[], maxminB=[], hullA=this;
+    project(hullA, axis, posA, quatB, maxminA);
+    project(hullB, axis, posB, quatB, maxminB);
+    var maxA = maxminA[0];
+    var minA = maxminA[1];
+    var maxB = maxminB[0];
+    var minB = maxminB[1];
+
+    if(maxA<minB || maxB<minA){
+      return false; // Separated
+    }
+    
+    var d0 = maxA - minB;
+    var d1 = maxB - minA;
+    depth = d0<d1 ? d0:d1;
+    return depth;
+  }
+
+  /**
+   * Find the separating axis between this hull and another
+   * @param CANNON.ConvexHull hullB
+   * @param CANNON.Vec3 posA
+   * @param CANNON.Vec3 quatA
+   * @param CANNON.Vec3 posB
+   * @param CANNON.Vec3 quatB
+   * @param CANNON.Vec3 target The target vector to save the axis in
+   * @return bool Returns false if a separation is found, else true
+   */
+  this.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
+    var dmin = Infinity;
+    var hullA = this;
+    var curPlaneTests=0;
+    var numFacesA = hullA.faces.length;
+
+    // Test normals from hullA
+    var faceANormalWS = new CANNON.Vec3();
+    for(var i=0; i<numFacesA; i++){
+      // Get world face normal
+      hullA.faceNormals[i].copy(faceANormalWS);
+      quatA.vmult(faceANormalWS,faceANormalWS);
+      //posA.vadd(faceANormalWS,faceANormalWS); // Needed?
+      //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS);
+      
+      var d = hullA.testSepAxis(faceANormalWS, hullB, posA, quatA, posB, quatB);
+      if(d===false){
+	return false;
+      }
+      
+      if(d<dmin){
+	dmin = d;
+	faceANormalWS.copy(target);
+      }
+    }
+
+    // Test normals from hullB
+    var WorldNormal = new CANNON.Vec3(); 
+    var numFacesB = hullB.faces.length;
+    for(var i=0;i<numFacesB;i++){
+      hullB.faceNormals[i].copy(WorldNormal);
+      quatB.vmult(WorldNormal,WorldNormal);
+      //posB.vadd(WorldNormal,WorldNormal);
+      //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",WorldNormal.toString());
+      curPlaneTests++;
+      var d = hullA.testSepAxis(WorldNormal, hullB,posA,quatA,posB,quatB);
+      if(d===false){
+	return false;
+      }
+      
+      if(d<dmin){
+	dmin = d;
+	WorldNormal.copy(target);
+      }
+    }
+
+    var edgeAstart,edgeAend,edgeBstart,edgeBend;
+    
+    var curEdgeEdge = 0;
+    // Test edges
+    var WorldEdge0 = new CANNON.Vec3();
+    var WorldEdge1 = new CANNON.Vec3();
+    var Cross = new CANNON.Vec3();
+    for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
+      // Get world edge
+      hullA.uniqueEdges[e0].copy(WorldEdge0);
+      quatA.vmult(WorldEdge0,WorldEdge0);
+      //posA.vadd(WorldEdge0,WorldEdge0); // needed?
+
+      //console.log("edge0:",WorldEdge0.toString());
+
+      for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
+	hullB.uniqueEdges[e1].copy(WorldEdge1);
+	quatB.vmult(WorldEdge1,WorldEdge1);
+	//posB.vadd(WorldEdge1,WorldEdge1); // needed?
+	//console.log("edge1:",WorldEdge1.toString());
+	
+	WorldEdge0.cross(WorldEdge1,Cross);
+
+	curEdgeEdge++;
+	if(!Cross.almostZero()){
+	  Cross.normalize();
+	  var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
+	  if(dist===false){
+	    return false;
+	  }
+	  
+	  if(dist<dmin){
+	    dmin = dist;
+	    Cross.copy(target);
+	  }
+	}
+      }
+    }
+
+    var deltaC = new CANNON.Vec3();
+    posB.vsub(posA,deltaC);
+    if((deltaC.dot(target))>0.0)
+      target.negate(target);
+    
+    return true;
+}
+
+  /**
+   * @fn clipAgainstHull
+   * @memberof CANNON.ConvexHull
+   * @brief Clip this hull against another hull
+   * @param CANNON.Vec3 posA
+   * @param CANNON.Quaternion quatA
+   * @param CANNON.ConvexHull hullB
+   * @param CANNON.Vec3 posB
+   * @param CANNON.Quaternion quatB
+   * @param CANNON.Vec3 separatingNormal
+   * @param float minDist Clamp distance
+   * @param float maxDist
+   * @param array result The resulting ContactPoints
+   * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
+   * @todo Store contact points?
+   */
+  this.clipAgainstHull = function(posA,quatA,hullB,posB,quatB,separatingNormal,minDist,maxDist,result){
+    if(!(posA instanceof CANNON.Vec3))
+      throw new Error("posA must be Vec3");
+    if(!(quatA instanceof CANNON.Quaternion))
+      throw new Error("quatA must be Quaternion");
+    var hullA = this;
+    var curMaxDist = maxDist;
+    var closestFaceB = -1;
+    var dmax = -Infinity;
+    var WorldNormal = new CANNON.Vec3();
+    for(var face=0; face < hullB.faces.length; face++){
+      this.faceNormals[face].copy(WorldNormal);
+      quatB.vmult(WorldNormal,WorldNormal);
+      posB.vadd(WorldNormal,WorldNormal);
+
+      var d = WorldNormal.dot(separatingNormal);
+      if (d > dmax){
+	dmax = d;
+	closestFaceB = face;
+      }
+    }
+    var worldVertsB1 = [];
+    polyB = hullB.faces[closestFaceB];
+    var numVertices = polyB.length;
+    for(var e0=0; e0<numVertices; e0++){
+      var b = hullB.vertices[polyB[e0]];
+      var worldb = new CANNON.Vec3();
+      b.copy(worldb);
+      quatB.vmult(worldb,worldb);
+      posB.vadd(worldb,worldb);
+      worldVertsB1.push(worldb);
+    }
+    
+    if (closestFaceB>=0)
+      this.clipFaceAgainstHull(separatingNormal,
+			       posA,
+			       quatA,
+			       worldVertsB1,
+			       minDist,
+			       maxDist,
+			       result);
   };
 
   /**
-   * Clip a face against a plane
+   * Clip a face against a hull
+   * @param CANNON.Vec3 separatingNormal
+   * @param CANNON.Vec3 posA
+   * @param CANNON.Quaternion quatA
+   * @param Array worldVertsB1
+   * @param float minDist Distance clamping
+   * @param float maxDist
+   * @param Array result Array to store resulting contact points in
+   */
+  this.clipFaceAgainstHull = function(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist,result){
+    if(!(separatingNormal instanceof CANNON.Vec3))
+       throw new Error("sep normal must be vector");
+    if(!(worldVertsB1 instanceof Array))
+       throw new Error("world verts must be array");
+    minDist = Number(minDist);
+    maxDist = Number(maxDist);
+    var hullA = this;
+    var worldVertsB2 = [];
+    var pVtxIn = worldVertsB1;
+    var pVtxOut = worldVertsB2;
+
+    // Find the face with normal closest to the separating axis
+    var closestFaceA = -1;
+    var dmin = Infinity;
+    var faceANormalWS = new CANNON.Vec3();
+    for(var face=0; face<hullA.faces.length; face++){
+      this.faceNormals[face].copy(faceANormalWS);
+      quatA.vmult(faceANormalWS,faceANormalWS);
+      posA.vadd(faceANormalWS,faceANormalWS);
+      
+      var d = faceANormalWS.dot(separatingNormal);
+      if (d < dmin){
+	dmin = d;
+	closestFaceA = face;
+      }
+    }
+    if (closestFaceA<0){
+      console.log("--- did not find any closest face... ---");
+      return;
+    }
+
+    // Get the face and construct connected faces
+    var polyA = hullA.faces[closestFaceA];
+    polyA.connectedFaces = [];
+    for(var i=0; i<hullA.faces.length; i++)
+      for(var j=0; j<hullA.faces[i].length; j++)
+	if(polyA.indexOf(hullA.faces[i][j])!==-1 && // Sharing a vertex
+	   i!==closestFaceA && // Not the one we are looking for connections from
+	   polyA.connectedFaces.indexOf(i)===-1 // Not already added
+	   )
+	  polyA.connectedFaces.push(i);
+    
+    // Clip the polygon to the back of the planes of all faces of hull A, that are adjacent to the witness face
+    var numContacts = pVtxIn.length;
+    var numVerticesA = polyA.length;
+    var edge0 = new CANNON.Vec3();
+    var WorldEdge0 = new CANNON.Vec3();
+    var worldPlaneAnormal1 = new CANNON.Vec3();
+    var planeNormalWS1 = new CANNON.Vec3();
+    var res = [];
+    for(var e0=0; e0<numVerticesA; e0++){
+      var a = hullA.vertices[polyA[e0]];
+      var b = hullA.vertices[polyA[(e0+1)%numVerticesA]];
+      a.vsub(b,edge0);
+      edge0.copy(WorldEdge0);
+      quatA.vmult(WorldEdge0,WorldEdge0);
+      posA.vadd(WorldEdge0,WorldEdge0);
+      this.faceNormals[closestFaceA].copy(worldPlaneAnormal1);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
+      quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
+      posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
+      WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
+      planeNormalWS1.negate();
+      var worldA1 = new CANNON.Vec3();
+      a.copy(worldA1);
+      quatA.vmult(worldA1,worldA1);
+      posA.vadd(worldA1,worldA1);
+      var planeEqWS1 = -worldA1.dot(planeNormalWS1);
+
+      if(true){
+	var otherFace = polyA.connectedFaces[e0];
+	var localPlaneNormal = new CANNON.Vec3();
+	this.faceNormals[otherFace].copy(localPlaneNormal);
+	var localPlaneEq = planeConstant(otherFace);
+	
+	var planeNormalWS = new CANNON.Vec3();
+	localPlaneNormal.copy(planeNormalWS);
+	quatA.vmult(planeNormalWS,planeNormalWS);
+	//posA.vadd(planeNormalWS,planeNormalWS);
+	var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
+      } else  {
+	var planeNormalWS = planeNormalWS1;
+	var planeEqWS = planeEqWS1;
+      }
+
+      // Clip face against our constructed plane
+      console.log("clipping polygon ",printFace(closestFaceA)," against plane ",planeNormalWS, planeEqWS);
+      this.clipFaceAgainstPlane(pVtxIn, pVtxOut, planeNormalWS, planeEqWS);
+      //console.log(" - clip result: ",pVtxOut);
+
+      // Throw away all clipped points, but save the reamining until next clip
+      while(pVtxIn.length)  pVtxIn.shift();
+      while(pVtxOut.length) pVtxIn.push(pVtxOut.shift());
+    }
+
+    console.log("Resulting points after clip:",pVtxIn);
+        
+    // only keep contact points that are behind the witness face
+    var localPlaneNormal = new CANNON.Vec3();
+    this.faceNormals[closestFaceA].copy(localPlaneNormal);
+    
+    var localPlaneEq = planeConstant(closestFaceA);
+    var planeNormalWS = new CANNON.Vec3();
+    localPlaneNormal.copy(planeNormalWS);
+    quatA.vmult(planeNormalWS,planeNormalWS);
+    //posA.vadd(planeNormalWS,planeNormalWS);
+    
+    var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
+    for (var i=0; i<pVtxIn.length; i++){
+      var depth = planeNormalWS.dot(pVtxIn[i]) + planeEqWS; //???
+      //console.log("depth calc from normal=",planeNormalWS," and constant "+planeEqWS+" and vertex ",pVtxIn[i]," gives "+depth);
+      if (depth <=minDist){
+	console.log("clamped: depth="+depth+" to minDist="+(minDist+""));
+	depth = minDist;
+      }
+      
+      if (depth <=maxDist){
+	var point = pVtxIn[i];
+	console.log("Got contact point ",point.toString(),
+		    ", depth=",depth,
+		    "contact normal=",separatingNormal.toString(),
+		    "plane",planeNormalWS.toString(),
+		    "planeConstant",planeEqWS);
+	//result.push(new CANNON.ContactPoint());
+      }
+    }
+  }
+  
+  /**
+   * Clip a face in a hull against the back of a plane.
+   * @param Array inVertices
+   * @param Array outVertices
    * @param int face_index
    * @param CANNON.Vec3 planeNormal
-   * @param float planeConstant
+   * @param float planeConstant The constant in the mathematical plane equation
+   * @todo inVertices is not used - remove?
    */
-  function clipFaceAgainstPlane(face_index, planeNormal, planeConstant){
-    var n_dot_first, n_dot_last, face = that.faces[face_index];
-    var numVerts = face.length;
-    var outVertices = [];
+  this.clipFaceAgainstPlane = function(inVertices,outVertices, planeNormal, planeConstant){
+    if(!(planeNormal instanceof CANNON.Vec3))
+      throw new Error("planeNormal must be Vec3, "+planeNormal+" given");
+    if(!(inVertices instanceof Array))
+      throw new Error("invertices must be Array, "+inVertices+" given");
+    if(!(outVertices instanceof Array))
+      throw new Error("outvertices must be Array, "+outVertices+" given");
+    var n_dot_first, n_dot_last;
+    var numVerts = inVertices.length;
 
-    if(numVerts < 2) return outVertices;
+    if(numVerts < 2)
+      return outVertices;
     
-    var firstVertex = face[face.length-1];
-    var lastVertex =   face[0];
-    
+    var firstVertex = inVertices[inVertices.length-1];
+    var lastVertex =   inVertices[0];
+
     n_dot_first = planeNormal.dot(firstVertex) + planeConstant;
     
     for(var vi = 0; vi < numVerts; vi++){
-      lastVertex = face[vi];
+      lastVertex = inVertices[vi];
       n_dot_last = planeNormal.dot(lastVertex) + planeConstant;
       if(n_dot_first < 0){
 	if(n_dot_last<0){
@@ -1373,14 +1830,20 @@ CANNON.ConvexHull = function( vertices ) {
 	  outVertices.push(lastVertex);
 	} else {
 	  // Start < 0, end >= 0, so output intersection
-	  outVertices.push(firstVertex.lerp(lastVertex,
-					    n_dot_first * 1.0/(n_dot_first - n_dot_last)));
+	  var newv = new CANNON.Vec3();
+	  firstVertex.lerp(lastVertex,
+			   n_dot_first * 1.0/(n_dot_first - n_dot_last),
+			   newv);
+	  outVertices.push(newv);
 	}
       } else {
 	if(n_dot_last<0){
 	  // Start >= 0, end < 0 so output intersection and end
-	  outVertices.push(firstVertex.lerp(lastVertex,
-					    n_dot_first * 1.0/(n_dot_first - n_dot_last)));
+	  var newv = new CANNON.Vec3();
+	  firstVertex.lerp(lastVertex,
+			   n_dot_first * 1.0/(n_dot_first - n_dot_last),
+			   newv);
+	  outVertices.push(newv);
 	  outVertices.push(lastVertex);
 	}
       }
@@ -1409,6 +1872,24 @@ CANNON.ConvexHull = function( vertices ) {
     return n.dot( vertex ) >= dist;
   }
 
+  var that = this;
+  function normalOfFace(i,target){
+    var f = that.faces[i];
+    //console.log(i,that.faces);
+    var va = that.vertices[f[0]];
+    var vb = that.vertices[f[1]];
+    var vc = that.vertices[f[2]];
+    return normal(va,vb,vc,target);
+  }
+
+  function planeConstant(face_i,target){
+    var f = that.faces[face_i];
+    var n = that.faceNormals[face_i];
+    var v = that.vertices[f[0]];
+    var c = -n.dot(v);
+    return c;
+  }
+
   /**
    * @brief Get face normal given 3 vertices
    * @param CANNON.Vec3 va
@@ -1428,6 +1909,13 @@ CANNON.ConvexHull = function( vertices ) {
     if ( !target.isZero() ) {
       target.normalize();
     }
+  }
+
+  function printFace(i){
+    var f = that.faces[i], s = "";
+    for(var j=0; j<f.length; j++)
+      s += " ("+that.vertices[f[j]]+")";
+    return s;
   }
 
   /**
@@ -1831,389 +2319,6 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 };
 
 /*global CANNON:true */
-
-/**
- * @class CANNON.ContactGenerator
- * @brief Helper class for the World. Generates ContactPoints.
- */
-CANNON.ContactGenerator = function(){
-
-  /**
-   * @property bool contactReduction
-   * @memberof CANNON.ContactGenerator
-   * @brief Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
-   */
-  this.contactReduction = true;
-
-  // Contact point objects that can be reused
-  var contactPointPool = [];
-
-  /**
-   * Near phase calculation, get the contact point, normal, etc.
-   * @param array result The result one will get back with all the contact point information
-   * @param Shape si Colliding shape
-   * @param Shape sj
-   * @param Vec3 xi Position of the center of mass
-   * @param Vec3 xj
-   * @param Quaternion qi Rotation around the center of mass
-   * @param Quaternion qj
-   * @todo All collision cases
-   */
-  function nearPhase(result,si,sj,xi,xj,qi,qj,bi,bj){
-    var swapped = false;
-    if(si.type>sj.type){
-      var temp;
-      temp=sj;   sj=si;   si=temp;
-      temp=xj;   xj=xi;   xi=temp;
-      temp=qj;   qj=qi;   qi=temp;
-      temp=bj;   bj=bi;   bi=temp;
-      swapped = true;
-    }
-
-    /**
-     * Make a contact object.
-     * @return object
-     * @todo reuse old contact point objects
-     */
-    function makeResult(bi,bj){
-      if(contactPointPool.length){
-	var c = contactPointPool.pop();
-	c.bi = bi;
-	c.bj = bj;
-	return c;
-      } else
-	return new CANNON.ContactPoint(bi,bj);
-    }
-
-    /**
-     * Swaps the body references in the contact
-     * @param object r
-     */
-    function swapResult(r){
-      var temp;
-      temp = r.ri; r.ri = r.rj; r.rj = temp;
-      r.ni.negate(r.ni);
-      temp = r.bi; r.bi = r.bj; r.bj = temp;
-    }
-
-    /**
-     * Go recursive for compound shapes
-     * @param Shape si
-     * @param CompoundShape sj
-     */
-    function recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj){
-      for(var i=0; i<sj.childShapes.length; i++){
-	var r = [];
-	nearPhase(r,
-		  si,
-		  sj.childShapes[i],
-		  xi,
-		  xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
-		  qi,
-		  qj.mult(sj.childOrientations[i]),
-		  bi,
-		  bj);
-	// Transform back
-	for(var j=0; j<r.length; j++){
-	  r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
-	  result.push(r[j]);
-	}
-      }
-    }
-
-    if(si.type==CANNON.Shape.types.SPHERE){
-      if(sj.type==CANNON.Shape.types.SPHERE){ // sphere-sphere
-
-	// We will have one contact in this case
-	var r = makeResult(bi,bj);
-
-	// Contact normal
-	xj.vsub(xi,r.ni);
-	r.ni.normalize();
-
-	// Contact point locations
-	r.ni.copy(r.ri);
-	r.ni.copy(r.rj);
-	r.ri.mult(si.radius,r.ri);
-	r.rj.mult(-sj.radius,r.rj);
-	result.push(r);
-
-      } else if(sj.type==CANNON.Shape.types.PLANE){ // sphere-plane
-
-	// We will have one contact in this case
-	var r = makeResult(bi,bj);
-
-	// Contact normal
-	sj.normal.copy(r.ni);
-	qj.vmult(r.ni,r.ni);
-	r.ni.negate(r.ni); // body i is the sphere, flip normal
-	r.ni.normalize();
-
-	// Vector from sphere center to contact point
-	r.ni.mult(si.radius,r.ri);
-
-	// Project down sphere on plane
-	var point_on_plane_to_sphere = xi.vsub(xj);
-	var plane_to_sphere_ortho = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
-	r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
-	if(plane_to_sphere_ortho.norm() <= si.radius)
-	  result.push(r);
-	
-      } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
-
-	// we refer to the box as body j
-	var box_to_sphere =  xi.vsub(xj);
-	var sides = sj.getSideNormals(true,qj);
-	var R =     si.radius;
-	var penetrating_sides = [];
-
-	// Check side (plane) intersections
-	var found = false;
-	for(var idx=0; idx<sides.length && !found; idx++){ // Max 3 penetrating sides
-	  var ns = sides[idx].copy();
-	  var h = ns.norm();
-	  ns.normalize();
-	  var dot = box_to_sphere.dot(ns);
-	  if(dot<h+R && dot>0){
-	    // Intersects plane. Now check the other two dimensions
-	    var ns1 = sides[(idx+1)%3].copy();
-	    var ns2 = sides[(idx+2)%3].copy();
-	    var h1 = ns1.norm();
-	    var h2 = ns2.norm();
-	    ns1.normalize();
-	    ns2.normalize();
-	    var dot1 = box_to_sphere.dot(ns1);
-	    var dot2 = box_to_sphere.dot(ns2);
-	    if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
-	      found = true;
-	      var r = makeResult(bi,bj);
-	      ns.mult(-R,r.ri); // Sphere r
-	      ns.copy(r.ni);
-	      r.ni.negate(r.ni); // Normal should be out of sphere
-	      ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
-	      result.push(r);
-	    }
-	  }
-	}
-
-	// Check corners
-	var rj = new CANNON.Vec3();
-	for(var j=0; j<2 && !found; j++){
-	  for(var k=0; k<2 && !found; k++){
-	    for(var l=0; l<2 && !found; l++){
-	      rj.set(0,0,0);
-	      if(j) rj.vadd(sides[0],rj);
-	      else  rj.vsub(sides[0],rj);
-	      if(k) rj.vadd(sides[1],rj);
-	      else  rj.vsub(sides[1],rj);
-	      if(l) rj.vadd(sides[2],rj);
-	      else  rj.vsub(sides[2],rj);
-
-	      // World position of corner
-	      var sphere_to_corner = xj.vadd(rj).vsub(xi);
-	      if(sphere_to_corner.norm()<R){
-		found = true;
-		var r = makeResult(bi,bj);
-		sphere_to_corner.copy(r.ri);
-		r.ri.normalize();
-		r.ri.copy(r.ni);
-		r.ri.mult(R,r.ri);
-		rj.copy(r.rj);
-		result.push(r);
-	      }
-	    }
-	  }
-	}
-
-	// Check edges
-	var edgeTangent = new CANNON.Vec3();
-	var edgeCenter = new CANNON.Vec3();
-	var r = new CANNON.Vec3(); // r = edge center to sphere center
-	var orthogonal = new CANNON.Vec3();
-	var dist = new CANNON.Vec3();
-	for(var j=0; j<sides.length && !found; j++){
-	  for(var k=0; k<sides.length && !found; k++){
-	    if(j%3!=k%3){
-	      // Get edge tangent
-	      sides[k].cross(sides[j],edgeTangent);
-	      edgeTangent.normalize();
-	      sides[j].vadd(sides[k], edgeCenter);
-	      xi.copy(r);
-	      r.vsub(edgeCenter,r);
-	      r.vsub(xj,r);
-	      var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
-	      edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
-	      
-	      // Find the third side orthogonal to this one
-	      var l = 0;
-	      while(l==j%3 || l==k%3) l++;
-
-	      // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-	      xi.copy(dist);
-	      dist.vsub(orthogonal,dist);
-	      dist.vsub(edgeCenter,dist);
-	      dist.vsub(xj,dist);
-
-	      // Distances in tangent direction and distance in the plane orthogonal to it
-	      var tdist = Math.abs(orthonorm);
-	      var ndist = dist.norm();
-	      
-	      if(tdist < sides[l].norm() && ndist<R){
-		found = true;
-		var res = makeResult(bi,bj);
-		edgeCenter.vadd(orthogonal,res.rj); // box rj
-		res.rj.copy(res.rj);
-		dist.negate(res.ni);
-		res.ni.normalize();
-
-		res.rj.copy(res.ri);
-		res.ri.vadd(xj,res.ri);
-		res.ri.vsub(xi,res.ri);
-		res.ri.normalize();
-		res.ri.mult(R,res.ri);
-
-		result.push(res);
-	      }
-	    }
-	  }
-	}
-
-      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
-	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-      }
-      
-    } else if(si.type==CANNON.Shape.types.PLANE){
-      
-      if(sj.type==CANNON.Shape.types.PLANE){ // plane-plane
-	throw "Plane-plane collision... wait, you did WHAT?";
-	
-      } else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
-
-	// Collision normal
-	var n = si.normal.copy();
-
-	// Loop over corners
-	var numcontacts = 0;
-	var corners = sj.getCorners(qj);
-	for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
-	  var r = makeResult(bi,bj);
-	  var worldCorner = corners[idx].vadd(xj);
-	  corners[idx].copy(r.rj);
-
-	  // Project down corner to plane to get xj
-	  var point_on_plane_to_corner = worldCorner.vsub(xi);
-	  var d = n.dot(point_on_plane_to_corner);
-	  if(d<=0){
-	    numcontacts++;
-	    var plane_to_corner = n.mult(d);
-	    point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
-	    
-	    // Set contact normal
-	    n.copy(r.ni);
-	    
-	    // Add contact
-	    result.push(r);
-	  }
-	}
-	
-      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
-	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-      }
-      
-    } else if(si.type==CANNON.Shape.types.BOX){
-      
-      if(sj.type==CANNON.Shape.types.BOX){ // box-box
-	throw "box-box collision not implemented yet";
-      }
-      
-      if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
-	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-	
-      }
-      
-    } else if(si.type==CANNON.Shape.types.COMPOUND){
-      
-      if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
-	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-	
-      }
-    }
-    
-    // Swap back if we swapped bodies in the beginning
-    for(var i=0; swapped && i<result.length; i++)
-      swapResult(result[i]);
-  }
-
-  /**
-   * @param array p1 Array of body indices
-   * @param array p2 Array of body indices
-   * @param CANNON.World world
-   * @param array result Array to store generated contacts
-   * @param array oldcontacts Optional. Array of reusable contact objects
-   */
-  this.getContacts = function(p1,p2,world,result,oldcontacts){
-    
-    // Save old contact objects
-    for(var i=0; oldcontacts && i<oldcontacts.length; i++)
-      contactPointPool.push(oldcontacts[i]);
-
-    for(var k=0; k<p1.length; k++){
-      // Get current collision indeces
-      var i = p1[k],
-      j = p2[k];
-
-      var bi = world.bodies[i],
-      bj = world.bodies[j];
-
-      // Get contacts
-      nearPhase(result,
-		bi.shape,
-		bj.shape,
-		bi.position,
-		bj.position,
-		bi.quaternion,
-		bj.quaternion,
-		bi,
-		bj
-		);
-    }
-  }
-};/*global CANNON:true */
-
-/**
- * @class CANNON.World
- * @brief The physics world
- */
-CANNON.World = function(){
-
-
-};/**
- * ContactPoint class
- * @brief A representation of a contact point between two bodies. Should be generated by the ContactGenerator
- * @param CANNON.RigidBody bi
- * @param CANNON.RigidBody bj
- * @param CANNON.Vec3 ri Optional. The vector from the center of mass of bi to the contact.
- * @param CANNON.Vec3 rj Optional. The vector from the center of mass of bj to the contact.
- * @param CANNON.Vec3 ni Optional. Contact normal vector, pointing out of body bi.
- */
-CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
-  if(!(bi instanceof CANNON.RigidBody) || !(bj instanceof CANNON.RigidBody))
-    throw "Arguments 1 and 2 must be instances of CANNON.RigidBody.";
-
-  // Local things
-  this.ri = new CANNON.Vec3();
-  this.rj = new CANNON.Vec3();
-  this.ni = new CANNON.Vec3();
-  
-  // Copy over data if arguments were passed
-  if(ri) ri.copy(this.ri);
-  if(rj) ri.copy(this.rj);
-  if(ni) ri.copy(this.ni);
-  
-  // References to bodies
-  this.bi = bi;
-  this.bj = bj;
-};/*global CANNON:true */
 
 /**
  * @class CANNON.World
@@ -2860,7 +2965,381 @@ CANNON.World.prototype.step = function(dt){
   world.stepnumber += 1;
 };
 
-if (typeof module !== 'undefined') {
+/**
+ * ContactPoint class
+ * @brief A representation of a contact point between two bodies. Should be generated by the ContactGenerator
+ * @param CANNON.RigidBody bi
+ * @param CANNON.RigidBody bj
+ * @param CANNON.Vec3 ri Optional. The vector from the center of mass of bi to the contact.
+ * @param CANNON.Vec3 rj Optional. The vector from the center of mass of bj to the contact.
+ * @param CANNON.Vec3 ni Optional. Contact normal vector, pointing out of body bi.
+ */
+CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
+  if(!(bi instanceof CANNON.RigidBody) || !(bj instanceof CANNON.RigidBody))
+    throw new Error("Arguments 1 and 2 must be instances of CANNON.RigidBody.");
+
+  // Local things
+  this.ri = new CANNON.Vec3();
+  this.rj = new CANNON.Vec3();
+  this.ni = new CANNON.Vec3();
+  
+  // Copy over data if arguments were passed
+  if(ri) ri.copy(this.ri);
+  if(rj) ri.copy(this.rj);
+  if(ni) ri.copy(this.ni);
+  
+  // References to bodies
+  this.bi = bi;
+  this.bj = bj;
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.ContactGenerator
+ * @brief Helper class for the World. Generates ContactPoints.
+ */
+CANNON.ContactGenerator = function(){
+
+  /**
+   * @property bool contactReduction
+   * @memberof CANNON.ContactGenerator
+   * @brief Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
+   */
+  this.contactReduction = true;
+
+  // Contact point objects that can be reused
+  var contactPointPool = [];
+
+  /**
+   * Near phase calculation, get the contact point, normal, etc.
+   * @param array result The result one will get back with all the contact point information
+   * @param Shape si Colliding shape
+   * @param Shape sj
+   * @param Vec3 xi Position of the center of mass
+   * @param Vec3 xj
+   * @param Quaternion qi Rotation around the center of mass
+   * @param Quaternion qj
+   * @todo All collision cases
+   */
+  function nearPhase(result,si,sj,xi,xj,qi,qj,bi,bj){
+    var swapped = false;
+    if(si.type>sj.type){
+      var temp;
+      temp=sj;   sj=si;   si=temp;
+      temp=xj;   xj=xi;   xi=temp;
+      temp=qj;   qj=qi;   qi=temp;
+      temp=bj;   bj=bi;   bi=temp;
+      swapped = true;
+    }
+
+    /**
+     * Make a contact object.
+     * @return object
+     * @todo reuse old contact point objects
+     */
+    function makeResult(bi,bj){
+      if(contactPointPool.length){
+	var c = contactPointPool.pop();
+	c.bi = bi;
+	c.bj = bj;
+	return c;
+      } else
+	return new CANNON.ContactPoint(bi,bj);
+    }
+
+    /**
+     * Swaps the body references in the contact
+     * @param object r
+     */
+    function swapResult(r){
+      var temp;
+      temp = r.ri; r.ri = r.rj; r.rj = temp;
+      r.ni.negate(r.ni);
+      temp = r.bi; r.bi = r.bj; r.bj = temp;
+    }
+
+    /**
+     * Go recursive for compound shapes
+     * @param Shape si
+     * @param CompoundShape sj
+     */
+    function recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj){
+      for(var i=0; i<sj.childShapes.length; i++){
+	var r = [];
+	nearPhase(r,
+		  si,
+		  sj.childShapes[i],
+		  xi,
+		  xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
+		  qi,
+		  qj.mult(sj.childOrientations[i]),
+		  bi,
+		  bj);
+	// Transform back
+	for(var j=0; j<r.length; j++){
+	  r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
+	  result.push(r[j]);
+	}
+      }
+    }
+
+    if(si.type==CANNON.Shape.types.SPHERE){
+      if(sj.type==CANNON.Shape.types.SPHERE){ // sphere-sphere
+
+	// We will have one contact in this case
+	var r = makeResult(bi,bj);
+
+	// Contact normal
+	xj.vsub(xi,r.ni);
+	r.ni.normalize();
+
+	// Contact point locations
+	r.ni.copy(r.ri);
+	r.ni.copy(r.rj);
+	r.ri.mult(si.radius,r.ri);
+	r.rj.mult(-sj.radius,r.rj);
+	result.push(r);
+
+      } else if(sj.type==CANNON.Shape.types.PLANE){ // sphere-plane
+
+	// We will have one contact in this case
+	var r = makeResult(bi,bj);
+
+	// Contact normal
+	sj.normal.copy(r.ni);
+	qj.vmult(r.ni,r.ni);
+	r.ni.negate(r.ni); // body i is the sphere, flip normal
+	r.ni.normalize();
+
+	// Vector from sphere center to contact point
+	r.ni.mult(si.radius,r.ri);
+
+	// Project down sphere on plane
+	var point_on_plane_to_sphere = xi.vsub(xj);
+	var plane_to_sphere_ortho = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
+	r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
+	if(plane_to_sphere_ortho.norm() <= si.radius)
+	  result.push(r);
+	
+      } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
+
+	// we refer to the box as body j
+	var box_to_sphere =  xi.vsub(xj);
+	var sides = sj.getSideNormals(true,qj);
+	var R =     si.radius;
+	var penetrating_sides = [];
+
+	// Check side (plane) intersections
+	var found = false;
+	for(var idx=0; idx<sides.length && !found; idx++){ // Max 3 penetrating sides
+	  var ns = sides[idx].copy();
+	  var h = ns.norm();
+	  ns.normalize();
+	  var dot = box_to_sphere.dot(ns);
+	  if(dot<h+R && dot>0){
+	    // Intersects plane. Now check the other two dimensions
+	    var ns1 = sides[(idx+1)%3].copy();
+	    var ns2 = sides[(idx+2)%3].copy();
+	    var h1 = ns1.norm();
+	    var h2 = ns2.norm();
+	    ns1.normalize();
+	    ns2.normalize();
+	    var dot1 = box_to_sphere.dot(ns1);
+	    var dot2 = box_to_sphere.dot(ns2);
+	    if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
+	      found = true;
+	      var r = makeResult(bi,bj);
+	      ns.mult(-R,r.ri); // Sphere r
+	      ns.copy(r.ni);
+	      r.ni.negate(r.ni); // Normal should be out of sphere
+	      ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
+	      result.push(r);
+	    }
+	  }
+	}
+
+	// Check corners
+	var rj = new CANNON.Vec3();
+	for(var j=0; j<2 && !found; j++){
+	  for(var k=0; k<2 && !found; k++){
+	    for(var l=0; l<2 && !found; l++){
+	      rj.set(0,0,0);
+	      if(j) rj.vadd(sides[0],rj);
+	      else  rj.vsub(sides[0],rj);
+	      if(k) rj.vadd(sides[1],rj);
+	      else  rj.vsub(sides[1],rj);
+	      if(l) rj.vadd(sides[2],rj);
+	      else  rj.vsub(sides[2],rj);
+
+	      // World position of corner
+	      var sphere_to_corner = xj.vadd(rj).vsub(xi);
+	      if(sphere_to_corner.norm()<R){
+		found = true;
+		var r = makeResult(bi,bj);
+		sphere_to_corner.copy(r.ri);
+		r.ri.normalize();
+		r.ri.copy(r.ni);
+		r.ri.mult(R,r.ri);
+		rj.copy(r.rj);
+		result.push(r);
+	      }
+	    }
+	  }
+	}
+
+	// Check edges
+	var edgeTangent = new CANNON.Vec3();
+	var edgeCenter = new CANNON.Vec3();
+	var r = new CANNON.Vec3(); // r = edge center to sphere center
+	var orthogonal = new CANNON.Vec3();
+	var dist = new CANNON.Vec3();
+	for(var j=0; j<sides.length && !found; j++){
+	  for(var k=0; k<sides.length && !found; k++){
+	    if(j%3!=k%3){
+	      // Get edge tangent
+	      sides[k].cross(sides[j],edgeTangent);
+	      edgeTangent.normalize();
+	      sides[j].vadd(sides[k], edgeCenter);
+	      xi.copy(r);
+	      r.vsub(edgeCenter,r);
+	      r.vsub(xj,r);
+	      var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
+	      edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
+	      
+	      // Find the third side orthogonal to this one
+	      var l = 0;
+	      while(l==j%3 || l==k%3) l++;
+
+	      // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
+	      xi.copy(dist);
+	      dist.vsub(orthogonal,dist);
+	      dist.vsub(edgeCenter,dist);
+	      dist.vsub(xj,dist);
+
+	      // Distances in tangent direction and distance in the plane orthogonal to it
+	      var tdist = Math.abs(orthonorm);
+	      var ndist = dist.norm();
+	      
+	      if(tdist < sides[l].norm() && ndist<R){
+		found = true;
+		var res = makeResult(bi,bj);
+		edgeCenter.vadd(orthogonal,res.rj); // box rj
+		res.rj.copy(res.rj);
+		dist.negate(res.ni);
+		res.ni.normalize();
+
+		res.rj.copy(res.ri);
+		res.ri.vadd(xj,res.ri);
+		res.ri.vsub(xi,res.ri);
+		res.ri.normalize();
+		res.ri.mult(R,res.ri);
+
+		result.push(res);
+	      }
+	    }
+	  }
+	}
+
+      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+      }
+      
+    } else if(si.type==CANNON.Shape.types.PLANE){
+      
+      if(sj.type==CANNON.Shape.types.PLANE){ // plane-plane
+	throw "Plane-plane collision... wait, you did WHAT?";
+	
+      } else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
+
+	// Collision normal
+	var n = si.normal.copy();
+
+	// Loop over corners
+	var numcontacts = 0;
+	var corners = sj.getCorners(qj);
+	for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
+	  var r = makeResult(bi,bj);
+	  var worldCorner = corners[idx].vadd(xj);
+	  corners[idx].copy(r.rj);
+
+	  // Project down corner to plane to get xj
+	  var point_on_plane_to_corner = worldCorner.vsub(xi);
+	  var d = n.dot(point_on_plane_to_corner);
+	  if(d<=0){
+	    numcontacts++;
+	    var plane_to_corner = n.mult(d);
+	    point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
+	    
+	    // Set contact normal
+	    n.copy(r.ni);
+	    
+	    // Add contact
+	    result.push(r);
+	  }
+	}
+	
+      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+      }
+      
+    } else if(si.type==CANNON.Shape.types.BOX){
+      
+      if(sj.type==CANNON.Shape.types.BOX){ // box-box
+	throw "box-box collision not implemented yet";
+      }
+      
+      if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+	
+      }
+      
+    } else if(si.type==CANNON.Shape.types.COMPOUND){
+      
+      if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
+	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+	
+      }
+    }
+    
+    // Swap back if we swapped bodies in the beginning
+    for(var i=0; swapped && i<result.length; i++)
+      swapResult(result[i]);
+  }
+
+  /**
+   * @param array p1 Array of body indices
+   * @param array p2 Array of body indices
+   * @param CANNON.World world
+   * @param array result Array to store generated contacts
+   * @param array oldcontacts Optional. Array of reusable contact objects
+   */
+  this.getContacts = function(p1,p2,world,result,oldcontacts){
+    
+    // Save old contact objects
+    for(var i=0; oldcontacts && i<oldcontacts.length; i++)
+      contactPointPool.push(oldcontacts[i]);
+
+    for(var k=0; k<p1.length; k++){
+      // Get current collision indeces
+      var i = p1[k],
+      j = p2[k];
+
+      var bi = world.bodies[i],
+      bj = world.bodies[j];
+
+      // Get contacts
+      nearPhase(result,
+		bi.shape,
+		bj.shape,
+		bi.position,
+		bj.position,
+		bi.quaternion,
+		bj.quaternion,
+		bi,
+		bj
+		);
+    }
+  }
+};if (typeof module !== 'undefined') {
 	// export for node
 	module.exports = CANNON;
 } else {

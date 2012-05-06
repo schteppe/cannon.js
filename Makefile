@@ -3,10 +3,10 @@ CANNON    = src/Cannon.js
 COLLISION = src/collision/Broadphase.js src/collision/NaiveBroadphase.js
 MATH      = src/math/Mat3.js src/math/Vec3.js src/math/Quaternion.js
 OBJECTS   = src/objects/Shape.js src/objects/RigidBody.js src/objects/Sphere.js src/objects/Box.js src/objects/Plane.js src/objects/Compound.js src/objects/ConvexHull.js
-SOLVER    = src/solver/*
+SOLVER    = src/solver/*.js
 MATERIAL  = src/material/Material.js src/material/ContactMaterial.js
-WORLD     = src/world/*
-DEMO      = src/demo/*
+WORLD     = src/world/World.js src/world/ContactPoint.js src/world/ContactGenerator.js
+DEMO      = src/demo/Demo.js
 END       = src/wrapper/End.js
 
 ALL_CORE_FILES = $(CANNON) $(COLLISION) $(MATH) $(OBJECTS) $(SOLVER) $(MATERIAL) $(WORLD)
