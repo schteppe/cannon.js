@@ -325,17 +325,6 @@ CANNON.ContactGenerator = function(){
 	    // Contact points are in world coordinates. Transform back to relative
 	    r.rj.vsub(xj,r.rj);
 	    r.ri.vsub(xi,r.ri);
-	    //r.ri.vadd(xj,r.ri);
-	    /* qj.inverse(qj);
-	      qi.inverse(qi);*/
-	    // console.log(res[j].normal.toString());
-	    //r.rj.vadd(q,r.rj);
-		    /*
-	    qj.vmult(r.rj,r.rj);
-	    qi.vmult(r.ri,r.ri);
-	    */
-	    /*qj.inverse(qj);
-	      qi.inverse(qi);*/
 	    result.push(r);
 	  }
 	}

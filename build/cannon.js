@@ -688,11 +688,12 @@ CANNON.Vec3.prototype.almostZero = function(precision){
 
 /**
  * @class CANNON.Quaternion
- * @brief 4-dimensional quaternion
- * @param float x
- * @param float y
- * @param float z 
- * @param float w
+ * @brief A Quaternion describes a rotation in 3D space. It is mathematically defined as Q = x*i + y*j + z*k + w, where (i,j,k) are imaginary basis vectors. (x,y,z) can be seen as a vector related to the axis of rotation, while the real multiplier, w, is related to the amount of rotation.
+ * @param float x Multiplier of the imaginary basis vector i.
+ * @param float y Multiplier of the imaginary basis vector j.
+ * @param float z Multiplier of the imaginary basis vector k.
+ * @param float w Multiplier of the real part.
+ * @see http://en.wikipedia.org/wiki/Quaternion
  */
 CANNON.Quaternion = function(x,y,z,w){
   /**
@@ -713,6 +714,7 @@ CANNON.Quaternion = function(x,y,z,w){
   /**
    * @property float w
    * @memberof CANNON.Quaternion
+   * @brief The multiplier of the real quaternion basis vector.
    */
   this.w = w!=undefined ? w : 1;
 };
@@ -798,6 +800,27 @@ CANNON.Quaternion.prototype.mult = function(q,target){
  * @return CANNON.Quaternion
  */
 CANNON.Quaternion.prototype.inverse = function(target){
+  if(target==undefined)
+    target = new CANNON.Quaternion();
+  
+  this.conjugate(target);
+  var inorm2 = 1/(this.x*this.x + this.y*this.y + this.z*this.z + this.w*this.w);
+  target.x *= inorm2;
+  target.y *= inorm2;
+  target.z *= inorm2;
+  target.w *= inorm2;
+
+  return target;
+};
+
+/**
+ * @fn conjugate
+ * @memberof CANNON.Quaternion
+ * @brief Get the quaternion conjugate
+ * @param CANNON.Quaternion target
+ * @return CANNON.Quaternion
+ */
+CANNON.Quaternion.prototype.conjugate = function(target){
   if(target==undefined)
     target = new CANNON.Quaternion();
   
@@ -3379,17 +3402,6 @@ CANNON.ContactGenerator = function(){
 	    // Contact points are in world coordinates. Transform back to relative
 	    r.rj.vsub(xj,r.rj);
 	    r.ri.vsub(xi,r.ri);
-	    //r.ri.vadd(xj,r.ri);
-	    /* qj.inverse(qj);
-	      qi.inverse(qi);*/
-	    // console.log(res[j].normal.toString());
-	    //r.rj.vadd(q,r.rj);
-		    /*
-	    qj.vmult(r.rj,r.rj);
-	    qi.vmult(r.ri,r.ri);
-	    */
-	    /*qj.inverse(qj);
-	      qi.inverse(qi);*/
 	    result.push(r);
 	  }
 	}
