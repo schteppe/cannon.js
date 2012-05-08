@@ -286,8 +286,61 @@ CANNON.ContactGenerator = function(){
 	
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+
+      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // plane-hull
+	// Separating axis is the plane normal
+	// Create a virtual convex hull for the plane
+	var planehull = new CANNON.ConvexHull();
+	var v1 = new CANNON.Vec3();
+	var v2 = new CANNON.Vec3();
+	var v3 = new CANNON.Vec3();
+	var v4 = new CANNON.Vec3();
+	si.normal.tangents(v1,v2);
+	v1.negate(v3);
+	v2.negate(v4);
+	v1.mult(100000,v1);
+	v2.mult(100000,v2);
+	v3.mult(100000,v3);
+	v4.mult(100000,v4);
+	var n = new CANNON.Vec3();
+	si.normal.copy(n);
+	planehull.addPoints([v1,v2,v3,v4],[[0,1,2,3]],[n]);
+	var sepAxis = new CANNON.Vec3();
+	n.copy(sepAxis);
+	if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)){
+	  var res = [];
+	  sj.clipAgainstHull(xj,qj,planehull,xi,qi,sepAxis,-100,100,res);
+	  for(var j=0; j<res.length; j++){
+	    var r = makeResult(bi,bj);
+	    sepAxis.copy(r.ni);
+	    var q = new CANNON.Vec3();
+	    res[j].normal.negate(q);
+	    q.mult(res[j].depth,q);
+	    r.ri.set(res[j].point.x,
+		     res[j].point.y,
+		     res[j].point.z);
+	    r.rj.set(res[j].point.x + q.x*0.5,
+		     res[j].point.y + q.y*0.5,
+		     res[j].point.z + q.z*0.5);
+	    // Contact points are in world coordinates. Transform back to relative
+	    r.rj.vsub(xj,r.rj);
+	    r.ri.vsub(xi,r.ri);
+	    //r.ri.vadd(xj,r.ri);
+	    /* qj.inverse(qj);
+	      qi.inverse(qi);*/
+	    // console.log(res[j].normal.toString());
+	    //r.rj.vadd(q,r.rj);
+		    /*
+	    qj.vmult(r.rj,r.rj);
+	    qi.vmult(r.ri,r.ri);
+	    */
+	    /*qj.inverse(qj);
+	      qi.inverse(qi);*/
+	    result.push(r);
+	  }
+	}
       }
-      
+
     } else if(si.type==CANNON.Shape.types.BOX){
       
       if(sj.type==CANNON.Shape.types.BOX){ // box-box
@@ -305,6 +358,9 @@ CANNON.ContactGenerator = function(){
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 	
       }
+
+    } else if(si.type==CANNON.Shape.types.CONVEXHULL){
+      
     }
     
     // Swap back if we swapped bodies in the beginning

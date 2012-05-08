@@ -18,8 +18,8 @@ CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
   
   // Copy over data if arguments were passed
   if(ri) ri.copy(this.ri);
-  if(rj) ri.copy(this.rj);
-  if(ni) ri.copy(this.ni);
+  if(rj) rj.copy(this.rj);
+  if(ni) ni.copy(this.ni);
   
   // References to bodies
   this.bi = bi;

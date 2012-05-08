@@ -5,10 +5,12 @@
  * @author schteppe / https://github.com/schteppe
  * @see http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
  * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
+ * @todo move the clipping functions to ContactGenerator?
  */
-CANNON.ConvexHull = function( vertices ) {
+CANNON.ConvexHull = function() {
   var that = this;
   CANNON.Shape.call( this );
+  this.type = CANNON.Shape.types.CONVEXHULL;
 
   /**
    * @property array vertices
@@ -96,7 +98,7 @@ CANNON.ConvexHull = function( vertices ) {
 	}
       }
     }
-
+    this.computeAABB();
     return true;
   }
 
@@ -269,7 +271,7 @@ CANNON.ConvexHull = function( vertices ) {
       target.negate(target);
     
     return true;
-}
+  }
 
   /**
    * @fn clipAgainstHull
@@ -331,14 +333,14 @@ CANNON.ConvexHull = function( vertices ) {
   };
 
   /**
-   * Clip a face against a hull
+   * Clip a face against a hull.
    * @param CANNON.Vec3 separatingNormal
    * @param CANNON.Vec3 posA
    * @param CANNON.Quaternion quatA
    * @param Array worldVertsB1
    * @param float minDist Distance clamping
    * @param float maxDist
-   * @param Array result Array to store resulting contact points in
+   * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
    */
   this.clipFaceAgainstHull = function(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist,result){
     if(!(separatingNormal instanceof CANNON.Vec3))
@@ -426,7 +428,7 @@ CANNON.ConvexHull = function( vertices ) {
       }
 
       // Clip face against our constructed plane
-      console.log("clipping polygon ",printFace(closestFaceA)," against plane ",planeNormalWS, planeEqWS);
+      //console.log("clipping polygon ",printFace(closestFaceA)," against plane ",planeNormalWS, planeEqWS);
       this.clipFaceAgainstPlane(pVtxIn, pVtxOut, planeNormalWS, planeEqWS);
       //console.log(" - clip result: ",pVtxOut);
 
@@ -435,7 +437,7 @@ CANNON.ConvexHull = function( vertices ) {
       while(pVtxOut.length) pVtxIn.push(pVtxOut.shift());
     }
 
-    console.log("Resulting points after clip:",pVtxIn);
+    //console.log("Resulting points after clip:",pVtxIn);
         
     // only keep contact points that are behind the witness face
     var localPlaneNormal = new CANNON.Vec3();
@@ -458,12 +460,17 @@ CANNON.ConvexHull = function( vertices ) {
       
       if (depth <=maxDist){
 	var point = pVtxIn[i];
-	console.log("Got contact point ",point.toString(),
+	/*console.log("Got contact point ",point.toString(),
 		    ", depth=",depth,
 		    "contact normal=",separatingNormal.toString(),
 		    "plane",planeNormalWS.toString(),
-		    "planeConstant",planeEqWS);
-	//result.push(new CANNON.ContactPoint());
+		    "planeConstant",planeEqWS);*/
+	//console.log(planeNormalWS.toString());
+	result.push({
+	    point:point,
+	    normal:planeNormalWS,
+	      depth: depth,
+	      });
       }
     }
   }
@@ -608,6 +615,46 @@ CANNON.ConvexHull = function( vertices ) {
    */
   function randomOffset() {
     return ( Math.random() - 0.5 ) * 2 * 1e-6;
+  }
+
+  this.calculateLocalInertia = function(mass,target){
+    // Approximate with box inertia
+    // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
+    var x = this.aabbmax.x - this.aabbmin.x,
+    y = this.aabbmax.y - this.aabbmin.y,
+    z = this.aabbmax.z - this.aabbmin.z;
+    target.x = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*z*2*z );
+    target.y = 1.0 / 12.0 * mass * ( 2*x*2*x + 2*z*2*z );
+    target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
+  }
+
+  this.computeAABB = function(){
+    var n = this.vertices.length,
+    aabbmin = this.aabbmin,
+    aabbmax = this.aabbmax,
+    vertices = this.vertices;
+    aabbmin.set(Infinity,Infinity,Infinity);
+    aabbmax.set(-Infinity,-Infinity,-Infinity);
+    for(var i=0; i<n; i++){
+      var v = vertices[i];
+      if     (v.x < aabbmin.x) aabbmin.x = v.x;
+      else if(v.x > aabbmax.x) aabbmax.x = v.x;
+      if     (v.y < aabbmin.y) aabbmin.y = v.y;
+      else if(v.y > aabbmax.y) aabbmax.y = v.y;
+      if     (v.z < aabbmin.z) aabbmin.z = v.z;
+      else if(v.z > aabbmax.z) aabbmax.z = v.z;
+    }
+  }
+
+  this.boundingSphereRadius = function(){
+    // Assume points are distributed with local (0,0,0) as center
+    var max2 = 0;
+    for(var i=0; i<this.vertices.length; i++) {
+      var norm2 = this.vertices[i].norm2();
+      if(norm2>max2)
+	max2 = norm2;
+    }
+    return Math.sqrt(max2);
   }
 };
 

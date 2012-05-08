@@ -96,7 +96,8 @@ CANNON.RigidBody = function(mass,shape,material){
    * @property CANNON.Vec3 inertia
    * @memberof CANNON.RigidBody
    */
-  this.inertia = shape.calculateLocalInertia(mass);
+  this.inertia = new CANNON.Vec3();
+  shape.calculateLocalInertia(mass,this.inertia);
 
   /**
    * @property CANNON.Vec3 intInertia

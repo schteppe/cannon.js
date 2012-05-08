@@ -88,7 +88,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 
   // Local fast access
   var types = CANNON.Shape.types;
-  var BOX_SPHERE_COMPOUND = types.SPHERE | types.BOX | types.COMPOUND,
+  var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXHULL,
   PLANE = types.PLANE,
   STATIC_OR_KINEMATIC = CANNON.RigidBody.STATIC | CANNON.RigidBody.KINEMATIC;
 
@@ -109,7 +109,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
       }
 
       // --- Box / sphere / compound collision ---
-      if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
+      if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
 
 	// Rel. position
 	bj.position.vsub(bi.position,r);
@@ -121,8 +121,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	  pairs2.push(j);
 	}
 
-      // --- Sphere/box/compound versus plane ---
-      } else if((ti & BOX_SPHERE_COMPOUND) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND) && (ti & types.PLANE)){
+      // --- Sphere/box/compound/hull versus plane ---
+      } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
 	var pi = (ti===PLANE) ? i : j, // Plane
 	  oi = (ti!==PLANE) ? i : j; // Other
 	  
@@ -534,6 +534,16 @@ CANNON.Vec3.prototype.norm = function(){
 };
 
 /**
+ * @fn norm2
+ * @memberof CANNON.Vec3
+ * @brief Get the squared length of the vector
+ * @return float
+ */
+CANNON.Vec3.prototype.norm2 = function(){
+  return this.dot(this);
+};
+
+/**
  * @fn mult
  * @memberof CANNON.Vec3
  * @brief Multiply the vector with a scalar
@@ -881,6 +891,9 @@ CANNON.Shape = function(){
    * @see CANNON.Shape.types
    */
   this.type = 0;
+
+  this.aabbmin = new CANNON.Vec3();
+  this.aabbmax = new CANNON.Vec3();
 };
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
@@ -946,7 +959,8 @@ CANNON.Shape.types = {
   SPHERE:1,
   PLANE:2,
   BOX:4,
-  COMPOUND:8
+  COMPOUND:8,
+  CONVEXHULL:16
 };
 
 /*global CANNON:true */
@@ -1047,7 +1061,8 @@ CANNON.RigidBody = function(mass,shape,material){
    * @property CANNON.Vec3 inertia
    * @memberof CANNON.RigidBody
    */
-  this.inertia = shape.calculateLocalInertia(mass);
+  this.inertia = new CANNON.Vec3();
+  shape.calculateLocalInertia(mass,this.inertia);
 
   /**
    * @property CANNON.Vec3 intInertia
@@ -1331,10 +1346,12 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
  * @author schteppe / https://github.com/schteppe
  * @see http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
  * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
+ * @todo move the clipping functions to ContactGenerator?
  */
-CANNON.ConvexHull = function( vertices ) {
+CANNON.ConvexHull = function() {
   var that = this;
   CANNON.Shape.call( this );
+  this.type = CANNON.Shape.types.CONVEXHULL;
 
   /**
    * @property array vertices
@@ -1422,7 +1439,7 @@ CANNON.ConvexHull = function( vertices ) {
 	}
       }
     }
-
+    this.computeAABB();
     return true;
   }
 
@@ -1595,7 +1612,7 @@ CANNON.ConvexHull = function( vertices ) {
       target.negate(target);
     
     return true;
-}
+  }
 
   /**
    * @fn clipAgainstHull
@@ -1657,14 +1674,14 @@ CANNON.ConvexHull = function( vertices ) {
   };
 
   /**
-   * Clip a face against a hull
+   * Clip a face against a hull.
    * @param CANNON.Vec3 separatingNormal
    * @param CANNON.Vec3 posA
    * @param CANNON.Quaternion quatA
    * @param Array worldVertsB1
    * @param float minDist Distance clamping
    * @param float maxDist
-   * @param Array result Array to store resulting contact points in
+   * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
    */
   this.clipFaceAgainstHull = function(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist,result){
     if(!(separatingNormal instanceof CANNON.Vec3))
@@ -1752,7 +1769,7 @@ CANNON.ConvexHull = function( vertices ) {
       }
 
       // Clip face against our constructed plane
-      console.log("clipping polygon ",printFace(closestFaceA)," against plane ",planeNormalWS, planeEqWS);
+      //console.log("clipping polygon ",printFace(closestFaceA)," against plane ",planeNormalWS, planeEqWS);
       this.clipFaceAgainstPlane(pVtxIn, pVtxOut, planeNormalWS, planeEqWS);
       //console.log(" - clip result: ",pVtxOut);
 
@@ -1761,7 +1778,7 @@ CANNON.ConvexHull = function( vertices ) {
       while(pVtxOut.length) pVtxIn.push(pVtxOut.shift());
     }
 
-    console.log("Resulting points after clip:",pVtxIn);
+    //console.log("Resulting points after clip:",pVtxIn);
         
     // only keep contact points that are behind the witness face
     var localPlaneNormal = new CANNON.Vec3();
@@ -1784,12 +1801,17 @@ CANNON.ConvexHull = function( vertices ) {
       
       if (depth <=maxDist){
 	var point = pVtxIn[i];
-	console.log("Got contact point ",point.toString(),
+	/*console.log("Got contact point ",point.toString(),
 		    ", depth=",depth,
 		    "contact normal=",separatingNormal.toString(),
 		    "plane",planeNormalWS.toString(),
-		    "planeConstant",planeEqWS);
-	//result.push(new CANNON.ContactPoint());
+		    "planeConstant",planeEqWS);*/
+	//console.log(planeNormalWS.toString());
+	result.push({
+	    point:point,
+	    normal:planeNormalWS,
+	      depth: depth,
+	      });
       }
     }
   }
@@ -1934,6 +1956,46 @@ CANNON.ConvexHull = function( vertices ) {
    */
   function randomOffset() {
     return ( Math.random() - 0.5 ) * 2 * 1e-6;
+  }
+
+  this.calculateLocalInertia = function(mass,target){
+    // Approximate with box inertia
+    // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
+    var x = this.aabbmax.x - this.aabbmin.x,
+    y = this.aabbmax.y - this.aabbmin.y,
+    z = this.aabbmax.z - this.aabbmin.z;
+    target.x = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*z*2*z );
+    target.y = 1.0 / 12.0 * mass * ( 2*x*2*x + 2*z*2*z );
+    target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
+  }
+
+  this.computeAABB = function(){
+    var n = this.vertices.length,
+    aabbmin = this.aabbmin,
+    aabbmax = this.aabbmax,
+    vertices = this.vertices;
+    aabbmin.set(Infinity,Infinity,Infinity);
+    aabbmax.set(-Infinity,-Infinity,-Infinity);
+    for(var i=0; i<n; i++){
+      var v = vertices[i];
+      if     (v.x < aabbmin.x) aabbmin.x = v.x;
+      else if(v.x > aabbmax.x) aabbmax.x = v.x;
+      if     (v.y < aabbmin.y) aabbmin.y = v.y;
+      else if(v.y > aabbmax.y) aabbmax.y = v.y;
+      if     (v.z < aabbmin.z) aabbmin.z = v.z;
+      else if(v.z > aabbmax.z) aabbmax.z = v.z;
+    }
+  }
+
+  this.boundingSphereRadius = function(){
+    // Assume points are distributed with local (0,0,0) as center
+    var max2 = 0;
+    for(var i=0; i<this.vertices.length; i++) {
+      var norm2 = this.vertices[i].norm2();
+      if(norm2>max2)
+	max2 = norm2;
+    }
+    return Math.sqrt(max2);
   }
 };
 
@@ -2985,8 +3047,8 @@ CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
   
   // Copy over data if arguments were passed
   if(ri) ri.copy(this.ri);
-  if(rj) ri.copy(this.rj);
-  if(ni) ri.copy(this.ni);
+  if(rj) rj.copy(this.rj);
+  if(ni) ni.copy(this.ni);
   
   // References to bodies
   this.bi = bi;
@@ -3279,8 +3341,61 @@ CANNON.ContactGenerator = function(){
 	
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+
+      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // plane-hull
+	// Separating axis is the plane normal
+	// Create a virtual convex hull for the plane
+	var planehull = new CANNON.ConvexHull();
+	var v1 = new CANNON.Vec3();
+	var v2 = new CANNON.Vec3();
+	var v3 = new CANNON.Vec3();
+	var v4 = new CANNON.Vec3();
+	si.normal.tangents(v1,v2);
+	v1.negate(v3);
+	v2.negate(v4);
+	v1.mult(100000,v1);
+	v2.mult(100000,v2);
+	v3.mult(100000,v3);
+	v4.mult(100000,v4);
+	var n = new CANNON.Vec3();
+	si.normal.copy(n);
+	planehull.addPoints([v1,v2,v3,v4],[[0,1,2,3]],[n]);
+	var sepAxis = new CANNON.Vec3();
+	n.copy(sepAxis);
+	if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)){
+	  var res = [];
+	  sj.clipAgainstHull(xj,qj,planehull,xi,qi,sepAxis,-100,100,res);
+	  for(var j=0; j<res.length; j++){
+	    var r = makeResult(bi,bj);
+	    sepAxis.copy(r.ni);
+	    var q = new CANNON.Vec3();
+	    res[j].normal.negate(q);
+	    q.mult(res[j].depth,q);
+	    r.ri.set(res[j].point.x,
+		     res[j].point.y,
+		     res[j].point.z);
+	    r.rj.set(res[j].point.x + q.x*0.5,
+		     res[j].point.y + q.y*0.5,
+		     res[j].point.z + q.z*0.5);
+	    // Contact points are in world coordinates. Transform back to relative
+	    r.rj.vsub(xj,r.rj);
+	    r.ri.vsub(xi,r.ri);
+	    //r.ri.vadd(xj,r.ri);
+	    /* qj.inverse(qj);
+	      qi.inverse(qi);*/
+	    // console.log(res[j].normal.toString());
+	    //r.rj.vadd(q,r.rj);
+		    /*
+	    qj.vmult(r.rj,r.rj);
+	    qi.vmult(r.ri,r.ri);
+	    */
+	    /*qj.inverse(qj);
+	      qi.inverse(qi);*/
+	    result.push(r);
+	  }
+	}
       }
-      
+
     } else if(si.type==CANNON.Shape.types.BOX){
       
       if(sj.type==CANNON.Shape.types.BOX){ // box-box
@@ -3298,6 +3413,9 @@ CANNON.ContactGenerator = function(){
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 	
       }
+
+    } else if(si.type==CANNON.Shape.types.CONVEXHULL){
+      
     }
     
     // Swap back if we swapped bodies in the beginning

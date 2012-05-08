@@ -14,6 +14,9 @@ CANNON.Shape = function(){
    * @see CANNON.Shape.types
    */
   this.type = 0;
+
+  this.aabbmin = new CANNON.Vec3();
+  this.aabbmax = new CANNON.Vec3();
 };
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
@@ -79,6 +82,7 @@ CANNON.Shape.types = {
   SPHERE:1,
   PLANE:2,
   BOX:4,
-  COMPOUND:8
+  COMPOUND:8,
+  CONVEXHULL:16
 };
 

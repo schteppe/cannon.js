@@ -170,6 +170,16 @@ CANNON.Vec3.prototype.norm = function(){
 };
 
 /**
+ * @fn norm2
+ * @memberof CANNON.Vec3
+ * @brief Get the squared length of the vector
+ * @return float
+ */
+CANNON.Vec3.prototype.norm2 = function(){
+  return this.dot(this);
+};
+
+/**
  * @fn mult
  * @memberof CANNON.Vec3
  * @brief Multiply the vector with a scalar
