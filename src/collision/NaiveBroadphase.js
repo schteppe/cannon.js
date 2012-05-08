@@ -55,9 +55,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	// Rel. position
 	bj.position.vsub(bi.position,r);
 
-	var boundingRadius1 = bi.shape.boundingSphereRadius();
-	var boundingRadius2 = bj.shape.boundingSphereRadius();
-	if(r.norm()<(boundingRadius1+boundingRadius2)){
+	var boundingRadiusSum = bi.shape.boundingSphereRadius() + bj.shape.boundingSphereRadius();
+	if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
 	  pairs1.push(i);
 	  pairs2.push(j);
 	}
