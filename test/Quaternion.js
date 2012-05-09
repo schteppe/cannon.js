@@ -40,5 +40,21 @@ exports.Quaternion = {
     test.equal(q.w,  4/denominator, ".inverse() should divide by length^2");
     
     test.done();
+  } ,
+  
+  "toEuler" : function(test) {
+      test.expect(3);
+      
+      var q = new C.Quaternion();
+      q.setFromAxisAngle(new C.Vec3(0,0,1),Math.PI/4);
+      var euler = new C.Vec3();
+      q.toEuler(euler);
+      
+      // we should expect (0,0,pi/4)
+      test.equal(euler.x, 0, "euler x should be zero, got "+euler.x);
+      test.equal(euler.y, 0, "euler y should be yero, got "+euler.y);
+      test.ok(Math.abs(euler.z-Math.PI/4)<0.001, "euler z should be "+(Math.PI/4)+", got "+euler.z);
+      
+      test.done();
   }
 };

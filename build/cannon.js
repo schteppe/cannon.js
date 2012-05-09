@@ -900,29 +900,45 @@ CANNON.Quaternion.prototype.copy = function(target){
 };
 
 /**
+ * @brief Convert the quaternion to euler angle representation. Order: YZX, as this page describes: http://www.euclideanspace.com/maths/standards/index.htm
  * @todo debug
  */
-CANNON.Quaternion.prototype.toEuler = function(){
-  var test = q1.x*q1.y + q1.z*q1.w;
-  var heading, attitude, bank;
-  if (test > 0.499) { // singularity at north pole
-    heading = 2 * atan2(q1.x,q1.w);
-    attitude = Math.PI/2;
-    bank = 0;
-    return;
-  }
-  if (test < -0.499) { // singularity at south pole
-    heading = -2 * atan2(q1.x,q1.w);
-    attitude = - Math.PI/2;
-    bank = 0;
-    return;
-  }
-  var sqx = q1.x*q1.x;
-  var sqy = q1.y*q1.y;
-  var sqz = q1.z*q1.z;
-  heading = atan2(2*q1.y*q1.w-2*q1.x*q1.z , 1 - 2*sqy - 2*sqz);
-  attitude = asin(2*test);
-  bank = atan2(2*q1.x*q1.w-2*q1.y*q1.z , 1 - 2*sqx - 2*sqz)
+CANNON.Quaternion.prototype.toEuler = function(target,order){
+    order = order || "YZX";
+
+    var heading, attitude, bank;
+    var x = this.x, y = this.y, z = this.z, w = this.w;
+
+    switch(order){
+    case "YZX":
+	var test = x*y + z*w;
+	if (test > 0.499) { // singularity at north pole
+	    heading = 2 * Math.atan2(x,w);
+	    attitude = Math.PI/2;
+	    bank = 0;
+	}
+	if (test < -0.499) { // singularity at south pole
+	    heading = -2 * Math.atan2(x,w);
+	    attitude = - Math.PI/2;
+	    bank = 0;
+	}
+	if(isNaN(heading)){
+	    var sqx = x*x;
+	    var sqy = y*y;
+	    var sqz = z*z;
+	    heading = Math.atan2(2*y*w - 2*x*z , 1 - 2*sqy - 2*sqz); // Heading
+	    attitude = Math.asin(2*test); // attitude
+	    bank = Math.atan2(2*x*w - 2*y*z , 1 - 2*sqx - 2*sqz); // bank
+	}
+	break;
+    default:
+	throw new Error("Euler order "+order+" not supported yet.");
+	break;
+    }
+
+    target.y = heading;
+    target.z = attitude;
+    target.x = bank;
 };/*global CANNON:true */
 
 /**
