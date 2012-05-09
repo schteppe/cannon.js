@@ -1,5 +1,6 @@
 /**
  * @class CANNON.ConvexHull
+ * @extends CANNON.Shape
  * @brief A set of points in space describing a convex shape.
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
@@ -44,7 +45,7 @@ CANNON.ConvexHull = function() {
 
   /**
    * @fn addPoints
-   * @memberof ConvexHull
+   * @memberof CANNON.ConvexHull
    * @brief Add points to the hull
    * @param array points An array of CANNON.Vec3's
    * @param array faces Deprecated - fix autogenerator for these
@@ -108,7 +109,7 @@ CANNON.ConvexHull = function() {
    * @param CANNON.Vec3 axis
    * @param CANNON.Vec3 pos
    * @param CANNON.Quaternion quat
-   * @param array maxmin
+   * @param array maxmin maxmin[0] and maxmin[1] will be set to maximum and minimum, respectively.
    */
   function project(hull,axis,pos,quat,maxmin){
     var n = hull.vertices.length;
@@ -171,12 +172,14 @@ CANNON.ConvexHull = function() {
   }
 
   /**
-   * Find the separating axis between this hull and another
+   * @fn findSeparatingAxis 
+   * @memberof CANNON.ConvexHull
+   * @brief Find the separating axis between this hull and another
    * @param CANNON.ConvexHull hullB
    * @param CANNON.Vec3 posA
-   * @param CANNON.Vec3 quatA
+   * @param CANNON.Quaternion quatA
    * @param CANNON.Vec3 posB
-   * @param CANNON.Vec3 quatB
+   * @param CANNON.Quaternion quatB
    * @param CANNON.Vec3 target The target vector to save the axis in
    * @return bool Returns false if a separation is found, else true
    */
@@ -285,9 +288,8 @@ CANNON.ConvexHull = function() {
    * @param CANNON.Vec3 separatingNormal
    * @param float minDist Clamp distance
    * @param float maxDist
-   * @param array result The resulting ContactPoints
+   * @param array result The an array of contact point objects, see clipFaceAgainstHull
    * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
-   * @todo Store contact points?
    */
   this.clipAgainstHull = function(posA,quatA,hullB,posB,quatB,separatingNormal,minDist,maxDist,result){
     if(!(posA instanceof CANNON.Vec3))
@@ -333,11 +335,13 @@ CANNON.ConvexHull = function() {
   };
 
   /**
-   * Clip a face against a hull.
+   * @fn clipFaceAgainstHull
+   * @memberof CANNON.ConvexHull 
+   * @brief Clip a face against a hull.
    * @param CANNON.Vec3 separatingNormal
    * @param CANNON.Vec3 posA
    * @param CANNON.Quaternion quatA
-   * @param Array worldVertsB1
+   * @param Array worldVertsB1 An array of CANNON.Vec3 with vertices in the world frame.
    * @param float minDist Distance clamping
    * @param float maxDist
    * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
@@ -476,13 +480,13 @@ CANNON.ConvexHull = function() {
   }
   
   /**
-   * Clip a face in a hull against the back of a plane.
+   * @fn clipFaceAgainstPlane
+   * @memberof CANNON.ConvexHull
+   * @brief Clip a face in a hull against the back of a plane.
    * @param Array inVertices
    * @param Array outVertices
-   * @param int face_index
    * @param CANNON.Vec3 planeNormal
    * @param float planeConstant The constant in the mathematical plane equation
-   * @todo inVertices is not used - remove?
    */
   this.clipFaceAgainstPlane = function(inVertices,outVertices, planeNormal, planeConstant){
     if(!(planeNormal instanceof CANNON.Vec3))
