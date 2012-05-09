@@ -189,3 +189,29 @@ CANNON.Quaternion.prototype.copy = function(target){
   target.z = this.z;
   target.w = this.w;
 };
+
+/**
+ * @todo debug
+ */
+CANNON.Quaternion.prototype.toEuler = function(){
+  var test = q1.x*q1.y + q1.z*q1.w;
+  var heading, attitude, bank;
+  if (test > 0.499) { // singularity at north pole
+    heading = 2 * atan2(q1.x,q1.w);
+    attitude = Math.PI/2;
+    bank = 0;
+    return;
+  }
+  if (test < -0.499) { // singularity at south pole
+    heading = -2 * atan2(q1.x,q1.w);
+    attitude = - Math.PI/2;
+    bank = 0;
+    return;
+  }
+  var sqx = q1.x*q1.x;
+  var sqy = q1.y*q1.y;
+  var sqz = q1.z*q1.z;
+  heading = atan2(2*q1.y*q1.w-2*q1.x*q1.z , 1 - 2*sqy - 2*sqz);
+  attitude = asin(2*test);
+  bank = atan2(2*q1.x*q1.w-2*q1.y*q1.z , 1 - 2*sqx - 2*sqz)
+};
