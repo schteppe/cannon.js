@@ -232,8 +232,8 @@ CANNON.Demo.prototype.updateVisuals = function(){
 	} else {
 	  // Create new mesh
 	  geometry = new THREE.Geometry();
-	  geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(0,0,0)));
-	  geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(1,1,1)));
+	  geometry.vertices.push(new THREE.Vector3(0,0,0));
+	  geometry.vertices.push(new THREE.Vector3(1,1,1));
 	  line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
 	  this._scene.add(line);
 	}
@@ -530,9 +530,9 @@ CANNON.Demo.prototype._buildScene = function(n){
       mesh = new THREE.Object3D();
       var submesh = new THREE.Object3D();
       var subsubmesh = new THREE.Object3D();
-
       var ground = new THREE.Mesh( geometry, that.currentMaterial );
       ground.scale = new THREE.Vector3(100,100,100);
+      ground.rotation.x = Math.PI/2;
       subsubmesh.add(ground);
       var n = shape.normal.copy();
 
@@ -553,6 +553,17 @@ CANNON.Demo.prototype._buildScene = function(n){
     case CANNON.Shape.types.BOX:
       var box_geometry = new THREE.CubeGeometry( shape.halfExtents.x*2, shape.halfExtents.y*2, shape.halfExtents.z*2 );
       mesh = new THREE.Mesh( box_geometry, that.currentMaterial );
+      break;
+
+    case CANNON.Shape.types.CONVEXHULL:
+      var verts = [];
+      for(var i=0; i<shape.vertices.length; i++){
+	verts.push(new THREE.Vector3(shape.vertices[i].x,
+				     shape.vertices[i].y,
+				     shape.vertices[i].z));
+      }
+      var geo = new THREE.ConvexGeometry( verts );
+      mesh = new THREE.Mesh( geo, that.currentMaterial );
       break;
 
     case CANNON.Shape.types.COMPOUND:

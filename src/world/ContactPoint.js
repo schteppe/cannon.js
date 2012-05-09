@@ -9,7 +9,7 @@
  */
 CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
   if(!(bi instanceof CANNON.RigidBody) || !(bj instanceof CANNON.RigidBody))
-    throw "Arguments 1 and 2 must be instances of CANNON.RigidBody.";
+    throw new Error("Arguments 1 and 2 must be instances of CANNON.RigidBody.");
 
   // Local things
   this.ri = new CANNON.Vec3();
@@ -18,8 +18,8 @@ CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
   
   // Copy over data if arguments were passed
   if(ri) ri.copy(this.ri);
-  if(rj) ri.copy(this.rj);
-  if(ni) ri.copy(this.ni);
+  if(rj) rj.copy(this.rj);
+  if(ni) ni.copy(this.ni);
   
   // References to bodies
   this.bi = bi;
