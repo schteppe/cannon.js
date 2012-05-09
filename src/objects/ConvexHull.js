@@ -301,8 +301,9 @@ CANNON.ConvexHull = function() {
     var closestFaceB = -1;
     var dmax = -Infinity;
     var WorldNormal = new CANNON.Vec3();
+      //console.log(this.faceNormals);
     for(var face=0; face < hullB.faces.length; face++){
-      this.faceNormals[face].copy(WorldNormal);
+      hullB.faceNormals[face].copy(WorldNormal);
       quatB.vmult(WorldNormal,WorldNormal);
       posB.vadd(WorldNormal,WorldNormal);
 
@@ -312,6 +313,7 @@ CANNON.ConvexHull = function() {
 	closestFaceB = face;
       }
     }
+      //console.log("closest B",closestFaceB);
     var worldVertsB1 = [];
     polyB = hullB.faces[closestFaceB];
     var numVertices = polyB.length;
@@ -323,7 +325,7 @@ CANNON.ConvexHull = function() {
       posB.vadd(worldb,worldb);
       worldVertsB1.push(worldb);
     }
-    
+      //console.log("to clip",worldVertsB1);
     if (closestFaceB>=0)
       this.clipFaceAgainstHull(separatingNormal,
 			       posA,
@@ -363,10 +365,9 @@ CANNON.ConvexHull = function() {
     var dmin = Infinity;
     var faceANormalWS = new CANNON.Vec3();
     for(var face=0; face<hullA.faces.length; face++){
-      this.faceNormals[face].copy(faceANormalWS);
+      hullA.faceNormals[face].copy(faceANormalWS);
       quatA.vmult(faceANormalWS,faceANormalWS);
       posA.vadd(faceANormalWS,faceANormalWS);
-      
       var d = faceANormalWS.dot(separatingNormal);
       if (d < dmin){
 	dmin = d;
@@ -377,6 +378,7 @@ CANNON.ConvexHull = function() {
       console.log("--- did not find any closest face... ---");
       return;
     }
+      //console.log("closest A: ",closestFaceA);
 
     // Get the face and construct connected faces
     var polyA = hullA.faces[closestFaceA];
@@ -408,7 +410,7 @@ CANNON.ConvexHull = function() {
       quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
       posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
       WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
-      planeNormalWS1.negate();
+      planeNormalWS1.negate(planeNormalWS1);
       var worldA1 = new CANNON.Vec3();
       a.copy(worldA1);
       quatA.vmult(worldA1,worldA1);
@@ -441,7 +443,7 @@ CANNON.ConvexHull = function() {
       while(pVtxOut.length) pVtxIn.push(pVtxOut.shift());
     }
 
-    //console.log("Resulting points after clip:",pVtxIn);
+      //console.log("Resulting points after clip:",pVtxIn);
         
     // only keep contact points that are behind the witness face
     var localPlaneNormal = new CANNON.Vec3();
@@ -451,12 +453,11 @@ CANNON.ConvexHull = function() {
     var planeNormalWS = new CANNON.Vec3();
     localPlaneNormal.copy(planeNormalWS);
     quatA.vmult(planeNormalWS,planeNormalWS);
-    //posA.vadd(planeNormalWS,planeNormalWS);
     
     var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
     for (var i=0; i<pVtxIn.length; i++){
-      var depth = planeNormalWS.dot(pVtxIn[i]) + planeEqWS; //???
-      //console.log("depth calc from normal=",planeNormalWS," and constant "+planeEqWS+" and vertex ",pVtxIn[i]," gives "+depth);
+	var depth = planeNormalWS.dot(pVtxIn[i]) + planeEqWS; //???
+	/*console.log("depth calc from normal=",planeNormalWS.toString()," and constant "+planeEqWS+" and vertex ",pVtxIn[i].toString()," gives "+depth);*/
       if (depth <=minDist){
 	console.log("clamped: depth="+depth+" to minDist="+(minDist+""));
 	depth = minDist;
@@ -469,12 +470,12 @@ CANNON.ConvexHull = function() {
 		    "contact normal=",separatingNormal.toString(),
 		    "plane",planeNormalWS.toString(),
 		    "planeConstant",planeEqWS);*/
-	//console.log(planeNormalWS.toString());
-	result.push({
+	  var p = {
 	    point:point,
 	    normal:planeNormalWS,
 	      depth: depth,
-	      });
+	  };
+	result.push(p);
       }
     }
   }

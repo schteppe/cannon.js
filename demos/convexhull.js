@@ -36,10 +36,10 @@ demo.addScene(function(app){
 			 new CANNON.Vec3(-1, 0, 0),
 			 new CANNON.Vec3( 1, 0, 0)]);
     var mass = 10;
-    var body = new CANNON.RigidBody(mass,hullShape);
-    body.position.set(1,0,size+1);
-    world.add(body);
-    app.addVisual(body);
+    var boxbody = new CANNON.RigidBody(mass,hullShape);
+    boxbody.position.set(1,0,size+1);
+    world.add(boxbody);
+    app.addVisual(boxbody);
 
     // ConvexHull tetra shape
     var tetraShape = new CANNON.ConvexHull();
@@ -123,6 +123,7 @@ demo.addScene(function(app){
     cylinderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/3);
     world.add(cylinderBody);
     app.addVisual(cylinderBody);
+
   });
 
 function setupWorld(app){
@@ -138,7 +139,7 @@ function setupWorld(app){
   n.normalize();
   var groundShape = new CANNON.Plane(n);
   var groundBody = new CANNON.RigidBody(0,groundShape);
-  groundBody.position.set(0,0,-1);
+  groundBody.position.set(0,0,0);
   world.add(groundBody);
   app.addVisual(groundBody);
 

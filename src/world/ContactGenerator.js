@@ -289,39 +289,63 @@ CANNON.ContactGenerator = function(){
 
       } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // plane-hull
 	// Separating axis is the plane normal
-	// Create a virtual convex hull for the plane
+	// Create a virtual box hull for the plane
 	var planehull = new CANNON.ConvexHull();
-	var v1 = new CANNON.Vec3();
-	var v2 = new CANNON.Vec3();
-	var v3 = new CANNON.Vec3();
-	var v4 = new CANNON.Vec3();
-	si.normal.tangents(v1,v2);
-	v1.negate(v3);
-	v2.negate(v4);
-	v1.mult(100000,v1);
-	v2.mult(100000,v2);
-	v3.mult(100000,v3);
-	v4.mult(100000,v4);
-	var n = new CANNON.Vec3();
+
+	var t1 = new CANNON.Vec3();
+	var t2 = new CANNON.Vec3();
+	si.normal.tangents(t1,t2);
+	t1.mult(100000,t1);
+	t2.mult(100000,t2);
+	var n = si.normal;  
+	var verts = [new CANNON.Vec3(-t1.x -t2.x -n.x, -t1.y -t2.y -n.y, -t1.z -t2.z -n.z), // ---
+		     new CANNON.Vec3( t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z), // +-+
+		     new CANNON.Vec3( t1.x +t2.x -n.x,  t1.y +t2.y -n.y,  t1.z +t2.z -n.z), // ++- 
+		     new CANNON.Vec3(-t1.x +t2.x -n.x, -t1.y +t2.y -n.y, -t1.z +t2.z -n.z), // -+-
+		     new CANNON.Vec3(-t1.x -t2.x +0*n.x, -t1.y -t2.y +0*n.y, -t1.z -t2.z +0*n.z), // --+
+		     new CANNON.Vec3(+t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z), // +-+
+		     new CANNON.Vec3(+t1.x +t2.x +0*n.x, +t1.y +t2.y +0*n.y,  t1.z +t2.z +0*n.z), // +++
+		     new CANNON.Vec3(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z)]; // -++
+	t1.normalize();
+	t2.normalize();
+	planehull.addPoints(verts,	    
+			    [
+				[0,1,2,3], // -z
+				[4,5,6,7], // +z
+				[0,1,4,5], // -y
+				[2,3,6,7], // +y
+				[0,3,4,7], // -x
+				[1,2,5,6], // +x
+			    ],
+			    
+			    [new CANNON.Vec3( -n.x, -n.y, -n.z),
+			     new CANNON.Vec3(  n.x,  n.y,  n.z),
+			     new CANNON.Vec3(-t2.x,-t2.y,-t2.z),
+			     new CANNON.Vec3( t2.x, t2.y, t2.z),
+			     new CANNON.Vec3(-t1.x,-t1.y,-t1.z),
+			     new CANNON.Vec3( t1.x, t1.y, t1.z)]);
+	  
+	n = new CANNON.Vec3();
 	si.normal.copy(n);
-	planehull.addPoints([v1,v2,v3,v4],[[0,1,2,3]],[n]);
 	var sepAxis = new CANNON.Vec3();
-	n.copy(sepAxis);
+	  //n.copy(sepAxis); // Use the plane normal
+	  n.negate(sepAxis);
 	if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)){
 	  var res = [];
-	  sj.clipAgainstHull(xj,qj,planehull,xi,qi,sepAxis,-100,100,res);
+	  planehull.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
+	    //console.log("planepos:",xi.toString(),res);
 	  for(var j=0; j<res.length; j++){
 	    var r = makeResult(bi,bj);
-	    sepAxis.copy(r.ni);
+	    sepAxis.negate(r.ni);
 	    var q = new CANNON.Vec3();
 	    res[j].normal.negate(q);
 	    q.mult(res[j].depth,q);
-	    r.ri.set(res[j].point.x,
+	    r.ri.set(res[j].point.x + q.x,
+		     res[j].point.y + q.y,
+		     res[j].point.z + q.z);
+	    r.rj.set(res[j].point.x,
 		     res[j].point.y,
 		     res[j].point.z);
-	    r.rj.set(res[j].point.x + q.x*0.5,
-		     res[j].point.y + q.y*0.5,
-		     res[j].point.z + q.z*0.5);
 	    // Contact points are in world coordinates. Transform back to relative
 	    r.rj.vsub(xj,r.rj);
 	    r.ri.vsub(xi,r.ri);
