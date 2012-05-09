@@ -298,7 +298,12 @@ CANNON.Vec3.prototype.lerp = function(v,t,target){
 };
 
 /**
- * Check if a vector 
+ * @fn almostEquals
+ * @memberof CANNON.Vec3
+ * @brief Check if a vector equals is almost equal to another one.
+ * @param CANNON.Vec3 v
+ * @param float precision
+ * @return bool
  */
 CANNON.Vec3.prototype.almostEquals = function(v,precision){
   if(precision===undefined)

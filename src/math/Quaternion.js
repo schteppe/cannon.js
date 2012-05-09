@@ -206,6 +206,11 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
   return target;
 };
 
+/**
+ * @fn copy
+ * @memberof CANNON.Quaternion
+ * @param CANNON.Quaternion target
+ */
 CANNON.Quaternion.prototype.copy = function(target){
   target.x = this.x;
   target.y = this.y;
@@ -214,8 +219,11 @@ CANNON.Quaternion.prototype.copy = function(target){
 };
 
 /**
+ * @fn toEuler
+ * @memberof CANNON.Quaternion
  * @brief Convert the quaternion to euler angle representation. Order: YZX, as this page describes: http://www.euclideanspace.com/maths/standards/index.htm
- * @todo debug
+ * @param CANNON.Vec3 target
+ * @param string order Three-character string e.g. "YZX", which also is default.
  */
 CANNON.Quaternion.prototype.toEuler = function(target,order){
     order = order || "YZX";

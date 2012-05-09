@@ -358,6 +358,8 @@ CANNON.ContactGenerator = function(){
   }
 
   /**
+   * @fn getContacts
+   * @memberof CANNON.ContactGenerator
    * @param array p1 Array of body indices
    * @param array p2 Array of body indices
    * @param CANNON.World world

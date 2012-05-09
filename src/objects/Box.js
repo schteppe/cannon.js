@@ -2,6 +2,7 @@
 
 /**
  * @class CANNON.Box
+ * @brief A 3d box shape.
  * @param CANNON.Vec3 halfExtents
  * @author schteppe
  * @extends CANNON.Shape
