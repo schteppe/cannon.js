@@ -108,7 +108,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	continue;
       }
 
-      // --- Box / sphere / compound collision ---
+      // --- Box / sphere / compound / hull collision ---
       if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
 
 	// Rel. position
@@ -3532,7 +3532,32 @@ CANNON.ContactGenerator = function(){
       }
 
     } else if(si.type==CANNON.Shape.types.CONVEXHULL){
-      
+
+      if(sj.type==CANNON.Shape.types.CONVEXHULL){ // hull-hull
+	var sepAxis = new CANNON.Vec3();
+	if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
+	  //console.log(sepAxis.toString());
+	  var res = [];
+	  si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
+	  for(var j=0; j<res.length; j++){
+	    var r = makeResult(bi,bj);
+	    sepAxis.negate(r.ni);
+	    var q = new CANNON.Vec3();
+	    res[j].normal.negate(q);
+	    q.mult(res[j].depth,q);
+	    r.ri.set(res[j].point.x + q.x*0.5,
+		     res[j].point.y + q.y*0.5,
+		     res[j].point.z + q.z*0.5);
+	    r.rj.set(res[j].point.x - q.x*0.5,
+		     res[j].point.y - q.y*0.5,
+		     res[j].point.z - q.z*0.5);
+	    // Contact points are in world coordinates. Transform back to relative
+	    r.rj.vsub(xj,r.rj);
+	    r.ri.vsub(xi,r.ri);
+	    result.push(r);
+	  }
+	}
+      }
     }
     
     // Swap back if we swapped bodies in the beginning

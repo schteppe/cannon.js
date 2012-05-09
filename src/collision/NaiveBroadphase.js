@@ -49,7 +49,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	continue;
       }
 
-      // --- Box / sphere / compound collision ---
+      // --- Box / sphere / compound / hull collision ---
       if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
 
 	// Rel. position

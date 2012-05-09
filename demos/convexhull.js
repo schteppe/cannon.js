@@ -9,6 +9,49 @@ demo.addScene(function(app){
     // ConvexHull box shape
     var hullShape = new CANNON.ConvexHull();
     // At the moment one must provide vertices, faces and normals..
+    var size = 2;
+    hullShape.addPoints([new CANNON.Vec3(-size,-size,-size),
+			 new CANNON.Vec3( size,-size,-size),
+			 new CANNON.Vec3( size, size,-size),
+			 new CANNON.Vec3(-size, size,-size),
+			 new CANNON.Vec3(-size,-size, size),
+			 new CANNON.Vec3( size,-size, size),
+			 new CANNON.Vec3( size, size, size),
+			 new CANNON.Vec3(-size, size, size)],
+			
+			// At the moment the convex hull can't resolve normals and faces by itself, so we need to help it. This should be changed in the future
+			[
+			 [0,1,2,3], // -z
+			 [4,5,6,7], // +z
+			 [0,1,4,5], // -y
+			 [2,3,6,7], // +y
+			 [0,3,4,7], // -x
+			 [1,2,5,6], // +x
+			 ],
+			
+			[new CANNON.Vec3( 0, 0,-1),
+			 new CANNON.Vec3( 0, 0, 1),
+			 new CANNON.Vec3( 0,-1, 0),
+			 new CANNON.Vec3( 0, 1, 0),
+			 new CANNON.Vec3(-1, 0, 0),
+			 new CANNON.Vec3( 1, 0, 0)]);
+    var mass = 10;
+    var boxbody1 = new CANNON.RigidBody(mass,hullShape);
+    var boxbody2 = new CANNON.RigidBody(mass,hullShape);
+    boxbody1.position.set(0,0,size+1);
+    boxbody2.position.set(1.5,0,4*size+1);
+    world.add(boxbody1);
+    world.add(boxbody2);
+    app.addVisual(boxbody1);
+    app.addVisual(boxbody2);
+  });
+
+demo.addScene(function(app){
+    var world = setupWorld(app);
+
+    // ConvexHull box shape
+    var hullShape = new CANNON.ConvexHull();
+    // At the moment one must provide vertices, faces and normals..
     var size = 0.5;
     hullShape.addPoints([new CANNON.Vec3(-size,-size,-size),
 			 new CANNON.Vec3( size,-size,-size),
