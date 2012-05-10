@@ -83,6 +83,7 @@ demo.addScene(function(app){
     }
   });
 
+// Various shapes
 demo.addScene(function(app){
     var world = setupWorld(app);
     // ConvexHull box shape
@@ -172,7 +173,7 @@ demo.addScene(function(app){
     normals.push(new CANNON.Vec3(0,0,-1));
     cylinderShape.addPoints(verts,faces,normals);
     var cylinderBody = new CANNON.RigidBody(mass,cylinderShape);
-    cylinderBody.position.set(1,-3,size+1);
+    cylinderBody.position.set(0,0,size*4+1);
     cylinderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/3);
     world.add(cylinderBody);
     app.addVisual(cylinderBody);
