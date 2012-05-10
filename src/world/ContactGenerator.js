@@ -330,7 +330,9 @@ CANNON.ContactGenerator = function(){
 	var sepAxis = new CANNON.Vec3();
 	  //n.copy(sepAxis); // Use the plane normal
 	  n.negate(sepAxis);
-	if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)){
+	  //console.log("testing... "+sepAxis.toString(),"qi=",qi.toString(),"qj=",qj.toString());
+	if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)!==false){
+	    //console.log("yeS!");
 	  var res = [];
 	  planehull.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
 	    //console.log("planepos:",xi.toString(),res);
@@ -377,6 +379,7 @@ CANNON.ContactGenerator = function(){
       if(sj.type==CANNON.Shape.types.CONVEXHULL){ // hull-hull
 	var sepAxis = new CANNON.Vec3();
 	if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
+
 	  //console.log(sepAxis.toString());
 	  var res = [];
 	  si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
@@ -386,12 +389,12 @@ CANNON.ContactGenerator = function(){
 	    var q = new CANNON.Vec3();
 	    res[j].normal.negate(q);
 	    q.mult(res[j].depth,q);
-	    r.ri.set(res[j].point.x + q.x*0.5,
-		     res[j].point.y + q.y*0.5,
-		     res[j].point.z + q.z*0.5);
-	    r.rj.set(res[j].point.x - q.x*0.5,
-		     res[j].point.y - q.y*0.5,
-		     res[j].point.z - q.z*0.5);
+	    r.ri.set(res[j].point.x + q.x,
+		     res[j].point.y + q.y,
+		     res[j].point.z + q.z);
+	    r.rj.set(res[j].point.x,
+		     res[j].point.y,
+		     res[j].point.z);
 	    // Contact points are in world coordinates. Transform back to relative
 	    r.rj.vsub(xj,r.rj);
 	    r.ri.vsub(xi,r.ri);

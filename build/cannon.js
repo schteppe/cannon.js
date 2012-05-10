@@ -1537,8 +1537,12 @@ CANNON.ConvexHull = function() {
     var vs = hull.vertices;
     var worldVertex = new CANNON.Vec3();
     for(var i=0; i<n; i++){
-      quat.vmult(vs[i],worldVertex);
+      vs[i].copy(worldVertex);
+	//console.log("orig:",worldVertex.toString());
+      quat.vmult(worldVertex,worldVertex);
+	//console.log("after the quat ",quat.toString(),":",worldVertex.toString());
       worldVertex.vadd(pos,worldVertex);
+	//console.log("after adding pos",pos.toString(),"worldvertex:",worldVertex.toString());
       var val = worldVertex.dot(axis);
       if(max===null || val>max)
 	max = val;
@@ -1573,14 +1577,14 @@ CANNON.ConvexHull = function() {
    */
   this.testSepAxis = function(axis, hullB, posA, quatA, posB, quatB){
     var maxminA=[], maxminB=[], hullA=this;
-    project(hullA, axis, posA, quatB, maxminA);
+    project(hullA, axis, posA, quatA, maxminA);
     project(hullB, axis, posB, quatB, maxminB);
     var maxA = maxminA[0];
     var minA = maxminA[1];
     var maxB = maxminB[0];
     var minB = maxminB[1];
-
     if(maxA<minB || maxB<minA){
+	//console.log(minA,maxA,minB,maxB);
       return false; // Separated
     }
     
@@ -1720,7 +1724,6 @@ CANNON.ConvexHull = function() {
     var closestFaceB = -1;
     var dmax = -Infinity;
     var WorldNormal = new CANNON.Vec3();
-      //console.log(this.faceNormals);
     for(var face=0; face < hullB.faces.length; face++){
       hullB.faceNormals[face].copy(WorldNormal);
       quatB.vmult(WorldNormal,WorldNormal);
@@ -1732,7 +1735,6 @@ CANNON.ConvexHull = function() {
 	closestFaceB = face;
       }
     }
-      //console.log("closest B",closestFaceB);
     var worldVertsB1 = [];
     polyB = hullB.faces[closestFaceB];
     var numVertices = polyB.length;
@@ -1744,7 +1746,7 @@ CANNON.ConvexHull = function() {
       posB.vadd(worldb,worldb);
       worldVertsB1.push(worldb);
     }
-      //console.log("to clip",worldVertsB1);
+      //console.log("--- clipping face: ",worldVertsB1);
     if (closestFaceB>=0)
       this.clipFaceAgainstHull(separatingNormal,
 			       posA,
@@ -1930,27 +1932,29 @@ CANNON.ConvexHull = function() {
       lastVertex = inVertices[vi];
       n_dot_last = planeNormal.dot(lastVertex) + planeConstant;
       if(n_dot_first < 0){
-	if(n_dot_last<0){
-	  // Start < 0, end < 0, so output lastVertex
-	  outVertices.push(lastVertex);
+	if(n_dot_last < 0){
+	    // Start < 0, end < 0, so output lastVertex
+	    var newv = new CANNON.Vec3();
+	    lastVertex.copy(newv);
+	    outVertices.push(newv);
 	} else {
-	  // Start < 0, end >= 0, so output intersection
-	  var newv = new CANNON.Vec3();
-	  firstVertex.lerp(lastVertex,
-			   n_dot_first * 1.0/(n_dot_first - n_dot_last),
-			   newv);
-	  outVertices.push(newv);
+	    // Start < 0, end >= 0, so output intersection
+	    var newv = new CANNON.Vec3();
+	    firstVertex.lerp(lastVertex,
+			     n_dot_first / (n_dot_first - n_dot_last),
+			     newv);
+	    outVertices.push(newv);
 	}
       } else {
-	if(n_dot_last<0){
-	  // Start >= 0, end < 0 so output intersection and end
-	  var newv = new CANNON.Vec3();
-	  firstVertex.lerp(lastVertex,
-			   n_dot_first * 1.0/(n_dot_first - n_dot_last),
-			   newv);
-	  outVertices.push(newv);
-	  outVertices.push(lastVertex);
-	}
+	  if(n_dot_last<0){
+	      // Start >= 0, end < 0 so output intersection and end
+	      var newv = new CANNON.Vec3();
+	      firstVertex.lerp(lastVertex,
+			       n_dot_first / (n_dot_first - n_dot_last),
+			       newv);
+	      outVertices.push(newv);
+	      outVertices.push(lastVertex);
+	  }
       }
       firstVertex = lastVertex;
       n_dot_first = n_dot_last;
@@ -1980,7 +1984,6 @@ CANNON.ConvexHull = function() {
   var that = this;
   function normalOfFace(i,target){
     var f = that.faces[i];
-    //console.log(i,that.faces);
     var va = that.vertices[f[0]];
     var vb = that.vertices[f[1]];
     var vc = that.vertices[f[2]];
@@ -3489,7 +3492,9 @@ CANNON.ContactGenerator = function(){
 	var sepAxis = new CANNON.Vec3();
 	  //n.copy(sepAxis); // Use the plane normal
 	  n.negate(sepAxis);
-	if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)){
+	  //console.log("testing... "+sepAxis.toString(),"qi=",qi.toString(),"qj=",qj.toString());
+	if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)!==false){
+	    //console.log("yeS!");
 	  var res = [];
 	  planehull.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
 	    //console.log("planepos:",xi.toString(),res);
@@ -3536,6 +3541,7 @@ CANNON.ContactGenerator = function(){
       if(sj.type==CANNON.Shape.types.CONVEXHULL){ // hull-hull
 	var sepAxis = new CANNON.Vec3();
 	if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
+
 	  //console.log(sepAxis.toString());
 	  var res = [];
 	  si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
@@ -3545,12 +3551,12 @@ CANNON.ContactGenerator = function(){
 	    var q = new CANNON.Vec3();
 	    res[j].normal.negate(q);
 	    q.mult(res[j].depth,q);
-	    r.ri.set(res[j].point.x + q.x*0.5,
-		     res[j].point.y + q.y*0.5,
-		     res[j].point.z + q.z*0.5);
-	    r.rj.set(res[j].point.x - q.x*0.5,
-		     res[j].point.y - q.y*0.5,
-		     res[j].point.z - q.z*0.5);
+	    r.ri.set(res[j].point.x + q.x,
+		     res[j].point.y + q.y,
+		     res[j].point.z + q.z);
+	    r.rj.set(res[j].point.x,
+		     res[j].point.y,
+		     res[j].point.z);
 	    // Contact points are in world coordinates. Transform back to relative
 	    r.rj.vsub(xj,r.rj);
 	    r.ri.vsub(xi,r.ri);

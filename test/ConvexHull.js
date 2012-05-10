@@ -76,6 +76,16 @@ exports.convexHull = {
       // Lower the plane to z=-2, we assume no points back
       h.clipFaceAgainstPlane(inverts,outverts,new C.Vec3(0,0,1),2);
       test.equal(outverts.length,0,"got more than zero vertices left after clipping!");
+	
+      // two points below, two over. We get four points back, though 2 of them are clipped to 
+      // the back of the  plane
+      var inverts2 = [new C.Vec3(-2, -2,  1),
+		      new C.Vec3(-2,  2,  1),
+		      new C.Vec3( 2,  2, -1),
+		      new C.Vec3( 2, -2, -1)];
+	outverts = [];
+      h.clipFaceAgainstPlane(inverts2,outverts,new C.Vec3(0,0,1),0.0);
+      test.equal(outverts.length,4,"Expected 4 points back from clipping a quad with plane, got "+outverts.length);
       test.done();
     },
 
@@ -115,43 +125,60 @@ exports.convexHull = {
       var sepaxis = new C.Vec3();
       var found = hullA.findSeparatingAxis(hullB,posA,quatA,posB,quatB,sepaxis);
       var result = [];
+	//hullA.clipAgainstHull(posA,quatA,hullB,posB,quatB,sepaxis,-100,100,result);
+      quatB.setFromAxisAngle(new C.Vec3(0,0,1),Math.PI/4);
+	//console.log("clipping....");
       hullA.clipAgainstHull(posA,quatA,hullB,posB,quatB,sepaxis,-100,100,result);
+	//console.log("result:",result);
+	//console.log("done....");
       test.done();
     },
 
     "testSepAxis":function(test){
-      test.expect(2);
-      var hullA = createBoxHull(),
-      posA = new C.Vec3(-0.2,0,0),
-      quatA = new C.Quaternion();
-
-      var hullB = createBoxHull(),
-      posB = new C.Vec3(0.2,0,0),
-      quatB = new C.Quaternion();
-
-      var sepAxis = new C.Vec3(1,0,0);
-      var found1 = hullA.testSepAxis(sepAxis,hullB,posA,quatA,posB,quatB);
-      test.equal(found1,0.6,"didnt find sep axis depth");
-
-      posA.x = -5;
-      var found2 = hullA.testSepAxis(sepAxis,hullB,posA,quatA,posB,quatB);
-      test.equal(found2,false,"found separating axis though there are none");
-      test.done();
+	test.expect(3);
+	var hullA = createBoxHull(0.5),
+	posA = new C.Vec3(-0.2,0,0),
+	quatA = new C.Quaternion();
+	
+	var hullB = createBoxHull(),
+	posB = new C.Vec3(0.2,0,0),
+	quatB = new C.Quaternion();
+	
+	var sepAxis = new C.Vec3(1,0,0);
+	var found1 = hullA.testSepAxis(sepAxis,hullB,posA,quatA,posB,quatB);
+	test.equal(found1,0.6,"didnt find sep axis depth");
+	
+	// Move away
+	posA.x = -5;
+	var found2 = hullA.testSepAxis(sepAxis,hullB,posA,quatA,posB,quatB);
+	test.equal(found2,false,"found separating axis though there are none");
+	
+	// Inclined 45 degrees, what happens then?
+	posA.x = 1;
+	quatB.setFromAxisAngle(new C.Vec3(0,0,1),Math.PI/4);
+	var found3 = hullA.testSepAxis(sepAxis,hullB,posA,quatA,posB,quatB);
+	test.ok(typeof(found3),"number","Did not fetch");
+		
+	test.done();
     },
 
     "findSepAxis":function(test){
-      var hullA = createBoxHull(),
-      posA = new C.Vec3(-0.2,0,0),
-      quatA = new C.Quaternion();
-
-      var hullB = createBoxHull(),
-      posB = new C.Vec3(0.2,0,0),
-      quatB = new C.Quaternion();
-
-      var sepaxis = new C.Vec3();
-      var found = hullA.findSeparatingAxis(hullB,posA,quatA,posB,quatB,sepaxis);
-      console.log("SepAxis found:",found,", the axis:",sepaxis);
-
-      test.done();
+	var hullA = createBoxHull(),
+	posA = new C.Vec3(-0.2,0,0),
+	quatA = new C.Quaternion();
+	
+	var hullB = createBoxHull(),
+	posB = new C.Vec3(0.2,0,0),
+	quatB = new C.Quaternion();
+	
+	var sepaxis = new C.Vec3();
+	var found = hullA.findSeparatingAxis(hullB,posA,quatA,posB,quatB,sepaxis);
+	console.log("SepAxis found:",found,", the axis:",sepaxis.toString());
+	
+	quatB.setFromAxisAngle(new C.Vec3(0,0,1),Math.PI/4);
+	var found2 = hullA.findSeparatingAxis(hullB,posA,quatA,posB,quatB,sepaxis);
+	console.log("SepAxis found:",found2,", the axis:",sepaxis.toString());
+	
+	test.done();
     }
 };

@@ -428,8 +428,8 @@ CANNON.Demo.prototype.start = function(){
   function animate(){
     requestAnimationFrame( animate );
     if(!that.paused){
-      updatePhysics();
       that.updateVisuals();
+      updatePhysics();
     }
     render();
     stats.update();

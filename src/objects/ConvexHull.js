@@ -118,8 +118,12 @@ CANNON.ConvexHull = function() {
     var vs = hull.vertices;
     var worldVertex = new CANNON.Vec3();
     for(var i=0; i<n; i++){
-      quat.vmult(vs[i],worldVertex);
+      vs[i].copy(worldVertex);
+	//console.log("orig:",worldVertex.toString());
+      quat.vmult(worldVertex,worldVertex);
+	//console.log("after the quat ",quat.toString(),":",worldVertex.toString());
       worldVertex.vadd(pos,worldVertex);
+	//console.log("after adding pos",pos.toString(),"worldvertex:",worldVertex.toString());
       var val = worldVertex.dot(axis);
       if(max===null || val>max)
 	max = val;
@@ -154,14 +158,14 @@ CANNON.ConvexHull = function() {
    */
   this.testSepAxis = function(axis, hullB, posA, quatA, posB, quatB){
     var maxminA=[], maxminB=[], hullA=this;
-    project(hullA, axis, posA, quatB, maxminA);
+    project(hullA, axis, posA, quatA, maxminA);
     project(hullB, axis, posB, quatB, maxminB);
     var maxA = maxminA[0];
     var minA = maxminA[1];
     var maxB = maxminB[0];
     var minB = maxminB[1];
-
     if(maxA<minB || maxB<minA){
+	//console.log(minA,maxA,minB,maxB);
       return false; // Separated
     }
     
@@ -301,7 +305,6 @@ CANNON.ConvexHull = function() {
     var closestFaceB = -1;
     var dmax = -Infinity;
     var WorldNormal = new CANNON.Vec3();
-      //console.log(this.faceNormals);
     for(var face=0; face < hullB.faces.length; face++){
       hullB.faceNormals[face].copy(WorldNormal);
       quatB.vmult(WorldNormal,WorldNormal);
@@ -313,7 +316,6 @@ CANNON.ConvexHull = function() {
 	closestFaceB = face;
       }
     }
-      //console.log("closest B",closestFaceB);
     var worldVertsB1 = [];
     polyB = hullB.faces[closestFaceB];
     var numVertices = polyB.length;
@@ -325,7 +327,7 @@ CANNON.ConvexHull = function() {
       posB.vadd(worldb,worldb);
       worldVertsB1.push(worldb);
     }
-      //console.log("to clip",worldVertsB1);
+      //console.log("--- clipping face: ",worldVertsB1);
     if (closestFaceB>=0)
       this.clipFaceAgainstHull(separatingNormal,
 			       posA,
@@ -511,27 +513,29 @@ CANNON.ConvexHull = function() {
       lastVertex = inVertices[vi];
       n_dot_last = planeNormal.dot(lastVertex) + planeConstant;
       if(n_dot_first < 0){
-	if(n_dot_last<0){
-	  // Start < 0, end < 0, so output lastVertex
-	  outVertices.push(lastVertex);
+	if(n_dot_last < 0){
+	    // Start < 0, end < 0, so output lastVertex
+	    var newv = new CANNON.Vec3();
+	    lastVertex.copy(newv);
+	    outVertices.push(newv);
 	} else {
-	  // Start < 0, end >= 0, so output intersection
-	  var newv = new CANNON.Vec3();
-	  firstVertex.lerp(lastVertex,
-			   n_dot_first * 1.0/(n_dot_first - n_dot_last),
-			   newv);
-	  outVertices.push(newv);
+	    // Start < 0, end >= 0, so output intersection
+	    var newv = new CANNON.Vec3();
+	    firstVertex.lerp(lastVertex,
+			     n_dot_first / (n_dot_first - n_dot_last),
+			     newv);
+	    outVertices.push(newv);
 	}
       } else {
-	if(n_dot_last<0){
-	  // Start >= 0, end < 0 so output intersection and end
-	  var newv = new CANNON.Vec3();
-	  firstVertex.lerp(lastVertex,
-			   n_dot_first * 1.0/(n_dot_first - n_dot_last),
-			   newv);
-	  outVertices.push(newv);
-	  outVertices.push(lastVertex);
-	}
+	  if(n_dot_last<0){
+	      // Start >= 0, end < 0 so output intersection and end
+	      var newv = new CANNON.Vec3();
+	      firstVertex.lerp(lastVertex,
+			       n_dot_first / (n_dot_first - n_dot_last),
+			       newv);
+	      outVertices.push(newv);
+	      outVertices.push(lastVertex);
+	  }
       }
       firstVertex = lastVertex;
       n_dot_first = n_dot_last;
@@ -561,7 +565,6 @@ CANNON.ConvexHull = function() {
   var that = this;
   function normalOfFace(i,target){
     var f = that.faces[i];
-    //console.log(i,that.faces);
     var va = that.vertices[f[0]];
     var vb = that.vertices[f[1]];
     var vc = that.vertices[f[2]];
