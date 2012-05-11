@@ -17,7 +17,8 @@ CANNON.Demo = function(){
     rendermode:0,
     contacts:false,  // Contact points
     cm2contact:false, // center of mass to contact points
-    normals:false // contact normals
+    normals:false, // contact normals
+    axes:false // "local" frame axes
   };
 
   this._phys_bodies = [];
@@ -41,6 +42,7 @@ CANNON.Demo = function(){
   this._contactmeshes = [];
   this._normallines = [];
   this._contactlines = [];
+  this._axes = [];
 
   this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
 
@@ -301,6 +303,51 @@ CANNON.Demo.prototype.updateVisuals = function(){
     for(var i=0; i<this._normallines.length; i++)
       this._scene.remove(this._normallines[i]);
   }
+
+  // Frame axes for each body
+  if(this.settings.axes){
+    var old_axes = this._axes;
+    this._axes = [];
+    for(var bi in this._world.bodies){
+      var b = this._world.bodies[bi], mesh;
+      if(old_axes.length){
+	// Get mesh from prev timestep
+	mesh = old_axes.pop();
+      } else {
+	// Create new mesh
+	mesh = new THREE.Object3D();
+	mesh.useQuaternion = true;
+	var origin = new THREE.Vector3(0,0,0);
+	var gX = new THREE.Geometry();
+	var gY = new THREE.Geometry();
+	var gZ = new THREE.Geometry();
+	gX.vertices.push(origin);
+	gY.vertices.push(origin);
+	gZ.vertices.push(origin);
+	gX.vertices.push(new THREE.Vector3(1,0,0));
+	gY.vertices.push(new THREE.Vector3(0,1,0));
+	gZ.vertices.push(new THREE.Vector3(0,0,1));
+	var lineX = new THREE.Line( gX, new THREE.LineBasicMaterial({color:0xff0000}));
+	var lineY = new THREE.Line( gY, new THREE.LineBasicMaterial({color:0x00ff00}));
+	var lineZ = new THREE.Line( gZ, new THREE.LineBasicMaterial({color:0x0000ff}));
+	mesh.add(lineX);
+	mesh.add(lineY);
+	mesh.add(lineZ);
+      }
+      b.position.copy(mesh.position);
+      b.quaternion.copy(mesh.quaternion);
+      this._axes.push(mesh);
+      this._scene.add(mesh);
+    }
+
+    // Remove overflowing
+    while(old_axes.length)
+      this._scene.remove(old_axes.pop());
+  } else if(this._axes.length){
+    // Remove all contact lines
+    for(var i=0; i<this._axes.length; i++)
+      this._scene.remove(this._axes[i]);
+  }
 };
 
 /**
@@ -499,6 +546,7 @@ CANNON.Demo.prototype.start = function(){
       });
     rf.add(that.settings,'cm2contact').onChange(function(cm2contact){});
     rf.add(that.settings,'normals').onChange(function(normals){});
+    rf.add(that.settings,'axes').onChange(function(axes){});
 
     // World folder
     var wf = that._gui.addFolder('World');
