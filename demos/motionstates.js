@@ -21,20 +21,13 @@ demo.addScene(function(app){
     b1.position.set(0,0,0.5*size);
     world.add(b1);
     app.addVisual(b1);
-
-    // To control the box movement we must set its velocity
-    //b1.velocity.set(0,0,5);
 	
-	rbhandle = b1;
-	
-	
-	
-	
+  	rbhandle = b1;
 
     // Dynamic Sphere
     // Dynamic bodies can collide with bodies of all other motionstates.
     var b2 = new CANNON.RigidBody(mass,sphereShape);
-    b2.position.set(0,0,4.5*size);
+    b2.position.set(0,0,3*size);
     world.add(b2);
     app.addVisual(b2);
   });
@@ -70,7 +63,7 @@ function QuatToAxisAngle(q) {
 	return [x,y,z,angle];
 }
 function EulerToQuat(phi, theta, psi, q) {
-	var c = Math.cos, s = Math.sin, f=phi, t=theta, p=psi;		
+	var c = Math.cos, s = Math.sin, f=phi, t=theta, p=psi;
 	var p2 = p*0.5, t2 = t*0.5, f2=f*0.5;
 	q.w = c(f2)*c(t2)*c(p2)+s(f2)*s(t2)*s(p2);
 	q.x = s(f2)*c(t2)*c(p2)-c(f2)*s(t2)*s(p2);
@@ -102,5 +95,5 @@ setInterval(function() {
 },16);
 document.onmousemove = function(e){
     xangle =  e.pageX-window.innerWidth*0.5;
-    yangle = e.pageY-window.innerHeight*0.5;	
+    yangle = e.pageY-window.innerHeight*0.5;
 }
