@@ -4,7 +4,7 @@
 var demo = new CANNON.Demo();
 var size = 2;
 
-var rbhandle,rbhandle2;
+var rbhandle;
 // Sphere / box side
 demo.addScene(function(app){
     var world = setupWorld(app);
@@ -28,12 +28,7 @@ demo.addScene(function(app){
 	rbhandle = b1;
 	
 	
-	var b2 = new CANNON.RigidBody(boxMass,boxShape); 
-	b2.position.set(0,0,.5*size);
-	world.add(b2);
-	app.addVisual(b2);
 	
-	rbhandle2 = b2;
 	
 
     // Dynamic Sphere
@@ -65,68 +60,15 @@ function setupWorld(app){
   return world;
 }
 
-document.onkeydown = function (e) {
-	var keynum;
-	if (!(e.which)) keynum = e.keyCode;
-	else if (e.which) keynum = e.which;
-	else return;
-	var keychar = String.fromCharCode(keynum);
-	if (keychar == 'W') {
-		
-		var newq = new CANNON.Quaternion();
-		EulerToQuat(-yangle/4/180*3.14159,-xangle/4/180*3.14159,0,newq);
-		console.log("q2e of current",QuatToEuler(rbhandle.quaternion));
-		console.log("euler of target", -yangle/4/180*3.14159,-xangle/4/180*3.14159,0);
-		rbhandle.quaternion.normalize();
-		var diffq = rbhandle.quaternion.inverse().mult(newq);	
-		var A = QuatToAxisAngle(diffq);
-		// A is the axis and angle which is the rotation needed to get us to where we want to be 
-		// But I think it is in the wrong frame. To do this I do 
-		// q * q_v * q^-1 to get the new (quat-)vector
-		var tempQ = new CANNON.Quaternion(); tempQ.set(A[0],A[1],A[2],0);
-		var finalAQ = rbhandle.quaternion.mult(tempQ).mult(rbhandle.quaternion.inverse());
-		
 
-		A[3] = A[3]*10;  
-		rbhandle.angularVelocity.set(finalAQ.x*A[3],finalAQ.y*A[3],finalAQ.z*A[3]);
-		
 
-		/* 
-		var oldangles = QuatToEuler(oldq);
-		var xdiff = xangle/4/180*Math.PI + oldangles[1];
-		var ydiff = yangle/4/180*Math.PI + oldangles[0];
-		var zdiff = oldangles[2];
-		// note that x-euler is set to -yangle, y-euler to -xangle. 
-		console.log(xdiff,ydiff,zdiff);
-		rbhandle.angularVelocity.set(-ydiff,-xdiff,-zdiff);
-		*/
-	}
+function QuatToAxisAngle(q) {
+	var angle = 2*Math.acos(q.w), scale = 1.0/Math.sqrt(1.0-q.w*q.w);
+	var x = q.x*scale;
+	var y = q.y*scale;
+	var z = q.z*scale;
+	return [x,y,z,angle];
 }
-var xangle,yangle;
-setInterval(function() {
-	rbhandle.angularVelocity.set(0,0,0);
-},100);
-document.onmousemove = function(e){
-    xangle =  e.pageX-window.innerWidth*0.5;
-    yangle = e.pageY-window.innerHeight*0.5;
-	
-	
-	
-	// computes and assigns new orientation	
-	EulerToQuat(-yangle/4/180*3.14159,-xangle/4/180*3.14159,0,rbhandle2.quaternion);
-	
-	// computes change orientation 
-	//var diffq = oldq.inverse().mult(rbhandle.quaternion); 
-	//var A = QuatToAxisAngle(diffq);
-	
-	//rbhandle.angularVelocity.set(A[0],A[1],A[2],A[3]*60.0); // diff = velocity * dt
-		
-	
-}
-
-// Determine quaternion from roll, pitch, and yaw euler angles: http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-// just using roll and pitch here
-
 function EulerToQuat(phi, theta, psi, q) {
 	var c = Math.cos, s = Math.sin, f=phi, t=theta, p=psi;		
 	var p2 = p*0.5, t2 = t*0.5, f2=f*0.5;
@@ -136,29 +78,29 @@ function EulerToQuat(phi, theta, psi, q) {
 	q.z = c(f2)*c(t2)*s(p2)-s(f2)*s(t2)*c(p2);
 }
 
-// http://www.gamedev.net/topic/423462-rotation-difference-between-two-quaternions/
-// to compute the angular velocity to make correct collision resolution
-
-function QuatToAxisAngle(q) {
-	var angle = 2*Math.acos(q.w), scale = 1.0/Math.sqrt(1.0-q.w*q.w);
-	var x = q.x*scale;
-	var y = q.y*scale;
-	var z = q.z*scale;
-	return [x,y,z,angle];
+// Q1*Q2E(Q1^-1*Q2)*Q1^-1
+// Not aware of a way to make this more efficent, my quat math sucks
+// returns in axis-angle the rotation value to bring frame exactly to Q2 from Q1. 
+// Used for setting proper velocity values for kinematic bodies. 
+function Q2ToAxisAngle(q1,q2) {
+	var q1i = q1.inverse();
+	var AA = QuatToAxisAngle(q1i.mult(q2));
+	var qv = new CANNON.Quaternion(AA[0],AA[1],AA[2],0);
+	var v = q1.mult(qv).mult(q1i);
+	return [v.x,v.y,v.z,AA[3]]; // returns an axis-angle value as an array
 }
 
-function QuatToEuler(q) {
-	var f,t,p;
-	f = Math.atan2(2*(q.w*q.x+q.y*q.z),1-2*(q.x*q.x+q.y*q.y));
-	t = Math.asin(2*(q.w*q.y-q.z*q.x));
-	p = Math.atan2(2*(q.w*q.z+q.x*q.y),1-2*(q.y*q.y+q.z*q.z));
-	return [f,t,p];
+var xangle=0,yangle=0;
+setInterval(function() {
+	var newq = new CANNON.Quaternion();
+	EulerToQuat(-yangle/4/180*3.14159,-xangle/4/180*3.14159,0,newq);
+	rbhandle.quaternion.normalize();
+	var aa = Q2ToAxisAngle(rbhandle.quaternion,newq);
+	//console.log(aa.toString(),rbhandle.angularVelocity.toString());
+	var rad_per_sec = aa[3]*30; // take me half the way to target in the next time step
+	rbhandle.angularVelocity.set(aa[0]*rad_per_sec,aa[1]*rad_per_sec,aa[2]*rad_per_sec);
+},16);
+document.onmousemove = function(e){
+    xangle =  e.pageX-window.innerWidth*0.5;
+    yangle = e.pageY-window.innerHeight*0.5;	
 }
-
-/* Not needed since inverse can use conjugate when unit quat 
-function QuatReciprocal(q) {
-	var recip = new CANNON.Quaternion();
-	var scale = 1.0/(q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w);
-	recip.set(-q.x*scale,-q.y*scale,-q.z*scale,q.w*scale);
-	return recip;
-} */
