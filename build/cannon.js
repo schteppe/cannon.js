@@ -100,17 +100,17 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   // Naive N^2 ftw!
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
-
+      
       var bi = bodies[i], bj = bodies[j];
       var ti = bi.shape.type, tj = bj.shape.type;
 
-      if((bi.motionstate & STATIC_OR_KINEMATIC) && (bi.motionstate & STATIC_OR_KINEMATIC)) {
+      if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0) && ((bj.motionstate & STATIC_OR_KINEMATIC)!==0)) {
+	// Both bodies are static or kinematic. Skip.
 	continue;
       }
 
       // --- Box / sphere / compound / hull collision ---
       if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
-
 	// Rel. position
 	bj.position.vsub(bi.position,r);
 
@@ -1180,6 +1180,20 @@ CANNON.RigidBody = function(mass,shape,material){
    * @brief Reference to the world the body is living in
    */
   this.world = null;
+
+  /**
+   * @property function preStep
+   * @memberof CANNON.RigidBody
+   * @brief Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this CANNON.RigidBody object.
+   */
+  this.preStep = null;
+
+  /**
+   * @property function postStep
+   * @memberof CANNON.RigidBody
+   * @brief Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this CANNON.RigidBody object.
+   */
+  this.postStep = null;
 };
 
 // Motionstates:
@@ -2803,7 +2817,7 @@ CANNON.World.prototype.step = function(dt){
   that = this,
   N = this.numObjects(),
   bodies = this.bodies;
-  
+
   if(dt==undefined){
     if(this.last_dt)
       dt = this.last_dt;
@@ -2845,11 +2859,18 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Begin with transferring old contact data to the right place
-  for(var i in bodies)
+  for(var i in bodies){
     for(var j=0; j<i; j++){
       cmatrix(i,j,-1, cmatrix(i,j,0));
       cmatrix(i,j,0,0);
     }
+  }
+
+  // Invoke pre-step callbacks
+  for(var i in bodies){
+    var bi = bodies[i];
+    bi.preStep && bi.preStep.call(bi);
+  }
 
   // Add gravity to all objects
   for(var i in bodies){
@@ -3027,8 +3048,8 @@ CANNON.World.prototype.step = function(dt){
 			    bj.force.x,bj.force.y,bj.force.z,
 			    bj.tau.x,bj.tau.y,bj.tau.z],
 			     
-			   -mu*g*(bi.mass+bj.mass),
-			   mu*g*(bi.mass+bj.mass),
+			   -mu*100*(bi.mass+bj.mass),
+			   mu*100*(bi.mass+bj.mass),
 
 			   i,
 			   j);

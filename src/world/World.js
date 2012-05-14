@@ -335,7 +335,7 @@ CANNON.World.prototype.step = function(dt){
   that = this,
   N = this.numObjects(),
   bodies = this.bodies;
-  
+
   if(dt==undefined){
     if(this.last_dt)
       dt = this.last_dt;
@@ -377,11 +377,18 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Begin with transferring old contact data to the right place
-  for(var i in bodies)
+  for(var i in bodies){
     for(var j=0; j<i; j++){
       cmatrix(i,j,-1, cmatrix(i,j,0));
       cmatrix(i,j,0,0);
     }
+  }
+
+  // Invoke pre-step callbacks
+  for(var i in bodies){
+    var bi = bodies[i];
+    bi.preStep && bi.preStep.call(bi);
+  }
 
   // Add gravity to all objects
   for(var i in bodies){
@@ -559,8 +566,8 @@ CANNON.World.prototype.step = function(dt){
 			    bj.force.x,bj.force.y,bj.force.z,
 			    bj.tau.x,bj.tau.y,bj.tau.z],
 			     
-			   -mu*g*(bi.mass+bj.mass),
-			   mu*g*(bi.mass+bj.mass),
+			   -mu*100*(bi.mass+bj.mass),
+			   mu*100*(bi.mass+bj.mass),
 
 			   i,
 			   j);
