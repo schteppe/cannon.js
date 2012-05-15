@@ -843,20 +843,42 @@ CANNON.Quaternion.prototype.conjugate = function(target){
  * @brief Normalize the quaternion. Note that this changes the values of the quaternion.
  */
 CANNON.Quaternion.prototype.normalize = function(){
-  var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
-  if ( l === 0 ) {
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
-    this.w = 0;
-  } else {
-    l = 1 / l;
-    this.x *= l;
-    this.y *= l;
-    this.z *= l;
-    this.w *= l;
-  }
+    var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
+    if ( l === 0 ) {
+	this.x = 0;
+	this.y = 0;
+	this.z = 0;
+	this.w = 0;
+    } else {
+	l = 1 / l;
+	this.x *= l;
+	this.y *= l;
+	this.z *= l;
+	this.w *= l;
+    }
 };
+
+/**
+ * @fn normalizeFast
+ * @memberof CANNON.Quaternion
+ * @brief Approximation of quaternion normalization. Works best when quat is already almost-normalized.
+ * @see http://jsperf.com/fast-quaternion-normalization
+ * @author unphased, https://github.com/unphased
+ */
+CANNON.Quaternion.prototype.normalizeFast = function () {
+    var f = (3.0-(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w))/2.0;
+    if ( f === 0 ) {
+	this.x = 0;
+	this.y = 0;
+	this.z = 0;
+	this.w = 0;
+    } else {
+	this.x *= f;
+	this.y *= f;
+	this.z *= f;
+	this.w *= f;
+    }
+}
 
 /**
  * @fn vmult
@@ -3123,7 +3145,8 @@ CANNON.World.prototype.step = function(dt){
       b.quaternion.y += dt * 0.5 * wq.y;
       b.quaternion.z += dt * 0.5 * wq.z;
       b.quaternion.w += dt * 0.5 * wq.w;
-      b.quaternion.normalize();
+      if(world.stepnumber % 10 === 0)
+        b.quaternion.normalizeFast();
     }
     b.force.set(0,0,0);
     b.tau.set(0,0,0);

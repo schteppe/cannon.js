@@ -641,7 +641,8 @@ CANNON.World.prototype.step = function(dt){
       b.quaternion.y += dt * 0.5 * wq.y;
       b.quaternion.z += dt * 0.5 * wq.z;
       b.quaternion.w += dt * 0.5 * wq.w;
-      b.quaternion.normalize();
+      if(world.stepnumber % 10 === 0)
+        b.quaternion.normalizeFast();
     }
     b.force.set(0,0,0);
     b.tau.set(0,0,0);
