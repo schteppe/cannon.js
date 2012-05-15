@@ -384,23 +384,6 @@ CANNON.World.prototype.step = function(dt){
     }
   }
 
-  // Invoke pre-step callbacks
-  for(var i in bodies){
-    var bi = bodies[i];
-    bi.preStep && bi.preStep.call(bi);
-  }
-
-  // Add gravity to all objects
-  for(var i in bodies){
-    var bi = bodies[i];
-    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
-      var f = bodies[i].force, m = bodies[i].mass;
-      f.x += world.gravity.x * m;
-      f.y += world.gravity.y * m;
-      f.z += world.gravity.z * m;
-    }
-  }
-
   // Reset contact solver
   this.solver.reset(N);
 
@@ -595,6 +578,17 @@ CANNON.World.prototype.step = function(dt){
     }
   }
 
+  // Add gravity to all objects
+  for(var i in bodies){
+    var bi = bodies[i];
+    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+      var f = bodies[i].force, m = bodies[i].mass;
+      f.x += world.gravity.x * m;
+      f.y += world.gravity.y * m;
+      f.z += world.gravity.z * m;
+    }
+  }
+
   // Apply damping
   for(var i in bodies){
     bi = bodies[i];
@@ -604,6 +598,12 @@ CANNON.World.prototype.step = function(dt){
       bi.velocity.mult(ld,bi.velocity);
       bi.angularVelocity.mult(ad,bi.angularVelocity);
     }
+  }
+
+  // Invoke pre-step callbacks
+  for(var i in bodies){
+    var bi = bodies[i];
+    bi.preStep && bi.preStep.call(bi);
   }
 
   // Leap frog
@@ -651,5 +651,11 @@ CANNON.World.prototype.step = function(dt){
   // Update world time
   world.time += dt;
   world.stepnumber += 1;
+
+  // Invoke post-step callbacks
+  for(var i in bodies){
+    var bi = bodies[i];
+    bi.postStep && bi.postStep.call(bi);
+  }
 };
 
