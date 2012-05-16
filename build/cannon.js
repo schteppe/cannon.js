@@ -2517,7 +2517,7 @@ CANNON.World = function(){
   this.stepnumber = 0;
 
   /// Spring constant
-  this.spook_k = 3000.0;
+  this.spook_k = 500.0;
 
   /// Stabilization parameter (number of timesteps until stabilization)
   this.spook_d = 3.0;
@@ -2541,7 +2541,7 @@ CANNON.World = function(){
   /// The contact solver
   this.solver = new CANNON.Solver(this.spook_a(1.0/60.0),
 				  this.spook_b,
-				  this.spook_eps(1.0/60.0),
+				  this.spook_eps(1.0/60.0)*0.1,
 				  this.spook_k,
 				  this.spook_d,
 				  5,
@@ -2847,6 +2847,17 @@ CANNON.World.prototype.step = function(dt){
       dt = this.default_dt;
   }
 
+  // Add gravity to all objects
+  for(var i in bodies){
+    var bi = bodies[i];
+    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+      var f = bodies[i].force, m = bodies[i].mass;
+      f.x += world.gravity.x * m;
+      f.y += world.gravity.y * m;
+      f.z += world.gravity.z * m;
+    }
+  }
+
   // 1. Collision detection
   var pairs = this.broadphase.collisionPairs(this);
   var p1 = pairs[0];
@@ -2968,7 +2979,7 @@ CANNON.World.prototype.step = function(dt){
       c.ri.cross(n,rixn);
       c.rj.cross(n,rjxn);
 
-      var un_rel = n.mult(u_rel.dot(n));
+      var un_rel = n.mult(u_rel.dot(n)*0.5);
       var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
       var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
 
@@ -3003,8 +3014,8 @@ CANNON.World.prototype.step = function(dt){
 		       // External force - forces & torques
 		       [bi.force.x,bi.force.y,bi.force.z,
 			bi.tau.x,bi.tau.y,bi.tau.z,
-			bj.force.x,bj.force.y,bj.force.z,
-			bj.tau.x,bj.tau.y,bj.tau.z],
+			-bj.force.x,-bj.force.y,-bj.force.z,
+			-bj.tau.x,-bj.tau.y,-bj.tau.z],
 		       0,
 		       'inf',
 		       i,
@@ -3079,17 +3090,6 @@ CANNON.World.prototype.step = function(dt){
 	b.angularVelocity.y += this.solver.wylambda[i];
 	b.angularVelocity.z += this.solver.wzlambda[i];
       }
-    }
-  }
-
-  // Add gravity to all objects
-  for(var i in bodies){
-    var bi = bodies[i];
-    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
-      var f = bodies[i].force, m = bodies[i].mass;
-      f.x += world.gravity.x * m;
-      f.y += world.gravity.y * m;
-      f.z += world.gravity.z * m;
     }
   }
 
