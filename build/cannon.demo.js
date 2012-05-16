@@ -520,15 +520,31 @@ CANNON.Demo.prototype.start = function(){
 	case 32: // Space - restart
 	that.restartCurrentScene();
 	break;
+
 	case 112: // p
 	that.paused = !that.paused;
 	that.settings.paused = that.paused;
 	that._updategui();
 	break;
+
 	case 115: // s
 	updatePhysics();
 	that.updateVisuals();
 	break;
+
+	case 49:
+	case 50:
+	case 51:
+	case 52:
+	case 53:
+	case 54:
+	case 55:
+	case 56:
+	case 57:
+	if(that._scenes.length > e.keyCode-49)
+	  that._changeScene(e.keyCode-49);
+	break;
+	
 	}
       }
     });
@@ -578,13 +594,17 @@ CANNON.Demo.prototype.start = function(){
     for(var i=0; i<that._scenes.length; i++)
       scenes[(i+1)+'. Scene '+(i+1)] = i;
     that._gui.add(that.settings,'scene',scenes).onChange(function(sceneNumber){
-	that.paused = false;
-	that.settings.paused = false;
-	that._updategui();
-	that._buildScene(sceneNumber);
+	that._changeScene(sceneNumber);
       });
   }
 };
+
+CANNON.Demo.prototype._changeScene = function(n){
+  this.paused = false;
+  this.settings.paused = false;
+  this._updategui();
+  this._buildScene(n);
+}
 
 /**
  * @private
