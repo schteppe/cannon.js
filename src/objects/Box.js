@@ -9,11 +9,61 @@
  */
 CANNON.Box = function(halfExtents){
   CANNON.Shape.call(this);
+
+  /**
+   * @property CANNON.Vec3 halfExtents
+   * @memberof CANNON.Box
+   */
   this.halfExtents = halfExtents;
   this.type = CANNON.Shape.types.BOX;
+
+  /**
+   * 
+   */
+  this.convexHullRepresentation = null;
+
+  this.updateConvexHullRepresentation();
 };
 CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
+
+/**
+ * @fn updateConvexHullRepresentation
+ * @memberof CANNON.Box
+ * @brief Updates the local convex hull representation used for some collisions.
+ */
+CANNON.Box.prototype.updateConvexHullRepresentation = function(){
+  var h = new CANNON.ConvexHull();
+  var sx = this.halfExtents.x;
+  var sy = this.halfExtents.y;
+  var sz = this.halfExtents.z;
+  var v = CANNON.Vec3;
+  h.addPoints([new v(-sx,-sy,-sz),
+	       new v( sx,-sy,-sz),
+	       new v( sx, sy,-sz),
+	       new v(-sx, sy,-sz),
+	       new v(-sx,-sy, sz),
+	       new v( sx,-sy, sz),
+	       new v( sx, sy, sz),
+	       new v(-sx, sy, sz)],
+	      
+	      [
+	       [0,1,2,3], // -z
+	       [4,5,6,7], // +z
+	       [0,1,4,5], // -y
+	       [2,3,6,7], // +y
+	       [0,3,4,7], // -x
+	       [1,2,5,6], // +x
+	       ],
+	      
+	      [new v( 0, 0,-1),
+	       new v( 0, 0, 1),
+	       new v( 0,-1, 0),
+	       new v( 0, 1, 0),
+	       new v(-1, 0, 0),
+	       new v( 1, 0, 0)]);
+  this.convexHullRepresentation = h;
+};
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();

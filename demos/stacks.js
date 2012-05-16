@@ -4,6 +4,25 @@
 var demo = new CANNON.Demo();
 var size = 2;
 
+// Boxes
+demo.addScene(function(app){
+    var world = setupWorld(app);
+    
+    // Box 1
+    var boxShape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+    var b1 = new CANNON.RigidBody(5,boxShape);
+    b1.position.set(0,0,3*size);
+    world.add(b1);
+    app.addVisual(b1);
+
+    // Box 2
+    var b2 = new CANNON.RigidBody(5,boxShape);
+    b2.position.set(0,0,1*size);
+    world.add(b2);
+    app.addVisual(b2);
+  });
+
+
 // Spheres
 demo.addScene(function(app){
     var world = setupWorld(app);

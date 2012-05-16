@@ -308,7 +308,7 @@ CANNON.ContactGenerator = function(){
 		     new CANNON.Vec3(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z)]; // -++
 	t1.normalize();
 	t2.normalize();
-	planehull.addPoints(verts,	    
+	planehull.addPoints(verts,
 			    [
 				[0,1,2,3], // -z
 				[4,5,6,7], // +z
@@ -359,7 +359,11 @@ CANNON.ContactGenerator = function(){
     } else if(si.type==CANNON.Shape.types.BOX){
       
       if(sj.type==CANNON.Shape.types.BOX){ // box-box
-	throw "box-box collision not implemented yet";
+	// Do convex hull instead
+	nearPhase(result,
+		  si.convexHullRepresentation,
+		  sj.convexHullRepresentation,
+		  xi,xj,qi,qj,bi,bj);
       }
       
       if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
@@ -407,6 +411,15 @@ CANNON.ContactGenerator = function(){
     // Swap back if we swapped bodies in the beginning
     for(var i=0; swapped && i<result.length; i++)
       swapResult(result[i]);
+  }
+
+  /**
+   * @fn reduceContacts
+   * @memberof CANNON.ContactGenerator
+   * @brief Removes unnecessary members of an array of CANNON.ContactPoint.
+   */
+  this.reduceContacts = function(contacts){
+    
   }
 
   /**

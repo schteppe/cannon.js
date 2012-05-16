@@ -1276,11 +1276,61 @@ CANNON.Sphere.prototype.boundingSphereRadius = function(){
  */
 CANNON.Box = function(halfExtents){
   CANNON.Shape.call(this);
+
+  /**
+   * @property CANNON.Vec3 halfExtents
+   * @memberof CANNON.Box
+   */
   this.halfExtents = halfExtents;
   this.type = CANNON.Shape.types.BOX;
+
+  /**
+   * 
+   */
+  this.convexHullRepresentation = null;
+
+  this.updateConvexHullRepresentation();
 };
 CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
+
+/**
+ * @fn updateConvexHullRepresentation
+ * @memberof CANNON.Box
+ * @brief Updates the local convex hull representation used for some collisions.
+ */
+CANNON.Box.prototype.updateConvexHullRepresentation = function(){
+  var h = new CANNON.ConvexHull();
+  var sx = this.halfExtents.x;
+  var sy = this.halfExtents.y;
+  var sz = this.halfExtents.z;
+  var v = CANNON.Vec3;
+  h.addPoints([new v(-sx,-sy,-sz),
+	       new v( sx,-sy,-sz),
+	       new v( sx, sy,-sz),
+	       new v(-sx, sy,-sz),
+	       new v(-sx,-sy, sz),
+	       new v( sx,-sy, sz),
+	       new v( sx, sy, sz),
+	       new v(-sx, sy, sz)],
+	      
+	      [
+	       [0,1,2,3], // -z
+	       [4,5,6,7], // +z
+	       [0,1,4,5], // -y
+	       [2,3,6,7], // +y
+	       [0,3,4,7], // -x
+	       [1,2,5,6], // +x
+	       ],
+	      
+	      [new v( 0, 0,-1),
+	       new v( 0, 0, 1),
+	       new v( 0,-1, 0),
+	       new v( 0, 1, 0),
+	       new v(-1, 0, 0),
+	       new v( 1, 0, 0)]);
+  this.convexHullRepresentation = h;
+};
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
@@ -3520,7 +3570,7 @@ CANNON.ContactGenerator = function(){
 		     new CANNON.Vec3(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z)]; // -++
 	t1.normalize();
 	t2.normalize();
-	planehull.addPoints(verts,	    
+	planehull.addPoints(verts,
 			    [
 				[0,1,2,3], // -z
 				[4,5,6,7], // +z
@@ -3571,7 +3621,11 @@ CANNON.ContactGenerator = function(){
     } else if(si.type==CANNON.Shape.types.BOX){
       
       if(sj.type==CANNON.Shape.types.BOX){ // box-box
-	throw "box-box collision not implemented yet";
+	// Do convex hull instead
+	nearPhase(result,
+		  si.convexHullRepresentation,
+		  sj.convexHullRepresentation,
+		  xi,xj,qi,qj,bi,bj);
       }
       
       if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
@@ -3619,6 +3673,15 @@ CANNON.ContactGenerator = function(){
     // Swap back if we swapped bodies in the beginning
     for(var i=0; swapped && i<result.length; i++)
       swapResult(result[i]);
+  }
+
+  /**
+   * @fn reduceContacts
+   * @memberof CANNON.ContactGenerator
+   * @brief Removes unnecessary members of an array of CANNON.ContactPoint.
+   */
+  this.reduceContacts = function(contacts){
+    
   }
 
   /**
