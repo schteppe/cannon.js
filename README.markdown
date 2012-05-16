@@ -52,7 +52,8 @@ Here is a [live version](http://schteppe.github.com/ghdoc/#schteppe/cannon.js/ma
 
 ## Todo
 
-* Box/box collision
+* Collision/contacts between convexhulls and simple shapes such as sphere
+* Contact point reduction
 * Better collision detection - spatial hashing, octrees or similar
 * Rename the current Solver class to GSSolver, and make the Solver class to a base class
 * ParallelSolver that uses Web Workers - splits the system into islands and then adds to subsolvers (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
