@@ -1,5 +1,6 @@
 var demo = new CANNON.Demo();
 var size = 2;
+
 demo.addScene(function(app){
     var sphereShape = new CANNON.Sphere(size);
     createBodyOnPlane(app,sphereShape);

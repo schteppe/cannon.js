@@ -248,6 +248,9 @@ CANNON.ContactGenerator = function(){
 
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+
+      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // sphere-convexhull
+	throw new Error("sphere/convexhull contacts not implemented yet.");
       }
       
     } else if(si.type==CANNON.Shape.types.PLANE){
@@ -364,11 +367,14 @@ CANNON.ContactGenerator = function(){
 		  si.convexHullRepresentation,
 		  sj.convexHullRepresentation,
 		  xi,xj,qi,qj,bi,bj);
-      }
-      
-      if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
+
+      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 	
+      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // box-convexhull
+	nearPhase(result,
+		  si.convexHullRepresentation,
+		  sj,xi,xj,qi,qj,bi,bj);
       }
       
     } else if(si.type==CANNON.Shape.types.COMPOUND){
@@ -376,11 +382,13 @@ CANNON.ContactGenerator = function(){
       if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 	
+      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // compound-convexhull
+	recurseCompound(result,sj,si,xj,xi,qj,qi,bj,bi);	
       }
 
     } else if(si.type==CANNON.Shape.types.CONVEXHULL){
 
-      if(sj.type==CANNON.Shape.types.CONVEXHULL){ // hull-hull
+      if(sj.type==CANNON.Shape.types.CONVEXHULL){ // convexhull-convexhull
 	var sepAxis = new CANNON.Vec3();
 	if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
 
