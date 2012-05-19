@@ -1,6 +1,6 @@
 /**
  * Equation class
- * @uthor schteppe
+ * @author schteppe
  * @brief Something for the solver to chew on. Its mostly a holder of vectors
  * @todo try with the solver
  */
