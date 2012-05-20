@@ -16,7 +16,7 @@ CANNON.World = function(){
   this.spook_k = 500.0;
 
   /// Stabilization parameter (number of timesteps until stabilization)
-  this.spook_d = 3.0;
+  this.spook_d = 4;
 
   /// Default and last timestep sizes
   this.default_dt = 1/60;
@@ -34,7 +34,7 @@ CANNON.World = function(){
   this.spook_b = (4.0 * this.spook_d) / (1 + 4 * this.spook_d);
   this.spook_eps = function(h){ return 4.0 / (h * h * th.spook_k * (1 + 4 * th.spook_d)); };
 
-  /// The contact solver
+  /// The constraint solver
   this.solver = new CANNON.Solver(this.spook_a(1.0/60.0),
 				  this.spook_b,
 				  this.spook_eps(1.0/60.0)*0.1,
@@ -42,6 +42,9 @@ CANNON.World = function(){
 				  this.spook_d,
 				  5,
 				  1.0/60.0);
+
+  // User defined constraints
+  this.constraints = [];
 
   // Contact generator
   this.contactgen = new CANNON.ContactGenerator();
@@ -244,6 +247,25 @@ CANNON.World.prototype.add = function(body){
   }
 };
 
+/**
+ * @fn addConstraint
+ * @memberof CANNON.World
+ * @brief Add a constraint to the simulation.
+ * @param CANNON.Constraint c
+ */
+CANNON.World.prototype.addConstraint = function(c){
+  if(c instanceof CANNON.Constraint){
+    this.constraints.push(c);
+    c.id = this.id();
+  }
+};
+
+/**
+ * @fn id
+ * @memberof CANNON.World
+ * @brief Generate a new unique integer identifyer
+ * @return int
+ */
 CANNON.World.prototype.id = function(){
   return this.nextId++;
 };
@@ -322,6 +344,15 @@ CANNON.World.prototype.addContactMaterial = function(cmat) {
 
   // Add current contact material to the material table
   this.mats2cmat[i+this.materials.length*j] = cmat.id; // index of the contact material
+};
+
+// Get the index given body id. Returns -1 on fail
+CANNON.World.prototype._id2index = function(id){
+  // ugly but works
+  for(var j=0; j<this.bodies.length; j++)
+    if(this.bodies[j].id === id)
+      return j;
+  return -1;
 };
 
 /**
@@ -417,8 +448,10 @@ CANNON.World.prototype.step = function(dt){
     // Get current collision indeces
     var bi = c.bi,
       bj = c.bj;
-    var i=bi.id,
-      j=bj.id;
+
+    // Resolve indeces
+    var i = this._id2index(bi.id),
+      j = this._id2index(bj.id);
     
     // Check last step stats
     var lastCollisionState = cmatrix(i,j,-1);
@@ -480,7 +513,6 @@ CANNON.World.prototype.step = function(dt){
       var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
 
       var gn = c.ni.mult(g);
-
       this.solver
 	.addConstraint( // Non-penetration constraint jacobian
 		       [-n.x,-n.y,-n.z,
@@ -514,7 +546,7 @@ CANNON.World.prototype.step = function(dt){
 			-bj.tau.x,-bj.tau.y,-bj.tau.z],
 		       0,
 		       'inf',
-		       i,
+		       i, // These are id's, not indeces...
 		       j);
 
       // Friction constraints
@@ -563,11 +595,23 @@ CANNON.World.prototype.step = function(dt){
 			   -mu*100*(bi.mass+bj.mass),
 			   mu*100*(bi.mass+bj.mass),
 
-			   i,
+			   i, // id, not index
 			   j);
 	}
       }
     }
+  }
+
+  // Add user-defined constraints
+  for(var i=0; i<this.constraints.length; i++){
+    // Preliminary - ugly but works
+    var bj=-1, bi=-1;
+    for(var j=0; j<this.bodies.length; j++)
+      if(this.bodies[j].id === this.constraints[i].body_i.id)
+	bi = j;
+      else if(this.bodies[j].id === this.constraints[i].body_j.id)
+	bj = j;
+    this.solver.addConstraint2(this.constraints[i],bi,bj);
   }
 
   var bi;
@@ -641,7 +685,7 @@ CANNON.World.prototype.step = function(dt){
       b.quaternion.y += dt * 0.5 * wq.y;
       b.quaternion.z += dt * 0.5 * wq.z;
       b.quaternion.w += dt * 0.5 * wq.w;
-      if(world.stepnumber % 10 === 0)
+      if(world.stepnumber % 3 === 0)
         b.quaternion.normalizeFast();
     }
     b.force.set(0,0,0);

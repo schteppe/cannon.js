@@ -120,7 +120,7 @@ CANNON.Solver.prototype.reset = function(numbodies){
  */
 CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,upper,body_i,body_j){
   if(this.debug){
-    console.log("Adding constraint ",this.n);
+    console.log("Adding constraint ",this.n," between body ",body_i," and ",body_j);
     console.log("G:",G);
     console.log("q:",q);
     console.log("qdot:",qdot);
@@ -150,6 +150,47 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
   // Return result index
   return this.n - 1; 
 };
+
+/**
+ * New version of the addConstraint function, still experimental
+ */
+CANNON.Solver.prototype.addConstraint2 = function(c,i,j){
+  c.update();
+  for(var k=0; k<c.equations.length; k++){
+    var e = c.equations[k];
+    this.addConstraint([e.G1.x,e.G1.y,e.G1.z,
+			e.G2.x,e.G2.y,e.G2.z,
+			e.G3.x,e.G3.y,e.G3.z,
+			e.G4.x,e.G4.y,e.G4.z],
+		       
+		       [e.iM1.x,e.iM1.y,e.iM1.z,
+			e.iM2.x,e.iM2.y,e.iM2.z,
+			e.iM3.x,e.iM3.y,e.iM3.z,
+			e.iM4.x,e.iM4.y,e.iM4.z],
+
+		       [e.g1.x,e.g1.y,e.g1.z,
+			e.g2.x,e.g2.y,e.g2.z,
+			e.g3.x,e.g3.y,e.g3.z,
+			e.g4.x,e.g4.y,e.g4.z],
+
+		       [e.W1.x,e.W1.y,e.W1.z,
+			e.W2.x,e.W2.y,e.W2.z,
+			e.W3.x,e.W3.y,e.W3.z,
+			e.W4.x,e.W4.y,e.W4.z],
+
+		       [e.f1.x,e.f1.y,e.f1.z,
+			e.f2.x,e.f2.y,e.f2.z,
+			e.f3.x,e.f3.y,e.f3.z,
+			e.f4.x,e.f4.y,e.f4.z],
+		       
+		       e.lambdamin,
+		       e.lambdamax,
+		       
+		       i,
+		       j);
+  }
+};
+
 
 /**
  * @fn addNonPenetrationConstraint
@@ -234,7 +275,7 @@ CANNON.Solver.prototype.solve = function(){
   var B = new Float32Array(n);
   var c = new Float32Array(n);
   var precomp = new Int16Array(n);
-  var G = new Float32Array(this.G);
+  var G = this.G;
   for(var k = 0; k<this.iterations; k++){
     for(var l=0; l<n; l++){
 
@@ -274,23 +315,34 @@ CANNON.Solver.prototype.solve = function(){
 
       var Gulambda = 0.0;
 
-      Gulambda += G[0+l12] * this.vxlambda[body_i]; // previuously calculated lambdas
-      Gulambda += G[1+l12] * this.vylambda[body_i];
-      Gulambda += G[2+l12] * this.vzlambda[body_i];
-      Gulambda += G[3+l12] * this.wxlambda[body_i];
-      Gulambda += G[4+l12] * this.wylambda[body_i];
-      Gulambda += G[5+l12] * this.wzlambda[body_i];
-
-      Gulambda += G[6+l12] * this.vxlambda[body_j];
-      Gulambda += G[7+l12] * this.vylambda[body_j];
-      Gulambda += G[8+l12] * this.vzlambda[body_j];
-      Gulambda += G[9+l12] * this.wxlambda[body_j];
-      Gulambda += G[10+l12] * this.wylambda[body_j];
-      Gulambda += G[11+l12] * this.wzlambda[body_j];
+      //console.log("debuuug2.1",this.vxlambda[0],Gulambda,body_i);
+      if(body_i>=0){
+	Gulambda += G[0+l12] * this.vxlambda[body_i]; // previuously calculated lambdas
+	Gulambda += G[1+l12] * this.vylambda[body_i];
+	Gulambda += G[2+l12] * this.vzlambda[body_i];
+	Gulambda += G[3+l12] * this.wxlambda[body_i];
+	Gulambda += G[4+l12] * this.wylambda[body_i];
+	Gulambda += G[5+l12] * this.wzlambda[body_i];
+	if(this.debug && isNaN(Gulambda))
+	  console.log("found NaN Gulambda",this.vxlambda);
+      }
+      /*for(var ss=0; ss<this.wzlambda.length; ss++)
+	console.log(this.vxlambda[ss],this.vylambda[ss],this.vzlambda[ss],
+		    this.wxlambda[ss],this.wylambda[ss],this.wzlambda[ss]);
+		    console.log("debuuug2.5",Gulambda,G[0+l12],G[1+l12],G[2+l12],G[3+l12],G[4+l12],G[5+l12]);*/
+      if(body_j!==-1){
+	Gulambda += G[6+l12] * this.vxlambda[body_j];
+	Gulambda += G[7+l12] * this.vylambda[body_j];
+	Gulambda += G[8+l12] * this.vzlambda[body_j];
+	Gulambda += G[9+l12] * this.wxlambda[body_j];
+	Gulambda += G[10+l12] * this.wylambda[body_j];
+	Gulambda += G[11+l12] * this.wzlambda[body_j];
+      }
+      //console.log("debuuug3",this.vxlambda[0],Gulambda);
 
       dlambda[l] = c[l] * ( B[l] - Gulambda - this.eps * lambda[l]);
       if(this.debug)
-	console.log("dlambda["+l+"]=",dlambda[l]);
+	console.log("dlambda["+l+"]=",dlambda[l],"rest = ",c[l],B[l],Gulambda,this.eps,lambda[l],l,body_i,body_j);
       lambda[l] = lambda[l] + dlambda[l];
 
       // Clamp lambda if out of bounds
@@ -309,18 +361,22 @@ CANNON.Solver.prototype.solve = function(){
       }
 
       // Add velocity changes to keep track of them
-      this.vxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+0] * G[l12+0];
-      this.vylambda[body_i] += dlambda[l] * this.MinvTrace[l12+1] * G[l12+1];
-      this.vzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+2] * G[l12+2];
-      this.wxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+3] * G[l12+3];
-      this.wylambda[body_i] += dlambda[l] * this.MinvTrace[l12+4] * G[l12+4];
-      this.wzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+5] * G[l12+5];
-      this.vxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+6] * G[l12+6];
-      this.vylambda[body_j] += dlambda[l] * this.MinvTrace[l12+7] * G[l12+7];
-      this.vzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+8] * G[l12+8];
-      this.wxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+9] * G[l12+9];
-      this.wylambda[body_j] += dlambda[l] * this.MinvTrace[l12+10] * G[l12+10];
-      this.wzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+11] * G[l12+11];
+      if(body_i!==-1){
+	this.vxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+0] * G[l12+0];
+	this.vylambda[body_i] += dlambda[l] * this.MinvTrace[l12+1] * G[l12+1];
+	this.vzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+2] * G[l12+2];
+	this.wxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+3] * G[l12+3];
+	this.wylambda[body_i] += dlambda[l] * this.MinvTrace[l12+4] * G[l12+4];
+	this.wzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+5] * G[l12+5];
+      }
+      if(body_j!==-1){
+	this.vxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+6] * G[l12+6];
+	this.vylambda[body_j] += dlambda[l] * this.MinvTrace[l12+7] * G[l12+7];
+	this.vzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+8] * G[l12+8];
+	this.wxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+9] * G[l12+9];
+	this.wylambda[body_j] += dlambda[l] * this.MinvTrace[l12+10] * G[l12+10];
+	this.wzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+11] * G[l12+11];
+      }
     }
   }
 

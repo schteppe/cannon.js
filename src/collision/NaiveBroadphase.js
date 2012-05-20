@@ -57,8 +57,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 
 	var boundingRadiusSum = bi.shape.boundingSphereRadius() + bj.shape.boundingSphereRadius();
 	if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
-	  pairs1.push(i);
-	  pairs2.push(j);
+	  pairs1.push(bi);
+	  pairs2.push(bj);
 	}
 
       // --- Sphere/box/compound/hull versus plane ---
@@ -72,8 +72,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	
 	var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
 	if(q<0.0){
-	  pairs1.push(i);
-	  pairs2.push(j);
+	  pairs1.push(bi);
+	  pairs2.push(bj);
 	}
       }
     }

@@ -1,6 +1,7 @@
 START     = LICENSE src/wrapper/Start.js
 CANNON    = src/Cannon.js
 COLLISION = src/collision/Broadphase.js src/collision/NaiveBroadphase.js
+CONSTRAINTS = src/constraints/*.js
 MATH      = src/math/Mat3.js src/math/Vec3.js src/math/Quaternion.js
 OBJECTS   = src/objects/Shape.js src/objects/RigidBody.js src/objects/Sphere.js src/objects/Box.js src/objects/Plane.js src/objects/Compound.js src/objects/ConvexHull.js
 SOLVER    = src/solver/*.js
@@ -9,7 +10,7 @@ WORLD     = src/world/World.js src/world/ContactPoint.js src/world/ContactGenera
 DEMO      = src/demo/Demo.js
 END       = src/wrapper/End.js
 
-ALL_CORE_FILES = $(CANNON) $(COLLISION) $(MATH) $(OBJECTS) $(SOLVER) $(MATERIAL) $(WORLD)
+ALL_CORE_FILES = $(CANNON) $(COLLISION) $(MATH) $(OBJECTS) $(SOLVER) $(MATERIAL) $(WORLD) $(CONSTRAINTS)
 ALL_FILES = $(START) $(ALL_CORE_FILES) $(END)
 DEMO_FILES = $(DEMO)
 

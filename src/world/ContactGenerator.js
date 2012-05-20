@@ -447,11 +447,8 @@ CANNON.ContactGenerator = function(){
 
     for(var k=0; k<p1.length; k++){
       // Get current collision indeces
-      var i = p1[k],
-      j = p2[k];
-
-      var bi = world.bodies[i],
-      bj = world.bodies[j];
+      var bi = p1[k],
+      bj = p2[k];
 
       // Get contacts
       nearPhase(result,
