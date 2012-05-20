@@ -94,13 +94,20 @@ CANNON.Solver.prototype.reset = function(numbodies){
   this.i = []; // To keep track of body id's
   this.j = [];
 
-  // We know number of bodies so we can allocate these now
-  this.vxlambda = new Float32Array(numbodies);
-  this.vylambda = new Float32Array(numbodies);
-  this.vzlambda = new Float32Array(numbodies);
-  this.wxlambda = new Float32Array(numbodies);
-  this.wylambda = new Float32Array(numbodies);
-  this.wzlambda = new Float32Array(numbodies);
+  this.vxlambda = [];
+  this.vylambda = [];
+  this.vzlambda = [];
+  this.wxlambda = [];
+  this.wylambda = [];
+  this.wzlambda = [];
+  for(var i=0; i<numbodies; i++){
+    this.vxlambda.push(0);
+    this.vylambda.push(0);
+    this.vzlambda.push(0);
+    this.wxlambda.push(0);
+    this.wylambda.push(0);
+    this.wzlambda.push(0);
+  }
 };
 
 /**
@@ -268,20 +275,21 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
  */
 CANNON.Solver.prototype.solve = function(){
   var n = this.n;
-  var lambda = [];//new Float32Array(n);
-  var dlambda = [];//new Float32Array(n);
-  var ulambda = new Float32Array(12*n); // 6 dof per constraint, and 2 bodies
-  var B = [];//new Float32Array(n);
-  var c = [];//new Float32Array(n);
-  var precomp = [];//new Int16Array(n);
+  var lambda = [];
+  var dlambda = [];
+  var ulambda = [];
+  var B = [];
+  var c = [];
+  var precomp = [];
 
   for(var i=0; i<n; i++){
     lambda.push(0);
     dlambda.push(0);
-    ulambda.push(0);
     B.push(0);
     c.push(0);
     precomp.push(0);
+    for(var j=0; j<12; j++)
+      dlambda.push(0);
   }
 
   var G = this.G;
