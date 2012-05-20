@@ -267,14 +267,23 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
  * @brief Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){
-  this.i = new Int16Array(this.i);
   var n = this.n;
-  var lambda = new Float32Array(n);
-  var dlambda = new Float32Array(n);
+  var lambda = [];//new Float32Array(n);
+  var dlambda = [];//new Float32Array(n);
   var ulambda = new Float32Array(12*n); // 6 dof per constraint, and 2 bodies
-  var B = new Float32Array(n);
-  var c = new Float32Array(n);
-  var precomp = new Int16Array(n);
+  var B = [];//new Float32Array(n);
+  var c = [];//new Float32Array(n);
+  var precomp = [];//new Int16Array(n);
+
+  for(var i=0; i<n; i++){
+    lambda.push(0);
+    dlambda.push(0);
+    ulambda.push(0);
+    B.push(0);
+    c.push(0);
+    precomp.push(0);
+  }
+
   var G = this.G;
   for(var k = 0; k<this.iterations; k++){
     for(var l=0; l<n; l++){
