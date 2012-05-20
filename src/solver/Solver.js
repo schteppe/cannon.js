@@ -274,13 +274,31 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
  * @brief Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){
-  var n = this.n;
-  var lambda = [];
-  var dlambda = [];
-  var ulambda = [];
-  var B = [];
-  var c = [];
-  var precomp = [];
+  var n = this.n,
+  lambda = [],
+  dlambda = [],
+  ulambda = [],
+  B = [],
+  c = [],
+  precomp = [],
+  iterations = this.iterations,
+  G = this.G,
+  debug = this.debug,
+  a = this.a,
+  eps = this.eps;
+
+  var lower = this.lower,
+  haslower = this.haslower,
+  upper = this.upper,
+  hasupper = this.hasupper;
+
+  var vxlambda = this.vxlambda,
+  vylambda = this.vylambda,
+  vzlambda = this.vzlambda,
+  wxlambda = this.wxlambda,
+  wylambda = this.wylambda,
+  wzlambda = this.wzlambda;
+  var MinvTrace = this.MinvTrace;
 
   for(var i=0; i<n; i++){
     lambda.push(0);
@@ -292,8 +310,7 @@ CANNON.Solver.prototype.solve = function(){
       dlambda.push(0);
   }
 
-  var G = this.G;
-  for(var k = 0; k<this.iterations; k++){
+  for(var k = 0; k<iterations; k++){
     for(var l=0; l<n; l++){
 
       // Bodies participating in constraint
@@ -311,18 +328,18 @@ CANNON.Solver.prototype.solve = function(){
 	// Only add normal contributions here? See eq. 27 in spooknotes
 	for(var i=0; i<12; i++){
 	  var addi = l12+i;
-	  G_Minv_Gt += G[addi] * this.MinvTrace[addi] * G[addi];
+	  G_Minv_Gt += G[addi] * MinvTrace[addi] * G[addi];
 	  Gq +=        G[addi] * this.q[addi];
 	  GW +=        G[addi] * this.qdot[addi];
-	  GMinvf +=    G[addi] * this.MinvTrace[addi] * this.Fext[addi];
+	  GMinvf +=    G[addi] * MinvTrace[addi] * this.Fext[addi];
 	}
-	c[l] = 1.0 / (G_Minv_Gt + this.eps); // 1.0 / ( G*Minv*Gt + eps)
-	B[l] = ( - this.a * Gq
+	c[l] = 1.0 / (G_Minv_Gt + eps); // 1.0 / ( G*Minv*Gt + eps)
+	B[l] = ( - a * Gq
 		 - this.b * GW
 		 - this.h * GMinvf);
 	precomp[l] = 1;
 
-	if(this.debug){
+	if(debug){
 	  console.log("G_Minv_Gt["+l+"]:",G_Minv_Gt);
 	  console.log("Gq["+l+"]:",Gq);
 	  console.log("GW["+l+"]:",GW);
@@ -332,78 +349,74 @@ CANNON.Solver.prototype.solve = function(){
 
       var Gulambda = 0.0;
 
-      //console.log("debuuug2.1",this.vxlambda[0],Gulambda,body_i);
+      //console.log("debuuug2.1",vxlambda[0],Gulambda,body_i);
       if(body_i>=0){
-	Gulambda += G[0+l12] * this.vxlambda[body_i]; // previuously calculated lambdas
-	Gulambda += G[1+l12] * this.vylambda[body_i];
-	Gulambda += G[2+l12] * this.vzlambda[body_i];
-	Gulambda += G[3+l12] * this.wxlambda[body_i];
-	Gulambda += G[4+l12] * this.wylambda[body_i];
-	Gulambda += G[5+l12] * this.wzlambda[body_i];
-	if(this.debug && isNaN(Gulambda))
-	  console.log("found NaN Gulambda",this.vxlambda);
+	Gulambda += G[0+l12] * vxlambda[body_i]; // previuously calculated lambdas
+	Gulambda += G[1+l12] * vylambda[body_i];
+	Gulambda += G[2+l12] * vzlambda[body_i];
+	Gulambda += G[3+l12] * wxlambda[body_i];
+	Gulambda += G[4+l12] * wylambda[body_i];
+	Gulambda += G[5+l12] * wzlambda[body_i];
+	if(debug && isNaN(Gulambda))
+	  console.log("found NaN Gulambda",vxlambda);
       }
-      /*for(var ss=0; ss<this.wzlambda.length; ss++)
-	console.log(this.vxlambda[ss],this.vylambda[ss],this.vzlambda[ss],
-		    this.wxlambda[ss],this.wylambda[ss],this.wzlambda[ss]);
-		    console.log("debuuug2.5",Gulambda,G[0+l12],G[1+l12],G[2+l12],G[3+l12],G[4+l12],G[5+l12]);*/
-      if(body_j!==-1){
-	Gulambda += G[6+l12] * this.vxlambda[body_j];
-	Gulambda += G[7+l12] * this.vylambda[body_j];
-	Gulambda += G[8+l12] * this.vzlambda[body_j];
-	Gulambda += G[9+l12] * this.wxlambda[body_j];
-	Gulambda += G[10+l12] * this.wylambda[body_j];
-	Gulambda += G[11+l12] * this.wzlambda[body_j];
-      }
-      //console.log("debuuug3",this.vxlambda[0],Gulambda);
 
-      dlambda[l] = c[l] * ( B[l] - Gulambda - this.eps * lambda[l]);
-      if(this.debug)
-	console.log("dlambda["+l+"]=",dlambda[l],"rest = ",c[l],B[l],Gulambda,this.eps,lambda[l],l,body_i,body_j);
+      if(body_j!==-1){
+	Gulambda += G[6+l12] * vxlambda[body_j];
+	Gulambda += G[7+l12] * vylambda[body_j];
+	Gulambda += G[8+l12] * vzlambda[body_j];
+	Gulambda += G[9+l12] * wxlambda[body_j];
+	Gulambda += G[10+l12] * wylambda[body_j];
+	Gulambda += G[11+l12] * wzlambda[body_j];
+      }
+
+      dlambda[l] = c[l] * ( B[l] - Gulambda - eps * lambda[l]);
+      if(debug)
+	console.log("dlambda["+l+"]=",dlambda[l],"rest = ",c[l],B[l],Gulambda,eps,lambda[l],l,body_i,body_j);
       lambda[l] = lambda[l] + dlambda[l];
 
       // Clamp lambda if out of bounds
       // @todo check if limits are numbers
-      if(this.haslower[l] && lambda[l]<this.lower[l]){
-	if(this.debug)
-	  console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+this.lower[l]);
-	lambda[l] = this.lower[l];
-	dlambda[l] = this.lower[l]-lambda[l];
+      if(haslower[l] && lambda[l]<lower[l]){
+	if(debug)
+	  console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+lower[l]);
+	lambda[l] = lower[l];
+	dlambda[l] = lower[l]-lambda[l];
       }
-      if(this.hasupper && lambda[l]>this.upper[l]){
-	if(this.debug)
-	  console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+this.upper[l]);
-	lambda[l] = this.upper[l];
-	dlambda[l] = this.upper[l]-lambda[l];
+      if(hasupper && lambda[l]>upper[l]){
+	if(debug)
+	  console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+upper[l]);
+	lambda[l] = upper[l];
+	dlambda[l] = upper[l]-lambda[l];
       }
 
       // Add velocity changes to keep track of them
       if(body_i!==-1){
-	this.vxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+0] * G[l12+0];
-	this.vylambda[body_i] += dlambda[l] * this.MinvTrace[l12+1] * G[l12+1];
-	this.vzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+2] * G[l12+2];
-	this.wxlambda[body_i] += dlambda[l] * this.MinvTrace[l12+3] * G[l12+3];
-	this.wylambda[body_i] += dlambda[l] * this.MinvTrace[l12+4] * G[l12+4];
-	this.wzlambda[body_i] += dlambda[l] * this.MinvTrace[l12+5] * G[l12+5];
+	vxlambda[body_i] += dlambda[l] * MinvTrace[l12+0] * G[l12+0];
+	vylambda[body_i] += dlambda[l] * MinvTrace[l12+1] * G[l12+1];
+	vzlambda[body_i] += dlambda[l] * MinvTrace[l12+2] * G[l12+2];
+	wxlambda[body_i] += dlambda[l] * MinvTrace[l12+3] * G[l12+3];
+	wylambda[body_i] += dlambda[l] * MinvTrace[l12+4] * G[l12+4];
+	wzlambda[body_i] += dlambda[l] * MinvTrace[l12+5] * G[l12+5];
       }
       if(body_j!==-1){
-	this.vxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+6] * G[l12+6];
-	this.vylambda[body_j] += dlambda[l] * this.MinvTrace[l12+7] * G[l12+7];
-	this.vzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+8] * G[l12+8];
-	this.wxlambda[body_j] += dlambda[l] * this.MinvTrace[l12+9] * G[l12+9];
-	this.wylambda[body_j] += dlambda[l] * this.MinvTrace[l12+10] * G[l12+10];
-	this.wzlambda[body_j] += dlambda[l] * this.MinvTrace[l12+11] * G[l12+11];
+	vxlambda[body_j] += dlambda[l] * MinvTrace[l12+6] * G[l12+6];
+	vylambda[body_j] += dlambda[l] * MinvTrace[l12+7] * G[l12+7];
+	vzlambda[body_j] += dlambda[l] * MinvTrace[l12+8] * G[l12+8];
+	wxlambda[body_j] += dlambda[l] * MinvTrace[l12+9] * G[l12+9];
+	wylambda[body_j] += dlambda[l] * MinvTrace[l12+10] * G[l12+10];
+	wzlambda[body_j] += dlambda[l] * MinvTrace[l12+11] * G[l12+11];
       }
     }
   }
 
-  if(this.debug)
+  if(debug)
     for(var i=0; i<this.vxlambda.length; i++)
       console.log("dv["+i+"]=",
-		  this.vxlambda[i],
-		  this.vylambda[i],
-		  this.vzlambda[i],
-		  this.wxlambda[i],
-		  this.wylambda[i],
-		  this.wzlambda[i]);
+		  vxlambda[i],
+		  vylambda[i],
+		  vzlambda[i],
+		  wxlambda[i],
+		  wylambda[i],
+		  wzlambda[i]);
 };
