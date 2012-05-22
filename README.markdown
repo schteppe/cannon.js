@@ -52,14 +52,17 @@ Here is a [live version](http://schteppe.github.com/ghdoc/#schteppe/cannon.js/ma
 
 ## Todo
 
-* Collision/contacts between convexhulls and simple shapes such as sphere
-* Contact point reduction
-* Better collision detection - spatial hashing, octrees or similar
+* Collision/contacts between convexhulls and sphere
+* Contact reduction
+* Better collision detection - spatial hashing, octrees or similar (Continous?)
 * Rename the current Solver class to GSSolver, and make the Solver class to a base class
 * ParallelSolver that uses Web Workers - splits the system into islands and then adds to subsolvers (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
 * Caching of bounding sphere radius
 * Better class structure for Constraints, Jacobian entries etc
-* Shapes: Cone, cylinder
+* Shapes (based on ConvexHull is enough to begin with): Cone, cylinder
+* Ray casting
+* Constraints: PointToPoint, etc etc
+* First-contact impulses
 * Search for "@todo" if you want to find more things to do
 
 ## Getting started
