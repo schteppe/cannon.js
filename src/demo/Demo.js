@@ -541,8 +541,10 @@ CANNON.Demo.prototype.start = function(){
 	case 55:
 	case 56:
 	case 57:
-	if(that._scenes.length > e.keyCode-49)
-	  that._changeScene(e.keyCode-49);
+	  // Change scene
+	  // Only for numbers 1-9 and if no input field is active
+	  if(that._scenes.length > e.keyCode-49 && !document.activeElement.localName.match(/input/))
+	    that._changeScene(e.keyCode-49);
 	break;
 	
 	}
@@ -570,22 +572,23 @@ CANNON.Demo.prototype.start = function(){
     wf.add(that.settings,'paused').onChange(function(p){
 	that.paused = p;
       });
-    wf.add(that.settings, 'gx').step(1).onChange(function(gx){
+      var maxg = 100;
+    wf.add(that.settings, 'gx',-maxg,maxg).onChange(function(gx){
 	if(!isNaN(gx))
 	  that._world.gravity.set(gx,that.settings.gy,that.settings.gz);
       });
-    wf.add(that.settings, 'gy').step(1).onChange(function(gy){
+    wf.add(that.settings, 'gy',-maxg,maxg).onChange(function(gy){
 	if(!isNaN(gy))
 	  that._world.gravity.set(that.settings.gx,gy,that.settings.gz);
       });
-    wf.add(that.settings, 'gz').step(1).onChange(function(gz){
+    wf.add(that.settings, 'gz',-maxg,maxg).onChange(function(gz){
 	if(!isNaN(gz))
 	  that._world.gravity.set(that.settings.gx,that.settings.gy,gz);
       });
 
     // Solver folder
     var sf = that._gui.addFolder('Solver');
-    sf.add(that.settings, 'iterations').min(1).step(1).onChange(function(it){
+      sf.add(that.settings, 'iterations',1,50).step(1).onChange(function(it){
 	that._world.solver.iterations = it;
       });
 
