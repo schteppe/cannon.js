@@ -248,6 +248,9 @@ CANNON.ContactGenerator = function(){
 
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+
+      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // sphere-convexhull
+	throw new Error("sphere/convexhull contacts not implemented yet.");
       }
       
     } else if(si.type==CANNON.Shape.types.PLANE){
@@ -308,7 +311,7 @@ CANNON.ContactGenerator = function(){
 		     new CANNON.Vec3(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z)]; // -++
 	t1.normalize();
 	t2.normalize();
-	planehull.addPoints(verts,	    
+	planehull.addPoints(verts,
 			    [
 				[0,1,2,3], // -z
 				[4,5,6,7], // +z
@@ -359,12 +362,19 @@ CANNON.ContactGenerator = function(){
     } else if(si.type==CANNON.Shape.types.BOX){
       
       if(sj.type==CANNON.Shape.types.BOX){ // box-box
-	throw "box-box collision not implemented yet";
-      }
-      
-      if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
+	// Do convex hull instead
+	nearPhase(result,
+		  si.convexHullRepresentation,
+		  sj.convexHullRepresentation,
+		  xi,xj,qi,qj,bi,bj);
+
+      } else if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 	
+      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // box-convexhull
+	nearPhase(result,
+		  si.convexHullRepresentation,
+		  sj,xi,xj,qi,qj,bi,bj);
       }
       
     } else if(si.type==CANNON.Shape.types.COMPOUND){
@@ -372,11 +382,13 @@ CANNON.ContactGenerator = function(){
       if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 	
+      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // compound-convexhull
+	recurseCompound(result,sj,si,xj,xi,qj,qi,bj,bi);	
       }
 
     } else if(si.type==CANNON.Shape.types.CONVEXHULL){
 
-      if(sj.type==CANNON.Shape.types.CONVEXHULL){ // hull-hull
+      if(sj.type==CANNON.Shape.types.CONVEXHULL){ // convexhull-convexhull
 	var sepAxis = new CANNON.Vec3();
 	if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
 
@@ -410,6 +422,15 @@ CANNON.ContactGenerator = function(){
   }
 
   /**
+   * @fn reduceContacts
+   * @memberof CANNON.ContactGenerator
+   * @brief Removes unnecessary members of an array of CANNON.ContactPoint.
+   */
+  this.reduceContacts = function(contacts){
+    
+  }
+
+  /**
    * @fn getContacts
    * @memberof CANNON.ContactGenerator
    * @param array p1 Array of body indices
@@ -426,11 +447,8 @@ CANNON.ContactGenerator = function(){
 
     for(var k=0; k<p1.length; k++){
       // Get current collision indeces
-      var i = p1[k],
-      j = p2[k];
-
-      var bi = world.bodies[i],
-      bj = world.bodies[j];
+      var bi = p1[k],
+      bj = p2[k];
 
       // Get contacts
       nearPhase(result,

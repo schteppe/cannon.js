@@ -12,6 +12,8 @@ CANNON.Constraint = function(){
    */
   this.equations = [];
 
+  this.id = -1;
+
 };
 CANNON.Constraint.prototype.constructor = CANNON.Constraint;
 

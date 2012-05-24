@@ -138,6 +138,20 @@ CANNON.RigidBody = function(mass,shape,material){
    * @brief Reference to the world the body is living in
    */
   this.world = null;
+
+  /**
+   * @property function preStep
+   * @memberof CANNON.RigidBody
+   * @brief Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this CANNON.RigidBody object.
+   */
+  this.preStep = null;
+
+  /**
+   * @property function postStep
+   * @memberof CANNON.RigidBody
+   * @brief Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this CANNON.RigidBody object.
+   */
+  this.postStep = null;
 };
 
 // Motionstates:

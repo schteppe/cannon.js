@@ -52,15 +52,24 @@ Here is a [live version](http://schteppe.github.com/ghdoc/#schteppe/cannon.js/ma
 
 ## Todo
 
-* Box/box collision
-* Better collision detection - spatial hashing, octrees or similar
+* Collision/contacts between convexhulls and sphere
+* Contact reduction
+* Better collision detection - spatial hashing, octrees or similar (Continous?)
 * Rename the current Solver class to GSSolver, and make the Solver class to a base class
 * ParallelSolver that uses Web Workers - splits the system into islands and then adds to subsolvers (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
 * Caching of bounding sphere radius
 * Better class structure for Constraints, Jacobian entries etc
-* Shapes: Cone, cylinder, TriangleMeshShape, ConvexHullShape
+* Shapes (based on ConvexHull is enough to begin with): Cone, cylinder
+* Ray casting
+* Constraints: PointToPoint, etc etc
+* First-contact impulses
 * Search for "@todo" if you want to find more things to do
 
-## Build
+## Getting started
 
-When a new version of the software has been made, a new build needs to be made. Run <code>cd cannon.js/utils/; ./build.py;</code> to do this. The version number will be read from <code>cannon.js/VERSION</code> and put into the built files, so update VERSION first. The software versioning should follow the Semantic Version Specification: http://semver.org/
+Download Node.js and NPM for your platform and make sure they work. When you've cloned cannon.js, run <code>npm install -d</code> in the main cannon.js directory and the tools you need will be installed (jshint, uglify-js, nodeunit etc).
+When you've changed something in the cannon.js source, you must build to see the changes in the demos. See below.
+
+## Building
+
+When a new version of the software has been made, make a new build. Run <code>make</code> in the main directory to do this. Remember to update VERSION. The software versioning should follow the Semantic Version Specification: http://semver.org/

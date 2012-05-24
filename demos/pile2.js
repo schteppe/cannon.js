@@ -53,11 +53,11 @@ demo.addScene(function(app){
 	app.addVisual(b1);
 	bodies.push(b1);
 
-	if(bodies.length>100){
-	    /*var b = bodies.shift();
+	if(bodies.length>80){
+	  var b = bodies.shift();
 	  app.removeVisual(b);
-	  world.remove(b);*/
-	    clearInterval(interval);
+	  world.remove(b);
+	  /*clearInterval(interval);*/
 	}
       },100);
 

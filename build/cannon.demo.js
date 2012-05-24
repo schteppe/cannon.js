@@ -17,7 +17,8 @@ CANNON.Demo = function(){
     rendermode:0,
     contacts:false,  // Contact points
     cm2contact:false, // center of mass to contact points
-    normals:false // contact normals
+    normals:false, // contact normals
+    axes:false // "local" frame axes
   };
 
   this._phys_bodies = [];
@@ -41,6 +42,7 @@ CANNON.Demo = function(){
   this._contactmeshes = [];
   this._normallines = [];
   this._contactlines = [];
+  this._axes = [];
 
   this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
 
@@ -301,6 +303,51 @@ CANNON.Demo.prototype.updateVisuals = function(){
     for(var i=0; i<this._normallines.length; i++)
       this._scene.remove(this._normallines[i]);
   }
+
+  // Frame axes for each body
+  if(this.settings.axes){
+    var old_axes = this._axes;
+    this._axes = [];
+    for(var bi in this._world.bodies){
+      var b = this._world.bodies[bi], mesh;
+      if(old_axes.length){
+	// Get mesh from prev timestep
+	mesh = old_axes.pop();
+      } else {
+	// Create new mesh
+	mesh = new THREE.Object3D();
+	mesh.useQuaternion = true;
+	var origin = new THREE.Vector3(0,0,0);
+	var gX = new THREE.Geometry();
+	var gY = new THREE.Geometry();
+	var gZ = new THREE.Geometry();
+	gX.vertices.push(origin);
+	gY.vertices.push(origin);
+	gZ.vertices.push(origin);
+	gX.vertices.push(new THREE.Vector3(1,0,0));
+	gY.vertices.push(new THREE.Vector3(0,1,0));
+	gZ.vertices.push(new THREE.Vector3(0,0,1));
+	var lineX = new THREE.Line( gX, new THREE.LineBasicMaterial({color:0xff0000}));
+	var lineY = new THREE.Line( gY, new THREE.LineBasicMaterial({color:0x00ff00}));
+	var lineZ = new THREE.Line( gZ, new THREE.LineBasicMaterial({color:0x0000ff}));
+	mesh.add(lineX);
+	mesh.add(lineY);
+	mesh.add(lineZ);
+      }
+      b.position.copy(mesh.position);
+      b.quaternion.copy(mesh.quaternion);
+      this._axes.push(mesh);
+      this._scene.add(mesh);
+    }
+
+    // Remove overflowing
+    while(old_axes.length)
+      this._scene.remove(old_axes.pop());
+  } else if(this._axes.length){
+    // Remove all contact lines
+    for(var i=0; i<this._axes.length; i++)
+      this._scene.remove(this._axes[i]);
+  }
 };
 
 /**
@@ -473,15 +520,33 @@ CANNON.Demo.prototype.start = function(){
 	case 32: // Space - restart
 	that.restartCurrentScene();
 	break;
+
 	case 112: // p
 	that.paused = !that.paused;
 	that.settings.paused = that.paused;
 	that._updategui();
 	break;
+
 	case 115: // s
 	updatePhysics();
 	that.updateVisuals();
 	break;
+
+	case 49:
+	case 50:
+	case 51:
+	case 52:
+	case 53:
+	case 54:
+	case 55:
+	case 56:
+	case 57:
+	  // Change scene
+	  // Only for numbers 1-9 and if no input field is active
+	  if(that._scenes.length > e.keyCode-49 && !document.activeElement.localName.match(/input/))
+	    that._changeScene(e.keyCode-49);
+	break;
+	
 	}
       }
     });
@@ -499,6 +564,7 @@ CANNON.Demo.prototype.start = function(){
       });
     rf.add(that.settings,'cm2contact').onChange(function(cm2contact){});
     rf.add(that.settings,'normals').onChange(function(normals){});
+    rf.add(that.settings,'axes').onChange(function(axes){});
 
     // World folder
     var wf = that._gui.addFolder('World');
@@ -506,22 +572,23 @@ CANNON.Demo.prototype.start = function(){
     wf.add(that.settings,'paused').onChange(function(p){
 	that.paused = p;
       });
-    wf.add(that.settings, 'gx').step(1).onChange(function(gx){
+      var maxg = 100;
+    wf.add(that.settings, 'gx',-maxg,maxg).onChange(function(gx){
 	if(!isNaN(gx))
 	  that._world.gravity.set(gx,that.settings.gy,that.settings.gz);
       });
-    wf.add(that.settings, 'gy').step(1).onChange(function(gy){
+    wf.add(that.settings, 'gy',-maxg,maxg).onChange(function(gy){
 	if(!isNaN(gy))
 	  that._world.gravity.set(that.settings.gx,gy,that.settings.gz);
       });
-    wf.add(that.settings, 'gz').step(1).onChange(function(gz){
+    wf.add(that.settings, 'gz',-maxg,maxg).onChange(function(gz){
 	if(!isNaN(gz))
 	  that._world.gravity.set(that.settings.gx,that.settings.gy,gz);
       });
 
     // Solver folder
     var sf = that._gui.addFolder('Solver');
-    sf.add(that.settings, 'iterations').min(1).step(1).onChange(function(it){
+      sf.add(that.settings, 'iterations',1,50).step(1).onChange(function(it){
 	that._world.solver.iterations = it;
       });
 
@@ -530,13 +597,17 @@ CANNON.Demo.prototype.start = function(){
     for(var i=0; i<that._scenes.length; i++)
       scenes[(i+1)+'. Scene '+(i+1)] = i;
     that._gui.add(that.settings,'scene',scenes).onChange(function(sceneNumber){
-	that.paused = false;
-	that.settings.paused = false;
-	that._updategui();
-	that._buildScene(sceneNumber);
+	that._changeScene(sceneNumber);
       });
   }
 };
+
+CANNON.Demo.prototype._changeScene = function(n){
+  this.paused = false;
+  this.settings.paused = false;
+  this._updategui();
+  this._buildScene(n);
+}
 
 /**
  * @private

@@ -1,8 +1,10 @@
 /**
  * Equation class
- * @uthor schteppe
+ * @author schteppe
  * @brief Something for the solver to chew on. Its mostly a holder of vectors
  * @todo try with the solver
+ * @param CANNON.RigidBody bi Could optionally be null
+ * @param CANNON.RigidBody bj Could optionally be null
  */
 CANNON.Equation = function(bi,bj){
 
@@ -37,8 +39,8 @@ CANNON.Equation = function(bi,bj){
   this.f4 = new CANNON.Vec3();
 
   // Clamping for multipliers (see as max constraint force)
-  this.lambdamax =  Infinity;
-  this.lambdamin = -Infinity;
+  this.lambdamax =  1e6;
+  this.lambdamin = -1e6;
 
   // Bodies to apply the constraint forces on
   this.body_i = bi;
@@ -47,20 +49,28 @@ CANNON.Equation = function(bi,bj){
 
 CANNON.Equation.prototype.setDefaultMassProps = function(){
   var bi = this.body_i, bj = this.body_j;
-  this.iM1.set(bi.invMass,
-	       bi.invMass,
-	       bi.invMass);
-  this.body_i.invInertia.copy(this.iM2);
-  this.iM3.set(bj.invMass,
-	       bj.invMass,
-	       bj.invMass);
-  this.body_j.invInertia.copy(this.iM4);
+  if(bi){
+    this.iM1.set(bi.invMass,
+		 bi.invMass,
+		 bi.invMass);
+    bi.invInertia.copy(this.iM2);
+  }
+  if(bj){
+    this.iM3.set(bj.invMass,
+		 bj.invMass,
+		 bj.invMass);
+    bj.invInertia.copy(this.iM4);
+  }
 };
 
 CANNON.Equation.prototype.setDefaultForce = function(){
   var bi = this.body_i, bj = this.body_j;
-  this.body_i.force.copy(this.f1);
-  this.body_i.tau.copy(this.f2);
-  this.body_j.force.copy(this.f3);
-  this.body_j.tau.copy(this.f4);
+  if(bi){
+    bi.force.copy(this.f1);
+    bi.tau.copy(this.f2);
+  }
+  if(bj){
+    bj.force.copy(this.f3);
+    bj.tau.copy(this.f4);
+  }
 };
