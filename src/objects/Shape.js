@@ -83,6 +83,6 @@ CANNON.Shape.types = {
   PLANE:2,
   BOX:4,
   COMPOUND:8,
-  CONVEXHULL:16
+  CONVEXPOLYHEDRON:16
 };
 

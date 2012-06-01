@@ -61,26 +61,24 @@ demo.addScene(function(app){
     app.addVisual(b2);
   });
 
-
-// ConvexHull and compound
+// ConvexPolyhedron and compound
 demo.addScene(function(app){
     var world = setupWorld(app);
     
-    var tetraShape = new CANNON.ConvexHull();
-    tetraShape.addPoints([new CANNON.Vec3(0,0,0),
-			  new CANNON.Vec3(2,0,0),
-			  new CANNON.Vec3(0,2,0),
-			  new CANNON.Vec3(0,0,2)],
-			 [
-			  [0,3,2], // -x
-			  [0,1,3], // -y
-			  [0,1,2], // -z
-			  [1,3,2], // +xyz
-			  ],
-			 [new CANNON.Vec3(-1, 0, 0),
-			  new CANNON.Vec3( 0,-1, 0),
-			  new CANNON.Vec3( 0, 0,-1),
-			  new CANNON.Vec3( 1, 1, 1)]);
+    var tetraShape = new CANNON.ConvexPolyhedron([new CANNON.Vec3(0,0,0),
+						  new CANNON.Vec3(2,0,0),
+						  new CANNON.Vec3(0,2,0),
+						  new CANNON.Vec3(0,0,2)],
+						 [
+						     [0,3,2], // -x
+						     [0,1,3], // -y
+						     [0,1,2], // -z
+						     [1,3,2], // +xyz
+						 ],
+						 [new CANNON.Vec3(-1, 0, 0),
+						  new CANNON.Vec3( 0,-1, 0),
+						  new CANNON.Vec3( 0, 0,-1),
+						  new CANNON.Vec3( 1, 1, 1)]);
     var b1 = new CANNON.RigidBody(5,tetraShape);
     b1.position.set(0,0,3*size);
     world.add(b1);
@@ -96,25 +94,24 @@ demo.addScene(function(app){
     app.addVisual(b2);
   });
 
-// ConvexHull and box
+// ConvexPolyhedron and box
 demo.addScene(function(app){
     var world = setupWorld(app);
     
-    var tetraShape = new CANNON.ConvexHull();
-    tetraShape.addPoints([new CANNON.Vec3(0,0,0),
-			  new CANNON.Vec3(2,0,0),
-			  new CANNON.Vec3(0,2,0),
-			  new CANNON.Vec3(0,0,2)],
-			 [
-			  [0,3,2], // -x
-			  [0,1,3], // -y
-			  [0,1,2], // -z
-			  [1,3,2], // +xyz
-			  ],
-			 [new CANNON.Vec3(-1, 0, 0),
-			  new CANNON.Vec3( 0,-1, 0),
-			  new CANNON.Vec3( 0, 0,-1),
-			  new CANNON.Vec3( 1, 1, 1)]);
+    var tetraShape = new CANNON.ConvexPolyhedron([new CANNON.Vec3(0,0,0),
+						  new CANNON.Vec3(2,0,0),
+						  new CANNON.Vec3(0,2,0),
+						  new CANNON.Vec3(0,0,2)],
+						 [
+						     [0,3,2], // -x
+						     [0,1,3], // -y
+						     [0,1,2], // -z
+						     [1,3,2], // +xyz
+						 ],
+						 [new CANNON.Vec3(-1, 0, 0),
+						  new CANNON.Vec3( 0,-1, 0),
+						  new CANNON.Vec3( 0, 0,-1),
+						  new CANNON.Vec3( 1, 1, 1)]);
     var b1 = new CANNON.RigidBody(5,tetraShape);
     b1.position.set(0,0,3*size);
     world.add(b1);

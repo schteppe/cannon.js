@@ -1,45 +1,43 @@
 /**
- * Experiment for testing ConvexHulls.
+ * Experiment for testing ConvexPolyhedrons.
  */
 var demo = new CANNON.Demo();
 
-function createBoxHull(size){
+function createBoxPolyhedron(size){
     size = size || 1;
-    var hullShape = new CANNON.ConvexHull();
-    hullShape.addPoints([new CANNON.Vec3(-size,-size,-size),
-			 new CANNON.Vec3( size,-size,-size),
-			 new CANNON.Vec3( size, size,-size),
-			 new CANNON.Vec3(-size, size,-size),
-			 new CANNON.Vec3(-size,-size, size),
-			 new CANNON.Vec3( size,-size, size),
-			 new CANNON.Vec3( size, size, size),
-			 new CANNON.Vec3(-size, size, size)],
-			
-			// At the moment the convex hull can't resolve normals and faces by itself, so we need to help it. This should be changed in the future
-			[
-			 [0,1,2,3], // -z
-			 [4,5,6,7], // +z
-			 [0,1,4,5], // -y
-			 [2,3,6,7], // +y
-			 [0,3,4,7], // -x
-			 [1,2,5,6], // +x
-			 ],
-			
-			[new CANNON.Vec3( 0, 0,-1),
-			 new CANNON.Vec3( 0, 0, 1),
-			 new CANNON.Vec3( 0,-1, 0),
-			 new CANNON.Vec3( 0, 1, 0),
-			 new CANNON.Vec3(-1, 0, 0),
-			 new CANNON.Vec3( 1, 0, 0)]);
-    return hullShape;
+    var boxShape = new CANNON.ConvexPolyhedron([new CANNON.Vec3(-size,-size,-size),
+						new CANNON.Vec3( size,-size,-size),
+						new CANNON.Vec3( size, size,-size),
+						new CANNON.Vec3(-size, size,-size),
+						new CANNON.Vec3(-size,-size, size),
+						new CANNON.Vec3( size,-size, size),
+						new CANNON.Vec3( size, size, size),
+						new CANNON.Vec3(-size, size, size)],
+					       
+					       [
+						   [0,1,2,3], // -z
+						   [4,5,6,7], // +z
+						   [0,1,4,5], // -y
+						   [2,3,6,7], // +y
+						   [0,3,4,7], // -x
+						   [1,2,5,6], // +x
+					       ],
+					       
+					       [new CANNON.Vec3( 0, 0,-1),
+						new CANNON.Vec3( 0, 0, 1),
+						new CANNON.Vec3( 0,-1, 0),
+						new CANNON.Vec3( 0, 1, 0),
+						new CANNON.Vec3(-1, 0, 0),
+						new CANNON.Vec3( 1, 0, 0)]);
+    return boxShape;
 }
 
 // Just 1 box on a plane
 demo.addScene(function(app){
     var world = setupWorld(app);
-    // ConvexHull box shape
+    // ConvexPolyhedron box shape
     var size = 2;
-    var hullShape = createBoxHull(size);
+    var hullShape = createBoxPolyhedron(size);
     // At the moment one must provide vertices, faces and normals..
     var mass = 10;
     var boxbody1 = new CANNON.RigidBody(mass,hullShape);
@@ -52,9 +50,9 @@ demo.addScene(function(app){
 // Box on box tilting over
 demo.addScene(function(app){
     var world = setupWorld(app);
-    // ConvexHull box shape
+    // ConvexPolyhedron box shape
     var size = 2;
-    var hullShape = createBoxHull(size);
+    var hullShape = createBoxPolyhedron(size);
     var mass = 10;
     var boxbody1 = new CANNON.RigidBody(mass,hullShape);
     var boxbody2 = new CANNON.RigidBody(mass,hullShape);
@@ -69,9 +67,9 @@ demo.addScene(function(app){
 // Pile of boxes
 demo.addScene(function(app){
     var world = setupWorld(app);
-    // ConvexHull box shape
+    // ConvexPolyhedron box shape
     var size = 1;
-    var hullShape = createBoxHull(size);
+    var hullShape = createBoxPolyhedron(size);
     var mass = 10;
     for(var i=0; i<3; i++){
 	for(var j=0; j<3; j++){
@@ -86,42 +84,38 @@ demo.addScene(function(app){
 // Various shapes
 demo.addScene(function(app){
     var world = setupWorld(app);
-    // ConvexHull box shape
+    // ConvexPolyhedron box shape
     var size = 0.5;
-    var hullShape = createBoxHull(size);
+    var hullShape = createBoxPolyhedron(size);
     var mass = 10;
     var boxbody = new CANNON.RigidBody(mass,hullShape);
     boxbody.position.set(1,0,size+1);
     world.add(boxbody);
     app.addVisual(boxbody);
 
-    // ConvexHull tetra shape
-    var tetraShape = new CANNON.ConvexHull();
-    // At the moment one must provide vertices, faces and normals..
-    tetraShape.addPoints([new CANNON.Vec3(0,0,0),
-			  new CANNON.Vec3(2,0,0),
-			  new CANNON.Vec3(0,2,0),
-			  new CANNON.Vec3(0,0,2)],
-			 
-			 [
-			  [0,3,2], // -x
-			  [0,1,3], // -y
-			  [0,1,2], // -z
-			  [1,3,2], // +xyz
-			  ],
-			 
-			 [new CANNON.Vec3(-1, 0, 0),
-			  new CANNON.Vec3( 0,-1, 0),
-			  new CANNON.Vec3( 0, 0,-1),
-			  new CANNON.Vec3( 1, 1, 1)]);
+    // ConvexPolyhedron tetra shape
+    var tetraShape = new CANNON.ConvexPolyhedron([new CANNON.Vec3(0,0,0),
+						  new CANNON.Vec3(2,0,0),
+						  new CANNON.Vec3(0,2,0),
+						  new CANNON.Vec3(0,0,2)],
+						 
+						 [
+						     [0,3,2], // -x
+						     [0,1,3], // -y
+						     [0,1,2], // -z
+						     [1,3,2], // +xyz
+						 ],
+						 
+						 [new CANNON.Vec3(-1, 0, 0),
+						  new CANNON.Vec3( 0,-1, 0),
+						  new CANNON.Vec3( 0, 0,-1),
+						  new CANNON.Vec3( 1, 1, 1)]);
     var tetraBody = new CANNON.RigidBody(mass,tetraShape);
     tetraBody.position.set(5,-3,size+1);
     world.add(tetraBody);
     app.addVisual(tetraBody);
 
-    // ConvexHull cylinder shape
-    var cylinderShape = new CANNON.ConvexHull();
-    // At the moment one must provide vertices, faces and normals..
+    // ConvexPolyhedron cylinder shape
     var num = 20;
     var verts = [];
     var normals = [];
@@ -171,7 +165,7 @@ demo.addScene(function(app){
     normals.push(new CANNON.Vec3(0,0,1));
     faces.push(bottomface);
     normals.push(new CANNON.Vec3(0,0,-1));
-    cylinderShape.addPoints(verts,faces,normals);
+    var cylinderShape = new CANNON.ConvexPolyhedron(verts,faces,normals);
     var cylinderBody = new CANNON.RigidBody(mass,cylinderShape);
     cylinderBody.position.set(0,0,size*4+1);
     cylinderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/3);

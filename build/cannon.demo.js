@@ -669,7 +669,7 @@ CANNON.Demo.prototype._buildScene = function(n){
       mesh = new THREE.Mesh( box_geometry, that.currentMaterial );
       break;
 
-    case CANNON.Shape.types.CONVEXHULL:
+    case CANNON.Shape.types.CONVEXPOLYHEDRON:
       var verts = [];
       for(var i=0; i<shape.vertices.length; i++){
 	verts.push(new THREE.Vector3(shape.vertices[i].x,

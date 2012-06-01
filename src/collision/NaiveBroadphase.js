@@ -29,7 +29,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 
   // Local fast access
   var types = CANNON.Shape.types;
-  var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXHULL,
+  var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
   PLANE = types.PLANE,
   STATIC_OR_KINEMATIC = CANNON.RigidBody.STATIC | CANNON.RigidBody.KINEMATIC;
 
@@ -50,7 +50,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	continue;
       }
 
-      // --- Box / sphere / compound / hull collision ---
+      // --- Box / sphere / compound / convexpolyhedron collision ---
       if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
 	// Rel. position
 	bj.position.vsub(bi.position,r);
@@ -61,7 +61,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	  pairs2.push(bj);
 	}
 
-      // --- Sphere/box/compound/hull versus plane ---
+      // --- Sphere/box/compound/convexpoly versus plane ---
       } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
 	var pi = (ti===PLANE) ? i : j, // Plane
 	  oi = (ti!==PLANE) ? i : j; // Other

@@ -20,49 +20,48 @@ CANNON.Box = function(halfExtents){
   /**
    * 
    */
-  this.convexHullRepresentation = null;
+  this.convexPolyhedronRepresentation = null;
 
-  this.updateConvexHullRepresentation();
+  this.updateConvexPolyhedronRepresentation();
 };
 CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
 
 /**
- * @fn updateConvexHullRepresentation
+ * @fn updateConvexPolyhedronRepresentation
  * @memberof CANNON.Box
- * @brief Updates the local convex hull representation used for some collisions.
+ * @brief Updates the local convex polyhedron representation used for some collisions.
  */
-CANNON.Box.prototype.updateConvexHullRepresentation = function(){
-  var h = new CANNON.ConvexHull();
+CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
   var sx = this.halfExtents.x;
   var sy = this.halfExtents.y;
   var sz = this.halfExtents.z;
   var v = CANNON.Vec3;
-  h.addPoints([new v(-sx,-sy,-sz),
-	       new v( sx,-sy,-sz),
-	       new v( sx, sy,-sz),
-	       new v(-sx, sy,-sz),
-	       new v(-sx,-sy, sz),
-	       new v( sx,-sy, sz),
-	       new v( sx, sy, sz),
-	       new v(-sx, sy, sz)],
-	      
-	      [
-	       [0,1,2,3], // -z
-	       [4,5,6,7], // +z
-	       [0,1,4,5], // -y
-	       [2,3,6,7], // +y
-	       [0,3,4,7], // -x
-	       [1,2,5,6], // +x
-	       ],
-	      
-	      [new v( 0, 0,-1),
-	       new v( 0, 0, 1),
-	       new v( 0,-1, 0),
-	       new v( 0, 1, 0),
-	       new v(-1, 0, 0),
-	       new v( 1, 0, 0)]);
-  this.convexHullRepresentation = h;
+    var h = new CANNON.ConvexPolyhedron([new v(-sx,-sy,-sz),
+					 new v( sx,-sy,-sz),
+					 new v( sx, sy,-sz),
+					 new v(-sx, sy,-sz),
+					 new v(-sx,-sy, sz),
+					 new v( sx,-sy, sz),
+					 new v( sx, sy, sz),
+					 new v(-sx, sy, sz)],
+					
+					[
+					    [0,1,2,3], // -z
+					    [4,5,6,7], // +z
+					    [0,1,4,5], // -y
+					    [2,3,6,7], // +y
+					    [0,3,4,7], // -x
+					    [1,2,5,6], // +x
+					],
+					
+					[new v( 0, 0,-1),
+					 new v( 0, 0, 1),
+					 new v( 0,-1, 0),
+					 new v( 0, 1, 0),
+					 new v(-1, 0, 0),
+					 new v( 1, 0, 0)]);
+    this.convexPolyhedronRepresentation = h;
 };
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){

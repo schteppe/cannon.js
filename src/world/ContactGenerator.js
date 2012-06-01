@@ -249,8 +249,8 @@ CANNON.ContactGenerator = function(){
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 
-      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // sphere-convexhull
-	throw new Error("sphere/convexhull contacts not implemented yet.");
+      } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // sphere-convexpolyhedron
+	throw new Error("sphere/convexpolyhedron contacts not implemented yet.");
       }
       
     } else if(si.type==CANNON.Shape.types.PLANE){
@@ -290,10 +290,10 @@ CANNON.ContactGenerator = function(){
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 
-      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // plane-hull
+      } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // plane-convex polyhedron
 	// Separating axis is the plane normal
-	// Create a virtual box hull for the plane
-	var planehull = new CANNON.ConvexHull();
+	// Create a virtual box polyhedron for the plane
+	
 
 	var t1 = new CANNON.Vec3();
 	var t2 = new CANNON.Vec3();
@@ -311,7 +311,7 @@ CANNON.ContactGenerator = function(){
 		     new CANNON.Vec3(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z)]; // -++
 	t1.normalize();
 	t2.normalize();
-	planehull.addPoints(verts,
+	var planehull = new CANNON.ConvexPolyhedron(verts,
 			    [
 				[0,1,2,3], // -z
 				[4,5,6,7], // +z
@@ -362,18 +362,18 @@ CANNON.ContactGenerator = function(){
     } else if(si.type==CANNON.Shape.types.BOX){
       
       if(sj.type==CANNON.Shape.types.BOX){ // box-box
-	// Do convex hull instead
+	// Do convex polyhedron instead
 	nearPhase(result,
-		  si.convexHullRepresentation,
-		  sj.convexHullRepresentation,
+		  si.convexPolyhedronRepresentation,
+		  sj.convexPolyhedronRepresentation,
 		  xi,xj,qi,qj,bi,bj);
 
       } else if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 	
-      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // box-convexhull
+      } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // box-convexpolyhedron
 	nearPhase(result,
-		  si.convexHullRepresentation,
+		  si.convexPolyhedronRepresentation,
 		  sj,xi,xj,qi,qj,bi,bj);
       }
       
@@ -382,13 +382,13 @@ CANNON.ContactGenerator = function(){
       if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
 	recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
 	
-      } else if(sj.type==CANNON.Shape.types.CONVEXHULL){ // compound-convexhull
+      } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // compound-convex polyhedron
 	recurseCompound(result,sj,si,xj,xi,qj,qi,bj,bi);	
       }
 
-    } else if(si.type==CANNON.Shape.types.CONVEXHULL){
+    } else if(si.type==CANNON.Shape.types.CONVEXPOLYHEDRON){
 
-      if(sj.type==CANNON.Shape.types.CONVEXHULL){ // convexhull-convexhull
+      if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // convex polyhedron - convex polyhedron
 	var sepAxis = new CANNON.Vec3();
 	if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
 
