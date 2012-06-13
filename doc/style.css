@@ -1,0 +1,79 @@
+html {
+    overflow-y: scroll;
+}
+a, a:link, a:active, a:visited {
+    color:#153788;
+    text-decoration:none;
+    font-weight:bold;
+}
+body {
+    font-family:Lucida Grande, Verdana, Geneva, Arial, sans-serif;
+    font-size:12px;
+    margin-left:220px;
+}
+nav {
+    margin-left:10px;
+    display:inline;
+    position:fixed;
+    height:100%;
+    overflow:auto;
+    left:0;
+    top:0;
+    background-color:white;
+    width:200px;
+}
+header {
+    text-align:center;
+    padding:10px;
+    margin:10px;
+}
+section {
+    margin-bottom:80px;
+}
+h1 {
+    font-size:20px;
+    padding:0px;
+    margin:10px 0px;
+}
+h2, div.page h1 { font-size:16px; color:#333; }
+h3, div.page h2 { font-size:14px; color:#666; }
+h4, div.page h3 { font-size:12px; color:#777; }
+footer {
+    width:200px;
+    padding:10px 5px;
+    background-color:white;
+    position:fixed;
+    font-size:10px;
+    right:0px;
+    bottom:0px;
+}
+nav ul {
+    list-style-type:none;
+    padding: 0px;
+    margin: 0px 10px;
+}
+ul.function_overview label, ul.class_overview label, ul.member_overview label {
+    width:100px;
+    display:block;
+    float:left;
+    margin-right:7px;
+    text-align:right;
+}
+table.function_overview td.datatype, table.member_overview td.datatype {
+    text-align:right;
+    padding-right:7px;
+}
+.datatype {
+    font-style:italic;
+    text-align:right;
+}
+.datatype a {
+    font-style:normal;
+}
+th { text-align:left; }
+th span.datatype { margin-left:10px; font-weight:normal; }
+th span.param { margin-right:5px; font-weight:bold; }
+.brief { color:#888; }
+td, th {
+    vertical-align:top;
+}
