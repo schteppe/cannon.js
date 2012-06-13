@@ -46,7 +46,7 @@ setInterval(function(){
 
 ## Documentation
 
-Here is a [live version](http://schteppe.github.com/ghdoc/#schteppe/cannon.js/master).
+Here is a [live version](http://schteppe.github.com/cannon.js/doc/).
 
 # Developer instructions
 
