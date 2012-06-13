@@ -298,7 +298,6 @@ CANNON.ContactGenerator = function(){
 	    } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // plane-convex polyhedron
 		// Separating axis is the plane normal
 		// Create a virtual box polyhedron for the plane
-		console.log(v3pool.objects.length);
 		var t1 = v3pool.get();
 		var t2 = v3pool.get();
 		si.normal.tangents(t1,t2);

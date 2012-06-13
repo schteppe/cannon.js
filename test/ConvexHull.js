@@ -2,63 +2,34 @@ var C = require("../build/cannon");
 
 function createBoxHull(size){
   size = (size===undefined ? 0.5 : size);
-  var h = new C.ConvexHull(); 
-  h.addPoints([new C.Vec3(-size,-size,-size),
-	       new C.Vec3( size,-size,-size),
-	       new C.Vec3( size, size,-size),
-	       new C.Vec3(-size, size,-size),
-	       new C.Vec3(-size,-size, size),
-	       new C.Vec3( size,-size, size),
-	       new C.Vec3( size, size, size),
-	       new C.Vec3(-size, size, size)],
-	
-	      [
-	       [0,1,2,3], // -z
-	       [4,5,6,7], // +z
-	       [0,1,4,5], // -y
-	       [2,3,6,7], // +y
-	       [0,3,4,7], // -x
-	       [1,2,5,6], // +x
-	       ],
+    var h = new C.ConvexPolyhedron([new C.Vec3(-size,-size,-size),
+				   new C.Vec3( size,-size,-size),
+				   new C.Vec3( size, size,-size),
+				   new C.Vec3(-size, size,-size),
+				   new C.Vec3(-size,-size, size),
+				   new C.Vec3( size,-size, size),
+				   new C.Vec3( size, size, size),
+				   new C.Vec3(-size, size, size)],
+				  
+				  [
+				      [0,1,2,3], // -z
+				      [4,5,6,7], // +z
+				      [0,1,4,5], // -y
+				      [2,3,6,7], // +y
+				      [0,3,4,7], // -x
+				      [1,2,5,6], // +x
+				  ],
 
-	      [new C.Vec3( 0, 0,-1),
-	       new C.Vec3( 0, 0, 1),
-	       new C.Vec3( 0,-1, 0),
-	       new C.Vec3( 0, 1, 0),
-	       new C.Vec3(-1, 0, 0),
-	       new C.Vec3( 1, 0, 0)]);
-  return h;
+				  [new C.Vec3( 0, 0,-1),
+				   new C.Vec3( 0, 0, 1),
+				   new C.Vec3( 0,-1, 0),
+				   new C.Vec3( 0, 1, 0),
+				   new C.Vec3(-1, 0, 0),
+				   new C.Vec3( 1, 0, 0)]);
+    return h;
 }
 
 exports.convexHull = {
-    "creation" : function(test) {
-        test.expect(0);
-	var h = new C.ConvexHull(); 
-        test.done();
-    },
-
-    "addPoints" : function(test){
-      var h = new C.ConvexHull(); 
-
-      h.addPoints([new C.Vec3(0,0,0),
-		   new C.Vec3(1,0,0),
-		   new C.Vec3(0,1,0),
-		   new C.Vec3(0,0,1)],
-	
-		  [
-		   [0,3,2], // -x
-		   [0,1,3], // -y
-		   [0,1,2], // -z
-		   [1,2,3], // +xyz
-		   ],
-
-		  [new C.Vec3(-1, 0, 0),
-		   new C.Vec3( 0,-1, 0),
-		   new C.Vec3( 0, 0,-1),
-		   new C.Vec3( 1, 1, 1)]);
-      test.done();
-    },
-
     "clipFaceAgainstPlane":function(test){ 
       var h = createBoxHull();
       
@@ -173,11 +144,11 @@ exports.convexHull = {
 	
 	var sepaxis = new C.Vec3();
 	var found = hullA.findSeparatingAxis(hullB,posA,quatA,posB,quatB,sepaxis);
-	console.log("SepAxis found:",found,", the axis:",sepaxis.toString());
+	//console.log("SepAxis found:",found,", the axis:",sepaxis.toString());
 	
 	quatB.setFromAxisAngle(new C.Vec3(0,0,1),Math.PI/4);
 	var found2 = hullA.findSeparatingAxis(hullB,posA,quatA,posB,quatB,sepaxis);
-	console.log("SepAxis found:",found2,", the axis:",sepaxis.toString());
+	//console.log("SepAxis found:",found2,", the axis:",sepaxis.toString());
 	
 	test.done();
     }

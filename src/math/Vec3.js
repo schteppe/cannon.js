@@ -179,6 +179,12 @@ CANNON.Vec3.prototype.norm2 = function(){
   return this.dot(this);
 };
 
+CANNON.Vec3.prototype.distanceTo = function(p){
+    return Math.sqrt((p.x-this.x)*(p.x-this.x)+
+		     (p.y-this.y)*(p.y-this.y)+
+		     (p.z-this.z)*(p.z-this.z));
+};
+
 /**
  * @fn mult
  * @memberof CANNON.Vec3

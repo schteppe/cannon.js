@@ -142,6 +142,208 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 /*global CANNON:true */
 
 /**
+ * @class CANNON.Ray
+ * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.
+ * @brief A ray is a line in 3D space that can intersect bodies and return intersection points.
+ */
+CANNON.Ray = function(origin, direction){
+    this.origin = origin || new CANNON.Vec3();
+    this.direction = direction || new CANNON.Vec3();
+
+    var precision = 0.0001;
+
+    this.setPrecision = function ( value ) {
+	precision = value;
+    };
+
+    var a = new CANNON.Vec3();
+    var b = new CANNON.Vec3();
+    var c = new CANNON.Vec3();
+    var d = new CANNON.Vec3();
+
+    var directionCopy = new CANNON.Vec3();
+
+    var vector = new CANNON.Vec3();
+    var normal = new CANNON.Vec3();
+    var intersectPoint = new CANNON.Vec3()
+
+    this.intersectBody = function ( body ) {
+	if(body.shape instanceof CANNON.ConvexPolyhedron){
+	    return this.intersectShape(body.shape,
+				       body.quaternion,
+				       body.position,
+				       body);
+	} else if(body.shape instanceof CANNON.Box){
+	    return this.intersectShape(body.shape.convexPolyhedronRepresentation,
+				       body.quaternion,
+				       body.position,
+				       body);
+	} else
+	    console.warn("Ray intersection is this far only implemented for ConvexPolyhedron and Box shapes.");
+    };
+
+    this.intersectShape = function(shape,quat,position,body){
+
+	var intersect, intersects = [];
+
+	if ( shape instanceof CANNON.ConvexPolyhedron ) {
+	    // Checking boundingSphere
+
+	    var distance = distanceFromIntersection( this.origin, this.direction, position );
+	    if ( distance > shape.boundingSphereRadius() ) {
+		return intersects;
+	    }
+
+	    // Checking faces
+	    var dot, scalar, faces = shape.faces, vertices = shape.vertices, normals = shape.faceNormals;
+
+	    for ( fi = 0; fi < faces.length; fi++ ) {
+
+		var face = faces[ fi ];
+		var faceNormal = normals[ fi ];
+		var q = quat;
+		var x = position;
+
+		// determine if ray intersects the plane of the face
+		// note: this works regardless of the direction of the face normal
+
+		// Get plane point
+		var vector = new CANNON.Vec3();
+		vertices[face[0]].copy(vector);
+		vector.vsub(this.origin,vector);
+		q.vmult(vector,vector);
+		vector.vadd(x,vector);
+
+		// Get plane normal
+		var normal = new CANNON.Vec3();
+		q.vmult(faceNormal,normal);
+		
+		dot = this.direction.dot(normal);
+		
+		// bail if ray and plane are parallel
+
+		if ( Math.abs( dot ) < precision ) continue;
+
+		// calc distance to plane
+
+		scalar = normal.dot( vector ) / dot;
+
+		// if negative distance, then plane is behind ray
+		if ( scalar < 0 ) continue;
+
+		if (  dot < 0 ) {
+
+		    // Intersection point is origin + direction * scalar
+		    this.direction.mult(scalar,intersectPoint);
+		    intersectPoint.vadd(this.origin,intersectPoint);
+
+		    // a is the point we compare points b and c with.
+		    vertices[ face[0] ].copy(a);
+		    q.vmult(a,a);
+		    x.vadd(a,a);
+
+		    for(var i=1; i<face.length-1; i++){
+			// Transform 3 vertices to world coords
+			vertices[ face[i] ].copy(b);
+			vertices[ face[i+1] ].copy(c);
+			q.vmult(b,b);
+			q.vmult(c,c);
+			x.vadd(b,b);
+			x.vadd(c,c);
+		    
+			if ( pointInTriangle( intersectPoint, a, b, c ) ) {
+
+			    intersect = {
+
+				distance: this.origin.distanceTo( intersectPoint ),
+				point: intersectPoint.copy(),
+				face: face,
+				body: body
+				
+			    };
+			    
+			    intersects.push( intersect );
+			    break;
+			    
+			}
+
+		    }
+		}
+
+	    }
+
+	}
+	    
+
+	return intersects;
+
+    }
+
+    this.intersectBodies = function ( bodies ) {
+
+	var intersects = [];
+
+	for ( var i = 0, l = bodies.length; i < l; i ++ ) {
+	    var result = this.intersectBody( bodies[ i ] );
+	    Array.prototype.push.apply( intersects, result );
+
+	}
+
+	intersects.sort( function ( a, b ) { return a.distance - b.distance; } );
+
+	return intersects;
+
+    };
+
+    var v0 = new CANNON.Vec3(), intersect = new CANNON.Vec3();
+    var dot, distance;
+
+    function distanceFromIntersection( origin, direction, position ) {
+
+	// v0 is vector from origin to position
+	position.vsub(origin,v0);
+	dot = v0.dot( direction );
+
+	// intersect = direction*dot + origin
+	direction.mult(dot,intersect);
+	intersect.vadd(origin,intersect);
+	
+	distance = position.distanceTo( intersect );
+
+	return distance;
+
+    }
+
+    // http://www.blackpawn.com/texts/pointinpoly/default.html
+
+    var dot00, dot01, dot02, dot11, dot12, invDenom, u, v;
+    var v1 = new CANNON.Vec3(), v2 = new CANNON.Vec3();
+
+    function pointInTriangle( p, a, b, c ) {
+	c.vsub(a,v0);
+	b.vsub(a,v1);
+	p.vsub(a,v2);
+
+	dot00 = v0.dot( v0 );
+	dot01 = v0.dot( v1 );
+	dot02 = v0.dot( v2 );
+	dot11 = v1.dot( v1 );
+	dot12 = v1.dot( v2 );
+
+	invDenom = 1 / ( dot00 * dot11 - dot01 * dot01 );
+	u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+	v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+
+	return ( u >= 0 ) && ( v >= 0 ) && ( u + v < 1 );
+
+    }
+
+    
+};
+CANNON.Ray.prototype.constructor = CANNON.Ray;
+/*global CANNON:true */
+
+/**
  * @class CANNON.Mat3
  * @brief Produce a 3x3 matrix. Columns first!
  * @param array elements Array of nine elements. Optional.
@@ -540,6 +742,12 @@ CANNON.Vec3.prototype.norm = function(){
  */
 CANNON.Vec3.prototype.norm2 = function(){
   return this.dot(this);
+};
+
+CANNON.Vec3.prototype.distanceTo = function(p){
+    return Math.sqrt((p.x-this.x)*(p.x-this.x)+
+		     (p.y-this.y)*(p.y-this.y)+
+		     (p.z-this.z)*(p.z-this.z));
 };
 
 /**
@@ -3612,11 +3820,11 @@ CANNON.ContactGenerator = function(){
 		rj = null;
 
 		// Check edges
-		var edgeTangent = new CANNON.Vec3();
-		var edgeCenter = new CANNON.Vec3();
-		var r = new CANNON.Vec3(); // r = edge center to sphere center
-		var orthogonal = new CANNON.Vec3();
-		var dist = new CANNON.Vec3();
+		var edgeTangent = v3pool.get();
+		var edgeCenter = v3pool.get();
+		var r = v3pool.get(); // r = edge center to sphere center
+		var orthogonal = v3pool.get();
+		var dist = v3pool.get();
 		for(var j=0; j<sides.length && !found; j++){
 		    for(var k=0; k<sides.length && !found; k++){
 			if(j%3!=k%3){
@@ -3663,6 +3871,7 @@ CANNON.ContactGenerator = function(){
 			}
 		    }
 		}
+		v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
 
 	    } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
 		recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
@@ -3711,7 +3920,6 @@ CANNON.ContactGenerator = function(){
 	    } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // plane-convex polyhedron
 		// Separating axis is the plane normal
 		// Create a virtual box polyhedron for the plane
-		console.log(v3pool.objects.length);
 		var t1 = v3pool.get();
 		var t2 = v3pool.get();
 		si.normal.tangents(t1,t2);
@@ -3804,14 +4012,12 @@ CANNON.ContactGenerator = function(){
 	    if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // convex polyhedron - convex polyhedron
 		var sepAxis = new CANNON.Vec3();
 		if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
-
-		    //console.log(sepAxis.toString());
 		    var res = [];
+		    var q = new CANNON.Vec3();
 		    si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
 		    for(var j=0; j<res.length; j++){
 			var r = makeResult(bi,bj);
 			sepAxis.negate(r.ni);
-			var q = new CANNON.Vec3();
 			res[j].normal.negate(q);
 			q.mult(res[j].depth,q);
 			r.ri.set(res[j].point.x + q.x,
