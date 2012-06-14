@@ -145,6 +145,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
  * @class CANNON.Ray
  * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.
  * @brief A ray is a line in 3D space that can intersect bodies and return intersection points.
+ * @param CANNON.Vec3 origin
+ * @param CANNON.Vec3 direction
  */
 CANNON.Ray = function(origin, direction){
     this.origin = origin || new CANNON.Vec3();
@@ -152,6 +154,12 @@ CANNON.Ray = function(origin, direction){
 
     var precision = 0.0001;
 
+    /**
+     * @fn setPrecision
+     * @memberof CANNON.Ray
+     * @param float value
+     * @brief Sets the precision of the ray. Used when checking parallelity etc.
+     */
     this.setPrecision = function ( value ) {
 	precision = value;
     };
@@ -167,6 +175,13 @@ CANNON.Ray = function(origin, direction){
     var normal = new CANNON.Vec3();
     var intersectPoint = new CANNON.Vec3()
 
+    /**
+     * @fn intersectBody
+     * @memberof CANNON.Ray
+     * @param CANNON.RigidBody body
+     * @brief Shoot a ray at a body, get back information about the hit.
+     * @return Array An array of results. The result objects has properties: distance (float), point (CANNON.Vec3) and body (CANNON.RigidBody).
+     */
     this.intersectBody = function ( body ) {
 	if(body.shape instanceof CANNON.ConvexPolyhedron){
 	    return this.intersectShape(body.shape,
@@ -181,7 +196,16 @@ CANNON.Ray = function(origin, direction){
 	} else
 	    console.warn("Ray intersection is this far only implemented for ConvexPolyhedron and Box shapes.");
     };
-
+    
+    /**
+     * @fn intersectShape
+     * @memberof CANNON.Ray
+     * @param CANNON.Shape shape
+     * @param CANNON.Quaternion quat
+     * @param CANNON.Vec3 position
+     * @param CANNON.RigidBody body
+     * @return Array See intersectBody()
+     */
     this.intersectShape = function(shape,quat,position,body){
 
 	var intersect, intersects = [];
@@ -279,6 +303,12 @@ CANNON.Ray = function(origin, direction){
 
     }
 
+    /**
+     * @fn intersectBodies
+     * @memberof CANNON.Ray
+     * @param Array bodies An array of CANNON.RigidBody objects.
+     * @return Array See intersectBody
+     */
     this.intersectBodies = function ( bodies ) {
 
 	var intersects = [];
@@ -335,10 +365,7 @@ CANNON.Ray = function(origin, direction){
 	v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
 
 	return ( u >= 0 ) && ( v >= 0 ) && ( u + v < 1 );
-
     }
-
-    
 };
 CANNON.Ray.prototype.constructor = CANNON.Ray;
 /*global CANNON:true */
