@@ -19,7 +19,6 @@ function createBodyOnPlane(app,shape){
   var world = new CANNON.World();
   app.setWorld(world);
   world.gravity.set(0,0,-40);
-  var bp = 
   world.broadphase = new CANNON.NaiveBroadphase();
   world.solver.iterations = 10;
 

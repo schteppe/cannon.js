@@ -1317,6 +1317,7 @@ CANNON.RigidBody = function(mass,shape,material){
   if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
       throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
 
+  // Extend the EventTarget class
   CANNON.EventTarget.apply(this);
 
   /**
@@ -1452,6 +1453,7 @@ CANNON.RigidBody = function(mass,shape,material){
    * @property function preStep
    * @memberof CANNON.RigidBody
    * @brief Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this CANNON.RigidBody object.
+   * @todo dispatch an event from the World instead
    */
   this.preStep = null;
 
@@ -1459,6 +1461,7 @@ CANNON.RigidBody = function(mass,shape,material){
    * @property function postStep
    * @memberof CANNON.RigidBody
    * @brief Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this CANNON.RigidBody object.
+   * @todo dispatch an event from the World instead
    */
   this.postStep = null;
 };
@@ -3351,35 +3354,47 @@ CANNON.World.prototype.step = function(dt){
   var BOX = CANNON.Shape.types.BOX;
   var COMPOUND = CANNON.Shape.types.COMPOUND;
 
-  /**
-   * Keep track of contacts for current and previous timesteps
-   * @param int i Body index
-   * @param int j Body index
-   * @param int which 0 means current, -1 one timestep behind, -2 two behind etc
-   * @param int newval New contact status
-   */
-  function cmatrix(i,j,which,newval){
-    // i == column
-    // j == row
-    if((which==0 && i<j) || // Current uses upper part of the matrix
-       (which==-1 && i>j)){ // Previous uses lower part of the matrix
-      var temp = j;
-      j = i;
-      i = temp;
-    }
-    if(newval===undefined)
-      return that.collision_matrix[i+j*that.numObjects()];
-    else
-      that.collision_matrix[i+j*that.numObjects()] = parseInt(newval);
+  // Keep track of contacts for current and previous timestep
+  // 0: No contact between i and j
+  // 1: Contact
+  function collisionMatrixGet(i,j,current){
+      if(typeof(current)=="undefined") current = true;
+      // i == column
+      // j == row
+      if((current && i<j) || // Current uses upper part of the matrix
+	 (!current && i>j)){ // Previous uses lower part of the matrix
+	  var temp = j;
+	  j = i;
+	  i = temp;
+      }
+      return that.collision_matrix[i+j*N];
+  }
+    
+  function collisionMatrixSet(i,j,value,current){
+      if(typeof(current)=="undefined") current = true;
+      if((current && i<j) || // Current uses upper part of the matrix
+	 (!current && i>j)){ // Previous uses lower part of the matrix
+	  var temp = j;
+	  j = i;
+	  i = temp;
+      }
+      that.collision_matrix[i+j*N] = parseInt(value);
   }
 
-  // Begin with transferring old contact data to the right place
-  for(var i in bodies){
-    for(var j=0; j<i; j++){
-      cmatrix(i,j,-1, cmatrix(i,j,0));
-      cmatrix(i,j,0,0);
-    }
+  // transfer old contact state data to T-1
+  function collisionMatrixTick(){
+      for(var i=0; i<bodies.length; i++){
+	  for(var j=0; j<i; j++){
+	      //cmatrix(i,j,-1, cmatrix(i,j,0));
+	      //cmatrix(i,j,0,0);
+	      var currentState = collisionMatrixGet(i,j,true);
+	      collisionMatrixSet(i,j,currentState,false);
+	      collisionMatrixSet(i,j,0,true);
+	  }
+      }
   }
+
+  collisionMatrixTick();
 
   // Reset contact solver
   this.solver.reset(N);
@@ -3409,8 +3424,8 @@ CANNON.World.prototype.step = function(dt){
       j = this._id2index(bj.id);
     
     // Check last step stats
-    var lastCollisionState = cmatrix(i,j,-1);
-    
+    var lastCollisionState = collisionMatrixGet(i,j,false);
+
     // Get collision properties
     var mu = 0.3, e = 0.2;
     var cm = this.getContactMaterial(bi.material,
@@ -3429,6 +3444,14 @@ CANNON.World.prototype.step = function(dt){
     
     // Action if penetration
     if(g<0.0){
+	// Now we know that i and j are in contact. Set collision matrix state
+	collisionMatrixSet(i,j,1,true);
+	
+	if(collisionMatrixGet(i,j,true)!=collisionMatrixGet(i,j,false)){
+	    bi.dispatchEvent({type:"collide", "with":bj});
+	    bj.dispatchEvent({type:"collide", "with":bi});
+	}
+
       var vi = bi.velocity;
       var wi = bi.angularVelocity;
       var vj = bj.velocity;
