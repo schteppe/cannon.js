@@ -21,6 +21,8 @@ CANNON.RigidBody = function(mass,shape,material){
   // Extend the EventTarget class
   CANNON.EventTarget.apply(this);
 
+  var that = this;
+
   /**
    * @property CANNON.Vec3 position
    * @memberof CANNON.RigidBody
@@ -165,9 +167,80 @@ CANNON.RigidBody = function(mass,shape,material){
    * @todo dispatch an event from the World instead
    */
   this.postStep = null;
-};
 
-// Motionstates:
+  /**
+   * @property bool allowSleep
+   * @memberof CANNON.RigidBody
+   * @brief If true, the body will automatically fall to sleep.
+   */
+  this.allowSleep = true;
+
+  // 0:awake, 1:sleepy, 2:sleeping
+  var sleepState = 0;
+
+  /**
+   * @fn isAwake
+   * @memberof CANNON.RigidBody
+   */
+  this.isAwake = function(){ return sleepState == 0; }
+
+  /**
+   * @fn isSleepy
+   * @memberof CANNON.RigidBody
+   */
+  this.isSleepy = function(){ return sleepState == 1; }
+
+  /**
+   * @fn isSleeping
+   * @memberof CANNON.RigidBody
+   */
+  this.isSleeping = function(){ return sleepState == 2; }
+
+  /**
+   * @property float sleepSpeedLimit
+   * @memberof CANNON.RigidBody
+   * @brief If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
+   */
+  this.sleepSpeedLimit = 0.1;
+
+  /**
+   * @property float sleepTimeLimit
+   * @memberof CANNON.RigidBody
+   * @brief If the body has been sleepy for this sleepTimeLimit milliseconds, it is considered sleeping.
+   */
+  this.sleepTimeLimit = 1000;
+  var timeLastSleepy = new Date().getTime();
+
+  /**
+   * @fn wakeUp
+   * @memberof CANNON.RigidBody
+   * @brief Wake the body up.
+   */
+  this.wakeUp = function(){
+      sleepState = 0;
+      that.dispatchEvent({type:"wakeup"});
+  };
+
+  /**
+   * @fn sleepTick
+   * @memberof CANNON.RigidBody
+   * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
+   */
+  this.sleepTick = function(){
+      if(that.allowSleep){
+	  if(sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
+	      sleepState = 1; // Sleepy
+	      timeLastSleepy = new Date().getTime();
+	      that.dispatchEvent({type:"sleepy"});
+	  } else if(sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
+	      that.wakeUp(); // Wake up
+	  } else if(sleepState==1 && (new Date().getTime() - timeLastSleepy)>that.sleepTimeLimit){
+	      sleepState = 2; // Sleeping
+	      that.dispatchEvent({type:"sleep"});
+	  }
+      }
+  };
+};
 
 /**
  * @brief A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.

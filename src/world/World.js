@@ -6,6 +6,9 @@
  */
 CANNON.World = function(){
 
+  /// Makes bodies go to sleep when they've been inactive
+  this.allowSleep = false;
+
   /// The wall-clock time since simulation start
   this.time = 0.0;
 
@@ -492,6 +495,8 @@ CANNON.World.prototype.step = function(dt){
 	if(collisionMatrixGet(i,j,true)!=collisionMatrixGet(i,j,false)){
 	    bi.dispatchEvent({type:"collide", "with":bj});
 	    bj.dispatchEvent({type:"collide", "with":bi});
+	    bi.wakeUp();
+	    bj.wakeUp();
 	}
 
       var vi = bi.velocity;
@@ -679,7 +684,7 @@ CANNON.World.prototype.step = function(dt){
   var DYNAMIC_OR_KINEMATIC = CANNON.RigidBody.DYNAMIC | CANNON.RigidBody.KINEMATIC;
   for(var i in bodies){
     var b = bodies[i];
-    if(b.motionstate & DYNAMIC_OR_KINEMATIC){ // Only for dynamic
+    if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
       
       b.velocity.x += b.force.x * b.invMass * dt;
       b.velocity.y += b.force.y * b.invMass * dt;
@@ -690,23 +695,24 @@ CANNON.World.prototype.step = function(dt){
       b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
 
       // Use new velocity  - leap frog
-      
-      b.position.x += b.velocity.x * dt;
-      b.position.y += b.velocity.y * dt;
-      b.position.z += b.velocity.z * dt;
-
-      w.set(b.angularVelocity.x,
-	    b.angularVelocity.y,
-	    b.angularVelocity.z,
-	    0);
-      w.mult(b.quaternion,wq);
-
-      b.quaternion.x += dt * 0.5 * wq.x;
-      b.quaternion.y += dt * 0.5 * wq.y;
-      b.quaternion.z += dt * 0.5 * wq.z;
-      b.quaternion.w += dt * 0.5 * wq.w;
-      if(world.stepnumber % 3 === 0)
-        b.quaternion.normalizeFast();
+      if(!b.isSleeping()){
+	  b.position.x += b.velocity.x * dt;
+	  b.position.y += b.velocity.y * dt;
+	  b.position.z += b.velocity.z * dt;
+	  
+	  w.set(b.angularVelocity.x,
+		b.angularVelocity.y,
+		b.angularVelocity.z,
+		0);
+	  w.mult(b.quaternion,wq);
+	  
+	  b.quaternion.x += dt * 0.5 * wq.x;
+	  b.quaternion.y += dt * 0.5 * wq.y;
+	  b.quaternion.z += dt * 0.5 * wq.z;
+	  b.quaternion.w += dt * 0.5 * wq.w;
+	  if(world.stepnumber % 3 === 0)
+              b.quaternion.normalizeFast();
+      }
     }
     b.force.set(0,0,0);
     b.tau.set(0,0,0);
@@ -720,6 +726,14 @@ CANNON.World.prototype.step = function(dt){
   for(var i in bodies){
     var bi = bodies[i];
     bi.postStep && bi.postStep.call(bi);
+  }
+
+  // Sleeping update
+  if(world.allowSleep){
+      for(var i=0; i<N; i++){
+	  var bi = bodies[i];
+	  bi.sleepTick();
+      }
   }
 };
 

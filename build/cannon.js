@@ -104,8 +104,9 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
       var bi = bodies[i], bj = bodies[j];
       var ti = bi.shape.type, tj = bj.shape.type;
 
-      if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0) && ((bj.motionstate & STATIC_OR_KINEMATIC)!==0)) {
-	// Both bodies are static or kinematic. Skip.
+	if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
+	   ((bj.motionstate & STATIC_OR_KINEMATIC)!==0 || bj.isSleeping())) {
+	// Both bodies are static, kinematic or sleeping. Skip.
 	continue;
       }
 
@@ -1320,6 +1321,8 @@ CANNON.RigidBody = function(mass,shape,material){
   // Extend the EventTarget class
   CANNON.EventTarget.apply(this);
 
+  var that = this;
+
   /**
    * @property CANNON.Vec3 position
    * @memberof CANNON.RigidBody
@@ -1464,9 +1467,80 @@ CANNON.RigidBody = function(mass,shape,material){
    * @todo dispatch an event from the World instead
    */
   this.postStep = null;
-};
 
-// Motionstates:
+  /**
+   * @property bool allowSleep
+   * @memberof CANNON.RigidBody
+   * @brief If true, the body will automatically fall to sleep.
+   */
+  this.allowSleep = true;
+
+  // 0:awake, 1:sleepy, 2:sleeping
+  var sleepState = 0;
+
+  /**
+   * @fn isAwake
+   * @memberof CANNON.RigidBody
+   */
+  this.isAwake = function(){ return sleepState == 0; }
+
+  /**
+   * @fn isSleepy
+   * @memberof CANNON.RigidBody
+   */
+  this.isSleepy = function(){ return sleepState == 1; }
+
+  /**
+   * @fn isSleeping
+   * @memberof CANNON.RigidBody
+   */
+  this.isSleeping = function(){ return sleepState == 2; }
+
+  /**
+   * @property float sleepSpeedLimit
+   * @memberof CANNON.RigidBody
+   * @brief If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
+   */
+  this.sleepSpeedLimit = 0.1;
+
+  /**
+   * @property float sleepTimeLimit
+   * @memberof CANNON.RigidBody
+   * @brief If the body has been sleepy for this sleepTimeLimit milliseconds, it is considered sleeping.
+   */
+  this.sleepTimeLimit = 1000;
+  var timeLastSleepy = new Date().getTime();
+
+  /**
+   * @fn wakeUp
+   * @memberof CANNON.RigidBody
+   * @brief Wake the body up.
+   */
+  this.wakeUp = function(){
+      sleepState = 0;
+      that.dispatchEvent({type:"wakeup"});
+  };
+
+  /**
+   * @fn sleepTick
+   * @memberof CANNON.RigidBody
+   * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
+   */
+  this.sleepTick = function(){
+      if(that.allowSleep){
+	  if(sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
+	      sleepState = 1; // Sleepy
+	      timeLastSleepy = new Date().getTime();
+	      that.dispatchEvent({type:"sleepy"});
+	  } else if(sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
+	      that.wakeUp(); // Wake up
+	  } else if(sleepState==1 && (new Date().getTime() - timeLastSleepy)>that.sleepTimeLimit){
+	      sleepState = 2; // Sleeping
+	      that.dispatchEvent({type:"sleep"});
+	  }
+      }
+  };
+};
 
 /**
  * @brief A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
@@ -2964,6 +3038,9 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
  */
 CANNON.World = function(){
 
+  /// Makes bodies go to sleep when they've been inactive
+  this.allowSleep = false;
+
   /// The wall-clock time since simulation start
   this.time = 0.0;
 
@@ -3450,6 +3527,8 @@ CANNON.World.prototype.step = function(dt){
 	if(collisionMatrixGet(i,j,true)!=collisionMatrixGet(i,j,false)){
 	    bi.dispatchEvent({type:"collide", "with":bj});
 	    bj.dispatchEvent({type:"collide", "with":bi});
+	    bi.wakeUp();
+	    bj.wakeUp();
 	}
 
       var vi = bi.velocity;
@@ -3637,7 +3716,7 @@ CANNON.World.prototype.step = function(dt){
   var DYNAMIC_OR_KINEMATIC = CANNON.RigidBody.DYNAMIC | CANNON.RigidBody.KINEMATIC;
   for(var i in bodies){
     var b = bodies[i];
-    if(b.motionstate & DYNAMIC_OR_KINEMATIC){ // Only for dynamic
+    if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
       
       b.velocity.x += b.force.x * b.invMass * dt;
       b.velocity.y += b.force.y * b.invMass * dt;
@@ -3648,23 +3727,24 @@ CANNON.World.prototype.step = function(dt){
       b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
 
       // Use new velocity  - leap frog
-      
-      b.position.x += b.velocity.x * dt;
-      b.position.y += b.velocity.y * dt;
-      b.position.z += b.velocity.z * dt;
-
-      w.set(b.angularVelocity.x,
-	    b.angularVelocity.y,
-	    b.angularVelocity.z,
-	    0);
-      w.mult(b.quaternion,wq);
-
-      b.quaternion.x += dt * 0.5 * wq.x;
-      b.quaternion.y += dt * 0.5 * wq.y;
-      b.quaternion.z += dt * 0.5 * wq.z;
-      b.quaternion.w += dt * 0.5 * wq.w;
-      if(world.stepnumber % 3 === 0)
-        b.quaternion.normalizeFast();
+      if(!b.isSleeping()){
+	  b.position.x += b.velocity.x * dt;
+	  b.position.y += b.velocity.y * dt;
+	  b.position.z += b.velocity.z * dt;
+	  
+	  w.set(b.angularVelocity.x,
+		b.angularVelocity.y,
+		b.angularVelocity.z,
+		0);
+	  w.mult(b.quaternion,wq);
+	  
+	  b.quaternion.x += dt * 0.5 * wq.x;
+	  b.quaternion.y += dt * 0.5 * wq.y;
+	  b.quaternion.z += dt * 0.5 * wq.z;
+	  b.quaternion.w += dt * 0.5 * wq.w;
+	  if(world.stepnumber % 3 === 0)
+              b.quaternion.normalizeFast();
+      }
     }
     b.force.set(0,0,0);
     b.tau.set(0,0,0);
@@ -3678,6 +3758,14 @@ CANNON.World.prototype.step = function(dt){
   for(var i in bodies){
     var bi = bodies[i];
     bi.postStep && bi.postStep.call(bi);
+  }
+
+  // Sleeping update
+  if(world.allowSleep){
+      for(var i=0; i<N; i++){
+	  var bi = bodies[i];
+	  bi.sleepTick();
+      }
   }
 };
 

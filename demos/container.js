@@ -33,7 +33,7 @@ function createContainer(app,nx,ny,nz){
   // Create world
   var world = new CANNON.World();
   app.setWorld(world);
-  world.gravity.set(0,0,-60);
+  world.gravity.set(0,0,-40);
   world.broadphase = new CANNON.NaiveBroadphase();
   world.solver.iterations = 5;
 
@@ -96,7 +96,6 @@ function createContainer(app,nx,ny,nz){
 				j*2-ny*0.5 + (Math.random()-0.5)*rand,
 				1+k*2.1+h+(i+j)*0.0);
 	world.add(sphereBody);
-	  
 	app.addVisual(sphereBody);
       }
     }
