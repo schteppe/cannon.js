@@ -222,6 +222,15 @@ CANNON.RigidBody = function(mass,shape,material){
   };
 
   /**
+   * @fn sleep
+   * @memberof CANNON.RigidBody
+   * @brief Force body sleep
+   */
+  this.sleep = function(){
+      sleepState = 2;
+  };
+
+  /**
    * @fn sleepTick
    * @memberof CANNON.RigidBody
    * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
