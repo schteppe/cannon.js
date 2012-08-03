@@ -455,7 +455,7 @@ CANNON.World.prototype.step = function(dt){
     
     // Check last step stats
     var lastCollisionState = cmatrix(i,j,-1);
-    
+
     // Get collision properties
     var mu = 0.3, e = 0.2;
     var cm = this.getContactMaterial(bi.material,

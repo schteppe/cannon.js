@@ -10,6 +10,17 @@
  */
 CANNON.RigidBody = function(mass,shape,material){
 
+  // Check input
+  if(typeof(mass)!="number")
+      throw new Error("Argument 1 (mass) must be a number.");
+  if(typeof(shape)!="object" || !(shape instanceof(CANNON.Shape)))
+      throw new Error("Argument 2 (shape) must be an instance of CANNON.Shape.");
+  if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
+      throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+
+  // Extend the EventTarget class
+  CANNON.EventTarget.apply(this);
+
   /**
    * @property CANNON.Vec3 position
    * @memberof CANNON.RigidBody
@@ -143,6 +154,7 @@ CANNON.RigidBody = function(mass,shape,material){
    * @property function preStep
    * @memberof CANNON.RigidBody
    * @brief Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this CANNON.RigidBody object.
+   * @todo dispatch an event from the World instead
    */
   this.preStep = null;
 
@@ -150,6 +162,7 @@ CANNON.RigidBody = function(mass,shape,material){
    * @property function postStep
    * @memberof CANNON.RigidBody
    * @brief Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this CANNON.RigidBody object.
+   * @todo dispatch an event from the World instead
    */
   this.postStep = null;
 };

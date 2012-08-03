@@ -1309,6 +1309,16 @@ CANNON.Shape.types = {
  */
 CANNON.RigidBody = function(mass,shape,material){
 
+  // Check input
+  if(typeof(mass)!="number")
+      throw new Error("Argument 1 (mass) must be a number.");
+  if(typeof(shape)!="object" || !(shape instanceof(CANNON.Shape)))
+      throw new Error("Argument 2 (shape) must be an instance of CANNON.Shape.");
+  if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
+      throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+
+  CANNON.EventTarget.apply(this);
+
   /**
    * @property CANNON.Vec3 position
    * @memberof CANNON.RigidBody
@@ -2815,6 +2825,54 @@ CANNON.Solver.prototype.solve = function(){
 		  wzlambda[i]);
 };
 /*global CANNON:true */
+
+/**
+ * @class CANNON.EventTarget
+ * @see https://github.com/mrdoob/eventtarget.js/
+ */
+CANNON.EventTarget = function () {
+
+	var listeners = {};
+
+	this.addEventListener = function ( type, listener ) {
+
+		if ( listeners[ type ] == undefined ) {
+
+			listeners[ type ] = [];
+
+		}
+
+		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+
+			listeners[ type ].push( listener );
+
+		}
+
+	};
+
+	this.dispatchEvent = function ( event ) {
+
+		for ( var listener in listeners[ event.type ] ) {
+
+			listeners[ event.type ][ listener ]( event );
+
+		}
+
+	};
+
+	this.removeEventListener = function ( type, listener ) {
+
+		var index = listeners[ type ].indexOf( listener );
+
+		if ( index !== - 1 ) {
+
+			listeners[ type ].splice( index, 1 );
+
+		}
+
+	};
+
+};/*global CANNON:true */
 
 /**
  * @class CANNON.ObjectPool
