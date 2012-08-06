@@ -12,6 +12,8 @@ CANNON.Demo = function(){
     gy:0.0,
     gz:0.0,
     iterations:3,
+    k:1000,
+    d:3,
     scene:0,
     paused:false,
     rendermode:0,
@@ -588,9 +590,15 @@ CANNON.Demo.prototype.start = function(){
 
     // Solver folder
     var sf = that._gui.addFolder('Solver');
-      sf.add(that.settings, 'iterations',1,50).step(1).onChange(function(it){
+    sf.add(that.settings, 'iterations',1,50).step(1).onChange(function(it){
 	that._world.solver.iterations = it;
-      });
+    });
+    sf.add(that.settings, 'k',10,5000).onChange(function(k){
+	that._world.solver.setSpookParams(k,that._world.solver.d);
+    });
+    sf.add(that.settings, 'd',0,20).step(1).onChange(function(d){
+	that._world.solver.setSpookParams(that._world.solver.k,d);
+    });
 
     // Scene picker
     var scenes = {};
@@ -779,5 +787,7 @@ CANNON.Demo.prototype._buildScene = function(n){
   that.settings.gx = that._world.gravity.x+0.0;
   that.settings.gy = that._world.gravity.y+0.0;
   that.settings.gz = that._world.gravity.z+0.0;
+  that.settings.k = that._world.solver.k;
+  that.settings.d = that._world.solver.d;
   that._updategui();
 };

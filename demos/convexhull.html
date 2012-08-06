@@ -195,7 +195,8 @@
         app.setWorld(world);
         world.gravity.set(0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 10;
+        world.solver.iterations = 40;
+        world.solver.k = 5000;
       
         // ground plane
         var n = new CANNON.Vec3(0,0,1);

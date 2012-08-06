@@ -15,12 +15,6 @@ CANNON.World = function(){
   /// Number of timesteps taken since start
   this.stepnumber = 0;
 
-  /// Spring constant
-  this.spook_k = 500.0;
-
-  /// Stabilization parameter (number of timesteps until stabilization)
-  this.spook_d = 4;
-
   /// Default and last timestep sizes
   this.default_dt = 1/60;
   this.last_dt = this.default_dt;
@@ -32,19 +26,8 @@ CANNON.World = function(){
 
   var th = this;
 
-  /// Contact solver parameters, @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
-  this.spook_a = function(h){ return 4.0 / (h * (1 + 4 * th.spook_d)); };
-  this.spook_b = (4.0 * this.spook_d) / (1 + 4 * this.spook_d);
-  this.spook_eps = function(h){ return 4.0 / (h * h * th.spook_k * (1 + 4 * th.spook_d)); };
-
   /// The constraint solver
-  this.solver = new CANNON.Solver(this.spook_a(1.0/60.0),
-				  this.spook_b,
-				  this.spook_eps(1.0/60.0)*0.1,
-				  this.spook_k,
-				  this.spook_d,
-				  5,
-				  1.0/60.0);
+  this.solver = new CANNON.Solver();
 
   // User defined constraints
   this.constraints = [];
@@ -641,21 +624,23 @@ CANNON.World.prototype.step = function(dt){
 
   var bi;
   if(this.solver.n){
-    this.solver.solve();
+   
+      this.solver.h = dt;
+      this.solver.solve();
 
-    // Apply constraint velocities
-    for(var i in bodies){
-      bi = bodies[i];
-      if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
-	var b = bodies[i];
-	b.velocity.x += this.solver.vxlambda[i];
-	b.velocity.y += this.solver.vylambda[i];
-	b.velocity.z += this.solver.vzlambda[i];
-	b.angularVelocity.x += this.solver.wxlambda[i];
-	b.angularVelocity.y += this.solver.wylambda[i];
-	b.angularVelocity.z += this.solver.wzlambda[i];
+      // Apply constraint velocities
+      for(var i in bodies){
+	  bi = bodies[i];
+	  if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+	      var b = bodies[i];
+	      b.velocity.x += this.solver.vxlambda[i];
+	      b.velocity.y += this.solver.vylambda[i];
+	      b.velocity.z += this.solver.vzlambda[i];
+	      b.angularVelocity.x += this.solver.wxlambda[i];
+	      b.angularVelocity.y += this.solver.wylambda[i];
+	      b.angularVelocity.z += this.solver.wzlambda[i];
+	  }
       }
-    }
   }
 
   // Apply damping

@@ -5,8 +5,9 @@
  * @brief Constraint solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
+ * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */
-CANNON.Solver = function(a,b,eps,k,d,iter,h){
+CANNON.Solver = function(){
 
   /**
    * @property int iterations
@@ -14,50 +15,51 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
    * @todo write more about solver and iterations in the wiki
    * @memberof CANNON.Solver
    */
-  this.iterations = iter || 10;
+  this.iterations = 10;
 
   /**
    * @property float h
    * @brief Time step size. The larger timestep, the less computationally heavy will your simulation be. But watch out, you don't want your bodies to tunnel each instead of colliding!
    * @memberof CANNON.Solver
    */
-  this.h = h || 1.0/60.0;
-
-  /**
-   * @property float a
-   * @brief SPOOK parameter
-   * @memberof CANNON.Solver
-   */
-  this.a = a;
-
-  /**
-   * @property float b
-   * @brief SPOOK parameter
-   * @memberof CANNON.Solver
-   */
-  this.b = b;
-
-  /**
-   * @property float eps
-   * @brief SPOOK parameter
-   * @memberof CANNON.Solver
-   */
-  this.eps = eps;
+  this.h = 1.0/60.0;
 
   /**
    * @property float k
    * @brief SPOOK parameter, spring stiffness
    * @memberof CANNON.Solver
    */
-  this.k = k;
+  this.k = 1000;
 
   /**
    * @property float d
    * @brief SPOOK parameter, similar to damping
    * @memberof CANNON.Solver
    */
-  this.d = d;
+  this.d = 4;
 
+  /**
+   * @property float a
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
+  this.a = 0.0;
+
+  /**
+   * @property float b
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
+  this.b = 0.0;
+
+  /**
+   * @property float eps
+   * @brief SPOOK parameter
+   * @memberof CANNON.Solver
+   */
+  this.eps = 0.0;
+
+    this.setSpookParams(this.k,this.d);
   this.reset(0);
 
   /**
@@ -69,6 +71,23 @@ CANNON.Solver = function(a,b,eps,k,d,iter,h){
 
   if(this.debug)
     console.log("a:",a,"b",b,"eps",eps,"k",k,"d",d);
+};
+
+/**
+ * @fn setSpookParams
+ * @memberof CANNON.Solver
+ * @brief Sets the SPOOK parameters k and d, and updates the other parameters a, b and eps accordingly.
+ * @param float k
+ * @param float d
+ */
+CANNON.Solver.prototype.setSpookParams = function(k,d){
+    var h=this.h;
+    
+    this.k = k;
+    this.d = d;
+    this.a = 4.0 / (h * (1 + 4 * d));
+    this.b = (4.0 * d) / (1 + 4 * d);
+    this.eps = 4.0 / (h * h * k * (1 + 4 * d));
 };
 
 /**
