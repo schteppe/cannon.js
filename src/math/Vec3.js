@@ -170,6 +170,22 @@ CANNON.Vec3.prototype.norm = function(){
 };
 
 /**
+ * @fn norm2
+ * @memberof CANNON.Vec3
+ * @brief Get the squared length of the vector
+ * @return float
+ */
+CANNON.Vec3.prototype.norm2 = function(){
+  return this.dot(this);
+};
+
+CANNON.Vec3.prototype.distanceTo = function(p){
+    return Math.sqrt((p.x-this.x)*(p.x-this.x)+
+		     (p.y-this.y)*(p.y-this.y)+
+		     (p.z-this.z)*(p.z-this.z));
+};
+
+/**
  * @fn mult
  * @memberof CANNON.Vec3
  * @brief Multiply the vector with a scalar
@@ -196,6 +212,15 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
 CANNON.Vec3.prototype.dot = function(v){
   return (this.x * v.x + this.y * v.y + this.z * v.z);
 };
+
+/**
+ * @fn isZero
+ * @memberof CANNON.Vec3
+ * @return bool
+ */
+CANNON.Vec3.prototype.isZero = function(){
+  return this.x===0 && this.y===0 && this.z===0;
+}
 
 /**
  * @fn negate
@@ -262,3 +287,49 @@ CANNON.Vec3.prototype.copy = function(target){
   target.z = this.z;
   return target;
 };
+
+
+/**
+ * @fn lerp
+ * @memberof CANNON.Vec3
+ * @brief Do a linear interpolation between two vectors
+ * @param CANNON.Vec3 v
+ * @param float t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
+ * @param CANNON.Vec3 target
+ */
+CANNON.Vec3.prototype.lerp = function(v,t,target){
+  target.x = this.x + (v.x-this.x)*t;
+  target.y = this.y + (v.y-this.y)*t;
+  target.z = this.z + (v.z-this.z)*t;
+};
+
+/**
+ * @fn almostEquals
+ * @memberof CANNON.Vec3
+ * @brief Check if a vector equals is almost equal to another one.
+ * @param CANNON.Vec3 v
+ * @param float precision
+ * @return bool
+ */
+CANNON.Vec3.prototype.almostEquals = function(v,precision){
+  if(precision===undefined)
+    precision = 1e-6;
+  if(Math.abs(this.x-v.x)>precision ||
+     Math.abs(this.y-v.y)>precision ||
+     Math.abs(this.z-v.z)>precision)
+    return false;
+  return true;
+}
+
+/**
+ * Check if a vector is almost zero
+ */
+CANNON.Vec3.prototype.almostZero = function(precision){
+  if(precision===undefined)
+    precision = 1e-6;
+  if(Math.abs(this.x)>precision ||
+     Math.abs(this.y)>precision ||
+     Math.abs(this.z)>precision)
+    return false;
+  return true;
+}

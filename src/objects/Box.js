@@ -2,17 +2,67 @@
 
 /**
  * @class CANNON.Box
+ * @brief A 3d box shape.
  * @param CANNON.Vec3 halfExtents
  * @author schteppe
  * @extends CANNON.Shape
  */
 CANNON.Box = function(halfExtents){
   CANNON.Shape.call(this);
+
+  /**
+   * @property CANNON.Vec3 halfExtents
+   * @memberof CANNON.Box
+   */
   this.halfExtents = halfExtents;
   this.type = CANNON.Shape.types.BOX;
+
+  /**
+   * 
+   */
+  this.convexPolyhedronRepresentation = null;
+
+  this.updateConvexPolyhedronRepresentation();
 };
 CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
+
+/**
+ * @fn updateConvexPolyhedronRepresentation
+ * @memberof CANNON.Box
+ * @brief Updates the local convex polyhedron representation used for some collisions.
+ */
+CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
+  var sx = this.halfExtents.x;
+  var sy = this.halfExtents.y;
+  var sz = this.halfExtents.z;
+  var v = CANNON.Vec3;
+    var h = new CANNON.ConvexPolyhedron([new v(-sx,-sy,-sz),
+					 new v( sx,-sy,-sz),
+					 new v( sx, sy,-sz),
+					 new v(-sx, sy,-sz),
+					 new v(-sx,-sy, sz),
+					 new v( sx,-sy, sz),
+					 new v( sx, sy, sz),
+					 new v(-sx, sy, sz)],
+					
+					[
+					    [0,1,2,3], // -z
+					    [4,5,6,7], // +z
+					    [0,1,4,5], // -y
+					    [2,3,6,7], // +y
+					    [0,3,4,7], // -x
+					    [1,2,5,6], // +x
+					],
+					
+					[new v( 0, 0,-1),
+					 new v( 0, 0, 1),
+					 new v( 0,-1, 0),
+					 new v( 0, 1, 0),
+					 new v(-1, 0, 0),
+					 new v( 1, 0, 0)]);
+    this.convexPolyhedronRepresentation = h;
+};
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();

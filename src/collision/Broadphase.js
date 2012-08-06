@@ -3,7 +3,7 @@
 /**
  * @class CANNON.Broadphase
  * @author schteppe
- * @todo Make it a base class for broadphase implementations, and rename this one to NaiveBroadphase
+ * @brief Base class for broadphase implementations
  */
 CANNON.Broadphase = function(){
   /// The world to search for collisions in.

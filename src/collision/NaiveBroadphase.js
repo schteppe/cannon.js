@@ -29,7 +29,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 
   // Local fast access
   var types = CANNON.Shape.types;
-  var BOX_SPHERE_COMPOUND = types.SPHERE | types.BOX | types.COMPOUND,
+  var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
   PLANE = types.PLANE,
   STATIC_OR_KINEMATIC = CANNON.RigidBody.STATIC | CANNON.RigidBody.KINEMATIC;
 
@@ -41,34 +41,34 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   // Naive N^2 ftw!
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
-
+      
       var bi = bodies[i], bj = bodies[j];
       if(bi.fixed && bj.fixed)
 	continue; // We do not want to collide two static bodies
 
       var ti = bi.shape.type, tj = bj.shape.type;
 
-      if((bi.motionstate & STATIC_OR_KINEMATIC) && (bi.motionstate & STATIC_OR_KINEMATIC))
+	if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
+	   ((bj.motionstate & STATIC_OR_KINEMATIC)!==0 || bj.isSleeping())) {
+	// Both bodies are static, kinematic or sleeping. Skip.
 	continue;
+      }
 
-      // --- Box / sphere / compound collision ---
-      if((ti & BOX_SPHERE_COMPOUND) && (tj & BOX_SPHERE_COMPOUND)){
-
+      // --- Box / sphere / compound / convexpolyhedron collision ---
+      if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
 	// Rel. position
 	bj.position.vsub(bi.position,r);
 
-	var boundingRadius1 = bi.shape.boundingSphereRadius();
-	var boundingRadius2 = bj.shape.boundingSphereRadius();
-	if(r.norm()<(boundingRadius1+boundingRadius2)){
-	  pairs1.push(i);
-	  pairs2.push(j);
+	var boundingRadiusSum = bi.shape.boundingSphereRadius() + bj.shape.boundingSphereRadius();
+	if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
+	  pairs1.push(bi);
+	  pairs2.push(bj);
 	}
 
-      // --- Sphere/box/compound versus plane ---
-      } else if((ti & BOX_SPHERE_COMPOUND) && (tj & types.PLANE) || 
-		(tj & BOX_SPHERE_COMPOUND) && (ti & types.PLANE)){
-	var pi = ti==PLANE ? i : j, // Plane
-	  oi = ti!=PLANE ? i : j; // Other
+      // --- Sphere/box/compound/convexpoly versus plane ---
+      } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
+	var pi = (ti===PLANE) ? i : j, // Plane
+	  oi = (ti!==PLANE) ? i : j; // Other
 	  
 	  // Rel. position
 	bodies[oi].position.vsub(bodies[pi].position,r);
@@ -76,8 +76,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 	
 	var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
 	if(q<0.0){
-	  pairs1.push(i);
-	  pairs2.push(j);
+	  pairs1.push(bi);
+	  pairs2.push(bj);
 	}
       }
     }

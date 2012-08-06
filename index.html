@@ -28,7 +28,7 @@
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:10px; font-style: italic; }
-    .demo_img {
+    #examples img {
       max-height:150px;
       box-shadow:0px 0px 10px rgba(0,0,0,1);
       margin:10px;
@@ -59,14 +59,21 @@
     <p>
       Click on an image to show the corresponding example.
     </p>
-    <a href="demos/container.html"><img src="images/container2.png" class="demo_img" alt="Container"></a>
-    <a href="demos/stacks.html"><img src="images/stack.png" class="demo_img" alt="Different types of stacks"></a>
-    <a href="demos/singleBodyOnPlane.html"><img src="images/single.png" class="demo_img" alt="Single shape on a plane."></a>
-    <a href="demos/collisions.html"><img src="images/collisions.png" class="demo_img" alt="Pair collisions"></a> 
-    <a href="demos/friction.html"><img src="images/friction.png" class="demo_img" alt="Friction"></a> 
-    <a href="demos/compound.html"><img src="images/compound.png" class="demo_img" alt="Compound shapes"></a> 
-    <a href="demos/pile2.html"><img src="images/pile.png" class="demo_img" alt="Pile"></a> 
-    <a href="demos/motionstates.html"><img src="images/motionstates.png" class="demo_img" alt="Motion states"></a> 
+    <div id="examples">
+      <a href="demos/callbacks.html"><img src="images/callbacks.png" alt="Callbacks"></a>
+      <a href="demos/collisions.html"><img src="images/collisions.png" alt="Pair collisions"></a> 
+      <a href="demos/compound.html"><img src="images/compound.png" alt="Compound shapes"></a> 
+      <a href="demos/constraints.html"><img src="images/constraints.png" alt="Constraints"></a> 
+      <a href="demos/container.html"><img src="images/container2.png" alt="Container"></a>
+      <a href="demos/convexhull.html"><img src="images/convexhull.png" alt="Convex Polyhedra"></a>
+      <a href="demos/events.html"><img src="images/events.png" alt="Events"></a>
+      <a href="demos/friction.html"><img src="images/friction.png" alt="Friction"></a> 
+      <a href="demos/motionstates.html"><img src="images/motionstates.png" alt="Motion states"></a> 
+      <a href="demos/pile.html"><img src="images/pile.png" alt="Pile"></a> 
+      <!-- <a href="demos/singleBodyOnPlane.html"><img src="images/single.png" alt="Single shape on a plane."></a> -->
+      <a href="demos/sleep.html"><img src="images/sleep.png" alt="Sleep"></a>
+      <a href="demos/stacks.html"><img src="images/stack.png" alt="Different types of stacks"></a>
+    </div>
     
     <div class="footer">
       Read more and download the code at <a href="https://github.com/schteppe/cannon.js">github.com/schteppe/cannon.js</a>
@@ -79,9 +86,8 @@
     <ul>
       <li>Lightweight, smaller file size than ported physics engines such as <a href="https://github.com/kripken/ammo.js">ammo.js</a> and <a href="http://www.jiglibjs.org/">JigLibJS</a>.</li>
       <li>100% open source JavaScript, written from scratch.</li>
-      <li>Uses typed arrays for <a href="http://granular.cs.umu.se/browserphysics/?p=729">fast number crunching</a>.</li>
-      <li>Uses an iterative Gauss-Seidel solver to solve generic constraints.</li>
-      <li>Uses <a href="https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK</a> for time stepping.</li>
+      <li>Uses an iterative Gauss-Seidel solver to solve constraints.</li>
+      <li>Uses the <a href="https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf">SPOOK</a> stepper.</li>
     </ul>
       
   </div>

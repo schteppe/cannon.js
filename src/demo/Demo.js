@@ -12,11 +12,15 @@ CANNON.Demo = function(){
     gy:0.0,
     gz:0.0,
     iterations:3,
+    k:1000,
+    d:3,
     scene:0,
     paused:false,
     rendermode:0,
     contacts:false,  // Contact points
-    cm2contact:false // center of mass to contact points
+    cm2contact:false, // center of mass to contact points
+    normals:false, // contact normals
+    axes:false // "local" frame axes
   };
 
   this._phys_bodies = [];
@@ -38,7 +42,9 @@ CANNON.Demo = function(){
   this.timestep = 1.0/60.0;
   this.shadowsOn = true;
   this._contactmeshes = [];
+  this._normallines = [];
   this._contactlines = [];
+  this._axes = [];
 
   this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
 
@@ -160,41 +166,40 @@ CANNON.Demo.prototype.updateVisuals = function(){
     var sphere_geometry = this.three_contactpoint_geo;
     var numadded = 0;
     var old_meshes = this._contactmeshes;
+    var old_normal_meshes = this._normalmeshes;
     this._contactmeshes = [];
     for(var ci in this._world.contacts){
-      for(var k=0; k<this._world.contacts[ci].length; k++){
-	var ij = ci.split(",");
-	var i=parseInt(ij[0]), j=parseInt(ij[1]), mesh_i, mesh_j;
-	if(numadded<old_meshes.length){
-	  // Get mesh from prev timestep
-	  mesh_i = old_meshes[numadded];
-	} else {
-	  // Create new mesh
-	  mesh_i = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
-	  this._scene.add(mesh_i);
-	}
-	this._contactmeshes.push(mesh_i);
-	numadded++;
-
-	if(numadded<old_meshes.length){
-	  // Get mesh from prev timestep
-	  mesh_j = old_meshes[numadded];
-	} else {
-	  // Create new mesh
-	  mesh_j = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
-	  this._scene.add(mesh_j);
-	}
-	this._contactmeshes.push(mesh_j);
-	numadded++;
-
-	mesh_i.position.x = this._world.bodies[i].position.x + this._world.contacts[ci][k].ri.x;
-	mesh_i.position.y = this._world.bodies[i].position.y + this._world.contacts[ci][k].ri.y;
-	mesh_i.position.z = this._world.bodies[i].position.z + this._world.contacts[ci][k].ri.z;
-
-	mesh_j.position.x = this._world.bodies[j].position.x + this._world.contacts[ci][k].rj.x;
-	mesh_j.position.y = this._world.bodies[j].position.y + this._world.contacts[ci][k].rj.y;
-	mesh_j.position.z = this._world.bodies[j].position.z + this._world.contacts[ci][k].rj.z;
+      var c = this._world.contacts[ci];
+      var bi=c.bi, bj=c.bj, mesh_i, mesh_j;
+      if(numadded<old_meshes.length){
+	// Get mesh from prev timestep
+	mesh_i = old_meshes[numadded];
+      } else {
+	// Create new mesh
+	mesh_i = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
+	this._scene.add(mesh_i);
       }
+      this._contactmeshes.push(mesh_i);
+      numadded++;
+      
+      if(numadded<old_meshes.length){
+	// Get mesh from prev timestep
+	mesh_j = old_meshes[numadded];
+      } else {
+	// Create new mesh
+	mesh_j = new THREE.Mesh( sphere_geometry, this.contactDotMaterial );
+	this._scene.add(mesh_j);
+      }
+      this._contactmeshes.push(mesh_j);
+      numadded++;
+      
+      mesh_i.position.x = bi.position.x + c.ri.x;
+      mesh_i.position.y = bi.position.y + c.ri.y;
+      mesh_i.position.z = bi.position.z + c.ri.z;
+      
+      mesh_j.position.x = bj.position.x + c.rj.x;
+      mesh_j.position.y = bj.position.y + c.rj.y;
+      mesh_j.position.z = bj.position.z + c.rj.z;
     }
 
     // Remove overflowing
@@ -219,35 +224,32 @@ CANNON.Demo.prototype.updateVisuals = function(){
     this._contactlines = [];
 
     for(var ci in this._world.contacts){
-      for(var k=0; k<this._world.contacts[ci].length; k++){
-	var ij = ci.split(",");
-	var i=parseInt(ij[0]), j=parseInt(ij[1]);
-	var line, geometry;
+      var c = this._world.contacts[ci];
+      var bi=c.bi, bj=c.bj, mesh_i, mesh_j;
+      var i=bi.id, j=bj.id;
+      var line, geometry;
 
-	for(var l=0; l<2; l++){
-	  if(old_lines.length){
-	    // Get mesh from prev timestep
-	    line = old_lines.pop();
-	    geometry = line.geometry;
-	    geometry.vertices.pop();
-	    geometry.vertices.pop();
-	  } else {
-	    // Create new mesh
-	    geometry = new THREE.Geometry();
-	    geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(0,0,0)));
-	    geometry.vertices.push(new THREE.Vertex(new THREE.Vector3(1,1,1)));
-	    line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
-	    this._scene.add(line);
-	  }
-	  this._contactlines.push(line);
-	  var r = l==0 ? this._world.contacts[ci][k].ri : this._world.contacts[ci][k].rj;
-	  var pos_idx = l==0 ? i : j;
-	  line.scale.set(r.x,r.y,r.z);
-	  line.position.set(this._world.bodies[pos_idx].position.x,
-			    this._world.bodies[pos_idx].position.y,
-			    this._world.bodies[pos_idx].position.z);
+      for(var l=0; l<2; l++){
+	if(old_lines.length){
+	  // Get mesh from prev timestep
+	  line = old_lines.pop();
+	  geometry = line.geometry;
+	  geometry.vertices.pop();
+	  geometry.vertices.pop();
+	} else {
+	  // Create new mesh
+	  geometry = new THREE.Geometry();
+	  geometry.vertices.push(new THREE.Vector3(0,0,0));
+	  geometry.vertices.push(new THREE.Vector3(1,1,1));
+	  line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
 	  this._scene.add(line);
 	}
+	this._contactlines.push(line);
+	var r = l==0 ? c.ri : c.rj;
+	var b = l==0 ? bi : bj;
+	line.scale.set(r.x,r.y,r.z);
+	b.position.copy(line.position);
+	this._scene.add(line);
       }
     }
 
@@ -261,6 +263,92 @@ CANNON.Demo.prototype.updateVisuals = function(){
     for(var i=0; i<this._contactlines.length; i++)
       this._scene.remove(this._contactlines[i]);
 
+  }
+
+  // Normal lines
+  if(this.settings.normals){
+    var old_lines = this._normallines;
+    this._normallines = [];
+    for(var ci in this._world.contacts){
+      var c = this._world.contacts[ci];
+      var bi=c.bi, bj=c.bj, mesh;
+      var i=bi.id, j=bj.id;
+      var line, geometry;
+      if(old_lines.length){
+	// Get mesh from prev timestep
+	line = old_lines.pop();
+	geometry = line.geometry;
+	geometry.vertices.pop();
+	geometry.vertices.pop();
+      } else {
+	// Create new mesh
+	geometry = new THREE.Geometry();
+	geometry.vertices.push(new THREE.Vector3(0,0,0));
+	geometry.vertices.push(new THREE.Vector3(1,1,1));
+	line = new THREE.Line( geometry, new THREE.LineBasicMaterial({color:0x00ff00}));
+	this._scene.add(line);
+      }
+      this._normallines.push(line);
+      var n = c.ni;
+      var b = bi;
+      line.scale.set(n.x,n.y,n.z);
+      b.position.copy(line.position);
+      c.ri.vadd(line.position,line.position);
+      this._scene.add(line);
+    }
+
+    // Remove overflowing
+    while(old_lines.length)
+      this._scene.remove(old_lines.pop());
+  } else if(this._normallines.length){
+    // Remove all contact lines
+    for(var i=0; i<this._normallines.length; i++)
+      this._scene.remove(this._normallines[i]);
+  }
+
+  // Frame axes for each body
+  if(this.settings.axes){
+    var old_axes = this._axes;
+    this._axes = [];
+    for(var bi in this._world.bodies){
+      var b = this._world.bodies[bi], mesh;
+      if(old_axes.length){
+	// Get mesh from prev timestep
+	mesh = old_axes.pop();
+      } else {
+	// Create new mesh
+	mesh = new THREE.Object3D();
+	mesh.useQuaternion = true;
+	var origin = new THREE.Vector3(0,0,0);
+	var gX = new THREE.Geometry();
+	var gY = new THREE.Geometry();
+	var gZ = new THREE.Geometry();
+	gX.vertices.push(origin);
+	gY.vertices.push(origin);
+	gZ.vertices.push(origin);
+	gX.vertices.push(new THREE.Vector3(1,0,0));
+	gY.vertices.push(new THREE.Vector3(0,1,0));
+	gZ.vertices.push(new THREE.Vector3(0,0,1));
+	var lineX = new THREE.Line( gX, new THREE.LineBasicMaterial({color:0xff0000}));
+	var lineY = new THREE.Line( gY, new THREE.LineBasicMaterial({color:0x00ff00}));
+	var lineZ = new THREE.Line( gZ, new THREE.LineBasicMaterial({color:0x0000ff}));
+	mesh.add(lineX);
+	mesh.add(lineY);
+	mesh.add(lineZ);
+      }
+      b.position.copy(mesh.position);
+      b.quaternion.copy(mesh.quaternion);
+      this._axes.push(mesh);
+      this._scene.add(mesh);
+    }
+
+    // Remove overflowing
+    while(old_axes.length)
+      this._scene.remove(old_axes.pop());
+  } else if(this._axes.length){
+    // Remove all contact lines
+    for(var i=0; i<this._axes.length; i++)
+      this._scene.remove(this._axes[i]);
   }
 };
 
@@ -389,8 +477,8 @@ CANNON.Demo.prototype.start = function(){
   function animate(){
     requestAnimationFrame( animate );
     if(!that.paused){
-      updatePhysics();
       that.updateVisuals();
+      updatePhysics();
     }
     render();
     stats.update();
@@ -434,15 +522,33 @@ CANNON.Demo.prototype.start = function(){
 	case 32: // Space - restart
 	that.restartCurrentScene();
 	break;
+
 	case 112: // p
 	that.paused = !that.paused;
 	that.settings.paused = that.paused;
 	that._updategui();
 	break;
+
 	case 115: // s
 	updatePhysics();
 	that.updateVisuals();
 	break;
+
+	case 49:
+	case 50:
+	case 51:
+	case 52:
+	case 53:
+	case 54:
+	case 55:
+	case 56:
+	case 57:
+	  // Change scene
+	  // Only for numbers 1-9 and if no input field is active
+	  if(that._scenes.length > e.keyCode-49 && !document.activeElement.localName.match(/input/))
+	    that._changeScene(e.keyCode-49);
+	break;
+	
 	}
       }
     });
@@ -458,9 +564,9 @@ CANNON.Demo.prototype.start = function(){
     rf.add(that.settings,'contacts').onChange(function(contacts){
 	// Do nothing... contacts are dynamically added/removed for each frame
       });
-    rf.add(that.settings,'cm2contact').onChange(function(cm2contact){
-	
-      });
+    rf.add(that.settings,'cm2contact').onChange(function(cm2contact){});
+    rf.add(that.settings,'normals').onChange(function(normals){});
+    rf.add(that.settings,'axes').onChange(function(axes){});
 
     // World folder
     var wf = that._gui.addFolder('World');
@@ -468,37 +574,48 @@ CANNON.Demo.prototype.start = function(){
     wf.add(that.settings,'paused').onChange(function(p){
 	that.paused = p;
       });
-    wf.add(that.settings, 'gx').step(1).onChange(function(gx){
+      var maxg = 100;
+    wf.add(that.settings, 'gx',-maxg,maxg).onChange(function(gx){
 	if(!isNaN(gx))
 	  that._world.gravity.set(gx,that.settings.gy,that.settings.gz);
       });
-    wf.add(that.settings, 'gy').step(1).onChange(function(gy){
+    wf.add(that.settings, 'gy',-maxg,maxg).onChange(function(gy){
 	if(!isNaN(gy))
 	  that._world.gravity.set(that.settings.gx,gy,that.settings.gz);
       });
-    wf.add(that.settings, 'gz').step(1).onChange(function(gz){
+    wf.add(that.settings, 'gz',-maxg,maxg).onChange(function(gz){
 	if(!isNaN(gz))
 	  that._world.gravity.set(that.settings.gx,that.settings.gy,gz);
       });
 
     // Solver folder
     var sf = that._gui.addFolder('Solver');
-    sf.add(that.settings, 'iterations').min(1).step(1).onChange(function(it){
+    sf.add(that.settings, 'iterations',1,50).step(1).onChange(function(it){
 	that._world.solver.iterations = it;
-      });
+    });
+    sf.add(that.settings, 'k',10,5000).onChange(function(k){
+	that._world.solver.setSpookParams(k,that._world.solver.d);
+    });
+    sf.add(that.settings, 'd',0,20).step(1).onChange(function(d){
+	that._world.solver.setSpookParams(that._world.solver.k,d);
+    });
 
     // Scene picker
     var scenes = {};
     for(var i=0; i<that._scenes.length; i++)
       scenes[(i+1)+'. Scene '+(i+1)] = i;
     that._gui.add(that.settings,'scene',scenes).onChange(function(sceneNumber){
-	that.paused = false;
-	that.settings.paused = false;
-	that._updategui();
-	that._buildScene(sceneNumber);
+	that._changeScene(sceneNumber);
       });
   }
 };
+
+CANNON.Demo.prototype._changeScene = function(n){
+  this.paused = false;
+  this.settings.paused = false;
+  this._updategui();
+  this._buildScene(n);
+}
 
 /**
  * @private
@@ -535,9 +652,9 @@ CANNON.Demo.prototype._buildScene = function(n){
       mesh = new THREE.Object3D();
       var submesh = new THREE.Object3D();
       var subsubmesh = new THREE.Object3D();
-
       var ground = new THREE.Mesh( geometry, that.currentMaterial );
       ground.scale = new THREE.Vector3(100,100,100);
+      ground.rotation.x = Math.PI/2;
       subsubmesh.add(ground);
       var n = shape.normal.copy();
 
@@ -558,6 +675,17 @@ CANNON.Demo.prototype._buildScene = function(n){
     case CANNON.Shape.types.BOX:
       var box_geometry = new THREE.CubeGeometry( shape.halfExtents.x*2, shape.halfExtents.y*2, shape.halfExtents.z*2 );
       mesh = new THREE.Mesh( box_geometry, that.currentMaterial );
+      break;
+
+    case CANNON.Shape.types.CONVEXPOLYHEDRON:
+      var verts = [];
+      for(var i=0; i<shape.vertices.length; i++){
+	verts.push(new THREE.Vector3(shape.vertices[i].x,
+				     shape.vertices[i].y,
+				     shape.vertices[i].z));
+      }
+      var geo = new THREE.ConvexGeometry( verts );
+      mesh = new THREE.Mesh( geo, that.currentMaterial );
       break;
 
     case CANNON.Shape.types.COMPOUND:
@@ -659,5 +787,7 @@ CANNON.Demo.prototype._buildScene = function(n){
   that.settings.gx = that._world.gravity.x+0.0;
   that.settings.gy = that._world.gravity.y+0.0;
   that.settings.gz = that._world.gravity.z+0.0;
+  that.settings.k = that._world.solver.k;
+  that.settings.d = that._world.solver.d;
   that._updategui();
 };

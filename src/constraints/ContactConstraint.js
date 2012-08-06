@@ -46,8 +46,8 @@ CANNON.ContactConstraint.prototype.update = function(){
   for(var i in bi.contacts){
     for(var j in bj.contacts){
       if(bi.contacts[i].to.id==bj.id && bj.contacts[j].to.id==bi.id){
-	var ri = = bi.contacts[i].r,
-	  rj = = bj.contacts[j].r,
+	var ri = bi.contacts[i].r,
+	  rj = bj.contacts[j].r,
 	  ni = bi.contacts[i].n; // normals should be the same anyways
 
 	n.tangents(tangents[0],tangents[1]);

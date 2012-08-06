@@ -12,10 +12,11 @@ CANNON.Mat3 = function(elements){
    * @memberof CANNON.Mat3
    * @brief A vector of length 9, containing all matrix elements
    */
-  if(elements)
+  if(elements){
     this.elements = new Float32Array(elements);
-  else
+  } else {
     this.elements = new Float32Array(9);
+  }
 };
 
 /**
@@ -47,14 +48,17 @@ CANNON.Mat3.prototype.identity = function(){
  * @param CANNON.Vec3 target Optional, target to save the result in.
  */
 CANNON.Mat3.prototype.vmult = function(v,target){
-  if(target===undefined)
+  if(target===undefined){
     target = new CANNON.Vec3();
+  }
 
   var vec = [v.x, v.y, v.z];
   var targetvec = [0, 0, 0];
-  for(var i=0; i<3; i++)
-    for(var j=0; j<3; j++)
+  for(var i=0; i<3; i++){
+    for(var j=0; j<3; j++){
       targetvec[i] += this.elements[i+3*j]*vec[i];
+    }
+  }
 
   target.x = targetvec[0];
   target.y = targetvec[1];
@@ -69,8 +73,9 @@ CANNON.Mat3.prototype.vmult = function(v,target){
  * @param float s
  */
 CANNON.Mat3.prototype.smult = function(s){
-  for(var i=0; i<this.elements.length; i++)
+  for(var i=0; i<this.elements.length; i++){
     this.elements[i] *= s;
+  }
 };
 
 /**
@@ -82,13 +87,15 @@ CANNON.Mat3.prototype.smult = function(s){
  */
 CANNON.Mat3.prototype.mmult = function(m){
   var r = new CANNON.Mat3();
-  for(var i=0; i<3; i++)
+  for(var i=0; i<3; i++){
     for(var j=0; j<3; j++){
       var sum = 0.0;
-      for(var k=0; k<3; k++)
+      for(var k=0; k<3; k++){
 	sum += this.elements[i+k] * m.elements[k+j*3];
-      r.elements[i+j*3] = sum; 
+      }
+      r.elements[i+j*3] = sum;
     }
+  }
   return r;
 };
 
@@ -108,26 +115,25 @@ CANNON.Mat3.prototype.solve = function(b,target){
   var nr = 3; // num rows
   var nc = 4; // num cols
   var eqns = new Float32Array(nr*nc);
-  for(var i=0; i<3; i++)
-    for(var j=0; j<3; j++)
+  var i,j;
+  for(i=0; i<3; i++){
+    for(j=0; j<3; j++){
       eqns[i+nc*j] = this.elements[i+3*j];
+    }
+  }
   eqns[3+4*0] = b.x;
   eqns[3+4*1] = b.y;
   eqns[3+4*2] = b.z;
   
   // Compute right upper triangular version of the matrix - Gauss elimination
-  var n = 3;
-  var k = n;
-  var i;
-  var np;
+  var n = 3, k = n, np;
   var kp = 4; // num rows
-  var p;
-  var els;
+  var p, els;
   do {
     i = k - n;
-    if (eqns[i+nc*i] == 0) {
+    if (eqns[i+nc*i] === 0) {
       for (j = i + 1; j < k; j++) {
-	if (eqns[i+nc*j] != 0) {
+	if (eqns[i+nc*j] !== 0) {
 	  els = [];
 	  np = kp;
 	  do {
@@ -141,7 +147,7 @@ CANNON.Mat3.prototype.solve = function(b,target){
 	}
       }
     }
-    if (eqns[i+nc*i] != 0) {
+    if (eqns[i+nc*i] !== 0) {
       for (j = i + 1; j < k; j++) {
 	var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
 	els = [];
@@ -161,9 +167,9 @@ CANNON.Mat3.prototype.solve = function(b,target){
   target.y = (eqns[1*nc+3] - eqns[1*nc+2]*target.z) / eqns[1*nc+1];
   target.x = (eqns[0*nc+3] - eqns[0*nc+2]*target.z - eqns[0*nc+1]*target.y) / eqns[0*nc+0];
 
-  if(isNaN(target.x) || isNaN(target.y) || isNaN(target.z) ||
-     target.x==Infinity || target.y==Infinity || target.z==Infinity)
+  if(isNaN(target.x) || isNaN(target.y) || isNaN(target.z) || target.x===Infinity || target.y===Infinity || target.z===Infinity){
     throw "Could not solve equation! Got x=["+target.toString()+"], b=["+b.toString()+"], A=["+this.toString()+"]";
+  }
 
   return target;
 };
@@ -178,9 +184,9 @@ CANNON.Mat3.prototype.solve = function(b,target){
  * @return float
  */
 CANNON.Mat3.prototype.e = function(i,j,value){
-  if(value==undefined)
+  if(value===undefined){
     return this.elements[i+3*j];
-  else {
+  } else {
     // Set value
     this.elements[i+3*j] = value;
   }
@@ -194,9 +200,10 @@ CANNON.Mat3.prototype.e = function(i,j,value){
  * @return CANNON.Mat3
  */
 CANNON.Mat3.prototype.copy = function(target){
-  target = target || new Mat3();
-  for(var i=0; i<this.elements.length; i++)
+  target = target || new CANNON.Mat3();
+  for(var i=0; i<this.elements.length; i++){
     target.elements[i] = this.elements[i];
+  }
   return target;
 };
 
@@ -209,7 +216,8 @@ CANNON.Mat3.prototype.copy = function(target){
 CANNON.Mat3.prototype.toString = function(){
   var r = "";
   var sep = ",";
-  for(var i=0; i<9; i++)
+  for(var i=0; i<9; i++){
     r += this.elements[i] + sep;
+  }
   return r;
 };
