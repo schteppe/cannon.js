@@ -9,12 +9,9 @@
     <script src="../../libs/Three.js"></script>
     <script src="../../build/cannon.js"></script>
     <script>
-    
-      // Cannon.js things
-      var world, mass, body, shape, timeStep=1/60;
-  
-      // Three.js things
-      var camera, scene, renderer, geometry, material, mesh;
+
+      var world, mass, body, shape, timeStep=1/60,
+         camera, scene, renderer, geometry, material, mesh;
       
       initThree();
       initCannon();
