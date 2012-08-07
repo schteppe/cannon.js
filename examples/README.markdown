@@ -1,6 +1,10 @@
-# Examples / How to render a Cannon.js scene
+# How to render a Cannon.js scene
 
-These examples demonstrates how to visualize a Cannon.js physics scene using commonly used 3D libraries. If you are looking for more in-depth examples on how to use Cannon.js, go to the [demos](https://github.com/schteppe/cannon.js/tree/master/demos) instead.
+You've learnt how to render really cool 3D in the browser, and now you want your mesh to move. You add your favorite physics engine (cannon.js) to your project, and then... what?
+
+These examples demonstrates how to render a Cannon.js physics scene using commonly used 3D libraries. The main problem is to make a mesh move according to a ```CANNON.RigidBody``` by synchronizing coordinates (position and orientation).
+
+If you are looking for more in-depth examples on how to use Cannon.js, go to the [demos](https://github.com/schteppe/cannon.js/tree/master/demos) instead.
 
 ### Three.js
 
