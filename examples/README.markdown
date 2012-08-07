@@ -12,13 +12,13 @@ One of the most convenient ways of using Cannon.js with Three.js is by enabling 
 mesh.useQuaternion = true;
 ```
 
-Then it gets really simple to copy over position+orientation data to Three:
+Then it gets really simple to copy over position+orientation data to the Three.js mesh:
 ```javascript
 rigidbody.position.copy(mesh.position);
 rigidbody.quaternion.copy(mesh.quaternion);
 ```
 
-See threejs.html for a full example.
+See [threejs.html](https://github.com/schteppe/cannon.js/blob/master/examples/threejs.html) for a full example.
 
 ### SceneJS
 
@@ -45,4 +45,4 @@ The update of these nodes can be done like this:
 scene.findNode("my-translate").set("xyz",{ x:0.0, y:0.0, z:0.0});
 scene.findNode("my-quaternion").set("rotation",{ x:0.0, y:0.0, z:0.0, angle:0.0 });
 ```
-The full example, and how to get the axis/angle representation of the CANNON.Quaternion, can be found in scenejs.html.
+The full example, and how to get the axis/angle representation of the ```CANNON.Quaternion```, can be found in [scenejs.html](https://github.com/schteppe/cannon.js/blob/master/examples/scenejs.html).
