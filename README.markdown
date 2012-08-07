@@ -1,22 +1,18 @@
-# cannon.js - a lightweight 3D physics engine for the web
+# cannon.js
 
-<a href="http://schteppe.github.com/cannon.js/demos/container.html"><img src="http://schteppe.github.com/cannon.js/images/container2.png" height="150" alt="Container"></a>
-<a href="http://schteppe.github.com/cannon.js/demos/stacks.html"><img src="http://schteppe.github.com/cannon.js/images/stack.png" height="150" alt="Stacks"></a>
-<a href="http://schteppe.github.com/cannon.js/demos/pile2.html"><img src="http://schteppe.github.com/cannon.js/images/pile.png" height="150" alt="Pile"></a>
-<a href="http://schteppe.github.com/cannon.js/demos/compound.html"><img src="http://schteppe.github.com/cannon.js/images/compound.png" height="150" alt="Compound"></a>
-
-<a href="http://schteppe.github.com/cannon.js"> All demos >></a>
-
+### Lightweight 3D physics for the web
 Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https://github.com/kripken/ammo.js), and driven by the fact that the web lacks a physics engine, here comes cannon.js.
 
-## Features
+[Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/doc/) - [NPM package](https://npmjs.org/package/cannon)
 
-* Lightweight - less than 50Kb compressed. For comparison: [ammo.js](https://github.com/kripken/ammo.js/) uses 1.12Mb when compressed.
-* 100% open source JavaScript, written from scratch
-* Uses an iterative Gauss-Seidel solver to solve generic constraints
-* Uses [SPOOK](https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf) for time stepping
+### Usage 
+Download [the library](https://raw.github.com/schteppe/cannon.js/master/build/cannon.js) and include it in your html. Alternatively, build the library yourself (see [Makefile](https://github.com/schteppe/cannon.js/blob/master/Makefile)).
 
-## Example
+```html
+<script src="cannon.js"></script>
+```
+
+The code below creates a sphere on a plane, steps the simulation, and prints the sphere simulation to the console.
 
 ```javascript
 // Setup our world
@@ -44,32 +40,27 @@ setInterval(function(){
 }, 1000.0/60.0);
 ```
 
-## Documentation
+If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](https://github.com/schteppe/cannon.js/tree/master/examples).
 
-Here is a [live version](http://schteppe.github.com/cannon.js/doc/).
+### Change log
+**0.4.3** Current
+ * Added ```Ray```. Basic hit testing for ```ConvexPolyhedra```.
+ * ```RigidBody``` now dispatches the following events: ```"collide"```, ```"sleep"```, ```"sleepy"```, ```"wakeup"```
+ * Added ```Solver.setSpookParams(k,d)``` and removed SPOOK param things from ```World```.
+ * Sleep functionality for ```RigidBody```
 
-# Developer instructions
+**0.4.2** 2012-08-06
+ * Code seem stable enough to start a change log.
 
-## Todo
 
+### Todo
+Ideas and todo's for developers. The todo's are marked with ```@todo``` in the code.
 * Collision/contacts between convexhulls and sphere
 * Contact reduction
-* Better collision detection - spatial hashing, octrees or similar (Continous?)
-* Rename the current Solver class to GSSolver, and make the Solver class to a base class
-* ParallelSolver that uses Web Workers - splits the system into islands and then adds to subsolvers (may be any other solver) - see http://www.html5rocks.com/en/tutorials/workers/basics/
-* Caching of bounding sphere radius
+* Improved collision detection - spatial hashing, octrees or similar (Continous?)
+* Figure out good Solver base class API - make current Solver to a subclass
 * Better class structure for Constraints, Jacobian entries etc
+* ParallelSolver that uses Web Workers - splits system into independent parts and solves them in parallel - see http://www.html5rocks.com/en/tutorials/workers/basics/
+* Caching of bounding sphere radius
 * Shapes (based on ConvexHull is enough to begin with): Cone, cylinder
-* Ray casting
-* Constraints: PointToPoint, etc etc
-* First-contact impulses
-* Search for "@todo" if you want to find more things to do
-
-## Getting started
-
-Download Node.js and NPM for your platform and make sure they work. When you've cloned cannon.js, run <code>npm install -d</code> in the main cannon.js directory and the tools you need will be installed (jshint, uglify-js, nodeunit etc).
-When you've changed something in the cannon.js source, you must build to see the changes in the demos. See below.
-
-## Building
-
-When a new version of the software has been made, make a new build. Run <code>make</code> in the main directory to do this. Remember to update VERSION. The software versioning should follow the Semantic Version Specification: http://semver.org/
+* First-contact impulse forces
