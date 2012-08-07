@@ -3,7 +3,7 @@
 ### Lightweight 3D physics for the web
 Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https://github.com/kripken/ammo.js), and driven by the fact that the web lacks a physics engine, here comes cannon.js.
 
-[Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/doc/) - [NPM package](https://npmjs.org/package/cannon)
+[Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/doc/) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon)
 
 ### Usage 
 Download [the library](https://raw.github.com/schteppe/cannon.js/master/build/cannon.js) and include it in your html. Alternatively, build the library yourself (see [Makefile](https://github.com/schteppe/cannon.js/blob/master/Makefile)).
@@ -44,6 +44,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.4.3** Current
+ * Added ```Quaternion.toAxisAngle()```
  * Added ```Ray```. Basic hit testing for ```ConvexPolyhedra```.
  * ```RigidBody``` now dispatches the following events: ```"collide"```, ```"sleep"```, ```"sleepy"```, ```"wakeup"```
  * Added ```Solver.setSpookParams(k,d)``` and removed SPOOK param things from ```World```.
