@@ -41,6 +41,8 @@ SceneJS has got support for quaternions, too. When setting up your scene, make s
 ...
 ```
 The update of these nodes can be done like this:
+```
 scene.findNode("my-translate").set("xyz",{ x:0.0, y:0.0, z:0.0});
 scene.findNode("my-quaternion").set("rotation",{ x:0.0, y:0.0, z:0.0, angle:0.0 });
+```
 The full example, and how to get the axis/angle representation of the CANNON.Quaternion, can be found in scenejs.html.
