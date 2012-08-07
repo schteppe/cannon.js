@@ -1,12 +1,10 @@
-# Examples
+# Examples / How to render a Cannon.js scene
 
-These examples demonstrates how to visualize a Cannon.js physics scene using commonly used 3D libraries.
-
-If you are looking for more in-depth examples on how to use Cannon.js, go to the [demos](https://github.com/schteppe/cannon.js/tree/master/demos) instead.
+These examples demonstrates how to visualize a Cannon.js physics scene using commonly used 3D libraries. If you are looking for more in-depth examples on how to use Cannon.js, go to the [demos](https://github.com/schteppe/cannon.js/tree/master/demos) instead.
 
 ### Three.js
 
-One of the most convenient ways of using Cannon.js with Three.js is by enabling use of quaternions:
+One of the most convenient ways of using Cannon.js with [Three.js](https://github.com/mrdoob/three.js/) is by enabling use of quaternions:
 
 ```javascript
 mesh.useQuaternion = true;
@@ -22,7 +20,7 @@ See [threejs.html](https://github.com/schteppe/cannon.js/blob/master/examples/th
 
 ### SceneJS
 
-SceneJS has got support for quaternions, too. When setting up your scene, make sure to create a translation node and a quaternion node for your mesh.
+[SceneJS](http://scenejs.org/) [supports quaternions](http://scenejs.wikispaces.com/quaternion), too. When setting up your scene, make sure to create a translation node and a quaternion node for your mesh.
 
 ```
 ...
