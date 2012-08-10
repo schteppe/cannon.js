@@ -634,9 +634,11 @@ CANNON.World.prototype.step = function(dt){
 	      b.velocity.x += this.solver.vxlambda[i];
 	      b.velocity.y += this.solver.vylambda[i];
 	      b.velocity.z += this.solver.vzlambda[i];
-	      b.angularVelocity.x += this.solver.wxlambda[i];
-	      b.angularVelocity.y += this.solver.wylambda[i];
-	      b.angularVelocity.z += this.solver.wzlambda[i];
+	      if(b.angularVelocity){
+	        b.angularVelocity.x += this.solver.wxlambda[i];
+	        b.angularVelocity.y += this.solver.wylambda[i];
+	        b.angularVelocity.z += this.solver.wzlambda[i];
+	      }
 	  }
       }
   }

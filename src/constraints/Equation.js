@@ -53,13 +53,15 @@ CANNON.Equation.prototype.setDefaultMassProps = function(){
     this.iM1.set(bi.invMass,
 		 bi.invMass,
 		 bi.invMass);
-    bi.invInertia.copy(this.iM2);
+    if(bi.invInertia)
+      bi.invInertia.copy(this.iM2);
   }
   if(bj){
     this.iM3.set(bj.invMass,
 		 bj.invMass,
 		 bj.invMass);
-    bj.invInertia.copy(this.iM4);
+    if(bj.invInertia)
+      bj.invInertia.copy(this.iM4);
   }
 };
 
@@ -67,10 +69,10 @@ CANNON.Equation.prototype.setDefaultForce = function(){
   var bi = this.body_i, bj = this.body_j;
   if(bi){
     bi.force.copy(this.f1);
-    bi.tau.copy(this.f2);
+    if(bi.tau) bi.tau.copy(this.f2);
   }
   if(bj){
     bj.force.copy(this.f3);
-    bj.tau.copy(this.f4);
+    if(bj.tau) bj.tau.copy(this.f4);
   }
 };

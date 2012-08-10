@@ -48,7 +48,7 @@ CANNON.Demo = function(){
   this._axes = [];
 
   this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
-  this.particleGeo = new THREE.SphereGeometry( 1, 8, 8 );
+  this.particleGeo = new THREE.SphereGeometry( 1, 6, 6 );
 
   // Material
   this.materialColor = 0xdddddd;
