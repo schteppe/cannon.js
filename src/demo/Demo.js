@@ -48,7 +48,7 @@ CANNON.Demo = function(){
   this._axes = [];
 
   this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
-  this.particleGeo = new THREE.SphereGeometry( 1, 6, 6 );
+  this.particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
 
   // Material
   this.materialColor = 0xdddddd;
@@ -57,6 +57,7 @@ CANNON.Demo = function(){
   this.wireframeMaterial = new THREE.MeshBasicMaterial( { color: this.materialColor, wireframe:true } );
   this.currentMaterial = this.solidMaterial;
   this.contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+  this.particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
 
   this.renderModes = {
     NORMAL:0,
@@ -762,7 +763,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 	if(body instanceof CANNON.RigidBody)
           mesh = shape2mesh(body.shape);
 	else if(body instanceof CANNON.Particle){
-	  mesh = new THREE.Mesh( that.particleGeo, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) );
+	  mesh = new THREE.Mesh( that.particleGeo, that.particleMaterial );
 	  mesh.scale.set(that.settings.particleSize,
 			 that.settings.particleSize,
 			 that.settings.particleSize);
