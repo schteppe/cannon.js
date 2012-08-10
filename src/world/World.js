@@ -6,7 +6,7 @@
  */
 CANNON.World = function(){
 
-    CANNON.EventTarget.apply(this);
+  CANNON.EventTarget.apply(this);
 
   /// Makes bodies go to sleep when they've been inactive
   this.allowSleep = false;

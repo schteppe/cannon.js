@@ -44,6 +44,8 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.4.3** Current
+ * ```World``` now dispatches "preStep" and "postStep" events.
+ * Introduced ```Body``` and ```Particle```. New inheritance: ```Body``` -> ```Particle``` -> ```RigidBody```.
  * Added ```Quaternion.toAxisAngle()```
  * Added ```Ray```. Basic hit testing for ```ConvexPolyhedra```.
  * ```RigidBody``` now dispatches the following events: ```"collide"```, ```"sleep"```, ```"sleepy"```, ```"wakeup"```
