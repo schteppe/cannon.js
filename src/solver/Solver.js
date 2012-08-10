@@ -59,7 +59,7 @@ CANNON.Solver = function(){
    */
   this.eps = 0.0;
 
-    this.setSpookParams(this.k,this.d);
+  this.setSpookParams(this.k,this.d);
   this.reset(0);
 
   /**
@@ -70,7 +70,7 @@ CANNON.Solver = function(){
   this.debug = false;
 
   if(this.debug)
-    console.log("a:",a,"b",b,"eps",eps,"k",k,"d",d);
+    console.log("a:",this.a,"b",this.b,"eps",this.eps,"k",this.k,"d",this.d);
 };
 
 /**
@@ -140,8 +140,8 @@ CANNON.Solver.prototype.reset = function(numbodies){
  * @param array Fext External forces (12 elements)
  * @param float lower Lower constraint force bound
  * @param float upper Upper constraint force bound
- * @param int body_i The first rigid body index
- * @param int body_j The second rigid body index - set to -1 if none
+ * @param int body_i The first body index
+ * @param int body_j The second body index - set to -1 if none
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */
 CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,upper,body_i,body_j){

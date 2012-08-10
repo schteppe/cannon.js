@@ -9,7 +9,7 @@
   --- Warning: work in progress! ---
   Quickly copy/pasted and javascriptified from my C++ version.
   Ideas: 
-  * Create class SPHParticle that inherits from Body or even Particle (btw, RigidBody should inherit from Body)
+  * Create class SPHParticle that inherits from Body or even Particle
   * Possibly create an utilities class for SPH too, or perhaps this should be handled by the World?
   
 */

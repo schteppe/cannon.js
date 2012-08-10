@@ -6,6 +6,8 @@
  */
 CANNON.World = function(){
 
+    CANNON.EventTarget.apply(this);
+
   /// Makes bodies go to sleep when they've been inactive
   this.allowSleep = false;
 
@@ -197,7 +199,7 @@ CANNON.World.prototype.numObjects = function(){
  * @fn clearCollisionState
  * @memberof CANNON.World
  * @brief Clear the contact state for a body.
- * @param CANNON.RigidBody body
+ * @param CANNON.Body body
  */
 CANNON.World.prototype.clearCollisionState = function(body){
   var n = this.numObjects();
@@ -213,24 +215,24 @@ CANNON.World.prototype.clearCollisionState = function(body){
  * @fn add
  * @memberof CANNON.World
  * @brief Add a rigid body to the simulation.
- * @param CANNON.RigidBody body
+ * @param CANNON.Body body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
 CANNON.World.prototype.add = function(body){
-  if(body instanceof CANNON.RigidBody){
     var n = this.numObjects();
     this.bodies.push(body);
     body.id = this.id();
     body.world = this;
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
-    body.angularVelocity.copy(body.initAngularVelocity);
-    body.quaternion.copy(body.initQuaternion);
+    if(body instanceof CANNON.RigidBody){
+	body.angularVelocity.copy(body.initAngularVelocity);
+	body.quaternion.copy(body.initQuaternion);
+    }
     
     // Create collision matrix
     this.collision_matrix = new Int16Array((n+1)*(n+1));
-  }
 };
 
 /**
@@ -260,10 +262,9 @@ CANNON.World.prototype.id = function(){
  * @fn remove
  * @memberof CANNON.World
  * @brief Remove a rigid body from the simulation.
- * @param CANNON.RigidBody body
+ * @param CANNON.Body body
  */
 CANNON.World.prototype.remove = function(body){
-  if(body instanceof CANNON.RigidBody){
     body.world = null;
     var n = this.numObjects();
     var bodies = this.bodies;
@@ -273,7 +274,6 @@ CANNON.World.prototype.remove = function(body){
 
     // Reset collision matrix
     this.collision_matrix = new Int16Array((n-1)*(n-1));
-  }
 };
 
 /**
@@ -361,9 +361,9 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Add gravity to all objects
-  for(var i in bodies){
+  for(var i=0; i<N; i++){
     var bi = bodies[i];
-    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+    if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
       var f = bodies[i].force, m = bodies[i].mass;
       f.x += world.gravity.x * m;
       f.y += world.gravity.y * m;
@@ -413,8 +413,6 @@ CANNON.World.prototype.step = function(dt){
   function collisionMatrixTick(){
       for(var i=0; i<bodies.length; i++){
 	  for(var j=0; j<i; j++){
-	      //cmatrix(i,j,-1, cmatrix(i,j,0));
-	      //cmatrix(i,j,0,0);
 	      var currentState = collisionMatrixGet(i,j,true);
 	      collisionMatrixSet(i,j,currentState,false);
 	      collisionMatrixSet(i,j,0,true);
@@ -629,9 +627,9 @@ CANNON.World.prototype.step = function(dt){
       this.solver.solve();
 
       // Apply constraint velocities
-      for(var i in bodies){
+      for(var i=0; i<N; i++){
 	  bi = bodies[i];
-	  if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+	  if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
 	      var b = bodies[i];
 	      b.velocity.x += this.solver.vxlambda[i];
 	      b.velocity.y += this.solver.vylambda[i];
@@ -646,13 +644,15 @@ CANNON.World.prototype.step = function(dt){
   // Apply damping
   for(var i in bodies){
     bi = bodies[i];
-    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+    if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
       var ld = 1.0 - bi.linearDamping;
       var ad = 1.0 - bi.angularDamping;
       bi.velocity.mult(ld,bi.velocity);
       bi.angularVelocity.mult(ad,bi.angularVelocity);
     }
   }
+
+  that.dispatchEvent({type:"preStep"});
 
   // Invoke pre-step callbacks
   for(var i in bodies){
@@ -666,8 +666,8 @@ CANNON.World.prototype.step = function(dt){
   var q = temp.step_q; 
   var w = temp.step_w;
   var wq = temp.step_wq;
-  var DYNAMIC_OR_KINEMATIC = CANNON.RigidBody.DYNAMIC | CANNON.RigidBody.KINEMATIC;
-  for(var i in bodies){
+  var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
+  for(var i=0; i<N; i++){
     var b = bodies[i];
     if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
       
@@ -706,6 +706,8 @@ CANNON.World.prototype.step = function(dt){
   // Update world time
   world.time += dt;
   world.stepnumber += 1;
+
+  that.dispatchEvent({type:"postStep"});
 
   // Invoke post-step callbacks
   for(var i in bodies){

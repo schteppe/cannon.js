@@ -38,7 +38,7 @@
             // Connect this body to the last one
             var c;
             if(lastBody!==null){
-      	c = new CANNON.DistanceConstraint(spherebody,lastBody,dist);
+  	c = new CANNON.DistanceConstraint(spherebody,lastBody,dist);
             } else {
       	c = new CANNON.DistanceConstraint(spherebody,
       					  new CANNON.Vec3(0,0,N*dist),
@@ -65,7 +65,7 @@
         groundBody.position.set(0,0,1);
         world.add(groundBody);
         app.addVisual(groundBody);
-      
+
         return world;
       };
       

@@ -31,7 +31,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   var types = CANNON.Shape.types;
   var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
   PLANE = types.PLANE,
-  STATIC_OR_KINEMATIC = CANNON.RigidBody.STATIC | CANNON.RigidBody.KINEMATIC;
+  STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 
   // Temp vecs
   var r = this.temp.r;

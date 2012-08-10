@@ -3,8 +3,8 @@
  * @author schteppe
  * @brief Something for the solver to chew on. Its mostly a holder of vectors
  * @todo try with the solver
- * @param CANNON.RigidBody bi Could optionally be null
- * @param CANNON.RigidBody bj Could optionally be null
+ * @param CANNON.Body bi Could optionally be null
+ * @param CANNON.Body bj Could optionally be null
  */
 CANNON.Equation = function(bi,bj){
 

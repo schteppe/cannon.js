@@ -1,8 +1,8 @@
 /**
  * Distance constraint class
  * @author schteppe
- * @param CANNON.RigidBody bodyA
- * @param CANNON.RigidBody bodyB Could optionally be a CANNON.Vec3 to constrain a body to a static point in space
+ * @param CANNON.Body bodyA
+ * @param CANNON.Body bodyB Could optionally be a CANNON.Vec3 to constrain a body to a static point in space
  * @param float distance
  * @todo test
  */
@@ -11,7 +11,7 @@ CANNON.DistanceConstraint = function(bodyA,bodyB,distance){
   this.body_i = bodyA;
   this.body_j = bodyB;
   this.distance = Number(distance);
-  var eq = new CANNON.Equation(bodyA, bodyB instanceof CANNON.RigidBody ? bodyB : null);
+    var eq = new CANNON.Equation(bodyA, bodyB instanceof CANNON.Vec3 ? null : bodyB);
   this.equations.push(eq);
 };
 
@@ -20,7 +20,7 @@ CANNON.DistanceConstraint.prototype.constructor = CANNON.DistanceConstraint;
 
 CANNON.DistanceConstraint.prototype.update = function(){
   var eq = this.equations[0], bi = this.body_i, bj = this.body_j;
-  var pair = bj instanceof CANNON.RigidBody;
+  var pair = typeof(bj.mass)=="number";
 
   // Jacobian is the distance unit vector
   if(pair)
@@ -43,7 +43,6 @@ CANNON.DistanceConstraint.prototype.update = function(){
 	    (pair ? bj.position.z : bj.z) - bi.position.z - eq.G1.z*this.distance);
   eq.g1.negate(eq.g1);
   eq.g1.negate(eq.g3);
-  //console.log(this.distance,pair,eq.g1.toString());
 };
 
 CANNON.DistanceConstraint.prototype.setMaxForce = function(f){
