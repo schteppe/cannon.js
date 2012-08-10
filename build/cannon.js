@@ -100,41 +100,42 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   // Naive N^2 ftw!
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
-      
       var bi = bodies[i], bj = bodies[j];
-      var ti = bi.shape.type, tj = bj.shape.type;
+      if(bi.shape && bj.shape){
+        var ti = bi.shape.type, tj = bj.shape.type;
 
 	if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
 	   ((bj.motionstate & STATIC_OR_KINEMATIC)!==0 || bj.isSleeping())) {
-	// Both bodies are static, kinematic or sleeping. Skip.
-	continue;
-      }
-
-      // --- Box / sphere / compound / convexpolyhedron collision ---
-      if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
-	// Rel. position
-	bj.position.vsub(bi.position,r);
-
-	var boundingRadiusSum = bi.shape.boundingSphereRadius() + bj.shape.boundingSphereRadius();
-	if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
-	  pairs1.push(bi);
-	  pairs2.push(bj);
+  	    // Both bodies are static, kinematic or sleeping. Skip.
+	    continue;
 	}
 
-      // --- Sphere/box/compound/convexpoly versus plane ---
-      } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
-	var pi = (ti===PLANE) ? i : j, // Plane
-	  oi = (ti!==PLANE) ? i : j; // Other
-	  
-	  // Rel. position
-	bodies[oi].position.vsub(bodies[pi].position,r);
-	bodies[pi].quaternion.vmult(bodies[pi].shape.normal,normal);
-	
-	var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
-	if(q<0.0){
-	  pairs1.push(bi);
-	  pairs2.push(bj);
-	}
+	  // --- Box / sphere / compound / convexpolyhedron collision ---
+	  if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
+	      // Rel. position
+	      bj.position.vsub(bi.position,r);
+
+	      var boundingRadiusSum = bi.shape.boundingSphereRadius() + bj.shape.boundingSphereRadius();
+	      if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
+		  pairs1.push(bi);
+		  pairs2.push(bj);
+	      }
+
+	      // --- Sphere/box/compound/convexpoly versus plane ---
+	  } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
+	      var pi = (ti===PLANE) ? i : j, // Plane
+	      oi = (ti!==PLANE) ? i : j; // Other
+	      
+	      // Rel. position
+	      bodies[oi].position.vsub(bodies[pi].position,r);
+	      bodies[pi].quaternion.vmult(bodies[pi].shape.normal,normal);
+	      
+	      var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
+	      if(q<0.0){
+		  pairs1.push(bi);
+		  pairs2.push(bj);
+	      }
+	  }
       }
     }
   }
@@ -1384,7 +1385,7 @@ CANNON.Particle = function(mass,material){
   if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
       throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
 
-  CANNON.Body.call(this,"rigidbody");
+  CANNON.Body.call(this,"particle");
 
   var that = this;
 
@@ -3117,7 +3118,7 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
  */
 CANNON.World = function(){
 
-    CANNON.EventTarget.apply(this);
+  CANNON.EventTarget.apply(this);
 
   /// Makes bodies go to sleep when they've been inactive
   this.allowSleep = false;
@@ -3753,13 +3754,14 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Apply damping
-  for(var i in bodies){
+  for(var i=0; i<N; i++){
     bi = bodies[i];
     if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
       var ld = 1.0 - bi.linearDamping;
       var ad = 1.0 - bi.angularDamping;
       bi.velocity.mult(ld,bi.velocity);
-      bi.angularVelocity.mult(ad,bi.angularVelocity);
+      if(bi.angularVelocity)
+	bi.angularVelocity.mult(ad,bi.angularVelocity);
     }
   }
 
@@ -3786,32 +3788,36 @@ CANNON.World.prototype.step = function(dt){
       b.velocity.y += b.force.y * b.invMass * dt;
       b.velocity.z += b.force.z * b.invMass * dt;
 
-      b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
-      b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
-      b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
+      if(b.angularVelocity){
+        b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
+	b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
+	b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
+      }
 
       // Use new velocity  - leap frog
       if(!b.isSleeping()){
 	  b.position.x += b.velocity.x * dt;
 	  b.position.y += b.velocity.y * dt;
 	  b.position.z += b.velocity.z * dt;
-	  
-	  w.set(b.angularVelocity.x,
-		b.angularVelocity.y,
-		b.angularVelocity.z,
-		0);
-	  w.mult(b.quaternion,wq);
-	  
-	  b.quaternion.x += dt * 0.5 * wq.x;
-	  b.quaternion.y += dt * 0.5 * wq.y;
-	  b.quaternion.z += dt * 0.5 * wq.z;
-	  b.quaternion.w += dt * 0.5 * wq.w;
-	  if(world.stepnumber % 3 === 0)
-              b.quaternion.normalizeFast();
+	 
+	  if(b.angularVelocity){
+	      w.set(b.angularVelocity.x,
+		    b.angularVelocity.y,
+		    b.angularVelocity.z,
+		    0);
+	      w.mult(b.quaternion,wq);
+	      
+	      b.quaternion.x += dt * 0.5 * wq.x;
+	      b.quaternion.y += dt * 0.5 * wq.y;
+	      b.quaternion.z += dt * 0.5 * wq.z;
+	      b.quaternion.w += dt * 0.5 * wq.w;
+	      if(world.stepnumber % 3 === 0)
+		  b.quaternion.normalizeFast();
+	  }
       }
     }
     b.force.set(0,0,0);
-    b.tau.set(0,0,0);
+    if(b.tau) b.tau.set(0,0,0);
   }
 
   // Update world time
@@ -3869,13 +3875,13 @@ CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
     if(ni) ni.copy(this.ni);
     
     /**
-     * @property CANNON.RigidBody bi
+     * @property CANNON.Body bi
      * @memberof CANNON.ContactPoint
      */
     this.bi = bi;
 
     /**
-     * @property CANNON.RigidBody bj
+     * @property CANNON.Body bj
      * @memberof CANNON.ContactPoint
      */
     this.bj = bj;
@@ -4588,8 +4594,8 @@ CANNON.DistanceConstraint.prototype.setMaxForce = function(f){
  * @author schteppe
  * @brief Something for the solver to chew on. Its mostly a holder of vectors
  * @todo try with the solver
- * @param CANNON.RigidBody bi Could optionally be null
- * @param CANNON.RigidBody bj Could optionally be null
+ * @param CANNON.Body bi Could optionally be null
+ * @param CANNON.Body bj Could optionally be null
  */
 CANNON.Equation = function(bi,bj){
 
@@ -4663,9 +4669,9 @@ CANNON.Equation.prototype.setDefaultForce = function(){
 /**
  * Point to point constraint class
  * @author schteppe
- * @param CANNON.RigidBody bodyA
+ * @param CANNON.Body bodyA
  * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
- * @param CANNON.RigidBody bodyB Optional. If specified, pivotB must also be specified, and bodyB will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param CANNON.Body bodyB Optional. If specified, pivotB must also be specified, and bodyB will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
  * @param CANNON.Vec3 pivotB Optional.
  */
 CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB){

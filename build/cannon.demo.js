@@ -20,7 +20,8 @@ CANNON.Demo = function(){
     contacts:false,  // Contact points
     cm2contact:false, // center of mass to contact points
     normals:false, // contact normals
-    axes:false // "local" frame axes
+    axes:false, // "local" frame axes
+    particleSize:0.1,
   };
 
   this._phys_bodies = [];
@@ -47,6 +48,7 @@ CANNON.Demo = function(){
   this._axes = [];
 
   this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
+  this.particleGeo = new THREE.SphereGeometry( 1, 8, 8 );
 
   // Material
   this.materialColor = 0xdddddd;
@@ -138,11 +140,16 @@ CANNON.Demo.prototype.addScene = function(initfunc){
  * @brief Restarts the current scene
  */
 CANNON.Demo.prototype.restartCurrentScene = function(){
-  for(var i=0; i<this._phys_bodies.length; i++){
-    this._phys_bodies[i].initPosition.copy(this._phys_bodies[i].position);
-    this._phys_bodies[i].initVelocity.copy(this._phys_bodies[i].velocity);
-    this._phys_bodies[i].initAngularVelocity.copy(this._phys_bodies[i].angularVelocity);
-    this._phys_bodies[i].initQuaternion.copy(this._phys_bodies[i].quaternion);
+  var bodies = this._phys_bodies;
+  var N = bodies.length;
+  for(var i=0; i<N; i++){
+    var b = this._phys_bodies[i];
+    b.initPosition.copy(b.position);
+    b.initVelocity.copy(b.velocity);
+    if(b.initAngularVelocity){
+      b.initAngularVelocity.copy(b.angularVelocity);
+      b.initQuaternion.copy(b.quaternion);
+    }
   }
 };
 
@@ -153,10 +160,15 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
  */
 CANNON.Demo.prototype.updateVisuals = function(){
   
+  var bodies = this._phys_bodies, visuals = this._phys_visuals;
+  var N = bodies.length;
+
   // Read position data into visuals
-  for(var i=0; i<this._phys_bodies.length; i++){
-    this._phys_bodies[i].position.copy(this._phys_visuals[i].position);
-    this._phys_bodies[i].quaternion.copy(this._phys_visuals[i].quaternion);
+  for(var i=0; i<N; i++){
+      var b = bodies[i];
+      b.position.copy(visuals[i].position);
+      if(b.quaternion)
+        b.quaternion.copy(visuals[i].quaternion);
   }
   
   // Render contacts
@@ -389,7 +401,7 @@ CANNON.Demo.prototype.start = function(){
     document.body.appendChild( container );
     
     // Camera
-    camera = new THREE.PerspectiveCamera( 24, that.SCREEN_WIDTH / that.SCREEN_HEIGHT, NEAR, FAR );
+    that.camera = camera = new THREE.PerspectiveCamera( 24, that.SCREEN_WIDTH / that.SCREEN_HEIGHT, NEAR, FAR );
     camera.up.set(0,0,1);
     camera.position.x = 0;
     camera.position.y = 30;
@@ -567,6 +579,12 @@ CANNON.Demo.prototype.start = function(){
     rf.add(that.settings,'cm2contact').onChange(function(cm2contact){});
     rf.add(that.settings,'normals').onChange(function(normals){});
     rf.add(that.settings,'axes').onChange(function(axes){});
+      rf.add(that.settings,'particleSize').min(0).max(1).onChange(function(size){
+	for(var i=0; i<that._phys_visuals.length; i++){
+	    if(that._phys_bodies[i] instanceof CANNON.Particle)
+		that._phys_visuals[i].scale.set(size,size,size);
+	}
+    });
 
     // World folder
     var wf = that._gui.addFolder('World');
@@ -740,7 +758,15 @@ CANNON.Demo.prototype._buildScene = function(n){
 
       addVisual:function(body){
 	// What geometry should be used?
-	var mesh = shape2mesh(body.shape);
+	var mesh;
+	if(body instanceof CANNON.RigidBody)
+          mesh = shape2mesh(body.shape);
+	else if(body instanceof CANNON.Particle){
+	  mesh = new THREE.Mesh( that.particleGeo, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) );
+	  mesh.scale.set(that.settings.particleSize,
+			 that.settings.particleSize,
+			 that.settings.particleSize);
+	}
 	if(mesh) {
 	  // Add body
 	  that._phys_bodies.push(body);
@@ -779,7 +805,9 @@ CANNON.Demo.prototype._buildScene = function(n){
 
       setWorld:function(w){
 	that._world = w;
-      }
+      },
+      
+      camera : that.camera
     });
 
   // Read the newly set data to the gui

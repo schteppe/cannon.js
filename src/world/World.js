@@ -642,13 +642,14 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Apply damping
-  for(var i in bodies){
+  for(var i=0; i<N; i++){
     bi = bodies[i];
     if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
       var ld = 1.0 - bi.linearDamping;
       var ad = 1.0 - bi.angularDamping;
       bi.velocity.mult(ld,bi.velocity);
-      bi.angularVelocity.mult(ad,bi.angularVelocity);
+      if(bi.angularVelocity)
+	bi.angularVelocity.mult(ad,bi.angularVelocity);
     }
   }
 
@@ -675,32 +676,36 @@ CANNON.World.prototype.step = function(dt){
       b.velocity.y += b.force.y * b.invMass * dt;
       b.velocity.z += b.force.z * b.invMass * dt;
 
-      b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
-      b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
-      b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
+      if(b.angularVelocity){
+        b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
+	b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
+	b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
+      }
 
       // Use new velocity  - leap frog
       if(!b.isSleeping()){
 	  b.position.x += b.velocity.x * dt;
 	  b.position.y += b.velocity.y * dt;
 	  b.position.z += b.velocity.z * dt;
-	  
-	  w.set(b.angularVelocity.x,
-		b.angularVelocity.y,
-		b.angularVelocity.z,
-		0);
-	  w.mult(b.quaternion,wq);
-	  
-	  b.quaternion.x += dt * 0.5 * wq.x;
-	  b.quaternion.y += dt * 0.5 * wq.y;
-	  b.quaternion.z += dt * 0.5 * wq.z;
-	  b.quaternion.w += dt * 0.5 * wq.w;
-	  if(world.stepnumber % 3 === 0)
-              b.quaternion.normalizeFast();
+	 
+	  if(b.angularVelocity){
+	      w.set(b.angularVelocity.x,
+		    b.angularVelocity.y,
+		    b.angularVelocity.z,
+		    0);
+	      w.mult(b.quaternion,wq);
+	      
+	      b.quaternion.x += dt * 0.5 * wq.x;
+	      b.quaternion.y += dt * 0.5 * wq.y;
+	      b.quaternion.z += dt * 0.5 * wq.z;
+	      b.quaternion.w += dt * 0.5 * wq.w;
+	      if(world.stepnumber % 3 === 0)
+		  b.quaternion.normalizeFast();
+	  }
       }
     }
     b.force.set(0,0,0);
-    b.tau.set(0,0,0);
+    if(b.tau) b.tau.set(0,0,0);
   }
 
   // Update world time
