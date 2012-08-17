@@ -80,6 +80,7 @@ CANNON.Ray = function(origin, direction){
 	    // Checking faces
 	    var dot, scalar, faces = shape.faces, vertices = shape.vertices, normals = shape.faceNormals;
 
+
 	    for ( fi = 0; fi < faces.length; fi++ ) {
 
 		var face = faces[ fi ];
@@ -90,25 +91,24 @@ CANNON.Ray = function(origin, direction){
 		// determine if ray intersects the plane of the face
 		// note: this works regardless of the direction of the face normal
 
-		// Get plane point
-		var vector = new CANNON.Vec3();
+		// Get plane point in world coordinates...
 		vertices[face[0]].copy(vector);
-		vector.vsub(this.origin,vector);
 		q.vmult(vector,vector);
 		vector.vadd(x,vector);
 
+		// ...but make it relative to the ray origin. We'll fix this later.
+		vector.vsub(this.origin,vector);
+
 		// Get plane normal
-		var normal = new CANNON.Vec3();
 		q.vmult(faceNormal,normal);
-		
+
+		// If this dot product is negative, we have something interesting
 		dot = this.direction.dot(normal);
 		
 		// bail if ray and plane are parallel
-
 		if ( Math.abs( dot ) < precision ) continue;
 
 		// calc distance to plane
-
 		scalar = normal.dot( vector ) / dot;
 
 		// if negative distance, then plane is behind ray
