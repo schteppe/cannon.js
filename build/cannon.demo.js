@@ -17,6 +17,7 @@ CANNON.Demo = function(){
     scene:0,
     paused:false,
     rendermode:0,
+    constraints:false,
     contacts:false,  // Contact points
     cm2contact:false, // center of mass to contact points
     normals:false, // contact normals
@@ -45,6 +46,7 @@ CANNON.Demo = function(){
   this._contactmeshes = [];
   this._normallines = [];
   this._contactlines = [];
+  this._distanceConstraintLines = [];
   this._axes = [];
 
   this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
@@ -161,7 +163,7 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
  */
 CANNON.Demo.prototype.updateVisuals = function(){
   
-  var bodies = this._phys_bodies, visuals = this._phys_visuals;
+    var bodies = this._phys_bodies, visuals = this._phys_visuals, world = this._world;
   var N = bodies.length;
 
   // Read position data into visuals
@@ -181,8 +183,8 @@ CANNON.Demo.prototype.updateVisuals = function(){
     var old_meshes = this._contactmeshes;
     var old_normal_meshes = this._normalmeshes;
     this._contactmeshes = [];
-    for(var ci in this._world.contacts){
-      var c = this._world.contacts[ci];
+    for(var ci in world.contacts){
+      var c = world.contacts[ci];
       var bi=c.bi, bj=c.bj, mesh_i, mesh_j;
       if(numadded<old_meshes.length){
 	// Get mesh from prev timestep
@@ -226,18 +228,14 @@ CANNON.Demo.prototype.updateVisuals = function(){
       this._scene.remove(this._contactmeshes[i]);
   }
 
-  // Lines
+  // Lines from center of mass to contact point
   if(this.settings.cm2contact){
-
-    // remove last timesteps' lines
-    /*while(this._contactlines.length)
-      this._scene.remove(this._contactlines.pop());*/
 
     var old_lines = this._contactlines;
     this._contactlines = [];
 
-    for(var ci in this._world.contacts){
-      var c = this._world.contacts[ci];
+    for(var ci in world.contacts){
+      var c = world.contacts[ci];
       var bi=c.bi, bj=c.bj, mesh_i, mesh_j;
       var i=bi.id, j=bj.id;
       var line, geometry;
@@ -275,15 +273,75 @@ CANNON.Demo.prototype.updateVisuals = function(){
     // Remove all contact lines
     for(var i=0; i<this._contactlines.length; i++)
       this._scene.remove(this._contactlines[i]);
+  }
+
+
+
+
+  // Lines for distance constraints
+  if(this.settings.constraints){
+    var old_lines = this._distanceConstraintLines;
+    this._distanceConstraintLines = [];
+
+    for(var ci=0; ci<world.constraints.length; ci++){
+
+      var c = world.constraints[ci];
+      if(!(c instanceof CANNON.DistanceConstraint))
+	continue;
+
+      var bi=c.body_i, bj=c.body_j, mesh;
+      var i=bi.id, j=bj.id;
+      var line, geometry;
+
+      if(old_lines.length){
+	  // Get mesh from prev timestep
+	  line = old_lines.pop();
+	  geometry = line.geometry;
+	  geometry.vertices.pop();
+	  geometry.vertices.pop();
+      } else {
+	  // Create new mesh
+	  geometry = new THREE.Geometry();
+	  geometry.vertices.push(new THREE.Vector3(0,0,0));
+	  geometry.vertices.push(new THREE.Vector3(1,1,1));
+	  line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
+	  this._scene.add(line);
+      }
+      this._distanceConstraintLines.push(line);
+      // Remember, bj is either a Vec3 or a Body.
+      var v;
+      if(bj.position)
+        v = bj.position;
+      else
+        v = bj;
+      line.scale.set(v.x-bi.position.x,
+		     v.y-bi.position.y,
+		     v.z-bi.position.z);
+      bi.position.copy(line.position);
+      this._scene.add(line);
+    }
+
+    // Remove overflowing
+    while(old_lines.length)
+      this._scene.remove(old_lines.pop());
+
+  } else if(this._distanceConstraintLines.length){
+
+    // Remove all contact lines
+    for(var i=0; i<this._distanceConstraintLines.length; i++)
+      this._scene.remove(this._distanceConstraintLines[i]);
 
   }
+
+
+
 
   // Normal lines
   if(this.settings.normals){
     var old_lines = this._normallines;
     this._normallines = [];
-    for(var ci in this._world.contacts){
-      var c = this._world.contacts[ci];
+    for(var ci in world.contacts){
+      var c = world.contacts[ci];
       var bi=c.bi, bj=c.bj, mesh;
       var i=bi.id, j=bj.id;
       var line, geometry;
@@ -323,8 +381,8 @@ CANNON.Demo.prototype.updateVisuals = function(){
   if(this.settings.axes){
     var old_axes = this._axes;
     this._axes = [];
-    for(var bi in this._world.bodies){
-      var b = this._world.bodies[bi], mesh;
+    for(var bi in world.bodies){
+      var b = world.bodies[bi], mesh;
       if(old_axes.length){
 	// Get mesh from prev timestep
 	mesh = old_axes.pop();
@@ -579,6 +637,7 @@ CANNON.Demo.prototype.start = function(){
       });
     rf.add(that.settings,'cm2contact').onChange(function(cm2contact){});
     rf.add(that.settings,'normals').onChange(function(normals){});
+    rf.add(that.settings,'constraints').onChange(function(constraints){});
     rf.add(that.settings,'axes').onChange(function(axes){});
       rf.add(that.settings,'particleSize').min(0).max(1).onChange(function(size){
 	for(var i=0; i<that._phys_visuals.length; i++){
