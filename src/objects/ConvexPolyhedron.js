@@ -451,17 +451,19 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	    
 	    if (depth <=maxDist){
 		var point = pVtxIn[i];
-		/*console.log("Got contact point ",point.toString(),
-		  ", depth=",depth,
-		  "contact normal=",separatingNormal.toString(),
-		  "plane",planeNormalWS.toString(),
-		  "planeConstant",planeEqWS);*/
-		var p = {
-		    point:point,
-		    normal:planeNormalWS,
-		    depth: depth,
-		};
-		result.push(p);
+		if(depth<=0){
+		    /*console.log("Got contact point ",point.toString(),
+		      ", depth=",depth,
+		      "contact normal=",separatingNormal.toString(),
+		      "plane",planeNormalWS.toString(),
+		      "planeConstant",planeEqWS);*/
+		    var p = {
+			point:point,
+			normal:planeNormalWS,
+			depth: depth,
+		    };
+		    result.push(p);
+		}
 	    }
 	}
     }
