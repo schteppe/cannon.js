@@ -18,7 +18,6 @@ CANNON.ContactGenerator = function(){
 
     var v3pool = new CANNON.Vec3Pool();
 
-
     // temp vertices for plane/polyhedron collision tests
     var tempverts = [new CANNON.Vec3(),
 		     new CANNON.Vec3(),

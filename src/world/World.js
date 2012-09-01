@@ -669,45 +669,53 @@ CANNON.World.prototype.step = function(dt){
   var q = temp.step_q; 
   var w = temp.step_w;
   var wq = temp.step_wq;
+  var stepnumber = world.stepnumber;
   var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
   for(var i=0; i<N; i++){
-    var b = bodies[i];
-    if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
-      
-      b.velocity.x += b.force.x * b.invMass * dt;
-      b.velocity.y += b.force.y * b.invMass * dt;
-      b.velocity.z += b.force.z * b.invMass * dt;
-
-      if(b.angularVelocity){
-        b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
-	b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
-	b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
-      }
-
-      // Use new velocity  - leap frog
-      if(!b.isSleeping()){
-	  b.position.x += b.velocity.x * dt;
-	  b.position.y += b.velocity.y * dt;
-	  b.position.z += b.velocity.z * dt;
-	 
+      var b = bodies[i],
+      force = b.force,
+      tau = b.tau;
+      if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
+	  var velo = b.velocity,
+	  angularVelo = b.angularVelocity,
+	  pos = b.position,
+	  quat = b.quaternion,
+	  invMass = b.invMass,
+	  invInertia = b.invInertia;
+	  velo.x += force.x * invMass * dt;
+	  velo.y += force.y * invMass * dt;
+	  velo.z += force.z * invMass * dt;
+	  
 	  if(b.angularVelocity){
-	      w.set(b.angularVelocity.x,
-		    b.angularVelocity.y,
-		    b.angularVelocity.z,
-		    0);
-	      w.mult(b.quaternion,wq);
+              angularVelo.x += tau.x * invInertia.x * dt;
+	      angularVelo.y += tau.y * invInertia.y * dt;
+	      angularVelo.z += tau.z * invInertia.z * dt;
+	  }
+	  
+	  // Use new velocity  - leap frog
+	  if(!b.isSleeping()){
+	      pos.x += velo.x * dt;
+	      pos.y += velo.y * dt;
+	      pos.z += velo.z * dt;
 	      
-	      b.quaternion.x += dt * 0.5 * wq.x;
-	      b.quaternion.y += dt * 0.5 * wq.y;
-	      b.quaternion.z += dt * 0.5 * wq.z;
-	      b.quaternion.w += dt * 0.5 * wq.w;
-	      if(world.stepnumber % 3 === 0)
-		  b.quaternion.normalizeFast();
+	      if(b.angularVelocity){
+		  w.set(angularVelo.x,
+			angularVelo.y,
+			angularVelo.z,
+			0);
+		  w.mult(quat,wq);
+		  
+		  quat.x += dt * 0.5 * wq.x;
+		  quat.y += dt * 0.5 * wq.y;
+		  quat.z += dt * 0.5 * wq.z;
+		  quat.w += dt * 0.5 * wq.w;
+		  if(stepnumber % 3 === 0)
+		      quat.normalizeFast();
+	      }
 	  }
       }
-    }
-    b.force.set(0,0,0);
-    if(b.tau) b.tau.set(0,0,0);
+      b.force.set(0,0,0);
+      if(b.tau) b.tau.set(0,0,0);
   }
 
   // Update world time
