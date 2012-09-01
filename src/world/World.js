@@ -493,24 +493,38 @@ CANNON.World.prototype.step = function(dt){
       var tangents = [temp.t1, temp.t2];
       n.tangents(tangents[0],tangents[1]);
 
-      var v_contact_i = vi.vadd(wi.cross(c.ri));
-      var v_contact_j = vj.vadd(wj.cross(c.rj));
-      var u_rel = v_contact_j.vsub(v_contact_i);
-      var w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
+
+      var v_contact_i;
+      if(wi) v_contact_i = vi.vadd(wi.cross(c.ri));
+      else   v_contact_i = vi.copy();
+
+      var v_contact_j;
+      if(wj) v_contact_j = vj.vadd(wj.cross(c.rj));
+      else   v_contact_j = vj.copy();
+
+      var u_rel = v_contact_j.vsub(v_contact_i)
+      var w_rel;
+      
+      if(wj && wi) w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
+      else if(wi)  w_rel = wi.cross(c.ri).negate();
+      else if(wj)  w_rel = wj.cross(c.rj);
 
       var u = (vj.vsub(vi)); // Contact velo
-      var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+      var uw;
+      if(wj && wi) uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+      else if(wi)  uw = c.ri.cross(wi).negate();
+      else if(wj)  uw = (c.rj.cross(wj));
       u.vsub(uw,u);
 
       // Get mass properties
       var iMi = bi.invMass;
       var iMj = bj.invMass;
-      var iIxi = bi.invInertia.x;
-      var iIyi = bi.invInertia.y;
-      var iIzi = bi.invInertia.z;
-      var iIxj = bj.invInertia.x;
-      var iIyj = bj.invInertia.y;
-      var iIzj = bj.invInertia.z;
+	var iIxi = bi.invInertia ? bi.invInertia.x : 0.0;
+	var iIyi = bi.invInertia ? bi.invInertia.y : 0.0;
+	var iIzi = bi.invInertia ? bi.invInertia.z : 0.0;
+	var iIxj = bj.invInertia ? bj.invInertia.x : 0.0;
+	var iIyj = bj.invInertia ? bj.invInertia.y : 0.0;
+	var iIzj = bj.invInertia ? bj.invInertia.z : 0.0;
 
       // Add contact constraint
       var rixn = temp.rixn;
@@ -523,6 +537,29 @@ CANNON.World.prototype.step = function(dt){
       var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
 
       var gn = c.ni.mult(g);
+
+	// Rotational forces
+	var tauxi, tauyi, tauzi;
+	if(bi.tau){
+	    tauxi = bi.tau.x;
+	    tauyi = bi.tau.y;
+	    tauzi = bi.tau.z;
+	} else {
+	    tauxi = 0;
+	    tauyi = 0;
+	    tauzi = 0;
+	}
+	var tauxj, tauyj, tauzj;
+	if(bi.tau){
+	    tauxj = bj.tau.x;
+	    tauyj = bj.tau.y;
+	    tauzj = bj.tau.z;
+	} else {
+	    tauxj = 0;
+	    tauyj = 0;
+	    tauzj = 0;
+	}
+
       solver
 	.addConstraint( // Non-penetration constraint jacobian
 		       [-n.x,-n.y,-n.z,
@@ -551,9 +588,9 @@ CANNON.World.prototype.step = function(dt){
 			 
 		       // External force - forces & torques
 		       [bi.force.x,bi.force.y,bi.force.z,
-			bi.tau.x,bi.tau.y,bi.tau.z,
+			tauxi,tauyi,tauzi,
 			-bj.force.x,-bj.force.y,-bj.force.z,
-			-bj.tau.x,-bj.tau.y,-bj.tau.z],
+			-tauxj,-tauyi,-tauzi],
 		       0,
 		       'inf',
 		       i, // These are id's, not indeces...
@@ -598,9 +635,9 @@ CANNON.World.prototype.step = function(dt){
 			     
 			   // External force - forces & torques
 			   [bi.force.x,bi.force.y,bi.force.z,
-			    bi.tau.x,bi.tau.y,bi.tau.z,
+			    tauxi,tauyi,tauzi,
 			    bj.force.x,bj.force.y,bj.force.z,
-			    bj.tau.x,bj.tau.y,bj.tau.z],
+			    tauxj,tauyj,tauzj],
 			     
 			   -mu*100*(bi.mass+bj.mass),
 			   mu*100*(bi.mass+bj.mass),

@@ -83,6 +83,67 @@
           }
         });
 
+      // Particle 3d object
+      demo.addScene(function(app){
+          var world = setupWorld(app);
+          world.solver.setSpookParams(5000,2);
+          world.solver.iterations = 10;
+          var dist = 1;
+          var mass = 1;
+          var Nx = 6, Ny = 3, Nz = 3;
+          var bodies = {}; // bodies["i j k"] => particle
+          for(var i=0; i<Nx; i++){
+            for(var j=0; j<Ny; j++){
+              for(var k=0; k<Nz; k++){
+                // Create a new body
+                var body = new CANNON.Particle(mass);
+                body.position.set(i*dist,j*dist, k*dist + Nz*dist*0.3+1);
+                body.velocity.set(0, 30*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
+                bodies[i+" "+j+" "+k] = body;
+                world.add(body);
+                app.addVisual(body);
+              }
+            }
+          }
+          function connect(i1,j1,k1,i2,j2,k2,len){
+              world.addConstraint(new CANNON.DistanceConstraint(bodies[i1+" "+j1+" "+k1],bodies[i2+" "+j2+" "+k2],len));
+          }
+          for(var i=0; i<Nx; i++){
+            for(var j=0; j<Ny; j++){
+              for(var k=0; k<Nz; k++){
+                // normal directions
+                if(i<Nx-1) connect(i,j,k,  i+1,j,k, dist);
+                if(j<Ny-1) connect(i,j,k,  i,j+1,k, dist);
+                if(k<Nz-1) connect(i,j,k,  i,j,k+1, dist);
+
+                // Diagonals
+                if(i<Nx-1 && j<Ny-1 && k<Nz-1){
+                  // 3d diagonals
+                  connect(i,j,k,  i+1,j+1,k+1, Math.sqrt(3)*dist);
+                  connect(i+1,j,k,  i,j+1,k+1, Math.sqrt(3)*dist);
+                  connect(i,j+1,k,  i+1,j,k+1, Math.sqrt(3)*dist);
+                  connect(i,j,k+1,  i+1,j+1,k, Math.sqrt(3)*dist);
+                  
+                }
+
+                // 2d diagonals
+                if(i<Nx-1 && j<Ny-1){
+                  connect(i+1,j,k,   i,j+1,k, Math.sqrt(2)*dist);
+                  connect(i,j+1,k,   i+1,j,k, Math.sqrt(2)*dist);
+                }
+                if(i<Nx-1 && k<Nz-1){
+                  connect(i+1,j,k,   i,j,k+1, Math.sqrt(2)*dist);
+                  connect(i,j,k+1,   i+1,j,k, Math.sqrt(2)*dist);
+                }
+                if(j<Ny-1 && k<Nz-1){
+                  connect(i,j+1,k,   i,j,k+1, Math.sqrt(2)*dist);
+                  connect(i,j,k+1,   i,j+1,k, Math.sqrt(2)*dist);
+                }
+              }
+            }
+          }
+        });
+
       
       function setupWorld(app){
         // Create world

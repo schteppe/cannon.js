@@ -43,15 +43,16 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
     for(var i=0; i<n; i++){
 	for(var j=0; j<i; j++){
 	    var bi = bodies[i], bj = bodies[j];
+
+	    if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
+	       ((bj.motionstate & STATIC_OR_KINEMATIC)!==0 || bj.isSleeping())) {
+  		// Both bodies are static, kinematic or sleeping. Skip.
+		continue;
+	    }
+
 	    var bishape = bi.shape, bjshape = bj.shape;
 	    if(bishape && bjshape){
 		var ti = bishape.type, tj = bjshape.type;
-
-		if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
-		   ((bj.motionstate & STATIC_OR_KINEMATIC)!==0 || bj.isSleeping())) {
-  		    // Both bodies are static, kinematic or sleeping. Skip.
-		    continue;
-		}
 
 		// --- Box / sphere / compound / convexpolyhedron collision ---
 		if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
@@ -77,6 +78,28 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 		    if(q<0.0){
 			pairs1.push(bi);
 			pairs2.push(bj);
+		    }
+		}
+	    } else {
+		// Particle without shape
+		if(!bishape && !bjshape){
+		    // No collisions between 2 particles
+		} else {
+		    var particle = bishape ? bj : bi;
+		    var other = bishape ? bi : bj;
+		    var otherShape = other.shape;
+		    var type = otherShape.type;
+
+		    if(type & BOX_SPHERE_COMPOUND_CONVEX){
+			// todo: particle vs box,sphere,compound,convex
+		    } else if(type & types.PLANE){
+			// particle/plane
+			var relpos = new CANNON.Vec3(); // todo: cache
+			particle.position.vsub(other.position,relpos);
+			if(otherShape.normal.dot(relpos)<=0.0){
+			    pairs1.push(particle);
+			    pairs2.push(other);
+			}
 		    }
 		}
 	    }
