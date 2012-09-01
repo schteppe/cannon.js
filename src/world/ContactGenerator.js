@@ -18,6 +18,24 @@ CANNON.ContactGenerator = function(){
 
     var v3pool = new CANNON.Vec3Pool();
 
+
+    // temp vertices for plane/polyhedron collision tests
+    var tempverts = [new CANNON.Vec3(),
+		     new CANNON.Vec3(),
+		     new CANNON.Vec3(),
+		     new CANNON.Vec3(),
+		     new CANNON.Vec3(),
+		     new CANNON.Vec3(),
+		     new CANNON.Vec3(),
+		     new CANNON.Vec3()];
+    // temp normals for plane/polyhedron
+    var tempnormals = [new CANNON.Vec3(),
+		       new CANNON.Vec3(),
+		       new CANNON.Vec3(),
+		       new CANNON.Vec3(),
+		       new CANNON.Vec3(),
+		       new CANNON.Vec3()];
+    
     /**
      * Near phase calculation, get the contact point, normal, etc.
      * @param array result The result one will get back with all the contact point information
@@ -304,18 +322,24 @@ CANNON.ContactGenerator = function(){
 		t1.mult(100000,t1);
 		t2.mult(100000,t2);
 		var n = v3pool.get();
-		si.normal.copy(n);  
-		var verts = [new CANNON.Vec3(-t1.x -t2.x -n.x, -t1.y -t2.y -n.y, -t1.z -t2.z -n.z), // ---
-			     new CANNON.Vec3( t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z), // +-+
-			     new CANNON.Vec3( t1.x +t2.x -n.x,  t1.y +t2.y -n.y,  t1.z +t2.z -n.z), // ++- 
-			     new CANNON.Vec3(-t1.x +t2.x -n.x, -t1.y +t2.y -n.y, -t1.z +t2.z -n.z), // -+-
-			     new CANNON.Vec3(-t1.x -t2.x +0*n.x, -t1.y -t2.y +0*n.y, -t1.z -t2.z +0*n.z), // --+
-			     new CANNON.Vec3(+t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z), // +-+
-			     new CANNON.Vec3(+t1.x +t2.x +0*n.x, +t1.y +t2.y +0*n.y,  t1.z +t2.z +0*n.z), // +++
-			     new CANNON.Vec3(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z)]; // -++
+		si.normal.copy(n);
+		tempverts[0].set(-t1.x -t2.x -n.x, -t1.y -t2.y -n.y, -t1.z -t2.z -n.z); //---
+		tempverts[1].set( t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
+		tempverts[2].set( t1.x +t2.x -n.x,  t1.y +t2.y -n.y,  t1.z +t2.z -n.z); // ++- 
+		tempverts[3].set(-t1.x +t2.x -n.x, -t1.y +t2.y -n.y, -t1.z +t2.z -n.z); // -+-
+		tempverts[4].set(-t1.x -t2.x +0*n.x, -t1.y -t2.y +0*n.y, -t1.z -t2.z +0*n.z); // --+
+		tempverts[5].set(+t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
+		tempverts[6].set(+t1.x +t2.x +0*n.x, +t1.y +t2.y +0*n.y,  t1.z +t2.z +0*n.z); // +++
+		tempverts[7].set(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z); // -++
 		t1.normalize();
 		t2.normalize();
-		var planehull = new CANNON.ConvexPolyhedron(verts,
+		tempnormals[0].set( -n.x, -n.y, -n.z);
+		tempnormals[1].set(  n.x,  n.y,  n.z);
+		tempnormals[2].set(-t2.x,-t2.y,-t2.z);
+		tempnormals[3].set( t2.x, t2.y, t2.z);
+		tempnormals[4].set(-t1.x,-t1.y,-t1.z);
+		tempnormals[5].set( t1.x, t1.y, t1.z);
+		var planehull = new CANNON.ConvexPolyhedron(tempverts,
 							    [
 								[0,1,2,3], // -z
 								[4,5,6,7], // +z
@@ -324,13 +348,7 @@ CANNON.ContactGenerator = function(){
 								[0,3,4,7], // -x
 								[1,2,5,6], // +x
 							    ],
-							    
-							    [new CANNON.Vec3( -n.x, -n.y, -n.z),
-							     new CANNON.Vec3(  n.x,  n.y,  n.z),
-							     new CANNON.Vec3(-t2.x,-t2.y,-t2.z),
-							     new CANNON.Vec3( t2.x, t2.y, t2.z),
-							     new CANNON.Vec3(-t1.x,-t1.y,-t1.z),
-							     new CANNON.Vec3( t1.x, t1.y, t1.z)]);
+							    tempnormals);
 		
 		var sepAxis = v3pool.get();
 		n.negate(sepAxis);
