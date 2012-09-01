@@ -168,10 +168,10 @@ CANNON.Demo.prototype.updateVisuals = function(){
 
   // Read position data into visuals
   for(var i=0; i<N; i++){
-      var b = bodies[i];
-      b.position.copy(visuals[i].position);
+      var b = bodies[i], visual = visuals[i];
+      b.position.copy(visual.position);
       if(b.quaternion)
-        b.quaternion.copy(visuals[i].quaternion);
+        b.quaternion.copy(visual.quaternion);
   }
   
   // Render contacts
@@ -435,8 +435,8 @@ CANNON.Demo.prototype.start = function(){
   if ( ! Detector.webgl )
     Detector.addGetWebGLMessage();
   
-  this.SHADOW_MAP_WIDTH = 1024;
-  this.SHADOW_MAP_HEIGHT = 1024;
+  this.SHADOW_MAP_WIDTH = 512;
+  this.SHADOW_MAP_HEIGHT = 512;
   var MARGIN = 0;
   this.SCREEN_WIDTH = window.innerWidth;
   this.SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
@@ -461,6 +461,7 @@ CANNON.Demo.prototype.start = function(){
     
     // Camera
     that.camera = camera = new THREE.PerspectiveCamera( 24, that.SCREEN_WIDTH / that.SCREEN_HEIGHT, NEAR, FAR );
+     
     camera.up.set(0,0,1);
     camera.position.x = 0;
     camera.position.y = 30;
@@ -477,19 +478,21 @@ CANNON.Demo.prototype.start = function(){
     scene.add( ambient );
 
     light = new THREE.SpotLight( 0xffffff );
-    light.position.set( 40, 40, 50 );
+    light.position.set( 30, 30, 40 );
     light.target.position.set( 0, 0, 0 );
     if(that.shadowsOn){
       light.castShadow = true;
 
-      light.shadowCameraNear = 1;
-      light.shadowCameraFar = camera.far;
+      light.shadowCameraNear = 10;
+	light.shadowCameraFar = 100;//camera.far;
       light.shadowCameraFov = 30;
     
       light.shadowMapBias = 0.0039;
       light.shadowMapDarkness = 0.5;
       light.shadowMapWidth = that.SHADOW_MAP_WIDTH;
       light.shadowMapHeight = that.SHADOW_MAP_HEIGHT;
+
+	//light.shadowCameraVisible = true;
     }
     scene.add( light );
     scene.add( camera );
