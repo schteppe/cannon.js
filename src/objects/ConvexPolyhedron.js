@@ -46,7 +46,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      */
     this.uniqueEdges = [];
 
-    for(pi in points){
+    for(var pi=0; pi<points.length; pi++){
 	var p = points[pi];
 	if(!(p instanceof CANNON.Vec3)){
 	    throw "Argument 1 must be instance of CANNON.Vec3";
@@ -95,19 +95,16 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param CANNON.Quaternion quat
      * @param array maxmin maxmin[0] and maxmin[1] will be set to maximum and minimum, respectively.
      */
+    var worldVertex = new CANNON.Vec3();
     function project(hull,axis,pos,quat,maxmin){
 	var n = hull.vertices.length;
 	var max = null;
 	var min = null;
 	var vs = hull.vertices;
-	var worldVertex = new CANNON.Vec3();
 	for(var i=0; i<n; i++){
 	    vs[i].copy(worldVertex);
-	    //console.log("orig:",worldVertex.toString());
 	    quat.vmult(worldVertex,worldVertex);
-	    //console.log("after the quat ",quat.toString(),":",worldVertex.toString());
 	    worldVertex.vadd(pos,worldVertex);
-	    //console.log("after adding pos",pos.toString(),"worldvertex:",worldVertex.toString());
 	    var val = worldVertex.dot(axis);
 	    if(max===null || val>max)
 		max = val;
@@ -171,6 +168,12 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param CANNON.Vec3 target The target vector to save the axis in
      * @return bool Returns false if a separation is found, else true
      */
+    var faceANormalWS3 = new CANNON.Vec3();
+    var Worldnormal1 = new CANNON.Vec3(); 
+    var deltaC = new CANNON.Vec3();
+    var worldEdge0 = new CANNON.Vec3();
+    var worldEdge1 = new CANNON.Vec3();
+    var Cross = new CANNON.Vec3();
     this.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
 	var dmin = Infinity;
 	var hullA = this;
@@ -178,42 +181,40 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	var numFacesA = hullA.faces.length;
 
 	// Test normals from hullA
-	var faceANormalWS = new CANNON.Vec3();
 	for(var i=0; i<numFacesA; i++){
 	    // Get world face normal
-	    hullA.faceNormals[i].copy(faceANormalWS);
-	    quatA.vmult(faceANormalWS,faceANormalWS);
-	    //posA.vadd(faceANormalWS,faceANormalWS); // Needed?
-	    //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS);
+	    hullA.faceNormals[i].copy(faceANormalWS3);
+	    quatA.vmult(faceANormalWS3,faceANormalWS3);
+	    //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
+	    //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
 	    
-	    var d = hullA.testSepAxis(faceANormalWS, hullB, posA, quatA, posB, quatB);
+	    var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
 	    if(d===false){
 		return false;
 	    }
 	    
 	    if(d<dmin){
 		dmin = d;
-		faceANormalWS.copy(target);
+		faceANormalWS3.copy(target);
 	    }
 	}
 
 	// Test normals from hullB
-	var WorldNormal = new CANNON.Vec3(); 
 	var numFacesB = hullB.faces.length;
 	for(var i=0;i<numFacesB;i++){
-	    hullB.faceNormals[i].copy(WorldNormal);
-	    quatB.vmult(WorldNormal,WorldNormal);
-	    //posB.vadd(WorldNormal,WorldNormal);
-	    //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",WorldNormal.toString());
+	    hullB.faceNormals[i].copy(Worldnormal1);
+	    quatB.vmult(Worldnormal1,Worldnormal1);
+	    //posB.vadd(Worldnormal1,Worldnormal1);
+	    //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
 	    curPlaneTests++;
-	    var d = hullA.testSepAxis(WorldNormal, hullB,posA,quatA,posB,quatB);
+	    var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
 	    if(d===false){
 		return false;
 	    }
 	    
 	    if(d<dmin){
 		dmin = d;
-		WorldNormal.copy(target);
+		Worldnormal1.copy(target);
 	    }
 	}
 
@@ -221,24 +222,21 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	
 	var curEdgeEdge = 0;
 	// Test edges
-	var WorldEdge0 = new CANNON.Vec3();
-	var WorldEdge1 = new CANNON.Vec3();
-	var Cross = new CANNON.Vec3();
 	for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
 	    // Get world edge
-	    hullA.uniqueEdges[e0].copy(WorldEdge0);
-	    quatA.vmult(WorldEdge0,WorldEdge0);
-	    //posA.vadd(WorldEdge0,WorldEdge0); // needed?
+	    hullA.uniqueEdges[e0].copy(worldEdge0);
+	    quatA.vmult(worldEdge0,worldEdge0);
+	    //posA.vadd(worldEdge0,worldEdge0); // needed?
 
-	    //console.log("edge0:",WorldEdge0.toString());
+	    //console.log("edge0:",worldEdge0.toString());
 
 	    for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-		hullB.uniqueEdges[e1].copy(WorldEdge1);
-		quatB.vmult(WorldEdge1,WorldEdge1);
-		//posB.vadd(WorldEdge1,WorldEdge1); // needed?
-		//console.log("edge1:",WorldEdge1.toString());
+		hullB.uniqueEdges[e1].copy(worldEdge1);
+		quatB.vmult(worldEdge1,worldEdge1);
+		//posB.vadd(worldEdge1,worldEdge1); // needed?
+		//console.log("edge1:",worldEdge1.toString());
 		
-		WorldEdge0.cross(WorldEdge1,Cross);
+		worldEdge0.cross(worldEdge1,Cross);
 
 		curEdgeEdge++;
 		if(!Cross.almostZero()){
@@ -256,7 +254,6 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	    }
 	}
 
-	var deltaC = new CANNON.Vec3();
 	posB.vsub(posA,deltaC);
 	if((deltaC.dot(target))>0.0)
 	    target.negate(target);
@@ -279,6 +276,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param array result The an array of contact point objects, see clipFaceAgainstHull
      * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
      */
+    var WorldNormal = new CANNON.Vec3();
     this.clipAgainstHull = function(posA,quatA,hullB,posB,quatB,separatingNormal,minDist,maxDist,result){
 	if(!(posA instanceof CANNON.Vec3))
 	    throw new Error("posA must be Vec3");
@@ -288,7 +286,6 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	var curMaxDist = maxDist;
 	var closestFaceB = -1;
 	var dmax = -Infinity;
-	var WorldNormal = new CANNON.Vec3();
 	for(var face=0; face < hullB.faces.length; face++){
 	    hullB.faceNormals[face].copy(WorldNormal);
 	    quatB.vmult(WorldNormal,WorldNormal);
@@ -334,6 +331,14 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param float maxDist
      * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
      */
+    var faceANormalWS = new CANNON.Vec3();
+    var edge0 = new CANNON.Vec3();
+    var WorldEdge0 = new CANNON.Vec3();
+    var worldPlaneAnormal1 = new CANNON.Vec3();
+    var planeNormalWS1 = new CANNON.Vec3();
+    var worldA1 = new CANNON.Vec3();
+    var localPlaneNormal = new CANNON.Vec3();
+    var planeNormalWS = new CANNON.Vec3();
     this.clipFaceAgainstHull = function(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist,result){
 	if(!(separatingNormal instanceof CANNON.Vec3))
 	    throw new Error("sep normal must be vector");
@@ -349,7 +354,6 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	// Find the face with normal closest to the separating axis
 	var closestFaceA = -1;
 	var dmin = Infinity;
-	var faceANormalWS = new CANNON.Vec3();
 	for(var face=0; face<hullA.faces.length; face++){
 	    hullA.faceNormals[face].copy(faceANormalWS);
 	    quatA.vmult(faceANormalWS,faceANormalWS);
@@ -380,10 +384,6 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	// Clip the polygon to the back of the planes of all faces of hull A, that are adjacent to the witness face
 	var numContacts = pVtxIn.length;
 	var numVerticesA = polyA.length;
-	var edge0 = new CANNON.Vec3();
-	var WorldEdge0 = new CANNON.Vec3();
-	var worldPlaneAnormal1 = new CANNON.Vec3();
-	var planeNormalWS1 = new CANNON.Vec3();
 	var res = [];
 	for(var e0=0; e0<numVerticesA; e0++){
 	    var a = hullA.vertices[polyA[e0]];
@@ -397,26 +397,23 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	    posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
 	    WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
 	    planeNormalWS1.negate(planeNormalWS1);
-	    var worldA1 = new CANNON.Vec3();
 	    a.copy(worldA1);
 	    quatA.vmult(worldA1,worldA1);
 	    posA.vadd(worldA1,worldA1);
 	    var planeEqWS1 = -worldA1.dot(planeNormalWS1);
-
+	    var planeEqWS;
 	    if(true){
 		var otherFace = polyA.connectedFaces[e0];
-		var localPlaneNormal = new CANNON.Vec3();
 		this.faceNormals[otherFace].copy(localPlaneNormal);
 		var localPlaneEq = planeConstant(otherFace);
 		
-		var planeNormalWS = new CANNON.Vec3();
 		localPlaneNormal.copy(planeNormalWS);
 		quatA.vmult(planeNormalWS,planeNormalWS);
 		//posA.vadd(planeNormalWS,planeNormalWS);
 		var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
 	    } else  {
-		var planeNormalWS = planeNormalWS1;
-		var planeEqWS = planeEqWS1;
+		planeNormalWS1.copy(planeNormalWS);
+		planeEqWS = planeEqWS1;
 	    }
 
 	    // Clip face against our constructed plane
@@ -432,11 +429,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 	//console.log("Resulting points after clip:",pVtxIn);
         
 	// only keep contact points that are behind the witness face
-	var localPlaneNormal = new CANNON.Vec3();
 	this.faceNormals[closestFaceA].copy(localPlaneNormal);
 	
 	var localPlaneEq = planeConstant(closestFaceA);
-	var planeNormalWS = new CANNON.Vec3();
 	localPlaneNormal.copy(planeNormalWS);
 	quatA.vmult(planeNormalWS,planeNormalWS);
 	
@@ -573,10 +568,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param CANNON.Vec3 target
      * @todo unit test?
      */
+    var cb = new CANNON.Vec3();
+    var ab = new CANNON.Vec3();
     function normal( va, vb, vc, target ) {
-	var cb = new CANNON.Vec3();
-	var ab = new CANNON.Vec3();
-
 	vb.vsub(va,ab);
 	vc.vsub(vb,cb);
 	cb.cross(ab,target);
