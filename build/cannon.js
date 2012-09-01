@@ -629,15 +629,20 @@ CANNON.Vec3 = function(x,y,z){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.cross = function(v,target){
-  target = target || new CANNON.Vec3();
-  var A = [this.x, this.y, this.z];
-  var B = [v.x, v.y, v.z];
-  
-  target.x = (A[1] * B[2]) - (A[2] * B[1]);
-  target.y = (A[2] * B[0]) - (A[0] * B[2]);
-  target.z = (A[0] * B[1]) - (A[1] * B[0]);
+    var vx=v.x, vy=v.y, vz=v.z, x=this.x, y=this.y, z=this.z;
+    target = target || new CANNON.Vec3();
 
-  return target;
+    var A = [this.x, this.y, this.z];
+    var B = [v.x, v.y, v.z];
+    
+    /*target.x = (A[1] * B[2]) - (A[2] * B[1]);
+    target.y = (A[2] * B[0]) - (A[0] * B[2]);
+    target.z = (A[0] * B[1]) - (A[1] * B[0]);*/
+    target.x = (y * vz) - (z * vy);
+    target.y = (z * vx) - (x * vz);
+    target.z = (x * vy) - (y * vx);
+    
+    return target;
 };
 
 /**
@@ -716,18 +721,20 @@ CANNON.Vec3.prototype.crossmat = function(){
  * @return float Returns the norm of the vector
  */
 CANNON.Vec3.prototype.normalize = function(){
-  var n = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
-  if(n>0.0){
-    this.x /= n;
-    this.y /= n;
-    this.z /= n;
-  } else {
-    // Make something up
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
-  }
-  return n;
+    var x=this.x, y=this.y, z=this.z;
+    var n = Math.sqrt(x*x + y*y + z*z);
+    if(n>0.0){
+	var invN = 1/n;
+	this.x *= invN;
+	this.y *= invN;
+	this.z *= invN;
+    } else {
+	// Make something up
+	this.x = 0;
+	this.y = 0;
+	this.z = 0;
+    }
+    return n;
 };
 
 /**
@@ -738,19 +745,20 @@ CANNON.Vec3.prototype.normalize = function(){
  * @return CANNON.Vec3 Returns the unit vector
  */
 CANNON.Vec3.prototype.unit = function(target){
-  target = target || new CANNON.Vec3();
-  var ninv = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
-  if(ninv>0.0){
-    ninv = 1.0/ninv;
-    target.x = this.x * ninv;
-    target.y = this.y * ninv;
-    target.z = this.z * ninv;
-  } else {
-    target.x = 0;
-    target.y = 0;
-    target.z = 0;
-  }
-  return target;
+    target = target || new CANNON.Vec3();
+    var x=this.x, y=this.y, z=this.z;
+    var ninv = Math.sqrt(x*x + y*y + z*z);
+    if(ninv>0.0){
+	ninv = 1.0/ninv;
+	target.x = x * ninv;
+	target.y = y * ninv;
+	target.z = z * ninv;
+    } else {
+	target.x = 0;
+	target.y = 0;
+	target.z = 0;
+    }
+    return target;
 };
 
 /**
@@ -760,7 +768,8 @@ CANNON.Vec3.prototype.unit = function(target){
  * @return float
  */
 CANNON.Vec3.prototype.norm = function(){
-  return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+    var x=this.x, y=this.y, z=this.z;
+    return Math.sqrt(x*x + y*y + z*z);
 };
 
 /**
@@ -770,13 +779,15 @@ CANNON.Vec3.prototype.norm = function(){
  * @return float
  */
 CANNON.Vec3.prototype.norm2 = function(){
-  return this.dot(this);
+    return this.dot(this);
 };
 
 CANNON.Vec3.prototype.distanceTo = function(p){
-    return Math.sqrt((p.x-this.x)*(p.x-this.x)+
-		     (p.y-this.y)*(p.y-this.y)+
-		     (p.z-this.z)*(p.z-this.z));
+    var x=this.x, y=this.y, z=this.z;
+    var px=p.x, py=p.y, pz=p.z;
+    return Math.sqrt((px-x)*(px-x)+
+		     (py-y)*(py-y)+
+		     (pz-z)*(pz-z));
 };
 
 /**
@@ -892,9 +903,10 @@ CANNON.Vec3.prototype.copy = function(target){
  * @param CANNON.Vec3 target
  */
 CANNON.Vec3.prototype.lerp = function(v,t,target){
-  target.x = this.x + (v.x-this.x)*t;
-  target.y = this.y + (v.y-this.y)*t;
-  target.z = this.z + (v.z-this.z)*t;
+    var x=this.x, y=this.y, z=this.z;
+    target.x = x + (v.x-x)*t;
+    target.y = y + (v.y-y)*t;
+    target.z = z + (v.z-z)*t;
 };
 
 /**
