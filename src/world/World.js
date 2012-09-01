@@ -351,7 +351,9 @@ CANNON.World.prototype.step = function(dt){
   var world = this,
   that = this,
   N = this.numObjects(),
-  bodies = this.bodies;
+  bodies = this.bodies,
+  solver = this.solver,
+  gravity = this.gravity;
 
   if(dt==undefined){
     if(this.last_dt)
@@ -365,9 +367,9 @@ CANNON.World.prototype.step = function(dt){
     var bi = bodies[i];
     if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
       var f = bodies[i].force, m = bodies[i].mass;
-      f.x += world.gravity.x * m;
-      f.y += world.gravity.y * m;
-      f.z += world.gravity.z * m;
+      f.x += gravity.x * m;
+      f.y += gravity.y * m;
+      f.z += gravity.z * m;
     }
   }
 
@@ -423,7 +425,7 @@ CANNON.World.prototype.step = function(dt){
   collisionMatrixTick();
 
   // Reset contact solver
-  this.solver.reset(N);
+  solver.reset(N);
 
   // Generate contacts
   var oldcontacts = this.contacts;
@@ -436,10 +438,12 @@ CANNON.World.prototype.step = function(dt){
 
   // Loop over all collisions
   var temp = this.temp;
-  for(var k=0; k<this.contacts.length; k++){
+  var contacts = this.contacts;
+  var ncontacts = contacts.length;
+  for(var k=0; k<ncontacts; k++){
 
     // Current contact
-    var c = this.contacts[k];
+    var c = contacts[k];
 
     // Get current collision indeces
     var bi = c.bi,
@@ -519,7 +523,7 @@ CANNON.World.prototype.step = function(dt){
       var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
 
       var gn = c.ni.mult(g);
-      this.solver
+      solver
 	.addConstraint( // Non-penetration constraint jacobian
 		       [-n.x,-n.y,-n.z,
 			-rixn.x,-rixn.y,-rixn.z,
@@ -557,7 +561,7 @@ CANNON.World.prototype.step = function(dt){
 
       // Friction constraints
       if(mu>0.0){
-	var g = that.gravity.norm();
+	var g = gravity.norm();
 	for(var ti=0; ti<tangents.length; ti++){
 	  var t = tangents[ti];
 	  var rixt = c.ri.cross(t);
@@ -566,7 +570,7 @@ CANNON.World.prototype.step = function(dt){
 	  var ut_rel = t.mult(u_rel.dot(t));
 	  var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
 	  var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
-	  this.solver
+	  solver
 	    .addConstraint( // Non-penetration constraint jacobian
 			   [-t.x,-t.y,-t.z,
 			    -rixt.x,-rixt.y,-rixt.z,
@@ -609,35 +613,45 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Add user-defined constraints
-  for(var i=0; i<this.constraints.length; i++){
+  var constraints = this.constraints;
+  var nconstraints = constraints.length;
+  for(var i=0; i<nconstraints; i++){
     // Preliminary - ugly but works
     var bj=-1, bi=-1;
-    for(var j=0; j<this.bodies.length; j++)
-      if(this.bodies[j].id === this.constraints[i].body_i.id)
+    for(var j=0; j<N; j++)
+      if(bodies[j].id === constraints[i].body_i.id)
 	bi = j;
-      else if(this.bodies[j].id === this.constraints[i].body_j.id)
+      else if(bodies[j].id === constraints[i].body_j.id)
 	bj = j;
-    this.solver.addConstraint2(this.constraints[i],bi,bj);
+    solver.addConstraint2(constraints[i],bi,bj);
   }
 
   var bi;
-  if(this.solver.n){
+  if(solver.n){
    
-      this.solver.h = dt;
-      this.solver.solve();
+      solver.h = dt;
+      solver.solve();
+      var vxlambda = solver.vxlambda,
+      vylambda = solver.vylambda,
+      vzlambda = solver.vzlambda;
+      var wxlambda = solver.wxlambda,
+      wylambda = solver.wylambda,
+      wzlambda = solver.wzlambda;
 
       // Apply constraint velocities
       for(var i=0; i<N; i++){
 	  bi = bodies[i];
 	  if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
 	      var b = bodies[i];
-	      b.velocity.x += this.solver.vxlambda[i];
-	      b.velocity.y += this.solver.vylambda[i];
-	      b.velocity.z += this.solver.vzlambda[i];
+	      var velo = b.velocity,
+	      avelo = b.angularVelocity;
+	      velo.x += vxlambda[i],
+	      velo.y += vylambda[i],
+	      velo.z += vzlambda[i];
 	      if(b.angularVelocity){
-	        b.angularVelocity.x += this.solver.wxlambda[i];
-	        b.angularVelocity.y += this.solver.wylambda[i];
-	        b.angularVelocity.z += this.solver.wzlambda[i];
+	        avelo.x += wxlambda[i];
+		avelo.y += wylambda[i];
+	        avelo.z += wzlambda[i];
 	      }
 	  }
       }
@@ -647,11 +661,13 @@ CANNON.World.prototype.step = function(dt){
   for(var i=0; i<N; i++){
     bi = bodies[i];
     if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
-      var ld = 1.0 - bi.linearDamping;
-      var ad = 1.0 - bi.angularDamping;
-      bi.velocity.mult(ld,bi.velocity);
-      if(bi.angularVelocity)
-	bi.angularVelocity.mult(ad,bi.angularVelocity);
+	var ld = 1.0 - bi.linearDamping,
+	ad = 1.0 - bi.angularDamping,
+	v = bi.velocity,
+	av = bi.angularVelocity;
+	v.mult(ld,v);
+	if(av)
+	    av.mult(ad,av);
     }
   }
 
@@ -725,16 +741,16 @@ CANNON.World.prototype.step = function(dt){
   that.dispatchEvent({type:"postStep"});
 
   // Invoke post-step callbacks
-  for(var i in bodies){
-    var bi = bodies[i];
-    bi.postStep && bi.postStep.call(bi);
+  for(var i=0; i<N; i++){
+      var bi = bodies[i];
+      var postStep = bi.postStep;
+      postStep && postStep.call(bi);
   }
 
   // Sleeping update
   if(world.allowSleep){
       for(var i=0; i<N; i++){
-	  var bi = bodies[i];
-	  bi.sleepTick();
+	  bodies[i].sleepTick();
       }
   }
 };
