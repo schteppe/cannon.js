@@ -9,13 +9,25 @@ exports.convexHull = {
     },
 
     "intersectBody" : function(test) {
-        test.expect(3);
 	var r = new C.Ray(new C.Vec3(5,0,0),new C.Vec3(-1,0,0));
 	var shape = createPolyhedron(0.5);
 	var body = new C.RigidBody(1,shape);
 	var result = r.intersectBody(body);
+	test.equals(result.length,1,"Could not intersect body (got "+result.length+" intersections)");
+	test.ok(result[0].point.almostEquals(new C.Vec3(0.5,0,0)));
+
+	// test rotating the body first
+	body.quaternion.setFromAxisAngle(new C.Vec3(1,0,0),Math.PI);
+	var result = r.intersectBody(body);
 	test.equals(result.length,1);
 	test.ok(result[0].point.almostEquals(new C.Vec3(0.5,0,0)));
+
+	// test shooting from other direction
+	r.direction.set(0,0,-1);
+	r.origin.set(0,0,5);
+	var result = r.intersectBody(body);
+	test.equals(result.length,1,"Did not get any intersection after changing ray origin!");
+	test.ok(result[0].point.almostEquals(new C.Vec3(0,0,0.5)));
 
 	// test miss
 	var r = new C.Ray(new C.Vec3(5,1,0),new C.Vec3(-1,0,0));
@@ -45,7 +57,7 @@ exports.convexHull = {
 	var shape = new C.Box(new C.Vec3(0.5,0.5,0.5));
 	var body = new C.RigidBody(1,shape);
 	var result = r.intersectBody(body);
-	test.equals(result.length,1);
+	test.equals(result.length,1,"Could not intersect box!");
 	test.ok(result[0].point.almostEquals(new C.Vec3(0.5,0,0)));
         test.done();
     }

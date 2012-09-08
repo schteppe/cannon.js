@@ -48,4 +48,4 @@ size: minify
 	rm $(CANNON_BUILD_MINIFY).temp.gz
 
 test: bundle
-	./node_modules/.bin/nodeunit ./test
+	./node_modules/.bin/nodeunit ./test/*.js

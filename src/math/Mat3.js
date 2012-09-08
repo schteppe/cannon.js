@@ -2,7 +2,7 @@
 
 /**
  * @class CANNON.Mat3
- * @brief Produce a 3x3 matrix. Columns first!
+ * @brief A 3x3 matrix.
  * @param array elements Array of nine elements. Optional.
  * @author schteppe / http://github.com/schteppe
  */
@@ -20,7 +20,7 @@ CANNON.Mat3 = function(elements){
 };
 
 /**
- * @fn identity
+ * @method identity
  * @memberof CANNON.Mat3
  * @brief Sets the matrix to identity
  * @todo Should perhaps be renamed to setIdentity() to be more clear.
@@ -41,7 +41,7 @@ CANNON.Mat3.prototype.identity = function(){
 };
 
 /**
- * @fn vmult
+ * @method vmult
  * @memberof CANNON.vmult
  * @brief Matrix-Vector multiplication
  * @param CANNON.Vec3 v The vector to multiply with
@@ -67,7 +67,7 @@ CANNON.Mat3.prototype.vmult = function(v,target){
 };
 
 /**
- * @fn smult
+ * @method smult
  * @memberof CANNON.Mat3
  * @brief Matrix-scalar multiplication
  * @param float s
@@ -79,7 +79,7 @@ CANNON.Mat3.prototype.smult = function(s){
 };
 
 /**
- * @fn mmult
+ * @method mmult
  * @memberof CANNON.Mat3
  * @brief Matrix multiplication
  * @param CANNON.Mat3 m Matrix to multiply with from left side.
@@ -100,7 +100,7 @@ CANNON.Mat3.prototype.mmult = function(m){
 };
 
 /**
- * @fn solve
+ * @method solve
  * @memberof CANNON.Mat3
  * @brief Solve Ax=b
  * @param CANNON.Vec3 b The right hand side
@@ -175,7 +175,7 @@ CANNON.Mat3.prototype.solve = function(b,target){
 };
 
 /**
- * @fn e
+ * @method e
  * @memberof CANNON.Mat3
  * @brief Get an element in the matrix by index. Index starts at 0, not 1!!!
  * @param int i
@@ -193,7 +193,7 @@ CANNON.Mat3.prototype.e = function(i,j,value){
 };
 
 /**
- * @fn copy
+ * @method copy
  * @memberof CANNON.Mat3
  * @brief Copy the matrix
  * @param CANNON.Mat3 target Optional. Target to save the copy in.
@@ -208,7 +208,7 @@ CANNON.Mat3.prototype.copy = function(target){
 };
 
 /**
- * @fn toString
+ * @method toString
  * @memberof CANNON.Mat3
  * @brief Returns a string representation of the matrix.
  * @return string

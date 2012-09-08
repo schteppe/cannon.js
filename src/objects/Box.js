@@ -28,7 +28,7 @@ CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
 
 /**
- * @fn updateConvexPolyhedronRepresentation
+ * @method updateConvexPolyhedronRepresentation
  * @memberof CANNON.Box
  * @brief Updates the local convex polyhedron representation used for some collisions.
  */
@@ -76,7 +76,7 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
 };
 
 /**
- * @fn getCorners
+ * @method getCorners
  * @memberof CANNON.Box
  * @brief Get the box corners
  * @param CANNON.Quaternion quat Orientation to apply to the corner vectors. If not provided, the vectors will be in respect to the local frame.
@@ -101,7 +101,7 @@ CANNON.Box.prototype.getCorners = function(quat){
 };
 
 /**
- * @fn getSideNormals
+ * @method getSideNormals
  * @memberof CANNON.Box
  * @brief Get the box 6 side normals
  * @param bool includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)

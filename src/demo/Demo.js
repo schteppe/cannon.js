@@ -17,6 +17,7 @@ CANNON.Demo = function(){
     scene:0,
     paused:false,
     rendermode:0,
+    constraints:false,
     contacts:false,  // Contact points
     cm2contact:false, // center of mass to contact points
     normals:false, // contact normals
@@ -45,10 +46,11 @@ CANNON.Demo = function(){
   this._contactmeshes = [];
   this._normallines = [];
   this._contactlines = [];
+  this._distanceConstraintLines = [];
   this._axes = [];
 
   this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
-  this.particleGeo = new THREE.SphereGeometry( 1, 6, 6 );
+  this.particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
 
   // Material
   this.materialColor = 0xdddddd;
@@ -57,6 +59,7 @@ CANNON.Demo = function(){
   this.wireframeMaterial = new THREE.MeshBasicMaterial( { color: this.materialColor, wireframe:true } );
   this.currentMaterial = this.solidMaterial;
   this.contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+  this.particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
 
   this.renderModes = {
     NORMAL:0,
@@ -78,7 +81,7 @@ CANNON.Demo = function(){
 };
 
 /**
- * @fn renderMode
+ * @method renderMode
  * @memberof CANNON.Demo
  * @brief Get/set render mode
  * @param int mode
@@ -125,7 +128,7 @@ CANNON.Demo.prototype.renderMode = function(mode){
 };
 
 /**
- * @fn addScene
+ * @method addScene
  * @memberof CANNON.Demo
  * @brief Add a scene to the demo app
  * @param function A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
@@ -135,7 +138,7 @@ CANNON.Demo.prototype.addScene = function(initfunc){
 };
 
 /**
- * @fn restartCurrentScene
+ * @method restartCurrentScene
  * @memberof CANNON.Demo
  * @brief Restarts the current scene
  */
@@ -154,21 +157,21 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
 };
 
 /**
- * @fn updateVisuals
+ * @method updateVisuals
  * @memberof CANNON.Demo
  * @brief Loads body positions and orientations from the World and updates the Three.js graphics.
  */
 CANNON.Demo.prototype.updateVisuals = function(){
   
-  var bodies = this._phys_bodies, visuals = this._phys_visuals;
+    var bodies = this._phys_bodies, visuals = this._phys_visuals, world = this._world;
   var N = bodies.length;
 
   // Read position data into visuals
   for(var i=0; i<N; i++){
-      var b = bodies[i];
-      b.position.copy(visuals[i].position);
+      var b = bodies[i], visual = visuals[i];
+      b.position.copy(visual.position);
       if(b.quaternion)
-        b.quaternion.copy(visuals[i].quaternion);
+        b.quaternion.copy(visual.quaternion);
   }
   
   // Render contacts
@@ -180,8 +183,8 @@ CANNON.Demo.prototype.updateVisuals = function(){
     var old_meshes = this._contactmeshes;
     var old_normal_meshes = this._normalmeshes;
     this._contactmeshes = [];
-    for(var ci in this._world.contacts){
-      var c = this._world.contacts[ci];
+    for(var ci in world.contacts){
+      var c = world.contacts[ci];
       var bi=c.bi, bj=c.bj, mesh_i, mesh_j;
       if(numadded<old_meshes.length){
 	// Get mesh from prev timestep
@@ -225,18 +228,14 @@ CANNON.Demo.prototype.updateVisuals = function(){
       this._scene.remove(this._contactmeshes[i]);
   }
 
-  // Lines
+  // Lines from center of mass to contact point
   if(this.settings.cm2contact){
-
-    // remove last timesteps' lines
-    /*while(this._contactlines.length)
-      this._scene.remove(this._contactlines.pop());*/
 
     var old_lines = this._contactlines;
     this._contactlines = [];
 
-    for(var ci in this._world.contacts){
-      var c = this._world.contacts[ci];
+    for(var ci in world.contacts){
+      var c = world.contacts[ci];
       var bi=c.bi, bj=c.bj, mesh_i, mesh_j;
       var i=bi.id, j=bj.id;
       var line, geometry;
@@ -274,15 +273,75 @@ CANNON.Demo.prototype.updateVisuals = function(){
     // Remove all contact lines
     for(var i=0; i<this._contactlines.length; i++)
       this._scene.remove(this._contactlines[i]);
+  }
+
+
+
+
+  // Lines for distance constraints
+  if(this.settings.constraints){
+    var old_lines = this._distanceConstraintLines;
+    this._distanceConstraintLines = [];
+
+    for(var ci=0; ci<world.constraints.length; ci++){
+
+      var c = world.constraints[ci];
+      if(!(c instanceof CANNON.DistanceConstraint))
+	continue;
+
+      var bi=c.body_i, bj=c.body_j, mesh;
+      var i=bi.id, j=bj.id;
+      var line, geometry;
+
+      if(old_lines.length){
+	  // Get mesh from prev timestep
+	  line = old_lines.pop();
+	  geometry = line.geometry;
+	  geometry.vertices.pop();
+	  geometry.vertices.pop();
+      } else {
+	  // Create new mesh
+	  geometry = new THREE.Geometry();
+	  geometry.vertices.push(new THREE.Vector3(0,0,0));
+	  geometry.vertices.push(new THREE.Vector3(1,1,1));
+	  line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
+	  this._scene.add(line);
+      }
+      this._distanceConstraintLines.push(line);
+      // Remember, bj is either a Vec3 or a Body.
+      var v;
+      if(bj.position)
+        v = bj.position;
+      else
+        v = bj;
+      line.scale.set(v.x-bi.position.x,
+		     v.y-bi.position.y,
+		     v.z-bi.position.z);
+      bi.position.copy(line.position);
+      this._scene.add(line);
+    }
+
+    // Remove overflowing
+    while(old_lines.length)
+      this._scene.remove(old_lines.pop());
+
+  } else if(this._distanceConstraintLines.length){
+
+    // Remove all contact lines
+    for(var i=0; i<this._distanceConstraintLines.length; i++)
+      this._scene.remove(this._distanceConstraintLines[i]);
 
   }
+
+
+
 
   // Normal lines
   if(this.settings.normals){
     var old_lines = this._normallines;
     this._normallines = [];
-    for(var ci in this._world.contacts){
-      var c = this._world.contacts[ci];
+    for(var ci in world.contacts){
+      var c = world.contacts[ci];
       var bi=c.bi, bj=c.bj, mesh;
       var i=bi.id, j=bj.id;
       var line, geometry;
@@ -322,8 +381,8 @@ CANNON.Demo.prototype.updateVisuals = function(){
   if(this.settings.axes){
     var old_axes = this._axes;
     this._axes = [];
-    for(var bi in this._world.bodies){
-      var b = this._world.bodies[bi], mesh;
+    for(var bi in world.bodies){
+      var b = world.bodies[bi], mesh;
       if(old_axes.length){
 	// Get mesh from prev timestep
 	mesh = old_axes.pop();
@@ -365,7 +424,7 @@ CANNON.Demo.prototype.updateVisuals = function(){
 };
 
 /**
- * @fn start
+ * @method start
  * @memberof CANNON.Demo
  * @brief When all scenes have been added, run this to launch the Demo app.
  */
@@ -376,8 +435,8 @@ CANNON.Demo.prototype.start = function(){
   if ( ! Detector.webgl )
     Detector.addGetWebGLMessage();
   
-  this.SHADOW_MAP_WIDTH = 1024;
-  this.SHADOW_MAP_HEIGHT = 1024;
+  this.SHADOW_MAP_WIDTH = 512;
+  this.SHADOW_MAP_HEIGHT = 512;
   var MARGIN = 0;
   this.SCREEN_WIDTH = window.innerWidth;
   this.SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
@@ -402,6 +461,7 @@ CANNON.Demo.prototype.start = function(){
     
     // Camera
     that.camera = camera = new THREE.PerspectiveCamera( 24, that.SCREEN_WIDTH / that.SCREEN_HEIGHT, NEAR, FAR );
+     
     camera.up.set(0,0,1);
     camera.position.x = 0;
     camera.position.y = 30;
@@ -418,19 +478,21 @@ CANNON.Demo.prototype.start = function(){
     scene.add( ambient );
 
     light = new THREE.SpotLight( 0xffffff );
-    light.position.set( 40, 40, 50 );
+    light.position.set( 30, 30, 40 );
     light.target.position.set( 0, 0, 0 );
     if(that.shadowsOn){
       light.castShadow = true;
 
-      light.shadowCameraNear = 1;
-      light.shadowCameraFar = camera.far;
+      light.shadowCameraNear = 10;
+	light.shadowCameraFar = 100;//camera.far;
       light.shadowCameraFov = 30;
     
       light.shadowMapBias = 0.0039;
       light.shadowMapDarkness = 0.5;
       light.shadowMapWidth = that.SHADOW_MAP_WIDTH;
       light.shadowMapHeight = that.SHADOW_MAP_HEIGHT;
+
+	//light.shadowCameraVisible = true;
     }
     scene.add( light );
     scene.add( camera );
@@ -578,6 +640,7 @@ CANNON.Demo.prototype.start = function(){
       });
     rf.add(that.settings,'cm2contact').onChange(function(cm2contact){});
     rf.add(that.settings,'normals').onChange(function(normals){});
+    rf.add(that.settings,'constraints').onChange(function(constraints){});
     rf.add(that.settings,'axes').onChange(function(axes){});
       rf.add(that.settings,'particleSize').min(0).max(1).onChange(function(size){
 	for(var i=0; i<that._phys_visuals.length; i++){
@@ -762,7 +825,7 @@ CANNON.Demo.prototype._buildScene = function(n){
 	if(body instanceof CANNON.RigidBody)
           mesh = shape2mesh(body.shape);
 	else if(body instanceof CANNON.Particle){
-	  mesh = new THREE.Mesh( that.particleGeo, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) );
+	  mesh = new THREE.Mesh( that.particleGeo, that.particleMaterial );
 	  mesh.scale.set(that.settings.particleSize,
 			 that.settings.particleSize,
 			 that.settings.particleSize);

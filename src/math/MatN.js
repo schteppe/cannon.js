@@ -21,7 +21,7 @@ CANNON.MatN = function(cols,rows,elements){
 };
 
 /**
- * @fn identity
+ * @method identity
  * @memberof CANNON.MatN
  * @brief Sets the matrix to identity
  * @todo Should perhaps be renamed to setIdentity() to be more clear.

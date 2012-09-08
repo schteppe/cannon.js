@@ -8,10 +8,15 @@
  * @author schteppe
  */
 CANNON.Plane = function(normal){
-  CANNON.Shape.call(this);
-  normal.normalize();
-  this.normal = normal;
-  this.type = CANNON.Shape.types.PLANE;
+    CANNON.Shape.call(this);
+    normal.normalize();
+
+    /**
+     * @property CANNON.Vec3 normal
+     * @memberof CANNON.Plane
+     */
+    this.normal = normal;
+    this.type = CANNON.Shape.types.PLANE;
 };
 CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;

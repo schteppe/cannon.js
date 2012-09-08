@@ -59,7 +59,7 @@ CANNON.World = function(){
 };
 
 /**
- * @fn getContactMaterial
+ * @method getContactMaterial
  * @memberof CANNON.World
  * @brief Get the contact material between materials m1 and m2
  * @param CANNON.Material m1
@@ -84,7 +84,7 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
 
 /**
  * @private
- * @fn _addImpulse
+ * @method _addImpulse
  * @memberof CANNON.World
  * @brief Add an impulse to the colliding bodies i and j
  * @param int i Body number 1
@@ -186,7 +186,7 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
 };
 
 /**
- * @fn numObjects
+ * @method numObjects
  * @memberof CANNON.World
  * @brief Get number of objects in the world.
  * @return int
@@ -196,7 +196,7 @@ CANNON.World.prototype.numObjects = function(){
 };
 
 /**
- * @fn clearCollisionState
+ * @method clearCollisionState
  * @memberof CANNON.World
  * @brief Clear the contact state for a body.
  * @param CANNON.Body body
@@ -212,7 +212,7 @@ CANNON.World.prototype.clearCollisionState = function(body){
 };
 
 /**
- * @fn add
+ * @method add
  * @memberof CANNON.World
  * @brief Add a rigid body to the simulation.
  * @param CANNON.Body body
@@ -236,7 +236,7 @@ CANNON.World.prototype.add = function(body){
 };
 
 /**
- * @fn addConstraint
+ * @method addConstraint
  * @memberof CANNON.World
  * @brief Add a constraint to the simulation.
  * @param CANNON.Constraint c
@@ -249,7 +249,7 @@ CANNON.World.prototype.addConstraint = function(c){
 };
 
 /**
- * @fn id
+ * @method id
  * @memberof CANNON.World
  * @brief Generate a new unique integer identifyer
  * @return int
@@ -259,7 +259,7 @@ CANNON.World.prototype.id = function(){
 };
 
 /**
- * @fn remove
+ * @method remove
  * @memberof CANNON.World
  * @brief Remove a rigid body from the simulation.
  * @param CANNON.Body body
@@ -277,7 +277,7 @@ CANNON.World.prototype.remove = function(body){
 };
 
 /**
- * @fn addMaterial
+ * @method addMaterial
  * @memberof CANNON.World
  * @brief Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
  * @param CANNON.Material m
@@ -303,7 +303,7 @@ CANNON.World.prototype.addMaterial = function(m){
 };
 
 /**
- * @fn addContactMaterial
+ * @method addContactMaterial
  * @memberof CANNON.World
  * @brief Adds a contact material to the World
  * @param CANNON.ContactMaterial cmat
@@ -342,7 +342,7 @@ CANNON.World.prototype._id2index = function(id){
 };
 
 /**
- * @fn step
+ * @method step
  * @memberof CANNON.World
  * @brief Step the simulation
  * @param float dt
@@ -351,7 +351,9 @@ CANNON.World.prototype.step = function(dt){
   var world = this,
   that = this,
   N = this.numObjects(),
-  bodies = this.bodies;
+  bodies = this.bodies,
+  solver = this.solver,
+  gravity = this.gravity;
 
   if(dt==undefined){
     if(this.last_dt)
@@ -365,9 +367,9 @@ CANNON.World.prototype.step = function(dt){
     var bi = bodies[i];
     if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
       var f = bodies[i].force, m = bodies[i].mass;
-      f.x += world.gravity.x * m;
-      f.y += world.gravity.y * m;
-      f.z += world.gravity.z * m;
+      f.x += gravity.x * m;
+      f.y += gravity.y * m;
+      f.z += gravity.z * m;
     }
   }
 
@@ -423,7 +425,7 @@ CANNON.World.prototype.step = function(dt){
   collisionMatrixTick();
 
   // Reset contact solver
-  this.solver.reset(N);
+  solver.reset(N);
 
   // Generate contacts
   var oldcontacts = this.contacts;
@@ -436,10 +438,12 @@ CANNON.World.prototype.step = function(dt){
 
   // Loop over all collisions
   var temp = this.temp;
-  for(var k=0; k<this.contacts.length; k++){
+  var contacts = this.contacts;
+  var ncontacts = contacts.length;
+  for(var k=0; k<ncontacts; k++){
 
     // Current contact
-    var c = this.contacts[k];
+    var c = contacts[k];
 
     // Get current collision indeces
     var bi = c.bi,
@@ -489,24 +493,38 @@ CANNON.World.prototype.step = function(dt){
       var tangents = [temp.t1, temp.t2];
       n.tangents(tangents[0],tangents[1]);
 
-      var v_contact_i = vi.vadd(wi.cross(c.ri));
-      var v_contact_j = vj.vadd(wj.cross(c.rj));
-      var u_rel = v_contact_j.vsub(v_contact_i);
-      var w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
+
+      var v_contact_i;
+      if(wi) v_contact_i = vi.vadd(wi.cross(c.ri));
+      else   v_contact_i = vi.copy();
+
+      var v_contact_j;
+      if(wj) v_contact_j = vj.vadd(wj.cross(c.rj));
+      else   v_contact_j = vj.copy();
+
+      var u_rel = v_contact_j.vsub(v_contact_i)
+      var w_rel;
+      
+      if(wj && wi) w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
+      else if(wi)  w_rel = wi.cross(c.ri).negate();
+      else if(wj)  w_rel = wj.cross(c.rj);
 
       var u = (vj.vsub(vi)); // Contact velo
-      var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+      var uw;
+      if(wj && wi) uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+      else if(wi)  uw = c.ri.cross(wi).negate();
+      else if(wj)  uw = (c.rj.cross(wj));
       u.vsub(uw,u);
 
       // Get mass properties
       var iMi = bi.invMass;
       var iMj = bj.invMass;
-      var iIxi = bi.invInertia.x;
-      var iIyi = bi.invInertia.y;
-      var iIzi = bi.invInertia.z;
-      var iIxj = bj.invInertia.x;
-      var iIyj = bj.invInertia.y;
-      var iIzj = bj.invInertia.z;
+	var iIxi = bi.invInertia ? bi.invInertia.x : 0.0;
+	var iIyi = bi.invInertia ? bi.invInertia.y : 0.0;
+	var iIzi = bi.invInertia ? bi.invInertia.z : 0.0;
+	var iIxj = bj.invInertia ? bj.invInertia.x : 0.0;
+	var iIyj = bj.invInertia ? bj.invInertia.y : 0.0;
+	var iIzj = bj.invInertia ? bj.invInertia.z : 0.0;
 
       // Add contact constraint
       var rixn = temp.rixn;
@@ -519,7 +537,30 @@ CANNON.World.prototype.step = function(dt){
       var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
 
       var gn = c.ni.mult(g);
-      this.solver
+
+	// Rotational forces
+	var tauxi, tauyi, tauzi;
+	if(bi.tau){
+	    tauxi = bi.tau.x;
+	    tauyi = bi.tau.y;
+	    tauzi = bi.tau.z;
+	} else {
+	    tauxi = 0;
+	    tauyi = 0;
+	    tauzi = 0;
+	}
+	var tauxj, tauyj, tauzj;
+	if(bi.tau){
+	    tauxj = bj.tau.x;
+	    tauyj = bj.tau.y;
+	    tauzj = bj.tau.z;
+	} else {
+	    tauxj = 0;
+	    tauyj = 0;
+	    tauzj = 0;
+	}
+
+      solver
 	.addConstraint( // Non-penetration constraint jacobian
 		       [-n.x,-n.y,-n.z,
 			-rixn.x,-rixn.y,-rixn.z,
@@ -547,9 +588,9 @@ CANNON.World.prototype.step = function(dt){
 			 
 		       // External force - forces & torques
 		       [bi.force.x,bi.force.y,bi.force.z,
-			bi.tau.x,bi.tau.y,bi.tau.z,
+			tauxi,tauyi,tauzi,
 			-bj.force.x,-bj.force.y,-bj.force.z,
-			-bj.tau.x,-bj.tau.y,-bj.tau.z],
+			-tauxj,-tauyi,-tauzi],
 		       0,
 		       'inf',
 		       i, // These are id's, not indeces...
@@ -557,7 +598,7 @@ CANNON.World.prototype.step = function(dt){
 
       // Friction constraints
       if(mu>0.0){
-	var g = that.gravity.norm();
+	var g = gravity.norm();
 	for(var ti=0; ti<tangents.length; ti++){
 	  var t = tangents[ti];
 	  var rixt = c.ri.cross(t);
@@ -566,7 +607,7 @@ CANNON.World.prototype.step = function(dt){
 	  var ut_rel = t.mult(u_rel.dot(t));
 	  var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
 	  var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
-	  this.solver
+	  solver
 	    .addConstraint( // Non-penetration constraint jacobian
 			   [-t.x,-t.y,-t.z,
 			    -rixt.x,-rixt.y,-rixt.z,
@@ -594,9 +635,9 @@ CANNON.World.prototype.step = function(dt){
 			     
 			   // External force - forces & torques
 			   [bi.force.x,bi.force.y,bi.force.z,
-			    bi.tau.x,bi.tau.y,bi.tau.z,
+			    tauxi,tauyi,tauzi,
 			    bj.force.x,bj.force.y,bj.force.z,
-			    bj.tau.x,bj.tau.y,bj.tau.z],
+			    tauxj,tauyj,tauzj],
 			     
 			   -mu*100*(bi.mass+bj.mass),
 			   mu*100*(bi.mass+bj.mass),
@@ -609,35 +650,45 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Add user-defined constraints
-  for(var i=0; i<this.constraints.length; i++){
+  var constraints = this.constraints;
+  var nconstraints = constraints.length;
+  for(var i=0; i<nconstraints; i++){
     // Preliminary - ugly but works
     var bj=-1, bi=-1;
-    for(var j=0; j<this.bodies.length; j++)
-      if(this.bodies[j].id === this.constraints[i].body_i.id)
+    for(var j=0; j<N; j++)
+      if(bodies[j].id === constraints[i].body_i.id)
 	bi = j;
-      else if(this.bodies[j].id === this.constraints[i].body_j.id)
+      else if(bodies[j].id === constraints[i].body_j.id)
 	bj = j;
-    this.solver.addConstraint2(this.constraints[i],bi,bj);
+    solver.addConstraint2(constraints[i],bi,bj);
   }
 
   var bi;
-  if(this.solver.n){
+  if(solver.n){
    
-      this.solver.h = dt;
-      this.solver.solve();
+      solver.h = dt;
+      solver.solve();
+      var vxlambda = solver.vxlambda,
+      vylambda = solver.vylambda,
+      vzlambda = solver.vzlambda;
+      var wxlambda = solver.wxlambda,
+      wylambda = solver.wylambda,
+      wzlambda = solver.wzlambda;
 
       // Apply constraint velocities
       for(var i=0; i<N; i++){
 	  bi = bodies[i];
 	  if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
 	      var b = bodies[i];
-	      b.velocity.x += this.solver.vxlambda[i];
-	      b.velocity.y += this.solver.vylambda[i];
-	      b.velocity.z += this.solver.vzlambda[i];
+	      var velo = b.velocity,
+	      avelo = b.angularVelocity;
+	      velo.x += vxlambda[i],
+	      velo.y += vylambda[i],
+	      velo.z += vzlambda[i];
 	      if(b.angularVelocity){
-	        b.angularVelocity.x += this.solver.wxlambda[i];
-	        b.angularVelocity.y += this.solver.wylambda[i];
-	        b.angularVelocity.z += this.solver.wzlambda[i];
+	        avelo.x += wxlambda[i];
+		avelo.y += wylambda[i];
+	        avelo.z += wzlambda[i];
 	      }
 	  }
       }
@@ -647,11 +698,13 @@ CANNON.World.prototype.step = function(dt){
   for(var i=0; i<N; i++){
     bi = bodies[i];
     if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
-      var ld = 1.0 - bi.linearDamping;
-      var ad = 1.0 - bi.angularDamping;
-      bi.velocity.mult(ld,bi.velocity);
-      if(bi.angularVelocity)
-	bi.angularVelocity.mult(ad,bi.angularVelocity);
+	var ld = 1.0 - bi.linearDamping,
+	ad = 1.0 - bi.angularDamping,
+	v = bi.velocity,
+	av = bi.angularVelocity;
+	v.mult(ld,v);
+	if(av)
+	    av.mult(ad,av);
     }
   }
 
@@ -669,45 +722,53 @@ CANNON.World.prototype.step = function(dt){
   var q = temp.step_q; 
   var w = temp.step_w;
   var wq = temp.step_wq;
+  var stepnumber = world.stepnumber;
   var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
   for(var i=0; i<N; i++){
-    var b = bodies[i];
-    if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
-      
-      b.velocity.x += b.force.x * b.invMass * dt;
-      b.velocity.y += b.force.y * b.invMass * dt;
-      b.velocity.z += b.force.z * b.invMass * dt;
-
-      if(b.angularVelocity){
-        b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
-	b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
-	b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
-      }
-
-      // Use new velocity  - leap frog
-      if(!b.isSleeping()){
-	  b.position.x += b.velocity.x * dt;
-	  b.position.y += b.velocity.y * dt;
-	  b.position.z += b.velocity.z * dt;
-	 
+      var b = bodies[i],
+      force = b.force,
+      tau = b.tau;
+      if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
+	  var velo = b.velocity,
+	  angularVelo = b.angularVelocity,
+	  pos = b.position,
+	  quat = b.quaternion,
+	  invMass = b.invMass,
+	  invInertia = b.invInertia;
+	  velo.x += force.x * invMass * dt;
+	  velo.y += force.y * invMass * dt;
+	  velo.z += force.z * invMass * dt;
+	  
 	  if(b.angularVelocity){
-	      w.set(b.angularVelocity.x,
-		    b.angularVelocity.y,
-		    b.angularVelocity.z,
-		    0);
-	      w.mult(b.quaternion,wq);
+              angularVelo.x += tau.x * invInertia.x * dt;
+	      angularVelo.y += tau.y * invInertia.y * dt;
+	      angularVelo.z += tau.z * invInertia.z * dt;
+	  }
+	  
+	  // Use new velocity  - leap frog
+	  if(!b.isSleeping()){
+	      pos.x += velo.x * dt;
+	      pos.y += velo.y * dt;
+	      pos.z += velo.z * dt;
 	      
-	      b.quaternion.x += dt * 0.5 * wq.x;
-	      b.quaternion.y += dt * 0.5 * wq.y;
-	      b.quaternion.z += dt * 0.5 * wq.z;
-	      b.quaternion.w += dt * 0.5 * wq.w;
-	      if(world.stepnumber % 3 === 0)
-		  b.quaternion.normalizeFast();
+	      if(b.angularVelocity){
+		  w.set(angularVelo.x,
+			angularVelo.y,
+			angularVelo.z,
+			0);
+		  w.mult(quat,wq);
+		  
+		  quat.x += dt * 0.5 * wq.x;
+		  quat.y += dt * 0.5 * wq.y;
+		  quat.z += dt * 0.5 * wq.z;
+		  quat.w += dt * 0.5 * wq.w;
+		  if(stepnumber % 3 === 0)
+		      quat.normalizeFast();
+	      }
 	  }
       }
-    }
-    b.force.set(0,0,0);
-    if(b.tau) b.tau.set(0,0,0);
+      b.force.set(0,0,0);
+      if(b.tau) b.tau.set(0,0,0);
   }
 
   // Update world time
@@ -717,16 +778,16 @@ CANNON.World.prototype.step = function(dt){
   that.dispatchEvent({type:"postStep"});
 
   // Invoke post-step callbacks
-  for(var i in bodies){
-    var bi = bodies[i];
-    bi.postStep && bi.postStep.call(bi);
+  for(var i=0; i<N; i++){
+      var bi = bodies[i];
+      var postStep = bi.postStep;
+      postStep && postStep.call(bi);
   }
 
   // Sleeping update
   if(world.allowSleep){
       for(var i=0; i<N; i++){
-	  var bi = bodies[i];
-	  bi.sleepTick();
+	  bodies[i].sleepTick();
       }
   }
 };

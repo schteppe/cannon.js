@@ -3,7 +3,7 @@
 /**
  * @class CANNON.Ray
  * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.
- * @brief A ray is a line in 3D space that can intersect bodies and return intersection points.
+ * @brief A line in 3D space that intersects bodies and return points.
  * @param CANNON.Vec3 origin
  * @param CANNON.Vec3 direction
  */
@@ -14,7 +14,7 @@ CANNON.Ray = function(origin, direction){
     var precision = 0.0001;
 
     /**
-     * @fn setPrecision
+     * @method setPrecision
      * @memberof CANNON.Ray
      * @param float value
      * @brief Sets the precision of the ray. Used when checking parallelity etc.
@@ -35,7 +35,7 @@ CANNON.Ray = function(origin, direction){
     var intersectPoint = new CANNON.Vec3()
 
     /**
-     * @fn intersectBody
+     * @method intersectBody
      * @memberof CANNON.Ray
      * @param CANNON.RigidBody body
      * @brief Shoot a ray at a body, get back information about the hit.
@@ -57,7 +57,7 @@ CANNON.Ray = function(origin, direction){
     };
     
     /**
-     * @fn intersectShape
+     * @method intersectShape
      * @memberof CANNON.Ray
      * @param CANNON.Shape shape
      * @param CANNON.Quaternion quat
@@ -80,6 +80,7 @@ CANNON.Ray = function(origin, direction){
 	    // Checking faces
 	    var dot, scalar, faces = shape.faces, vertices = shape.vertices, normals = shape.faceNormals;
 
+
 	    for ( fi = 0; fi < faces.length; fi++ ) {
 
 		var face = faces[ fi ];
@@ -90,25 +91,24 @@ CANNON.Ray = function(origin, direction){
 		// determine if ray intersects the plane of the face
 		// note: this works regardless of the direction of the face normal
 
-		// Get plane point
-		var vector = new CANNON.Vec3();
+		// Get plane point in world coordinates...
 		vertices[face[0]].copy(vector);
-		vector.vsub(this.origin,vector);
 		q.vmult(vector,vector);
 		vector.vadd(x,vector);
 
+		// ...but make it relative to the ray origin. We'll fix this later.
+		vector.vsub(this.origin,vector);
+
 		// Get plane normal
-		var normal = new CANNON.Vec3();
 		q.vmult(faceNormal,normal);
-		
+
+		// If this dot product is negative, we have something interesting
 		dot = this.direction.dot(normal);
 		
 		// bail if ray and plane are parallel
-
 		if ( Math.abs( dot ) < precision ) continue;
 
 		// calc distance to plane
-
 		scalar = normal.dot( vector ) / dot;
 
 		// if negative distance, then plane is behind ray
@@ -163,7 +163,7 @@ CANNON.Ray = function(origin, direction){
     }
 
     /**
-     * @fn intersectBodies
+     * @method intersectBodies
      * @memberof CANNON.Ray
      * @param Array bodies An array of CANNON.RigidBody objects.
      * @return Array See intersectBody

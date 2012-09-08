@@ -27,7 +27,7 @@ CANNON.Vec3 = function(x,y,z){
 };
 
 /**
- * @fn cross
+ * @method cross
  * @memberof CANNON.Vec3
  * @brief Vector cross product
  * @param CANNON.Vec3 v
@@ -35,19 +35,24 @@ CANNON.Vec3 = function(x,y,z){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.cross = function(v,target){
-  target = target || new CANNON.Vec3();
-  var A = [this.x, this.y, this.z];
-  var B = [v.x, v.y, v.z];
-  
-  target.x = (A[1] * B[2]) - (A[2] * B[1]);
-  target.y = (A[2] * B[0]) - (A[0] * B[2]);
-  target.z = (A[0] * B[1]) - (A[1] * B[0]);
+    var vx=v.x, vy=v.y, vz=v.z, x=this.x, y=this.y, z=this.z;
+    target = target || new CANNON.Vec3();
 
-  return target;
+    var A = [this.x, this.y, this.z];
+    var B = [v.x, v.y, v.z];
+    
+    /*target.x = (A[1] * B[2]) - (A[2] * B[1]);
+    target.y = (A[2] * B[0]) - (A[0] * B[2]);
+    target.z = (A[0] * B[1]) - (A[1] * B[0]);*/
+    target.x = (y * vz) - (z * vy);
+    target.y = (z * vx) - (x * vz);
+    target.z = (x * vy) - (y * vx);
+    
+    return target;
 };
 
 /**
- * @fn set
+ * @method set
  * @memberof CANNON.Vec3
  * @brief Set the vectors' 3 elements
  * @param float x
@@ -63,7 +68,7 @@ CANNON.Vec3.prototype.set = function(x,y,z){
 };
     
 /**
- * @fn vadd
+ * @method vadd
  * @memberof CANNON.Vec3
  * @brief Vector addition
  * @param CANNON.Vec3 v
@@ -83,7 +88,7 @@ CANNON.Vec3.prototype.vadd = function(v,target){
 };
     
 /**
- * @fn vsub
+ * @method vsub
  * @memberof CANNON.Vec3
  * @brief Vector subtraction
  * @param CANNON.Vec3 v
@@ -103,7 +108,7 @@ CANNON.Vec3.prototype.vsub = function(v,target){
 };
 
 /**
- * @fn crossmat
+ * @method crossmat
  * @memberof CANNON.Vec3
  * @brief Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
@@ -116,77 +121,83 @@ CANNON.Vec3.prototype.crossmat = function(){
 };
 
 /**
- * @fn normalize
+ * @method normalize
  * @memberof CANNON.Vec3
  * @brief Normalize the vector. Note that this changes the values in the vector.
  * @return float Returns the norm of the vector
  */
 CANNON.Vec3.prototype.normalize = function(){
-  var n = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
-  if(n>0.0){
-    this.x /= n;
-    this.y /= n;
-    this.z /= n;
-  } else {
-    // Make something up
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
-  }
-  return n;
+    var x=this.x, y=this.y, z=this.z;
+    var n = Math.sqrt(x*x + y*y + z*z);
+    if(n>0.0){
+	var invN = 1/n;
+	this.x *= invN;
+	this.y *= invN;
+	this.z *= invN;
+    } else {
+	// Make something up
+	this.x = 0;
+	this.y = 0;
+	this.z = 0;
+    }
+    return n;
 };
 
 /**
- * @fn unit
+ * @method unit
  * @memberof CANNON.Vec3
  * @brief Get the version of this vector that is of length 1.
  * @param CANNON.Vec3 target Optional target to save in
  * @return CANNON.Vec3 Returns the unit vector
  */
 CANNON.Vec3.prototype.unit = function(target){
-  target = target || new CANNON.Vec3();
-  var ninv = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
-  if(ninv>0.0){
-    ninv = 1.0/ninv;
-    target.x = this.x * ninv;
-    target.y = this.y * ninv;
-    target.z = this.z * ninv;
-  } else {
-    target.x = 0;
-    target.y = 0;
-    target.z = 0;
-  }
-  return target;
+    target = target || new CANNON.Vec3();
+    var x=this.x, y=this.y, z=this.z;
+    var ninv = Math.sqrt(x*x + y*y + z*z);
+    if(ninv>0.0){
+	ninv = 1.0/ninv;
+	target.x = x * ninv;
+	target.y = y * ninv;
+	target.z = z * ninv;
+    } else {
+	target.x = 0;
+	target.y = 0;
+	target.z = 0;
+    }
+    return target;
 };
 
 /**
- * @fn norm
+ * @method norm
  * @memberof CANNON.Vec3
  * @brief Get the 2-norm (length) of the vector
  * @return float
  */
 CANNON.Vec3.prototype.norm = function(){
-  return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+    var x=this.x, y=this.y, z=this.z;
+    return Math.sqrt(x*x + y*y + z*z);
 };
 
 /**
- * @fn norm2
+ * @method norm2
  * @memberof CANNON.Vec3
  * @brief Get the squared length of the vector
  * @return float
  */
 CANNON.Vec3.prototype.norm2 = function(){
-  return this.dot(this);
+    return this.dot(this);
 };
 
 CANNON.Vec3.prototype.distanceTo = function(p){
-    return Math.sqrt((p.x-this.x)*(p.x-this.x)+
-		     (p.y-this.y)*(p.y-this.y)+
-		     (p.z-this.z)*(p.z-this.z));
+    var x=this.x, y=this.y, z=this.z;
+    var px=p.x, py=p.y, pz=p.z;
+    return Math.sqrt((px-x)*(px-x)+
+		     (py-y)*(py-y)+
+		     (pz-z)*(pz-z));
 };
 
 /**
- * @fn mult
+ * @method mult
  * @memberof CANNON.Vec3
  * @brief Multiply the vector with a scalar
  * @param float scalar
@@ -203,7 +214,7 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
 };
 
 /**
- * @fn dot
+ * @method dot
  * @memberof CANNON.Vec3
  * @brief Calculate dot product
  * @param CANNON.Vec3 v
@@ -214,7 +225,7 @@ CANNON.Vec3.prototype.dot = function(v){
 };
 
 /**
- * @fn isZero
+ * @method isZero
  * @memberof CANNON.Vec3
  * @return bool
  */
@@ -223,7 +234,7 @@ CANNON.Vec3.prototype.isZero = function(){
 }
 
 /**
- * @fn negate
+ * @method negate
  * @memberof CANNON.Vec3
  * @brief Make the vector point in the opposite direction.
  * @param CANNON.Vec3 target Optional target to save in
@@ -238,7 +249,7 @@ CANNON.Vec3.prototype.negate = function(target){
 };
 
 /**
- * @fn tangents
+ * @method tangents
  * @memberof CANNON.Vec3
  * @brief Compute two artificial tangents to the vector
  * @param CANNON.Vec3 t1 Vector object to save the first tangent in
@@ -264,7 +275,7 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
 };
 
 /**
- * @fn toString
+ * @method toString
  * @memberof CANNON.Vec3
  * @brief Converts to a more readable format
  * @return string
@@ -274,7 +285,7 @@ CANNON.Vec3.prototype.toString = function(){
 };
 
 /**
- * @fn copy
+ * @method copy
  * @memberof CANNON.Vec3
  * @brief Copy the vector.
  * @param CANNON.Vec3 target
@@ -290,7 +301,7 @@ CANNON.Vec3.prototype.copy = function(target){
 
 
 /**
- * @fn lerp
+ * @method lerp
  * @memberof CANNON.Vec3
  * @brief Do a linear interpolation between two vectors
  * @param CANNON.Vec3 v
@@ -298,13 +309,14 @@ CANNON.Vec3.prototype.copy = function(target){
  * @param CANNON.Vec3 target
  */
 CANNON.Vec3.prototype.lerp = function(v,t,target){
-  target.x = this.x + (v.x-this.x)*t;
-  target.y = this.y + (v.y-this.y)*t;
-  target.z = this.z + (v.z-this.z)*t;
+    var x=this.x, y=this.y, z=this.z;
+    target.x = x + (v.x-x)*t;
+    target.y = y + (v.y-y)*t;
+    target.z = z + (v.z-z)*t;
 };
 
 /**
- * @fn almostEquals
+ * @method almostEquals
  * @memberof CANNON.Vec3
  * @brief Check if a vector equals is almost equal to another one.
  * @param CANNON.Vec3 v

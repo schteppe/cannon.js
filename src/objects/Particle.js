@@ -2,6 +2,7 @@
 
 /**
  * @class CANNON.Particle
+ * @brief A body consisting of one point mass. Does not have orientation.
  * @param float mass
  * @param CANNON.Material material
  */
@@ -91,20 +92,23 @@ CANNON.Particle = function(mass,material){
   var sleepState = 0;
 
   /**
-   * @fn isAwake
+   * @method isAwake
    * @memberof CANNON.Particle
+   * @return bool
    */
   this.isAwake = function(){ return sleepState == 0; }
 
   /**
-   * @fn isSleepy
+   * @method isSleepy
    * @memberof CANNON.Particle
+   * @return bool
    */
   this.isSleepy = function(){ return sleepState == 1; }
 
   /**
-   * @fn isSleeping
+   * @method isSleeping
    * @memberof CANNON.Particle
+   * @return bool
    */
   this.isSleeping = function(){ return sleepState == 2; }
 
@@ -124,7 +128,7 @@ CANNON.Particle = function(mass,material){
   var timeLastSleepy = new Date().getTime();
 
   /**
-   * @fn wakeUp
+   * @method wakeUp
    * @memberof CANNON.Particle
    * @brief Wake the body up.
    */
@@ -134,7 +138,7 @@ CANNON.Particle = function(mass,material){
   };
 
   /**
-   * @fn sleep
+   * @method sleep
    * @memberof CANNON.Particle
    * @brief Force body sleep
    */
@@ -143,7 +147,7 @@ CANNON.Particle = function(mass,material){
   };
 
   /**
-   * @fn sleepTick
+   * @method sleepTick
    * @memberof CANNON.Particle
    * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
    */

@@ -74,7 +74,7 @@ CANNON.Solver = function(){
 };
 
 /**
- * @fn setSpookParams
+ * @method setSpookParams
  * @memberof CANNON.Solver
  * @brief Sets the SPOOK parameters k and d, and updates the other parameters a, b and eps accordingly.
  * @param float k
@@ -91,7 +91,7 @@ CANNON.Solver.prototype.setSpookParams = function(k,d){
 };
 
 /**
- * @fn reset
+ * @method reset
  * @memberof CANNON.Solver
  * @brief Resets the solver, removes all constraints and prepares for a new round of solving
  * @param int numbodies The number of bodies in the new system
@@ -130,7 +130,7 @@ CANNON.Solver.prototype.reset = function(numbodies){
 };
 
 /**
- * @fn addConstraint
+ * @method addConstraint
  * @memberof CANNON.Solver
  * @brief Add a constraint to the solver
  * @param array G Jacobian vector, 12 elements (6 dof per body)
@@ -219,7 +219,7 @@ CANNON.Solver.prototype.addConstraint2 = function(c,i,j){
 
 
 /**
- * @fn addNonPenetrationConstraint
+ * @method addNonPenetrationConstraint
  * @memberof CANNON.Solver
  * @brief Add a non-penetration constraint to the solver
  * @param CANNON.Vec3 ni
@@ -288,7 +288,7 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
 };
 
 /**
- * @fn solve
+ * @method solve
  * @memberof CANNON.Solver
  * @brief Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
