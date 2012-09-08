@@ -5,7 +5,7 @@
 
 /**
  * @library cannon.js
- * @version 0.4.2
+ * @version 0.4.3
  * @brief A lightweight 3D physics engine for the web
  */
 

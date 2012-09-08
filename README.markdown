@@ -43,7 +43,7 @@ setInterval(function(){
 If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](https://github.com/schteppe/cannon.js/tree/master/examples).
 
 ### Change log
-**0.4.3** Current
+**0.4.3**
  * ```World``` now dispatches "preStep" and "postStep" events.
  * Introduced ```Body``` and ```Particle```. New inheritance: ```Body``` -> ```Particle``` -> ```RigidBody```.
  * Added ```Quaternion.toAxisAngle()```
