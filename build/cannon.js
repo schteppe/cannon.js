@@ -28,7 +28,7 @@
 
 /**
  * @library cannon.js
- * @version 0.4.2
+ * @version 0.4.3
  * @brief A lightweight 3D physics engine for the web
  */
 
@@ -89,38 +89,6 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
-<<<<<<< HEAD
-  var pairs1 = [], pairs2 = [];
-  var n = world.numObjects(),
-  bodies = world.bodies;
-
-  // Local fast access
-  var types = CANNON.Shape.types;
-  var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
-  PLANE = types.PLANE,
-  STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
-
-  // Temp vecs
-  var r = this.temp.r;
-  var normal = this.temp.normal;
-  var quat = this.temp.quat;
-
-  // Naive N^2 ftw!
-  for(var i=0; i<n; i++){
-    for(var j=0; j<i; j++){
-      var bi = bodies[i], bj = bodies[j];
-      if(bi.fixed && bj.fixed)
-	continue; // We do not want to collide two static bodies
-
-      if(bi.shape && bj.shape){
-        var ti = bi.shape.type, tj = bj.shape.type;
-
-	if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
-	   ((bj.motionstate & STATIC_OR_KINEMATIC)!==0 || bj.isSleeping())) {
-  	    // Both bodies are static, kinematic or sleeping. Skip.
-	    continue;
-	}
-=======
     var pairs1 = [], pairs2 = [];
     var n = world.numObjects(),
     bodies = world.bodies;
@@ -147,7 +115,6 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   		// Both bodies are static, kinematic or sleeping. Skip.
 		continue;
 	    }
->>>>>>> master
 
 	    var bishape = bi.shape, bjshape = bj.shape;
 	    if(bishape && bjshape){
