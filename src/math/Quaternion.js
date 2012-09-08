@@ -68,6 +68,25 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
   this.w = Math.cos(angle*0.5);
 };
 
+// saves axis to targetAxis and returns 
+CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
+    targetAxis = targetAxis || new CANNON.Vec3();
+    this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
+    var angle = 2 * Math.acos(this.w);
+    var s = Math.sqrt(1-this.w*this.w); // assuming quaternion normalised then w is less than 1, so term always positive.
+    if (s < 0.001) { // test to avoid divide by zero, s is always positive due to sqrt
+	// if s close to zero then direction of axis not important
+	targetAxis.x = this.x; // if it is important that axis is normalised then replace with x=1; y=z=0;
+	targetAxis.y = this.y;
+	targetAxis.z = this.z;
+    } else {
+	targetAxis.x = this.x / s; // normalise axis
+	targetAxis.y = this.y / s;
+	targetAxis.z = this.z / s;
+    }
+    return [targetAxis,angle];
+};
+
 /**
  * @fn setFromVectors
  * @memberof CANNON.Quaternion

@@ -90,7 +90,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   var types = CANNON.Shape.types;
   var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
   PLANE = types.PLANE,
-  STATIC_OR_KINEMATIC = CANNON.RigidBody.STATIC | CANNON.RigidBody.KINEMATIC;
+  STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 
   // Temp vecs
   var r = this.temp.r;
@@ -100,44 +100,45 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
   // Naive N^2 ftw!
   for(var i=0; i<n; i++){
     for(var j=0; j<i; j++){
-      
       var bi = bodies[i], bj = bodies[j];
       if(bi.fixed && bj.fixed)
 	continue; // We do not want to collide two static bodies
 
-      var ti = bi.shape.type, tj = bj.shape.type;
+      if(bi.shape && bj.shape){
+        var ti = bi.shape.type, tj = bj.shape.type;
 
 	if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
 	   ((bj.motionstate & STATIC_OR_KINEMATIC)!==0 || bj.isSleeping())) {
-	// Both bodies are static, kinematic or sleeping. Skip.
-	continue;
-      }
-
-      // --- Box / sphere / compound / convexpolyhedron collision ---
-      if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
-	// Rel. position
-	bj.position.vsub(bi.position,r);
-
-	var boundingRadiusSum = bi.shape.boundingSphereRadius() + bj.shape.boundingSphereRadius();
-	if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
-	  pairs1.push(bi);
-	  pairs2.push(bj);
+  	    // Both bodies are static, kinematic or sleeping. Skip.
+	    continue;
 	}
 
-      // --- Sphere/box/compound/convexpoly versus plane ---
-      } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
-	var pi = (ti===PLANE) ? i : j, // Plane
-	  oi = (ti!==PLANE) ? i : j; // Other
-	  
-	  // Rel. position
-	bodies[oi].position.vsub(bodies[pi].position,r);
-	bodies[pi].quaternion.vmult(bodies[pi].shape.normal,normal);
-	
-	var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
-	if(q<0.0){
-	  pairs1.push(bi);
-	  pairs2.push(bj);
-	}
+	  // --- Box / sphere / compound / convexpolyhedron collision ---
+	  if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
+	      // Rel. position
+	      bj.position.vsub(bi.position,r);
+
+	      var boundingRadiusSum = bi.shape.boundingSphereRadius() + bj.shape.boundingSphereRadius();
+	      if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
+		  pairs1.push(bi);
+		  pairs2.push(bj);
+	      }
+
+	      // --- Sphere/box/compound/convexpoly versus plane ---
+	  } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
+	      var pi = (ti===PLANE) ? i : j, // Plane
+	      oi = (ti!==PLANE) ? i : j; // Other
+	      
+	      // Rel. position
+	      bodies[oi].position.vsub(bodies[pi].position,r);
+	      bodies[pi].quaternion.vmult(bodies[pi].shape.normal,normal);
+	      
+	      var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
+	      if(q<0.0){
+		  pairs1.push(bi);
+		  pairs2.push(bj);
+	      }
+	  }
       }
     }
   }
@@ -998,6 +999,25 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
   this.w = Math.cos(angle*0.5);
 };
 
+// saves axis to targetAxis and returns 
+CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
+    targetAxis = targetAxis || new CANNON.Vec3();
+    this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
+    var angle = 2 * Math.acos(this.w);
+    var s = Math.sqrt(1-this.w*this.w); // assuming quaternion normalised then w is less than 1, so term always positive.
+    if (s < 0.001) { // test to avoid divide by zero, s is always positive due to sqrt
+	// if s close to zero then direction of axis not important
+	targetAxis.x = this.x; // if it is important that axis is normalised then replace with x=1; y=z=0;
+	targetAxis.y = this.y;
+	targetAxis.z = this.z;
+    } else {
+	targetAxis.x = this.x / s; // normalise axis
+	targetAxis.y = this.y / s;
+	targetAxis.z = this.z / s;
+    }
+    return [targetAxis,angle];
+};
+
 /**
  * @fn setFromVectors
  * @memberof CANNON.Quaternion
@@ -1304,12 +1324,227 @@ CANNON.Shape.types = {
 /*global CANNON:true */
 
 /**
+ * @class CANNON.Body
+ * @brief Base class for all body types.
+ * @param string type
+ */
+CANNON.Body = function(type){
+
+  CANNON.EventTarget.apply(this);
+
+  this.type = type;
+
+  var that = this;
+
+  /**
+   * @property CANNON.World world
+   * @memberof CANNON.Body
+   * @brief Reference to the world the body is living in
+   */
+  this.world = null;
+
+  /**
+   * @property function preStep
+   * @memberof CANNON.Body
+   * @brief Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this CANNON.Body object.
+   * @todo dispatch an event from the World instead
+   */
+  this.preStep = null;
+
+  /**
+   * @property function postStep
+   * @memberof CANNON.Body
+   * @brief Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this CANNON.Body object.
+   * @todo dispatch an event from the World instead
+   */
+  this.postStep = null;
+};
+
+/**
+ * @brief A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
+ */
+CANNON.Body.DYNAMIC = 1;
+
+/**
+ * @brief A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
+ */
+CANNON.Body.STATIC = 2;
+
+/**
+ * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
+ */
+CANNON.Body.KINEMATIC = 4;/*global CANNON:true */
+
+/**
+ * @class CANNON.Particle
+ * @param float mass
+ * @param CANNON.Material material
+ */
+CANNON.Particle = function(mass,material){
+
+  // Check input
+  if(typeof(mass)!="number")
+      throw new Error("Argument 1 (mass) must be a number.");
+  if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
+      throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+
+  CANNON.Body.call(this,"particle");
+
+  var that = this;
+
+  /**
+   * @property CANNON.Vec3 position
+   * @memberof CANNON.Particle
+   */
+  this.position = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 initPosition
+   * @memberof CANNON.Particle
+   * @brief Initial position of the body
+   */
+  this.initPosition = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 velocity
+   * @memberof CANNON.Particle
+   */
+  this.velocity = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 initVelocity
+   * @memberof CANNON.Particle
+   */
+  this.initVelocity = new CANNON.Vec3();
+
+  /**
+   * @property CANNON.Vec3 force
+   * @memberof CANNON.Particle
+   * @brief Linear force on the body
+   */
+  this.force = new CANNON.Vec3();
+
+  /**
+   * @property float mass
+   * @memberof CANNON.Particle
+   */
+  this.mass = mass;
+
+  /**
+   * @property float invMass
+   * @memberof CANNON.Particle
+   */
+  this.invMass = mass>0 ? 1.0/mass : 0;
+
+  /**
+   * @property CANNON.Material material
+   * @memberof CANNON.Particle
+   */
+  this.material = material;
+
+  /**
+   * @property float linearDamping
+   * @memberof CANNON.Particle
+   */
+  this.linearDamping = 0.01; // Perhaps default should be zero here?
+
+  /**
+   * @property int motionstate
+   * @memberof CANNON.Particle
+   * @brief One of the states CANNON.Body.DYNAMIC, CANNON.Body.STATIC and CANNON.Body.KINEMATIC
+   */
+  this.motionstate = (mass <= 0.0 ? CANNON.Body.STATIC : CANNON.Body.DYNAMIC);
+
+  /**
+   * @property bool allowSleep
+   * @memberof CANNON.Particle
+   * @brief If true, the body will automatically fall to sleep.
+   */
+  this.allowSleep = true;
+
+  // 0:awake, 1:sleepy, 2:sleeping
+  var sleepState = 0;
+
+  /**
+   * @fn isAwake
+   * @memberof CANNON.Particle
+   */
+  this.isAwake = function(){ return sleepState == 0; }
+
+  /**
+   * @fn isSleepy
+   * @memberof CANNON.Particle
+   */
+  this.isSleepy = function(){ return sleepState == 1; }
+
+  /**
+   * @fn isSleeping
+   * @memberof CANNON.Particle
+   */
+  this.isSleeping = function(){ return sleepState == 2; }
+
+  /**
+   * @property float sleepSpeedLimit
+   * @memberof CANNON.Particle
+   * @brief If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
+   */
+  this.sleepSpeedLimit = 0.1;
+
+  /**
+   * @property float sleepTimeLimit
+   * @memberof CANNON.Particle
+   * @brief If the body has been sleepy for this sleepTimeLimit milliseconds, it is considered sleeping.
+   */
+  this.sleepTimeLimit = 1000;
+  var timeLastSleepy = new Date().getTime();
+
+  /**
+   * @fn wakeUp
+   * @memberof CANNON.Particle
+   * @brief Wake the body up.
+   */
+  this.wakeUp = function(){
+      sleepState = 0;
+      that.dispatchEvent({type:"wakeup"});
+  };
+
+  /**
+   * @fn sleep
+   * @memberof CANNON.Particle
+   * @brief Force body sleep
+   */
+  this.sleep = function(){
+      sleepState = 2;
+  };
+
+  /**
+   * @fn sleepTick
+   * @memberof CANNON.Particle
+   * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
+   */
+  this.sleepTick = function(){
+      if(that.allowSleep){
+	  if(sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
+	      sleepState = 1; // Sleepy
+	      timeLastSleepy = new Date().getTime();
+	      that.dispatchEvent({type:"sleepy"});
+	  } else if(sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
+	      that.wakeUp(); // Wake up
+	  } else if(sleepState==1 && (new Date().getTime() - timeLastSleepy)>that.sleepTimeLimit){
+	      sleepState = 2; // Sleeping
+	      that.dispatchEvent({type:"sleep"});
+	  }
+      }
+  };
+};
+/*global CANNON:true */
+
+/**
  * @class CANNON.RigidBody
  * @brief Rigid body base class
  * @param float mass
  * @param CANNON.Shape shape
  * @param CANNON.Material material
- * @todo Motion state? Like dynamic, kinematic, static...
  */
 CANNON.RigidBody = function(mass,shape,material){
 
@@ -1321,42 +1556,9 @@ CANNON.RigidBody = function(mass,shape,material){
   if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
       throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
 
-  // Extend the EventTarget class
-  CANNON.EventTarget.apply(this);
+  CANNON.Particle.call(this,mass,material);
 
   var that = this;
-
-  /**
-   * @property CANNON.Vec3 position
-   * @memberof CANNON.RigidBody
-   */
-  this.position = new CANNON.Vec3();
-
-  /**
-   * @property CANNON.Vec3 initPosition
-   * @memberof CANNON.RigidBody
-   * @brief Initial position of the body
-   */
-  this.initPosition = new CANNON.Vec3();
-
-  /**
-   * @property CANNON.Vec3 velocity
-   * @memberof CANNON.RigidBody
-   */
-  this.velocity = new CANNON.Vec3();
-
-  /**
-   * @property CANNON.Vec3 initVelocity
-   * @memberof CANNON.RigidBody
-   */
-  this.initVelocity = new CANNON.Vec3();
-
-  /**
-   * @property CANNON.Vec3 force
-   * @memberof CANNON.RigidBody
-   * @brief Linear force on the body
-   */
-  this.force = new CANNON.Vec3();
 
   /**
    * @property CANNON.Vec3 tau
@@ -1391,18 +1593,6 @@ CANNON.RigidBody = function(mass,shape,material){
   this.initAngularVelocity = new CANNON.Vec3();
 
   /**
-   * @property float mass
-   * @memberof CANNON.RigidBody
-   */
-  this.mass = mass;
-
-  /**
-   * @property float invMass
-   * @memberof CANNON.RigidBody
-   */
-  this.invMass = mass>0 ? 1.0/mass : 0;
-
-  /**
    * @property CANNON.Shape shape
    * @memberof CANNON.RigidBody
    */
@@ -1424,150 +1614,12 @@ CANNON.RigidBody = function(mass,shape,material){
 				    this.inertia.z>0 ? 1.0/this.inertia.z : 0);
 
   /**
-   * @property CANNON.Material material
-   * @memberof CANNON.RigidBody
-   */
-  this.material = material;
-
-  /**
-   * @property float linearDamping
-   * @memberof CANNON.RigidBody
-   */
-  this.linearDamping = 0.01; // Perhaps default should be zero here?
-
-  /**
    * @property float angularDamping
    * @memberof CANNON.RigidBody
    */
-  this.angularDamping = 0.01;
-
-  /**
-   * @property int motionstate
-   * @memberof CANNON.RigidBody
-   * @brief One of the states CANNON.RigidBody.DYNAMIC, CANNON.RigidBody.STATIC and CANNON.RigidBody.KINEMATIC
-   */
-  this.motionstate = (mass <= 0.0 ? CANNON.RigidBody.STATIC : CANNON.RigidBody.DYNAMIC);
-
-  /**
-   * @property CANNON.World world
-   * @memberof CANNON.RigidBody
-   * @brief Reference to the world the body is living in
-   */
-  this.world = null;
-
-  /**
-   * @property function preStep
-   * @memberof CANNON.RigidBody
-   * @brief Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this CANNON.RigidBody object.
-   * @todo dispatch an event from the World instead
-   */
-  this.preStep = null;
-
-  /**
-   * @property function postStep
-   * @memberof CANNON.RigidBody
-   * @brief Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this CANNON.RigidBody object.
-   * @todo dispatch an event from the World instead
-   */
-  this.postStep = null;
-
-  /**
-   * @property bool allowSleep
-   * @memberof CANNON.RigidBody
-   * @brief If true, the body will automatically fall to sleep.
-   */
-  this.allowSleep = true;
-
-  // 0:awake, 1:sleepy, 2:sleeping
-  var sleepState = 0;
-
-  /**
-   * @fn isAwake
-   * @memberof CANNON.RigidBody
-   */
-  this.isAwake = function(){ return sleepState == 0; }
-
-  /**
-   * @fn isSleepy
-   * @memberof CANNON.RigidBody
-   */
-  this.isSleepy = function(){ return sleepState == 1; }
-
-  /**
-   * @fn isSleeping
-   * @memberof CANNON.RigidBody
-   */
-  this.isSleeping = function(){ return sleepState == 2; }
-
-  /**
-   * @property float sleepSpeedLimit
-   * @memberof CANNON.RigidBody
-   * @brief If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
-   */
-  this.sleepSpeedLimit = 0.1;
-
-  /**
-   * @property float sleepTimeLimit
-   * @memberof CANNON.RigidBody
-   * @brief If the body has been sleepy for this sleepTimeLimit milliseconds, it is considered sleeping.
-   */
-  this.sleepTimeLimit = 1000;
-  var timeLastSleepy = new Date().getTime();
-
-  /**
-   * @fn wakeUp
-   * @memberof CANNON.RigidBody
-   * @brief Wake the body up.
-   */
-  this.wakeUp = function(){
-      sleepState = 0;
-      that.dispatchEvent({type:"wakeup"});
-  };
-
-  /**
-   * @fn sleep
-   * @memberof CANNON.RigidBody
-   * @brief Force body sleep
-   */
-  this.sleep = function(){
-      sleepState = 2;
-  };
-
-  /**
-   * @fn sleepTick
-   * @memberof CANNON.RigidBody
-   * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
-   */
-  this.sleepTick = function(){
-      if(that.allowSleep){
-	  if(sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
-	      sleepState = 1; // Sleepy
-	      timeLastSleepy = new Date().getTime();
-	      that.dispatchEvent({type:"sleepy"});
-	  } else if(sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
-	      that.wakeUp(); // Wake up
-	  } else if(sleepState==1 && (new Date().getTime() - timeLastSleepy)>that.sleepTimeLimit){
-	      sleepState = 2; // Sleeping
-	      that.dispatchEvent({type:"sleep"});
-	  }
-      }
-  };
+  this.angularDamping = 0.01; // Perhaps default should be zero here?
 };
-
-/**
- * @brief A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
- */
-CANNON.RigidBody.DYNAMIC = 1;
-
-/**
- * @brief A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
- */
-CANNON.RigidBody.STATIC = 2;
-
-/**
- * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
- */
-CANNON.RigidBody.KINEMATIC = 4;/*global CANNON:true */
+/*global CANNON:true */
 
 /**
  * @brief Spherical rigid body
@@ -2552,7 +2604,7 @@ CANNON.Solver = function(){
    */
   this.eps = 0.0;
 
-    this.setSpookParams(this.k,this.d);
+  this.setSpookParams(this.k,this.d);
   this.reset(0);
 
   /**
@@ -2563,7 +2615,7 @@ CANNON.Solver = function(){
   this.debug = false;
 
   if(this.debug)
-    console.log("a:",a,"b",b,"eps",eps,"k",k,"d",d);
+    console.log("a:",this.a,"b",this.b,"eps",this.eps,"k",this.k,"d",this.d);
 };
 
 /**
@@ -2633,8 +2685,8 @@ CANNON.Solver.prototype.reset = function(numbodies){
  * @param array Fext External forces (12 elements)
  * @param float lower Lower constraint force bound
  * @param float upper Upper constraint force bound
- * @param int body_i The first rigid body index
- * @param int body_j The second rigid body index - set to -1 if none
+ * @param int body_i The first body index
+ * @param int body_j The second body index - set to -1 if none
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */
 CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,upper,body_i,body_j){
@@ -3069,6 +3121,8 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
  */
 CANNON.World = function(){
 
+  CANNON.EventTarget.apply(this);
+
   /// Makes bodies go to sleep when they've been inactive
   this.allowSleep = false;
 
@@ -3260,7 +3314,7 @@ CANNON.World.prototype.numObjects = function(){
  * @fn clearCollisionState
  * @memberof CANNON.World
  * @brief Clear the contact state for a body.
- * @param CANNON.RigidBody body
+ * @param CANNON.Body body
  */
 CANNON.World.prototype.clearCollisionState = function(body){
   var n = this.numObjects();
@@ -3276,24 +3330,24 @@ CANNON.World.prototype.clearCollisionState = function(body){
  * @fn add
  * @memberof CANNON.World
  * @brief Add a rigid body to the simulation.
- * @param CANNON.RigidBody body
+ * @param CANNON.Body body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
 CANNON.World.prototype.add = function(body){
-  if(body instanceof CANNON.RigidBody){
     var n = this.numObjects();
     this.bodies.push(body);
     body.id = this.id();
     body.world = this;
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
-    body.angularVelocity.copy(body.initAngularVelocity);
-    body.quaternion.copy(body.initQuaternion);
+    if(body instanceof CANNON.RigidBody){
+	body.angularVelocity.copy(body.initAngularVelocity);
+	body.quaternion.copy(body.initQuaternion);
+    }
     
     // Create collision matrix
     this.collision_matrix = new Int16Array((n+1)*(n+1));
-  }
 };
 
 /**
@@ -3323,10 +3377,9 @@ CANNON.World.prototype.id = function(){
  * @fn remove
  * @memberof CANNON.World
  * @brief Remove a rigid body from the simulation.
- * @param CANNON.RigidBody body
+ * @param CANNON.Body body
  */
 CANNON.World.prototype.remove = function(body){
-  if(body instanceof CANNON.RigidBody){
     body.world = null;
     var n = this.numObjects();
     var bodies = this.bodies;
@@ -3336,7 +3389,6 @@ CANNON.World.prototype.remove = function(body){
 
     // Reset collision matrix
     this.collision_matrix = new Int16Array((n-1)*(n-1));
-  }
 };
 
 /**
@@ -3424,9 +3476,9 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Add gravity to all objects
-  for(var i in bodies){
+  for(var i=0; i<N; i++){
     var bi = bodies[i];
-    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+    if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
       var f = bodies[i].force, m = bodies[i].mass;
       f.x += world.gravity.x * m;
       f.y += world.gravity.y * m;
@@ -3476,8 +3528,6 @@ CANNON.World.prototype.step = function(dt){
   function collisionMatrixTick(){
       for(var i=0; i<bodies.length; i++){
 	  for(var j=0; j<i; j++){
-	      //cmatrix(i,j,-1, cmatrix(i,j,0));
-	      //cmatrix(i,j,0,0);
 	      var currentState = collisionMatrixGet(i,j,true);
 	      collisionMatrixSet(i,j,currentState,false);
 	      collisionMatrixSet(i,j,0,true);
@@ -3692,30 +3742,35 @@ CANNON.World.prototype.step = function(dt){
       this.solver.solve();
 
       // Apply constraint velocities
-      for(var i in bodies){
+      for(var i=0; i<N; i++){
 	  bi = bodies[i];
-	  if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+	  if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
 	      var b = bodies[i];
 	      b.velocity.x += this.solver.vxlambda[i];
 	      b.velocity.y += this.solver.vylambda[i];
 	      b.velocity.z += this.solver.vzlambda[i];
-	      b.angularVelocity.x += this.solver.wxlambda[i];
-	      b.angularVelocity.y += this.solver.wylambda[i];
-	      b.angularVelocity.z += this.solver.wzlambda[i];
+	      if(b.angularVelocity){
+	        b.angularVelocity.x += this.solver.wxlambda[i];
+	        b.angularVelocity.y += this.solver.wylambda[i];
+	        b.angularVelocity.z += this.solver.wzlambda[i];
+	      }
 	  }
       }
   }
 
   // Apply damping
-  for(var i in bodies){
+  for(var i=0; i<N; i++){
     bi = bodies[i];
-    if(bi.motionstate & CANNON.RigidBody.DYNAMIC){ // Only for dynamic bodies
+    if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
       var ld = 1.0 - bi.linearDamping;
       var ad = 1.0 - bi.angularDamping;
       bi.velocity.mult(ld,bi.velocity);
-      bi.angularVelocity.mult(ad,bi.angularVelocity);
+      if(bi.angularVelocity)
+	bi.angularVelocity.mult(ad,bi.angularVelocity);
     }
   }
+
+  that.dispatchEvent({type:"preStep"});
 
   // Invoke pre-step callbacks
   for(var i in bodies){
@@ -3729,8 +3784,8 @@ CANNON.World.prototype.step = function(dt){
   var q = temp.step_q; 
   var w = temp.step_w;
   var wq = temp.step_wq;
-  var DYNAMIC_OR_KINEMATIC = CANNON.RigidBody.DYNAMIC | CANNON.RigidBody.KINEMATIC;
-  for(var i in bodies){
+  var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
+  for(var i=0; i<N; i++){
     var b = bodies[i];
     if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
       
@@ -3738,37 +3793,43 @@ CANNON.World.prototype.step = function(dt){
       b.velocity.y += b.force.y * b.invMass * dt;
       b.velocity.z += b.force.z * b.invMass * dt;
 
-      b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
-      b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
-      b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
+      if(b.angularVelocity){
+        b.angularVelocity.x += b.tau.x * b.invInertia.x * dt;
+	b.angularVelocity.y += b.tau.y * b.invInertia.y * dt;
+	b.angularVelocity.z += b.tau.z * b.invInertia.z * dt;
+      }
 
       // Use new velocity  - leap frog
       if(!b.isSleeping()){
 	  b.position.x += b.velocity.x * dt;
 	  b.position.y += b.velocity.y * dt;
 	  b.position.z += b.velocity.z * dt;
-	  
-	  w.set(b.angularVelocity.x,
-		b.angularVelocity.y,
-		b.angularVelocity.z,
-		0);
-	  w.mult(b.quaternion,wq);
-	  
-	  b.quaternion.x += dt * 0.5 * wq.x;
-	  b.quaternion.y += dt * 0.5 * wq.y;
-	  b.quaternion.z += dt * 0.5 * wq.z;
-	  b.quaternion.w += dt * 0.5 * wq.w;
-	  if(world.stepnumber % 3 === 0)
-              b.quaternion.normalizeFast();
+	 
+	  if(b.angularVelocity){
+	      w.set(b.angularVelocity.x,
+		    b.angularVelocity.y,
+		    b.angularVelocity.z,
+		    0);
+	      w.mult(b.quaternion,wq);
+	      
+	      b.quaternion.x += dt * 0.5 * wq.x;
+	      b.quaternion.y += dt * 0.5 * wq.y;
+	      b.quaternion.z += dt * 0.5 * wq.z;
+	      b.quaternion.w += dt * 0.5 * wq.w;
+	      if(world.stepnumber % 3 === 0)
+		  b.quaternion.normalizeFast();
+	  }
       }
     }
     b.force.set(0,0,0);
-    b.tau.set(0,0,0);
+    if(b.tau) b.tau.set(0,0,0);
   }
 
   // Update world time
   world.time += dt;
   world.stepnumber += 1;
+
+  that.dispatchEvent({type:"postStep"});
 
   // Invoke post-step callbacks
   for(var i in bodies){
@@ -3788,16 +3849,13 @@ CANNON.World.prototype.step = function(dt){
 /**
  * @class ContactPoint
  * @brief A representation of a contact point between two bodies. Should be generated by the ContactGenerator
- * @param CANNON.RigidBody bi
- * @param CANNON.RigidBody bj
+ * @param CANNON.Body bi
+ * @param CANNON.Body bj
  * @param CANNON.Vec3 ri Optional. The vector from the center of mass of bi to the contact.
  * @param CANNON.Vec3 rj Optional. The vector from the center of mass of bj to the contact.
  * @param CANNON.Vec3 ni Optional. Contact normal vector, pointing out of body bi.
  */
-CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
-    if(!(bi instanceof CANNON.RigidBody) || !(bj instanceof CANNON.RigidBody))
-	throw new Error("Arguments 1 and 2 must be instances of CANNON.RigidBody.");
-    
+CANNON.ContactPoint = function(bi,bj,ri,rj,ni){    
     /**
      * @property CANNON.Vec3 ri
      * @memberof CANNON.ContactPoint
@@ -3822,13 +3880,13 @@ CANNON.ContactPoint = function(bi,bj,ri,rj,ni){
     if(ni) ni.copy(this.ni);
     
     /**
-     * @property CANNON.RigidBody bi
+     * @property CANNON.Body bi
      * @memberof CANNON.ContactPoint
      */
     this.bi = bi;
 
     /**
-     * @property CANNON.RigidBody bj
+     * @property CANNON.Body bj
      * @memberof CANNON.ContactPoint
      */
     this.bj = bj;
@@ -4488,8 +4546,8 @@ CANNON.ContactConstraint.prototype.update = function(){
 /**
  * Distance constraint class
  * @author schteppe
- * @param CANNON.RigidBody bodyA
- * @param CANNON.RigidBody bodyB Could optionally be a CANNON.Vec3 to constrain a body to a static point in space
+ * @param CANNON.Body bodyA
+ * @param CANNON.Body bodyB Could optionally be a CANNON.Vec3 to constrain a body to a static point in space
  * @param float distance
  * @todo test
  */
@@ -4498,7 +4556,7 @@ CANNON.DistanceConstraint = function(bodyA,bodyB,distance){
   this.body_i = bodyA;
   this.body_j = bodyB;
   this.distance = Number(distance);
-  var eq = new CANNON.Equation(bodyA, bodyB instanceof CANNON.RigidBody ? bodyB : null);
+    var eq = new CANNON.Equation(bodyA, bodyB instanceof CANNON.Vec3 ? null : bodyB);
   this.equations.push(eq);
 };
 
@@ -4507,7 +4565,7 @@ CANNON.DistanceConstraint.prototype.constructor = CANNON.DistanceConstraint;
 
 CANNON.DistanceConstraint.prototype.update = function(){
   var eq = this.equations[0], bi = this.body_i, bj = this.body_j;
-  var pair = bj instanceof CANNON.RigidBody;
+  var pair = typeof(bj.mass)=="number";
 
   // Jacobian is the distance unit vector
   if(pair)
@@ -4530,7 +4588,6 @@ CANNON.DistanceConstraint.prototype.update = function(){
 	    (pair ? bj.position.z : bj.z) - bi.position.z - eq.G1.z*this.distance);
   eq.g1.negate(eq.g1);
   eq.g1.negate(eq.g3);
-  //console.log(this.distance,pair,eq.g1.toString());
 };
 
 CANNON.DistanceConstraint.prototype.setMaxForce = function(f){
@@ -4542,8 +4599,8 @@ CANNON.DistanceConstraint.prototype.setMaxForce = function(f){
  * @author schteppe
  * @brief Something for the solver to chew on. Its mostly a holder of vectors
  * @todo try with the solver
- * @param CANNON.RigidBody bi Could optionally be null
- * @param CANNON.RigidBody bj Could optionally be null
+ * @param CANNON.Body bi Could optionally be null
+ * @param CANNON.Body bj Could optionally be null
  */
 CANNON.Equation = function(bi,bj){
 
@@ -4592,13 +4649,15 @@ CANNON.Equation.prototype.setDefaultMassProps = function(){
     this.iM1.set(bi.invMass,
 		 bi.invMass,
 		 bi.invMass);
-    bi.invInertia.copy(this.iM2);
+    if(bi.invInertia)
+      bi.invInertia.copy(this.iM2);
   }
   if(bj){
     this.iM3.set(bj.invMass,
 		 bj.invMass,
 		 bj.invMass);
-    bj.invInertia.copy(this.iM4);
+    if(bj.invInertia)
+      bj.invInertia.copy(this.iM4);
   }
 };
 
@@ -4606,20 +4665,20 @@ CANNON.Equation.prototype.setDefaultForce = function(){
   var bi = this.body_i, bj = this.body_j;
   if(bi){
     bi.force.copy(this.f1);
-    bi.tau.copy(this.f2);
+    if(bi.tau) bi.tau.copy(this.f2);
   }
   if(bj){
     bj.force.copy(this.f3);
-    bj.tau.copy(this.f4);
+    if(bj.tau) bj.tau.copy(this.f4);
   }
 };/*global CANNON:true */
 
 /**
  * Point to point constraint class
  * @author schteppe
- * @param CANNON.RigidBody bodyA
+ * @param CANNON.Body bodyA
  * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
- * @param CANNON.RigidBody bodyB Optional. If specified, pivotB must also be specified, and bodyB will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param CANNON.Body bodyB Optional. If specified, pivotB must also be specified, and bodyB will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
  * @param CANNON.Vec3 pivotB Optional.
  */
 CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB){

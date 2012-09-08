@@ -15,7 +15,7 @@
     <script>
 
       /**
-       * Demos of the RigidBody.motionstate types.
+       * Demos of the Body.motionstate types.
        */
       var demo = new CANNON.Demo();
       var size = 2;
@@ -32,7 +32,7 @@
           // Kinematic Box
           // Does only collide with dynamic bodies, but does not respond to any force. Can be controlled by setting its velocity.
           var b1 = new CANNON.RigidBody(boxMass,boxShape);
-          b1.motionstate = CANNON.RigidBody.KINEMATIC;
+          b1.motionstate = CANNON.Body.KINEMATIC;
           b1.position.set(0,0,0.5*size);
           world.add(b1);
           app.addVisual(b1);
