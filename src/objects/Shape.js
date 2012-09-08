@@ -21,7 +21,7 @@ CANNON.Shape = function(){
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
 /**
- * @fn boundingSphereRadius
+ * @method boundingSphereRadius
  * @memberof CANNON.Shape
  * @brief Get the bounding sphere radius from this shape
  * @return float
@@ -31,7 +31,7 @@ CANNON.Shape.prototype.boundingSphereRadius = function(){
 };
 
 /**
- * @fn volume
+ * @method volume
  * @memberof CANNON.Shape
  * @brief Get the volume of this shape
  * @return float
@@ -41,7 +41,7 @@ CANNON.Shape.prototype.volume = function(){
 };
 
 /**
- * @fn calculateLocalInertia
+ * @method calculateLocalInertia
  * @memberof CANNON.Shape
  * @brief Calculates the inertia in the local frame for this shape.
  * @return CANNON.Vec3
@@ -52,7 +52,7 @@ CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
 };
 
 /**
- * @fn calculateTransformedInertia
+ * @method calculateTransformedInertia
  * @memberof CANNON.Shape
  * @brief Calculates inertia in a specified frame for this shape.
  * @return CANNON.Vec3

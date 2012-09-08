@@ -8,9 +8,14 @@
  * @author schteppe / http://github.com/schteppe
  */
 CANNON.Sphere = function(radius){
-  CANNON.Shape.call(this);
-  this.radius = radius!=undefined ? Number(radius) : 1.0;
-  this.type = CANNON.Shape.types.SPHERE;
+    CANNON.Shape.call(this);
+
+    /**
+     * @property float radius
+     * @memberof CANNON.Sphere
+     */
+    this.radius = radius!=undefined ? Number(radius) : 1.0;
+    this.type = CANNON.Shape.types.SPHERE;
 };
 CANNON.Sphere.prototype = new CANNON.Shape();
 CANNON.Sphere.prototype.constructor = CANNON.Sphere;

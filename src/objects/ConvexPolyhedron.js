@@ -126,7 +126,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     }
 
     /**
-     * @fn testSepAxis
+     * @method testSepAxis
      * @memberof CANNON.ConvexPolyhedron
      * @brief Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
      * @param CANNON.Vec3 axis
@@ -157,7 +157,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     }
 
     /**
-     * @fn findSeparatingAxis 
+     * @method findSeparatingAxis
      * @memberof CANNON.ConvexPolyhedron
      * @brief Find the separating axis between this hull and another
      * @param CANNON.ConvexPolyhedron hullB
@@ -262,7 +262,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     }
 
     /**
-     * @fn clipAgainstHull
+     * @method clipAgainstHull
      * @memberof CANNON.ConvexPolyhedron
      * @brief Clip this hull against another hull
      * @param CANNON.Vec3 posA
@@ -320,8 +320,8 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     };
 
     /**
-     * @fn clipFaceAgainstHull
-     * @memberof CANNON.ConvexPolyhedron 
+     * @method clipFaceAgainstHull
+     * @memberof CANNON.ConvexPolyhedron
      * @brief Clip a face against a hull.
      * @param CANNON.Vec3 separatingNormal
      * @param CANNON.Vec3 posA
@@ -464,7 +464,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     }
     
     /**
-     * @fn clipFaceAgainstPlane
+     * @method clipFaceAgainstPlane
      * @memberof CANNON.ConvexPolyhedron
      * @brief Clip a face in a hull against the back of a plane.
      * @param Array inVertices

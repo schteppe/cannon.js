@@ -3,7 +3,7 @@
 /**
  * @class CANNON.Compound
  * @extends CANNON.Shape
- * @brief A shape that is built of several other shapes, in this context called child shapes.
+ * @brief A shape made of several other shapes.
  * @author schteppe
  */
 CANNON.Compound = function(){
@@ -17,7 +17,7 @@ CANNON.Compound.prototype = new CANNON.Shape();
 CANNON.Compound.prototype.constructor = CANNON.Compound;
 
 /**
- * @fn addChild
+ * @method addChild
  * @memberof CANNON.Compound
  * @brief Add a child shape.
  * @param CANNON.Shape shape

@@ -2,7 +2,8 @@
 
 /**
  * @class CANNON.NaiveBroadphase
- * @brief Naive broadphase implementation, used in lack of better ones. The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
+ * @brief Naive broadphase implementation, used in lack of better ones.
+ * @description The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
  * @extends CANNON.Broadphase
  */
 CANNON.NaiveBroadphase = function(){
@@ -16,7 +17,7 @@ CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
 CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
 /**
- * @fn collisionPairs
+ * @method collisionPairs
  * @memberof CANNON.NaiveBroadphase
  * @brief Get all the collision pairs in the physics world
  * @param CANNON.World world

@@ -27,7 +27,7 @@ CANNON.Vec3 = function(x,y,z){
 };
 
 /**
- * @fn cross
+ * @method cross
  * @memberof CANNON.Vec3
  * @brief Vector cross product
  * @param CANNON.Vec3 v
@@ -52,7 +52,7 @@ CANNON.Vec3.prototype.cross = function(v,target){
 };
 
 /**
- * @fn set
+ * @method set
  * @memberof CANNON.Vec3
  * @brief Set the vectors' 3 elements
  * @param float x
@@ -68,7 +68,7 @@ CANNON.Vec3.prototype.set = function(x,y,z){
 };
     
 /**
- * @fn vadd
+ * @method vadd
  * @memberof CANNON.Vec3
  * @brief Vector addition
  * @param CANNON.Vec3 v
@@ -88,7 +88,7 @@ CANNON.Vec3.prototype.vadd = function(v,target){
 };
     
 /**
- * @fn vsub
+ * @method vsub
  * @memberof CANNON.Vec3
  * @brief Vector subtraction
  * @param CANNON.Vec3 v
@@ -108,7 +108,7 @@ CANNON.Vec3.prototype.vsub = function(v,target){
 };
 
 /**
- * @fn crossmat
+ * @method crossmat
  * @memberof CANNON.Vec3
  * @brief Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
@@ -121,7 +121,7 @@ CANNON.Vec3.prototype.crossmat = function(){
 };
 
 /**
- * @fn normalize
+ * @method normalize
  * @memberof CANNON.Vec3
  * @brief Normalize the vector. Note that this changes the values in the vector.
  * @return float Returns the norm of the vector
@@ -144,7 +144,7 @@ CANNON.Vec3.prototype.normalize = function(){
 };
 
 /**
- * @fn unit
+ * @method unit
  * @memberof CANNON.Vec3
  * @brief Get the version of this vector that is of length 1.
  * @param CANNON.Vec3 target Optional target to save in
@@ -168,7 +168,7 @@ CANNON.Vec3.prototype.unit = function(target){
 };
 
 /**
- * @fn norm
+ * @method norm
  * @memberof CANNON.Vec3
  * @brief Get the 2-norm (length) of the vector
  * @return float
@@ -179,7 +179,7 @@ CANNON.Vec3.prototype.norm = function(){
 };
 
 /**
- * @fn norm2
+ * @method norm2
  * @memberof CANNON.Vec3
  * @brief Get the squared length of the vector
  * @return float
@@ -197,7 +197,7 @@ CANNON.Vec3.prototype.distanceTo = function(p){
 };
 
 /**
- * @fn mult
+ * @method mult
  * @memberof CANNON.Vec3
  * @brief Multiply the vector with a scalar
  * @param float scalar
@@ -214,7 +214,7 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
 };
 
 /**
- * @fn dot
+ * @method dot
  * @memberof CANNON.Vec3
  * @brief Calculate dot product
  * @param CANNON.Vec3 v
@@ -225,7 +225,7 @@ CANNON.Vec3.prototype.dot = function(v){
 };
 
 /**
- * @fn isZero
+ * @method isZero
  * @memberof CANNON.Vec3
  * @return bool
  */
@@ -234,7 +234,7 @@ CANNON.Vec3.prototype.isZero = function(){
 }
 
 /**
- * @fn negate
+ * @method negate
  * @memberof CANNON.Vec3
  * @brief Make the vector point in the opposite direction.
  * @param CANNON.Vec3 target Optional target to save in
@@ -249,7 +249,7 @@ CANNON.Vec3.prototype.negate = function(target){
 };
 
 /**
- * @fn tangents
+ * @method tangents
  * @memberof CANNON.Vec3
  * @brief Compute two artificial tangents to the vector
  * @param CANNON.Vec3 t1 Vector object to save the first tangent in
@@ -275,7 +275,7 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
 };
 
 /**
- * @fn toString
+ * @method toString
  * @memberof CANNON.Vec3
  * @brief Converts to a more readable format
  * @return string
@@ -285,7 +285,7 @@ CANNON.Vec3.prototype.toString = function(){
 };
 
 /**
- * @fn copy
+ * @method copy
  * @memberof CANNON.Vec3
  * @brief Copy the vector.
  * @param CANNON.Vec3 target
@@ -301,7 +301,7 @@ CANNON.Vec3.prototype.copy = function(target){
 
 
 /**
- * @fn lerp
+ * @method lerp
  * @memberof CANNON.Vec3
  * @brief Do a linear interpolation between two vectors
  * @param CANNON.Vec3 v
@@ -316,7 +316,7 @@ CANNON.Vec3.prototype.lerp = function(v,t,target){
 };
 
 /**
- * @fn almostEquals
+ * @method almostEquals
  * @memberof CANNON.Vec3
  * @brief Check if a vector equals is almost equal to another one.
  * @param CANNON.Vec3 v

@@ -59,7 +59,7 @@ CANNON.World = function(){
 };
 
 /**
- * @fn getContactMaterial
+ * @method getContactMaterial
  * @memberof CANNON.World
  * @brief Get the contact material between materials m1 and m2
  * @param CANNON.Material m1
@@ -84,7 +84,7 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
 
 /**
  * @private
- * @fn _addImpulse
+ * @method _addImpulse
  * @memberof CANNON.World
  * @brief Add an impulse to the colliding bodies i and j
  * @param int i Body number 1
@@ -186,7 +186,7 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
 };
 
 /**
- * @fn numObjects
+ * @method numObjects
  * @memberof CANNON.World
  * @brief Get number of objects in the world.
  * @return int
@@ -196,7 +196,7 @@ CANNON.World.prototype.numObjects = function(){
 };
 
 /**
- * @fn clearCollisionState
+ * @method clearCollisionState
  * @memberof CANNON.World
  * @brief Clear the contact state for a body.
  * @param CANNON.Body body
@@ -212,7 +212,7 @@ CANNON.World.prototype.clearCollisionState = function(body){
 };
 
 /**
- * @fn add
+ * @method add
  * @memberof CANNON.World
  * @brief Add a rigid body to the simulation.
  * @param CANNON.Body body
@@ -236,7 +236,7 @@ CANNON.World.prototype.add = function(body){
 };
 
 /**
- * @fn addConstraint
+ * @method addConstraint
  * @memberof CANNON.World
  * @brief Add a constraint to the simulation.
  * @param CANNON.Constraint c
@@ -249,7 +249,7 @@ CANNON.World.prototype.addConstraint = function(c){
 };
 
 /**
- * @fn id
+ * @method id
  * @memberof CANNON.World
  * @brief Generate a new unique integer identifyer
  * @return int
@@ -259,7 +259,7 @@ CANNON.World.prototype.id = function(){
 };
 
 /**
- * @fn remove
+ * @method remove
  * @memberof CANNON.World
  * @brief Remove a rigid body from the simulation.
  * @param CANNON.Body body
@@ -277,7 +277,7 @@ CANNON.World.prototype.remove = function(body){
 };
 
 /**
- * @fn addMaterial
+ * @method addMaterial
  * @memberof CANNON.World
  * @brief Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
  * @param CANNON.Material m
@@ -303,7 +303,7 @@ CANNON.World.prototype.addMaterial = function(m){
 };
 
 /**
- * @fn addContactMaterial
+ * @method addContactMaterial
  * @memberof CANNON.World
  * @brief Adds a contact material to the World
  * @param CANNON.ContactMaterial cmat
@@ -342,7 +342,7 @@ CANNON.World.prototype._id2index = function(id){
 };
 
 /**
- * @fn step
+ * @method step
  * @memberof CANNON.World
  * @brief Step the simulation
  * @param float dt

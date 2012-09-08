@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 cannon.js Authors
  * 
  * Permission is hereby granted, free of charge, to any person

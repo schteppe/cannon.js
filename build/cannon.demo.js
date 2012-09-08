@@ -81,7 +81,7 @@ CANNON.Demo = function(){
 };
 
 /**
- * @fn renderMode
+ * @method renderMode
  * @memberof CANNON.Demo
  * @brief Get/set render mode
  * @param int mode
@@ -128,7 +128,7 @@ CANNON.Demo.prototype.renderMode = function(mode){
 };
 
 /**
- * @fn addScene
+ * @method addScene
  * @memberof CANNON.Demo
  * @brief Add a scene to the demo app
  * @param function A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
@@ -138,7 +138,7 @@ CANNON.Demo.prototype.addScene = function(initfunc){
 };
 
 /**
- * @fn restartCurrentScene
+ * @method restartCurrentScene
  * @memberof CANNON.Demo
  * @brief Restarts the current scene
  */
@@ -157,7 +157,7 @@ CANNON.Demo.prototype.restartCurrentScene = function(){
 };
 
 /**
- * @fn updateVisuals
+ * @method updateVisuals
  * @memberof CANNON.Demo
  * @brief Loads body positions and orientations from the World and updates the Three.js graphics.
  */
@@ -424,7 +424,7 @@ CANNON.Demo.prototype.updateVisuals = function(){
 };
 
 /**
- * @fn start
+ * @method start
  * @memberof CANNON.Demo
  * @brief When all scenes have been added, run this to launch the Demo app.
  */

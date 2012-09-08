@@ -2,7 +2,8 @@
 
 /**
  * @class CANNON.Quaternion
- * @brief A Quaternion describes a rotation in 3D space. It is mathematically defined as Q = x*i + y*j + z*k + w, where (i,j,k) are imaginary basis vectors. (x,y,z) can be seen as a vector related to the axis of rotation, while the real multiplier, w, is related to the amount of rotation.
+ * @brief A Quaternion describes a rotation in 3D space.
+ * @description The Quaternion is mathematically defined as Q = x*i + y*j + z*k + w, where (i,j,k) are imaginary basis vectors. (x,y,z) can be seen as a vector related to the axis of rotation, while the real multiplier, w, is related to the amount of rotation.
  * @param float x Multiplier of the imaginary basis vector i.
  * @param float y Multiplier of the imaginary basis vector j.
  * @param float z Multiplier of the imaginary basis vector k.
@@ -44,7 +45,7 @@ CANNON.Quaternion.prototype.set = function(x,y,z,w){
 };
 
 /**
- * @fn toString
+ * @method toString
  * @memberof CANNON.Quaternion
  * @brief Convert to a readable format
  * @return string
@@ -54,7 +55,7 @@ CANNON.Quaternion.prototype.toString = function(){
 };
 
 /**
- * @fn setFromAxisAngle
+ * @method setFromAxisAngle
  * @memberof CANNON.Quaternion
  * @brief Set the quaternion components given an axis and an angle.
  * @param CANNON.Vec3 axis
@@ -88,7 +89,7 @@ CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
 };
 
 /**
- * @fn setFromVectors
+ * @method setFromVectors
  * @memberof CANNON.Quaternion
  * @brief Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
  * @param CANNON.Vec3 u
@@ -104,7 +105,7 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
 };
 
 /**
- * @fn mult
+ * @method mult
  * @memberof CANNON.Quaternion
  * @brief Quaternion multiplication
  * @param CANNON.Quaternion q
@@ -130,7 +131,7 @@ CANNON.Quaternion.prototype.mult = function(q,target){
 };
 
 /**
- * @fn inverse
+ * @method inverse
  * @memberof CANNON.Quaternion
  * @brief Get the inverse quaternion rotation.
  * @param CANNON.Quaternion target
@@ -152,7 +153,7 @@ CANNON.Quaternion.prototype.inverse = function(target){
 };
 
 /**
- * @fn conjugate
+ * @method conjugate
  * @memberof CANNON.Quaternion
  * @brief Get the quaternion conjugate
  * @param CANNON.Quaternion target
@@ -171,7 +172,7 @@ CANNON.Quaternion.prototype.conjugate = function(target){
 };
 
 /**
- * @fn normalize
+ * @method normalize
  * @memberof CANNON.Quaternion
  * @brief Normalize the quaternion. Note that this changes the values of the quaternion.
  */
@@ -192,7 +193,7 @@ CANNON.Quaternion.prototype.normalize = function(){
 };
 
 /**
- * @fn normalizeFast
+ * @method normalizeFast
  * @memberof CANNON.Quaternion
  * @brief Approximation of quaternion normalization. Works best when quat is already almost-normalized.
  * @see http://jsperf.com/fast-quaternion-normalization
@@ -214,7 +215,7 @@ CANNON.Quaternion.prototype.normalizeFast = function () {
 }
 
 /**
- * @fn vmult
+ * @method vmult
  * @memberof CANNON.Quaternion
  * @brief Multiply the quaternion by a vector
  * @param CANNON.Vec3 v
@@ -253,7 +254,7 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
 };
 
 /**
- * @fn copy
+ * @method copy
  * @memberof CANNON.Quaternion
  * @param CANNON.Quaternion target
  */
@@ -265,7 +266,7 @@ CANNON.Quaternion.prototype.copy = function(target){
 };
 
 /**
- * @fn toEuler
+ * @method toEuler
  * @memberof CANNON.Quaternion
  * @brief Convert the quaternion to euler angle representation. Order: YZX, as this page describes: http://www.euclideanspace.com/maths/standards/index.htm
  * @param CANNON.Vec3 target

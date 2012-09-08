@@ -472,7 +472,7 @@ CANNON.ContactGenerator = function(){
     }
 
     /**
-     * @fn reduceContacts
+     * @method reduceContacts
      * @memberof CANNON.ContactGenerator
      * @brief Removes unnecessary members of an array of CANNON.ContactPoint.
      */
@@ -481,7 +481,7 @@ CANNON.ContactGenerator = function(){
     }
 
     /**
-     * @fn getContacts
+     * @method getContacts
      * @memberof CANNON.ContactGenerator
      * @param array p1 Array of body indices
      * @param array p2 Array of body indices

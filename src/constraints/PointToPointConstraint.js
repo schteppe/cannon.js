@@ -1,7 +1,6 @@
 /*global CANNON:true */
 
 /**
- * Point to point constraint class
  * @author schteppe
  * @param CANNON.Body bodyA
  * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.

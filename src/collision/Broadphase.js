@@ -12,7 +12,7 @@ CANNON.Broadphase = function(){
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 
 /**
- * @fn collisionPairs
+ * @method collisionPairs
  * @memberof CANNON.Broadphase
  * @brief Get the collision pairs from the world
  * @param CANNON.World world The world to search in
