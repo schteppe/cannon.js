@@ -6,78 +6,75 @@
  */
 CANNON.Demo = function(){
 
-  // Global settings
-  this.settings = {
-    gx:0.0,
-    gy:0.0,
-    gz:0.0,
-    iterations:3,
-    k:1000,
-    d:3,
-    scene:0,
-    paused:false,
-    rendermode:0,
-    constraints:false,
-    contacts:false,  // Contact points
-    cm2contact:false, // center of mass to contact points
-    normals:false, // contact normals
-    axes:false, // "local" frame axes
-    particleSize:0.1,
-  };
+    // Global settings
+    this.settings = {
+	timeStep:1/60,
+	stepsPerFrame:1,
+	gx:0.0,
+	gy:0.0,
+	gz:0.0,
+	iterations:3,
+	k:1000,
+	d:3,
+	scene:0,
+	paused:false,
+	rendermode:0,
+	constraints:false,
+	contacts:false,  // Contact points
+	cm2contact:false, // center of mass to contact points
+	normals:false, // contact normals
+	axes:false, // "local" frame axes
+	particleSize:0.1,
+    };
 
-  this._phys_bodies = [];
-  this._phys_visuals = [];
-  this._scenes = [];
-  this._gui = null;
+    this._phys_bodies = [];
+    this._phys_visuals = [];
+    this._scenes = [];
+    this._gui = null;
 
-  /**
-   * @property bool paused
-   * @memberof CANNON.Demo
-   * @brief Controls if the simulation runs or not
-   */
-  this.paused = false;
+    /**
+     * @property bool paused
+     * @memberof CANNON.Demo
+     * @brief Controls if the simulation runs or not
+     */
+    this.paused = false;
+    
+    this.shadowsOn = true;
+    this._contactmeshes = [];
+    this._normallines = [];
+    this._contactlines = [];
+    this._distanceConstraintLines = [];
+    this._axes = [];
 
-  /**
-   * @property float timestep
-   * @memberof CANNON.Demo
-   */
-  this.timestep = 1.0/60.0;
-  this.shadowsOn = true;
-  this._contactmeshes = [];
-  this._normallines = [];
-  this._contactlines = [];
-  this._distanceConstraintLines = [];
-  this._axes = [];
+    this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
+    this.particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
 
-  this.three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
-  this.particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
+    // Material
+    this.materialColor = 0xdddddd;
+    this.solidMaterial = new THREE.MeshLambertMaterial( { color: this.materialColor } );
+    THREE.ColorUtils.adjustHSV( this.solidMaterial.color, 0, 0, 0.9 );
+    this.wireframeMaterial = new THREE.MeshBasicMaterial( { color: this.materialColor, wireframe:true } );
+    this.currentMaterial = this.solidMaterial;
+    this.contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+    this.particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
 
-  // Material
-  this.materialColor = 0xdddddd;
-  this.solidMaterial = new THREE.MeshLambertMaterial( { color: this.materialColor } );
-  THREE.ColorUtils.adjustHSV( this.solidMaterial.color, 0, 0, 0.9 );
-  this.wireframeMaterial = new THREE.MeshBasicMaterial( { color: this.materialColor, wireframe:true } );
-  this.currentMaterial = this.solidMaterial;
-  this.contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
-  this.particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+    this.renderModes = {
+	NORMAL:0,
+	WIREFRAME:1
+    };
 
-  this.renderModes = {
-    NORMAL:0,
-    WIREFRAME:1
-  };
+    this._updategui = function(){
+	if(this._gui){
+	    // First level
+	    for (var i in this._gui.__controllers)
+		this._gui.__controllers[i].updateDisplay();
 
-  this._updategui = function(){
-    if(this._gui){
-      // First level
-      for (var i in this._gui.__controllers)
-	this._gui.__controllers[i].updateDisplay();
-
-      // Second level
-      for (var f in this._gui.__folders)
-	for (var i in this._gui.__folders[f].__controllers)
-	  this._gui.__folders[f].__controllers[i].updateDisplay();
-    }
-  };
+	    // Second level
+	    for (var f in this._gui.__folders)
+		for (var i in this._gui.__folders[f].__controllers)
+		    this._gui.__folders[f].__controllers[i].updateDisplay();
+	}
+    };
 };
 
 /**
@@ -559,8 +556,10 @@ CANNON.Demo.prototype.start = function(){
   }
 
   function updatePhysics(){
-    // Step world
-    that._world.step(that.timestep);
+      // Step world
+      for(var i=0; i<that.settings.stepsPerFrame; i++){
+	  that._world.step(that.settings.timeStep);
+      }
   }
 
   function onDocumentMouseMove( event ) {
@@ -655,7 +654,9 @@ CANNON.Demo.prototype.start = function(){
     wf.add(that.settings,'paused').onChange(function(p){
 	that.paused = p;
       });
-      var maxg = 100;
+    wf.add(that.settings, 'timeStep',0,1);
+    wf.add(that.settings, 'stepsPerFrame',1,10).step(1);
+    var maxg = 100;
     wf.add(that.settings, 'gx',-maxg,maxg).onChange(function(gx){
 	if(!isNaN(gx))
 	  that._world.gravity.set(gx,that.settings.gy,that.settings.gz);
@@ -674,10 +675,10 @@ CANNON.Demo.prototype.start = function(){
     sf.add(that.settings, 'iterations',1,50).step(1).onChange(function(it){
 	that._world.solver.iterations = it;
     });
-    sf.add(that.settings, 'k',10,5000).onChange(function(k){
+      sf.add(that.settings, 'k',10,10000).onChange(function(k){
 	that._world.solver.setSpookParams(k,that._world.solver.d);
     });
-    sf.add(that.settings, 'd',0,20).step(1).onChange(function(d){
+    sf.add(that.settings, 'd',0,20).step(0.1).onChange(function(d){
 	that._world.solver.setSpookParams(that._world.solver.k,d);
     });
 
