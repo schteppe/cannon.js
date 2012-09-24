@@ -20,8 +20,8 @@
       var demo = new CANNON.Demo();
       
       // Using the preStep callback to add a force
-      demo.addScene(function(app){
-          var world = setupWorld(app);
+      demo.addScene("Moon",function(){
+          var world = demo.getWorld();
       
           var mass = 5;
           var moonShape = new CANNON.Sphere(0.5);
@@ -50,20 +50,10 @@
       
           world.add(moon);
           world.add(planet);
-          app.addVisual(moon);
-          app.addVisual(planet);
+          demo.addVisual(moon);
+          demo.addVisual(planet);
         });
-      
-      function setupWorld(app){
-        // Create world
-        var world = new CANNON.World();
-        app.setWorld(world);
-        world.gravity.set(0,0,0);
-        world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 10;
-        return world;
-      };
-      
+
       demo.start();
       
     </script>

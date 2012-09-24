@@ -14,35 +14,35 @@
     <script src="../libs/Stats.js"></script>
     <script>
 
-      var demo = new CANNON.Demo();
+      var demo = new CANNON.Demo({ stepFrequency:180 });
       var size = 2;
       
-      demo.addScene(function(app){
+      demo.addScene("Sphere",function(){
           var sphereShape = new CANNON.Sphere(size);
-          createBodyOnPlane(app,sphereShape);
+          createBodyOnPlane(demo,sphereShape);
         });
       
-      demo.addScene(function(app){
+      demo.addScene("Box",function(){
           var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
-          createBodyOnPlane(app,boxShape);
+          createBodyOnPlane(demo,boxShape);
         });
       
       demo.start();
       
-      function createBodyOnPlane(app,shape){
+      function createBodyOnPlane(demo,shape){
       
         // Create world
-        var world = new CANNON.World();
-        app.setWorld(world);
+        var world = demo.getWorld();
         world.gravity.set(0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 10;
+        world.solver.iterations = 20;
+        world.solver.setSpookParams(10000,10);
       
         // ground plane
         var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
         var groundBody = new CANNON.RigidBody(0,groundShape);
         world.add(groundBody);
-        app.addVisual(groundBody);
+        demo.addVisual(groundBody);
       
         // Shape on plane
         var shapeBody = new CANNON.RigidBody(30,shape);
@@ -51,7 +51,7 @@
         shapeBody.velocity.set(0,0,0);
         shapeBody.angularVelocity.set(0,0,0);
         world.add(shapeBody);
-        app.addVisual(shapeBody);
+        demo.addVisual(shapeBody);
       }
             
     </script>

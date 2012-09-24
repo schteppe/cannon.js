@@ -17,12 +17,11 @@
       /**
        * Demos of the Body.motionstate types.
        */
-      var demo = new CANNON.Demo();
+      var demo = new CANNON.Demo({ stepFrequency:180 });
       var size = 2;
       
-      // Sphere / box side
-      demo.addScene(function(app){
-          var world = setupWorld(app);
+      demo.addScene("Moving box",function(){
+          var world = setupWorld(demo);
       
           var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
           var sphereShape = new CANNON.Sphere(size);
@@ -35,7 +34,7 @@
           b1.motionstate = CANNON.Body.KINEMATIC;
           b1.position.set(0,0,0.5*size);
           world.add(b1);
-          app.addVisual(b1);
+          demo.addVisual(b1);
       
           // To control the box movement we must set its velocity
           b1.velocity.set(0,0,5);
@@ -51,18 +50,17 @@
           var b2 = new CANNON.RigidBody(mass,sphereShape);
           b2.position.set(0,0,3*size);
           world.add(b2);
-          app.addVisual(b2);
+          demo.addVisual(b2);
         });
       
       demo.start();
       
-      function setupWorld(app){
-        // Create world
-        var world = new CANNON.World();
-        app.setWorld(world);
-        world.gravity.set(0,0,-50);
+      function setupWorld(demo){
+        var world = demo.getWorld();
+        world.gravity.set(0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 10;
+        world.solver.iterations = 30;
+        world.solver.setSpookParams(10000,20);
       
         // Static ground plane
         // Static bodies only interacts with dynamic bodies. Velocity is always zero.
@@ -70,7 +68,7 @@
         var mass = 0; // mass=0 will produce a static body automatically
         var groundBody = new CANNON.RigidBody(mass,groundShape);
         world.add(groundBody);
-        app.addVisual(groundBody);
+        demo.addVisual(groundBody);
       
         return world;
       }

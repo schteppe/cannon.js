@@ -14,16 +14,16 @@
     <script src="../libs/Stats.js"></script>
     <script>
     
-      var demo = new CANNON.Demo(), size = 1.0;
+      var demo = new CANNON.Demo({ stepFrequency: 180 }), size = 1.0;
       
-      demo.addScene(function(app){
+      demo.addScene("Friction",function(){
         var shape = new CANNON.Box(new CANNON.Vec3(size,size,size));
 
         // Create world
-        var world = new CANNON.World();
-        app.setWorld(world);
+        var world = demo.getWorld();
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.iterations = 10;
+        world.iterations = 20;
+        world.solver.setSpookParams(5000,10);
       
         // Materials
         var groundMaterial = new CANNON.Material("groundMaterial");
@@ -32,7 +32,7 @@
         var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
         var groundBody = new CANNON.RigidBody(0,groundShape,groundMaterial);
         world.add(groundBody);
-        app.addVisual(groundBody);
+        demo.addVisual(groundBody);
       
         // Create a slippery material (friction coefficient = 0.0)
         var slipperyMaterial = new CANNON.Material("slipperyMaterial");
@@ -51,17 +51,16 @@
         var boxBody = new CANNON.RigidBody(10,shape,slipperyMaterial);
         boxBody.position.set(0,0,5);
         world.add(boxBody);
-        app.addVisual(boxBody);
+        demo.addVisual(boxBody);
 
         // Create box made of groundMaterial
         var boxBody2 = new CANNON.RigidBody(10,shape,groundMaterial);
         boxBody2.position.set(size*4,0,5);
         world.add(boxBody2);
-        app.addVisual(boxBody2);
+        demo.addVisual(boxBody2);
       
         // Change gravity so the boxes will slide along x axis
         world.gravity.set(-3,0,-60);
-
       });
       
       demo.start();

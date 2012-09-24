@@ -14,44 +14,27 @@
     <script src="../libs/Stats.js"></script>
     <script>
 
-      var demo = new CANNON.Demo();
+      var demo = new CANNON.Demo({
+        stepFrequency:120
+      });
       var nx=4, ny=4;
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,4);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,8);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,15);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,20);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,25);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,30);
-        });
+
+      demo.addScene((nx*ny*4)+ " spheres", function(){   createContainer(demo,nx,ny,4);    });
+      demo.addScene((nx*ny*8)+ " spheres", function(){   createContainer(demo,nx,ny,8);    });
+      demo.addScene((nx*ny*15)+" spheres", function(){   createContainer(demo,nx,ny,15);   });
+      demo.addScene((nx*ny*20)+" spheres", function(){   createContainer(demo,nx,ny,20);   });
+      demo.addScene((nx*ny*25)+" spheres", function(){   createContainer(demo,nx,ny,25);   });
+      demo.addScene((nx*ny*30)+" spheres", function(){   createContainer(demo,nx,ny,30);   });
       
       demo.start();
       
-      function createContainer(app,nx,ny,nz){
-      
-        console.log((nx*ny*nz)+" spheres");
+      function createContainer(demo,nx,ny,nz){
       
         // Create world
-        var world = new CANNON.World();
-        app.setWorld(world);
+        var world = demo.getWorld();
+        world.solver.setSpookParams(10000,7);
+        world.solver.iterations = 25;
         world.gravity.set(0,0,-40);
-        world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 5;
       
         // Materials
         var stone = new CANNON.Material('stone');
@@ -66,7 +49,7 @@
         var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
         var groundBody = new CANNON.RigidBody(0,groundShape,stone);
         world.add(groundBody);
-        app.addVisual(groundBody);
+        demo.addVisual(groundBody);
       
         // plane -x
         var planeShapeXmin = new CANNON.Plane(new CANNON.Vec3(0,1,0));
@@ -104,7 +87,7 @@
       				      j*2-ny*0.5 + (Math.random()-0.5)*rand,
       				      1+k*2.1+h+(i+j)*0.0);
               world.add(sphereBody);
-      	      app.addVisual(sphereBody);
+      	      demo.addVisual(sphereBody);
             }
           }
         }

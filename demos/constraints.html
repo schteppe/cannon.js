@@ -20,10 +20,10 @@
       var demo = new CANNON.Demo();
 
       // Sphere chain
-      demo.addScene(function(app){
+      demo.addScene("Sphere chain",function(){
           var size = 0.5;
           var dist = size*2+0.12;
-          var world = setupWorld(app);
+          var world = setupWorld(demo);
           var sphereShape = new CANNON.Sphere(size);
           var mass = 1;
           var lastBody = null;
@@ -34,7 +34,7 @@
             spherebody.position.set(0,0,(N-i)*dist);
             spherebody.velocity.x = i;
             world.add(spherebody);
-            app.addVisual(spherebody);
+            demo.addVisual(spherebody);
            
             // Connect this body to the last one
             var c;
@@ -53,8 +53,8 @@
 
 
       // Particle cloth
-      demo.addScene(function(app){
-          var world = setupWorld(app);
+      demo.addScene("Particle cloth",function(){
+          var world = setupWorld(demo);
           world.solver.setSpookParams(1000,2);
           world.solver.iterations = 50;
           var dist = 0.2;
@@ -69,7 +69,7 @@
               body.velocity.set(0, 3*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
               bodies[i+" "+j] = body;
               world.add(body);
-              app.addVisual(body);
+              demo.addVisual(body);
             }
           }
           function connect(i1,j1,i2,j2){
@@ -84,8 +84,8 @@
         });
 
       // Particle 3d object
-      demo.addScene(function(app){
-          var world = setupWorld(app);
+      demo.addScene("3D cloth structure",function(){
+          var world = setupWorld(demo);
           world.solver.setSpookParams(5000,2);
           world.solver.iterations = 10;
           var dist = 1;
@@ -101,7 +101,7 @@
                 body.velocity.set(0, 30*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
                 bodies[i+" "+j+" "+k] = body;
                 world.add(body);
-                app.addVisual(body);
+                demo.addVisual(body);
               }
             }
           }
@@ -145,10 +145,9 @@
         });
 
       
-      function setupWorld(app){
+      function setupWorld(demo){
         // Create world
-        var world = new CANNON.World();
-        app.setWorld(world);
+        var world = demo.getWorld();
         world.gravity.set(0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
@@ -160,7 +159,7 @@
         var groundBody = new CANNON.RigidBody(0,groundShape);
         groundBody.position.set(0,0,1);
         world.add(groundBody);
-        app.addVisual(groundBody);
+        demo.addVisual(groundBody);
 
         return world;
       };

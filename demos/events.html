@@ -14,22 +14,21 @@
     <script src="../libs/Stats.js"></script>
     <script>
 
-      var demo = new CANNON.Demo();
+      var demo = new CANNON.Demo({ stepFrequency:180 });
       var size = 1;
       
-      demo.addScene(function(app){
+      demo.addScene("'collide' event",function(){
       
           // Create world
-          var world = new CANNON.World();
-          app.setWorld(world);
+          var world = demo.getWorld();
+          world.solver.setSpookParams(5000,10);
           world.gravity.set(0,0,-20);
-          world.broadphase = new CANNON.NaiveBroadphase();
       
           // ground plane
           var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
           var groundBody = new CANNON.RigidBody(0,groundShape);
           world.add(groundBody);
-          app.addVisual(groundBody);
+          demo.addVisual(groundBody);
       
           // Sphere
           var sphere = new CANNON.Sphere(size);
@@ -37,7 +36,7 @@
           var pos = new CANNON.Vec3(0,0,size);
           sphereBody.position.set(0,0,size*6);
           world.add(sphereBody);
-          app.addVisual(sphereBody);
+          demo.addVisual(sphereBody);
           
           // Add collide event
           sphereBody.addEventListener("collide",function(e){

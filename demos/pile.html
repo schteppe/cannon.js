@@ -14,24 +14,24 @@
     <script src="../libs/Stats.js"></script>
     <script>
 
-      var demo = new CANNON.Demo();
+      var demo = new CANNON.Demo({ stepFrequency:180 });
       var size = 1;
       
       // Spheres
-      demo.addScene(function(app){
-          // Create world
-          var world = new CANNON.World();
-          app.setWorld(world);
+      demo.addScene("Pile",function(){
+          var world = demo.getWorld();
+
           world.gravity.set(0,0,-50);
           world.broadphase = new CANNON.NaiveBroadphase();
-          world.solver.iterations = 2;
+          world.solver.iterations = 10;
+          world.solver.setSpookParams(5000,10);
           
           // ground plane
           var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
           var groundBody = new CANNON.RigidBody(0,groundShape);
           groundBody.position.set(0,0,0);
           world.add(groundBody);
-          app.addVisual(groundBody);
+          demo.addVisual(groundBody);
       
           // plane -x
           var planeShapeXmin = new CANNON.Plane(new CANNON.Vec3(0,1,0));
@@ -66,12 +66,12 @@
               var b1 = new CANNON.RigidBody(5,sphereShape);
               b1.position.set(2*size*Math.sin(i),2*size*Math.cos(i),7*2*size);
               world.add(b1);
-              app.addVisual(b1);
+              demo.addVisual(b1);
               bodies.push(b1);
               
               if(bodies.length>80){
                 var b = bodies.shift();
-                app.removeVisual(b);
+                demo.removeVisual(b);
                 world.remove(b);
                 /*clearInterval(interval);*/
               }

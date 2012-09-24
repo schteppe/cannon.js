@@ -3422,6 +3422,18 @@ CANNON.World.prototype.addConstraint = function(c){
 };
 
 /**
+ * @method removeConstraint
+ * @memberof CANNON.World
+ * @brief Removes a constraint
+ * @param CANNON.Constraint c
+ */
+CANNON.World.prototype.removeConstraint = function(c){
+    var idx = this.constraints.indexOf(c);
+    if(idx!=-1)
+	this.constraints.splice(idx,1);
+};
+
+/**
  * @method id
  * @memberof CANNON.World
  * @brief Generate a new unique integer identifyer
