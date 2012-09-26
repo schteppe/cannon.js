@@ -73,7 +73,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 		    
 		    // Rel. position
 		    bodies[oi].position.vsub(bodies[pi].position,r);
-		    bodies[pi].quaternion.vmult(bodies[pi].shape.normal,normal);
+		    normal.set(0,0,1);
+		    bodies[pi].quaternion.vmult(normal,normal);
 		    
 		    var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
 		    if(q<0.0){
@@ -95,9 +96,12 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 			// todo: particle vs box,sphere,compound,convex
 		    } else if(type & types.PLANE){
 			// particle/plane
+			var plane = other;
 			var relpos = new CANNON.Vec3(); // todo: cache
-			particle.position.vsub(other.position,relpos);
-			if(otherShape.normal.dot(relpos)<=0.0){
+			var normal = new CANNON.Vec3(0,0,1); // Todo: cache
+			plane.quaternion.vmult(normal,normal);
+			particle.position.vsub(plane.position,relpos);
+			if(normal.dot(relpos)<=0.0){
 			    pairs1.push(particle);
 			    pairs2.push(other);
 			}

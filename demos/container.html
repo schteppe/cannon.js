@@ -46,37 +46,41 @@
         world.addContactMaterial(stone_stone);
       
         // ground plane
-        var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+        var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape,stone);
         world.add(groundBody);
         demo.addVisual(groundBody);
       
         // plane -x
-        var planeShapeXmin = new CANNON.Plane(new CANNON.Vec3(0,1,0));
+        var planeShapeXmin = new CANNON.Plane();
         var planeXmin = new CANNON.RigidBody(0, planeShapeXmin,stone);
-        planeXmin.position.set(0,-5,0);
+        planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
+        planeXmin.position.set(-5,0,0);
         world.add(planeXmin);
       
         // Plane +x
-        var planeShapeXmax = new CANNON.Plane(new CANNON.Vec3(0,-1,0));
+        var planeShapeXmax = new CANNON.Plane();
         var planeXmax = new CANNON.RigidBody(0, planeShapeXmax,stone);
-        planeXmax.position.set(0,5,0);
+        planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
+        planeXmax.position.set(5,0,0);
         world.add(planeXmax);
       
         // Plane -y
-        var planeShapeYmin = new CANNON.Plane(new CANNON.Vec3(1,0,0));
+        var planeShapeYmin = new CANNON.Plane();
         var planeYmin = new CANNON.RigidBody(0, planeShapeYmin,stone);
-        planeYmin.position.set(-5,0,0);
+        planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+        planeYmin.position.set(0,-5,0);
         world.add(planeYmin);
-      
+
         // Plane +y
-        var planeShapeYmax = new CANNON.Plane(new CANNON.Vec3(-1,0,0));
+        var planeShapeYmax = new CANNON.Plane();
         var planeYmax = new CANNON.RigidBody(0, planeShapeYmax, stone);
-        planeYmax.position.set(5,0,0);
+        planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
+        planeYmax.position.set(0,5,0);
         world.add(planeYmax);
       
         // Sphere on plane
-        var rand = 0.01;
+        var rand = 0.1;
         var h = 0;
         var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
         for(var i=0; i<nx; i++){

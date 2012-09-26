@@ -29,7 +29,7 @@
         var groundMaterial = new CANNON.Material("groundMaterial");
       
         // ground plane
-        var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+        var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape,groundMaterial);
         world.add(groundBody);
         demo.addVisual(groundBody);

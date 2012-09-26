@@ -138,7 +138,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 		    
 		    // Rel. position
 		    bodies[oi].position.vsub(bodies[pi].position,r);
-		    bodies[pi].quaternion.vmult(bodies[pi].shape.normal,normal);
+		    normal.set(0,0,1);
+		    bodies[pi].quaternion.vmult(normal,normal);
 		    
 		    var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
 		    if(q<0.0){
@@ -160,9 +161,12 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
 			// todo: particle vs box,sphere,compound,convex
 		    } else if(type & types.PLANE){
 			// particle/plane
+			var plane = other;
 			var relpos = new CANNON.Vec3(); // todo: cache
-			particle.position.vsub(other.position,relpos);
-			if(otherShape.normal.dot(relpos)<=0.0){
+			var normal = new CANNON.Vec3(0,0,1); // Todo: cache
+			plane.quaternion.vmult(normal,normal);
+			particle.position.vsub(plane.position,relpos);
+			if(normal.dot(relpos)<=0.0){
 			    pairs1.push(particle);
 			    pairs2.push(other);
 			}
@@ -1912,19 +1916,11 @@ CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
- * @brief An infinite plane, facing in the direction of the given normal.
+ * @brief An infinite plane, facing in the Z direction.
  * @author schteppe
- * @todo should not have a normal... That makes it two ways to change its rotation
  */
-CANNON.Plane = function(normal){
+CANNON.Plane = function(){
     CANNON.Shape.call(this);
-    normal.normalize();
-
-    /**
-     * @property CANNON.Vec3 normal
-     * @memberof CANNON.Plane
-     */
-    this.normal = normal;
     this.type = CANNON.Shape.types.PLANE;
 };
 CANNON.Plane.prototype = new CANNON.Shape();
@@ -1940,7 +1936,8 @@ CANNON.Plane.prototype.volume = function(){
 };
 
 CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
-
+    // Todo
+    throw new Error("todo");
 };/*global CANNON:true */
 
 /**
@@ -4281,7 +4278,8 @@ CANNON.ContactGenerator = function(){
 		    var r = makeResult(bi,bj);
 
 		    // Contact normal
-		    sj.normal.copy(r.ni);
+		    //sj.normal.copy(r.ni);
+		    r.ni.set(0,0,1);
 		    qj.vmult(r.ni,r.ni);
 		    r.ni.negate(r.ni); // body i is the sphere, flip normal
 		    r.ni.normalize();
@@ -4433,7 +4431,8 @@ CANNON.ContactGenerator = function(){
 		} else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
 
 		    // Collision normal
-		    var n = si.normal.copy();
+		    var n = new CANNON.Vec3(0,0,1); //si.normal.copy();
+		    qi.vmult(n,n);
 
 		    // Loop over corners
 		    var numcontacts = 0;
@@ -4467,11 +4466,17 @@ CANNON.ContactGenerator = function(){
 		    // Create a virtual box polyhedron for the plane
 		    var t1 = v3pool.get();
 		    var t2 = v3pool.get();
-		    si.normal.tangents(t1,t2);
+		    //si.normal.tangents(t1,t2);
+		    t1.set(1,0,0);
+		    t2.set(0,1,0);
+		    qi.vmult(t1,t1); // Rotate the tangents
+		    qi.vmult(t2,t2);
 		    t1.mult(100000,t1);
 		    t2.mult(100000,t2);
 		    var n = v3pool.get();
-		    si.normal.copy(n);
+		    n.set(0,0,1);
+		    qi.vmult(n,n);
+		    //si.normal.copy(n);
 		    tempverts[0].set(-t1.x -t2.x -n.x, -t1.y -t2.y -n.y, -t1.z -t2.z -n.z); //---
 		    tempverts[1].set( t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
 		    tempverts[2].set( t1.x +t2.x -n.x,  t1.y +t2.y -n.y,  t1.z +t2.z -n.z); // ++- 
@@ -4587,13 +4592,14 @@ CANNON.ContactGenerator = function(){
 	    var type = otherShape.type;
 
 	    if(type == CANNON.Shape.types.PLANE){ // Particle vs plane
-		var normal = otherShape.normal;
+		var normal = new CANNON.Vec3(0,0,1); // todo: cache
+		other.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
 		var relpos = new CANNON.Vec3(); // todo: cache
 		particle.position.vsub(other.position,relpos);
 		var dot = normal.dot(relpos);
 		if(dot<=0.0){
 		    var r = makeResult(particle,other);
-		    otherShape.normal.copy( r.ni ); // Contact normal is the plane normal
+		    normal.copy( r.ni ); // Contact normal is the plane normal
 		    r.ni.negate(r.ni);
 		    r.ri.set(0,0,0); // Center of particle
 

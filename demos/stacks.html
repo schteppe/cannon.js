@@ -17,7 +17,7 @@
       /**
        * For debugging different kinds of stacks
        */
-      var demo = new CANNON.Demo({ stepFrequency : 180 });
+      var demo = new CANNON.Demo({ stepFrequency : 120 });
       var size = 2;
       
       // Boxes
@@ -152,7 +152,7 @@
         world.solver.setSpookParams(5000,10);
       
         // ground plane
-        var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+        var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);

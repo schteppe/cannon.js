@@ -4,19 +4,11 @@
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
- * @brief An infinite plane, facing in the direction of the given normal.
+ * @brief An infinite plane, facing in the Z direction.
  * @author schteppe
- * @todo should not have a normal... That makes it two ways to change its rotation
  */
-CANNON.Plane = function(normal){
+CANNON.Plane = function(){
     CANNON.Shape.call(this);
-    normal.normalize();
-
-    /**
-     * @property CANNON.Vec3 normal
-     * @memberof CANNON.Plane
-     */
-    this.normal = normal;
     this.type = CANNON.Shape.types.PLANE;
 };
 CANNON.Plane.prototype = new CANNON.Shape();
@@ -32,5 +24,6 @@ CANNON.Plane.prototype.volume = function(){
 };
 
 CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
-
+    // Todo
+    throw new Error("todo");
 };

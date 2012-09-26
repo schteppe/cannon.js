@@ -302,7 +302,8 @@ CANNON.Demo = function(options){
 	    for(var bi=0; bi<bodies.length; bi++){
 		var b = bodies[bi], mesh=axesMeshCache.request();
 		b.position.copy(mesh.position);
-		b.quaternion.copy(mesh.quaternion);
+		if(b.quaternion)
+		    b.quaternion.copy(mesh.quaternion);
 	    }
 	}
 	axesMeshCache.hideCached();
@@ -580,24 +581,14 @@ CANNON.Demo = function(options){
 	    var geometry = new THREE.PlaneGeometry( 100, 100 , 100 , 100 );
 	    mesh = new THREE.Object3D();
 	    var submesh = new THREE.Object3D();
-	    var subsubmesh = new THREE.Object3D();
 	    var ground = new THREE.Mesh( geometry, currentMaterial );
 	    ground.scale = new THREE.Vector3(100,100,100);
 	    ground.rotation.x = Math.PI/2;
-	    subsubmesh.add(ground);
-	    var n = shape.normal.copy();
-
+	    submesh.add(ground);
 	    if(settings.shadows){
 		ground.castShadow = true;
 		ground.receiveShadow = true;
 	    }
-
-	    // Rotate the plane according to normal
-	    var q = new CANNON.Quaternion();
-	    q.setFromVectors(n,new CANNON.Vec3(0,0,-1));
-	    submesh.useQuaternion = true;
-	    submesh.quaternion.set(q.x,q.y,q.z,q.w);
-	    submesh.add(subsubmesh);
 	    mesh.add(submesh);
 	    break;
 
