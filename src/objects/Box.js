@@ -100,6 +100,7 @@ CANNON.Box.prototype.getCorners = function(quat){
   return corners;
 };
 
+
 /**
  * @method getSideNormals
  * @memberof CANNON.Box
@@ -109,21 +110,23 @@ CANNON.Box.prototype.getCorners = function(quat){
  * @return array
  */
 CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
-  var sides = [];
-  var ex = this.halfExtents;
-  sides.push(new CANNON.Vec3(  ex.x,     0,     0));
-  sides.push(new CANNON.Vec3(     0,  ex.y,     0));
-  sides.push(new CANNON.Vec3(     0,     0,  ex.z));
-  if(includeNegative!=undefined && includeNegative){
-    sides.push(new CANNON.Vec3( -ex.x,     0,     0));
-    sides.push(new CANNON.Vec3(     0, -ex.y,     0));
-    sides.push(new CANNON.Vec3(     0,     0, -ex.z));
-  }
+    var sides = [];
+    var ex = this.halfExtents;
+    sides.push(new CANNON.Vec3(  ex.x,     0,     0));
+    sides.push(new CANNON.Vec3(     0,  ex.y,     0));
+    sides.push(new CANNON.Vec3(     0,     0,  ex.z));
+    if(includeNegative!=undefined && includeNegative){
+	sides.push(new CANNON.Vec3( -ex.x,     0,     0));
+	sides.push(new CANNON.Vec3(     0, -ex.y,     0));
+	sides.push(new CANNON.Vec3(     0,     0, -ex.z));
+    }
 
-  for(var i=0; quat!=undefined && i<sides.length; i++)
-    quat.vmult(sides[i],sides[i]);
+    if(quat!=undefined){
+	for(var i=0; i<sides.length; i++)
+	    quat.vmult(sides[i],sides[i]);
+    }
 
-  return sides;
+    return sides;
 };
 
 CANNON.Box.prototype.volume = function(){
@@ -132,4 +135,40 @@ CANNON.Box.prototype.volume = function(){
 
 CANNON.Box.prototype.boundingSphereRadius = function(){
   return this.halfExtents.norm();
+};
+
+var worldCornerTempPos = new CANNON.Vec3();
+var worldCornerTempNeg = new CANNON.Vec3();
+CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
+    this.halfExtents.copy(worldCornerTempPos);
+    this.halfExtents.negate(worldCornerTempNeg);
+    quat.vmult(worldCornerTempPos,worldCornerTempPos);
+    quat.vmult(worldCornerTempNeg,worldCornerTempNeg);
+    pos.vadd(worldCornerTempPos,worldCornerTempPos);
+    pos.vadd(worldCornerTempNeg,worldCornerTempNeg);
+
+    var p = worldCornerTempPos;
+    var n = worldCornerTempNeg;
+    callback( p.x, p.y, p.z);
+    callback( n.x, p.y, p.z);
+    callback( n.x, n.y, p.z);
+    callback( n.x, n.y, n.z);
+    callback( p.x, n.y, n.z);
+    callback( p.x, p.y, n.z);
+    callback( n.x, p.y, n.z);
+    callback( p.x, n.y, p.z);
+};
+
+CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    // Get each axis max
+    pos.copy(min);
+    pos.copy(max);
+    this.forEachWorldCorner(pos,quat,function(x,y,z){
+	if(x > max.x) max.x = x;
+	if(y > max.y) max.y = y;
+	if(z > max.z) max.z = z;
+	if(x < min.x) min.x = x;
+	if(y < min.y) min.y = y;
+	if(z < min.z) min.z = z;
+    });    
 };

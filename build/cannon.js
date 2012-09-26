@@ -1289,16 +1289,17 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
  */
 CANNON.Shape = function(){
 
-  /**
-   * @property int type
-   * @memberof CANNON.Shape
-   * @brief The type of this shape. Must be set to an int > 0 by subclasses.
-   * @see CANNON.Shape.types
-   */
-  this.type = 0;
+    /**
+     * @property int type
+     * @memberof CANNON.Shape
+     * @brief The type of this shape. Must be set to an int > 0 by subclasses.
+     * @see CANNON.Shape.types
+     */
+    this.type = 0;
 
-  this.aabbmin = new CANNON.Vec3();
-  this.aabbmax = new CANNON.Vec3();
+    // Local AABB's
+    this.aabbmin = new CANNON.Vec3();
+    this.aabbmax = new CANNON.Vec3();
 };
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
@@ -1354,6 +1355,11 @@ CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
   target.z = Math.abs(worldInertia.z);
   return target;
   //throw "calculateInertia() not implemented for shape type "+this.type;
+};
+
+// Calculates the local aabb and sets the result to .aabbmax and .aabbmin
+CANNON.Shape.calculateLocalAABB = function(){
+    throw new Error(".calculateLocalAABB is not implemented for this Shape yet!");
 };
 
 /**
@@ -1599,78 +1605,98 @@ CANNON.Particle = function(mass,material){
  */
 CANNON.RigidBody = function(mass,shape,material){
 
-  // Check input
-  if(typeof(mass)!="number")
-      throw new Error("Argument 1 (mass) must be a number.");
-  if(typeof(shape)!="object" || !(shape instanceof(CANNON.Shape)))
-      throw new Error("Argument 2 (shape) must be an instance of CANNON.Shape.");
-  if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
-      throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+    // Check input
+    if(typeof(mass)!="number")
+	throw new Error("Argument 1 (mass) must be a number.");
+    if(typeof(shape)!="object" || !(shape instanceof(CANNON.Shape)))
+	throw new Error("Argument 2 (shape) must be an instance of CANNON.Shape.");
+    if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
+	throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
 
-  CANNON.Particle.call(this,mass,material);
+    CANNON.Particle.call(this,mass,material);
 
-  var that = this;
+    var that = this;
 
-  /**
-   * @property CANNON.Vec3 tau
-   * @memberof CANNON.RigidBody
-   * @brief Rotational force on the body, around center of mass
-   */
-  this.tau = new CANNON.Vec3();
+    /**
+     * @property CANNON.Vec3 tau
+     * @memberof CANNON.RigidBody
+     * @brief Rotational force on the body, around center of mass
+     */
+    this.tau = new CANNON.Vec3();
 
-  /**
-   * @property CANNON.Quaternion quaternion
-   * @memberof CANNON.RigidBody
-   * @brief Orientation of the body
-   */
-  this.quaternion = new CANNON.Quaternion();
+    /**
+     * @property CANNON.Quaternion quaternion
+     * @memberof CANNON.RigidBody
+     * @brief Orientation of the body
+     */
+    this.quaternion = new CANNON.Quaternion();
 
-  /**
-   * @property CANNON.Quaternion initQuaternion
-   * @memberof CANNON.RigidBody
-   */
-  this.initQuaternion = new CANNON.Quaternion();
+    /**
+     * @property CANNON.Quaternion initQuaternion
+     * @memberof CANNON.RigidBody
+     */
+    this.initQuaternion = new CANNON.Quaternion();
 
-  /**
-   * @property CANNON.Vec3 angularVelocity
-   * @memberof CANNON.RigidBody
-   */
-  this.angularVelocity = new CANNON.Vec3();
+    /**
+     * @property CANNON.Vec3 angularVelocity
+     * @memberof CANNON.RigidBody
+     */
+    this.angularVelocity = new CANNON.Vec3();
 
-  /**
-   * @property CANNON.Vec3 initAngularVelocity
-   * @memberof CANNON.RigidBody
-   */
-  this.initAngularVelocity = new CANNON.Vec3();
+    /**
+     * @property CANNON.Vec3 initAngularVelocity
+     * @memberof CANNON.RigidBody
+     */
+    this.initAngularVelocity = new CANNON.Vec3();
 
-  /**
-   * @property CANNON.Shape shape
-   * @memberof CANNON.RigidBody
-   */
-  this.shape = shape;
+    /**
+     * @property CANNON.Shape shape
+     * @memberof CANNON.RigidBody
+     */
+    this.shape = shape;
 
-  /**
-   * @property CANNON.Vec3 inertia
-   * @memberof CANNON.RigidBody
-   */
-  this.inertia = new CANNON.Vec3();
-  shape.calculateLocalInertia(mass,this.inertia);
+    /**
+     * @property CANNON.Vec3 inertia
+     * @memberof CANNON.RigidBody
+     */
+    this.inertia = new CANNON.Vec3();
+    shape.calculateLocalInertia(mass,this.inertia);
 
-  /**
-   * @property CANNON.Vec3 intInertia
-   * @memberof CANNON.RigidBody
-   */
-  this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
-				    this.inertia.y>0 ? 1.0/this.inertia.y : 0,
-				    this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+    /**
+     * @property CANNON.Vec3 intInertia
+     * @memberof CANNON.RigidBody
+     */
+    this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
+				      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
+				      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
 
-  /**
-   * @property float angularDamping
-   * @memberof CANNON.RigidBody
-   */
-  this.angularDamping = 0.01; // Perhaps default should be zero here?
+    /**
+     * @property float angularDamping
+     * @memberof CANNON.RigidBody
+     */
+    this.angularDamping = 0.01; // Perhaps default should be zero here?
+
+
+    /**
+     * @property aabbmin
+     * @memberof CANNON.RigidBody
+     */
+    this.aabbmin = new CANNON.Vec3();
+    /**
+     * @property aabbmax
+     * @memberof CANNON.RigidBody
+     */
+    this.aabbmax = new CANNON.Vec3();
 };
-/*global CANNON:true */
+
+CANNON.RigidBody.constructor = CANNON.RigidBody;
+
+CANNON.RigidBody.prototype.calculateAABB = function(){
+    this.shape.calculateWorldAABB(this.position,
+				  this.quaternion,
+				  this.aabbmin,
+				  this.aabbmax);
+};/*global CANNON:true */
 
 /**
  * @brief Spherical rigid body
@@ -1809,6 +1835,7 @@ CANNON.Box.prototype.getCorners = function(quat){
   return corners;
 };
 
+
 /**
  * @method getSideNormals
  * @memberof CANNON.Box
@@ -1818,21 +1845,23 @@ CANNON.Box.prototype.getCorners = function(quat){
  * @return array
  */
 CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
-  var sides = [];
-  var ex = this.halfExtents;
-  sides.push(new CANNON.Vec3(  ex.x,     0,     0));
-  sides.push(new CANNON.Vec3(     0,  ex.y,     0));
-  sides.push(new CANNON.Vec3(     0,     0,  ex.z));
-  if(includeNegative!=undefined && includeNegative){
-    sides.push(new CANNON.Vec3( -ex.x,     0,     0));
-    sides.push(new CANNON.Vec3(     0, -ex.y,     0));
-    sides.push(new CANNON.Vec3(     0,     0, -ex.z));
-  }
+    var sides = [];
+    var ex = this.halfExtents;
+    sides.push(new CANNON.Vec3(  ex.x,     0,     0));
+    sides.push(new CANNON.Vec3(     0,  ex.y,     0));
+    sides.push(new CANNON.Vec3(     0,     0,  ex.z));
+    if(includeNegative!=undefined && includeNegative){
+	sides.push(new CANNON.Vec3( -ex.x,     0,     0));
+	sides.push(new CANNON.Vec3(     0, -ex.y,     0));
+	sides.push(new CANNON.Vec3(     0,     0, -ex.z));
+    }
 
-  for(var i=0; quat!=undefined && i<sides.length; i++)
-    quat.vmult(sides[i],sides[i]);
+    if(quat!=undefined){
+	for(var i=0; i<sides.length; i++)
+	    quat.vmult(sides[i],sides[i]);
+    }
 
-  return sides;
+    return sides;
 };
 
 CANNON.Box.prototype.volume = function(){
@@ -1841,6 +1870,42 @@ CANNON.Box.prototype.volume = function(){
 
 CANNON.Box.prototype.boundingSphereRadius = function(){
   return this.halfExtents.norm();
+};
+
+var worldCornerTempPos = new CANNON.Vec3();
+var worldCornerTempNeg = new CANNON.Vec3();
+CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
+    this.halfExtents.copy(worldCornerTempPos);
+    this.halfExtents.negate(worldCornerTempNeg);
+    quat.vmult(worldCornerTempPos,worldCornerTempPos);
+    quat.vmult(worldCornerTempNeg,worldCornerTempNeg);
+    pos.vadd(worldCornerTempPos,worldCornerTempPos);
+    pos.vadd(worldCornerTempNeg,worldCornerTempNeg);
+
+    var p = worldCornerTempPos;
+    var n = worldCornerTempNeg;
+    callback( p.x, p.y, p.z);
+    callback( n.x, p.y, p.z);
+    callback( n.x, n.y, p.z);
+    callback( n.x, n.y, n.z);
+    callback( p.x, n.y, n.z);
+    callback( p.x, p.y, n.z);
+    callback( n.x, p.y, n.z);
+    callback( p.x, n.y, p.z);
+};
+
+CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    // Get each axis max
+    pos.copy(min);
+    pos.copy(max);
+    this.forEachWorldCorner(pos,quat,function(x,y,z){
+	if(x > max.x) max.x = x;
+	if(y > max.y) max.y = y;
+	if(z > max.z) max.z = z;
+	if(x < min.x) min.x = x;
+	if(y < min.y) min.y = y;
+	if(z < min.z) min.z = z;
+    });    
 };/*global CANNON:true */
 
 /**
@@ -1849,6 +1914,7 @@ CANNON.Box.prototype.boundingSphereRadius = function(){
  * @param CANNON.Vec3 normal
  * @brief An infinite plane, facing in the direction of the given normal.
  * @author schteppe
+ * @todo should not have a normal... That makes it two ways to change its rotation
  */
 CANNON.Plane = function(normal){
     CANNON.Shape.call(this);
@@ -1871,6 +1937,10 @@ CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
 
 CANNON.Plane.prototype.volume = function(){
   return Infinity; // The plane is infinite...
+};
+
+CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
+
 };/*global CANNON:true */
 
 /**
@@ -1949,6 +2019,35 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
       r = candidate;
   }
   return r;
+};
+
+var aabbmaxTemp = new CANNON.Vec3();
+var aabbminTemp = new CANNON.Vec3();
+var childPosTemp = new CANNON.Vec3();
+var childQuatTemp = new CANNON.Vec3();
+CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    var minx,miny,minz,maxx,maxy,maxz;
+    // Get each axis max
+    for(var i=0; i<this.childShapes.length; i++){
+
+	// Accumulate transformation to child
+	pos.vadd(this.childOffsets[i],childPosTemp);
+	quat.mult(this.childOrientations[i],childQuatTemp);
+
+	// Get child AABB
+	this.childShapes[i].calculateWorldAABB(childPosTemp,quat,aabbminTemp,aabbmaxTemp);
+
+	if(aabbminTemp.x > minx || minx===undefined) minx = aabbminTemp.x;
+	if(aabbminTemp.y > miny || miny===undefined) miny = aabbminTemp.y;
+	if(aabbminTemp.z > minz || minz===undefined) minz = aabbminTemp.z;
+	
+	if(aabbmaxTemp.x > maxx || maxx===undefined) maxx = aabbmaxTemp.x;
+	if(aabbmaxTemp.y > maxy || maxy===undefined) maxy = aabbmaxTemp.y;
+	if(aabbmaxTemp.z > maxz || maxz===undefined) maxz = aabbmaxTemp.z;
+    }
+
+    min.set(minx,miny,minz);
+    max.set(maxx,maxy,maxz);
 };/**
  * @class CANNON.ConvexPolyhedron
  * @extends CANNON.Shape
@@ -2600,7 +2699,29 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 };
 
 CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
-CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;/*global CANNON:true */
+CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
+
+var tempWorldVertex = new CANNON.Vec3();
+CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    var n = this.vertices.length, verts = this.vertices;
+    var minx,miny,minz,maxx,maxy,maxz;
+
+    for(var i=0; i<n; i++){
+	verts[i].copy(tempWorldVertex);
+	quat.vmult(tempWorldVertex,tempWorldVertex);
+	pos.vadd(tempWorldVertex,tempWorldVertex);
+	var v = tempWorldVertex;
+	if     (v.x < minx || minx==undefined) minx = v.x;
+	else if(v.x > maxx || maxx==undefined) maxx = v.x;
+	if     (v.y < miny || miny==undefined) miny = v.y;
+	else if(v.y > maxy || maxy==undefined) maxy = v.y;
+	if     (v.z < minz || minz==undefined) minz = v.z;
+	else if(v.z > maxz || maxz==undefined) maxz = v.z;
+    } 
+    min.set(minx,miny,minz);
+    max.set(maxx,maxy,maxz);
+};
+/*global CANNON:true */
 
 /**
  * @class CANNON.Solver

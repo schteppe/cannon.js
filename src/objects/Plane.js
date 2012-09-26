@@ -6,6 +6,7 @@
  * @param CANNON.Vec3 normal
  * @brief An infinite plane, facing in the direction of the given normal.
  * @author schteppe
+ * @todo should not have a normal... That makes it two ways to change its rotation
  */
 CANNON.Plane = function(normal){
     CANNON.Shape.call(this);
@@ -28,4 +29,8 @@ CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
 
 CANNON.Plane.prototype.volume = function(){
   return Infinity; // The plane is infinite...
+};
+
+CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
+
 };

@@ -7,16 +7,17 @@
  */
 CANNON.Shape = function(){
 
-  /**
-   * @property int type
-   * @memberof CANNON.Shape
-   * @brief The type of this shape. Must be set to an int > 0 by subclasses.
-   * @see CANNON.Shape.types
-   */
-  this.type = 0;
+    /**
+     * @property int type
+     * @memberof CANNON.Shape
+     * @brief The type of this shape. Must be set to an int > 0 by subclasses.
+     * @see CANNON.Shape.types
+     */
+    this.type = 0;
 
-  this.aabbmin = new CANNON.Vec3();
-  this.aabbmax = new CANNON.Vec3();
+    // Local AABB's
+    this.aabbmin = new CANNON.Vec3();
+    this.aabbmax = new CANNON.Vec3();
 };
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
@@ -72,6 +73,11 @@ CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
   target.z = Math.abs(worldInertia.z);
   return target;
   //throw "calculateInertia() not implemented for shape type "+this.type;
+};
+
+// Calculates the local aabb and sets the result to .aabbmax and .aabbmin
+CANNON.Shape.calculateLocalAABB = function(){
+    throw new Error(".calculateLocalAABB is not implemented for this Shape yet!");
 };
 
 /**

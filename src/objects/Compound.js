@@ -77,3 +77,32 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
   }
   return r;
 };
+
+var aabbmaxTemp = new CANNON.Vec3();
+var aabbminTemp = new CANNON.Vec3();
+var childPosTemp = new CANNON.Vec3();
+var childQuatTemp = new CANNON.Vec3();
+CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    var minx,miny,minz,maxx,maxy,maxz;
+    // Get each axis max
+    for(var i=0; i<this.childShapes.length; i++){
+
+	// Accumulate transformation to child
+	pos.vadd(this.childOffsets[i],childPosTemp);
+	quat.mult(this.childOrientations[i],childQuatTemp);
+
+	// Get child AABB
+	this.childShapes[i].calculateWorldAABB(childPosTemp,quat,aabbminTemp,aabbmaxTemp);
+
+	if(aabbminTemp.x > minx || minx===undefined) minx = aabbminTemp.x;
+	if(aabbminTemp.y > miny || miny===undefined) miny = aabbminTemp.y;
+	if(aabbminTemp.z > minz || minz===undefined) minz = aabbminTemp.z;
+	
+	if(aabbmaxTemp.x > maxx || maxx===undefined) maxx = aabbmaxTemp.x;
+	if(aabbmaxTemp.y > maxy || maxy===undefined) maxy = aabbmaxTemp.y;
+	if(aabbmaxTemp.z > maxz || maxz===undefined) maxz = aabbmaxTemp.z;
+    }
+
+    min.set(minx,miny,minz);
+    max.set(maxx,maxy,maxz);
+};
