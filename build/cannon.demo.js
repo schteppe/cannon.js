@@ -53,15 +53,6 @@ CANNON.Demo = function(options){
     var gui = null;
     var scenePicker = {};
 
-    var contactmeshes = [];
-    var contactmeshes_numAdded = 0;
-
-    var normalmeshes = [];
-    var normallines = [];
-    var contactlines = [];
-    var distanceConstraintLines = [];
-    var axes = [];
-
     var three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
     var particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
 
@@ -312,11 +303,11 @@ CANNON.Demo = function(options){
     if ( ! Detector.webgl )
 	Detector.addGetWebGLMessage();
     
-    SHADOW_MAP_WIDTH = 512;
-    SHADOW_MAP_HEIGHT = 512;
+    var SHADOW_MAP_WIDTH = 512;
+    var SHADOW_MAP_HEIGHT = 512;
     var MARGIN = 0;
-    SCREEN_WIDTH = window.innerWidth;
-    SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
+    var SCREEN_WIDTH = window.innerWidth;
+    var SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
     var camera, controls, scene, renderer;
     var container, stats;
     var NEAR = 5, FAR = 2000;
@@ -355,20 +346,20 @@ CANNON.Demo = function(options){
 	light = new THREE.SpotLight( 0xffffff );
 	light.position.set( 30, 30, 40 );
 	light.target.position.set( 0, 0, 0 );
-	if(settings.shadows){
-	    light.castShadow = true;
-	    
-	    light.shadowCameraNear = 10;
-	    light.shadowCameraFar = 100;//camera.far;
-	    light.shadowCameraFov = 30;
-	    
-	    light.shadowMapBias = 0.0039;
-	    light.shadowMapDarkness = 0.5;
-	    light.shadowMapWidth = SHADOW_MAP_WIDTH;
-	    light.shadowMapHeight = SHADOW_MAP_HEIGHT;
-	    
-	    //light.shadowCameraVisible = true;
-	}
+
+	light.castShadow = true;
+	
+	light.shadowCameraNear = 10;
+	light.shadowCameraFar = 100;//camera.far;
+	light.shadowCameraFov = 30;
+	
+	light.shadowMapBias = 0.0039;
+	light.shadowMapDarkness = 0.5;
+	light.shadowMapWidth = SHADOW_MAP_WIDTH;
+	light.shadowMapHeight = SHADOW_MAP_HEIGHT;
+	
+	//light.shadowCameraVisible = true;
+
 	scene.add( light );
 	scene.add( camera );
 	
@@ -385,10 +376,8 @@ CANNON.Demo = function(options){
 	renderer.setClearColor( scene.fog.color, 1 );
 	renderer.autoClear = false;
 	
-	if(settings.shadows){
-	    renderer.shadowMapEnabled = true;
-	    renderer.shadowMapSoft = true;
-	}
+	renderer.shadowMapEnabled = true;
+	renderer.shadowMapSoft = true;
 
 	// STATS
 	stats = new Stats();
@@ -524,6 +513,14 @@ CANNON.Demo = function(options){
 		    visuals[i].scale.set(size,size,size);
 	    }
 	});
+	rf.add(settings,'shadows').onChange(function(shadows){
+	    if(shadows){
+		renderer.shadowMapAutoUpdate = true;
+	    } else {
+		renderer.shadowMapAutoUpdate = false;
+		renderer.clearTarget( light.shadowMap );
+	    }
+	});
 
 	// World folder
 	var wf = gui.addFolder('World');
@@ -585,10 +582,10 @@ CANNON.Demo = function(options){
 	    ground.scale = new THREE.Vector3(100,100,100);
 	    ground.rotation.x = Math.PI/2;
 	    submesh.add(ground);
-	    if(settings.shadows){
-		ground.castShadow = true;
-		ground.receiveShadow = true;
-	    }
+
+	    ground.castShadow = true;
+	    ground.receiveShadow = true;
+
 	    mesh.add(submesh);
 	    break;
 
@@ -640,19 +637,18 @@ CANNON.Demo = function(options){
 	    throw "Visual type not recognized: "+shape.type;
 	}
 
-	if(settings.shadows){
-	    mesh.receiveShadow = true;
-	    mesh.castShadow = true;
-	    if(mesh.children)
-		for(var i=0; i<mesh.children.length; i++){
-		    mesh.children[i].castShadow = true;
-		    mesh.children[i].receiveShadow = true;
-		    if(mesh.children[i])
-			for(var j=0; j<mesh.children[i].length; j++){
-			    mesh.children[i].children[j].castShadow = true;
-			    mesh.children[i].children[j].receiveShadow = true;
-			}
-		}
+	mesh.receiveShadow = true;
+	mesh.castShadow = true;
+	if(mesh.children){
+	    for(var i=0; i<mesh.children.length; i++){
+		mesh.children[i].castShadow = true;
+		mesh.children[i].receiveShadow = true;
+		if(mesh.children[i])
+		    for(var j=0; j<mesh.children[i].length; j++){
+			mesh.children[i].children[j].castShadow = true;
+			mesh.children[i].children[j].receiveShadow = true;
+		    }
+	    }
 	}
 	return mesh;
     }
