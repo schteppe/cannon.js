@@ -1691,6 +1691,8 @@ CANNON.RigidBody = function(mass,shape,material){
      * @memberof CANNON.RigidBody
      */
     this.aabbmax = new CANNON.Vec3();
+
+    this.calculateAABB();
 };
 
 CANNON.RigidBody.constructor = CANNON.RigidBody;
@@ -1737,6 +1739,16 @@ CANNON.Sphere.prototype.volume = function(){
 
 CANNON.Sphere.prototype.boundingSphereRadius = function(){
   return this.radius;
+};
+
+CANNON.Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    var r = this.radius;
+    var axes = ['x','y','z'];
+    for(var i=0; i<axes.length; i++){
+	var ax = axes[i];
+	min[ax] = pos[ax] - r;
+	max[ax] = pos[ax] + r;
+    }
 };/*global CANNON:true */
 
 /**
@@ -1879,36 +1891,41 @@ CANNON.Box.prototype.boundingSphereRadius = function(){
 var worldCornerTempPos = new CANNON.Vec3();
 var worldCornerTempNeg = new CANNON.Vec3();
 CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
-    this.halfExtents.copy(worldCornerTempPos);
-    this.halfExtents.negate(worldCornerTempNeg);
-    quat.vmult(worldCornerTempPos,worldCornerTempPos);
-    quat.vmult(worldCornerTempNeg,worldCornerTempNeg);
-    pos.vadd(worldCornerTempPos,worldCornerTempPos);
-    pos.vadd(worldCornerTempNeg,worldCornerTempNeg);
 
-    var p = worldCornerTempPos;
-    var n = worldCornerTempNeg;
-    callback( p.x, p.y, p.z);
-    callback( n.x, p.y, p.z);
-    callback( n.x, n.y, p.z);
-    callback( n.x, n.y, n.z);
-    callback( p.x, n.y, n.z);
-    callback( p.x, p.y, n.z);
-    callback( n.x, p.y, n.z);
-    callback( p.x, n.y, p.z);
+    var e = this.halfExtents;
+    var corners = [[  e.x,  e.y,  e.z],
+		   [ -e.x,  e.y,  e.z],
+		   [ -e.x, -e.y,  e.z],
+		   [ -e.x, -e.y, -e.z],
+		   [  e.x, -e.y, -e.z],
+		   [  e.x,  e.y, -e.z],
+		   [ -e.x,  e.y, -e.z],
+		   [  e.x, -e.y,  e.z]];
+		   
+    for(var i=0; i<corners.length; i++){
+	worldCornerTempPos.set(corners[i][0],corners[i][1],corners[i][2]);
+	quat.vmult(worldCornerTempPos,worldCornerTempPos);
+	pos.vadd(worldCornerTempPos,worldCornerTempPos);
+	callback(worldCornerTempPos.x,
+		 worldCornerTempPos.y,
+		 worldCornerTempPos.z);
+    }
 };
 
 CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
     // Get each axis max
-    pos.copy(min);
-    pos.copy(max);
+    min.set(Infinity,Infinity,Infinity);
+    max.set(-Infinity,-Infinity,-Infinity);
     this.forEachWorldCorner(pos,quat,function(x,y,z){
+
 	if(x > max.x) max.x = x;
 	if(y > max.y) max.y = y;
 	if(z > max.z) max.z = z;
+
 	if(x < min.x) min.x = x;
 	if(y < min.y) min.y = y;
 	if(z < min.z) min.z = z;
+
     });    
 };/*global CANNON:true */
 
@@ -1935,9 +1952,19 @@ CANNON.Plane.prototype.volume = function(){
   return Infinity; // The plane is infinite...
 };
 
+var tempNormal = new CANNON.Vec3(0,0,1);
 CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
-    // Todo
-    throw new Error("todo");
+    // The plane AABB is infinite, except if the normal is pointing along any axis
+    quat.vmult(tempNormal,tempNormal);
+    min.set(Infinity,Infinity,Infinity);
+    var axes = ['x','y','z'];
+    for(var i=0; i<axes.length; i++){
+	var ax = axes[i];
+	if(tempNormal[ax]==1)
+	    max[ax] = pos[ax];
+	if(tempNormal[ax]==-1)
+	    min[ax] = pos[ax];
+    }
 };/*global CANNON:true */
 
 /**
@@ -2023,28 +2050,32 @@ var aabbminTemp = new CANNON.Vec3();
 var childPosTemp = new CANNON.Vec3();
 var childQuatTemp = new CANNON.Vec3();
 CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
-    var minx,miny,minz,maxx,maxy,maxz;
+    var N=this.childShapes.length;
+    min.set(Infinity,Infinity,Infinity);
+    max.set(-Infinity,-Infinity,-Infinity);
     // Get each axis max
-    for(var i=0; i<this.childShapes.length; i++){
+    for(var i=0; i<N; i++){
 
 	// Accumulate transformation to child
-	pos.vadd(this.childOffsets[i],childPosTemp);
-	quat.mult(this.childOrientations[i],childQuatTemp);
+	this.childOffsets[i].copy(childPosTemp);
+	quat.vmult(childPosTemp,childPosTemp);
+	pos.vadd(childPosTemp,childPosTemp);
+	//quat.mult(this.childOrientations[i],childQuatTemp);
 
 	// Get child AABB
-	this.childShapes[i].calculateWorldAABB(childPosTemp,quat,aabbminTemp,aabbmaxTemp);
+	this.childShapes[i].calculateWorldAABB(childPosTemp,
+					       this.childOrientations[i],
+					       aabbminTemp,
+					       aabbmaxTemp);
 
-	if(aabbminTemp.x > minx || minx===undefined) minx = aabbminTemp.x;
-	if(aabbminTemp.y > miny || miny===undefined) miny = aabbminTemp.y;
-	if(aabbminTemp.z > minz || minz===undefined) minz = aabbminTemp.z;
+	if(aabbminTemp.x < min.x) min.x = aabbminTemp.x;
+	if(aabbminTemp.y < min.y) min.y = aabbminTemp.y;
+	if(aabbminTemp.z < min.z) min.z = aabbminTemp.z;
 	
-	if(aabbmaxTemp.x > maxx || maxx===undefined) maxx = aabbmaxTemp.x;
-	if(aabbmaxTemp.y > maxy || maxy===undefined) maxy = aabbmaxTemp.y;
-	if(aabbmaxTemp.z > maxz || maxz===undefined) maxz = aabbmaxTemp.z;
+	if(aabbmaxTemp.x > max.x) max.x = aabbmaxTemp.x;
+	if(aabbmaxTemp.y > max.y) max.y = aabbmaxTemp.y;
+	if(aabbmaxTemp.z > max.z) max.z = aabbmaxTemp.z;
     }
-
-    min.set(minx,miny,minz);
-    max.set(maxx,maxy,maxz);
 };/**
  * @class CANNON.ConvexPolyhedron
  * @extends CANNON.Shape

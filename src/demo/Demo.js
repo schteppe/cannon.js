@@ -36,6 +36,7 @@ CANNON.Demo = function(options){
 	particleSize:0.1,
 	paused:false,
 	shadows:true,
+	aabbs:false,
     };
 
     // Extend settings with options
@@ -74,6 +75,14 @@ CANNON.Demo = function(options){
 	geometry.vertices.push(new THREE.Vector3(0,0,0));
 	geometry.vertices.push(new THREE.Vector3(1,1,1));
 	return new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
+    });
+    var bboxGeometry = new THREE.CubeGeometry(1,1,1);
+    var bboxMaterial = new THREE.MeshBasicMaterial({
+	color: materialColor,
+	wireframe:true
+    });
+    var bboxMeshCache = new GeometryCache(function(){
+	return new THREE.Mesh(bboxGeometry,bboxMaterial);
     });
     var distanceConstraintMeshCache = new GeometryCache(function(){
 	var geometry = new THREE.Geometry();
@@ -287,6 +296,36 @@ CANNON.Demo = function(options){
 	}
 	normalMeshCache.hideCached();
 	
+	// AABBs
+	bboxMeshCache.restart();
+	if(settings.aabbs){
+	    for(var i=0; i<bodies.length; i++){
+		var b = bodies[i];
+		if(b.calculateAABB){
+		    b.calculateAABB();
+		    // Todo: cap the infinite AABB to scene AABB, for now just dont render
+		    if(isFinite(b.aabbmax.x) &&
+		       isFinite(b.aabbmax.y) &&
+		       isFinite(b.aabbmax.z) &&
+		       isFinite(b.aabbmin.x) &&
+		       isFinite(b.aabbmin.y) &&
+		       isFinite(b.aabbmin.z) && 
+		       b.aabbmax.x - b.aabbmin.x != 0 && 
+		       b.aabbmax.y - b.aabbmin.y != 0 && 
+		       b.aabbmax.z - b.aabbmin.z != 0){
+			var mesh = bboxMeshCache.request();
+			mesh.scale.set(b.aabbmax.x - b.aabbmin.x,
+				       b.aabbmax.y - b.aabbmin.y,
+				       b.aabbmax.z - b.aabbmin.z);
+			mesh.position.set((b.aabbmax.x + b.aabbmin.x)*0.5,
+					  (b.aabbmax.y + b.aabbmin.y)*0.5,
+					  (b.aabbmax.z + b.aabbmin.z)*0.5);
+		    }
+		}
+	    }
+	}
+	bboxMeshCache.hideCached();
+
 	// Frame axes for each body
 	axesMeshCache.restart();
 	if(settings.axes){
@@ -398,7 +437,6 @@ CANNON.Demo = function(options){
 	var radius = 100;
 	controls.minDistance = 0.0;
 	controls.maxDistance = radius * 1000;
-	controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
 	controls.screen.width = SCREEN_WIDTH;
 	controls.screen.height = SCREEN_HEIGHT;
     }
@@ -454,6 +492,11 @@ CANNON.Demo = function(options){
 		
 	    case 32: // Space - restart
 		restartCurrentScene();
+		break;
+		
+	    case 97: // a - AABBs
+		settings.aabbs = !settings.aabbs;
+		updategui();
 		break;
 		
 	    case 112: // p
@@ -521,6 +564,7 @@ CANNON.Demo = function(options){
 		renderer.clearTarget( light.shadowMap );
 	    }
 	});
+	rf.add(settings,'aabbs');
 
 	// World folder
 	var wf = gui.addFolder('World');

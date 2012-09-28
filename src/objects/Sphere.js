@@ -36,3 +36,13 @@ CANNON.Sphere.prototype.volume = function(){
 CANNON.Sphere.prototype.boundingSphereRadius = function(){
   return this.radius;
 };
+
+CANNON.Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    var r = this.radius;
+    var axes = ['x','y','z'];
+    for(var i=0; i<axes.length; i++){
+	var ax = axes[i];
+	min[ax] = pos[ax] - r;
+	max[ax] = pos[ax] + r;
+    }
+};

@@ -83,26 +83,30 @@ var aabbminTemp = new CANNON.Vec3();
 var childPosTemp = new CANNON.Vec3();
 var childQuatTemp = new CANNON.Vec3();
 CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
-    var minx,miny,minz,maxx,maxy,maxz;
+    var N=this.childShapes.length;
+    min.set(Infinity,Infinity,Infinity);
+    max.set(-Infinity,-Infinity,-Infinity);
     // Get each axis max
-    for(var i=0; i<this.childShapes.length; i++){
+    for(var i=0; i<N; i++){
 
 	// Accumulate transformation to child
-	pos.vadd(this.childOffsets[i],childPosTemp);
-	quat.mult(this.childOrientations[i],childQuatTemp);
+	this.childOffsets[i].copy(childPosTemp);
+	quat.vmult(childPosTemp,childPosTemp);
+	pos.vadd(childPosTemp,childPosTemp);
+	//quat.mult(this.childOrientations[i],childQuatTemp);
 
 	// Get child AABB
-	this.childShapes[i].calculateWorldAABB(childPosTemp,quat,aabbminTemp,aabbmaxTemp);
+	this.childShapes[i].calculateWorldAABB(childPosTemp,
+					       this.childOrientations[i],
+					       aabbminTemp,
+					       aabbmaxTemp);
 
-	if(aabbminTemp.x > minx || minx===undefined) minx = aabbminTemp.x;
-	if(aabbminTemp.y > miny || miny===undefined) miny = aabbminTemp.y;
-	if(aabbminTemp.z > minz || minz===undefined) minz = aabbminTemp.z;
+	if(aabbminTemp.x < min.x) min.x = aabbminTemp.x;
+	if(aabbminTemp.y < min.y) min.y = aabbminTemp.y;
+	if(aabbminTemp.z < min.z) min.z = aabbminTemp.z;
 	
-	if(aabbmaxTemp.x > maxx || maxx===undefined) maxx = aabbmaxTemp.x;
-	if(aabbmaxTemp.y > maxy || maxy===undefined) maxy = aabbmaxTemp.y;
-	if(aabbmaxTemp.z > maxz || maxz===undefined) maxz = aabbmaxTemp.z;
+	if(aabbmaxTemp.x > max.x) max.x = aabbmaxTemp.x;
+	if(aabbmaxTemp.y > max.y) max.y = aabbmaxTemp.y;
+	if(aabbmaxTemp.z > max.z) max.z = aabbmaxTemp.z;
     }
-
-    min.set(minx,miny,minz);
-    max.set(maxx,maxy,maxz);
 };

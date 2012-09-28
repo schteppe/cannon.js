@@ -91,6 +91,8 @@ CANNON.RigidBody = function(mass,shape,material){
      * @memberof CANNON.RigidBody
      */
     this.aabbmax = new CANNON.Vec3();
+
+    this.calculateAABB();
 };
 
 CANNON.RigidBody.constructor = CANNON.RigidBody;
