@@ -62,7 +62,7 @@
     var materialColor = 0xdddddd;
     var solidMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
     THREE.ColorUtils.adjustHSV( solidMaterial.color, 0, 0, 0.9 );
-    var wireframeMaterial = new THREE.MeshBasicMaterial( { color: materialColor, wireframe:true } );
+    var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, wireframe:true } );
     var currentMaterial = solidMaterial;
     var contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
     var particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
@@ -146,13 +146,23 @@
         }
     };
 
+    var light, scene, ambient, stats;
+
     function setRenderMode(mode){
         if(renderModes.indexOf(mode)==-1)
             throw new Error("Render mode "+mode+" not found!");
 
         switch(mode){
-            case "solid": currentMaterial = solidMaterial; break;
-            case "wireframe": currentMaterial = wireframeMaterial; break;
+            case "solid":
+                currentMaterial = solidMaterial;
+                light.intensity = 1;
+                ambient.color.setHex(0x222222);
+                break;
+            case "wireframe":
+                currentMaterial = wireframeMaterial;
+                light.intensity = 0;
+                ambient.color.setHex(0xffffff);
+                break;
         }
 
         function setMaterial(node,mat){
@@ -204,6 +214,12 @@
         }
     };
 
+    function makeSureNotZero(vec){
+        if(vec.x==0.0) vec.x = 1e-6;
+        if(vec.y==0.0) vec.y = 1e-6;
+        if(vec.z==0.0) vec.z = 1e-6;
+    }
+
     function updateVisuals(){
         var N = bodies.length;
 
@@ -240,7 +256,8 @@
                     c = world.contacts[ci],
                     b = ij==0 ? c.bi : c.bj,
                     r = ij==0 ? c.ri : c.rj;
-                    line.scale.set(r.x,r.y,r.z);
+                    line.scale.set( r.x, r.y, r.z);
+                    makeSureNotZero(line.scale);
                     b.position.copy(line.position);
                 }
             }
@@ -264,7 +281,10 @@
                     v = bj.position;
                 else
                     v = bj;
-                line.scale.set( v.x-bi.position.x,v.y-bi.position.y,v.z-bi.position.z);
+                line.scale.set( v.x-bi.position.x,
+                                v.y-bi.position.y,
+                                v.z-bi.position.z );
+                makeSureNotZero(line.scale);
                 bi.position.copy(line.position);
             }
         }
@@ -280,6 +300,7 @@
                 var n = c.ni;
                 var b = bi;
                 line.scale.set(n.x,n.y,n.z);
+                makeSureNotZero(line.scale);
                 b.position.copy(line.position);
                 c.ri.vadd(line.position,line.position);
             }
@@ -307,11 +328,10 @@
     var MARGIN = 0;
     var SCREEN_WIDTH = window.innerWidth;
     var SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
-    var camera, controls, scene, renderer;
-    var container, stats;
+    var camera, controls, renderer;
+    var container;
     var NEAR = 5, FAR = 2000;
     var sceneHUD, cameraOrtho, hudMaterial;
-    var light;
 
     var mouseX = 0, mouseY = 0;
 
@@ -337,7 +357,7 @@
         scene.fog = new THREE.Fog( 0x222222, 1000, FAR );
 
         // LIGHTS
-        var ambient = new THREE.AmbientLight( 0x222222 );
+        ambient = new THREE.AmbientLight( 0x222222 );
         scene.add( ambient );
 
         light = new THREE.SpotLight( 0xffffff );
@@ -450,6 +470,13 @@
             switch(e.keyCode){
                 case 32: // Space - restart
                 restartCurrentScene();
+                break;
+
+                case 104:
+                if(stats.domElement.style.display=="none")
+                    stats.domElement.style.display = "block";
+                else
+                    stats.domElement.style.display = "none";
                 break;
 
                 case 112: // p
@@ -570,12 +597,11 @@
             break;
 
             case CANNON.Shape.types.PLANE:
-            var geometry = new THREE.PlaneGeometry( 100, 100 , 100 , 100 );
+            var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
             mesh = new THREE.Object3D();
             var submesh = new THREE.Object3D();
             var ground = new THREE.Mesh( geometry, currentMaterial );
             ground.scale = new THREE.Vector3(100,100,100);
-            ground.rotation.x = Math.PI/2;
             submesh.add(ground);
 
             ground.castShadow = true;
