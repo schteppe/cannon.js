@@ -1,0 +1,62 @@
+<DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - compound demo</title>
+    <meta charset="utf-8">
+    <style>* {margin:0;padding:0}</style>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script>
+
+        var demo = new CANNON.Demo({
+            stepFrequency:60,
+        });
+
+        var radius = 1, mass = 1, f=50;
+      
+        demo.addScene("center",function(){
+            var world = setupWorld(demo);
+            var shape = new CANNON.Sphere(radius);
+            var body = new CANNON.RigidBody(mass,shape);
+            world.add(body);
+            demo.addVisual(body);
+
+            // Add an impulse to the center
+            var worldPoint = new CANNON.Vec3(0,0,0);
+            var force = new CANNON.Vec3(f,0,0);
+            var dt = 1/10;
+            body.applyImpulse(worldPoint,force,dt);
+        });
+
+      
+        demo.addScene("top",function(){
+            var world = setupWorld(demo);
+            var shape = new CANNON.Sphere(radius);
+            var body = new CANNON.RigidBody(mass,shape);
+            world.add(body);
+            demo.addVisual(body);
+
+            // Add an impulse to the center
+            var worldPoint = new CANNON.Vec3(0,0,radius);
+            var force = new CANNON.Vec3(f,0,0);
+            var dt = 1/10;
+            body.applyImpulse(worldPoint,force,dt);
+        });
+      
+      function setupWorld(demo){
+        var world = demo.getWorld();
+        world.broadphase = new CANNON.NaiveBroadphase();
+        return world;
+      };
+      
+      demo.start();
+      
+    </script>
+  </body>
+</html>

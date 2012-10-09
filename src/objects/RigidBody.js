@@ -11,11 +11,11 @@ CANNON.RigidBody = function(mass,shape,material){
 
     // Check input
     if(typeof(mass)!="number")
-	throw new Error("Argument 1 (mass) must be a number.");
+    throw new Error("Argument 1 (mass) must be a number.");
     if(typeof(shape)!="object" || !(shape instanceof(CANNON.Shape)))
-	throw new Error("Argument 2 (shape) must be an instance of CANNON.Shape.");
+    throw new Error("Argument 2 (shape) must be an instance of CANNON.Shape.");
     if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
-	throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+    throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
 
     CANNON.Particle.call(this,mass,material);
 
@@ -71,8 +71,8 @@ CANNON.RigidBody = function(mass,shape,material){
      * @memberof CANNON.RigidBody
      */
     this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
-				      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
-				      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+                      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
+                      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
 
     /**
      * @property float angularDamping
@@ -86,6 +86,7 @@ CANNON.RigidBody = function(mass,shape,material){
      * @memberof CANNON.RigidBody
      */
     this.aabbmin = new CANNON.Vec3();
+
     /**
      * @property aabbmax
      * @memberof CANNON.RigidBody
@@ -99,7 +100,16 @@ CANNON.RigidBody.constructor = CANNON.RigidBody;
 
 CANNON.RigidBody.prototype.calculateAABB = function(){
     this.shape.calculateWorldAABB(this.position,
-				  this.quaternion,
-				  this.aabbmin,
-				  this.aabbmax);
+                  this.quaternion,
+                  this.aabbmin,
+                  this.aabbmax);
+};
+
+CANNON.RigidBody.prototype.applyImpulse = function(worldPoint,force,dt){
+    dt = dt || 1/60;
+    var r=new CANNON.Vec3(), rotForce=new CANNON.Vec3();
+    worldPoint.vsub(this.position,r);
+    r.cross(force,rotForce);
+    this.velocity.vadd(force.mult(dt),this.velocity);
+    this.angularVelocity.vadd(rotForce.mult(dt),this.angularVelocity);
 };
