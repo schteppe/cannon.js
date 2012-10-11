@@ -28,8 +28,7 @@ sphereBody.position.set(0,0,10);
 world.add(sphereBody);
     
 // Create a plane
-var normal = new CANNON.Vec3(0,0,1);
-var groundShape = new CANNON.Plane(normal);
+var groundShape = new CANNON.Plane();
 var groundBody = new CANNON.RigidBody(0,groundShape);
 world.add(groundBody);
     
@@ -43,6 +42,12 @@ setInterval(function(){
 If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](https://github.com/schteppe/cannon.js/tree/master/examples).
 
 ### Change log
+**Current**
+ * Added method ```RigidBody.applyImpulse```
+ * Added iterator method ```Box.forEachWorldCorner```
+ * Added "abstract method" ```Shape.calculateWorldAABB``` and implemented it in subclasses.
+ * Removed ```Plane.normal``` in favor of ```RigidBody.quaternion```. One way to rotate a plane is enough.
+
 **0.4.3**
  * ```World``` now dispatches "preStep" and "postStep" events.
  * Introduced ```Body``` and ```Particle```. New inheritance: ```Body``` -> ```Particle``` -> ```RigidBody```.
