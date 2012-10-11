@@ -1,0 +1,124 @@
+<DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - convex hull demo</title>
+    <meta charset="utf-8">
+    <style>* {margin:0;padding:0}</style>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script>
+
+        var demo = new CANNON.Demo({ stepFrequency:120 });
+        var mass = 1, size = 1;
+
+        demo.addScene("all shapes",function(){
+            var world = setupWorld(demo);
+
+
+            // Sphere shape
+            var sphereShape = new CANNON.Sphere(size);
+            var sphereBody = new CANNON.RigidBody(mass,sphereShape);
+            sphereBody.position.set(size*2,size*2,size+1);
+            world.add(sphereBody);
+            demo.addVisual(sphereBody);
+
+
+
+            // Cylinder shape
+            var cylinderShape = new CANNON.Cylinder(size,size,2*size,10);
+            var cylinderBody = new CANNON.RigidBody(mass,cylinderShape);
+            cylinderBody.position.set(-size*2,size*2,size+1);
+            world.add(cylinderBody);
+            demo.addVisual(cylinderBody);
+
+
+
+
+            // Box shape
+            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+            var boxBody = new CANNON.RigidBody(mass,boxShape);
+            boxBody.position.set(-size*2,-size*2,size+1);
+            world.add(boxBody);
+            demo.addVisual(boxBody);
+
+
+
+
+            // Particle - not a shape but still here to show how to use it.
+            var particle = new CANNON.Particle(mass);
+            particle.position.set(-size*2,size*4,size+1);
+            world.add(particle);
+            demo.addVisual(particle);
+
+
+
+
+            // Compound
+            var compoundShape = new CANNON.Compound();
+            var s = size;
+            var shape = new CANNON.Box(new CANNON.Vec3(0.5*s,0.5*s,0.5*s));
+            compoundShape.addChild(shape,new CANNON.Vec3( 0, 0, s));
+            compoundShape.addChild(shape,new CANNON.Vec3( 0, 0, 0));
+            compoundShape.addChild(shape,new CANNON.Vec3( 0, 0,-s));
+            compoundShape.addChild(shape,new CANNON.Vec3(-s, 0,-s));
+            var compoundBody = new CANNON.RigidBody(mass,compoundShape);
+            compoundBody.position.set(-size*4,size*4,size+1);
+            world.add(compoundBody);
+            demo.addVisual(compoundBody);
+
+
+      
+            // ConvexPolyhedron tetra shape
+            var polyhedronShape = new CANNON.ConvexPolyhedron([ new CANNON.Vec3(0,0,0),
+                                                                new CANNON.Vec3(2,0,0),
+                                                                new CANNON.Vec3(0,2,0),
+                                                                new CANNON.Vec3(0,0,2)],
+                                                                [
+                                                                [0,3,2], // -x
+                                                                [0,1,3], // -y
+                                                                [0,1,2], // -z
+                                                                [1,3,2], // +xyz
+                                                                ],
+                                                                [
+                                                                new CANNON.Vec3(-1, 0, 0),
+                                                                new CANNON.Vec3( 0,-1, 0),
+                                                                new CANNON.Vec3( 0, 0,-1),
+                                                                new CANNON.Vec3( 1, 1, 1)
+                                                                ]);
+            var polyhedronBody = new CANNON.RigidBody(mass,polyhedronShape);
+            polyhedronBody.position.set(size*2,-size*2,size+1);
+            world.add(polyhedronBody);
+            demo.addVisual(polyhedronBody);
+
+
+        });
+
+      
+            
+      function setupWorld(demo){
+        var world = demo.getWorld();
+        world.gravity.set(0,0,-30);
+        world.broadphase = new CANNON.NaiveBroadphase();
+        world.solver.iterations = 40;
+        world.solver.setSpookParams(5000,7);
+      
+        // ground plane
+        var groundShape = new CANNON.Plane();
+        var groundBody = new CANNON.RigidBody(0,groundShape);
+        groundBody.position.set(-10,0,0);
+        world.add(groundBody);
+        demo.addVisual(groundBody);
+        return world;
+      };
+      
+      demo.start();
+      
+    </script>
+  </body>
+</html>
