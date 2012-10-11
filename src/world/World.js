@@ -562,7 +562,7 @@ CANNON.World.prototype.step = function(dt){
 	    tauzi = 0;
 	}
 	var tauxj, tauyj, tauzj;
-	if(bi.tau){
+	if(bj.tau){
 	    tauxj = bj.tau.x;
 	    tauyj = bj.tau.y;
 	    tauzj = bj.tau.z;

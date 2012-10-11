@@ -453,7 +453,7 @@
         var radius = 100;
         controls.minDistance = 0.0;
         controls.maxDistance = radius * 1000;
-        controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
+        //controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
         controls.screen.width = SCREEN_WIDTH;
         controls.screen.height = SCREEN_HEIGHT;
     }
@@ -662,6 +662,7 @@
             break;
 
             case CANNON.Shape.types.CONVEXPOLYHEDRON:
+
             var verts = [];
             for(var i=0; i<shape.vertices.length; i++){
                 verts.push(new THREE.Vector3(shape.vertices[i].x,
@@ -670,6 +671,7 @@
             }
             var geo = new THREE.ConvexGeometry( verts );
             mesh = new THREE.Mesh( geo, currentMaterial );
+
             break;
 
             case CANNON.Shape.types.COMPOUND:

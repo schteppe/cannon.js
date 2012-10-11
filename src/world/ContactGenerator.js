@@ -34,6 +34,17 @@ CANNON.ContactGenerator = function(){
 		       new CANNON.Vec3(),
 		       new CANNON.Vec3(),
 		       new CANNON.Vec3()];
+
+    var planehull = new CANNON.ConvexPolyhedron(tempverts,
+                                [
+                                    [0,1,2,3], // -z
+                                    [4,5,6,7], // +z
+                                    [0,1,4,5], // -y
+                                    [2,3,6,7], // +y
+                                    [0,3,4,7], // -x
+                                    [1,2,5,6], // +x
+                                ],
+                                tempnormals);
     
     /**
      * Near phase calculation, get the contact point, normal, etc.
@@ -334,33 +345,23 @@ CANNON.ContactGenerator = function(){
 		    var n = v3pool.get();
 		    n.set(0,0,1);
 		    qi.vmult(n,n);
-		    //si.normal.copy(n);
-		    tempverts[0].set(-t1.x -t2.x -n.x, -t1.y -t2.y -n.y, -t1.z -t2.z -n.z); //---
-		    tempverts[1].set( t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
-		    tempverts[2].set( t1.x +t2.x -n.x,  t1.y +t2.y -n.y,  t1.z +t2.z -n.z); // ++- 
-		    tempverts[3].set(-t1.x +t2.x -n.x, -t1.y +t2.y -n.y, -t1.z +t2.z -n.z); // -+-
-		    tempverts[4].set(-t1.x -t2.x +0*n.x, -t1.y -t2.y +0*n.y, -t1.z -t2.z +0*n.z); // --+
-		    tempverts[5].set(+t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
-		    tempverts[6].set(+t1.x +t2.x +0*n.x, +t1.y +t2.y +0*n.y,  t1.z +t2.z +0*n.z); // +++
-		    tempverts[7].set(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z); // -++
-		    t1.normalize();
-		    t2.normalize();
-		    tempnormals[0].set( -n.x, -n.y, -n.z);
-		    tempnormals[1].set(  n.x,  n.y,  n.z);
-		    tempnormals[2].set(-t2.x,-t2.y,-t2.z);
-		    tempnormals[3].set( t2.x, t2.y, t2.z);
-		    tempnormals[4].set(-t1.x,-t1.y,-t1.z);
-		    tempnormals[5].set( t1.x, t1.y, t1.z);
-		    var planehull = new CANNON.ConvexPolyhedron(tempverts,
-								[
-								    [0,1,2,3], // -z
-								    [4,5,6,7], // +z
-								    [0,1,4,5], // -y
-								    [2,3,6,7], // +y
-								    [0,3,4,7], // -x
-								    [1,2,5,6], // +x
-								],
-								tempnormals);
+
+            planehull.vertices[0].set(-t1.x -t2.x -n.x, -t1.y -t2.y -n.y, -t1.z -t2.z -n.z); //---
+            planehull.vertices[1].set( t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
+            planehull.vertices[2].set( t1.x +t2.x -n.x,  t1.y +t2.y -n.y,  t1.z +t2.z -n.z); // ++- 
+            planehull.vertices[3].set(-t1.x +t2.x -n.x, -t1.y +t2.y -n.y, -t1.z +t2.z -n.z); // -+-
+            planehull.vertices[4].set(-t1.x -t2.x +0*n.x, -t1.y -t2.y +0*n.y, -t1.z -t2.z +0*n.z); // --+
+            planehull.vertices[5].set(+t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
+            planehull.vertices[6].set(+t1.x +t2.x +0*n.x, +t1.y +t2.y +0*n.y,  t1.z +t2.z +0*n.z); // +++
+            planehull.vertices[7].set(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z); // -++
+            t1.normalize();
+            t2.normalize();
+            planehull.faceNormals[0].set( -n.x, -n.y, -n.z);
+            planehull.faceNormals[1].set(  n.x,  n.y,  n.z);
+            planehull.faceNormals[2].set(-t2.x,-t2.y,-t2.z);
+            planehull.faceNormals[3].set( t2.x, t2.y, t2.z);
+            planehull.faceNormals[4].set(-t1.x,-t1.y,-t1.z);
+            planehull.faceNormals[5].set( t1.x, t1.y, t1.z);
 		    
 		    var sepAxis = v3pool.get();
 		    n.negate(sepAxis);

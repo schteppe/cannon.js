@@ -12,8 +12,6 @@ CANNON.RigidBody = function(mass,shape,material){
     // Check input
     if(typeof(mass)!="number")
     throw new Error("Argument 1 (mass) must be a number.");
-    if(typeof(shape)!="object" || !(shape instanceof(CANNON.Shape)))
-    throw new Error("Argument 2 (shape) must be an instance of CANNON.Shape.");
     if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
     throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
 
