@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/schteppe/cannon.js.png)](http://travis-ci.org/schteppe/cannon.js)
 # cannon.js
 
 ### Lightweight 3D physics for the web
