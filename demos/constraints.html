@@ -14,10 +14,63 @@
     <script src="../libs/Stats.js"></script>
     <script>
 
-      /**
-       * Experiment for testing constraints
-       */
-      var demo = new CANNON.Demo();
+      var demo = new CANNON.Demo({paused:false});
+
+      demo.addScene("links",function(){
+            var world = setupWorld(demo);
+            world.gravity.set(0,-5,-20);
+            world.solver.setSpookParams(150,5);
+            var size = 1;
+            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size*0.1,size));
+            var mass = 0;
+            var space = 0.1*size;
+            
+            var N=5, last;
+            for(var i=0; i<N; i++){
+                var boxbody = new CANNON.RigidBody(mass,boxShape);
+                boxbody.position.set(0,0,(N-i)*(size*2+2*space) + size*2+space);
+                boxbody.linearDamping=0.01;
+                boxbody.angularDamping=0.01;
+                world.add(boxbody);
+                demo.addVisual(boxbody);
+
+                if(i!=0){
+                    // Connect this body to the last one
+                    var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(-size,0,size+space),last,new CANNON.Vec3(-size,0,-size-space));
+                    var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
+                    world.addConstraint(c1);
+                    world.addConstraint(c2);
+                } else {
+                    mass=0.3;
+                    console.log(boxbody.motionstate)
+                }
+                last = boxbody;
+            }
+        });
+
+      demo.addScene("Sphere pendulum",function(){
+            var world = setupWorld(demo);
+            var size = 1;
+            var sphereShape = new CANNON.Sphere(size);
+            var mass = 1;
+            
+            var spherebody = new CANNON.RigidBody(mass,sphereShape);
+            spherebody.position.set(0,0,size*3);
+            spherebody.velocity.set(5,0,0);
+            spherebody.linearDamping=0;
+            spherebody.angularDamping=0;
+            world.add(spherebody);
+            demo.addVisual(spherebody);
+            
+            var spherebody2 = new CANNON.RigidBody(0,sphereShape);
+            spherebody2.position.set(0,0,size*7);
+            world.add(spherebody2);
+            demo.addVisual(spherebody2);
+           
+            // Connect this body to the last one
+            var c = new CANNON.PointToPointConstraint(spherebody,new CANNON.Vec3(0,0,size*2),spherebody2,new CANNON.Vec3(0,0,-size*2));
+            world.addConstraint(c);
+        });
 
       // Sphere chain
       demo.addScene("Sphere chain",function(){

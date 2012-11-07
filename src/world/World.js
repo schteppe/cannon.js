@@ -774,8 +774,8 @@ CANNON.World.prototype.step = function(dt){
 		  quat.y += dt * 0.5 * wq.y;
 		  quat.z += dt * 0.5 * wq.z;
 		  quat.w += dt * 0.5 * wq.w;
-		  if(stepnumber % 3 === 0)
-		      quat.normalizeFast();
+		  if(stepnumber % 1 === 0)
+		      quat.normalize();
 	      }
 	  }
       }

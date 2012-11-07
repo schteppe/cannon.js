@@ -92,6 +92,12 @@
         geometry.vertices.push(new THREE.Vector3(1,1,1));
         return new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
     });
+    var p2pConstraintMeshCache = new GeometryCache(function(){
+        var geometry = new THREE.Geometry();
+        geometry.vertices.push(new THREE.Vector3(0,0,0));
+        geometry.vertices.push(new THREE.Vector3(1,1,1));
+        return new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
+    });
     var normalMeshCache = new GeometryCache(function(){
         var geometry = new THREE.Geometry();
         geometry.vertices.push(new THREE.Vector3(0,0,0));
@@ -273,9 +279,10 @@
         }
         cm2contactMeshCache.hideCached();
 
-        // Lines for distance constraints
         distanceConstraintMeshCache.restart();
+        p2pConstraintMeshCache.restart();
         if(settings.constraints){
+            // Lines for distance constraints
             for(var ci=0; ci<world.constraints.length; ci++){
                 var c = world.constraints[ci];
                 if(!(c instanceof CANNON.DistanceConstraint))
@@ -296,7 +303,31 @@
                 makeSureNotZero(line.scale);
                 bi.position.copy(line.position);
             }
+
+
+            // Lines for distance constraints
+            for(var ci=0; ci<world.constraints.length; ci++){
+                var c = world.constraints[ci];
+                if(!(c instanceof CANNON.PointToPointConstraint))
+                    continue;
+
+                var bi=c.body_i, bj=c.body_j, relLine1 = p2pConstraintMeshCache.request(), relLine2 = p2pConstraintMeshCache.request(), diffLine = p2pConstraintMeshCache.request();
+                var i=bi.id, j=bj.id;
+
+                relLine1.scale.set( c.ri.x, c.ri.y, c.ri.z );
+                relLine2.scale.set( c.rj.x, c.rj.y, c.rj.z );
+                diffLine.scale.set( c.piWorld.x-c.pjWorld.x,
+                                    c.piWorld.y-c.pjWorld.y,
+                                    c.piWorld.z-c.pjWorld.z );
+                makeSureNotZero(relLine1.scale);
+                makeSureNotZero(relLine2.scale);
+                makeSureNotZero(diffLine.scale);
+                bi.position.copy(relLine1.position);
+                bj.position.copy(relLine2.position);
+                c.pjWorld.copy(diffLine.position);
+            }
         }
+        p2pConstraintMeshCache.hideCached();
         distanceConstraintMeshCache.hideCached();
 
         // Normal lines
@@ -518,10 +549,16 @@
                     stats.domElement.style.display = "none";
                 break;
 
-        case 97: // a - AABBs
-        settings.aabbs = !settings.aabbs;
-        updategui();
-        break;
+                case 97: // a - AABBs
+                settings.aabbs = !settings.aabbs;
+                updategui();
+                break;
+
+                case 99: // c - constraints
+                settings.constraints = !settings.constraints;
+                updategui();
+                break;
+
                 case 112: // p
                 settings.paused = !settings.paused;
                 updategui();
