@@ -233,57 +233,56 @@ CANNON.Solver.prototype.addConstraint2 = function(c,i,j){
  * @param CANNON.Vec3 w1
  * @param CANNON.Vec3 w2
  */
-CANNON.Solver.prototype.addNonPenetrationConstraint
-  = function(i,j,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
+CANNON.Solver.prototype.addNonPenetrationConstraint = function(i,j,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
   
-  var rxn = ri.cross(ni);
-  var u = vj.vsub(vi); // vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
+    var rxn = ri.cross(ni);
+    var u = vj.vsub(vi); // vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
 
-  // g = ( xj + rj - xi - ri ) .dot ( ni )
-  var qvec = xj.vadd(rj).vsub(xi.vadd(ri));
-  var q = qvec.dot(ni);
+    // g = ( xj + rj - xi - ri ) .dot ( ni )
+    var qvec = xj.vadd(rj).vsub(xi.vadd(ri));
+    var q = qvec.dot(ni);
 
-  if(q<0.0){
-    if(this.debug){
-      console.log("i:",i,"j",j,"xi",xi.toString(),"xj",xj.toString());
-      console.log("ni",ni.toString(),"ri",ri.toString(),"rj",rj.toString());
-      console.log("iMi",iMi.toString(),"iMj",iMj.toString(),"iIi",iIi.toString(),"iIj",iIj.toString(),"vi",vi.toString(),"vj",vj.toString(),"wi",wi.toString(),"wj",wj.toString(),"fi",fi.toString(),"fj",fj.toString(),"taui",taui.toString(),"tauj",tauj.toString());
+    if(q<0.0){
+        if(this.debug){
+          console.log("i:",i,"j",j,"xi",xi.toString(),"xj",xj.toString());
+          console.log("ni",ni.toString(),"ri",ri.toString(),"rj",rj.toString());
+          console.log("iMi",iMi.toString(),"iMj",iMj.toString(),"iIi",iIi.toString(),"iIj",iIj.toString(),"vi",vi.toString(),"vj",vj.toString(),"wi",wi.toString(),"wj",wj.toString(),"fi",fi.toString(),"fj",fj.toString(),"taui",taui.toString(),"tauj",tauj.toString());
+        }
+        this.addConstraint( // Non-penetration constraint jacobian
+                            [ -ni.x,  -ni.y,  -ni.z,
+                              -rxn.x, -rxn.y, -rxn.z,
+                              ni.x,   ni.y,   ni.z,
+                              rxn.x,  rxn.y,  rxn.z],
+                            
+                            // Inverse mass matrix & inertia
+                            [iMi.x, iMi.y, iMi.z,
+                             iIi.z, iIi.y, iIi.z,
+                             iMj.x, iMj.y, iMj.z,
+                             iIj.z, iIj.y, iIj.z],
+                            
+                            // q - constraint violation
+                            [-qvec.x,-qvec.y,-qvec.z,
+                             0,0,0,
+                             qvec.x,qvec.y,qvec.z,
+                             0,0,0],
+                            
+                            // qdot - motion along penetration normal
+                            [-u.x, -u.y, -u.z,
+                             0,0,0,
+                             u.x, u.y, u.z,
+                             0,0,0],
+                            
+                            // External force - forces & torques
+                            [fi.x,fi.y,fi.z,
+                             taui.x,taui.y,taui.z,
+                             fj.x,fj.y,fj.z,
+                             tauj.x,tauj.y,tauj.z],
+                            
+                            0,
+                            'inf',
+                            i,
+                            j);
     }
-    this.addConstraint( // Non-penetration constraint jacobian
-            [ -ni.x,  -ni.y,  -ni.z,
-              -rxn.x, -rxn.y, -rxn.z,
-              ni.x,   ni.y,   ni.z,
-              rxn.x,  rxn.y,  rxn.z],
-            
-            // Inverse mass matrix & inertia
-            [iMi.x, iMi.y, iMi.z,
-             iIi.z, iIi.y, iIi.z,
-             iMj.x, iMj.y, iMj.z,
-             iIj.z, iIj.y, iIj.z],
-            
-            // q - constraint violation
-            [-qvec.x,-qvec.y,-qvec.z,
-             0,0,0,
-             qvec.x,qvec.y,qvec.z,
-             0,0,0],
-            
-            // qdot - motion along penetration normal
-            [-u.x, -u.y, -u.z,
-             0,0,0,
-             u.x, u.y, u.z,
-             0,0,0],
-            
-            // External force - forces & torques
-            [fi.x,fi.y,fi.z,
-             taui.x,taui.y,taui.z,
-             fj.x,fj.y,fj.z,
-             tauj.x,tauj.y,tauj.z],
-            
-            0,
-            'inf',
-            i,
-            j);
-  }
 };
 
 /**
@@ -292,149 +291,149 @@ CANNON.Solver.prototype.addNonPenetrationConstraint
  * @brief Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
 CANNON.Solver.prototype.solve = function(){
-  var n = this.n,
-  lambda = [],
-  dlambda = [],
-  ulambda = [],
-  B = [],
-  c = [],
-  precomp = [],
-  iterations = this.iterations,
-  G = this.G,
-  debug = this.debug,
-  a = this.a,
-  eps = this.eps;
+    var n = this.n,
+        lambda = [],
+        dlambda = [],
+        ulambda = [],
+        B = [],
+        c = [],
+        precomp = [],
+        iterations = this.iterations,
+        G = this.G,
+        debug = this.debug,
+        a = this.a,
+        eps = this.eps;
 
-  var lower = this.lower,
-  haslower = this.haslower,
-  upper = this.upper,
-  hasupper = this.hasupper;
+    var lower = this.lower,
+        haslower = this.haslower,
+        upper = this.upper,
+        hasupper = this.hasupper;
 
-  var vxlambda = this.vxlambda,
-  vylambda = this.vylambda,
-  vzlambda = this.vzlambda,
-  wxlambda = this.wxlambda,
-  wylambda = this.wylambda,
-  wzlambda = this.wzlambda;
-  var MinvTrace = this.MinvTrace;
+    var vxlambda = this.vxlambda,
+        vylambda = this.vylambda,
+        vzlambda = this.vzlambda,
+        wxlambda = this.wxlambda,
+        wylambda = this.wylambda,
+        wzlambda = this.wzlambda;
+    var MinvTrace = this.MinvTrace;
 
-  for(var i=0; i<n; i++){
-    lambda.push(0);
-    dlambda.push(0);
-    B.push(0);
-    c.push(0);
-    precomp.push(0);
-    for(var j=0; j<12; j++)
-      dlambda.push(0);
-  }
-
-  for(var k = 0; k<iterations; k++){
-    for(var l=0; l<n; l++){
-
-      // Bodies participating in constraint
-      var body_i = this.i[l];
-      var body_j = this.j[l];
-
-      var l12 = 12*l;
-      
-      if(!precomp[l]){
-    // Precompute constants c[l] and B[l] for contact l
-    var G_Minv_Gt = 0.0;
-    var Gq = 0.0;
-    var GW = 0.0;
-    var GMinvf = 0.0;
-    // Only add normal contributions here? See eq. 27 in spooknotes
-    for(var i=0; i<12; i++){
-      var addi = l12+i;
-      G_Minv_Gt += G[addi] * MinvTrace[addi] * G[addi];
-      Gq +=        G[addi] * this.q[addi];
-      GW +=        G[addi] * this.qdot[addi];
-      GMinvf +=    G[addi] * MinvTrace[addi] * this.Fext[addi];
+    for(var i=0; i<n; i++){
+        lambda.push(0);
+        dlambda.push(0);
+        B.push(0);
+        c.push(0);
+        precomp.push(0);
+        for(var j=0; j<12; j++)
+            dlambda.push(0);
     }
-    c[l] = 1.0 / (G_Minv_Gt + eps); // 1.0 / ( G*Minv*Gt + eps)
-    B[l] = ( - a * Gq
-         - this.b * GW
-         - this.h * GMinvf);
-    precomp[l] = 1;
 
-    if(debug){
-      console.log("G_Minv_Gt[l="+l+"]:",G_Minv_Gt);
-      console.log("Gq[l="+l+"]:",Gq);
-      console.log("GW[l="+l+"]:",GW);
-      console.log("GMinvf[l="+l+"]:",GMinvf);
+    for(var k = 0; k<iterations; k++){
+        for(var l=0; l<n; l++){
+
+            // Bodies participating in constraint
+            var body_i = this.i[l];
+            var body_j = this.j[l];
+
+            var l12 = 12*l;
+
+            if(!precomp[l]){
+                // Precompute constants c[l] and B[l] for contact l
+                var G_Minv_Gt = 0.0;
+                var Gq = 0.0;
+                var GW = 0.0;
+                var GMinvf = 0.0;
+                // Only add normal contributions here? See eq. 27 in spooknotes
+                for(var i=0; i<12; i++){
+                    var addi = l12+i;
+                    G_Minv_Gt += G[addi] * MinvTrace[addi] * G[addi];
+                    Gq +=        G[addi] * this.q[addi];
+                    GW +=        G[addi] * this.qdot[addi];
+                    GMinvf +=    G[addi] * MinvTrace[addi] * this.Fext[addi];
+                }
+                c[l] = 1.0 / (G_Minv_Gt + eps); // 1.0 / ( G*Minv*Gt + eps)
+                B[l] = ( - a * Gq
+                         - this.b * GW
+                         - this.h * GMinvf);
+                precomp[l] = 1;
+
+                if(debug){
+                    console.log("G_Minv_Gt[l="+l+"]:",G_Minv_Gt);
+                    console.log("Gq[l="+l+"]:",Gq);
+                    console.log("GW[l="+l+"]:",GW);
+                    console.log("GMinvf[l="+l+"]:",GMinvf);
+                }
+            }
+
+            var Gulambda = 0.0;
+
+            //console.log("debuuug2.1",vxlambda[0],Gulambda,body_i);
+            if(body_i>=0){
+                Gulambda += G[0+l12] * vxlambda[body_i]; // previuously calculated lambdas
+                Gulambda += G[1+l12] * vylambda[body_i];
+                Gulambda += G[2+l12] * vzlambda[body_i];
+                Gulambda += G[3+l12] * wxlambda[body_i];
+                Gulambda += G[4+l12] * wylambda[body_i];
+                Gulambda += G[5+l12] * wzlambda[body_i];
+                if(debug && isNaN(Gulambda))
+                    console.log("found NaN Gulambda",vxlambda);
+            }
+
+            if(body_j!==-1){
+                Gulambda += G[6+l12] * vxlambda[body_j];
+                Gulambda += G[7+l12] * vylambda[body_j];
+                Gulambda += G[8+l12] * vzlambda[body_j];
+                Gulambda += G[9+l12] * wxlambda[body_j];
+                Gulambda += G[10+l12] * wylambda[body_j];
+                Gulambda += G[11+l12] * wzlambda[body_j];
+            }
+
+            dlambda[l] = c[l] * ( B[l] - Gulambda - eps * lambda[l]);
+            if(debug)
+                console.log("dlambda["+l+"]=",dlambda[l],"rest = ",c[l],B[l],Gulambda,eps,lambda[l],l,body_i,body_j);
+            lambda[l] = lambda[l] + dlambda[l];
+
+            // Clamp lambda if out of bounds
+            // @todo check if limits are numbers
+            if(haslower[l] && lambda[l]<lower[l]){
+                if(debug)
+                    console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+lower[l]);
+                lambda[l] = lower[l];
+                dlambda[l] = lower[l]-lambda[l];
+            }
+            if(hasupper && lambda[l]>upper[l]){
+                if(debug)
+                    console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+upper[l]);
+                lambda[l] = upper[l];
+                dlambda[l] = upper[l]-lambda[l];
+            }
+
+            // Add velocity changes to keep track of them
+            if(body_i!==-1){
+                vxlambda[body_i] += dlambda[l] * MinvTrace[l12+0] * G[l12+0];
+                vylambda[body_i] += dlambda[l] * MinvTrace[l12+1] * G[l12+1];
+                vzlambda[body_i] += dlambda[l] * MinvTrace[l12+2] * G[l12+2];
+                wxlambda[body_i] += dlambda[l] * MinvTrace[l12+3] * G[l12+3];
+                wylambda[body_i] += dlambda[l] * MinvTrace[l12+4] * G[l12+4];
+                wzlambda[body_i] += dlambda[l] * MinvTrace[l12+5] * G[l12+5];
+            }
+            if(body_j!==-1){
+                vxlambda[body_j] += dlambda[l] * MinvTrace[l12+6] * G[l12+6];
+                vylambda[body_j] += dlambda[l] * MinvTrace[l12+7] * G[l12+7];
+                vzlambda[body_j] += dlambda[l] * MinvTrace[l12+8] * G[l12+8];
+                wxlambda[body_j] += dlambda[l] * MinvTrace[l12+9] * G[l12+9];
+                wylambda[body_j] += dlambda[l] * MinvTrace[l12+10] * G[l12+10];
+                wzlambda[body_j] += dlambda[l] * MinvTrace[l12+11] * G[l12+11];
+            }
+        }
     }
-      }
 
-      var Gulambda = 0.0;
-
-      //console.log("debuuug2.1",vxlambda[0],Gulambda,body_i);
-      if(body_i>=0){
-        Gulambda += G[0+l12] * vxlambda[body_i]; // previuously calculated lambdas
-        Gulambda += G[1+l12] * vylambda[body_i];
-        Gulambda += G[2+l12] * vzlambda[body_i];
-        Gulambda += G[3+l12] * wxlambda[body_i];
-        Gulambda += G[4+l12] * wylambda[body_i];
-        Gulambda += G[5+l12] * wzlambda[body_i];
-        if(debug && isNaN(Gulambda))
-            console.log("found NaN Gulambda",vxlambda);
-      }
-
-      if(body_j!==-1){
-    Gulambda += G[6+l12] * vxlambda[body_j];
-    Gulambda += G[7+l12] * vylambda[body_j];
-    Gulambda += G[8+l12] * vzlambda[body_j];
-    Gulambda += G[9+l12] * wxlambda[body_j];
-    Gulambda += G[10+l12] * wylambda[body_j];
-    Gulambda += G[11+l12] * wzlambda[body_j];
-      }
-
-      dlambda[l] = c[l] * ( B[l] - Gulambda - eps * lambda[l]);
-      if(debug)
-    console.log("dlambda["+l+"]=",dlambda[l],"rest = ",c[l],B[l],Gulambda,eps,lambda[l],l,body_i,body_j);
-      lambda[l] = lambda[l] + dlambda[l];
-
-      // Clamp lambda if out of bounds
-      // @todo check if limits are numbers
-      if(haslower[l] && lambda[l]<lower[l]){
     if(debug)
-      console.log("hit lower bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+lower[l]);
-    lambda[l] = lower[l];
-    dlambda[l] = lower[l]-lambda[l];
-      }
-      if(hasupper && lambda[l]>upper[l]){
-    if(debug)
-      console.log("hit upper bound for constraint "+l+", truncating "+lambda[l]+" to the bound "+upper[l]);
-    lambda[l] = upper[l];
-    dlambda[l] = upper[l]-lambda[l];
-      }
-
-      // Add velocity changes to keep track of them
-      if(body_i!==-1){
-    vxlambda[body_i] += dlambda[l] * MinvTrace[l12+0] * G[l12+0];
-    vylambda[body_i] += dlambda[l] * MinvTrace[l12+1] * G[l12+1];
-    vzlambda[body_i] += dlambda[l] * MinvTrace[l12+2] * G[l12+2];
-    wxlambda[body_i] += dlambda[l] * MinvTrace[l12+3] * G[l12+3];
-    wylambda[body_i] += dlambda[l] * MinvTrace[l12+4] * G[l12+4];
-    wzlambda[body_i] += dlambda[l] * MinvTrace[l12+5] * G[l12+5];
-      }
-      if(body_j!==-1){
-    vxlambda[body_j] += dlambda[l] * MinvTrace[l12+6] * G[l12+6];
-    vylambda[body_j] += dlambda[l] * MinvTrace[l12+7] * G[l12+7];
-    vzlambda[body_j] += dlambda[l] * MinvTrace[l12+8] * G[l12+8];
-    wxlambda[body_j] += dlambda[l] * MinvTrace[l12+9] * G[l12+9];
-    wylambda[body_j] += dlambda[l] * MinvTrace[l12+10] * G[l12+10];
-    wzlambda[body_j] += dlambda[l] * MinvTrace[l12+11] * G[l12+11];
-      }
-    }
-  }
-
-  if(debug)
-    for(var i=0; i<this.vxlambda.length; i++)
-      console.log("dv["+i+"]=",
-          vxlambda[i],
-          vylambda[i],
-          vzlambda[i],
-          wxlambda[i],
-          wylambda[i],
-          wzlambda[i]);
+        for(var i=0; i<this.vxlambda.length; i++)
+            console.log("dv["+i+"]=",
+                          vxlambda[i],
+                          vylambda[i],
+                          vzlambda[i],
+                          wxlambda[i],
+                          wylambda[i],
+                          wzlambda[i]);
 };

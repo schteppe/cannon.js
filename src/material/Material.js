@@ -7,11 +7,11 @@
  * @author schteppe
  */
 CANNON.Material = function(name){
-  /**
-   * @property string name
-   * @memberof CANNON.Material
-   */
-  this.name = name;
-  this.id = -1;
+    /**
+    * @property string name
+    * @memberof CANNON.Material
+    */
+    this.name = name;
+    this.id = -1;
 };
 

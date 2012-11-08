@@ -7,34 +7,34 @@
  */
 CANNON.Body = function(type){
 
-  CANNON.EventTarget.apply(this);
+    CANNON.EventTarget.apply(this);
 
-  this.type = type;
+    this.type = type;
 
-  var that = this;
+    var that = this;
 
-  /**
-   * @property CANNON.World world
-   * @memberof CANNON.Body
-   * @brief Reference to the world the body is living in
-   */
-  this.world = null;
+    /**
+    * @property CANNON.World world
+    * @memberof CANNON.Body
+    * @brief Reference to the world the body is living in
+    */
+    this.world = null;
 
-  /**
-   * @property function preStep
-   * @memberof CANNON.Body
-   * @brief Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this CANNON.Body object.
-   * @todo dispatch an event from the World instead
-   */
-  this.preStep = null;
+    /**
+    * @property function preStep
+    * @memberof CANNON.Body
+    * @brief Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this CANNON.Body object.
+    * @todo dispatch an event from the World instead
+    */
+    this.preStep = null;
 
-  /**
-   * @property function postStep
-   * @memberof CANNON.Body
-   * @brief Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this CANNON.Body object.
-   * @todo dispatch an event from the World instead
-   */
-  this.postStep = null;
+    /**
+    * @property function postStep
+    * @memberof CANNON.Body
+    * @brief Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this CANNON.Body object.
+    * @todo dispatch an event from the World instead
+    */
+    this.postStep = null;
 };
 
 /*

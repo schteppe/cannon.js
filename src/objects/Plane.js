@@ -15,12 +15,12 @@ CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;
 
 CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
-  target = target || new CANNON.Vec3();
-  return target;
+    target = target || new CANNON.Vec3();
+    return target;
 };
 
 CANNON.Plane.prototype.volume = function(){
-  return Infinity; // The plane is infinite...
+    return Infinity; // The plane is infinite...
 };
 
 var tempNormal = new CANNON.Vec3(0,0,1);
@@ -30,10 +30,10 @@ CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
     min.set(Infinity,Infinity,Infinity);
     var axes = ['x','y','z'];
     for(var i=0; i<axes.length; i++){
-	var ax = axes[i];
-	if(tempNormal[ax]==1)
-	    max[ax] = pos[ax];
-	if(tempNormal[ax]==-1)
-	    min[ax] = pos[ax];
+        var ax = axes[i];
+        if(tempNormal[ax]==1)
+            max[ax] = pos[ax];
+        if(tempNormal[ax]==-1)
+            min[ax] = pos[ax];
     }
 };

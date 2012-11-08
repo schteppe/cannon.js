@@ -11,9 +11,7 @@ CANNON.Constraint = function(){
    * @brief A number of CANNON.Equation's that belongs to this Constraint
    */
   this.equations = [];
-
   this.id = -1;
-
 };
 CANNON.Constraint.prototype.constructor = CANNON.Constraint;
 
@@ -21,5 +19,5 @@ CANNON.Constraint.prototype.constructor = CANNON.Constraint;
  * @brief Updates the internal numbers, calculates the Jacobian etc.
  */
 CANNON.Constraint.prototype.update = function(){
-  throw "update() not implemented in this Constraint subclass!";
+    throw "update() not implemented in this Constraint subclass!";
 };

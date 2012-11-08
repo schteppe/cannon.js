@@ -7,12 +7,12 @@
  * @todo test
  */
  CANNON.DistanceConstraint = function(bodyA,bodyB,distance){
-  CANNON.Constraint.call(this);
-  this.body_i = bodyA;
-  this.body_j = bodyB;
-  this.distance = Number(distance);
-  var eq = new CANNON.Equation(bodyA, bodyB instanceof CANNON.Vec3 ? null : bodyB);
-  this.equations.push(eq);
+    CANNON.Constraint.call(this);
+    this.body_i = bodyA;
+    this.body_j = bodyB;
+    this.distance = Number(distance);
+    var eq = new CANNON.Equation(bodyA, bodyB instanceof CANNON.Vec3 ? null : bodyB);
+    this.equations.push(eq);
 };
 
 CANNON.DistanceConstraint.prototype = new CANNON.Constraint();

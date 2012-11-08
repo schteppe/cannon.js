@@ -11,17 +11,17 @@
  */
 CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 
-  /// Contact material index in the world, -1 until added to the world
-  this.id = -1;
+    /// Contact material index in the world, -1 until added to the world
+    this.id = -1;
 
-  /// The two materials participating in the contact
-  this.materials = [m1,m2];
+    /// The two materials participating in the contact
+    this.materials = [m1,m2];
 
-  /// Kinetic friction
-  this.friction = friction!=undefined ? Number(friction) : 0.3;
+    /// Kinetic friction
+    this.friction = friction!=undefined ? Number(friction) : 0.3;
 
-  /// Restitution
-  this.restitution =      restitution!=undefined ?      Number(restitution) :      0.3;
+    /// Restitution
+    this.restitution =      restitution!=undefined ?      Number(restitution) :      0.3;
   
 };
 

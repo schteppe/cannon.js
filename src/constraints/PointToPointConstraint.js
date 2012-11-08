@@ -30,7 +30,6 @@ CANNON.PointToPointConstraint.prototype.constructor = CANNON.PointToPointConstra
 
 CANNON.PointToPointConstraint.prototype.update = function(){
     var neq=this.equations[0],
-        //teq=this.equations[1],
         bi=this.body_i,
         bj=this.body_j,
         pi=this.pivot_i,
