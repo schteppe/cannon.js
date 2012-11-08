@@ -3367,6 +3367,22 @@ CANNON.World = function(){
     /// Makes bodies go to sleep when they've been inactive
     this.allowSleep = false;
 
+    /**
+     * @property int quatNormalizeSkip
+     * @brief How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.
+     * @memberof CANNON.World
+     */
+    this.quatNormalizeSkip = 2;
+
+    /**
+     * @property bool quatNormalizeFast
+     * @brief Whether to use fast quaternion normalization or normal (slower, but more accurate) normalization.
+     * @memberof CANNON.World
+     * @see CANNON.Quaternion.normalizeFast
+     * @see CANNON.Quaternion.normalize
+     */
+    this.quatNormalizeFast = true;
+
     /// The wall-clock time since simulation start
     this.time = 0.0;
 
@@ -4124,8 +4140,12 @@ CANNON.World.prototype.step = function(dt){
                 quat.y += dt * 0.5 * wq.y;
                 quat.z += dt * 0.5 * wq.z;
                 quat.w += dt * 0.5 * wq.w;
-                if(stepnumber % 1 === 0)
-                  quat.normalize();
+                if(stepnumber % (this.quatNormalizeSkip+1) === 0){
+                    if(this.quatNormalizeFast)
+                        quat.normalizeFast();
+                    else
+                        quat.normalize();
+                }
               }
           }
       }
