@@ -378,7 +378,8 @@ CANNON.World.prototype.step = function(dt){
   N = this.numObjects(),
   bodies = this.bodies,
   solver = this.solver,
-  gravity = this.gravity;
+  gravity = this.gravity,
+  DYNAMIC = CANNON.Body.DYNAMIC;
 
   if(dt==undefined){
     if(this.last_dt)
@@ -388,13 +389,16 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // Add gravity to all objects
+  var gx = gravity.x,
+      gy = gravity.y,
+      gz = gravity.z;
   for(var i=0; i<N; i++){
     var bi = bodies[i];
-    if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
-      var f = bodies[i].force, m = bodies[i].mass;
-      f.x += gravity.x * m;
-      f.y += gravity.y * m;
-      f.z += gravity.z * m;
+    if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
+      var f = bi.force, m = bi.mass;
+      f.x += m*gx;
+      f.y += m*gy;
+      f.z += m*gz;
     }
   }
 
@@ -703,7 +707,7 @@ CANNON.World.prototype.step = function(dt){
       // Apply constraint velocities
       for(var i=0; i<N; i++){
           bi = bodies[i];
-          if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
+          if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
               var b = bodies[i];
               var velo = b.velocity,
               avelo = b.angularVelocity;
@@ -722,7 +726,7 @@ CANNON.World.prototype.step = function(dt){
   // Apply damping
   for(var i=0; i<N; i++){
     bi = bodies[i];
-    if(bi.motionstate & CANNON.Body.DYNAMIC){ // Only for dynamic bodies
+    if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
         var ld = 1.0 - bi.linearDamping,
         ad = 1.0 - bi.angularDamping,
         v = bi.velocity,
@@ -749,17 +753,20 @@ CANNON.World.prototype.step = function(dt){
   var wq = temp.step_wq;
   var stepnumber = world.stepnumber;
   var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
+  var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
+  var quatNormalizeFast = this.quatNormalizeFast;
+  var half_dt = dt * 0.5;
   for(var i=0; i<N; i++){
       var b = bodies[i],
-      force = b.force,
-      tau = b.tau;
+          force = b.force,
+          tau = b.tau;
       if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
           var velo = b.velocity,
-          angularVelo = b.angularVelocity,
-          pos = b.position,
-          quat = b.quaternion,
-          invMass = b.invMass,
-          invInertia = b.invInertia;
+              angularVelo = b.angularVelocity,
+              pos = b.position,
+              quat = b.quaternion,
+              invMass = b.invMass,
+              invInertia = b.invInertia;
           velo.x += force.x * invMass * dt;
           velo.y += force.y * invMass * dt;
           velo.z += force.z * invMass * dt;
@@ -780,12 +787,12 @@ CANNON.World.prototype.step = function(dt){
                 w.set(  angularVelo.x, angularVelo.y, angularVelo.z, 0);
                 w.mult(quat,wq);
               
-                quat.x += dt * 0.5 * wq.x;
-                quat.y += dt * 0.5 * wq.y;
-                quat.z += dt * 0.5 * wq.z;
-                quat.w += dt * 0.5 * wq.w;
-                if(stepnumber % (this.quatNormalizeSkip+1) === 0){
-                    if(this.quatNormalizeFast)
+                quat.x += half_dt * wq.x;
+                quat.y += half_dt * wq.y;
+                quat.z += half_dt * wq.z;
+                quat.w += half_dt * wq.w;
+                if(quatNormalize){
+                    if(quatNormalizeFast)
                         quat.normalizeFast();
                     else
                         quat.normalize();

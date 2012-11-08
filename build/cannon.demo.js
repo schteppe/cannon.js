@@ -19,6 +19,8 @@
     // Global settings
     var settings = {
        stepFrequency:60,
+       quatNormalizeSkip:2,
+       quatNormalizeFast:true,
        gx:0.0,
        gy:0.0,
        gz:0.0,
@@ -642,6 +644,14 @@
         wf.add(settings, 'gz',-maxg,maxg).onChange(function(gz){
             if(!isNaN(gz))
                 world.gravity.set(settings.gx,settings.gy,gz);
+        });
+        wf.add(settings, 'quatNormalizeSkip',0,50).step(1).onChange(function(skip){
+            if(!isNaN(skip)){
+                world.quatNormalizeSkip = skip;
+            }
+        });
+        wf.add(settings, 'quatNormalizeFast').onChange(function(fast){
+            world.quatNormalizeFast = !!fast;
         });
 
         // Solver folder
