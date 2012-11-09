@@ -42,7 +42,7 @@ CANNON.Mat3.prototype.identity = function(){
 
 /**
  * @method vmult
- * @memberof CANNON.vmult
+ * @memberof CANNON.Mat3
  * @brief Matrix-Vector multiplication
  * @param CANNON.Vec3 v The vector to multiply with
  * @param CANNON.Vec3 target Optional, target to save the result in.

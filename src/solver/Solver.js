@@ -177,7 +177,12 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 };
 
 /**
- * New version of the addConstraint function, still experimental
+ * @method addConstraint2
+ * @memberof CANNON.Solver
+ * @brief New version of the addConstraint function, still experimental
+ * @param CANNON.Constraint c
+ * @param int i
+ * @param int j
  */
 CANNON.Solver.prototype.addConstraint2 = function(c,i,j){
   c.update();

@@ -46,7 +46,7 @@ CANNON.ContactGenerator = function(){
                                                 ],
                                                 tempnormals);
     
-    /**
+    /*
      * Near phase calculation, get the contact point, normal, etc.
      * @param array result The result one will get back with all the contact point information
      * @param Shape si Colliding shape. If not given, particle is assumed.
@@ -72,7 +72,7 @@ CANNON.ContactGenerator = function(){
             // Particle!
         }
 
-        /**
+        /*
          * Make a contact object.
          * @return object
          * @todo reuse old contact point objects
@@ -87,7 +87,7 @@ CANNON.ContactGenerator = function(){
                 return new CANNON.ContactPoint(bi,bj);
         }
 
-        /**
+        /*
          * Swaps the body references in the contact
          * @param object r
          */
@@ -98,7 +98,7 @@ CANNON.ContactGenerator = function(){
             temp = r.bi; r.bi = r.bj; r.bj = temp;
         }
 
-        /**
+        /*
          * Go recursive for compound shapes
          * @param Shape si
          * @param CompoundShape sj

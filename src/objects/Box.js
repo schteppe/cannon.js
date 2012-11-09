@@ -18,7 +18,9 @@ CANNON.Box = function(halfExtents){
     this.type = CANNON.Shape.types.BOX;
 
     /**
-    * 
+    * @property CANNON.ConvexPolyhedron convexPolyhedronRepresentation
+    * @brief Used by the contact generator to make contacts with other convex polyhedra for example
+    * @memberof CANNON.Box
     */
     this.convexPolyhedronRepresentation = null;
 

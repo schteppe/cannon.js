@@ -50,7 +50,7 @@ CANNON.Broadphase = function(){
     /**
     * @property CANNON.World world
     * @brief The world to search for collisions in.
-    * @memberof CANNON.World
+    * @memberof CANNON.Broadphase
     */
     this.world = null;
 };
@@ -452,7 +452,7 @@ CANNON.Mat3.prototype.identity = function(){
 
 /**
  * @method vmult
- * @memberof CANNON.vmult
+ * @memberof CANNON.Mat3
  * @brief Matrix-Vector multiplication
  * @param CANNON.Vec3 v The vector to multiply with
  * @param CANNON.Vec3 target Optional, target to save the result in.
@@ -968,7 +968,10 @@ CANNON.Vec3.prototype.almostEquals = function(v,precision){
 }
 
 /**
- * Check if a vector is almost zero
+ * @method almostZero
+ * @brief Check if a vector is almost zero
+ * @param float precision
+ * @memberof CANNON.Vec3
  */
 CANNON.Vec3.prototype.almostZero = function(precision){
     if(precision===undefined)
@@ -1015,7 +1018,13 @@ CANNON.Quaternion = function(x,y,z,w){
 };
 
 /**
- * Set the value of the quaternion.
+ * @method set
+ * @memberof CANNON.Quaternion
+ * @brief Set the value of the quaternion.
+ * @param float x
+ * @param float y
+ * @param float z
+ * @param float w
  */
 CANNON.Quaternion.prototype.set = function(x,y,z,w){
     this.x = x;
@@ -1371,7 +1380,8 @@ CANNON.Shape.calculateLocalAABB = function(){
 };
 
 /**
- * @enum CANNON.Shape.types
+ * @property Object types
+ * @memberof CANNON.Shape
  * @brief The available shape types.
  */
 CANNON.Shape.types = {
@@ -1674,8 +1684,8 @@ CANNON.RigidBody = function(mass,shape,material){
      * @memberof CANNON.RigidBody
      */
     this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
-                      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
-                      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+                                      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
+                                      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
 
     /**
      * @property float angularDamping
@@ -1685,13 +1695,13 @@ CANNON.RigidBody = function(mass,shape,material){
 
 
     /**
-     * @property aabbmin
+     * @property CANNON.Vec3 aabbmin
      * @memberof CANNON.RigidBody
      */
     this.aabbmin = new CANNON.Vec3();
 
     /**
-     * @property aabbmax
+     * @property CANNON.Vec3 aabbmax
      * @memberof CANNON.RigidBody
      */
     this.aabbmax = new CANNON.Vec3();
@@ -1782,7 +1792,9 @@ CANNON.Box = function(halfExtents){
     this.type = CANNON.Shape.types.BOX;
 
     /**
-    * 
+    * @property CANNON.ConvexPolyhedron convexPolyhedronRepresentation
+    * @brief Used by the contact generator to make contacts with other convex polyhedra for example
+    * @memberof CANNON.Box
     */
     this.convexPolyhedronRepresentation = null;
 
@@ -1943,9 +1955,8 @@ CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
- * @brief A plane, facing in the Z direction. The plane has its surface at z=0 and
- * everything below z=0 is assumed to be solid plane. To make the plane face in some other
- * direction than z, you must put it inside a RigidBody and rotate that body. See the demos.
+ * @brief A plane, facing in the Z direction.
+ * @description A plane, facing in the Z direction. The plane has its surface at z=0 and everything below z=0 is assumed to be solid plane. To make the plane face in some other direction than z, you must put it inside a RigidBody and rotate that body. See the demos.
  * @author schteppe
  */
 CANNON.Plane = function(){
@@ -2174,7 +2185,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         }
     }
 
-    /**
+    /*
      * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
      * @param CANNON.ConvexPolyhedron hull
      * @param CANNON.Vec3 axis
@@ -2261,90 +2272,90 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var worldEdge1 = new CANNON.Vec3();
     var Cross = new CANNON.Vec3();
     this.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
-    var dmin = Infinity;
-    var hullA = this;
-    var curPlaneTests=0;
-    var numFacesA = hullA.faces.length;
+        var dmin = Infinity;
+        var hullA = this;
+        var curPlaneTests=0;
+        var numFacesA = hullA.faces.length;
 
-    // Test normals from hullA
-    for(var i=0; i<numFacesA; i++){
-        // Get world face normal
-        hullA.faceNormals[i].copy(faceANormalWS3);
-        quatA.vmult(faceANormalWS3,faceANormalWS3);
-        //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
-        //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
-        
-        var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
-        if(d===false){
-        return false;
-        }
-        
-        if(d<dmin){
-            dmin = d;
-            faceANormalWS3.copy(target);
-        }
-    }
-
-    // Test normals from hullB
-    var numFacesB = hullB.faces.length;
-    for(var i=0;i<numFacesB;i++){
-        hullB.faceNormals[i].copy(Worldnormal1);
-        quatB.vmult(Worldnormal1,Worldnormal1);
-        //posB.vadd(Worldnormal1,Worldnormal1);
-        //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
-        curPlaneTests++;
-        var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
-        if(d===false){
-            return false;
-        }
-        
-        if(d<dmin){
-            dmin = d;
-            Worldnormal1.copy(target);
-        }
-    }
-
-    var edgeAstart,edgeAend,edgeBstart,edgeBend;
-    
-    var curEdgeEdge = 0;
-    // Test edges
-    for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
-        // Get world edge
-        hullA.uniqueEdges[e0].copy(worldEdge0);
-        quatA.vmult(worldEdge0,worldEdge0);
-        //posA.vadd(worldEdge0,worldEdge0); // needed?
-
-        //console.log("edge0:",worldEdge0.toString());
-
-        for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-            hullB.uniqueEdges[e1].copy(worldEdge1);
-            quatB.vmult(worldEdge1,worldEdge1);
-            //posB.vadd(worldEdge1,worldEdge1); // needed?
-            //console.log("edge1:",worldEdge1.toString());
+        // Test normals from hullA
+        for(var i=0; i<numFacesA; i++){
+            // Get world face normal
+            hullA.faceNormals[i].copy(faceANormalWS3);
+            quatA.vmult(faceANormalWS3,faceANormalWS3);
+            //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
+            //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
             
-            worldEdge0.cross(worldEdge1,Cross);
-    
-            curEdgeEdge++;
-            if(!Cross.almostZero()){
-                Cross.normalize();
-                var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
-                if(dist===false){
-                    return false;
-                }
+            var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
+            if(d===false){
+            return false;
+            }
+            
+            if(d<dmin){
+                dmin = d;
+                faceANormalWS3.copy(target);
+            }
+        }
+
+        // Test normals from hullB
+        var numFacesB = hullB.faces.length;
+        for(var i=0;i<numFacesB;i++){
+            hullB.faceNormals[i].copy(Worldnormal1);
+            quatB.vmult(Worldnormal1,Worldnormal1);
+            //posB.vadd(Worldnormal1,Worldnormal1);
+            //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
+            curPlaneTests++;
+            var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
+            if(d===false){
+                return false;
+            }
+            
+            if(d<dmin){
+                dmin = d;
+                Worldnormal1.copy(target);
+            }
+        }
+
+        var edgeAstart,edgeAend,edgeBstart,edgeBend;
+        
+        var curEdgeEdge = 0;
+        // Test edges
+        for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
+            // Get world edge
+            hullA.uniqueEdges[e0].copy(worldEdge0);
+            quatA.vmult(worldEdge0,worldEdge0);
+            //posA.vadd(worldEdge0,worldEdge0); // needed?
+
+            //console.log("edge0:",worldEdge0.toString());
+
+            for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
+                hullB.uniqueEdges[e1].copy(worldEdge1);
+                quatB.vmult(worldEdge1,worldEdge1);
+                //posB.vadd(worldEdge1,worldEdge1); // needed?
+                //console.log("edge1:",worldEdge1.toString());
                 
-                if(dist<dmin){
-                    dmin = dist;
-                    Cross.copy(target);
+                worldEdge0.cross(worldEdge1,Cross);
+        
+                curEdgeEdge++;
+                if(!Cross.almostZero()){
+                    Cross.normalize();
+                    var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
+                    if(dist===false){
+                        return false;
+                    }
+                    
+                    if(dist<dmin){
+                        dmin = dist;
+                        Cross.copy(target);
+                    }
                 }
             }
         }
-    }
 
-    posB.vsub(posA,deltaC);
-    if((deltaC.dot(target))>0.0)
-        target.negate(target);
-    
-    return true;
+        posB.vsub(posA,deltaC);
+        if((deltaC.dot(target))>0.0)
+            target.negate(target);
+        
+        return true;
     }
 
     /**
@@ -2610,7 +2621,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return outVertices;
     }
 
-    /**
+    /*
      * Whether the face is visible from the vertex
      * @param array face
      * @param CANNON.Vec3 vertex
@@ -2646,7 +2657,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return c;
     }
 
-    /**
+    /*
      * @brief Get face normal given 3 vertices
      * @param CANNON.Vec3 va
      * @param CANNON.Vec3 vb
@@ -2672,7 +2683,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return s;
     }
 
-    /**
+    /*
      * Detect whether two edges are equal.
      * Note that when constructing the convex hull, two same edges can only
      * be of the negative direction.
@@ -2682,7 +2693,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return ea[ 0 ] === eb[ 1 ] && ea[ 1 ] === eb[ 0 ]; 
     }
 
-    /**
+    /*
      * Create a random offset between -1e-6 and 1e-6.
      * @return float
      */
@@ -3001,7 +3012,12 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
 };
 
 /**
- * New version of the addConstraint function, still experimental
+ * @method addConstraint2
+ * @memberof CANNON.Solver
+ * @brief New version of the addConstraint function, still experimental
+ * @param CANNON.Constraint c
+ * @param int i
+ * @param int j
  */
 CANNON.Solver.prototype.addConstraint2 = function(c,i,j){
   c.update();
@@ -3399,10 +3415,18 @@ CANNON.World = function(){
      */
     this.quatNormalizeFast = true;
 
-    /// The wall-clock time since simulation start
+    /**
+     * @property float time
+     * @brief The wall-clock time since simulation start
+     * @memberof CANNON.World
+     */
     this.time = 0.0;
 
-    /// Number of timesteps taken since start
+    /**
+     * @property int stepnumber
+     * @brief Number of timesteps taken since start
+     * @memberof CANNON.World
+     */
     this.stepnumber = 0;
 
     /// Default and last timestep sizes
@@ -3410,13 +3434,25 @@ CANNON.World = function(){
     this.last_dt = this.default_dt;
 
     this.nextId = 0;
+    /**
+     * @property CANNON.Vec3 gravity
+     * @memberof CANNON.World
+     */
     this.gravity = new CANNON.Vec3();
     this.broadphase = null;
+
+    /**
+     * @property Array bodies
+     * @memberof CANNON.World
+     */
     this.bodies = [];
 
     var th = this;
 
-    /// The constraint solver
+    /**
+     * @property CANNON.Solver solver
+     * @memberof CANNON.World
+     */
     this.solver = new CANNON.Solver();
 
     // User defined constraints
@@ -3470,7 +3506,6 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
 };
 
 /**
- * @private
  * @method _addImpulse
  * @memberof CANNON.World
  * @brief Add an impulse to the colliding bodies i and j
@@ -4289,7 +4324,7 @@ CANNON.ContactGenerator = function(){
                                                 ],
                                                 tempnormals);
     
-    /**
+    /*
      * Near phase calculation, get the contact point, normal, etc.
      * @param array result The result one will get back with all the contact point information
      * @param Shape si Colliding shape. If not given, particle is assumed.
@@ -4315,7 +4350,7 @@ CANNON.ContactGenerator = function(){
             // Particle!
         }
 
-        /**
+        /*
          * Make a contact object.
          * @return object
          * @todo reuse old contact point objects
@@ -4330,7 +4365,7 @@ CANNON.ContactGenerator = function(){
                 return new CANNON.ContactPoint(bi,bj);
         }
 
-        /**
+        /*
          * Swaps the body references in the contact
          * @param object r
          */
@@ -4341,7 +4376,7 @@ CANNON.ContactGenerator = function(){
             temp = r.bi; r.bi = r.bj; r.bj = temp;
         }
 
-        /**
+        /*
          * Go recursive for compound shapes
          * @param Shape si
          * @param CompoundShape sj
@@ -5057,9 +5092,9 @@ CANNON.Equation = function(bi,bj){
 };
 
 /**
-* @method setDefaultMassProps
-* @memberof CANNON.Equation
-*/
+ * @method setDefaultMassProps
+ * @memberof CANNON.Equation
+ */
 CANNON.Equation.prototype.setDefaultMassProps = function(){
   var bi = this.body_i, bj = this.body_j;
     if(bi){
@@ -5097,6 +5132,8 @@ CANNON.Equation.prototype.setDefaultForce = function(){
 
 /**
  * @class CANNON.PointToPointConstraint
+ * @brief Connects two bodies at given offset points
+ * @extends CANNON.Constraint
  * @author schteppe
  * @param CANNON.Body bodyA
  * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
@@ -5109,14 +5146,45 @@ CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB){
     this.body_j = bodyB;
     this.pivot_i = pivotA;
     this.pivot_j = pivotB;
-    this.equations.push(new CANNON.Equation(bodyA, bodyB)/*, // Normal
-                        new CANNON.Equation(bodyA, bodyB)*/); // Angular
+    this.equations.push(new CANNON.Equation(bodyA, bodyB));
     
-    this.piWorld = new CANNON.Vec3(); // world points
+    /**
+     * @property CANNON.Vec3 piWorld
+     * @memberof CANNON.PointToPointConstraint
+     * @brief Pivot point relative to body_i in world coordinates
+     */
+    this.piWorld = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Vec3 pjWorld
+     * @memberof CANNON.PointToPointConstraint
+     */
     this.pjWorld = new CANNON.Vec3();
-    this.ri = new CANNON.Vec3(); // Pivot point relative to the corresponding body (it is world oriented)
+
+    /**
+     * @property CANNON.Vec3 ri
+     * @memberof CANNON.PointToPointConstraint
+     * @brief Pivot point relative to body_i (this vector is world oriented but without offset)
+     */
+    this.ri = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Vec3 rj
+     * @memberof CANNON.PointToPointConstraint
+     */
     this.rj = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Vec3 di
+     * @memberof CANNON.PointToPointConstraint
+     * @brief Difference vector; piWorld - pjWorld
+     */
     this.di = new CANNON.Vec3(); // The diff vector
+
+    /**
+     * @property CANNON.Vec3 dj
+     * @memberof CANNON.PointToPointConstraint
+     */
     this.dj = new CANNON.Vec3();
     this.temp = new CANNON.Vec3();
 };
@@ -5176,13 +5244,6 @@ CANNON.PointToPointConstraint.prototype.update = function(){
     bi.angularVelocity.copy(neq.W2);
     bj.velocity.copy(neq.W3);
     bj.angularVelocity.copy(neq.W4);
-
-    /*
-    console.log("G1:",neq.G1.toString(),
-                "G2:",neq.G2.toString(),
-                "G3:",neq.G3.toString(),
-                "G4:",neq.G4.toString());
-    */
 
     // Mass properties
     neq.setDefaultMassProps();

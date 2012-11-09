@@ -9,7 +9,7 @@ CANNON.Broadphase = function(){
     /**
     * @property CANNON.World world
     * @brief The world to search for collisions in.
-    * @memberof CANNON.World
+    * @memberof CANNON.Broadphase
     */
     this.world = null;
 };

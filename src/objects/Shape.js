@@ -81,7 +81,8 @@ CANNON.Shape.calculateLocalAABB = function(){
 };
 
 /**
- * @enum CANNON.Shape.types
+ * @property Object types
+ * @memberof CANNON.Shape
  * @brief The available shape types.
  */
 CANNON.Shape.types = {

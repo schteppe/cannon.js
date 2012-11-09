@@ -27,10 +27,18 @@ CANNON.World = function(){
      */
     this.quatNormalizeFast = true;
 
-    /// The wall-clock time since simulation start
+    /**
+     * @property float time
+     * @brief The wall-clock time since simulation start
+     * @memberof CANNON.World
+     */
     this.time = 0.0;
 
-    /// Number of timesteps taken since start
+    /**
+     * @property int stepnumber
+     * @brief Number of timesteps taken since start
+     * @memberof CANNON.World
+     */
     this.stepnumber = 0;
 
     /// Default and last timestep sizes
@@ -38,13 +46,25 @@ CANNON.World = function(){
     this.last_dt = this.default_dt;
 
     this.nextId = 0;
+    /**
+     * @property CANNON.Vec3 gravity
+     * @memberof CANNON.World
+     */
     this.gravity = new CANNON.Vec3();
     this.broadphase = null;
+
+    /**
+     * @property Array bodies
+     * @memberof CANNON.World
+     */
     this.bodies = [];
 
     var th = this;
 
-    /// The constraint solver
+    /**
+     * @property CANNON.Solver solver
+     * @memberof CANNON.World
+     */
     this.solver = new CANNON.Solver();
 
     // User defined constraints
@@ -98,7 +118,6 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
 };
 
 /**
- * @private
  * @method _addImpulse
  * @memberof CANNON.World
  * @brief Add an impulse to the colliding bodies i and j

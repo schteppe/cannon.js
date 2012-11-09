@@ -84,7 +84,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         }
     }
 
-    /**
+    /*
      * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
      * @param CANNON.ConvexPolyhedron hull
      * @param CANNON.Vec3 axis
@@ -171,90 +171,90 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var worldEdge1 = new CANNON.Vec3();
     var Cross = new CANNON.Vec3();
     this.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
-    var dmin = Infinity;
-    var hullA = this;
-    var curPlaneTests=0;
-    var numFacesA = hullA.faces.length;
+        var dmin = Infinity;
+        var hullA = this;
+        var curPlaneTests=0;
+        var numFacesA = hullA.faces.length;
 
-    // Test normals from hullA
-    for(var i=0; i<numFacesA; i++){
-        // Get world face normal
-        hullA.faceNormals[i].copy(faceANormalWS3);
-        quatA.vmult(faceANormalWS3,faceANormalWS3);
-        //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
-        //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
-        
-        var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
-        if(d===false){
-        return false;
-        }
-        
-        if(d<dmin){
-            dmin = d;
-            faceANormalWS3.copy(target);
-        }
-    }
-
-    // Test normals from hullB
-    var numFacesB = hullB.faces.length;
-    for(var i=0;i<numFacesB;i++){
-        hullB.faceNormals[i].copy(Worldnormal1);
-        quatB.vmult(Worldnormal1,Worldnormal1);
-        //posB.vadd(Worldnormal1,Worldnormal1);
-        //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
-        curPlaneTests++;
-        var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
-        if(d===false){
-            return false;
-        }
-        
-        if(d<dmin){
-            dmin = d;
-            Worldnormal1.copy(target);
-        }
-    }
-
-    var edgeAstart,edgeAend,edgeBstart,edgeBend;
-    
-    var curEdgeEdge = 0;
-    // Test edges
-    for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
-        // Get world edge
-        hullA.uniqueEdges[e0].copy(worldEdge0);
-        quatA.vmult(worldEdge0,worldEdge0);
-        //posA.vadd(worldEdge0,worldEdge0); // needed?
-
-        //console.log("edge0:",worldEdge0.toString());
-
-        for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-            hullB.uniqueEdges[e1].copy(worldEdge1);
-            quatB.vmult(worldEdge1,worldEdge1);
-            //posB.vadd(worldEdge1,worldEdge1); // needed?
-            //console.log("edge1:",worldEdge1.toString());
+        // Test normals from hullA
+        for(var i=0; i<numFacesA; i++){
+            // Get world face normal
+            hullA.faceNormals[i].copy(faceANormalWS3);
+            quatA.vmult(faceANormalWS3,faceANormalWS3);
+            //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
+            //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
             
-            worldEdge0.cross(worldEdge1,Cross);
-    
-            curEdgeEdge++;
-            if(!Cross.almostZero()){
-                Cross.normalize();
-                var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
-                if(dist===false){
-                    return false;
-                }
+            var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
+            if(d===false){
+            return false;
+            }
+            
+            if(d<dmin){
+                dmin = d;
+                faceANormalWS3.copy(target);
+            }
+        }
+
+        // Test normals from hullB
+        var numFacesB = hullB.faces.length;
+        for(var i=0;i<numFacesB;i++){
+            hullB.faceNormals[i].copy(Worldnormal1);
+            quatB.vmult(Worldnormal1,Worldnormal1);
+            //posB.vadd(Worldnormal1,Worldnormal1);
+            //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
+            curPlaneTests++;
+            var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
+            if(d===false){
+                return false;
+            }
+            
+            if(d<dmin){
+                dmin = d;
+                Worldnormal1.copy(target);
+            }
+        }
+
+        var edgeAstart,edgeAend,edgeBstart,edgeBend;
+        
+        var curEdgeEdge = 0;
+        // Test edges
+        for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
+            // Get world edge
+            hullA.uniqueEdges[e0].copy(worldEdge0);
+            quatA.vmult(worldEdge0,worldEdge0);
+            //posA.vadd(worldEdge0,worldEdge0); // needed?
+
+            //console.log("edge0:",worldEdge0.toString());
+
+            for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
+                hullB.uniqueEdges[e1].copy(worldEdge1);
+                quatB.vmult(worldEdge1,worldEdge1);
+                //posB.vadd(worldEdge1,worldEdge1); // needed?
+                //console.log("edge1:",worldEdge1.toString());
                 
-                if(dist<dmin){
-                    dmin = dist;
-                    Cross.copy(target);
+                worldEdge0.cross(worldEdge1,Cross);
+        
+                curEdgeEdge++;
+                if(!Cross.almostZero()){
+                    Cross.normalize();
+                    var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
+                    if(dist===false){
+                        return false;
+                    }
+                    
+                    if(dist<dmin){
+                        dmin = dist;
+                        Cross.copy(target);
+                    }
                 }
             }
         }
-    }
 
-    posB.vsub(posA,deltaC);
-    if((deltaC.dot(target))>0.0)
-        target.negate(target);
-    
-    return true;
+        posB.vsub(posA,deltaC);
+        if((deltaC.dot(target))>0.0)
+            target.negate(target);
+        
+        return true;
     }
 
     /**
@@ -520,7 +520,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return outVertices;
     }
 
-    /**
+    /*
      * Whether the face is visible from the vertex
      * @param array face
      * @param CANNON.Vec3 vertex
@@ -556,7 +556,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return c;
     }
 
-    /**
+    /*
      * @brief Get face normal given 3 vertices
      * @param CANNON.Vec3 va
      * @param CANNON.Vec3 vb
@@ -582,7 +582,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return s;
     }
 
-    /**
+    /*
      * Detect whether two edges are equal.
      * Note that when constructing the convex hull, two same edges can only
      * be of the negative direction.
@@ -592,7 +592,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return ea[ 0 ] === eb[ 1 ] && ea[ 1 ] === eb[ 0 ]; 
     }
 
-    /**
+    /*
      * Create a random offset between -1e-6 and 1e-6.
      * @return float
      */

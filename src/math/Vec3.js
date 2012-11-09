@@ -334,7 +334,10 @@ CANNON.Vec3.prototype.almostEquals = function(v,precision){
 }
 
 /**
- * Check if a vector is almost zero
+ * @method almostZero
+ * @brief Check if a vector is almost zero
+ * @param float precision
+ * @memberof CANNON.Vec3
  */
 CANNON.Vec3.prototype.almostZero = function(precision){
     if(precision===undefined)

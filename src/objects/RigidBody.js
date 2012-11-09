@@ -69,8 +69,8 @@ CANNON.RigidBody = function(mass,shape,material){
      * @memberof CANNON.RigidBody
      */
     this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
-                      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
-                      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+                                      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
+                                      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
 
     /**
      * @property float angularDamping
@@ -80,13 +80,13 @@ CANNON.RigidBody = function(mass,shape,material){
 
 
     /**
-     * @property aabbmin
+     * @property CANNON.Vec3 aabbmin
      * @memberof CANNON.RigidBody
      */
     this.aabbmin = new CANNON.Vec3();
 
     /**
-     * @property aabbmax
+     * @property CANNON.Vec3 aabbmax
      * @memberof CANNON.RigidBody
      */
     this.aabbmax = new CANNON.Vec3();

@@ -47,9 +47,9 @@ CANNON.Equation = function(bi,bj){
 };
 
 /**
-* @method setDefaultMassProps
-* @memberof CANNON.Equation
-*/
+ * @method setDefaultMassProps
+ * @memberof CANNON.Equation
+ */
 CANNON.Equation.prototype.setDefaultMassProps = function(){
   var bi = this.body_i, bj = this.body_j;
     if(bi){

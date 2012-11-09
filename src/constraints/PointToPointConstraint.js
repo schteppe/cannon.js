@@ -2,6 +2,8 @@
 
 /**
  * @class CANNON.PointToPointConstraint
+ * @brief Connects two bodies at given offset points
+ * @extends CANNON.Constraint
  * @author schteppe
  * @param CANNON.Body bodyA
  * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
@@ -14,14 +16,45 @@ CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB){
     this.body_j = bodyB;
     this.pivot_i = pivotA;
     this.pivot_j = pivotB;
-    this.equations.push(new CANNON.Equation(bodyA, bodyB)/*, // Normal
-                        new CANNON.Equation(bodyA, bodyB)*/); // Angular
+    this.equations.push(new CANNON.Equation(bodyA, bodyB));
     
-    this.piWorld = new CANNON.Vec3(); // world points
+    /**
+     * @property CANNON.Vec3 piWorld
+     * @memberof CANNON.PointToPointConstraint
+     * @brief Pivot point relative to body_i in world coordinates
+     */
+    this.piWorld = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Vec3 pjWorld
+     * @memberof CANNON.PointToPointConstraint
+     */
     this.pjWorld = new CANNON.Vec3();
-    this.ri = new CANNON.Vec3(); // Pivot point relative to the corresponding body (it is world oriented)
+
+    /**
+     * @property CANNON.Vec3 ri
+     * @memberof CANNON.PointToPointConstraint
+     * @brief Pivot point relative to body_i (this vector is world oriented but without offset)
+     */
+    this.ri = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Vec3 rj
+     * @memberof CANNON.PointToPointConstraint
+     */
     this.rj = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Vec3 di
+     * @memberof CANNON.PointToPointConstraint
+     * @brief Difference vector; piWorld - pjWorld
+     */
     this.di = new CANNON.Vec3(); // The diff vector
+
+    /**
+     * @property CANNON.Vec3 dj
+     * @memberof CANNON.PointToPointConstraint
+     */
     this.dj = new CANNON.Vec3();
     this.temp = new CANNON.Vec3();
 };
@@ -81,13 +114,6 @@ CANNON.PointToPointConstraint.prototype.update = function(){
     bi.angularVelocity.copy(neq.W2);
     bj.velocity.copy(neq.W3);
     bj.angularVelocity.copy(neq.W4);
-
-    /*
-    console.log("G1:",neq.G1.toString(),
-                "G2:",neq.G2.toString(),
-                "G3:",neq.G3.toString(),
-                "G4:",neq.G4.toString());
-    */
 
     // Mass properties
     neq.setDefaultMassProps();

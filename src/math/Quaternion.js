@@ -35,7 +35,13 @@ CANNON.Quaternion = function(x,y,z,w){
 };
 
 /**
- * Set the value of the quaternion.
+ * @method set
+ * @memberof CANNON.Quaternion
+ * @brief Set the value of the quaternion.
+ * @param float x
+ * @param float y
+ * @param float z
+ * @param float w
  */
 CANNON.Quaternion.prototype.set = function(x,y,z,w){
     this.x = x;
