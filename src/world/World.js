@@ -442,7 +442,7 @@ CANNON.World.prototype.step = function(dt){
 
   // transfer old contact state data to T-1
   function collisionMatrixTick(){
-      for(var i=0; i<bodies.length; i++){
+      for(var i=0; i<N; i++){
           for(var j=0; j<i; j++){
               var currentState = collisionMatrixGet(i,j,true);
               collisionMatrixSet(i,j,currentState,false);

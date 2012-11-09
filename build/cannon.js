@@ -47,7 +47,11 @@ if(!this.Int32Array){
  * @brief Base class for broadphase implementations
  */
 CANNON.Broadphase = function(){
-    /// The world to search for collisions in.
+    /**
+    * @property CANNON.World world
+    * @brief The world to search for collisions in.
+    * @memberof CANNON.World
+    */
     this.world = null;
 };
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
@@ -187,7 +191,16 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @param CANNON.Vec3 direction
  */
 CANNON.Ray = function(origin, direction){
+    /**
+    * @property CANNON.Vec3 origin
+    * @memberof CANNON.Ray
+    */
     this.origin = origin || new CANNON.Vec3();
+
+    /**
+    * @property CANNON.Vec3 direction
+    * @memberof CANNON.Ray
+    */
     this.direction = direction || new CANNON.Vec3();
 
     var precision = 0.0001;
@@ -1375,6 +1388,7 @@ CANNON.Shape.types = {
  * @class CANNON.Body
  * @brief Base class for all body types.
  * @param string type
+ * @extends CANNON.EventTarget
  */
 CANNON.Body = function(type){
 
@@ -1929,7 +1943,9 @@ CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
- * @brief An infinite plane, facing in the Z direction.
+ * @brief A plane, facing in the Z direction. The plane has its surface at z=0 and
+ * everything below z=0 is assumed to be solid plane. To make the plane face in some other
+ * direction than z, you must put it inside a RigidBody and rotate that body. See the demos.
  * @author schteppe
  */
 CANNON.Plane = function(){
@@ -3798,7 +3814,7 @@ CANNON.World.prototype.step = function(dt){
 
   // transfer old contact state data to T-1
   function collisionMatrixTick(){
-      for(var i=0; i<bodies.length; i++){
+      for(var i=0; i<N; i++){
           for(var j=0; j<i; j++){
               var currentState = collisionMatrixGet(i,j,true);
               collisionMatrixSet(i,j,currentState,false);
@@ -4690,7 +4706,7 @@ CANNON.ContactGenerator = function(){
                     r.ri.set(0,0,0); // Center of particle
 
                     // Get particle position projected on plane
-                    var projected = new CANNON.Vec3();
+                    var projected = new CANNON.Vec3(); // todo: cache
                     normal.mult(normal.dot(particle.position),projected);
                     particle.position.vsub(projected,projected);
                     //projected.vadd(other.position,projected);
@@ -4753,7 +4769,8 @@ CANNON.ContactGenerator = function(){
 };/*global CANNON:true */
 
 /**
- * Constraint base class
+ * @class CANNON.Constraint
+ * @brief Constraint base class
  * @author schteppe
  */
 CANNON.Constraint = function(){
@@ -4761,6 +4778,7 @@ CANNON.Constraint = function(){
   /**
    * @property array equations
    * @brief A number of CANNON.Equation's that belongs to this Constraint
+   * @memberof CANNON.Constraint
    */
   this.equations = [];
   this.id = -1;
@@ -4768,18 +4786,22 @@ CANNON.Constraint = function(){
 CANNON.Constraint.prototype.constructor = CANNON.Constraint;
 
 /**
+ * @method update
+ * @memberof CANNON.Constraint
  * @brief Updates the internal numbers, calculates the Jacobian etc.
  */
 CANNON.Constraint.prototype.update = function(){
     throw "update() not implemented in this Constraint subclass!";
 };
 /**
- * Contact constraint class
+ * @class CANNON.ContactConstraint
+ * @brief Contact constraint class
  * @author schteppe
  * @param CANNON.RigidBody bodyA
  * @param CANNON.RigidBody bodyB
  * @param float friction
- * @todo test
+ * @extends CANNON.Constraint
+ * @todo integrate with the World class
  */
 CANNON.ContactConstraint = function(bodyA,bodyB,slipForce){
     CANNON.Constraint.call(this);
@@ -4939,12 +4961,12 @@ CANNON.ContactConstraint.prototype.update = function(){
     }
 };
 /**
+ * @class CANNON.DistanceConstraint
  * @brief Distance constraint class
  * @author schteppe
  * @param CANNON.Body bodyA
  * @param CANNON.Body bodyB Could optionally be a CANNON.Vec3 to constrain a body to a static point in space
  * @param float distance
- * @todo test
  */
  CANNON.DistanceConstraint = function(bodyA,bodyB,distance){
     CANNON.Constraint.call(this);
@@ -4987,10 +5009,9 @@ CANNON.DistanceConstraint.prototype.setMaxForce = function(f){
     this.equations[0].lambdamax = Math.abs(f);
     this.equations[0].lambdamin = -this.equations[0].lambdamax;
 };/**
- * Equation class
+ * @class CANNON.Equation
  * @author schteppe
  * @brief Something for the solver to chew on. Its mostly a holder of vectors
- * @todo try with the solver
  * @param CANNON.Body bi Could optionally be null
  * @param CANNON.Body bj Could optionally be null
  */
@@ -5035,6 +5056,10 @@ CANNON.Equation = function(bi,bj){
     this.body_j = bj;
 };
 
+/**
+* @method setDefaultMassProps
+* @memberof CANNON.Equation
+*/
 CANNON.Equation.prototype.setDefaultMassProps = function(){
   var bi = this.body_i, bj = this.body_j;
     if(bi){
@@ -5053,6 +5078,10 @@ CANNON.Equation.prototype.setDefaultMassProps = function(){
     }
 };
 
+/**
+* @method setDefaultForce
+* @memberof CANNON.Equation
+*/
 CANNON.Equation.prototype.setDefaultForce = function(){
     var bi = this.body_i, bj = this.body_j;
     //console.log("motionstate",bi.motionstate,bi.force.toString(),bj?bj.force.toString() : "");
@@ -5067,6 +5096,7 @@ CANNON.Equation.prototype.setDefaultForce = function(){
 };/*global CANNON:true */
 
 /**
+ * @class CANNON.PointToPointConstraint
  * @author schteppe
  * @param CANNON.Body bodyA
  * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.

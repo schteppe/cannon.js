@@ -1,8 +1,7 @@
 /**
- * Equation class
+ * @class CANNON.Equation
  * @author schteppe
  * @brief Something for the solver to chew on. Its mostly a holder of vectors
- * @todo try with the solver
  * @param CANNON.Body bi Could optionally be null
  * @param CANNON.Body bj Could optionally be null
  */
@@ -47,6 +46,10 @@ CANNON.Equation = function(bi,bj){
     this.body_j = bj;
 };
 
+/**
+* @method setDefaultMassProps
+* @memberof CANNON.Equation
+*/
 CANNON.Equation.prototype.setDefaultMassProps = function(){
   var bi = this.body_i, bj = this.body_j;
     if(bi){
@@ -65,6 +68,10 @@ CANNON.Equation.prototype.setDefaultMassProps = function(){
     }
 };
 
+/**
+* @method setDefaultForce
+* @memberof CANNON.Equation
+*/
 CANNON.Equation.prototype.setDefaultForce = function(){
     var bi = this.body_i, bj = this.body_j;
     //console.log("motionstate",bi.motionstate,bi.force.toString(),bj?bj.force.toString() : "");

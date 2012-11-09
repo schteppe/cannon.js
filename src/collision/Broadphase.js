@@ -6,7 +6,11 @@
  * @brief Base class for broadphase implementations
  */
 CANNON.Broadphase = function(){
-    /// The world to search for collisions in.
+    /**
+    * @property CANNON.World world
+    * @brief The world to search for collisions in.
+    * @memberof CANNON.World
+    */
     this.world = null;
 };
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;

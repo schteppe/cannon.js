@@ -8,7 +8,16 @@
  * @param CANNON.Vec3 direction
  */
 CANNON.Ray = function(origin, direction){
+    /**
+    * @property CANNON.Vec3 origin
+    * @memberof CANNON.Ray
+    */
     this.origin = origin || new CANNON.Vec3();
+
+    /**
+    * @property CANNON.Vec3 direction
+    * @memberof CANNON.Ray
+    */
     this.direction = direction || new CANNON.Vec3();
 
     var precision = 0.0001;

@@ -3,6 +3,7 @@
 /**
  * @class CANNON.Demo
  * @brief Demo framework class. If you want to learn how to connect Cannon.js with Three.js, please look at the examples/ instead.
+ * @param Object options
  */
  CANNON.Demo = function(options){
 

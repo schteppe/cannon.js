@@ -1,10 +1,10 @@
 /**
+ * @class CANNON.DistanceConstraint
  * @brief Distance constraint class
  * @author schteppe
  * @param CANNON.Body bodyA
  * @param CANNON.Body bodyB Could optionally be a CANNON.Vec3 to constrain a body to a static point in space
  * @param float distance
- * @todo test
  */
  CANNON.DistanceConstraint = function(bodyA,bodyB,distance){
     CANNON.Constraint.call(this);

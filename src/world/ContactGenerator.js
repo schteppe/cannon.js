@@ -463,7 +463,7 @@ CANNON.ContactGenerator = function(){
                     r.ri.set(0,0,0); // Center of particle
 
                     // Get particle position projected on plane
-                    var projected = new CANNON.Vec3();
+                    var projected = new CANNON.Vec3(); // todo: cache
                     normal.mult(normal.dot(particle.position),projected);
                     particle.position.vsub(projected,projected);
                     //projected.vadd(other.position,projected);

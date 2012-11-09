@@ -4,6 +4,7 @@
  * @class CANNON.Body
  * @brief Base class for all body types.
  * @param string type
+ * @extends CANNON.EventTarget
  */
 CANNON.Body = function(type){
 

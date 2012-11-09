@@ -1,10 +1,12 @@
 /**
- * Contact constraint class
+ * @class CANNON.ContactConstraint
+ * @brief Contact constraint class
  * @author schteppe
  * @param CANNON.RigidBody bodyA
  * @param CANNON.RigidBody bodyB
  * @param float friction
- * @todo test
+ * @extends CANNON.Constraint
+ * @todo integrate with the World class
  */
 CANNON.ContactConstraint = function(bodyA,bodyB,slipForce){
     CANNON.Constraint.call(this);
