@@ -96,6 +96,13 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
                     if(type & BOX_SPHERE_COMPOUND_CONVEX){
                         // todo: particle vs box,sphere,compound,convex
+                        if(type === types.SPHERE){
+                            particle.position.vsub(other.position,relpos);
+                            if(Math.pow(otherShape.radius,2) >= relpos.norm2()){
+                                pairs1.push(particle);
+                                pairs2.push(other);
+                            }
+                        }
                     } else if(type & types.PLANE){
                         // particle/plane
                         var plane = other;

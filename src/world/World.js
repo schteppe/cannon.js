@@ -543,7 +543,7 @@ CANNON.World.prototype.step = function(dt){
              bj.position.y + c.rj.y - bi.position.y - c.ri.y,
              bj.position.z + c.rj.z - bi.position.z - c.ri.z);
     var g = gvec.dot(c.ni); // Gap, negative if penetration
-    
+
     // Action if penetration
     if(g<0.0){
         // Now we know that i and j are in contact. Set collision matrix state

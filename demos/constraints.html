@@ -16,6 +16,46 @@
 
       var demo = new CANNON.Demo({paused:false});
 
+
+
+
+      // Particle cloth on sphere
+      demo.addScene("cloth on sphere",function(){
+          var world = setupWorld(demo);
+          world.solver.setSpookParams(1000,2);
+          world.solver.iterations = 20;
+          var dist = 0.2;
+          var mass = 0.5;
+          var Nrows = 15, Ncols = 15;
+          var bodies = {}; // bodies["i j"] => particle
+          for(var i=0; i<Ncols; i++){
+            for(var j=0; j<Nrows; j++){
+              // Create a new body
+              var body = new CANNON.Particle(mass);
+              body.position.set((i-Ncols*0.5)*dist,(j-Nrows*0.5)*dist,5);
+              bodies[i+" "+j] = body;
+              world.add(body);
+              demo.addVisual(body);
+            }
+          }
+          function connect(i1,j1,i2,j2){
+              world.addConstraint(new CANNON.DistanceConstraint(bodies[i1+" "+j1],bodies[i2+" "+j2],dist));
+          }
+          for(var i=0; i<Ncols; i++){
+            for(var j=0; j<Nrows; j++){
+              if(i<Ncols-1) connect(i,j,i+1,j);
+              if(j<Nrows-1) connect(i,j,i,j+1);
+            }
+          }
+
+          var sphere = new CANNON.Sphere(1.5);
+          var body = new CANNON.RigidBody(0,sphere);
+          body.position.set(0,0,3.5);
+          world.add(body);
+          demo.addVisual(body);
+        });
+
+
       demo.addScene("links",function(){
             var world = setupWorld(demo);
             world.gravity.set(0,-5,-20);
@@ -77,6 +117,7 @@
           var size = 0.5;
           var dist = size*2+0.12;
           var world = setupWorld(demo);
+          world.solver.setSpookParams(1000,2);
           var sphereShape = new CANNON.Sphere(size);
           var mass = 1;
           var lastBody = null;

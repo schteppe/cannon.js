@@ -165,6 +165,13 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
 
                     if(type & BOX_SPHERE_COMPOUND_CONVEX){
                         // todo: particle vs box,sphere,compound,convex
+                        if(type === types.SPHERE){
+                            particle.position.vsub(other.position,relpos);
+                            if(Math.pow(otherShape.radius,2) >= relpos.norm2()){
+                                pairs1.push(particle);
+                                pairs2.push(other);
+                            }
+                        }
                     } else if(type & types.PLANE){
                         // particle/plane
                         var plane = other;
@@ -3931,7 +3938,7 @@ CANNON.World.prototype.step = function(dt){
              bj.position.y + c.rj.y - bi.position.y - c.ri.y,
              bj.position.z + c.rj.z - bi.position.z - c.ri.z);
     var g = gvec.dot(c.ni); // Gap, negative if penetration
-    
+
     // Action if penetration
     if(g<0.0){
         // Now we know that i and j are in contact. Set collision matrix state
@@ -4777,7 +4784,23 @@ CANNON.ContactGenerator = function(){
 
                     // rj is now the projected world position minus plane position
                     projected.copy(r.rj);
+                    result.push(r);
+                }
+            } else if(type == CANNON.Shape.types.SPHERE){ // Particle vs sphere
 
+                // The normal is the unit vector from sphere center to particle center
+                var normal = new CANNON.Vec3(0,0,1); // todo: cache
+                particle.position.vsub(other.position,normal);
+                var lengthSquared = normal.norm2();
+
+                if(lengthSquared <= Math.pow(otherShape.radius,2)){
+                    var r = makeResult(particle,other);
+                    normal.normalize();
+                    normal.copy(r.rj);
+                    r.rj.mult(otherShape.radius,r.rj);
+                    normal.copy( r.ni ); // Contact normal
+                    r.ni.negate(r.ni);
+                    r.ri.set(0,0,0); // Center of particle
                     result.push(r);
                 }
             }

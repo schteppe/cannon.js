@@ -470,7 +470,23 @@ CANNON.ContactGenerator = function(){
 
                     // rj is now the projected world position minus plane position
                     projected.copy(r.rj);
+                    result.push(r);
+                }
+            } else if(type == CANNON.Shape.types.SPHERE){ // Particle vs sphere
 
+                // The normal is the unit vector from sphere center to particle center
+                var normal = new CANNON.Vec3(0,0,1); // todo: cache
+                particle.position.vsub(other.position,normal);
+                var lengthSquared = normal.norm2();
+
+                if(lengthSquared <= Math.pow(otherShape.radius,2)){
+                    var r = makeResult(particle,other);
+                    normal.normalize();
+                    normal.copy(r.rj);
+                    r.rj.mult(otherShape.radius,r.rj);
+                    normal.copy( r.ni ); // Contact normal
+                    r.ni.negate(r.ni);
+                    r.ri.set(0,0,0); // Center of particle
                     result.push(r);
                 }
             }
