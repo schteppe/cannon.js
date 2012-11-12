@@ -3909,12 +3909,10 @@ CANNON.World.prototype.step = function(dt){
     var c = contacts[k];
 
     // Get current collision indeces
-    var bi = c.bi,
-      bj = c.bj;
+    var bi=c.bi, bj=c.bj;
 
     // Resolve indeces
-    var i = this._id2index(bi.id),
-      j = this._id2index(bj.id);
+    var i = bodies.indexOf(bi), j = bodies.indexOf(bj);
     
     // Check last step stats
     var lastCollisionState = this.collisionMatrixGet(i,j,false);
@@ -4242,7 +4240,6 @@ CANNON.World.prototype.step = function(dt){
       if(b.tau) b.tau.set(0,0,0);
   }
   if(doProfiling) profile.integrate = now() - profilingStart;
-
 
   // Update world time
   world.time += dt;
