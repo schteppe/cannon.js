@@ -3480,6 +3480,17 @@ CANNON.World = function(){
         step_w:new CANNON.Quaternion(),
         step_wq:new CANNON.Quaternion()
     };
+
+    this.doProfiling = true;
+
+    // Profiling data in milliseconds
+    this.profile = {
+        broadphase:0,
+        integrate:0,
+        nearphase:0,
+        solve:0,
+        makeContactConstraints:0,
+    };
 };
 
 /**
@@ -3628,10 +3639,54 @@ CANNON.World.prototype.clearCollisionState = function(body){
     var i = body.id;
     for(var idx=0; idx<n; idx++){
         var j = idx;
-        if(i>j) this.collision_matrix[j+i*n] = 0;
-        else    this.collision_matrix[i+j*n] = 0;
+        if(i>j) cm[j+i*n] = 0;
+        else    cm[i+j*n] = 0;
     }
 };
+
+
+
+// Keep track of contacts for current and previous timestep
+// 0: No contact between i and j
+// 1: Contact
+CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
+    var N = this.bodies.length;
+    if(typeof(current)=="undefined") current = true;
+    // i == column
+    // j == row
+    if((current && i<j) || // Current uses upper part of the matrix
+       (!current && i>j)){ // Previous uses lower part of the matrix
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+    return this.collision_matrix[i+j*N];
+}
+
+CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
+    var N = this.bodies.length;
+    if(typeof(current)==="undefined") current = true;
+    if( (current && i<j) || // Current uses upper part of the matrix
+        (!current && i>j)){ // Previous uses lower part of the matrix
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+    this.collision_matrix[i+j*N] = value;
+}
+
+// transfer old contact state data to T-1
+CANNON.World.prototype.collisionMatrixTick = function(){
+    var N = this.bodies.length
+    for(var i=0; i<N; i++){
+        for(var j=0; j<i; j++){
+            var currentState = this.collisionMatrixGet(i,j,true);
+            this.collisionMatrixSet(i,j,currentState,false);
+            this.collisionMatrixSet(i,j,0,true);
+        }
+    }
+}
+
 
 /**
  * @method add
@@ -3773,6 +3828,10 @@ CANNON.World.prototype._id2index = function(id){
   return -1;
 };
 
+CANNON.World.prototype._now = function(){
+    return window.performance.webkitNow();
+}
+
 /**
  * @method step
  * @memberof CANNON.World
@@ -3780,13 +3839,20 @@ CANNON.World.prototype._id2index = function(id){
  * @param float dt
  */
 CANNON.World.prototype.step = function(dt){
-  var world = this,
-  that = this,
-  N = this.numObjects(),
-  bodies = this.bodies,
-  solver = this.solver,
-  gravity = this.gravity,
-  DYNAMIC = CANNON.Body.DYNAMIC;
+    var world = this,
+        that = this,
+        N = this.numObjects(),
+        bodies = this.bodies,
+        solver = this.solver,
+        gravity = this.gravity,
+        doProfiling = this.doProfiling,
+        profile = this.profile,
+        DYNAMIC = CANNON.Body.DYNAMIC,
+        now = this._now,
+        profilingStart,
+        cm = this.collision_matrix;
+
+  if(doProfiling) profilingStart = now();
 
   if(dt==undefined){
     if(this.last_dt)
@@ -3810,60 +3876,19 @@ CANNON.World.prototype.step = function(dt){
   }
 
   // 1. Collision detection
+  if(doProfiling) profilingStart = now();
   var pairs = this.broadphase.collisionPairs(this);
   var p1 = pairs[0];
   var p2 = pairs[1];
+  if(doProfiling) profile.broadphase = now() - profilingStart;
 
-  // Get references to things that are accessed often. Will save some lookup time.
-  var SPHERE = CANNON.Shape.types.SPHERE;
-  var PLANE = CANNON.Shape.types.PLANE;
-  var BOX = CANNON.Shape.types.BOX;
-  var COMPOUND = CANNON.Shape.types.COMPOUND;
-
-  // Keep track of contacts for current and previous timestep
-  // 0: No contact between i and j
-  // 1: Contact
-  function collisionMatrixGet(i,j,current){
-      if(typeof(current)=="undefined") current = true;
-      // i == column
-      // j == row
-      if((current && i<j) || // Current uses upper part of the matrix
-         (!current && i>j)){ // Previous uses lower part of the matrix
-          var temp = j;
-          j = i;
-          i = temp;
-      }
-      return that.collision_matrix[i+j*N];
-  }
-    
-  function collisionMatrixSet(i,j,value,current){
-      if(typeof(current)=="undefined") current = true;
-      if((current && i<j) || // Current uses upper part of the matrix
-         (!current && i>j)){ // Previous uses lower part of the matrix
-          var temp = j;
-          j = i;
-          i = temp;
-      }
-      that.collision_matrix[i+j*N] = parseInt(value);
-  }
-
-  // transfer old contact state data to T-1
-  function collisionMatrixTick(){
-      for(var i=0; i<N; i++){
-          for(var j=0; j<i; j++){
-              var currentState = collisionMatrixGet(i,j,true);
-              collisionMatrixSet(i,j,currentState,false);
-              collisionMatrixSet(i,j,0,true);
-          }
-      }
-  }
-
-  collisionMatrixTick();
+  this.collisionMatrixTick();
 
   // Reset contact solver
   solver.reset(N);
 
   // Generate contacts
+  if(doProfiling) profilingStart = now();
   var oldcontacts = this.contacts;
   this.contacts = [];
   this.contactgen.getContacts(p1,p2,
@@ -3871,8 +3896,10 @@ CANNON.World.prototype.step = function(dt){
                               this.contacts,
                               oldcontacts // To be reused
                               );
+  if(doProfiling) profile.nearphase = now() - profilingStart;
 
   // Loop over all collisions
+  if(doProfiling) profilingStart = now();
   var temp = this.temp;
   var contacts = this.contacts;
   var ncontacts = contacts.length;
@@ -3890,12 +3917,11 @@ CANNON.World.prototype.step = function(dt){
       j = this._id2index(bj.id);
     
     // Check last step stats
-    var lastCollisionState = collisionMatrixGet(i,j,false);
+    var lastCollisionState = this.collisionMatrixGet(i,j,false);
 
     // Get collision properties
     var mu = 0.3, e = 0.2;
-    var cm = this.getContactMaterial(bi.material,
-                     bj.material);
+    var cm = this.getContactMaterial(bi.material,bj.material);
     if(cm){
       mu = cm.friction;
       e = cm.restitution;
@@ -3911,9 +3937,9 @@ CANNON.World.prototype.step = function(dt){
     // Action if penetration
     if(g<0.0){
         // Now we know that i and j are in contact. Set collision matrix state
-        collisionMatrixSet(i,j,1,true);
+        this.collisionMatrixSet(i,j,1,true);
         
-        if(collisionMatrixGet(i,j,true)!=collisionMatrixGet(i,j,false)){
+        if(this.collisionMatrixGet(i,j,true)!=this.collisionMatrixGet(i,j,false)){
             bi.dispatchEvent({type:"collide", "with":bj});
             bj.dispatchEvent({type:"collide", "with":bi});
             bi.wakeUp();
@@ -4084,6 +4110,7 @@ CANNON.World.prototype.step = function(dt){
       }
     }
   }
+  if(doProfiling) profile.makeContactConstraints = now() - profilingStart;
 
   // Add user-defined constraints
   var constraints = this.constraints;
@@ -4100,6 +4127,8 @@ CANNON.World.prototype.step = function(dt){
   }
 
   var bi;
+
+  if(doProfiling) profilingStart = now();
   if(solver.n){
    
       solver.h = dt;
@@ -4129,6 +4158,7 @@ CANNON.World.prototype.step = function(dt){
           }
       }
   }
+  if(doProfiling) profile.solve = now() - profilingStart;
 
   // Apply damping
   for(var i=0; i<N; i++){
@@ -4147,7 +4177,7 @@ CANNON.World.prototype.step = function(dt){
   that.dispatchEvent({type:"preStep"});
 
   // Invoke pre-step callbacks
-  for(var i in bodies){
+  for(var i=0; i<N; i++){
     var bi = bodies[i];
     bi.preStep && bi.preStep.call(bi);
   }
@@ -4155,6 +4185,7 @@ CANNON.World.prototype.step = function(dt){
   // Leap frog
   // vnew = v + h*f/m
   // xnew = x + h*vnew
+  if(doProfiling) profilingStart = now();
   var q = temp.step_q; 
   var w = temp.step_w;
   var wq = temp.step_wq;
@@ -4210,6 +4241,8 @@ CANNON.World.prototype.step = function(dt){
       b.force.set(0,0,0);
       if(b.tau) b.tau.set(0,0,0);
   }
+  if(doProfiling) profile.integrate = now() - profilingStart;
+
 
   // Update world time
   world.time += dt;
