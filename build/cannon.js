@@ -79,7 +79,8 @@ CANNON.Broadphase.prototype.collisionPairs = function(world){
     this.temp = {
         r: new CANNON.Vec3(),
         normal: new CANNON.Vec3(),
-        quat: new CANNON.Quaternion()
+        quat: new CANNON.Quaternion(),
+        relpos : new CANNON.Vec3(),
     };
 };
 CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
@@ -107,7 +108,8 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
     var temp = this.temp;
     var r = temp.r,
     normal = temp.normal,
-    quat = temp.quat;
+    quat = temp.quat,
+    relpos = temp.relpos;
 
     // Naive N^2 ftw!
     for(var i=0; i<n; i++){
@@ -166,8 +168,6 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                     } else if(type & types.PLANE){
                         // particle/plane
                         var plane = other;
-                        var relpos = new CANNON.Vec3(); // todo: cache
-                        var normal = new CANNON.Vec3(0,0,1); // Todo: cache
                         plane.quaternion.vmult(normal,normal);
                         particle.position.vsub(plane.position,relpos);
                         if(normal.dot(relpos)<=0.0){
@@ -3952,7 +3952,6 @@ CANNON.World.prototype.step = function(dt){
       var n = c.ni;
       var tangents = [temp.t1, temp.t2];
       n.tangents(tangents[0],tangents[1]);
-
 
       var v_contact_i;
       if(wi) v_contact_i = vi.vadd(wi.cross(c.ri));
