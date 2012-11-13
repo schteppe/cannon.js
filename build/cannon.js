@@ -418,6 +418,69 @@ CANNON.Ray.prototype.constructor = CANNON.Ray;
 /*global CANNON:true */
 
 /**
+ * @class CANNON.SAPBroadphase
+ * @extends CANNON.Broadphase
+ */
+CANNON.SAPBroadphase = function(world){
+    CANNON.Broadphase.apply(this);
+    var xlist=[], ylist=[], zlist=[];
+    for(var i=0; i<world.bodies.length; i++){
+	xlist.push(world.bodies[i]);
+	ylist.push(world.bodies[i]);
+	zlist.push(world.bodies[i]);
+    }
+    // todo listener for adding bodies from world
+
+    // Uses single axis sweep and prune broadphase collision detection.
+    this.collisionPairs = function(){
+	var p1=[], p2=[];
+	var swapOrder = false;
+
+	// Sort list
+	xlist.sort(function(b1,b2){
+	    return b1.aabbmin.x - b2.aabbmin.x;
+	});
+
+	var active = [];
+	doAxis(xlist,'x',active);
+	
+	return [p1,p2];
+    };
+	
+    function doAxis(axisList,axisName,activeList){
+	for(var j=0; j<axisList.length; j++){
+	    var body = axisList[j];
+	    var min = body.aabbmin[axisName];
+	    var n = activeList.length;
+	    var thisInactive = false; // todo  // body.IsStaticOrInactive;
+	    
+	    for(var i=0; i!=n; ){
+		var ac = activeList[i];
+		if(ac.aabbmax[axisName] < min){
+		    // Remove
+		    n--;
+		    activeList.splice(i,1);
+		} else {
+		    if (!(thisInactive && ac.IsStaticOrInactive)){
+			if(swapOrder){
+			    overlaps.push(j+" "+i);
+			} else {
+			    overlaps.push(i+" "+j);
+			}
+			swapOrder = !swapOrder;
+		    }
+		    i++;
+		}
+	    }
+	    activeList.push(body);
+	}
+    }
+};
+CANNON.SAPBroadphase.prototype = new CANNON.Broadphase();
+CANNON.SAPBroadphase.prototype.constructor = CANNON.SAPBroadphase;
+/*global CANNON:true */
+
+/**
  * @class CANNON.Mat3
  * @brief A 3x3 matrix.
  * @param array elements Array of nine elements. Optional.
@@ -3488,7 +3551,7 @@ CANNON.World = function(){
         step_wq:new CANNON.Quaternion()
     };
 
-    this.doProfiling = true;
+    this.doProfiling = false;
 
     // Profiling data in milliseconds
     this.profile = {
@@ -3836,7 +3899,10 @@ CANNON.World.prototype._id2index = function(id){
 };
 
 CANNON.World.prototype._now = function(){
-    return window.performance.webkitNow();
+    if(window.performance.webkitNow)
+        return window.performance.webkitNow();
+    else
+        return Date.now();
 }
 
 /**
@@ -5171,7 +5237,6 @@ CANNON.Equation.prototype.setDefaultMassProps = function(){
 */
 CANNON.Equation.prototype.setDefaultForce = function(){
     var bi = this.body_i, bj = this.body_j;
-    //console.log("motionstate",bi.motionstate,bi.force.toString(),bj?bj.force.toString() : "");
     if(bi){
         bi.force.copy(this.f1);
         if(bi.tau) bi.tau.copy(this.f2);
@@ -5280,7 +5345,6 @@ CANNON.PointToPointConstraint.prototype.update = function(){
     pjWorld.vsub(piWorld,dj);
 
     var diUnit = di.unit();
-    //console.log(diUnit.toString());
     diUnit.negate(neq.G1);
     diUnit.copy(neq.G3);
     ri.cross(diUnit,neq.G2);

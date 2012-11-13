@@ -93,7 +93,7 @@ CANNON.World = function(){
         step_wq:new CANNON.Quaternion()
     };
 
-    this.doProfiling = true;
+    this.doProfiling = false;
 
     // Profiling data in milliseconds
     this.profile = {
@@ -441,7 +441,10 @@ CANNON.World.prototype._id2index = function(id){
 };
 
 CANNON.World.prototype._now = function(){
-    return window.performance.webkitNow();
+    if(window.performance.webkitNow)
+        return window.performance.webkitNow();
+    else
+        return Date.now();
 }
 
 /**
