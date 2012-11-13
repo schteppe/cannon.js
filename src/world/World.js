@@ -431,15 +431,6 @@ CANNON.World.prototype.addContactMaterial = function(cmat) {
   this.mats2cmat[i+this.materials.length*j] = cmat.id; // index of the contact material
 };
 
-// Get the index given body id. Returns -1 on fail
-CANNON.World.prototype._id2index = function(id){
-  // ugly but works
-  for(var j=0; j<this.bodies.length; j++)
-    if(this.bodies[j].id === id)
-      return j;
-  return -1;
-};
-
 CANNON.World.prototype._now = function(){
     if(window.performance.webkitNow)
         return window.performance.webkitNow();
