@@ -11,6 +11,11 @@ CANNON.Mat3 = function(elements){
     * @property Float32Array elements
     * @memberof CANNON.Mat3
     * @brief A vector of length 9, containing all matrix elements
+    * The values in the array are stored in the following order:
+    * | 0 1 2 |
+    * | 3 4 5 |
+    * | 6 7 8 |
+    * 
     */
     if(elements){
         this.elements = new Float32Array(elements);
@@ -48,15 +53,14 @@ CANNON.Mat3.prototype.identity = function(){
  * @param CANNON.Vec3 target Optional, target to save the result in.
  */
 CANNON.Mat3.prototype.vmult = function(v,target){
-    if(target===undefined){
-        target = new CANNON.Vec3();
-    }
+    target = target || new CANNON.Vec3();
 
     var vec = [v.x, v.y, v.z];
     var targetvec = [0, 0, 0];
     for(var i=0; i<3; i++){
         for(var j=0; j<3; j++){
-            targetvec[i] += this.elements[i+3*j]*vec[i];
+          targetvec[j] += this.elements[i+3*j]*vec[i]; // instead of  
+        //targetvec[i] += this.elements[i+3*j]*vec[i]
         }
     }
 
@@ -87,15 +91,16 @@ CANNON.Mat3.prototype.smult = function(s){
  */
 CANNON.Mat3.prototype.mmult = function(m){
     var r = new CANNON.Mat3();
-    for(var i=0; i<3; i++){
-        for(var j=0; j<3; j++){
-            var sum = 0.0;
-            for(var k=0; k<3; k++){
-                sum += this.elements[i+k] * m.elements[k+j*3];
-            }
-            r.elements[i+j*3] = sum;
-        }
+for(var i=0; i<3; i++){
+    for(var j=0; j<3; j++){
+      var sum = 0.0;
+      for(var k=0; k<3; k++){
+        sum += this.elements[i+k*3] * m.elements[k+j*3]; //instead of
+      //sum += this.elements[i+k] * m.elements[k+j*3]; 
+      }
+      r.elements[i+j*3] = sum;
     }
+  }
     return r;
 };
 
@@ -129,39 +134,32 @@ CANNON.Mat3.prototype.solve = function(b,target){
     var n = 3, k = n, np;
     var kp = 4; // num rows
     var p, els;
-    do {
-        i = k - n;
-        if (eqns[i+nc*i] === 0) {
-            for (j = i + 1; j < k; j++) {
-                if (eqns[i+nc*j] !== 0) {
-                    els = [];
-                    np = kp;
-                    do {
-                        p = kp - np;
-                        els.push(eqns[p+nc*i] + eqns[p+nc*j]);
-                    } while (--np);
-                    eqns[i+nc*0] = els[0];
-                    eqns[i+nc*1] = els[1];
-                    eqns[i+nc*2] = els[2];
-                    break;
-                }
-            }
+do {
+    i = k - n;
+    if (eqns[i+nc*i] === 0) {
+        // the pivot is null, swap lines
+      for (j = i + 1; j < k; j++) {
+        if (eqns[i+nc*j] !== 0) {
+          np = kp;
+          do {  // do ligne( i ) = ligne( i ) + ligne( k )
+            p = kp - np;
+            eqns[p+nc*i] += eqns[p+nc*j]; 
+          } while (--np);
+          break;
         }
-        if (eqns[i+nc*i] !== 0) {
-            for (j = i + 1; j < k; j++) {
-                var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
-                els = [];
-                np = kp;
-                do {
-                    p = kp - np;
-                    els.push(p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier);
-                } while (--np);
-                eqns[j+nc*0] = els[0];
-                eqns[j+nc*1] = els[1];
-                eqns[j+nc*2] = els[2];
-            }
-        }
-    } while (--n);
+      }
+    }
+    if (eqns[i+nc*i] !== 0) {
+      for (j = i + 1; j < k; j++) {
+        var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+        np = kp;
+        do {  // do ligne( k ) = ligne( k ) - multiplier * ligne( i )
+          p = kp - np;
+          eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+        } while (--np);
+      }
+    }
+  } while (--n);
 
     // Get the solution
     target.z = eqns[2*nc+3] / eqns[2*nc+2];

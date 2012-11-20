@@ -43,10 +43,11 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **Current**
- * Added ```CANNON.PointToPointConstraint```
- * Added ```CANNON.Cylinder```.
+ * Added property ```World.enableImpulses```
+ * Added ```PointToPointConstraint```
+ * Added ```Cylinder```.
  * Added method ```RigidBody.applyImpulse```
- * Added iterator method ```Box.forEachWorldCorner```
+ * Added "iterator" method ```Box.forEachWorldCorner```
  * Added "abstract method" ```Shape.calculateWorldAABB``` and implemented it in subclasses.
  * Removed ```Plane.normal``` in favor of ```RigidBody.quaternion```. One way to rotate a plane is enough.
 

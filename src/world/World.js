@@ -12,6 +12,13 @@ CANNON.World = function(){
     this.allowSleep = false;
 
     /**
+     * @property bool enableImpulses
+     * @brief Whether to enable impulses or not. This is a quite unstable feature for now.
+     * @memberof CANNON.World
+     */
+    this.enableImpulses = false;
+
+    /**
      * @property int quatNormalizeSkip
      * @brief How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.
      * @memberof CANNON.World
@@ -142,35 +149,40 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
  * @param float mu The contact friction
  * @todo Use it in the code!
  */
-CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
-
+CANNON.World.prototype.addCollisionImpulse = function(c,e,mu){
+    var ri = c.ri,
+        rj = c.rj,
+        ni = c.ni,
+        bi = c.bi
+        bj = c.bj;
+    var vi = bi.velocity,
+        vj = bj.velocity,
+        ui = vj.vsub(vi);
     var ri_star = ri.crossmat();
     var rj_star = rj.crossmat();
 
     // Inverse inertia matrices
-    var ii = this.inertiax[i]>0 ? 1.0/this.inertiax[i] : 0.0;
+    var ii = bi.inertia && bi.inertia.x>0 ? 1.0/bi.inertia.x : 0.0;
     var Iinv_i = new CANNON.Mat3([ii,0,0,
                                   0,ii,0,
                                   0,0,ii]);
-    ii = this.inertiax[j]>0 ? 1.0/this.inertiax[j] : 0.0;
+    ii = bj.inertia && bj.inertia.x>0 ? 1.0/bj.inertia.x : 0.0;
     var Iinv_j = new CANNON.Mat3([ii,0,0,
                                   0,ii,0,
                                   0,0,ii]);
 
     // Collision matrix:
     // K = 1/mi + 1/mj - ri_star*I_inv_i*ri_star - rj_star*I_inv_j*rj_star;
-    var im = this.invm[i] + this.invm[j];
+    var im = bi.invMass + bj.invMass;
     var K = new CANNON.Mat3([im,0,0,
                              0,im,0,
                              0,0,im]);
     var rIr_i = ri_star.mmult(Iinv_i.mmult(ri_star));
     var rIr_j = rj_star.mmult(Iinv_j.mmult(rj_star));
 
-    /*
     // @todo add back when this works
     for(var el = 0; el<9; el++)
-    K.elements[el] -= (rIr_i.elements[el] + rIr_j.elements[el]);
-    */
+        K.elements[el] -= (rIr_i.elements[el] + rIr_j.elements[el]);
 
     // First assume stick friction
     // Final velocity if stick:
@@ -179,12 +191,10 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
     var J =  K.solve(v_f.vsub(ui));
 
     // Check if slide mode (J_t > J_n) - outside friction cone
-    var mu = 0.0; // quick fix
     if(mu>0){
         var J_n = ni.mult(J.dot(ni));
         var J_t = J.vsub(J_n);
-        if(J_t.norm() > J_n.mult(mu).norm()){
-
+        if(J_t.norm2() > J_n.mult(mu).norm2()){
             // Calculate impulse j = -(1+e)u_n / nK(n-mu*t)
             var v_tang = ui.vsub(ni.mult(ui.dot(ni)));
             var tangent = v_tang.mult(1.0/(v_tang.norm() + 0.0001));
@@ -194,40 +204,35 @@ CANNON.World.prototype._addImpulse = function(i,j,ri,rj,ui,ni,e,mu){
     }
 
     // Add to velocities
-    var imi = this.invm[i];
-    var imj = this.invm[j];
+    var imi = bi.invMass;
+    var imj = bj.invMass;
 
-    // du = uprim - u
-    //   => uprim = du + u
-    // vi = vi + J/mi
-    // vj = vj - J/mj
+    if(imi){
+        vi.x =  vi.x - J.x * imi;
+        vi.y =  vi.y - J.y * imi;
+        vi.z =  vi.z - J.z * imi;
+    }
+    if(imj) {
+        vj.x =  vj.x + J.x * imj;
+        vj.y =  vj.y + J.y * imj;
+        vj.z =  vj.z + J.z * imj;
+    }
 
-    // Convert back to non-relative velocities:
-    // u_rel = vj - vi
-    // vi = vj - u_rel
-    // vj = vi + u_rel
-
-    this.vx[i] +=  J.x * imi - (this.vx[j] - ui.x);
-    this.vy[i] +=  J.y * imi - (this.vy[j] - ui.y);
-    this.vz[i] +=  J.z * imi - (this.vz[j] - ui.z);
-    this.vx[j] -=  J.x * imj + (this.vx[i] + ui.x);
-    this.vy[j] -=  J.y * imj + (this.vy[i] + ui.y);
-    this.vz[j] -=  J.z * imj + (this.vz[i] + ui.z);
-
-    var cr = ri.cross(J);
-    var wadd = cr.mult(1.0/this.inertiax[i]);
-
-    /*
-    // Add rotational impulses
-    this.wx[i] += wadd.x;
-    this.wy[i] += wadd.y;
-    this.wz[i] += wadd.z;
-    cr = rj.cross(J);
-    wadd = cr.mult(1.0/this.inertiax[j]); // @todo fix to suit asymmetric inertia
-    this.wx[j] -= wadd.x;
-    this.wy[j] -= wadd.y;
-    this.wz[j] -= wadd.z;
-    */
+    if(bi.inertia || bj.inertia){
+        // Add rotational impulses
+        var wi = bi.angularVelocity,
+            wj = bj.angularVelocity;
+        if(bi.inertia){
+            var cr = ri.cross(J);
+            var wadd = cr.mult(bi.inertia.x ? 1.0/bi.inertia.x : 0.0);
+            wi.vsub(wadd,wi);
+        }
+        if(bj.inertia){
+            cr = rj.cross(J);
+            wadd = cr.mult(bj.inertia.x ? 1.0/bj.inertia.x : 0.0); // @todo fix to suit asymmetric inertia
+            wj.vadd(wadd,wj);
+        }
+    }
 };
 
 /**
@@ -550,172 +555,176 @@ CANNON.World.prototype.step = function(dt){
         this.collisionMatrixSet(i,j,1,true);
         
         if(this.collisionMatrixGet(i,j,true)!=this.collisionMatrixGet(i,j,false)){
+            // First contact!
             bi.dispatchEvent({type:"collide", "with":bj});
             bj.dispatchEvent({type:"collide", "with":bi});
             bi.wakeUp();
             bj.wakeUp();
+            if(this.enableImpulses)
+                this.addCollisionImpulse(c,e,mu);
         }
 
-      var vi = bi.velocity;
-      var wi = bi.angularVelocity;
-      var vj = bj.velocity;
-      var wj = bj.angularVelocity;
+          var vi = bi.velocity;
+          var wi = bi.angularVelocity;
+          var vj = bj.velocity;
+          var wj = bj.angularVelocity;
 
-      var n = c.ni;
-      var tangents = [temp.t1, temp.t2];
-      n.tangents(tangents[0],tangents[1]);
+          var n = c.ni;
+          var tangents = [temp.t1, temp.t2];
+          n.tangents(tangents[0],tangents[1]);
 
-      var v_contact_i;
-      if(wi) v_contact_i = vi.vadd(wi.cross(c.ri));
-      else   v_contact_i = vi.copy();
+          var v_contact_i;
+          if(wi) v_contact_i = vi.vadd(wi.cross(c.ri));
+          else   v_contact_i = vi.copy();
 
-      var v_contact_j;
-      if(wj) v_contact_j = vj.vadd(wj.cross(c.rj));
-      else   v_contact_j = vj.copy();
+          var v_contact_j;
+          if(wj) v_contact_j = vj.vadd(wj.cross(c.rj));
+          else   v_contact_j = vj.copy();
 
-      var u_rel = v_contact_j.vsub(v_contact_i)
-      var w_rel;
-      
-      if(wj && wi) w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
-      else if(wi)  w_rel = wi.cross(c.ri).negate();
-      else if(wj)  w_rel = wj.cross(c.rj);
+          var u_rel = v_contact_j.vsub(v_contact_i)
+          var w_rel;
+          
+          if(wj && wi) w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
+          else if(wi)  w_rel = wi.cross(c.ri).negate();
+          else if(wj)  w_rel = wj.cross(c.rj);
 
-      var u = (vj.vsub(vi)); // Contact velo
-      var uw;
-      if(wj && wi) uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
-      else if(wi)  uw = c.ri.cross(wi).negate();
-      else if(wj)  uw = (c.rj.cross(wj));
-      u.vsub(uw,u);
+          var u = (vj.vsub(vi)); // Contact velo
+          var uw;
+          if(wj && wi) uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
+          else if(wi)  uw = c.ri.cross(wi).negate();
+          else if(wj)  uw = (c.rj.cross(wj));
+          u.vsub(uw,u);
 
-    // Get mass properties
-    var iMi = bi.invMass;
-    var iMj = bj.invMass;
-    var iIxi = bi.invInertia ? bi.invInertia.x : 0.0;
-    var iIyi = bi.invInertia ? bi.invInertia.y : 0.0;
-    var iIzi = bi.invInertia ? bi.invInertia.z : 0.0;
-    var iIxj = bj.invInertia ? bj.invInertia.x : 0.0;
-    var iIyj = bj.invInertia ? bj.invInertia.y : 0.0;
-    var iIzj = bj.invInertia ? bj.invInertia.z : 0.0;
+        // Get mass properties
+        var iMi = bi.invMass;
+        var iMj = bj.invMass;
+        var iIxi = bi.invInertia ? bi.invInertia.x : 0.0;
+        var iIyi = bi.invInertia ? bi.invInertia.y : 0.0;
+        var iIzi = bi.invInertia ? bi.invInertia.z : 0.0;
+        var iIxj = bj.invInertia ? bj.invInertia.x : 0.0;
+        var iIyj = bj.invInertia ? bj.invInertia.y : 0.0;
+        var iIzj = bj.invInertia ? bj.invInertia.z : 0.0;
 
-      // Add contact constraint
-      var rixn = temp.rixn;
-      var rjxn = temp.rjxn;
-      c.ri.cross(n,rixn);
-      c.rj.cross(n,rjxn);
+          // Add contact constraint
+          var rixn = temp.rixn;
+          var rjxn = temp.rjxn;
+          c.ri.cross(n,rixn);
+          c.rj.cross(n,rjxn);
 
-      var un_rel = n.mult(u_rel.dot(n)*0.5);
-      var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
-      var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
+          var un_rel = n.mult(u_rel.dot(n)*0.5);
+          var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
+          var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
 
-      var gn = c.ni.mult(g);
+          var gn = c.ni.mult(g);
 
-    // Rotational forces
-    var tauxi, tauyi, tauzi;
-    if(bi.tau){
-        tauxi = bi.tau.x;
-        tauyi = bi.tau.y;
-        tauzi = bi.tau.z;
-    } else {
-        tauxi = 0;
-        tauyi = 0;
-        tauzi = 0;
-    }
-    var tauxj, tauyj, tauzj;
-    if(bj.tau){
-        tauxj = bj.tau.x;
-        tauyj = bj.tau.y;
-        tauzj = bj.tau.z;
-    } else {
-        tauxj = 0;
-        tauyj = 0;
-        tauzj = 0;
-    }
+        // Rotational forces
+        var tauxi, tauyi, tauzi;
+        if(bi.tau){
+            tauxi = bi.tau.x;
+            tauyi = bi.tau.y;
+            tauzi = bi.tau.z;
+        } else {
+            tauxi = 0;
+            tauyi = 0;
+            tauzi = 0;
+        }
+        var tauxj, tauyj, tauzj;
+        if(bj.tau){
+            tauxj = bj.tau.x;
+            tauyj = bj.tau.y;
+            tauzj = bj.tau.z;
+        } else {
+            tauxj = 0;
+            tauyj = 0;
+            tauzj = 0;
+        }
 
-    solver
-    .addConstraint( // Non-penetration constraint jacobian
-               [-n.x,-n.y,-n.z,
-                -rixn.x,-rixn.y,-rixn.z,
-                n.x,n.y,n.z,
-                rjxn.x,rjxn.y,rjxn.z],
-             
-               // Inverse mass matrix
-               [iMi,iMi,iMi,
-                iIxi,iIyi,iIzi,
-                iMj,iMj,iMj,
-                iIxj,iIyj,iIzj],
-             
-               // g - constraint violation / gap
-               [-gn.x,-gn.y,-gn.z,
-                0,0,0,//-gn.x,-gn.y,-gn.z,
-                gn.x,gn.y,gn.z,
-                0,0,0//gn.x,gn.y,gn.z
-                ],
-
-               [-un_rel.x,-un_rel.y,-un_rel.z,
-                0,0,0,//-u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
-                un_rel.x,un_rel.y,un_rel.z,
-                0,0,0//u_rjxn_rel.x,u_rjxn_rel.y,u_rjxn_rel.z
-                ],
-             
-               // External force - forces & torques
-               [bi.force.x,bi.force.y,bi.force.z,
-                tauxi,tauyi,tauzi,
-                -bj.force.x,-bj.force.y,-bj.force.z,
-                -tauxj,-tauyi,-tauzi],
-               0,
-               'inf',
-               i, // These are id's, not indeces...
-               j);
-
-      // Friction constraints
-      if(mu>0.0){
-        var g = gravity.norm();
-        for(var ti=0; ti<tangents.length; ti++){
-          var t = tangents[ti];
-          var rixt = c.ri.cross(t);
-          var rjxt = c.rj.cross(t);
-
-          var ut_rel = t.mult(u_rel.dot(t));
-          var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
-          var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
-          solver
-            .addConstraint( // Non-penetration constraint jacobian
-                   [-t.x,-t.y,-t.z,
-                    -rixt.x,-rixt.y,-rixt.z,
-                    t.x,t.y,t.z,
-                    rjxt.x,rjxt.y,rjxt.z
-                    ],
-                     
+        solver
+        .addConstraint( // Non-penetration constraint jacobian
+                   [-n.x,-n.y,-n.z,
+                    -rixn.x,-rixn.y,-rixn.z,
+                    n.x,n.y,n.z,
+                    rjxn.x,rjxn.y,rjxn.z],
+                 
                    // Inverse mass matrix
                    [iMi,iMi,iMi,
                     iIxi,iIyi,iIzi,
                     iMj,iMj,iMj,
                     iIxj,iIyj,iIzj],
-                     
+                 
                    // g - constraint violation / gap
-                   [0,0,0,
-                    0,0,0,
-                    0,0,0,
-                    0,0,0],
-                     
-                   [-ut_rel.x,-ut_rel.y,-ut_rel.z,
-                    0,0,0,//-u_rixt_rel.x,-u_rixt_rel.y,-u_rixt_rel.z,
-                    ut_rel.x,ut_rel.y,ut_rel.z,
-                    0,0,0//u_rjxt_rel.x,u_rjxt_rel.y,u_rjxt_rel.z
+                   [-gn.x,-gn.y,-gn.z,
+                    0,0,0,//-gn.x,-gn.y,-gn.z,
+                    gn.x,gn.y,gn.z,
+                    0,0,0//gn.x,gn.y,gn.z
                     ],
-                     
+
+                   [-un_rel.x,-un_rel.y,-un_rel.z,
+                    0,0,0,//-u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
+                    un_rel.x,un_rel.y,un_rel.z,
+                    0,0,0//u_rjxn_rel.x,u_rjxn_rel.y,u_rjxn_rel.z
+                    ],
+                 
                    // External force - forces & torques
                    [bi.force.x,bi.force.y,bi.force.z,
                     tauxi,tauyi,tauzi,
-                    bj.force.x,bj.force.y,bj.force.z,
-                    tauxj,tauyj,tauzj],
-                     
-                   -mu*100*(bi.mass+bj.mass),
-                   mu*100*(bi.mass+bj.mass),
-
-                   i, // id, not index
+                    -bj.force.x,-bj.force.y,-bj.force.z,
+                    -tauxj,-tauyi,-tauzi],
+                   0,
+                   'inf',
+                   i, // These are id's, not indeces...
                    j);
-        }
+
+          // Friction constraints
+          if(mu>0.0){
+            var g = gravity.norm();
+            for(var ti=0; ti<tangents.length; ti++){
+              var t = tangents[ti];
+              var rixt = c.ri.cross(t);
+              var rjxt = c.rj.cross(t);
+
+              var ut_rel = t.mult(u_rel.dot(t));
+              var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
+              var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
+              solver
+                .addConstraint( // Non-penetration constraint jacobian
+                       [-t.x,-t.y,-t.z,
+                        -rixt.x,-rixt.y,-rixt.z,
+                        t.x,t.y,t.z,
+                        rjxt.x,rjxt.y,rjxt.z
+                        ],
+                         
+                       // Inverse mass matrix
+                       [iMi,iMi,iMi,
+                        iIxi,iIyi,iIzi,
+                        iMj,iMj,iMj,
+                        iIxj,iIyj,iIzj],
+                         
+                       // g - constraint violation / gap
+                       [0,0,0,
+                        0,0,0,
+                        0,0,0,
+                        0,0,0],
+                         
+                       [-ut_rel.x,-ut_rel.y,-ut_rel.z,
+                        0,0,0,//-u_rixt_rel.x,-u_rixt_rel.y,-u_rixt_rel.z,
+                        ut_rel.x,ut_rel.y,ut_rel.z,
+                        0,0,0//u_rjxt_rel.x,u_rjxt_rel.y,u_rjxt_rel.z
+                        ],
+                         
+                       // External force - forces & torques
+                       [bi.force.x,bi.force.y,bi.force.z,
+                        tauxi,tauyi,tauzi,
+                        bj.force.x,bj.force.y,bj.force.z,
+                        tauxj,tauyj,tauzj],
+                         
+                       -mu*100*(bi.mass+bj.mass),
+                       mu*100*(bi.mass+bj.mass),
+
+                       i, // id, not index
+                       j);
+            }
+          
       }
     }
   }
