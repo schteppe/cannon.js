@@ -16,9 +16,6 @@
 
       var demo = new CANNON.Demo({paused:false});
 
-
-
-
       // Particle cloth on sphere
       demo.addScene("cloth on sphere",function(){
           var world = setupWorld(demo);
@@ -82,7 +79,6 @@
                     world.addConstraint(c2);
                 } else {
                     mass=0.3;
-                    console.log(boxbody.motionstate)
                 }
                 last = boxbody;
             }

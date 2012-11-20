@@ -74,7 +74,6 @@ CANNON.Equation.prototype.setDefaultMassProps = function(){
 */
 CANNON.Equation.prototype.setDefaultForce = function(){
     var bi = this.body_i, bj = this.body_j;
-    //console.log("motionstate",bi.motionstate,bi.force.toString(),bj?bj.force.toString() : "");
     if(bi){
         bi.force.copy(this.f1);
         if(bi.tau) bi.tau.copy(this.f2);

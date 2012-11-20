@@ -98,7 +98,6 @@ CANNON.PointToPointConstraint.prototype.update = function(){
     pjWorld.vsub(piWorld,dj);
 
     var diUnit = di.unit();
-    //console.log(diUnit.toString());
     diUnit.negate(neq.G1);
     diUnit.copy(neq.G3);
     ri.cross(diUnit,neq.G2);
