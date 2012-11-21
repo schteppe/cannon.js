@@ -91,16 +91,15 @@ CANNON.Mat3.prototype.smult = function(s){
  */
 CANNON.Mat3.prototype.mmult = function(m){
     var r = new CANNON.Mat3();
-for(var i=0; i<3; i++){
-    for(var j=0; j<3; j++){
-      var sum = 0.0;
-      for(var k=0; k<3; k++){
-        sum += this.elements[i+k*3] * m.elements[k+j*3]; //instead of
-      //sum += this.elements[i+k] * m.elements[k+j*3]; 
-      }
-      r.elements[i+j*3] = sum;
+    for(var i=0; i<3; i++){
+	for(var j=0; j<3; j++){
+	    var sum = 0.0;
+	    for(var k=0; k<3; k++){
+		sum += m.elements[i+k*3] * this.elements[k+j*3];
+	    }
+	    r.elements[i+j*3] = sum;
+	}
     }
-  }
     return r;
 };
 
@@ -177,17 +176,17 @@ do {
  * @method e
  * @memberof CANNON.Mat3
  * @brief Get an element in the matrix by index. Index starts at 0, not 1!!!
- * @param int i
- * @param int j
+ * @param int row 
+ * @param int column
  * @param float value Optional. If provided, the matrix element will be set to this value.
  * @return float
  */
-CANNON.Mat3.prototype.e = function(i,j,value){
+CANNON.Mat3.prototype.e = function( row , column ,value){
     if(value===undefined){
-        return this.elements[i+3*j];
+	return this.elements[column+3*row];
     } else {
-        // Set value
-        this.elements[i+3*j] = value;
+    // Set value
+	this.elements[column+3*row] = value;
     }
 };
 
@@ -219,4 +218,106 @@ CANNON.Mat3.prototype.toString = function(){
         r += this.elements[i] + sep;
     }
     return r;
+};
+
+/**
+ * @method reverse
+ * @memberof CANNON.Mat3
+ * @brief reverse the matrix
+ * @param CANNON.Mat3 target Optional. Target matrix to save in.
+ * @return CANNON.Mat3 The solution x
+ */
+CANNON.Mat3.prototype.reverse = function(target){
+
+    target = target || new CANNON.Mat3();
+
+  // Construct equations
+    var nr = 3; // num rows
+    var nc = 6; // num cols
+    var eqns = new Float32Array(nr*nc);
+    var i,j;
+    for(i=0; i<3; i++){
+	for(j=0; j<3; j++){
+	    eqns[i+nc*j] = this.elements[i+3*j];
+	}
+    }
+    eqns[3+6*0] = 1;
+    eqns[3+6*1] = 0;
+    eqns[3+6*2] = 0;
+    eqns[4+6*0] = 0;
+    eqns[4+6*1] = 1;
+    eqns[4+6*2] = 0;
+    eqns[5+6*0] = 0;
+    eqns[5+6*1] = 0;
+    eqns[5+6*2] = 1;
+  
+  // Compute right upper triangular version of the matrix - Gauss elimination
+    var n = 3, k = n, np;
+    var kp = nc; // num rows
+    var p;
+    do {
+	i = k - n;
+	if (eqns[i+nc*i] === 0) {
+	    // the pivot is null, swap lines
+	    for (j = i + 1; j < k; j++) {
+		if (eqns[i+nc*j] !== 0) {
+		    np = kp;
+		    do { // do line( i ) = line( i ) + line( k )
+			p = kp - np;
+			eqns[p+nc*i] += eqns[p+nc*j];
+		    } while (--np);
+		    break;
+		}
+	    }
+	}
+	if (eqns[i+nc*i] !== 0) {
+	    for (j = i + 1; j < k; j++) {
+		var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+		np = kp;
+		do { // do line( k ) = line( k ) - multiplier * line( i )
+		    p = kp - np;
+		    eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+		} while (--np);
+	    }
+	}
+    } while (--n);
+  
+  // eliminate the upper left triangle of the matrix
+  i = 2
+    do {
+	j = i-1;
+	do {
+	    var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+	    np = nc;
+	    do { 
+		p = nc - np;
+		eqns[p+nc*j] =  eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+	    } while (--np);
+	} while (j--);
+    } while (--i);
+  
+  // operations on the diagonal
+    i = 2;
+    do {
+	var multiplier = 1 / eqns[i+nc*i];
+	np = nc;
+	do { 
+	    p = nc - np;
+	    eqns[p+nc*i] = eqns[p+nc*i] * multiplier ;
+	} while (--np);
+    } while (i--);
+  
+  
+    i = 2;
+    do {
+	j = 2;
+	do {
+	    p = eqns[nr+j+nc*i];
+	    if( isNaN( p ) || p ===Infinity )
+		throw "Could not reverse! A=["+this.toString()+"]";
+	    target.e( i , j , p );
+	} while (j--);
+    } while (i--);
+    
+    return target;
 };
