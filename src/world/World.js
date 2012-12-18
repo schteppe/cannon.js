@@ -246,66 +246,6 @@ CANNON.World.prototype.numObjects = function(){
 };
 
 /**
- * @method clearCollisionState
- * @memberof CANNON.World
- * @brief Clear the contact state for a body.
- * @param CANNON.Body body
- */
-CANNON.World.prototype.clearCollisionState = function(body){
-    var n = this.numObjects();
-    var i = body.id;
-    for(var idx=0; idx<n; idx++){
-        var j = idx;
-        if(i>j) cm[j+i*n] = 0;
-        else    cm[i+j*n] = 0;
-    }
-};
-
-
-
-// Keep track of contacts for current and previous timestep
-// 0: No contact between i and j
-// 1: Contact
-CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
-    var N = this.bodies.length;
-    if(typeof(current)=="undefined") current = true;
-    // i == column
-    // j == row
-    if((current && i<j) || // Current uses upper part of the matrix
-       (!current && i>j)){ // Previous uses lower part of the matrix
-        var temp = j;
-        j = i;
-        i = temp;
-    }
-    return this.collision_matrix[i+j*N];
-}
-
-CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
-    var N = this.bodies.length;
-    if(typeof(current)==="undefined") current = true;
-    if( (current && i<j) || // Current uses upper part of the matrix
-        (!current && i>j)){ // Previous uses lower part of the matrix
-        var temp = j;
-        j = i;
-        i = temp;
-    }
-    this.collision_matrix[i+j*N] = value;
-}
-
-// transfer old contact state data to T-1
-CANNON.World.prototype.collisionMatrixTick = function(){
-    var N = this.bodies.length
-    for(var i=0; i<N; i++){
-        for(var j=0; j<i; j++){
-            var currentState = this.collisionMatrixGet(i,j,true);
-            this.collisionMatrixSet(i,j,currentState,false);
-            this.collisionMatrixSet(i,j,0,true);
-        }
-    }
-}
-
-
-/**
  * @method add
  * @memberof CANNON.World
  * @brief Add a rigid body to the simulation.
@@ -336,10 +276,8 @@ CANNON.World.prototype.add = function(body){
  * @param CANNON.Constraint c
  */
 CANNON.World.prototype.addConstraint = function(c){
-  if(c instanceof CANNON.Constraint){
     this.constraints.push(c);
     c.id = this.id();
-  }
 };
 
 /**
@@ -492,10 +430,8 @@ CANNON.World.prototype.step = function(dt){
     var p2 = pairs[1];
     if(doProfiling) profile.broadphase = now() - profilingStart;
 
-    this.collisionMatrixTick();
-
     // Reset contact solver
-    solver.reset(N);
+    //solver.reset(N);
 
     // Generate contacts
     if(doProfiling) profilingStart = now();
@@ -524,9 +460,6 @@ CANNON.World.prototype.step = function(dt){
 
         // Resolve indeces
         var i = bodies.indexOf(bi), j = bodies.indexOf(bj);
-        
-        // Check last step stats
-        var lastCollisionState = this.collisionMatrixGet(i,j,false);
 
         // Get collision properties
         var mu = 0.3, e = 0.2;
@@ -545,7 +478,10 @@ CANNON.World.prototype.step = function(dt){
 
         // Action if penetration
         if(g<0.0){
+            c.penetration = g;
+            solver.addConstraint(c);
 
+            /*
             // Now we know that i and j are in contact. Set collision matrix state
             this.collisionMatrixSet(i,j,1,true);
 
@@ -671,9 +607,10 @@ CANNON.World.prototype.step = function(dt){
                        'inf',
                        i, // These are id's, not indeces...
                        j);
+                        */
 
             // Friction constraints
-            if(mu>0.0){
+            if(false && mu>0.0){
                 var g = gravity.norm();
                 for(var ti=0; ti<tangents.length; ti++){
                     var t = tangents[ti];
@@ -726,6 +663,7 @@ CANNON.World.prototype.step = function(dt){
     }
     if(doProfiling) profile.makeContactConstraints = now() - profilingStart;
 
+    /*
     // Add user-defined constraints
     var constraints = this.constraints;
     var nconstraints = constraints.length;
@@ -739,10 +677,12 @@ CANNON.World.prototype.step = function(dt){
                 bj = j;
             solver.addConstraint2(constraints[i],bi,bj);
     }
+    */
 
     var bi;
 
     if(doProfiling) profilingStart = now();
+    /*
     if(solver.n){
 
         solver.h = dt;
@@ -772,7 +712,14 @@ CANNON.World.prototype.step = function(dt){
             }
         }
     }
+     */
     if(doProfiling) profile.solve = now() - profilingStart;
+
+    solver.solve(dt,world);
+
+    // Remove all contacts from solver
+    for(var i=0; i<contacts.length; i++)
+        solver.removeConstraint(contacts[i]);
 
     // Apply damping
     for(var i=0; i<N; i++){

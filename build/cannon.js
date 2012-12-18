@@ -1535,6 +1535,8 @@ CANNON.Body = function(type){
     * @todo dispatch an event from the World instead
     */
     this.postStep = null;
+
+    this.vlambda = new CANNON.Vec3();
 };
 
 /*
@@ -1812,6 +1814,8 @@ CANNON.RigidBody = function(mass,shape,material){
     this.aabbmax = new CANNON.Vec3();
 
     this.calculateAABB();
+
+    this.wlambda = new CANNON.Vec3();
 };
 
 CANNON.RigidBody.constructor = CANNON.RigidBody;
@@ -2969,14 +2973,14 @@ CANNON.Solver = function(){
     * @brief SPOOK parameter, spring stiffness
     * @memberof CANNON.Solver
     */
-    this.k = 1000;
+    this.k = 10000;
 
     /**
     * @property float d
     * @brief SPOOK parameter, similar to damping
     * @memberof CANNON.Solver
     */
-    this.d = 4;
+    this.d = 1;
 
     /**
     * @property float a
@@ -2999,8 +3003,15 @@ CANNON.Solver = function(){
     */
     this.eps = 0.0;
 
+    /**
+     * When tolerance is reached, the system is assumed to be converged.
+     * @property float tolerance
+     */
+    this.tolerance = 0.001;
+    this.constraints = [];
+
     this.setSpookParams(this.k,this.d);
-    this.reset(0);
+    //this.reset(0);
 
     /**
     * @property bool debug
@@ -3029,13 +3040,120 @@ CANNON.Solver.prototype.setSpookParams = function(k,d){
     this.eps = 4.0 / (h * h * k * (1 + 4 * d));
 };
 
-/**
- * @method reset
- * @memberof CANNON.Solver
- * @brief Resets the solver, removes all constraints and prepares for a new round of solving
- * @param int numbodies The number of bodies in the new system
- * @todo vlambda does not need to be instantiated again if the number of bodies is the same. Set to zero instead.
- */
+CANNON.Solver.prototype.solve = function(dt,world){
+
+    var d = this.d;
+    var ks = this.k;
+    var iter = 0;
+    var maxIter = this.iterations;
+    var tol = this.tolerance;
+    var a = this.a;
+    var b = this.b;
+    var eps = this.eps;
+    var constraints = this.constraints;
+    var Nc = constraints.length;
+    var bodies = world.bodies;
+
+    // Create array for lambdas
+    var lambda = [];
+    for(var i=0; i<Nc; i++)
+        lambda.push(0.0);
+
+    // Each body has a lambdaVel property that we will delete later...
+
+    var h = dt;
+    var q;               //Penetration depth
+    var B;
+    var deltalambda;
+    var deltalambdaTot;
+    var relVel = new CANNON.Vec3();       //Relative velocity between constraint boides
+    var dir = new CANNON.Vec3();          //Constant direction
+    var relForce = new CANNON.Vec3();     //Relative force
+
+    if(Nc > 0){
+        for(iter=0; iter<maxIter; iter++){
+
+            // Reset
+            deltalambdaTot = 0.0;
+            for(var i=0; i<bodies.length; i++){
+                bodies[i].vlambda.set(0,0,0);
+                bodies[i].wlambda.set(0,0,0);
+            }
+
+            for(var j=0; j<Nc; j++){
+
+                //Get information from bodies
+                var c = constraints[j];
+                var bi = c.bi;
+                var bj = c.bj;
+
+                //Body1
+                var vi = bi.velocity;
+                var fi = bi.force;
+                var invMassi = bi.invMass; // matrix?
+
+                var vj = bj.velocity;
+                var fj = bj.force;
+                var invMassj = bj.invMass; // matrix?
+
+                if(c instanceof CANNON.ContactConstraint){
+                    c.ni.negate(dir);
+                    vi.vsub(vj,relVel);
+                    relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
+                                    ( fi.y*invMassi - fj.y*invMassj ) ,
+                                    ( fi.z*invMassi - fj.z*invMassj ) );
+
+                    // Do contact Constraint!
+                    q = -Math.abs(c.penetration);
+                } else {
+                    throw new Error("Constraint not recognized");
+                }
+
+                // Compute iteration
+                B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
+                deltalambda = (1.0/(invMassi + invMassj + eps)) * (B - bi.vlambda.vsub(bj.vlambda).dot(dir) - eps * lambda[j]);
+
+                if(lambda[j] + deltalambda < 0.0){
+                    deltalambda = -lambda[j];
+                }
+
+                lambda[j] += deltalambda;
+
+                deltalambdaTot += Math.abs(deltalambda);
+
+                bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
+                bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
+            } 
+
+            // If converged - stop iterate
+            if(deltalambdaTot < tol){
+                break;
+            }  
+        }
+
+        //Add result to velocity
+        for(var j=0; j<bodies.length; j++){
+            var b = bodies[j];
+            b.velocity.vadd(b.vlambda, b.velocity);
+            b.vlambda.set(0,0,0);
+        }
+    }
+
+    errorTot = deltalambdaTot;
+    return iter; 
+};
+
+CANNON.Solver.prototype.addConstraint = function(constraint){
+    this.constraints.push(constraint);
+};
+
+CANNON.Solver.prototype.removeConstraint = function(constraint){
+    var i = this.constraints.indexOf(constraint);
+    if(i!=-1)
+        this.constraints.splice(i,1);
+};
+
+/*
 CANNON.Solver.prototype.reset = function(numbodies){
 
     // Don't know number of constraints yet... Use dynamic arrays
@@ -3067,6 +3185,7 @@ CANNON.Solver.prototype.reset = function(numbodies){
         this.wzlambda.push(0);
     }
 };
+ */
 
 /**
  * @method addConstraint
@@ -3083,6 +3202,7 @@ CANNON.Solver.prototype.reset = function(numbodies){
  * @param int body_j The second body index - set to -1 if none
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */
+/*
 CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,upper,body_i,body_j){
     if(this.debug){
         console.log("Adding constraint l=",this.n," between body ",body_i," and ",body_j);
@@ -3115,6 +3235,7 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
     // Return result index
     return this.n - 1; 
 };
+*/
 
 /**
  * @method addConstraint2
@@ -3124,6 +3245,7 @@ CANNON.Solver.prototype.addConstraint = function(G,MinvTrace,q,qdot,Fext,lower,u
  * @param int i
  * @param int j
  */
+/*
 CANNON.Solver.prototype.addConstraint2 = function(c,i,j){
   c.update();
   for(var k=0; k<c.equations.length; k++){
@@ -3160,81 +3282,14 @@ CANNON.Solver.prototype.addConstraint2 = function(c,i,j){
                         j);
     }
 };
-
-
-/**
- * @method addNonPenetrationConstraint
- * @memberof CANNON.Solver
- * @brief Add a non-penetration constraint to the solver
- * @param CANNON.Vec3 ni
- * @param CANNON.Vec3 ri
- * @param CANNON.Vec3 rj
- * @param CANNON.Vec3 iMi
- * @param CANNON.Vec3 iMj
- * @param CANNON.Vec3 iIi
- * @param CANNON.Vec3 iIj
- * @param CANNON.Vec3 v1
- * @param CANNON.Vec3 v2
- * @param CANNON.Vec3 w1
- * @param CANNON.Vec3 w2
  */
-CANNON.Solver.prototype.addNonPenetrationConstraint = function(i,j,xi,xj,ni,ri,rj,iMi,iMj,iIi,iIj,vi,vj,wi,wj,fi,fj,taui,tauj){
-  
-    var rxn = ri.cross(ni);
-    var u = vj.vsub(vi); // vj.vadd(rj.cross(wj)).vsub(vi.vadd(ri.cross(wi)));
-
-    // g = ( xj + rj - xi - ri ) .dot ( ni )
-    var qvec = xj.vadd(rj).vsub(xi.vadd(ri));
-    var q = qvec.dot(ni);
-
-    if(q<0.0){
-        if(this.debug){
-          console.log("i:",i,"j",j,"xi",xi.toString(),"xj",xj.toString());
-          console.log("ni",ni.toString(),"ri",ri.toString(),"rj",rj.toString());
-          console.log("iMi",iMi.toString(),"iMj",iMj.toString(),"iIi",iIi.toString(),"iIj",iIj.toString(),"vi",vi.toString(),"vj",vj.toString(),"wi",wi.toString(),"wj",wj.toString(),"fi",fi.toString(),"fj",fj.toString(),"taui",taui.toString(),"tauj",tauj.toString());
-        }
-        this.addConstraint( // Non-penetration constraint jacobian
-                            [ -ni.x,  -ni.y,  -ni.z,
-                              -rxn.x, -rxn.y, -rxn.z,
-                              ni.x,   ni.y,   ni.z,
-                              rxn.x,  rxn.y,  rxn.z],
-                            
-                            // Inverse mass matrix & inertia
-                            [iMi.x, iMi.y, iMi.z,
-                             iIi.z, iIi.y, iIi.z,
-                             iMj.x, iMj.y, iMj.z,
-                             iIj.z, iIj.y, iIj.z],
-                            
-                            // q - constraint violation
-                            [-qvec.x,-qvec.y,-qvec.z,
-                             0,0,0,
-                             qvec.x,qvec.y,qvec.z,
-                             0,0,0],
-                            
-                            // qdot - motion along penetration normal
-                            [-u.x, -u.y, -u.z,
-                             0,0,0,
-                             u.x, u.y, u.z,
-                             0,0,0],
-                            
-                            // External force - forces & torques
-                            [fi.x,fi.y,fi.z,
-                             taui.x,taui.y,taui.z,
-                             fj.x,fj.y,fj.z,
-                             tauj.x,tauj.y,tauj.z],
-                            
-                            0,
-                            'inf',
-                            i,
-                            j);
-    }
-};
 
 /**
  * @method solve
  * @memberof CANNON.Solver
  * @brief Solves the system, and sets the vlambda and wlambda properties of the Solver object
  */
+/*
 CANNON.Solver.prototype.solve = function(){
     var n = this.n,
         lambda = [],
@@ -3382,6 +3437,7 @@ CANNON.Solver.prototype.solve = function(){
                           wylambda[i],
                           wzlambda[i]);
 };
+ */
 /*global CANNON:true */
 
 /**
@@ -3739,66 +3795,6 @@ CANNON.World.prototype.numObjects = function(){
 };
 
 /**
- * @method clearCollisionState
- * @memberof CANNON.World
- * @brief Clear the contact state for a body.
- * @param CANNON.Body body
- */
-CANNON.World.prototype.clearCollisionState = function(body){
-    var n = this.numObjects();
-    var i = body.id;
-    for(var idx=0; idx<n; idx++){
-        var j = idx;
-        if(i>j) cm[j+i*n] = 0;
-        else    cm[i+j*n] = 0;
-    }
-};
-
-
-
-// Keep track of contacts for current and previous timestep
-// 0: No contact between i and j
-// 1: Contact
-CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
-    var N = this.bodies.length;
-    if(typeof(current)=="undefined") current = true;
-    // i == column
-    // j == row
-    if((current && i<j) || // Current uses upper part of the matrix
-       (!current && i>j)){ // Previous uses lower part of the matrix
-        var temp = j;
-        j = i;
-        i = temp;
-    }
-    return this.collision_matrix[i+j*N];
-}
-
-CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
-    var N = this.bodies.length;
-    if(typeof(current)==="undefined") current = true;
-    if( (current && i<j) || // Current uses upper part of the matrix
-        (!current && i>j)){ // Previous uses lower part of the matrix
-        var temp = j;
-        j = i;
-        i = temp;
-    }
-    this.collision_matrix[i+j*N] = value;
-}
-
-// transfer old contact state data to T-1
-CANNON.World.prototype.collisionMatrixTick = function(){
-    var N = this.bodies.length
-    for(var i=0; i<N; i++){
-        for(var j=0; j<i; j++){
-            var currentState = this.collisionMatrixGet(i,j,true);
-            this.collisionMatrixSet(i,j,currentState,false);
-            this.collisionMatrixSet(i,j,0,true);
-        }
-    }
-}
-
-
-/**
  * @method add
  * @memberof CANNON.World
  * @brief Add a rigid body to the simulation.
@@ -3829,10 +3825,8 @@ CANNON.World.prototype.add = function(body){
  * @param CANNON.Constraint c
  */
 CANNON.World.prototype.addConstraint = function(c){
-  if(c instanceof CANNON.Constraint){
     this.constraints.push(c);
     c.id = this.id();
-  }
 };
 
 /**
@@ -3985,10 +3979,8 @@ CANNON.World.prototype.step = function(dt){
     var p2 = pairs[1];
     if(doProfiling) profile.broadphase = now() - profilingStart;
 
-    this.collisionMatrixTick();
-
     // Reset contact solver
-    solver.reset(N);
+    //solver.reset(N);
 
     // Generate contacts
     if(doProfiling) profilingStart = now();
@@ -4017,9 +4009,6 @@ CANNON.World.prototype.step = function(dt){
 
         // Resolve indeces
         var i = bodies.indexOf(bi), j = bodies.indexOf(bj);
-        
-        // Check last step stats
-        var lastCollisionState = this.collisionMatrixGet(i,j,false);
 
         // Get collision properties
         var mu = 0.3, e = 0.2;
@@ -4038,7 +4027,10 @@ CANNON.World.prototype.step = function(dt){
 
         // Action if penetration
         if(g<0.0){
+            c.penetration = g;
+            solver.addConstraint(c);
 
+            /*
             // Now we know that i and j are in contact. Set collision matrix state
             this.collisionMatrixSet(i,j,1,true);
 
@@ -4164,9 +4156,10 @@ CANNON.World.prototype.step = function(dt){
                        'inf',
                        i, // These are id's, not indeces...
                        j);
+                        */
 
             // Friction constraints
-            if(mu>0.0){
+            if(false && mu>0.0){
                 var g = gravity.norm();
                 for(var ti=0; ti<tangents.length; ti++){
                     var t = tangents[ti];
@@ -4219,6 +4212,7 @@ CANNON.World.prototype.step = function(dt){
     }
     if(doProfiling) profile.makeContactConstraints = now() - profilingStart;
 
+    /*
     // Add user-defined constraints
     var constraints = this.constraints;
     var nconstraints = constraints.length;
@@ -4232,10 +4226,12 @@ CANNON.World.prototype.step = function(dt){
                 bj = j;
             solver.addConstraint2(constraints[i],bi,bj);
     }
+    */
 
     var bi;
 
     if(doProfiling) profilingStart = now();
+    /*
     if(solver.n){
 
         solver.h = dt;
@@ -4265,7 +4261,14 @@ CANNON.World.prototype.step = function(dt){
             }
         }
     }
+     */
     if(doProfiling) profile.solve = now() - profilingStart;
+
+    solver.solve(dt,world);
+
+    // Remove all contacts from solver
+    for(var i=0; i<contacts.length; i++)
+        solver.removeConstraint(contacts[i]);
 
     // Apply damping
     for(var i=0; i<N; i++){
@@ -4500,7 +4503,7 @@ CANNON.ContactGenerator = function(){
                 c.bj = bj;
                 return c;
             } else
-                return new CANNON.ContactPoint(bi,bj);
+                return new CANNON.ContactConstraint(bi,bj);
         }
 
         /*
@@ -4992,163 +4995,20 @@ CANNON.Constraint.prototype.update = function(){
  * @extends CANNON.Constraint
  * @todo integrate with the World class
  */
-CANNON.ContactConstraint = function(bodyA,bodyB,slipForce){
+CANNON.ContactConstraint = function(bi,bj){
     CANNON.Constraint.call(this);
-    this.body_i = bodyA;
-    this.body_j = bodyB;
-    this.contact = contact;
-    this.slipForce = slipForce;
-    this.unused_equations = [];
-    this.temp = {
-        rixn:new CANNON.Vec3(),
-        rjxn:new CANNON.Vec3(),
-        t1:new CANNON.Vec3(),
-        t2:new CANNON.Vec3()
-    };
+    this.impact = true; // Impact on first collision
+    this.penetration = 0.0;
+    this.bi = bi;
+    this.bj = bj;
+    this.slipForce = 0.0;
+    this.ri = new CANNON.Vec3();
+    this.rj = new CANNON.Vec3();
+    this.ni = new CANNON.Vec3();
 };
 
 CANNON.ContactConstraint.prototype = new CANNON.Constraint();
 CANNON.ContactConstraint.prototype.constructor = CANNON.ContactConstraint;
-
-CANNON.ContactConstraint.prototype.update = function(){
-
-    /*
-    if(friction>0.0){
-    for(var i=0; i<3; i++)
-    this.equations.push(new CANNON.Equation(bodyA,bodyB)); // Normal+2tangents
-    } else
-    this.equations.push(new CANNON.Equation(bodyA,bodyB)); // Normal
-    */
-
-    var bi = this.body_i,
-        bj = this.body_j;
-
-    var vi = bi.velocity,
-        wi = bi.angularVelocity,
-        vj = bj.velocity,
-        wj = bj.angularVelocity;
-
-    var tangents = [this.temp.t1, this.temp.t2];
-    for(var i in bi.contacts){
-        for(var j in bj.contacts){
-            if(bi.contacts[i].to.id==bj.id && bj.contacts[j].to.id==bi.id){
-                var ri = bi.contacts[i].r,
-                    rj = bj.contacts[j].r,
-                    ni = bi.contacts[i].n; // normals should be the same anyways
-
-                n.tangents(tangents[0],tangents[1]);
-                
-                var v_contact_i = vi.vadd(wi.cross(c.ri));
-                var v_contact_j = vj.vadd(wj.cross(c.rj));
-                var u_rel = v_contact_j.vsub(v_contact_i);
-                var w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
-                
-                var u = (vj.vsub(vi));
-                var uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
-                u.vsub(uw,u);
-                
-                // Get mass properties
-                var iMi = bi.invMass;
-                var iMj = bj.invMass;
-                var iIxi = bi.invInertia.x;
-                var iIyi = bi.invInertia.y;
-                var iIzi = bi.invInertia.z;
-                var iIxj = bj.invInertia.x;
-                var iIyj = bj.invInertia.y;
-                var iIzj = bj.invInertia.z;
-                
-                // Add contact constraint
-                var rixn = this.temp.rixn;
-                var rjxn = this.temp.rjxn;
-                c.ri.cross(n,rixn);
-                c.rj.cross(n,rjxn);
-                
-                var un_rel = n.mult(u_rel.dot(n));
-                var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
-                var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
-                
-                var gn = c.ni.mult(g);
-                
-                // Jacobian, eq. 25 in spooknotes
-                n.negate(eq.G1);
-                rixn.negate(eq.G2);
-                n.copy(eq.G3);
-                rjxn.copy(eq.G4);
-                
-                eq.setDefaultMassProps();
-                
-                // g - constraint violation / gap
-                gn.negate(eq.g1);
-                gn.copy(eq.g3);
-                
-                // W
-                un_rel.negate(eq.W1);
-                un_rel.copy(eq.W3);
-
-                // External force - forces & torques
-                bi.force.copy(eq.f1);
-                bi.tau.copy(eq.f2);
-                bj.force.copy(eq.f3);
-                bj.tau.copy(eq.f4);
-
-                eq.lambdamin = 0;
-                eq.lambdamax = 'inf';
-                /*
-              // Friction constraints
-              if(mu>0.0){
-                var g = that.gravity.norm();
-                for(var ti=0; ti<tangents.length; ti++){
-                  var t = tangents[ti];
-                  var rixt = c.ri.cross(t);
-                  var rjxt = c.rj.cross(t);
-                  
-                  var ut_rel = t.mult(u_rel.dot(t));
-                  var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
-                  var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
-                  this.solver
-                .addConstraint( // Non-penetration constraint jacobian
-                           [-t.x,-t.y,-t.z,
-                        -rixt.x,-rixt.y,-rixt.z,
-                        t.x,t.y,t.z,
-                        rjxt.x,rjxt.y,rjxt.z
-                        ],
-                           
-                           // Inverse mass matrix
-                           [iMi,iMi,iMi,
-                        iIxi,iIyi,iIzi,
-                        iMj,iMj,iMj,
-                        iIxj,iIyj,iIzj],
-                           
-                           // g - constraint violation / gap
-                           [0,0,0,
-                              0,0,0,
-                        0,0,0,
-                        0,0,0],
-                           
-                           [-ut_rel.x,-ut_rel.y,-ut_rel.z,
-                        0,0,0,//-u_rixt_rel.x,-u_rixt_rel.y,-u_rixt_rel.z,
-                        ut_rel.x,ut_rel.y,ut_rel.z,
-                              0,0,0//u_rjxt_rel.x,u_rjxt_rel.y,u_rjxt_rel.z
-                        ],
-                           
-                           // External force - forces & torques
-                           [bi.force.x,bi.force.y,bi.force.z,
-                        bi.tau.x,bi.tau.y,bi.tau.z,
-                        bj.force.x,bj.force.y,bj.force.z,
-                        bj.tau.x,bj.tau.y,bj.tau.z],
-                           
-                           -mu*g*(bi.mass+bj.mass),
-                           mu*g*(bi.mass+bj.mass),
-                           
-                           i,
-                           j);
-                           }
-                           }
-                */
-            }
-        }
-    }
-};
 /**
  * @class CANNON.DistanceConstraint
  * @brief Distance constraint class

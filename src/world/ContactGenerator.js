@@ -84,7 +84,7 @@ CANNON.ContactGenerator = function(){
                 c.bj = bj;
                 return c;
             } else
-                return new CANNON.ContactPoint(bi,bj);
+                return new CANNON.ContactConstraint(bi,bj);
         }
 
         /*

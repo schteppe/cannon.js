@@ -36,6 +36,8 @@ CANNON.Body = function(type){
     * @todo dispatch an event from the World instead
     */
     this.postStep = null;
+
+    this.vlambda = new CANNON.Vec3();
 };
 
 /*
