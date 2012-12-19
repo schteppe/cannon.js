@@ -111,10 +111,18 @@ CANNON.Solver.prototype.solve = function(dt,world){
     var Nc = constraints.length;
     var bodies = world.bodies;
 
+
+    // Things that does not change during iteration can be computed once
+    var Cs = [];
+    var Bs = [];
+
     // Create array for lambdas
     var lambda = [];
-    for(var i=0; i<Nc; i++)
+    for(var i=0; i<Nc; i++){
         lambda.push(0.0);
+        Cs.push(null);
+        Bs.push(null);
+    }
 
     // Each body has a lambdaVel property that we will delete later...
 
@@ -126,6 +134,7 @@ CANNON.Solver.prototype.solve = function(dt,world){
     var relVel = new CANNON.Vec3();       //Relative velocity between constraint boides
     var dir = new CANNON.Vec3();          //Constant direction
     var relForce = new CANNON.Vec3();     //Relative force
+
 
     if(Nc > 0){
         for(iter=0; iter<maxIter; iter++){
@@ -144,29 +153,30 @@ CANNON.Solver.prototype.solve = function(dt,world){
                 var bj = c.bj;
 
                 var vi = bi.velocity;
+                var wi = bi.angularVelocity;
                 var fi = bi.force;
                 var invMassi = bi.invMass;
 
                 var vj = bj.velocity;
+                var wj = bj.angularVelocity;
                 var fj = bj.force;
                 var invMassj = bj.invMass;
 
-                if(c instanceof CANNON.ContactConstraint){
-                    c.ni.negate(dir);
-                    vi.vsub(vj,relVel);
-                    relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
-                                    ( fi.y*invMassi - fj.y*invMassj ) ,
-                                    ( fi.z*invMassi - fj.z*invMassj ) );
+                c.ni.negate(dir);
 
-                    // Do contact Constraint!
-                    q = -Math.abs(c.penetration);
-                } else {
-                    throw new Error("Constraint not recognized");
-                }
+                vi.vsub(vj,relVel);
+                relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
+                                ( fi.y*invMassi - fj.y*invMassj ) ,
+                                ( fi.z*invMassi - fj.z*invMassj ) );
+
+                // Do contact Constraint!
+                q = -Math.abs(c.penetration);
 
                 // Compute iteration
+                
                 B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
-                deltalambda = (1.0/(invMassi + invMassj + eps)) * (B - bi.vlambda.vsub(bj.vlambda).dot(dir) - eps * lambda[j]);
+                var C = (invMassi + invMassj + eps);
+                deltalambda = (1.0/C) * (B - bi.vlambda.vsub(bj.vlambda).dot(dir) - eps * lambda[j]);
 
                 if(lambda[j] + deltalambda < 0.0){
                     deltalambda = -lambda[j];

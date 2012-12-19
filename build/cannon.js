@@ -3040,6 +3040,120 @@ CANNON.Solver.prototype.setSpookParams = function(k,d){
     this.eps = 4.0 / (h * h * k * (1 + 4 * d));
 };
 
+
+CANNON.Solver.prototype.solve = function(dt,world){
+
+    var d = this.d;
+    var ks = this.k;
+    var iter = 0;
+    var maxIter = this.iterations;
+    var tol = this.tolerance;
+    var a = this.a;
+    var b = this.b;
+    var eps = this.eps;
+    var constraints = this.constraints;
+    var Nc = constraints.length;
+    var bodies = world.bodies;
+
+
+    // Things that does not change during iteration can be computed once
+    var Cs = [];
+    var Bs = [];
+
+    // Create array for lambdas
+    var lambda = [];
+    for(var i=0; i<Nc; i++){
+        lambda.push(0.0);
+        Cs.push(null);
+        Bs.push(null);
+    }
+
+    // Each body has a lambdaVel property that we will delete later...
+
+    var h = dt;
+    var q;               //Penetration depth
+    var B;
+    var deltalambda;
+    var deltalambdaTot;
+    var relVel = new CANNON.Vec3();       //Relative velocity between constraint boides
+    var dir = new CANNON.Vec3();          //Constant direction
+    var relForce = new CANNON.Vec3();     //Relative force
+
+
+    if(Nc > 0){
+        for(iter=0; iter<maxIter; iter++){
+
+            // Reset
+            deltalambdaTot = 0.0;
+            for(var i=0; i<bodies.length; i++){
+                bodies[i].vlambda.set(0,0,0);
+                bodies[i].wlambda.set(0,0,0);
+            }
+
+            for(var j=0; j<Nc; j++){
+
+                var c = constraints[j];
+                var bi = c.bi;
+                var bj = c.bj;
+
+                var vi = bi.velocity;
+                var wi = bi.angularVelocity;
+                var fi = bi.force;
+                var invMassi = bi.invMass;
+
+                var vj = bj.velocity;
+                var wj = bj.angularVelocity;
+                var fj = bj.force;
+                var invMassj = bj.invMass;
+
+                c.ni.negate(dir);
+
+                vi.vsub(vj,relVel);
+                relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
+                                ( fi.y*invMassi - fj.y*invMassj ) ,
+                                ( fi.z*invMassi - fj.z*invMassj ) );
+
+                // Do contact Constraint!
+                q = -Math.abs(c.penetration);
+
+                // Compute iteration
+                
+                B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
+                var C = (invMassi + invMassj + eps);
+                deltalambda = (1.0/C) * (B - bi.vlambda.vsub(bj.vlambda).dot(dir) - eps * lambda[j]);
+
+                if(lambda[j] + deltalambda < 0.0){
+                    deltalambda = -lambda[j];
+                }
+
+                lambda[j] += deltalambda;
+
+                deltalambdaTot += Math.abs(deltalambda);
+
+                bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
+                bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
+            } 
+
+            // If converged - stop iterate
+            if(deltalambdaTot < tol){
+                break;
+            }  
+        }
+
+        //Add result to velocity
+        for(var j=0; j<bodies.length; j++){
+            var b = bodies[j];
+            b.velocity.vadd(b.vlambda, b.velocity);
+            b.vlambda.set(0,0,0);
+        }
+    }
+
+    errorTot = deltalambdaTot;
+    return iter; 
+};
+
+
+/*
 CANNON.Solver.prototype.solve = function(dt,world){
 
     var d = this.d;
@@ -3082,19 +3196,19 @@ CANNON.Solver.prototype.solve = function(dt,world){
 
             for(var j=0; j<Nc; j++){
 
-                //Get information from bodies
                 var c = constraints[j];
                 var bi = c.bi;
                 var bj = c.bj;
 
-                //Body1
                 var vi = bi.velocity;
                 var fi = bi.force;
-                var invMassi = bi.invMass; // matrix?
+                var invMassi = bi.invMass;
 
                 var vj = bj.velocity;
                 var fj = bj.force;
-                var invMassj = bj.invMass; // matrix?
+                var invMassj = bj.invMass;
+
+
 
                 if(c instanceof CANNON.ContactConstraint){
                     c.ni.negate(dir);
@@ -3142,6 +3256,8 @@ CANNON.Solver.prototype.solve = function(dt,world){
     errorTot = deltalambdaTot;
     return iter; 
 };
+
+*/
 
 CANNON.Solver.prototype.addConstraint = function(constraint){
     this.constraints.push(constraint);
