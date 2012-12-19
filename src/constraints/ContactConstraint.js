@@ -21,7 +21,6 @@ CANNON.ContactConstraint = function(bi,bj){
     this.minForce = 0.0; // Force must be repelling
     this.maxForce = 1e6;
 
-    this.dir = new CANNON.Vec3();
     this.relVel = new CANNON.Vec3();
     this.relForce = new CANNON.Vec3();
 };
@@ -45,21 +44,21 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
 
     var relVel = this.relVel;
     var relForce = this.relForce;
-    var dir = this.dir;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
-    this.ni.negate(dir);
-    vi.vsub(vj,relVel);
-    relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
-                    ( fi.y*invMassi - fj.y*invMassj ) ,
-                    ( fi.z*invMassi - fj.z*invMassj ) );
+    var n = this.ni;
+
+    vj.vsub(vi,relVel);
+    relForce.set(   ( fj.x*invMassj - fi.x*invMassi ) ,
+                    ( fj.y*invMassj - fi.y*invMassi ) ,
+                    ( fj.z*invMassj - fi.z*invMassi ) );
 
     // Do contact Constraint!
     var q = -Math.abs(this.penetration);
 
     // Compute iteration
-    var B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
+    var B = -q * a - relVel.dot(n) * b - relForce.dot(n) * h;
     return B;
 };
 
@@ -71,8 +70,8 @@ CANNON.ContactConstraint.prototype.computeC = function(eps){
 };
 
 CANNON.ContactConstraint.prototype.computeGWlambda = function(){
-    var ulambda = this.bi.vlambda.vsub(this.bj.vlambda);
-    var GWlambda = ulambda.dot(this.dir);
+    var ulambda = this.bj.vlambda.vsub(this.bi.vlambda);
+    var GWlambda = ulambda.dot(this.ni);
     return GWlambda;
 };
 
@@ -81,7 +80,7 @@ CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
     var bj = this.bj;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
-    var dir = this.dir;
-    bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
-    bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
+    var n = this.ni;
+    bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
+    bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
 };
