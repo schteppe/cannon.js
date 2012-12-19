@@ -3054,7 +3054,7 @@ CANNON.Solver.prototype.solve = function(dt,world){
     var constraints = this.constraints;
     var Nc = constraints.length;
     var bodies = world.bodies;
-
+    var h = dt;
 
     // Things that does not change during iteration can be computed once
     var Cs = [];
@@ -3063,14 +3063,13 @@ CANNON.Solver.prototype.solve = function(dt,world){
     // Create array for lambdas
     var lambda = [];
     for(var i=0; i<Nc; i++){
+        var c = constraints[i];
         lambda.push(0.0);
-        Cs.push(null);
-        Bs.push(null);
+        Cs.push(c.computeC(eps));
+        Bs.push(c.computeB(a,b,h));
     }
 
-    // Each body has a lambdaVel property that we will delete later...
-
-    var h = dt;
+    // Each body has a lambdaVel property that we will delete later..
     var q;               //Penetration depth
     var B;
     var deltalambda;
@@ -3093,7 +3092,9 @@ CANNON.Solver.prototype.solve = function(dt,world){
             for(var j=0; j<Nc; j++){
 
                 var c = constraints[j];
-                var bi = c.bi;
+                c.ni.negate(dir);
+
+                /*var bi = c.bi;
                 var bj = c.bj;
 
                 var vi = bi.velocity;
@@ -3106,8 +3107,6 @@ CANNON.Solver.prototype.solve = function(dt,world){
                 var fj = bj.force;
                 var invMassj = bj.invMass;
 
-                c.ni.negate(dir);
-
                 vi.vsub(vj,relVel);
                 relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
                                 ( fi.y*invMassi - fj.y*invMassj ) ,
@@ -3115,23 +3114,26 @@ CANNON.Solver.prototype.solve = function(dt,world){
 
                 // Do contact Constraint!
                 q = -Math.abs(c.penetration);
+                */
 
                 // Compute iteration
-                
-                B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
-                var C = (invMassi + invMassj + eps);
-                deltalambda = (1.0/C) * (B - bi.vlambda.vsub(bj.vlambda).dot(dir) - eps * lambda[j]);
+                //B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
+                B = Bs[j];
+                //var C = (invMassi + invMassj + eps);
+                var C = Cs[j];
+                var GWlambda = c.computeGWlambda(eps); //bi.vlambda.vsub(bj.vlambda).dot(dir);
+                deltalambda = (1.0/C) * (B - GWlambda - eps * lambda[j]);
 
-                if(lambda[j] + deltalambda < 0.0){
+                if(lambda[j] + deltalambda < c.minForce || lambda[j] + deltalambda > c.maxForce){
                     deltalambda = -lambda[j];
                 }
-
                 lambda[j] += deltalambda;
 
                 deltalambdaTot += Math.abs(deltalambda);
 
-                bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
-                bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
+                c.addToWlambda(deltalambda);
+                //bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
+                //bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
             } 
 
             // If converged - stop iterate
@@ -3140,11 +3142,12 @@ CANNON.Solver.prototype.solve = function(dt,world){
             }  
         }
 
-        //Add result to velocity
+        // Add result to velocity
         for(var j=0; j<bodies.length; j++){
             var b = bodies[j];
             b.velocity.vadd(b.vlambda, b.velocity);
-            b.vlambda.set(0,0,0);
+            if(b.angularVelocity)
+                b.angularVelocity.vadd(b.wlambda, b.angularVelocity);
         }
     }
 
@@ -5090,6 +5093,8 @@ CANNON.Constraint = function(){
    */
   this.equations = [];
   this.id = -1;
+  this.minForce = -1e6;
+  this.maxForce = 1e6;
 };
 CANNON.Constraint.prototype.constructor = CANNON.Constraint;
 
@@ -5113,7 +5118,6 @@ CANNON.Constraint.prototype.update = function(){
  */
 CANNON.ContactConstraint = function(bi,bj){
     CANNON.Constraint.call(this);
-    this.impact = true; // Impact on first collision
     this.penetration = 0.0;
     this.bi = bi;
     this.bj = bj;
@@ -5121,11 +5125,74 @@ CANNON.ContactConstraint = function(bi,bj){
     this.ri = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
     this.ni = new CANNON.Vec3();
+
+    this.minForce = 0.0; // Force must be repelling
+    this.maxForce = 1e6;
+
+    this.dir = new CANNON.Vec3();
+    this.relVel = new CANNON.Vec3();
+    this.relForce = new CANNON.Vec3();
 };
 
 CANNON.ContactConstraint.prototype = new CANNON.Constraint();
 CANNON.ContactConstraint.prototype.constructor = CANNON.ContactConstraint;
-/**
+
+CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
+    var bi = this.bi;
+    var bj = this.bj;
+
+    var vi = bi.velocity;
+    var wi = bi.angularVelocity;
+    var fi = bi.force;
+    var taui = bi.tau;
+
+    var vj = bj.velocity;
+    var wj = bj.angularVelocity;
+    var fj = bj.force;
+    var tauj = bj.tau;
+
+    var relVel = this.relVel;
+    var relForce = this.relForce;
+    var dir = this.dir;
+    var invMassi = bi.invMass;
+    var invMassj = bj.invMass;
+
+    this.ni.negate(dir);
+    vi.vsub(vj,relVel);
+    relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
+                    ( fi.y*invMassi - fj.y*invMassj ) ,
+                    ( fi.z*invMassi - fj.z*invMassj ) );
+
+    // Do contact Constraint!
+    var q = -Math.abs(this.penetration);
+
+    // Compute iteration
+    var B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
+    return B;
+};
+
+CANNON.ContactConstraint.prototype.computeC = function(eps){
+    var invMassi = this.bi.invMass;
+    var invMassj = this.bj.invMass;
+    var C = (invMassi + invMassj + eps);
+    return C;
+};
+
+CANNON.ContactConstraint.prototype.computeGWlambda = function(){
+    var ulambda = this.bi.vlambda.vsub(this.bj.vlambda);
+    var GWlambda = ulambda.dot(this.dir);
+    return GWlambda;
+};
+
+CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
+    var bi = this.bi;
+    var bj = this.bj;
+    var invMassi = bi.invMass;
+    var invMassj = bj.invMass;
+    var dir = this.dir;
+    bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
+    bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
+};/**
  * @class CANNON.DistanceConstraint
  * @brief Distance constraint class
  * @author schteppe

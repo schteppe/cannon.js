@@ -14,6 +14,8 @@ CANNON.Constraint = function(){
    */
   this.equations = [];
   this.id = -1;
+  this.minForce = -1e6;
+  this.maxForce = 1e6;
 };
 CANNON.Constraint.prototype.constructor = CANNON.Constraint;
 

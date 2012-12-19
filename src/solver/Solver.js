@@ -110,7 +110,7 @@ CANNON.Solver.prototype.solve = function(dt,world){
     var constraints = this.constraints;
     var Nc = constraints.length;
     var bodies = world.bodies;
-
+    var h = dt;
 
     // Things that does not change during iteration can be computed once
     var Cs = [];
@@ -119,14 +119,13 @@ CANNON.Solver.prototype.solve = function(dt,world){
     // Create array for lambdas
     var lambda = [];
     for(var i=0; i<Nc; i++){
+        var c = constraints[i];
         lambda.push(0.0);
-        Cs.push(null);
-        Bs.push(null);
+        Cs.push(c.computeC(eps));
+        Bs.push(c.computeB(a,b,h));
     }
 
-    // Each body has a lambdaVel property that we will delete later...
-
-    var h = dt;
+    // Each body has a lambdaVel property that we will delete later..
     var q;               //Penetration depth
     var B;
     var deltalambda;
@@ -149,7 +148,9 @@ CANNON.Solver.prototype.solve = function(dt,world){
             for(var j=0; j<Nc; j++){
 
                 var c = constraints[j];
-                var bi = c.bi;
+                c.ni.negate(dir);
+
+                /*var bi = c.bi;
                 var bj = c.bj;
 
                 var vi = bi.velocity;
@@ -162,8 +163,6 @@ CANNON.Solver.prototype.solve = function(dt,world){
                 var fj = bj.force;
                 var invMassj = bj.invMass;
 
-                c.ni.negate(dir);
-
                 vi.vsub(vj,relVel);
                 relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
                                 ( fi.y*invMassi - fj.y*invMassj ) ,
@@ -171,23 +170,26 @@ CANNON.Solver.prototype.solve = function(dt,world){
 
                 // Do contact Constraint!
                 q = -Math.abs(c.penetration);
+                */
 
                 // Compute iteration
-                
-                B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
-                var C = (invMassi + invMassj + eps);
-                deltalambda = (1.0/C) * (B - bi.vlambda.vsub(bj.vlambda).dot(dir) - eps * lambda[j]);
+                //B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
+                B = Bs[j];
+                //var C = (invMassi + invMassj + eps);
+                var C = Cs[j];
+                var GWlambda = c.computeGWlambda(eps); //bi.vlambda.vsub(bj.vlambda).dot(dir);
+                deltalambda = (1.0/C) * (B - GWlambda - eps * lambda[j]);
 
-                if(lambda[j] + deltalambda < 0.0){
+                if(lambda[j] + deltalambda < c.minForce || lambda[j] + deltalambda > c.maxForce){
                     deltalambda = -lambda[j];
                 }
-
                 lambda[j] += deltalambda;
 
                 deltalambdaTot += Math.abs(deltalambda);
 
-                bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
-                bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
+                c.addToWlambda(deltalambda);
+                //bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
+                //bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
             } 
 
             // If converged - stop iterate
@@ -196,11 +198,12 @@ CANNON.Solver.prototype.solve = function(dt,world){
             }  
         }
 
-        //Add result to velocity
+        // Add result to velocity
         for(var j=0; j<bodies.length; j++){
             var b = bodies[j];
             b.velocity.vadd(b.vlambda, b.velocity);
-            b.vlambda.set(0,0,0);
+            if(b.angularVelocity)
+                b.angularVelocity.vadd(b.wlambda, b.angularVelocity);
         }
     }
 
