@@ -713,13 +713,14 @@ CANNON.World.prototype.step = function(dt){
         }
     }
      */
-    if(doProfiling) profile.solve = now() - profilingStart;
-
+    
     solver.solve(dt,world);
+
+    if(doProfiling) profile.solve = now() - profilingStart;
 
     // Remove all contacts from solver
     for(var i=0; i<contacts.length; i++)
-        solver.removeConstraint(contacts[i]);
+        solver.removeAllConstraints();
 
     // Apply damping
     for(var i=0; i<N; i++){

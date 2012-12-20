@@ -300,6 +300,10 @@ CANNON.Solver.prototype.removeConstraint = function(constraint){
         this.constraints.splice(i,1);
 };
 
+CANNON.Solver.prototype.removeAllConstraints = function(){
+    this.constraints = [];
+};
+
 /*
 CANNON.Solver.prototype.reset = function(numbodies){
 
