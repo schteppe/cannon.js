@@ -14,7 +14,7 @@
         <script src="../libs/Stats.js"></script>
         <script>
 
-        var demo = new CANNON.Demo({ stepFrequency:180 });
+        var demo = new CANNON.Demo();
         var size = 1;
         var interval;
 
@@ -26,8 +26,8 @@
 
             world.gravity.set(0,0,-50);
             world.broadphase = new CANNON.NaiveBroadphase();
-            world.solver.iterations = 10;
-            world.solver.setSpookParams(5000,10);
+            world.solver.iterations = 5;
+            world.solver.setSpookParams(5000000,10);
 
             // ground plane
             var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));

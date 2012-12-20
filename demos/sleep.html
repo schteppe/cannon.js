@@ -19,19 +19,17 @@
        * Why is this handy? Well, it can help you get a more stable simulation, and increase performance. No collision detection is made between sleeping bodies (and static ones).
        */
 
-      var demo = new CANNON.Demo({
-        stepFrequency:180,
-        k:4000
-      });
+      var demo = new CANNON.Demo();
       var size = 1;
 
       // Sleep demo
       demo.addScene("Sleep",function(){
-      
+
         // Create world and collision detection
         var world = demo.getWorld();
         world.gravity.set(0,0,-10);
         world.broadphase = new CANNON.NaiveBroadphase();
+        world.solver.setSpookParams(1000000,3);
 
         // Create ground plane
         var groundShape = new CANNON.Plane();

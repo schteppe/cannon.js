@@ -481,6 +481,30 @@ CANNON.World.prototype.step = function(dt){
             c.penetration = g;
             solver.addConstraint(c);
 
+            // Add friction constraint
+            if(mu > 0){
+
+                // Create 2 tangent constraints
+                var mug = mu*gravity.norm();
+                var reducedMass = (bi.invMass + bj.invMass);
+                if(reducedMass != 0) reducedMass = 1/reducedMass;
+                var c1 = new CANNON.FrictionConstraint(bi,bj,mug*reducedMass);
+                var c2 = new CANNON.FrictionConstraint(bi,bj,mug*reducedMass);
+
+                // Copy over the relative vectors
+                c.ri.copy(c1.ri);
+                c.rj.copy(c1.rj);
+                c.ri.copy(c2.ri);
+                c.rj.copy(c2.rj);
+
+                // Construct tangents
+                c.ni.tangents(c1.t,c2.t);
+
+                // Add constraints to solver
+                solver.addConstraint(c1);
+                solver.addConstraint(c2);
+            }
+
             /*
             // Now we know that i and j are in contact. Set collision matrix state
             this.collisionMatrixSet(i,j,1,true);

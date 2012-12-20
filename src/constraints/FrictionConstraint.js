@@ -17,7 +17,7 @@ CANNON.FrictionConstraint = function(bi,bj,slipForce){
     this.rixt = new CANNON.Vec3();
     this.rjxt = new CANNON.Vec3();
     this.wixri = new CANNON.Vec3();
-    this.wixrj = new CANNON.Vec3();
+    this.wjxrj = new CANNON.Vec3();
 
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
@@ -36,6 +36,8 @@ CANNON.FrictionConstraint.prototype.computeB = function(a,b,h){
     var rj = this.rj;
     var rixt = this.rixt;
     var rjxt = this.rjxt;
+    var wixri = this.wixri;
+    var wjxrj = this.wjxrj;
 
     var vi = bi.velocity;
     var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
@@ -57,18 +59,19 @@ CANNON.FrictionConstraint.prototype.computeB = function(a,b,h){
     var invIj = this.invIj;
 
     if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity();
     if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity();
 
-    var n = this.ni;
+    var t = this.t;
 
     // Caluclate cross products
     ri.cross(t,rixt);
     rj.cross(t,rjxt);
 
+    wi.cross(ri,wixri);
+    wj.cross(rj,wjxrj);
+
     var Gq = 0; // we do only want to constrain motion
-    var GW = vj.dot(t) - vi.dot(t) +wjxrj.dot(t) - wixri.dot(t); // eq. 40
+    var GW = vj.dot(t) - vi.dot(t) + wjxrj.dot(t) - wixri.dot(t); // eq. 40
     var GiMf = fj.dot(t)*invMassj - fi.dot(t)*invMassi + rjxt.dot(invIj.vmult(tauj)) - rixt.dot(invIi.vmult(taui));
 
     var B = - Gq * a - GW * b - h*GiMf;
@@ -91,9 +94,7 @@ CANNON.FrictionConstraint.prototype.computeC = function(eps){
     var invIj = this.invIj;
 
     if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity();
     if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity();
 
     // Compute rxt * I * rxt for each body
     C += invIi.vmult(rixt).dot(rixt);

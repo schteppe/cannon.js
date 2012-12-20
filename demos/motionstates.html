@@ -17,7 +17,7 @@
       /**
        * Demos of the Body.motionstate types.
        */
-      var demo = new CANNON.Demo({ stepFrequency:180 });
+      var demo = new CANNON.Demo();
       var size = 2;
       
       demo.addScene("Moving box",function(){
@@ -59,8 +59,8 @@
         var world = demo.getWorld();
         world.gravity.set(0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 30;
-        world.solver.setSpookParams(10000,20);
+        world.solver.iterations = 10;
+        world.solver.setSpookParams(100000000,10);
       
         // Static ground plane
         // Static bodies only interacts with dynamic bodies. Velocity is always zero.

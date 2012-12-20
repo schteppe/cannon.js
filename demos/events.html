@@ -14,14 +14,14 @@
     <script src="../libs/Stats.js"></script>
     <script>
 
-      var demo = new CANNON.Demo({ stepFrequency:180 });
+      var demo = new CANNON.Demo();
       var size = 1;
       
       demo.addScene("'collide' event",function(){
       
           // Create world
           var world = demo.getWorld();
-          world.solver.setSpookParams(5000,10);
+          world.solver.setSpookParams(50000000,4);
           world.gravity.set(0,0,-20);
       
           // ground plane

@@ -17,7 +17,7 @@
       /**
        * Experiment for testing ConvexPolyhedrons.
        */
-      var demo = new CANNON.Demo({ stepFrequency:120 });
+      var demo = new CANNON.Demo();
       
       function createBoxPolyhedron(size){
           size = size || 1;
@@ -195,8 +195,8 @@
         var world = demo.getWorld();
         world.gravity.set(0,0,-30);
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 40;
-        world.solver.setSpookParams(5000,7);
+        world.solver.iterations = 10;
+        world.solver.setSpookParams(5000000,3);
       
         // ground plane
         var n = new CANNON.Vec3(0,0,1);

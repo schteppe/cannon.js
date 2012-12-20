@@ -17,9 +17,7 @@
       /**
        * For debugging different kinds of pair collisions
        */
-      var demo = new CANNON.Demo({
-        stepFrequency:60,
-      });
+      var demo = new CANNON.Demo();
       
       demo.addScene("Sphere / sphere",function(){
           var world = setupWorld(demo);

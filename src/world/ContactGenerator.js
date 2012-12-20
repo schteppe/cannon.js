@@ -11,7 +11,7 @@ CANNON.ContactGenerator = function(){
      * @memberof CANNON.ContactGenerator
      * @brief Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
      */
-    this.contactReduction = true;
+    this.contactReduction = false;
 
     // Contact point objects that can be reused
     var contactPointPool = [];
