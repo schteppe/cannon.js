@@ -5071,44 +5071,25 @@ CANNON.ContactGenerator = function(){
  * @brief Constraint base class
  * @author schteppe
  */
-CANNON.Constraint = function(){
-
-  /**
-   * @property array equations
-   * @brief A number of CANNON.Equation's that belongs to this Constraint
-   * @memberof CANNON.Constraint
-   */
-  this.equations = [];
+CANNON.Constraint = function(bi,bj,minForce,maxForce){
   this.id = -1;
-  this.minForce = -1e6;
-  this.maxForce = 1e6;
+  this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
+  this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
+  this.bi = bi;
+  this.bj = bj;
 };
 CANNON.Constraint.prototype.constructor = CANNON.Constraint;
-
-/**
- * @method update
- * @memberof CANNON.Constraint
- * @brief Updates the internal numbers, calculates the Jacobian etc.
- */
-CANNON.Constraint.prototype.update = function(){
-    throw "update() not implemented in this Constraint subclass!";
-};
 /**
  * @class CANNON.ContactConstraint
  * @brief Contact constraint class
  * @author schteppe
- * @param CANNON.RigidBody bodyA
- * @param CANNON.RigidBody bodyB
- * @param float friction
+ * @param CANNON.RigidBody bj
+ * @param CANNON.RigidBody bi
  * @extends CANNON.Constraint
- * @todo integrate with the World class
  */
 CANNON.ContactConstraint = function(bi,bj){
-    CANNON.Constraint.call(this);
+    CANNON.Constraint.call(this,bi,bj,0,1e6);
     this.penetration = 0.0;
-    this.bi = bi;
-    this.bj = bj;
-    this.slipForce = 0.0;
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
@@ -5120,9 +5101,6 @@ CANNON.ContactConstraint = function(bi,bj){
 
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
-
-    this.minForce = 0.0; // Force must be repelling
-    this.maxForce = 1e6;
 
     this.relVel = new CANNON.Vec3();
     this.relForce = new CANNON.Vec3();
@@ -5188,7 +5166,7 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     return B;
 };
 
-// Compute C = GMG+eps
+// Compute C = GMG+eps in the SPOOK equation
 CANNON.ContactConstraint.prototype.computeC = function(eps){
     var bi = this.bi;
     var bj = this.bj;
@@ -5254,7 +5232,8 @@ CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
         var I = this.invIj;
         bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
     }
-};/**
+};
+/**
  * @class CANNON.DistanceConstraint
  * @brief Distance constraint class
  * @author schteppe
@@ -5268,7 +5247,7 @@ CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
     this.body_j = bodyB;
     this.distance = Number(distance);
     var eq = new CANNON.Equation(bodyA, bodyB instanceof CANNON.Vec3 ? null : bodyB);
-    this.equations.push(eq);
+    //this.equations.push(eq);
 };
 
 CANNON.DistanceConstraint.prototype = new CANNON.Constraint();
@@ -5392,13 +5371,11 @@ CANNON.Equation.prototype.setDefaultForce = function(){
  * @author schteppe
  * @param CANNON.RigidBody bi
  * @param CANNON.RigidBody bj
+ * @param float slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
  * @extends CANNON.Constraint
  */
-CANNON.FrictionConstraint = function(bi,bj){
-    CANNON.Constraint.call(this);
-
-    this.bi = bi;
-    this.bj = bj;
+CANNON.FrictionConstraint = function(bi,bj,slipForce){
+    CANNON.Constraint.call(this,bi,bj,-slipForce,slipForce);
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
@@ -5411,10 +5388,6 @@ CANNON.FrictionConstraint = function(bi,bj){
 
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
-
-    // should be +-F_friction = +-mu * F_normal = +-mu * m * g
-    this.minForce = -10;
-    this.maxForce =  10; 
 
     this.relVel = new CANNON.Vec3();
     this.relForce = new CANNON.Vec3();
@@ -5470,7 +5443,7 @@ CANNON.FrictionConstraint.prototype.computeB = function(a,b,h){
     return B;
 };
 
-// Compute C = GMG+eps
+// Compute C = G * Minv * G + eps
 CANNON.FrictionConstraint.prototype.computeC = function(eps){
     var bi = this.bi;
     var bj = this.bj;

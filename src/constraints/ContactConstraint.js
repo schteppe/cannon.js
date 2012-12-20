@@ -2,18 +2,13 @@
  * @class CANNON.ContactConstraint
  * @brief Contact constraint class
  * @author schteppe
- * @param CANNON.RigidBody bodyA
- * @param CANNON.RigidBody bodyB
- * @param float friction
+ * @param CANNON.RigidBody bj
+ * @param CANNON.RigidBody bi
  * @extends CANNON.Constraint
- * @todo integrate with the World class
  */
 CANNON.ContactConstraint = function(bi,bj){
-    CANNON.Constraint.call(this);
+    CANNON.Constraint.call(this,bi,bj,0,1e6);
     this.penetration = 0.0;
-    this.bi = bi;
-    this.bj = bj;
-    this.slipForce = 0.0;
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
@@ -25,9 +20,6 @@ CANNON.ContactConstraint = function(bi,bj){
 
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
-
-    this.minForce = 0.0; // Force must be repelling
-    this.maxForce = 1e6;
 
     this.relVel = new CANNON.Vec3();
     this.relForce = new CANNON.Vec3();
@@ -93,7 +85,7 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     return B;
 };
 
-// Compute C = GMG+eps
+// Compute C = GMG+eps in the SPOOK equation
 CANNON.ContactConstraint.prototype.computeC = function(eps){
     var bi = this.bi;
     var bj = this.bj;

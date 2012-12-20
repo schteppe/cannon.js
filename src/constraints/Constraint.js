@@ -5,25 +5,11 @@
  * @brief Constraint base class
  * @author schteppe
  */
-CANNON.Constraint = function(){
-
-  /**
-   * @property array equations
-   * @brief A number of CANNON.Equation's that belongs to this Constraint
-   * @memberof CANNON.Constraint
-   */
-  this.equations = [];
+CANNON.Constraint = function(bi,bj,minForce,maxForce){
   this.id = -1;
-  this.minForce = -1e6;
-  this.maxForce = 1e6;
+  this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
+  this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
+  this.bi = bi;
+  this.bj = bj;
 };
 CANNON.Constraint.prototype.constructor = CANNON.Constraint;
-
-/**
- * @method update
- * @memberof CANNON.Constraint
- * @brief Updates the internal numbers, calculates the Jacobian etc.
- */
-CANNON.Constraint.prototype.update = function(){
-    throw "update() not implemented in this Constraint subclass!";
-};

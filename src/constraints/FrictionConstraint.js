@@ -4,13 +4,11 @@
  * @author schteppe
  * @param CANNON.RigidBody bi
  * @param CANNON.RigidBody bj
+ * @param float slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
  * @extends CANNON.Constraint
  */
-CANNON.FrictionConstraint = function(bi,bj){
-    CANNON.Constraint.call(this);
-
-    this.bi = bi;
-    this.bj = bj;
+CANNON.FrictionConstraint = function(bi,bj,slipForce){
+    CANNON.Constraint.call(this,bi,bj,-slipForce,slipForce);
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
@@ -23,10 +21,6 @@ CANNON.FrictionConstraint = function(bi,bj){
 
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
-
-    // should be +-F_friction = +-mu * F_normal = +-mu * m * g
-    this.minForce = -10;
-    this.maxForce =  10; 
 
     this.relVel = new CANNON.Vec3();
     this.relForce = new CANNON.Vec3();
