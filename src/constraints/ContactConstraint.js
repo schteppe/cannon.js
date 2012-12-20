@@ -140,8 +140,6 @@ CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
     var invMassj = bj.invMass;
     var n = this.ni;
 
-    //console.log("addToWlambda",bi.vlambda.toString(),bj.vlambda.toString());
-
     // Add to linear velocity
     bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
     bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
