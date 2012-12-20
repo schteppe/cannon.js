@@ -22,6 +22,9 @@ CANNON.ContactConstraint = function(bi,bj){
     this.rixw = new CANNON.Vec3();
     this.rjxw = new CANNON.Vec3();
 
+    this.invIi = new CANNON.Mat3();
+    this.invIj = new CANNON.Mat3();
+
     this.minForce = 0.0; // Force must be repelling
     this.maxForce = 1e6;
 
@@ -53,7 +56,13 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     var relVel = this.relVel;
     var relForce = this.relForce;
     var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+    var invMassj = bi.invMass;
+
+    var invIi = this.invIi;
+    var invIj = this.invIj;
+
+    invIi.setTrace(bi.invInertia);
+    invIj.setTrace(bj.invInertia);
 
     var n = this.ni;
 
@@ -61,29 +70,40 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     ri.cross(n,rixn);
     rj.cross(n,rjxn);
 
-    vj.vsub(vi,relVel);
-    relForce.set(   ( fj.x*invMassj - fi.x*invMassi ) ,
-                    ( fj.y*invMassj - fi.y*invMassi ) ,
-                    ( fj.z*invMassj - fi.z*invMassi ) );
-
     // Do contact Constraint!
-    var q = -Math.abs(this.penetration);
+    var Gq = -Math.abs(this.penetration);
 
     // Compute iteration
-    var B = -q * a - relVel.dot(n) * b - relForce.dot(n) * h;
+    var GW = vj.dot(n) - vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
+    var GiMf = fj.dot(n)*invMassi - fi.dot(n)*invMassj + rjxn.dot(invIj.vmult(tauj)) - rixn.dot(invIi.vmult(taui)) ;
+    var B = - Gq * a - GW * b - h*GiMf;
+
+    console.log(B);
+
     return B;
 };
 
 // Compute C = GMG+eps
 CANNON.ContactConstraint.prototype.computeC = function(eps){
+    var bi = this.bi;
+    var bj = this.bj;
     var rixn = this.rixn;
     var rjxn = this.rjxn;
     var invMassi = this.bi.invMass;
     var invMassj = this.bj.invMass;
 
-    
+    var C = invMassi + invMassj + eps;
 
-    var C = (invMassi + invMassj + eps); // Should include angular stuff
+    var invIi = this.invIi;
+    var invIj = this.invIj;
+
+    invIi.setTrace(bi.invInertia);
+    invIj.setTrace(bj.invInertia);
+
+    // Compute rxn * I * rxn for each body
+    C += invIi.vmult(rixn).dot(rixn);
+    C -= invIj.vmult(rjxn).dot(rjxn);
+
     return C;
 };
 
@@ -92,11 +112,11 @@ CANNON.ContactConstraint.prototype.computeGWlambda = function(){
     var bj = this.bj;
 
     var GWlambda = 0.0;
-    var ulambda = this.bj.vlambda.vsub(this.bi.vlambda);
+    var ulambda = bj.vlambda.vsub(bi.vlambda);
     GWlambda += ulambda.dot(this.ni);
 
     // Angular
-    GWlambda += bi.wlambda.dot(this.rixn);
+    GWlambda -= bi.wlambda.dot(this.rixn);
     GWlambda += bj.wlambda.dot(this.rjxn);
 
     return GWlambda;
@@ -111,13 +131,19 @@ CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
     var invMassj = bj.invMass;
     var n = this.ni;
 
+    //console.log("addToWlambda",bi.vlambda.toString(),bj.vlambda.toString());
+
     // Add to linear velocity
     bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
     bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
 
     // Add to angular velocity
-    if(bi.wlambda)
-        bi.wlambda.vsub(rixn.mult(bi.inertia.norm()*deltalambda),bi.wlambda);
-    if(bj.wlambda)
-        bj.wlambda.vadd(rjxn.mult(bj.inertia.norm()*deltalambda),bj.wlambda);
+    if(bi.wlambda){
+        var I = this.invIi;
+        bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
+    }
+    if(bj.wlambda){
+        var I = this.invIj;
+        bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
+    }
 };

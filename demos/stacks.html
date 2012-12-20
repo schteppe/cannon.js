@@ -27,13 +27,13 @@
           // Box 1
           var boxShape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
           var b1 = new CANNON.RigidBody(5,boxShape);
-          b1.position.set(0,0,3*size);
+          b1.position.set(0,0,1*size);
           world.add(b1);
           demo.addVisual(b1);
       
           // Box 2
           var b2 = new CANNON.RigidBody(5,boxShape);
-          b2.position.set(0,0,1*size);
+          b2.position.set(3*size,0,1*size);
           world.add(b2);
           demo.addVisual(b2);
         });
@@ -146,10 +146,10 @@
       
       function setupWorld(demo){
         var world = demo.getWorld();
-        world.gravity.set(0,0,-40);
+        world.gravity.set(0,0,-10);
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 30;
-        world.solver.setSpookParams(5000000000,3);
+        world.solver.iterations = 20;
+        world.solver.setSpookParams(1000000000,2);
       
         // ground plane
         var groundShape = new CANNON.Plane();

@@ -463,6 +463,17 @@ CANNON.Mat3.prototype.identity = function(){
 };
 
 /**
+ * @method setTrace
+ * @memberof CANNON.Mat3
+ * @brief Sets the matrix diagonal elements from a Vec3
+ */
+CANNON.Mat3.prototype.setTrace = function(vec3){
+    this.elements[0] = vec3.x;
+    this.elements[4] = vec3.y;
+    this.elements[8] = vec3.z;
+};
+
+/**
  * @method vmult
  * @memberof CANNON.Mat3
  * @brief Matrix-Vector multiplication
@@ -476,8 +487,7 @@ CANNON.Mat3.prototype.vmult = function(v,target){
     var targetvec = [0, 0, 0];
     for(var i=0; i<3; i++){
         for(var j=0; j<3; j++){
-          targetvec[j] += this.elements[i+3*j]*vec[i]; // instead of  
-        //targetvec[i] += this.elements[i+3*j]*vec[i]
+          targetvec[j] += this.elements[i+3*j]*vec[i];
         }
     }
 
@@ -3007,11 +3017,10 @@ CANNON.Solver = function(){
      * When tolerance is reached, the system is assumed to be converged.
      * @property float tolerance
      */
-    this.tolerance = 0.001;
+    this.tolerance = 0;
     this.constraints = [];
 
     this.setSpookParams(this.k,this.d);
-    //this.reset(0);
 
     /**
     * @property bool debug
@@ -3065,8 +3074,8 @@ CANNON.Solver.prototype.solve = function(dt,world){
     for(var i=0; i<Nc; i++){
         var c = constraints[i];
         lambda.push(0.0);
-        Cs.push(c.computeC(eps));
         Bs.push(c.computeB(a,b,h));
+        Cs.push(c.computeC(eps));
     }
 
     // Each body has a lambdaVel property that we will delete later..
@@ -3074,55 +3083,30 @@ CANNON.Solver.prototype.solve = function(dt,world){
     var B;
     var deltalambda;
     var deltalambdaTot;
-    var relVel = new CANNON.Vec3();       //Relative velocity between constraint boides
-    var dir = new CANNON.Vec3();          //Constant direction
-    var relForce = new CANNON.Vec3();     //Relative force
-
 
     if(Nc > 0){
+
+        // Reset vlambda
+        for(var i=0; i<bodies.length; i++){
+            bodies[i].vlambda.set(0,0,0);
+            bodies[i].wlambda.set(0,0,0);
+        }
+
+        // Iterate over constraints
         for(iter=0; iter<maxIter; iter++){
 
-            // Reset
+            // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
-            for(var i=0; i<bodies.length; i++){
-                bodies[i].vlambda.set(0,0,0);
-                bodies[i].wlambda.set(0,0,0);
-            }
 
             for(var j=0; j<Nc; j++){
 
                 var c = constraints[j];
-                c.ni.negate(dir);
-
-                /*var bi = c.bi;
-                var bj = c.bj;
-
-                var vi = bi.velocity;
-                var wi = bi.angularVelocity;
-                var fi = bi.force;
-                var invMassi = bi.invMass;
-
-                var vj = bj.velocity;
-                var wj = bj.angularVelocity;
-                var fj = bj.force;
-                var invMassj = bj.invMass;
-
-                vi.vsub(vj,relVel);
-                relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
-                                ( fi.y*invMassi - fj.y*invMassj ) ,
-                                ( fi.z*invMassi - fj.z*invMassj ) );
-
-                // Do contact Constraint!
-                q = -Math.abs(c.penetration);
-                */
 
                 // Compute iteration
-                //B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
                 B = Bs[j];
-                //var C = (invMassi + invMassj + eps);
                 var C = Cs[j];
-                var GWlambda = c.computeGWlambda(eps); //bi.vlambda.vsub(bj.vlambda).dot(dir);
-                deltalambda = (1.0/C) * (B - GWlambda - eps * lambda[j]);
+                var GWlambda = c.computeGWlambda(eps);
+                deltalambda = ( 1.0 / C ) * ( B - GWlambda - eps * lambda[j] );
 
                 if(lambda[j] + deltalambda < c.minForce || lambda[j] + deltalambda > c.maxForce){
                     deltalambda = -lambda[j];
@@ -3132,26 +3116,25 @@ CANNON.Solver.prototype.solve = function(dt,world){
                 deltalambdaTot += Math.abs(deltalambda);
 
                 c.addToWlambda(deltalambda);
-                //bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
-                //bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
-            } 
+            }
 
-            // If converged - stop iterate
-            if(deltalambdaTot < tol){
-                break;
-            }  
+            // If the total error is small enough - stop iterate
+            if(deltalambdaTot < tol) break;
         }
 
         // Add result to velocity
-        for(var j=0; j<bodies.length; j++){
-            var b = bodies[j];
+        for(var i=0; i<bodies.length; i++){
+            var b = bodies[i];
             b.velocity.vadd(b.vlambda, b.velocity);
             if(b.angularVelocity)
                 b.angularVelocity.vadd(b.wlambda, b.angularVelocity);
         }
+
+        console.log(lambda);
     }
 
     errorTot = deltalambdaTot;
+
     return iter; 
 };
 
@@ -5127,6 +5110,11 @@ CANNON.ContactConstraint = function(bi,bj){
     this.ni = new CANNON.Vec3();
     this.rixn = new CANNON.Vec3();
     this.rjxn = new CANNON.Vec3();
+    this.rixw = new CANNON.Vec3();
+    this.rjxw = new CANNON.Vec3();
+
+    this.invIi = new CANNON.Mat3();
+    this.invIj = new CANNON.Mat3();
 
     this.minForce = 0.0; // Force must be repelling
     this.maxForce = 1e6;
@@ -5159,7 +5147,13 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     var relVel = this.relVel;
     var relForce = this.relForce;
     var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+    var invMassj = bi.invMass;
+
+    var invIi = this.invIi;
+    var invIj = this.invIj;
+
+    invIi.setTrace(bi.invInertia);
+    invIj.setTrace(bj.invInertia);
 
     var n = this.ni;
 
@@ -5167,23 +5161,40 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     ri.cross(n,rixn);
     rj.cross(n,rjxn);
 
-    vj.vsub(vi,relVel);
-    relForce.set(   ( fj.x*invMassj - fi.x*invMassi ) ,
-                    ( fj.y*invMassj - fi.y*invMassi ) ,
-                    ( fj.z*invMassj - fi.z*invMassi ) );
-
     // Do contact Constraint!
-    var q = -Math.abs(this.penetration);
+    var Gq = -Math.abs(this.penetration);
 
     // Compute iteration
-    var B = -q * a - relVel.dot(n) * b - relForce.dot(n) * h;
+    var GW = vj.dot(n) - vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
+    var GiMf = fj.dot(n)*invMassi - fi.dot(n)*invMassj + rjxn.dot(invIj.vmult(tauj)) - rixn.dot(invIi.vmult(taui)) ;
+    var B = - Gq * a - GW * b - h*GiMf;
+
+    console.log(B);
+
     return B;
 };
 
+// Compute C = GMG+eps
 CANNON.ContactConstraint.prototype.computeC = function(eps){
+    var bi = this.bi;
+    var bj = this.bj;
+    var rixn = this.rixn;
+    var rjxn = this.rjxn;
     var invMassi = this.bi.invMass;
     var invMassj = this.bj.invMass;
-    var C = (invMassi + invMassj + eps); // Should include angular stuff
+
+    var C = invMassi + invMassj + eps;
+
+    var invIi = this.invIi;
+    var invIj = this.invIj;
+
+    invIi.setTrace(bi.invInertia);
+    invIj.setTrace(bj.invInertia);
+
+    // Compute rxn * I * rxn for each body
+    C += invIi.vmult(rixn).dot(rixn);
+    C -= invIj.vmult(rjxn).dot(rjxn);
+
     return C;
 };
 
@@ -5192,11 +5203,11 @@ CANNON.ContactConstraint.prototype.computeGWlambda = function(){
     var bj = this.bj;
 
     var GWlambda = 0.0;
-    var ulambda = this.bj.vlambda.vsub(this.bi.vlambda);
+    var ulambda = bj.vlambda.vsub(bi.vlambda);
     GWlambda += ulambda.dot(this.ni);
 
     // Angular
-    GWlambda += bi.wlambda.dot(this.rixn);
+    GWlambda -= bi.wlambda.dot(this.rixn);
     GWlambda += bj.wlambda.dot(this.rjxn);
 
     return GWlambda;
@@ -5211,15 +5222,21 @@ CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
     var invMassj = bj.invMass;
     var n = this.ni;
 
+    //console.log("addToWlambda",bi.vlambda.toString(),bj.vlambda.toString());
+
     // Add to linear velocity
     bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
     bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
 
     // Add to angular velocity
-    if(bi.wlambda)
-        bi.wlambda.vsub(rixn.mult(bi.inertia.norm()*deltalambda),bi.wlambda);
-    if(bj.wlambda)
-        bj.wlambda.vadd(rjxn.mult(bj.inertia.norm()*deltalambda),bj.wlambda);
+    if(bi.wlambda){
+        var I = this.invIi;
+        bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
+    }
+    if(bj.wlambda){
+        var I = this.invIj;
+        bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
+    }
 };/**
  * @class CANNON.DistanceConstraint
  * @brief Distance constraint class

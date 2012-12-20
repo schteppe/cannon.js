@@ -46,6 +46,17 @@ CANNON.Mat3.prototype.identity = function(){
 };
 
 /**
+ * @method setTrace
+ * @memberof CANNON.Mat3
+ * @brief Sets the matrix diagonal elements from a Vec3
+ */
+CANNON.Mat3.prototype.setTrace = function(vec3){
+    this.elements[0] = vec3.x;
+    this.elements[4] = vec3.y;
+    this.elements[8] = vec3.z;
+};
+
+/**
  * @method vmult
  * @memberof CANNON.Mat3
  * @brief Matrix-Vector multiplication
@@ -59,8 +70,7 @@ CANNON.Mat3.prototype.vmult = function(v,target){
     var targetvec = [0, 0, 0];
     for(var i=0; i<3; i++){
         for(var j=0; j<3; j++){
-          targetvec[j] += this.elements[i+3*j]*vec[i]; // instead of  
-        //targetvec[i] += this.elements[i+3*j]*vec[i]
+          targetvec[j] += this.elements[i+3*j]*vec[i];
         }
     }
 

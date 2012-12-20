@@ -33,10 +33,10 @@
       
         // Create world
         var world = demo.getWorld();
-        world.gravity.set(0,0,-40);
+        world.gravity.set(0,0,-10);
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 1;
-        world.solver.setSpookParams(10000000000,2);
+        world.solver.iterations = 10;
+        world.solver.setSpookParams(1000000000000,2);
       
         // ground plane
         var groundShape = new CANNON.Plane();

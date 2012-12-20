@@ -63,11 +63,10 @@ CANNON.Solver = function(){
      * When tolerance is reached, the system is assumed to be converged.
      * @property float tolerance
      */
-    this.tolerance = 0.001;
+    this.tolerance = 0;
     this.constraints = [];
 
     this.setSpookParams(this.k,this.d);
-    //this.reset(0);
 
     /**
     * @property bool debug
@@ -121,8 +120,8 @@ CANNON.Solver.prototype.solve = function(dt,world){
     for(var i=0; i<Nc; i++){
         var c = constraints[i];
         lambda.push(0.0);
-        Cs.push(c.computeC(eps));
         Bs.push(c.computeB(a,b,h));
+        Cs.push(c.computeC(eps));
     }
 
     // Each body has a lambdaVel property that we will delete later..
@@ -130,55 +129,30 @@ CANNON.Solver.prototype.solve = function(dt,world){
     var B;
     var deltalambda;
     var deltalambdaTot;
-    var relVel = new CANNON.Vec3();       //Relative velocity between constraint boides
-    var dir = new CANNON.Vec3();          //Constant direction
-    var relForce = new CANNON.Vec3();     //Relative force
-
 
     if(Nc > 0){
+
+        // Reset vlambda
+        for(var i=0; i<bodies.length; i++){
+            bodies[i].vlambda.set(0,0,0);
+            bodies[i].wlambda.set(0,0,0);
+        }
+
+        // Iterate over constraints
         for(iter=0; iter<maxIter; iter++){
 
-            // Reset
+            // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
-            for(var i=0; i<bodies.length; i++){
-                bodies[i].vlambda.set(0,0,0);
-                bodies[i].wlambda.set(0,0,0);
-            }
 
             for(var j=0; j<Nc; j++){
 
                 var c = constraints[j];
-                c.ni.negate(dir);
-
-                /*var bi = c.bi;
-                var bj = c.bj;
-
-                var vi = bi.velocity;
-                var wi = bi.angularVelocity;
-                var fi = bi.force;
-                var invMassi = bi.invMass;
-
-                var vj = bj.velocity;
-                var wj = bj.angularVelocity;
-                var fj = bj.force;
-                var invMassj = bj.invMass;
-
-                vi.vsub(vj,relVel);
-                relForce.set(   ( fi.x*invMassi - fj.x*invMassj ) ,
-                                ( fi.y*invMassi - fj.y*invMassj ) ,
-                                ( fi.z*invMassi - fj.z*invMassj ) );
-
-                // Do contact Constraint!
-                q = -Math.abs(c.penetration);
-                */
 
                 // Compute iteration
-                //B = -q * a - relVel.dot(dir) * b - relForce.dot(dir) * h;
                 B = Bs[j];
-                //var C = (invMassi + invMassj + eps);
                 var C = Cs[j];
-                var GWlambda = c.computeGWlambda(eps); //bi.vlambda.vsub(bj.vlambda).dot(dir);
-                deltalambda = (1.0/C) * (B - GWlambda - eps * lambda[j]);
+                var GWlambda = c.computeGWlambda(eps);
+                deltalambda = ( 1.0 / C ) * ( B - GWlambda - eps * lambda[j] );
 
                 if(lambda[j] + deltalambda < c.minForce || lambda[j] + deltalambda > c.maxForce){
                     deltalambda = -lambda[j];
@@ -188,26 +162,25 @@ CANNON.Solver.prototype.solve = function(dt,world){
                 deltalambdaTot += Math.abs(deltalambda);
 
                 c.addToWlambda(deltalambda);
-                //bi.vlambda.vadd(dir.mult(invMassi * deltalambda),bi.vlambda);
-                //bj.vlambda.vsub(dir.mult(invMassj * deltalambda),bj.vlambda);
-            } 
+            }
 
-            // If converged - stop iterate
-            if(deltalambdaTot < tol){
-                break;
-            }  
+            // If the total error is small enough - stop iterate
+            if(deltalambdaTot < tol) break;
         }
 
         // Add result to velocity
-        for(var j=0; j<bodies.length; j++){
-            var b = bodies[j];
+        for(var i=0; i<bodies.length; i++){
+            var b = bodies[i];
             b.velocity.vadd(b.vlambda, b.velocity);
             if(b.angularVelocity)
                 b.angularVelocity.vadd(b.wlambda, b.angularVelocity);
         }
+
+        console.log(lambda);
     }
 
     errorTot = deltalambdaTot;
+
     return iter; 
 };
 
