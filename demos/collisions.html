@@ -18,9 +18,7 @@
        * For debugging different kinds of pair collisions
        */
       var demo = new CANNON.Demo({
-        stepFrequency:180,
-        k:5000,
-        d:10
+        stepFrequency:60,
       });
       
       demo.addScene("Sphere / sphere",function(){
@@ -131,6 +129,7 @@
         world.gravity.set(0,0,0); // no gravity
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 2;
+        world.solver.setSpookParams(5000000,20);
         return world;
       }
       

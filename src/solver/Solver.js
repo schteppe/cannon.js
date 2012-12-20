@@ -134,8 +134,9 @@ CANNON.Solver.prototype.solve = function(dt,world){
 
         // Reset vlambda
         for(var i=0; i<bodies.length; i++){
-            bodies[i].vlambda.set(0,0,0);
-            bodies[i].wlambda.set(0,0,0);
+            var b = bodies[i];
+            b.vlambda.set(0,0,0);
+            if(b.wlambda) b.wlambda.set(0,0,0);
         }
 
         // Iterate over constraints

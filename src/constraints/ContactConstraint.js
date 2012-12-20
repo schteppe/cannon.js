@@ -45,14 +45,14 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     var rjxn = this.rjxn;
 
     var vi = bi.velocity;
-    var wi = bi.angularVelocity;
+    var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
     var fi = bi.force;
-    var taui = bi.tau;
+    var taui = bi.tau ? bi.tau : new CANNON.Vec3();
 
     var vj = bj.velocity;
-    var wj = bj.angularVelocity;
+    var wj = bj.angularVelocity ? bj.angularVelocity : new CANNON.Vec3();
     var fj = bj.force;
-    var tauj = bj.tau;
+    var tauj = bj.tau ? bj.tau : new CANNON.Vec3();
 
     var relVel = this.relVel;
     var relForce = this.relForce;
@@ -63,8 +63,10 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    invIi.setTrace(bi.invInertia);
-    invIj.setTrace(bj.invInertia);
+    if(bi.invInertia) invIi.setTrace(bi.invInertia);
+    else              invIi.identity();
+    if(bj.invInertia) invIj.setTrace(bj.invInertia);
+    else              invIj.identity();
 
     var n = this.ni;
 
@@ -105,8 +107,10 @@ CANNON.ContactConstraint.prototype.computeC = function(eps){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    invIi.setTrace(bi.invInertia);
-    invIj.setTrace(bj.invInertia);
+    if(bi.invInertia) invIi.setTrace(bi.invInertia);
+    else              invIi.identity();
+    if(bj.invInertia) invIj.setTrace(bj.invInertia);
+    else              invIj.identity();
 
     // Compute rxn * I * rxn for each body
     C += invIi.vmult(rixn).dot(rixn);
@@ -125,8 +129,10 @@ CANNON.ContactConstraint.prototype.computeGWlambda = function(){
     GWlambda += ulambda.dot(this.ni);
 
     // Angular
-    GWlambda -= bi.wlambda.dot(this.rixn);
-    GWlambda += bj.wlambda.dot(this.rjxn);
+    if(bi.wlambda)
+        GWlambda -= bi.wlambda.dot(this.rixn);
+    if(bj.wlambda)
+        GWlambda += bj.wlambda.dot(this.rjxn);
 
     return GWlambda;
 };
