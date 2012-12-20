@@ -175,8 +175,6 @@ CANNON.Solver.prototype.solve = function(dt,world){
             if(b.angularVelocity)
                 b.angularVelocity.vadd(b.wlambda, b.angularVelocity);
         }
-
-        console.log(lambda);
     }
 
     errorTot = deltalambdaTot;

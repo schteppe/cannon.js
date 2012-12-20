@@ -15,6 +15,7 @@ CANNON.ContactConstraint = function(bi,bj){
     this.bj = bj;
     this.slipForce = 0.0;
     this.ri = new CANNON.Vec3();
+    this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
     this.ni = new CANNON.Vec3();
     this.rixn = new CANNON.Vec3();
@@ -55,8 +56,9 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
 
     var relVel = this.relVel;
     var relForce = this.relForce;
+    var penetrationVec = this.penetrationVec;
     var invMassi = bi.invMass;
-    var invMassj = bi.invMass;
+    var invMassj = bj.invMass;
 
     var invIi = this.invIi;
     var invIj = this.invIj;
@@ -70,15 +72,21 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     ri.cross(n,rixn);
     rj.cross(n,rjxn);
 
-    // Do contact Constraint!
-    var Gq = -Math.abs(this.penetration);
+    // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
+    var penetrationVec = this.penetrationVec;
+    penetrationVec.set(0,0,0);
+    penetrationVec.vadd(bj.position,penetrationVec);
+    penetrationVec.vadd(rj,penetrationVec);
+    penetrationVec.vsub(bi.position,penetrationVec);
+    penetrationVec.vsub(ri,penetrationVec);
+
+    var Gq = n.dot(penetrationVec);//-Math.abs(this.penetration);
 
     // Compute iteration
     var GW = vj.dot(n) - vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-    var GiMf = fj.dot(n)*invMassi - fi.dot(n)*invMassj + rjxn.dot(invIj.vmult(tauj)) - rixn.dot(invIi.vmult(taui)) ;
-    var B = - Gq * a - GW * b - h*GiMf;
+    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj.vmult(tauj)) - rixn.dot(invIi.vmult(taui)) ;
 
-    console.log(B);
+    var B = - Gq * a - GW * b - h*GiMf;
 
     return B;
 };
@@ -89,8 +97,8 @@ CANNON.ContactConstraint.prototype.computeC = function(eps){
     var bj = this.bj;
     var rixn = this.rixn;
     var rjxn = this.rjxn;
-    var invMassi = this.bi.invMass;
-    var invMassj = this.bj.invMass;
+    var invMassi = bi.invMass;
+    var invMassj = bj.invMass;
 
     var C = invMassi + invMassj + eps;
 
@@ -102,7 +110,8 @@ CANNON.ContactConstraint.prototype.computeC = function(eps){
 
     // Compute rxn * I * rxn for each body
     C += invIi.vmult(rixn).dot(rixn);
-    C -= invIj.vmult(rjxn).dot(rjxn);
+    C += invIj.vmult(rjxn).dot(rjxn);
+
 
     return C;
 };
