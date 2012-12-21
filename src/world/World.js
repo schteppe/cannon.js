@@ -740,8 +740,14 @@ CANNON.World.prototype.step = function(dt){
      */
     
     // Add user-added constraints
-    for(var i=0; i<constraints.length; i++)
-        solver.addConstraint(constraints[i]);
+    for(var i=0; i<constraints.length; i++){
+        var c = constraints[i];
+        c.update();
+        for(var name in c.equations){
+            var eq = c.equations[name];
+            solver.addConstraint(eq);
+        }
+    }
 
     // Solve the constrained system
     solver.solve(dt,world);

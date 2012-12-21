@@ -4413,8 +4413,14 @@ CANNON.World.prototype.step = function(dt){
      */
     
     // Add user-added constraints
-    for(var i=0; i<constraints.length; i++)
-        solver.addConstraint(constraints[i]);
+    for(var i=0; i<constraints.length; i++){
+        var c = constraints[i];
+        c.update();
+        for(var name in c.equations){
+            var eq = c.equations[name];
+            solver.addConstraint(eq);
+        }
+    }
 
     // Solve the constrained system
     solver.solve(dt,world);
@@ -5107,7 +5113,7 @@ CANNON.Constraint = function(bi,bj,minForce,maxForce){
 CANNON.Constraint.prototype.constructor = CANNON.Constraint;
 /**
  * @class CANNON.ContactConstraint
- * @brief Contact constraint class
+ * @brief Contact/non-penetration constraint
  * @author schteppe
  * @param CANNON.RigidBody bj
  * @param CANNON.RigidBody bi
@@ -5640,8 +5646,7 @@ CANNON.PointToPointConstraint.prototype.computeB = function(a,b,h){
     bj.position.vsub(bi.position,n); // Use a "penetration normal" along the distance vector in between
     n.normalize();
 
-
-    var Gq = n.dot(penetrationVec) - rjxn.dot(penetrationVec) + rixn.dot(penetrationVec);
+    var Gq = n.dot(penetrationVec);
 
     // Compute iteration
     var GW = vj.dot(n) - vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
@@ -5716,6 +5721,47 @@ CANNON.PointToPointConstraint.prototype.addToWlambda = function(deltalambda){
         var I = this.invIj;
         bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
     }
+};
+/*global CANNON:true */
+
+/**
+ * @class CANNON.PointToPointConstraint2
+ * @brief Connects two bodies at given offset points
+ * @extends CANNON.Constraint
+ * @author schteppe
+ * @param CANNON.Body bodyA
+ * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param CANNON.Body bodyB Optional. If specified, pivotB must also be specified, and bodyB will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param CANNON.Vec3 pivotB Optional. See pivotA.
+ */
+CANNON.PointToPointConstraint2 = function(bodyA,pivotA,bodyB,pivotB,maxForce){
+    // Equations to be fed to the solver
+    var eqs = this.equations = {
+        normal: new CANNON.ContactConstraint(bodyA,bodyB),
+        tangent1: new CANNON.ContactConstraint(bodyA,bodyB),
+        tangent2: new CANNON.ContactConstraint(bodyA,bodyB),
+    };
+
+    var normal = eqs.normal;
+    var t1 = eqs.tangent1;
+    var t2 = eqs.tangent2;
+
+    t1.minForce = t2.minForce = normal.minForce = -maxForce;
+    t1.maxForce = t2.maxForce = normal.maxForce =  maxForce;
+
+    // Update 
+    this.update = function(){
+        bodyB.position.vsub(bodyA.position,normal.ni);
+        normal.ni.normalize();
+        bodyA.quaternion.vmult(pivotA,normal.ri);
+        bodyB.quaternion.vmult(pivotB,normal.rj);
+
+        normal.ni.tangents(t1.ni,t2.ni);
+        normal.ri.copy(t1.ri);
+        normal.rj.copy(t1.rj);
+        normal.ri.copy(t2.ri);
+        normal.rj.copy(t2.rj);
+    };
 };
 if (typeof module !== 'undefined') {
     // export for node

@@ -26,7 +26,7 @@
             var mass = 0;
             var space = 0.1*size;
             
-            var N=5, last;
+            var N=2, last;
             for(var i=0; i<N; i++){
                 var boxbody = new CANNON.RigidBody(mass,boxShape);
                 boxbody.position.set(0,0,(N-i)*(size*2+2*space) + size*2+space);
@@ -37,10 +37,15 @@
 
                 if(i!=0){
                     // Connect this body to the last one
-                    var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(-size,0,size+space),last,new CANNON.Vec3(-size,0,-size-space));
-                    var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
-                    world.addConstraint(c1);
-                    world.addConstraint(c2);
+                    if(false){
+                        var c1 = new CANNON.PointToPointConstraint2(boxbody,new CANNON.Vec3(-size,0,size+space),last,new CANNON.Vec3(-size,0,-size-space));
+                        var c2 = new CANNON.PointToPointConstraint2(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
+                        world.addConstraint(c1);
+                        world.addConstraint(c2);
+                    } else {
+                        var c = new CANNON.PointToPointConstraint2(boxbody,new CANNON.Vec3(0,0,size+space),last,new CANNON.Vec3(0,0,-size-space));
+                        world.addConstraint(c);
+                    }
                 } else {
                     mass=0.3;
                 }
