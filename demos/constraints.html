@@ -38,12 +38,12 @@
                 if(i!=0){
                     // Connect this body to the last one
                     if(true){
-                        var c1 = new CANNON.PointToPointConstraint2(boxbody,new CANNON.Vec3(-size,0,size+space),last,new CANNON.Vec3(-size,0,-size-space));
-                        var c2 = new CANNON.PointToPointConstraint2(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
+                        var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(-size,0,size+space),last,new CANNON.Vec3(-size,0,-size-space));
+                        var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
                         world.addConstraint(c1);
                         world.addConstraint(c2);
                     } else {
-                        var c = new CANNON.PointToPointConstraint2(boxbody,new CANNON.Vec3(0,0,size+space),last,new CANNON.Vec3(0,0,-size-space));
+                        var c = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(0,0,size+space),last,new CANNON.Vec3(0,0,-size-space));
                         world.addConstraint(c);
                     }
                 } else {

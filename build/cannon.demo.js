@@ -311,7 +311,7 @@
             // Lines for distance constraints
             for(var ci=0; ci<world.constraints.length; ci++){
                 var c = world.constraints[ci];
-                if(!(c instanceof CANNON.PointToPointConstraint2))
+                if(!(c instanceof CANNON.PointToPointConstraint))
                     continue;
                 var n = c.equations.normal;
                 var bi=n.bi, bj=n.bj, relLine1 = p2pConstraintMeshCache.request(), relLine2 = p2pConstraintMeshCache.request(), diffLine = p2pConstraintMeshCache.request();
