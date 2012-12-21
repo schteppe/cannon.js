@@ -64,6 +64,10 @@ CANNON.RigidBody = function(mass,shape,material){
     this.inertia = new CANNON.Vec3();
     shape.calculateLocalInertia(mass,this.inertia);
 
+    this.inertiaWorld = new CANNON.Vec3();
+    this.inertia.copy(this.inertiaWorld);
+    this.inertiaWorldAutoUpdate = false;
+
     /**
      * @property CANNON.Vec3 intInertia
      * @memberof CANNON.RigidBody
@@ -71,13 +75,15 @@ CANNON.RigidBody = function(mass,shape,material){
     this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
                                       this.inertia.y>0 ? 1.0/this.inertia.y : 0,
                                       this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+    this.invInertiaWorld = new CANNON.Vec3();
+    this.invInertia.copy(this.invInertiaWorld);
+    this.invInertiaWorldAutoUpdate = false;
 
     /**
      * @property float angularDamping
      * @memberof CANNON.RigidBody
      */
     this.angularDamping = 0.01; // Perhaps default should be zero here?
-
 
     /**
      * @property CANNON.Vec3 aabbmin

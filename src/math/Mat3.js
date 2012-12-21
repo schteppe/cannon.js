@@ -45,6 +45,19 @@ CANNON.Mat3.prototype.identity = function(){
     this.elements[8] = 1;
 };
 
+CANNON.Mat3.prototype.setZero = function(){
+    var e = this.elements;
+    e[0] = 0;
+    e[1] = 0;
+    e[2] = 0;
+    e[3] = 0;
+    e[4] = 0;
+    e[5] = 0;
+    e[6] = 0;
+    e[7] = 0;
+    e[8] = 0;
+};
+
 /**
  * @method setTrace
  * @memberof CANNON.Mat3

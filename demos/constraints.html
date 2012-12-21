@@ -16,6 +16,38 @@
 
       var demo = new CANNON.Demo();
 
+
+      demo.addScene("links",function(){
+            var world = setupWorld(demo);
+            world.gravity.set(0,-5,-20);
+            world.solver.setSpookParams(10000000,5);
+            var size = 1;
+            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size*0.1,size));
+            var mass = 0;
+            var space = 0.1*size;
+            
+            var N=2, last;
+            for(var i=0; i<N; i++){
+                var boxbody = new CANNON.RigidBody(mass,boxShape);
+                boxbody.position.set(0,0,(N-i)*(size*2+2*space) + size*2+space);
+                boxbody.linearDamping=0.01;
+                boxbody.angularDamping=0.01;
+                world.add(boxbody);
+                demo.addVisual(boxbody);
+
+                if(i!=0){
+                    // Connect this body to the last one
+                    var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(-size*0,0,size+space),last,new CANNON.Vec3(-size*0,0,-size-space));
+                    //var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
+                    world.addConstraint(c1);
+                    //world.addConstraint(c2);
+                } else {
+                    mass=0.3;
+                }
+                last = boxbody;
+            }
+        });
+
       // Particle cloth on sphere
       demo.addScene("cloth on sphere",function(){
           var world = setupWorld(demo);
@@ -52,37 +84,6 @@
           demo.addVisual(body);
         });
 
-
-      demo.addScene("links",function(){
-            var world = setupWorld(demo);
-            world.gravity.set(0,-5,-20);
-            world.solver.setSpookParams(150,5);
-            var size = 1;
-            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size*0.1,size));
-            var mass = 0;
-            var space = 0.1*size;
-            
-            var N=5, last;
-            for(var i=0; i<N; i++){
-                var boxbody = new CANNON.RigidBody(mass,boxShape);
-                boxbody.position.set(0,0,(N-i)*(size*2+2*space) + size*2+space);
-                boxbody.linearDamping=0.01;
-                boxbody.angularDamping=0.01;
-                world.add(boxbody);
-                demo.addVisual(boxbody);
-
-                if(i!=0){
-                    // Connect this body to the last one
-                    var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(-size,0,size+space),last,new CANNON.Vec3(-size,0,-size-space));
-                    var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
-                    world.addConstraint(c1);
-                    world.addConstraint(c2);
-                } else {
-                    mass=0.3;
-                }
-                last = boxbody;
-            }
-        });
 
       demo.addScene("Sphere pendulum",function(){
             var world = setupWorld(demo);

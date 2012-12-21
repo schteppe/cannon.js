@@ -56,9 +56,9 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
     var invIj = this.invIj;
 
     if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity();
+    else              invIi.identity(); // ok?
     if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity();
+    else              invIj.identity(); // ok?
 
     var n = this.ni;
 
@@ -100,9 +100,9 @@ CANNON.ContactConstraint.prototype.computeC = function(eps){
     var invIj = this.invIj;
 
     if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity();
+    else              invIi.identity(); // ok?
     if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity();
+    else              invIj.identity(); // ok?
 
     // Compute rxn * I * rxn for each body
     C += invIi.vmult(rixn).dot(rixn);

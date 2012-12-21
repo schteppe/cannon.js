@@ -399,7 +399,8 @@ CANNON.World.prototype.step = function(dt){
         DYNAMIC = CANNON.Body.DYNAMIC,
         now = this._now,
         profilingStart,
-        cm = this.collision_matrix;
+        cm = this.collision_matrix,
+        constraints = this.constraints;
 
     if(doProfiling) profilingStart = now();
 
@@ -738,13 +739,17 @@ CANNON.World.prototype.step = function(dt){
     }
      */
     
+    // Add user-added constraints
+    for(var i=0; i<constraints.length; i++)
+        solver.addConstraint(constraints[i]);
+
+    // Solve the constrained system
     solver.solve(dt,world);
 
     if(doProfiling) profile.solve = now() - profilingStart;
 
     // Remove all contacts from solver
-    for(var i=0; i<contacts.length; i++)
-        solver.removeAllConstraints();
+    solver.removeAllConstraints();
 
     // Apply damping
     for(var i=0; i<N; i++){
@@ -839,6 +844,15 @@ CANNON.World.prototype.step = function(dt){
         var bi = bodies[i];
         var postStep = bi.postStep;
         postStep && postStep.call(bi);
+    }
+
+    // Update world inertias
+    for(var i=0; i<N; i++){
+        var b = bodies[i];
+        if(b.inertiaWorldAutoUpdate)
+            b.quaternion.vmult(b.inertia,b.inertiaWorld);
+        if(b.invInertiaWorldAutoUpdate)
+            b.quaternion.vmult(b.invInertia,b.invInertiaWorld);
     }
 
     // Sleeping update
