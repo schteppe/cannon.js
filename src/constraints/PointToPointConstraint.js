@@ -96,7 +96,8 @@ CANNON.PointToPointConstraint.prototype.computeB = function(a,b,h){
     penetrationVec.vsub(bi.position,penetrationVec);
     penetrationVec.vsub(ri,penetrationVec);
 
-    penetrationVec.copy(n);
+    //penetrationVec.copy(n);
+    bj.position.vsub(bi.position,n); // Use a "penetration normal" along the distance vector in between
     n.normalize();
 
     var Gq = n.dot(penetrationVec);

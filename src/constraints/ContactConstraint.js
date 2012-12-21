@@ -1,6 +1,6 @@
 /**
  * @class CANNON.ContactConstraint
- * @brief Contact constraint class
+ * @brief Contact/non-penetration constraint
  * @author schteppe
  * @param CANNON.RigidBody bj
  * @param CANNON.RigidBody bi
