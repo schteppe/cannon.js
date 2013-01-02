@@ -26,7 +26,7 @@
             var mass = 0;
             var space = 0.1*size;
             
-            var N=5, last;
+            var N=10, last;
             for(var i=0; i<N; i++){
                 var boxbody = new CANNON.RigidBody(mass,boxShape);
                 boxbody.position.set(0,0,(N-i)*(size*2+2*space) + size*2+space);
