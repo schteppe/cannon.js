@@ -174,7 +174,7 @@
                 world = new CANNON.World();
                 world.quatNormalizeSkip = 0;
                 world.quatNormalizeFast = false;
-                world.solver.setSpookParams(300,10);
+                world.solver.setSpookParams(1000000000,7);
                 world.solver.iterations = 5;
                 world.gravity.set(0,-20,0);
                 world.broadphase = new CANNON.NaiveBroadphase();
@@ -382,9 +382,9 @@
                                             shootDirection.z * shootVelo);
 
                     // Move the ball outside the player sphere
-                    x += shootDirection.x * (sphereShape.radius + ballShape.radius);
-                    y += shootDirection.y * (sphereShape.radius + ballShape.radius);
-                    z += shootDirection.z * (sphereShape.radius + ballShape.radius);
+                    x += shootDirection.x * (sphereShape.radius*1.02 + ballShape.radius);
+                    y += shootDirection.y * (sphereShape.radius*1.02 + ballShape.radius);
+                    z += shootDirection.z * (sphereShape.radius*1.02 + ballShape.radius);
                     ballBody.position.set(x,y,z);
                     ballMesh.position.set(x,y,z);
                     ballMesh.useQuaternion = true;

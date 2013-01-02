@@ -3527,6 +3527,65 @@ CANNON.World.prototype.numObjects = function(){
 };
 
 /**
+ * @method clearCollisionState
+ * @memberof CANNON.World
+ * @brief Clear the contact state for a body.
+ * @param CANNON.Body body
+ */
+CANNON.World.prototype.clearCollisionState = function(body){
+    var n = this.numObjects();
+    var i = body.id;
+    for(var idx=0; idx<n; idx++){
+        var j = idx;
+        if(i>j) cm[j+i*n] = 0;
+        else    cm[i+j*n] = 0;
+    }
+};
+
+
+
+// Keep track of contacts for current and previous timestep
+// 0: No contact between i and j
+// 1: Contact
+CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
+    var N = this.bodies.length;
+    if(typeof(current)=="undefined") current = true;
+    // i == column
+    // j == row
+    if((current && i<j) || // Current uses upper part of the matrix
+       (!current && i>j)){ // Previous uses lower part of the matrix
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+    return this.collision_matrix[i+j*N];
+}
+
+CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
+    var N = this.bodies.length;
+    if(typeof(current)==="undefined") current = true;
+    if( (current && i<j) || // Current uses upper part of the matrix
+        (!current && i>j)){ // Previous uses lower part of the matrix
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+    this.collision_matrix[i+j*N] = value;
+}
+
+// transfer old contact state data to T-1
+CANNON.World.prototype.collisionMatrixTick = function(){
+    var N = this.bodies.length
+    for(var i=0; i<N; i++){
+        for(var j=0; j<i; j++){
+            var currentState = this.collisionMatrixGet(i,j,true);
+            this.collisionMatrixSet(i,j,currentState,false);
+            this.collisionMatrixSet(i,j,0,true);
+        }
+    }
+}
+
+/**
  * @method add
  * @memberof CANNON.World
  * @brief Add a rigid body to the simulation.
@@ -3787,7 +3846,6 @@ CANNON.World.prototype.step = function(dt){
                 solver.addConstraint(c2);
             }
 
-            /*
             // Now we know that i and j are in contact. Set collision matrix state
             this.collisionMatrixSet(i,j,1,true);
 
@@ -3801,6 +3859,7 @@ CANNON.World.prototype.step = function(dt){
                     this.addCollisionImpulse(c,e,mu);
             }
 
+            /*
             var vi = bi.velocity;
             var wi = bi.angularVelocity;
             var vj = bj.velocity;
