@@ -291,7 +291,9 @@
                 if(!(c instanceof CANNON.DistanceConstraint))
                     continue;
 
-                var bi=c.body_i, bj=c.body_j, line = distanceConstraintMeshCache.request();
+                var nc = c.equations.normal;
+
+                var bi=nc.bi, bj=nc.bj, line = distanceConstraintMeshCache.request();
                 var i=bi.id, j=bj.id;
 
                 // Remember, bj is either a Vec3 or a Body.
@@ -787,6 +789,8 @@
         settings.gz = world.gravity.z+0.0;
         settings.k = world.solver.k;
         settings.d = world.solver.d;
+        settings.quatNormalizeSkip = world.quatNormalizeSkip;
+        settings.quatNormalizeFast = world.quatNormalizeFast;
         updategui();
 
         restartGeometryCaches();

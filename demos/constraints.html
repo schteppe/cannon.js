@@ -56,8 +56,8 @@
       // Particle cloth on sphere
       demo.addScene("cloth on sphere",function(){
           var world = setupWorld(demo);
-          world.solver.setSpookParams(1000,2);
-          world.solver.iterations = 20;
+          world.solver.setSpookParams(1000000000,2);
+          world.solver.iterations = 10;
           var dist = 0.2;
           var mass = 0.5;
           var Nrows = 15, Ncols = 15;
@@ -119,11 +119,12 @@
           var size = 0.5;
           var dist = size*2+0.12;
           var world = setupWorld(demo);
-          world.solver.setSpookParams(1000,2);
+          world.solver.setSpookParams(1e20,3);
           var sphereShape = new CANNON.Sphere(size);
           var mass = 1;
           var lastBody = null;
-          var N = 10;
+          var N = 20;
+          world.solver.iterations = N;
           for(var i=0; i<N; i++){
             // Create a new body
             var spherebody = new CANNON.RigidBody(i===0 ? 0 :mass,sphereShape);
@@ -135,13 +136,13 @@
             // Connect this body to the last one
             var c;
             if(lastBody!==null){
-              c = new CANNON.DistanceConstraint(spherebody,lastBody,dist);
-            } else {
+              world.addConstraint(c = new CANNON.DistanceConstraint(spherebody,lastBody,dist));
+            } /*else {
               c = new CANNON.DistanceConstraint(spherebody,
                                                 new CANNON.Vec3(0,0,N*dist),
                                                 0);
             }
-            world.addConstraint(c);
+            */
             lastBody = spherebody;
           }
         });
@@ -151,11 +152,11 @@
       // Particle cloth
       demo.addScene("Particle cloth",function(){
           var world = setupWorld(demo);
-          world.solver.setSpookParams(1000,2);
-          world.solver.iterations = 50;
+          world.solver.setSpookParams(1e20,3);
+          world.solver.iterations = 18;
           var dist = 0.2;
           var mass = 0.5;
-          var Nrows = 10, Ncols = 15;
+          var Nrows = 15, Ncols = 15;
           var bodies = {}; // bodies["i j"] => particle
           for(var i=0; i<Ncols; i++){
             for(var j=0; j<Nrows; j++){
@@ -182,7 +183,7 @@
       // Particle 3d object
       demo.addScene("3D cloth structure",function(){
           var world = setupWorld(demo);
-          world.solver.setSpookParams(5000,2);
+          world.solver.setSpookParams(1e9,2);
           world.solver.iterations = 10;
           var dist = 1;
           var mass = 1;
@@ -254,6 +255,9 @@
         groundBody.position.set(0,0,1);
         world.add(groundBody);
         demo.addVisual(groundBody);
+
+        world.quatNormalizeFast = false;
+        world.quatNormalizeSkip = 0;
 
         return world;
       };

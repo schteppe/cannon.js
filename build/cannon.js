@@ -4941,7 +4941,6 @@ CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
  * @param float distance
  */
 CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
-
     if(typeof(maxForce)=="undefined" )
         maxForce = 1e6;
 
