@@ -29,14 +29,14 @@ CANNON.Solver = function(){
     * @brief SPOOK parameter, spring stiffness
     * @memberof CANNON.Solver
     */
-    this.k = 10000;
+    this.k = 1e7;
 
     /**
     * @property float d
     * @brief SPOOK parameter, similar to damping
     * @memberof CANNON.Solver
     */
-    this.d = 1;
+    this.d = 5;
 
     /**
     * @property float a

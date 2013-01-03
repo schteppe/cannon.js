@@ -490,8 +490,7 @@ CANNON.World.prototype.step = function(dt){
     var p2 = pairs[1];
     if(doProfiling) profile.broadphase = now() - profilingStart;
 
-    // Reset contact solver
-    //solver.reset(N);
+    this.collisionMatrixTick();
 
     // Generate contacts
     if(doProfiling) profilingStart = now();

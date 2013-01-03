@@ -126,8 +126,8 @@
         var world = demo.getWorld();
         world.gravity.set(0,0,0); // no gravity
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 2;
-        world.solver.setSpookParams(5000000,20);
+        world.solver.iterations = 5;
+        world.solver.setSpookParams(1e6,10);
         return world;
       }
       

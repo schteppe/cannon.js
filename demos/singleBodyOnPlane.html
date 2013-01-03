@@ -36,7 +36,7 @@
         world.gravity.set(0,0,-10);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
-        world.solver.setSpookParams(1000000000000,2);
+        world.solver.setSpookParams(1e7,4);
       
         // ground plane
         var groundShape = new CANNON.Plane();

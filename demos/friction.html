@@ -23,7 +23,7 @@
         var world = demo.getWorld();
         world.broadphase = new CANNON.NaiveBroadphase();
         world.iterations = 10;
-        world.solver.setSpookParams(50000000,2);
+        world.solver.setSpookParams(1e8,3);
       
         // Materials
         var groundMaterial = new CANNON.Material("groundMaterial");

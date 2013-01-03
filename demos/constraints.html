@@ -20,7 +20,7 @@
       demo.addScene("links",function(){
             var world = setupWorld(demo);
             world.gravity.set(0,-1,-20);
-            world.solver.setSpookParams(10000000,5);
+            world.solver.setSpookParams(1e7,5);
             var size = 1;
             var boxShape = new CANNON.Box(new CANNON.Vec3(size,size*0.1,size));
             var mass = 0;
