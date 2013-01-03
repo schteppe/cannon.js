@@ -3,7 +3,6 @@
 /**
  * @class CANNON.PointToPointConstraint
  * @brief Connects two bodies at given offset points
- * @extends CANNON.Constraint
  * @author schteppe
  * @param CANNON.Body bodyA
  * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
@@ -13,9 +12,9 @@
 CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
     // Equations to be fed to the solver
     var eqs = this.equations = {
-        normal: new CANNON.ContactConstraint(bodyA,bodyB),
-        tangent1: new CANNON.ContactConstraint(bodyA,bodyB),
-        tangent2: new CANNON.ContactConstraint(bodyA,bodyB),
+        normal: new CANNON.ContactEquation(bodyA,bodyB),
+        tangent1: new CANNON.ContactEquation(bodyA,bodyB),
+        tangent2: new CANNON.ContactEquation(bodyA,bodyB),
     };
 
     var normal = eqs.normal;

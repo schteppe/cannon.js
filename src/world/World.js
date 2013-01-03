@@ -482,7 +482,6 @@ CANNON.World.prototype.step = function(dt){
         }
     }
 
-
     // 1. Collision detection
     if(doProfiling) profilingStart = now();
     var pairs = this.broadphase.collisionPairs(this);
@@ -538,17 +537,17 @@ CANNON.World.prototype.step = function(dt){
         // Action if penetration
         if(g<0.0){
             c.penetration = g;
-            solver.addConstraint(c);
+            solver.addEquation(c);
 
-            // Add friction constraint
+            // Add friction constraint equation
             if(mu > 0){
 
-                // Create 2 tangent constraints
+                // Create 2 tangent equations
                 var mug = mu*gravity.norm();
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass != 0) reducedMass = 1/reducedMass;
-                var c1 = new CANNON.FrictionConstraint(bi,bj,mug*reducedMass);
-                var c2 = new CANNON.FrictionConstraint(bi,bj,mug*reducedMass);
+                var c1 = new CANNON.FrictionEquation(bi,bj,mug*reducedMass);
+                var c2 = new CANNON.FrictionEquation(bi,bj,mug*reducedMass);
 
                 // Copy over the relative vectors
                 c.ri.copy(c1.ri);
@@ -559,9 +558,9 @@ CANNON.World.prototype.step = function(dt){
                 // Construct tangents
                 c.ni.tangents(c1.t,c2.t);
 
-                // Add constraints to solver
-                solver.addConstraint(c1);
-                solver.addConstraint(c2);
+                // Add equations to solver
+                solver.addEquation(c1);
+                solver.addEquation(c2);
             }
 
             // Now we know that i and j are in contact. Set collision matrix state
@@ -576,226 +575,13 @@ CANNON.World.prototype.step = function(dt){
                 if(this.enableImpulses)
                     this.addCollisionImpulse(c,e,mu);
             }
-
-            /*
-            var vi = bi.velocity;
-            var wi = bi.angularVelocity;
-            var vj = bj.velocity;
-            var wj = bj.angularVelocity;
-
-            var n = c.ni;
-            var tangents = [temp.t1, temp.t2];
-            n.tangents(tangents[0],tangents[1]);
-
-            var v_contact_i;
-            if(wi) v_contact_i = vi.vadd(wi.cross(c.ri));
-            else   v_contact_i = vi.copy();
-
-            var v_contact_j;
-            if(wj) v_contact_j = vj.vadd(wj.cross(c.rj));
-            else   v_contact_j = vj.copy();
-
-            var u_rel = v_contact_j.vsub(v_contact_i)
-            var w_rel;
-
-            if(wj && wi) w_rel = wj.cross(c.rj).vsub(wi.cross(c.ri));
-            else if(wi)  w_rel = wi.cross(c.ri).negate();
-            else if(wj)  w_rel = wj.cross(c.rj);
-
-            var u = (vj.vsub(vi)); // Contact velo
-            var uw;
-            if(wj && wi) uw = (c.rj.cross(wj)).vsub(c.ri.cross(wi));
-            else if(wi)  uw = c.ri.cross(wi).negate();
-            else if(wj)  uw = (c.rj.cross(wj));
-            u.vsub(uw,u);
-
-            // Get mass properties
-            var iMi = bi.invMass;
-            var iMj = bj.invMass;
-            var iIxi = bi.invInertia ? bi.invInertia.x : 0.0;
-            var iIyi = bi.invInertia ? bi.invInertia.y : 0.0;
-            var iIzi = bi.invInertia ? bi.invInertia.z : 0.0;
-            var iIxj = bj.invInertia ? bj.invInertia.x : 0.0;
-            var iIyj = bj.invInertia ? bj.invInertia.y : 0.0;
-            var iIzj = bj.invInertia ? bj.invInertia.z : 0.0;
-
-            // Add contact constraint
-            var rixn = temp.rixn;
-            var rjxn = temp.rjxn;
-            c.ri.cross(n,rixn);
-            c.rj.cross(n,rjxn);
-
-            var un_rel = n.mult(u_rel.dot(n)*0.5);
-            var u_rixn_rel = rixn.unit().mult(w_rel.dot(rixn.unit()));
-            var u_rjxn_rel = rjxn.unit().mult(-w_rel.dot(rjxn.unit()));
-
-            var gn = c.ni.mult(g);
-
-            // Rotational forces
-            var tauxi, tauyi, tauzi;
-            if(bi.tau){
-                tauxi = bi.tau.x;
-                tauyi = bi.tau.y;
-                tauzi = bi.tau.z;
-            } else {
-                tauxi = 0;
-                tauyi = 0;
-                tauzi = 0;
-            }
-            var tauxj, tauyj, tauzj;
-            if(bj.tau){
-                tauxj = bj.tau.x;
-                tauyj = bj.tau.y;
-                tauzj = bj.tau.z;
-            } else {
-                tauxj = 0;
-                tauyj = 0;
-                tauzj = 0;
-            }
-
-            solver
-            .addConstraint( // Non-penetration constraint jacobian
-                       [-n.x,-n.y,-n.z,
-                        -rixn.x,-rixn.y,-rixn.z,
-                        n.x,n.y,n.z,
-                        rjxn.x,rjxn.y,rjxn.z],
-
-
-                       // Inverse mass matrix
-                       [iMi,iMi,iMi,
-                        iIxi,iIyi,iIzi,
-                        iMj,iMj,iMj,
-                        iIxj,iIyj,iIzj],
-
-
-                       // g - constraint violation / gap
-                       [-gn.x,-gn.y,-gn.z,
-                        0,0,0,//-gn.x,-gn.y,-gn.z,
-                        gn.x,gn.y,gn.z,
-                        0,0,0//gn.x,gn.y,gn.z
-                        ],
-
-                       [-un_rel.x,-un_rel.y,-un_rel.z,
-                        0,0,0,//-u_rixn_rel.x,-u_rixn_rel.y,-u_rixn_rel.z,
-                        un_rel.x,un_rel.y,un_rel.z,
-                        0,0,0//u_rjxn_rel.x,u_rjxn_rel.y,u_rjxn_rel.z
-                        ],
-                     
-                       // External force - forces & torques
-                       [bi.force.x,bi.force.y,bi.force.z,
-                        tauxi,tauyi,tauzi,
-                        -bj.force.x,-bj.force.y,-bj.force.z,
-                        -tauxj,-tauyi,-tauzi],
-                       0,
-                       'inf',
-                       i, // These are id's, not indeces...
-                       j);
-                        */
-
-            // Friction constraints
-            if(false && mu>0.0){
-                var g = gravity.norm();
-                for(var ti=0; ti<tangents.length; ti++){
-                    var t = tangents[ti];
-                    var rixt = c.ri.cross(t);
-                    var rjxt = c.rj.cross(t);
-
-                    var ut_rel = t.mult(u_rel.dot(t));
-                    var u_rixt_rel = rixt.unit().mult(u_rel.dot(rixt.unit()));
-                    var u_rjxt_rel = rjxt.unit().mult(-u_rel.dot(rjxt.unit()));
-                    solver
-                    .addConstraint( // Non-penetration constraint jacobian
-                           [-t.x,-t.y,-t.z,
-                            -rixt.x,-rixt.y,-rixt.z,
-                            t.x,t.y,t.z,
-                            rjxt.x,rjxt.y,rjxt.z
-                            ],
-                             
-                           // Inverse mass matrix
-                           [iMi,iMi,iMi,
-                            iIxi,iIyi,iIzi,
-                            iMj,iMj,iMj,
-                            iIxj,iIyj,iIzj],
-                             
-                           // g - constraint violation / gap
-                           [0,0,0,
-                            0,0,0,
-                            0,0,0,
-                            0,0,0],
-                             
-                           [-ut_rel.x,-ut_rel.y,-ut_rel.z,
-                            0,0,0,//-u_rixt_rel.x,-u_rixt_rel.y,-u_rixt_rel.z,
-                            ut_rel.x,ut_rel.y,ut_rel.z,
-                            0,0,0//u_rjxt_rel.x,u_rjxt_rel.y,u_rjxt_rel.z
-                            ],
-                             
-                           // External force - forces & torques
-                           [bi.force.x,bi.force.y,bi.force.z,
-                            tauxi,tauyi,tauzi,
-                            bj.force.x,bj.force.y,bj.force.z,
-                            tauxj,tauyj,tauzj],
-                             
-                           -mu*100*(bi.mass+bj.mass),
-                           mu*100*(bi.mass+bj.mass),
-
-                           i, // id, not index
-                           j);
-                }
-            }
         }
     }
     if(doProfiling) profile.makeContactConstraints = now() - profilingStart;
 
-    /*
-    // Add user-defined constraints
-    var constraints = this.constraints;
-    var nconstraints = constraints.length;
-    for(var i=0; i<nconstraints; i++){
-        // Preliminary - ugly but works
-        var bj=-1, bi=-1;
-        for(var j=0; j<N; j++)
-            if(bodies[j].id === constraints[i].body_i.id)
-                bi = j;
-            else if(bodies[j].id === constraints[i].body_j.id)
-                bj = j;
-            solver.addConstraint2(constraints[i],bi,bj);
-    }
-    */
-
     var bi;
 
     if(doProfiling) profilingStart = now();
-    /*
-    if(solver.n){
-
-        solver.h = dt;
-        solver.solve();
-        var vxlambda = solver.vxlambda,
-        vylambda = solver.vylambda,
-        vzlambda = solver.vzlambda;
-        var wxlambda = solver.wxlambda,
-        wylambda = solver.wylambda,
-        wzlambda = solver.wzlambda;
-
-        // Apply constraint velocities
-        for(var i=0; i<N; i++){
-            bi = bodies[i];
-            if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
-                var b = bodies[i];
-                var velo = b.velocity,
-                avelo = b.angularVelocity;
-                velo.x += vxlambda[i],
-                velo.y += vylambda[i],
-                velo.z += vzlambda[i];
-                if(b.angularVelocity){
-                    avelo.x += wxlambda[i];
-                    avelo.y += wylambda[i];
-                    avelo.z += wzlambda[i];
-                }
-            }
-        }
-    }
-     */
     
     // Add user-added constraints
     for(var i=0; i<constraints.length; i++){
@@ -803,7 +589,7 @@ CANNON.World.prototype.step = function(dt){
         c.update();
         for(var name in c.equations){
             var eq = c.equations[name];
-            solver.addConstraint(eq);
+            solver.addEquation(eq);
         }
     }
 
@@ -813,7 +599,7 @@ CANNON.World.prototype.step = function(dt){
     if(doProfiling) profile.solve = now() - profilingStart;
 
     // Remove all contacts from solver
-    solver.removeAllConstraints();
+    solver.removeAllEquations();
 
     // Apply damping
     for(var i=0; i<N; i++){

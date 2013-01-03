@@ -12,7 +12,7 @@ CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
 
     // Equations to be fed to the solver
     var eqs = this.equations = {
-        normal: new CANNON.ContactConstraint(bodyA,bodyB),
+        normal: new CANNON.ContactEquation(bodyA,bodyB),
     };
 
     var normal = eqs.normal;

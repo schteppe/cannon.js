@@ -1,14 +1,14 @@
 /**
- * @class CANNON.FrictionConstraint
+ * @class CANNON.FrictionEquation
  * @brief Constrains the slipping in a contact along a tangent
  * @author schteppe
  * @param CANNON.RigidBody bi
  * @param CANNON.RigidBody bj
  * @param float slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
- * @extends CANNON.Constraint
+ * @extends CANNON.Equation
  */
-CANNON.FrictionConstraint = function(bi,bj,slipForce){
-    CANNON.Constraint.call(this,bi,bj,-slipForce,slipForce);
+CANNON.FrictionEquation = function(bi,bj,slipForce){
+    CANNON.Equation.call(this,bi,bj,-slipForce,slipForce);
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
@@ -26,10 +26,10 @@ CANNON.FrictionConstraint = function(bi,bj,slipForce){
     this.relForce = new CANNON.Vec3();
 };
 
-CANNON.FrictionConstraint.prototype = new CANNON.Constraint();
-CANNON.FrictionConstraint.prototype.constructor = CANNON.FrictionConstraint;
+CANNON.FrictionEquation.prototype = new CANNON.Equation();
+CANNON.FrictionEquation.prototype.constructor = CANNON.FrictionEquation;
 
-CANNON.FrictionConstraint.prototype.computeB = function(a,b,h){
+CANNON.FrictionEquation.prototype.computeB = function(a,b,h){
     var bi = this.bi;
     var bj = this.bj;
     var ri = this.ri;
@@ -80,7 +80,7 @@ CANNON.FrictionConstraint.prototype.computeB = function(a,b,h){
 };
 
 // Compute C = G * Minv * G + eps
-CANNON.FrictionConstraint.prototype.computeC = function(eps){
+CANNON.FrictionEquation.prototype.computeC = function(eps){
     var bi = this.bi;
     var bj = this.bj;
     var rixt = this.rixt;
@@ -103,7 +103,7 @@ CANNON.FrictionConstraint.prototype.computeC = function(eps){
     return C;
 };
 
-CANNON.FrictionConstraint.prototype.computeGWlambda = function(){
+CANNON.FrictionEquation.prototype.computeGWlambda = function(){
 
     // Correct at all ???
     
@@ -123,7 +123,7 @@ CANNON.FrictionConstraint.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
-CANNON.FrictionConstraint.prototype.addToWlambda = function(deltalambda){
+CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
     var rixt = this.rixt;

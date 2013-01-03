@@ -1,13 +1,13 @@
 /**
- * @class CANNON.ContactConstraint
- * @brief Contact/non-penetration constraint
+ * @class CANNON.ContactEquation
+ * @brief Contact/non-penetration constraint equation
  * @author schteppe
  * @param CANNON.RigidBody bj
  * @param CANNON.RigidBody bi
- * @extends CANNON.Constraint
+ * @extends CANNON.Equation
  */
-CANNON.ContactConstraint = function(bi,bj){
-    CANNON.Constraint.call(this,bi,bj,0,1e6);
+CANNON.ContactEquation = function(bi,bj){
+    CANNON.Equation.call(this,bi,bj,0,1e6);
     this.penetration = 0.0;
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
@@ -25,10 +25,10 @@ CANNON.ContactConstraint = function(bi,bj){
     this.relForce = new CANNON.Vec3();
 };
 
-CANNON.ContactConstraint.prototype = new CANNON.Constraint();
-CANNON.ContactConstraint.prototype.constructor = CANNON.ContactConstraint;
+CANNON.ContactEquation.prototype = new CANNON.Equation();
+CANNON.ContactEquation.prototype.constructor = CANNON.ContactEquation;
 
-CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
+CANNON.ContactEquation.prototype.computeB = function(a,b,h){
     var bi = this.bi;
     var bj = this.bj;
     var ri = this.ri;
@@ -86,7 +86,7 @@ CANNON.ContactConstraint.prototype.computeB = function(a,b,h){
 };
 
 // Compute C = GMG+eps in the SPOOK equation
-CANNON.ContactConstraint.prototype.computeC = function(eps){
+CANNON.ContactEquation.prototype.computeC = function(eps){
     var bi = this.bi;
     var bj = this.bj;
     var rixn = this.rixn;
@@ -112,7 +112,7 @@ CANNON.ContactConstraint.prototype.computeC = function(eps){
     return C;
 };
 
-CANNON.ContactConstraint.prototype.computeGWlambda = function(){
+CANNON.ContactEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
 
@@ -129,7 +129,7 @@ CANNON.ContactConstraint.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
-CANNON.ContactConstraint.prototype.addToWlambda = function(deltalambda){
+CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
     var rixn = this.rixn;

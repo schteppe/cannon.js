@@ -2,7 +2,7 @@
 
 /**
  * @class CANNON.Solver
- * @brief Constraint solver.
+ * @brief Constraint equation solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
@@ -64,7 +64,9 @@ CANNON.Solver = function(){
      * @property float tolerance
      */
     this.tolerance = 0;
-    this.constraints = [];
+
+    // All equations to be solved
+    this.equations = [];
 
     this.setSpookParams(this.k,this.d);
 
@@ -106,8 +108,8 @@ CANNON.Solver.prototype.solve = function(dt,world){
     var a = this.a;
     var b = this.b;
     var eps = this.eps;
-    var constraints = this.constraints;
-    var Nc = constraints.length;
+    var equations = this.equations;
+    var Neq = equations.length;
     var bodies = world.bodies;
     var h = dt;
 
@@ -117,8 +119,8 @@ CANNON.Solver.prototype.solve = function(dt,world){
 
     // Create array for lambdas
     var lambda = [];
-    for(var i=0; i<Nc; i++){
-        var c = constraints[i];
+    for(var i=0; i<Neq; i++){
+        var c = equations[i];
         lambda.push(0.0);
         Bs.push(c.computeB(a,b,h));
         Cs.push(c.computeC(eps));
@@ -130,7 +132,7 @@ CANNON.Solver.prototype.solve = function(dt,world){
     var deltalambda;
     var deltalambdaTot;
 
-    if(Nc > 0){
+    if(Neq > 0){
 
         // Reset vlambda
         for(var i=0; i<bodies.length; i++){
@@ -139,15 +141,15 @@ CANNON.Solver.prototype.solve = function(dt,world){
             if(b.wlambda) b.wlambda.set(0,0,0);
         }
 
-        // Iterate over constraints
+        // Iterate over equations
         for(iter=0; iter<maxIter; iter++){
 
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
 
-            for(var j=0; j<Nc; j++){
+            for(var j=0; j<Neq; j++){
 
-                var c = constraints[j];
+                var c = equations[j];
 
                 // Compute iteration
                 B = Bs[j];
@@ -183,17 +185,17 @@ CANNON.Solver.prototype.solve = function(dt,world){
     return iter; 
 };
 
-CANNON.Solver.prototype.addConstraint = function(constraint){
-    this.constraints.push(constraint);
+CANNON.Solver.prototype.addEquation = function(eq){
+    this.equations.push(eq);
 };
 
-CANNON.Solver.prototype.removeConstraint = function(constraint){
-    var i = this.constraints.indexOf(constraint);
+CANNON.Solver.prototype.removeEquation = function(eq){
+    var i = this.equations.indexOf(eq);
     if(i!=-1)
-        this.constraints.splice(i,1);
+        this.equations.splice(i,1);
 };
 
-CANNON.Solver.prototype.removeAllConstraints = function(){
-    this.constraints = [];
+CANNON.Solver.prototype.removeAllEquations = function(){
+    this.equations = [];
 };
 
