@@ -1431,6 +1431,7 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
  * @class CANNON.Shape
  * @author schteppe
  * @brief Base class for shapes
+ * @todo Should have a mechanism for caching bounding sphere radius instead of calculating it each time
  */
 CANNON.Shape = function(){
 
@@ -2977,6 +2978,7 @@ CANNON.Cylinder.prototype = new CANNON.ConvexPolyhedron();/*global CANNON:true *
  * @class CANNON.Solver
  * @brief Constraint equation solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
+ * @todo Rename this class to GSSolver which inherits from a new class Solver
  * @author schteppe / https://github.com/schteppe
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */
@@ -4014,6 +4016,8 @@ CANNON.ContactPoint = function(bi, bj, normalConstraint, contactMaterial, tangen
 /**
  * @class CANNON.ContactGenerator
  * @brief Helper class for the World. Generates ContactPoints.
+ * @todo Sphere-ConvexPolyhedron contacts
+ * @todo Contact reduction
  */
 CANNON.ContactGenerator = function(){
 

@@ -42,8 +42,14 @@ setInterval(function(){
 If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](https://github.com/schteppe/cannon.js/tree/master/examples).
 
 ### Change log
-**Current**
- * Added property ```World.enableImpulses```
+**0.5.0 Current**
+ * Added method ```Mat3.setTrace```
+ * ```ContactGenerator``` now produces ```ContactEquation``` instead of ```ContactPoint```
+ * Added property ```Solver.tolerance```
+ * Changed default ```Solver``` parameter values
+ * Improved ```Solver``` algorithm, the parameters ```.a```, ```.b```, ```.k```, ```.d```, ```.eps``` do not have the same effect anymore.
+ * Rewrote ```Solver```, ```Equation``` and ```Constraint``` totally, broke backward compatibility.
+ * Added property ```World.enableImpulses``` - still an experimental feature
  * Added ```PointToPointConstraint```
  * Added ```Cylinder```.
  * Added method ```RigidBody.applyImpulse```
@@ -63,15 +69,5 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 **0.4.2** 2012-08-06
  * Code seem stable enough to start a change log.
 
-
 ### Todo
-Ideas and todo's for developers. The todo's are marked with ```@todo``` in the code.
-* Collision/contacts between convexhulls and sphere
-* Contact reduction
-* Improved collision detection - spatial hashing, octrees or similar (Continous?)
-* Figure out good Solver base class API - make current Solver to a subclass
-* Better class structure for Constraints, Jacobian entries etc
-* ParallelSolver that uses Web Workers - splits system into independent parts and solves them in parallel - see http://www.html5rocks.com/en/tutorials/workers/basics/
-* Caching of bounding sphere radius
-* Shapes (based on ConvexHull is enough to begin with): Cone, cylinder
-* First-contact impulse forces
+For developers. The simpler todos are marked with ```@todo``` in the code. Github Issues can and should also be used for todos.

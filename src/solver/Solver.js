@@ -4,6 +4,7 @@
  * @class CANNON.Solver
  * @brief Constraint equation solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
+ * @todo Rename this class to GSSolver which inherits from a new class Solver
  * @author schteppe / https://github.com/schteppe
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */

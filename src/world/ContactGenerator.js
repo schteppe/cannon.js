@@ -3,6 +3,8 @@
 /**
  * @class CANNON.ContactGenerator
  * @brief Helper class for the World. Generates ContactPoints.
+ * @todo Sphere-ConvexPolyhedron contacts
+ * @todo Contact reduction
  */
 CANNON.ContactGenerator = function(){
 

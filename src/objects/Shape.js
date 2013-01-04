@@ -4,6 +4,7 @@
  * @class CANNON.Shape
  * @author schteppe
  * @brief Base class for shapes
+ * @todo Should have a mechanism for caching bounding sphere radius instead of calculating it each time
  */
 CANNON.Shape = function(){
 
