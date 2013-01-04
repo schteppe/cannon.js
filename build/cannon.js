@@ -2976,26 +2976,59 @@ CANNON.Cylinder.prototype = new CANNON.ConvexPolyhedron();/*global CANNON:true *
 
 /**
  * @class CANNON.Solver
- * @brief Constraint equation solver.
- * @todo The spook parameters should be specified for each constraint, not globally.
- * @todo Rename this class to GSSolver which inherits from a new class Solver
+ * @brief Constraint equation solver base class.
  * @author schteppe / https://github.com/schteppe
- * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
  */
 CANNON.Solver = function(){
+    // All equations to be solved
+    this.equations = [];
+};
+
+// Should be implemented in subclasses!
+CANNON.Solver.prototype.solve = function(dt,world){
+    // Should return the number of iterations done!
+    return 0;
+};
+
+CANNON.Solver.prototype.addEquation = function(eq){
+    this.equations.push(eq);
+};
+
+CANNON.Solver.prototype.removeEquation = function(eq){
+    var i = this.equations.indexOf(eq);
+    if(i!=-1)
+        this.equations.splice(i,1);
+};
+
+CANNON.Solver.prototype.removeAllEquations = function(){
+    this.equations = [];
+};
+
+/*global CANNON:true */
+
+/**
+ * @class CANNON.Solver
+ * @brief Constraint equation Gauss-Seidel solver.
+ * @todo The spook parameters should be specified for each constraint, not globally.
+ * @author schteppe / https://github.com/schteppe
+ * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
+ * @extends CANNON.Solver
+ */
+CANNON.GSSolver = function(){
+    CANNON.Solver.call(this);
 
     /**
     * @property int iterations
     * @brief The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
     * @todo write more about solver and iterations in the wiki
-    * @memberof CANNON.Solver
+    * @memberof CANNON.GSSolver
     */
     this.iterations = 10;
 
     /**
     * @property float h
     * @brief Time step size. The larger timestep, the less computationally heavy will your simulation be. But watch out, you don't want your bodies to tunnel each instead of colliding!
-    * @memberof CANNON.Solver
+    * @memberof CANNON.GSSolver
     */
     this.h = 1.0/60.0;
 
@@ -3009,28 +3042,28 @@ CANNON.Solver = function(){
     /**
     * @property float d
     * @brief SPOOK parameter, similar to damping
-    * @memberof CANNON.Solver
+    * @memberof CANNON.GSSolver
     */
     this.d = 5;
 
     /**
     * @property float a
     * @brief SPOOK parameter
-    * @memberof CANNON.Solver
+    * @memberof CANNON.GSSolver
     */
     this.a = 0.0;
 
     /**
     * @property float b
     * @brief SPOOK parameter
-    * @memberof CANNON.Solver
+    * @memberof CANNON.GSSolver
     */
     this.b = 0.0;
 
     /**
     * @property float eps
     * @brief SPOOK parameter
-    * @memberof CANNON.Solver
+    * @memberof CANNON.GSSolver
     */
     this.eps = 0.0;
 
@@ -3040,30 +3073,28 @@ CANNON.Solver = function(){
      */
     this.tolerance = 0;
 
-    // All equations to be solved
-    this.equations = [];
-
     this.setSpookParams(this.k,this.d);
 
     /**
     * @property bool debug
     * @brief Debug flag, will output solver data to console if true
-    * @memberof CANNON.Solver
+    * @memberof CANNON.GSSolver
     */
     this.debug = false;
 
     if(this.debug)
         console.log("a:",this.a,"b",this.b,"eps",this.eps,"k",this.k,"d",this.d);
 };
+CANNON.GSSolver.prototype = new CANNON.Solver();
 
 /**
  * @method setSpookParams
- * @memberof CANNON.Solver
+ * @memberof CANNON.GSSolver
  * @brief Sets the SPOOK parameters k and d, and updates the other parameters a, b and eps accordingly.
  * @param float k
  * @param float d
  */
-CANNON.Solver.prototype.setSpookParams = function(k,d){
+CANNON.GSSolver.prototype.setSpookParams = function(k,d){
     var h=this.h;
     this.k = k;
     this.d = d;
@@ -3073,7 +3104,7 @@ CANNON.Solver.prototype.setSpookParams = function(k,d){
 };
 
 
-CANNON.Solver.prototype.solve = function(dt,world){
+CANNON.GSSolver.prototype.solve = function(dt,world){
 
     var d = this.d;
     var ks = this.k;
@@ -3159,21 +3190,6 @@ CANNON.Solver.prototype.solve = function(dt,world){
 
     return iter; 
 };
-
-CANNON.Solver.prototype.addEquation = function(eq){
-    this.equations.push(eq);
-};
-
-CANNON.Solver.prototype.removeEquation = function(eq){
-    var i = this.equations.indexOf(eq);
-    if(i!=-1)
-        this.equations.splice(i,1);
-};
-
-CANNON.Solver.prototype.removeAllEquations = function(){
-    this.equations = [];
-};
-
 /*global CANNON:true */
 
 /**
@@ -3357,7 +3373,7 @@ CANNON.World = function(){
      * @property CANNON.Solver solver
      * @memberof CANNON.World
      */
-    this.solver = new CANNON.Solver();
+    this.solver = new CANNON.GSSolver();
 
     // User defined constraints
     this.constraints = [];

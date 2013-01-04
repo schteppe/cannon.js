@@ -72,7 +72,7 @@ CANNON.World = function(){
      * @property CANNON.Solver solver
      * @memberof CANNON.World
      */
-    this.solver = new CANNON.Solver();
+    this.solver = new CANNON.GSSolver();
 
     // User defined constraints
     this.constraints = [];
