@@ -459,7 +459,8 @@ CANNON.World.prototype.step = function(dt){
         now = this._now,
         profilingStart,
         cm = this.collision_matrix,
-        constraints = this.constraints;
+        constraints = this.constraints,
+        FrictionEquation = CANNON.FrictionEquation;
 
     if(doProfiling) profilingStart = now();
 
@@ -546,8 +547,8 @@ CANNON.World.prototype.step = function(dt){
                 var mug = mu*gravity.norm();
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass != 0) reducedMass = 1/reducedMass;
-                var c1 = new CANNON.FrictionEquation(bi,bj,mug*reducedMass);
-                var c2 = new CANNON.FrictionEquation(bi,bj,mug*reducedMass);
+                var c1 = new FrictionEquation(bi,bj,mug*reducedMass);
+                var c2 = new FrictionEquation(bi,bj,mug*reducedMass);
 
                 // Copy over the relative vectors
                 c.ri.copy(c1.ri);
