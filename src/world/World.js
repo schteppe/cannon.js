@@ -601,17 +601,19 @@ CANNON.World.prototype.step = function(dt){
     // Remove all contacts from solver
     solver.removeAllEquations();
 
-    // Apply damping
+    // Apply damping, see http://code.google.com/p/bullet/issues/detail?id=74 for details
+    var pow = Math.pow;
     for(var i=0; i<N; i++){
         bi = bodies[i];
         if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
-            var ld = 1.0 - bi.linearDamping,
-            ad = 1.0 - bi.angularDamping,
-            v = bi.velocity,
-            av = bi.angularVelocity;
+            var ld = pow(1.0 - bi.linearDamping,dt);
+            var v = bi.velocity;
             v.mult(ld,v);
-            if(av)
+	    var av = bi.angularVelocity;
+            if(av){	
+		var ad = pow(1.0 - bi.angularDamping,dt);
                 av.mult(ad,av);
+	    }
         }
     }
 

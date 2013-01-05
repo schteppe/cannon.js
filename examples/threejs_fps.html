@@ -176,6 +176,7 @@
                 world.quatNormalizeFast = false;
                 world.solver.setSpookParams(1000000000,7);
                 world.solver.iterations = 5;
+	        world.solver.tolerance = 0.1;
                 world.gravity.set(0,-20,0);
                 world.broadphase = new CANNON.NaiveBroadphase();
 
@@ -194,7 +195,7 @@
                 sphereShape = new CANNON.Sphere(radius);
                 sphereBody = new CANNON.RigidBody(mass,sphereShape,physicsMaterial);
                 sphereBody.position.set(0,5,0);
-                sphereBody.linearDamping = 0.05;
+                sphereBody.linearDamping = 0.9;
                 world.add(sphereBody);
 
                 // Create a plane
