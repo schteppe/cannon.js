@@ -18,9 +18,9 @@ CANNON.Mat3 = function(elements){
     * 
     */
     if(elements){
-        this.elements = new Float32Array(elements);
+        this.elements = elements; //new Float32Array(elements);
     } else {
-        this.elements = new Float32Array(9);
+        this.elements = [0,0,0,0,0,0,0,0,0]; //new Float32Array(9);
     }
 };
 

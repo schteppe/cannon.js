@@ -80,6 +80,9 @@ CANNON.World = function(){
     // Contact generator
     this.contactgen = new CANNON.ContactGenerator();
 
+    // Collision matrix, size N*N
+    this.collision_matrix = [];
+
     // Materials
     this.materials = []; // References to all added materials
     this.contactmaterials = []; // All added contact materials
@@ -324,8 +327,10 @@ CANNON.World.prototype.add = function(body){
         body.quaternion.copy(body.initQuaternion);
     }
     
-    // Create collision matrix
-    this.collision_matrix = new Int16Array((n+1)*(n+1));
+    // Increase size of collision matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
+    for(var i=0; i<2*n+1; i++)
+        this.collision_matrix.push(0);
+    //this.collision_matrix = new Int16Array((n+1)*(n+1));
 };
 
 /**
@@ -375,8 +380,13 @@ CANNON.World.prototype.remove = function(body){
         if(bodies[i].id == body.id)
             bodies.splice(i,1);
 
+
+    // Reduce size of collision matrix to (n-1)*(n-1)=n*n-2*n+1 elements, it was n*n last.
+    for(var i=0; i<2*n-1; i++)
+        this.collision_matrix.pop();
+
     // Reset collision matrix
-    this.collision_matrix = new Int16Array((n-1)*(n-1));
+    //this.collision_matrix = new Int16Array((n-1)*(n-1));
 };
 
 /**
