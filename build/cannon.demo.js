@@ -40,6 +40,7 @@
        paused:false,
        shadows:true,
        aabbs:false,
+       profiling:false,
     };
 
     // Extend settings with options
@@ -57,6 +58,8 @@
     var visuals = [];
     var scenes = [];
     var gui = null;
+    var smoothie = null;
+    var smoothieCanvas = null;
     var scenePicker = {};
 
     var three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
@@ -475,6 +478,60 @@
         stats.domElement.style.zIndex = 100;
         container.appendChild( stats.domElement );
 
+        // Smoothie (test)
+        smoothieCanvas = document.createElement("canvas");
+        smoothieCanvas.style.position = 'absolute';
+        smoothieCanvas.style.top = '0px';
+        smoothieCanvas.style.zIndex = 100;
+        container.appendChild( smoothieCanvas );
+        smoothie = new SmoothieChart({
+            maxDataSetLength:100,
+            millisPerPixel:10,
+            grid: {
+                strokeStyle:'rgb(125, 125, 125)',
+                fillStyle:'rgb(0, 0, 0)',
+                lineWidth: 1,
+                millisPerLine: 250,
+                verticalSections: 6
+            },
+            labels: {
+                fillStyle:'rgb(180, 180, 180)'
+            }
+        });
+        smoothie.streamTo(smoothieCanvas);
+        // Create time series for each profile label
+        var lines = {};
+        var colors = [[255, 0, 0],[0, 255, 0],[0, 0, 255],[255,255,0],[255,0,255],[0,255,255]];
+        var i=0;
+        for(var label in world.profile){
+            var c = colors[i%colors.length];
+            lines[label] = new TimeSeries({
+                label : label,
+                fillStyle : "rgb("+c[0]+","+c[1]+","+c[2]+")"
+            });
+            i++;
+        }
+        // Add a random value to each line every second
+        world.addEventListener("postStep",function(evt) {
+            for(var label in world.profile)
+                lines[label].append(world.time * 1000, world.profile[label]);
+        });
+        // Add to SmoothieChart
+        var i=0;
+        for(var label in world.profile){
+            var c = colors[i%colors.length];
+            smoothie.addTimeSeries(lines[label],{
+                strokeStyle : "rgb("+c[0]+","+c[1]+","+c[2]+")",
+                fillStyle:"rgba("+c[0]+","+c[1]+","+c[2]+",0.3)",
+                lineWidth:1
+            });
+            i++;
+        }
+        world.doProfiling = false;
+        smoothie.stop();
+        smoothieCanvas.style.display = "none";
+
+
         // Trackball controls
         controls = new THREE.TrackballControls( camera, renderer.domElement );
         controls.rotateSpeed = 1.0;
@@ -626,12 +683,30 @@
                 renderer.clearTarget( light.shadowMap );
             }
         });
-    rf.add(settings,'aabbs');
+        rf.add(settings,'aabbs');
+        rf.add(settings,'profiling').onChange(function(profiling){
+            if(profiling){
+                world.doProfiling = true;
+                smoothie.start();
+                smoothieCanvas.style.display = "block";
+            } else {
+                world.doProfiling = false;
+                smoothie.stop();
+                smoothieCanvas.style.display = "none";
+            }
+
+        });
 
         // World folder
         var wf = gui.addFolder('World');
         // Pause
-        wf.add(settings, 'paused');
+        wf.add(settings, 'paused').onChange(function(p){
+            /*if(p){
+                smoothie.stop();
+            } else {
+                smoothie.start();
+            }*/
+        });
         wf.add(settings, 'stepFrequency',60,60*10).step(60);
         var maxg = 100;
         wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){

@@ -104,11 +104,11 @@ CANNON.World = function(){
 
     // Profiling data in milliseconds
     this.profile = {
+        solve:0,
+        makeContactConstraints:0,
         broadphase:0,
         integrate:0,
         nearphase:0,
-        solve:0,
-        makeContactConstraints:0,
     };
 };
 
