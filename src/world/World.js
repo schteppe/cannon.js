@@ -397,19 +397,27 @@ CANNON.World.prototype.remove = function(body){
  */
 CANNON.World.prototype.addMaterial = function(m){
     if(m.id==-1){
+        var n = this.materials.length;
         this.materials.push(m);
         m.id = this.materials.length-1;
 
-        // Enlarge matrix
-        var newcm = new Int16Array((this.materials.length) * (this.materials.length));
-        for(var i=0; i<newcm.length; i++)
-            newcm[i] = -1;
+        if(true){
+            // Increase size of collision matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
+            for(var i=0; i<2*n+1; i++)
+                this.mats2cmat.push(-1);
+            //this.mats2cmat[];
+        } else {
+            // Enlarge matrix
+            var newcm = new Int16Array((this.materials.length) * (this.materials.length));
+            for(var i=0; i<newcm.length; i++)
+                newcm[i] = -1;
 
-        // Copy over old values
-        for(var i=0; i<this.materials.length-1; i++)
-            for(var j=0; j<this.materials.length-1; j++)
-                newcm[i+this.materials.length*j] = this.mats2cmat[i+(this.materials.length-1)*j];
-        this.mats2cmat = newcm;
+            // Copy over old values
+            for(var i=0; i<this.materials.length-1; i++)
+                for(var j=0; j<this.materials.length-1; j++)
+                    newcm[i+this.materials.length*j] = this.mats2cmat[i+(this.materials.length-1)*j];
+            this.mats2cmat = newcm;
+        }
     }
 };
 

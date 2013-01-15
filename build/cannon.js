@@ -425,7 +425,7 @@ CANNON.Ray.prototype.constructor = CANNON.Ray;
  */
 CANNON.Mat3 = function(elements){
     /**
-    * @property Float32Array elements
+    * @property Array elements
     * @memberof CANNON.Mat3
     * @brief A vector of length 9, containing all matrix elements
     * The values in the array are stored in the following order:
@@ -435,9 +435,9 @@ CANNON.Mat3 = function(elements){
     * 
     */
     if(elements){
-        this.elements = elements; //new Float32Array(elements);
+        this.elements = elements;
     } else {
-        this.elements = [0,0,0,0,0,0,0,0,0]; //new Float32Array(9);
+        this.elements = [0,0,0,0,0,0,0,0,0];
     }
 };
 
@@ -532,13 +532,13 @@ CANNON.Mat3.prototype.smult = function(s){
 CANNON.Mat3.prototype.mmult = function(m){
     var r = new CANNON.Mat3();
     for(var i=0; i<3; i++){
-	for(var j=0; j<3; j++){
-	    var sum = 0.0;
-	    for(var k=0; k<3; k++){
-		sum += m.elements[i+k*3] * this.elements[k+j*3];
-	    }
-	    r.elements[i+j*3] = sum;
-	}
+    for(var j=0; j<3; j++){
+        var sum = 0.0;
+        for(var k=0; k<3; k++){
+        sum += m.elements[i+k*3] * this.elements[k+j*3];
+        }
+        r.elements[i+j*3] = sum;
+    }
     }
     return r;
 };
@@ -558,7 +558,8 @@ CANNON.Mat3.prototype.solve = function(b,target){
     // Construct equations
     var nr = 3; // num rows
     var nc = 4; // num cols
-    var eqns = new Float32Array(nr*nc);
+    var eqns = [];
+    for(var i=0; i<nr*nc; i++) eqns.push(0);
     var i,j;
     for(i=0; i<3; i++){
         for(j=0; j<3; j++){
@@ -623,10 +624,10 @@ do {
  */
 CANNON.Mat3.prototype.e = function( row , column ,value){
     if(value===undefined){
-	return this.elements[column+3*row];
+    return this.elements[column+3*row];
     } else {
     // Set value
-	this.elements[column+3*row] = value;
+    this.elements[column+3*row] = value;
     }
 };
 
@@ -674,12 +675,13 @@ CANNON.Mat3.prototype.reverse = function(target){
   // Construct equations
     var nr = 3; // num rows
     var nc = 6; // num cols
-    var eqns = new Float32Array(nr*nc);
+    var eqns = [];
+    for(var i=0; i<nr*nc; i++) eqns.push(0);
     var i,j;
     for(i=0; i<3; i++){
-	for(j=0; j<3; j++){
-	    eqns[i+nc*j] = this.elements[i+3*j];
-	}
+        for(j=0; j<3; j++){
+            eqns[i+nc*j] = this.elements[i+3*j];
+        }
     }
     eqns[3+6*0] = 1;
     eqns[3+6*1] = 0;
@@ -696,67 +698,67 @@ CANNON.Mat3.prototype.reverse = function(target){
     var kp = nc; // num rows
     var p;
     do {
-	i = k - n;
-	if (eqns[i+nc*i] === 0) {
-	    // the pivot is null, swap lines
-	    for (j = i + 1; j < k; j++) {
-		if (eqns[i+nc*j] !== 0) {
-		    np = kp;
-		    do { // do line( i ) = line( i ) + line( k )
-			p = kp - np;
-			eqns[p+nc*i] += eqns[p+nc*j];
-		    } while (--np);
-		    break;
-		}
-	    }
-	}
-	if (eqns[i+nc*i] !== 0) {
-	    for (j = i + 1; j < k; j++) {
-		var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
-		np = kp;
-		do { // do line( k ) = line( k ) - multiplier * line( i )
-		    p = kp - np;
-		    eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
-		} while (--np);
-	    }
-	}
+    i = k - n;
+    if (eqns[i+nc*i] === 0) {
+        // the pivot is null, swap lines
+        for (j = i + 1; j < k; j++) {
+        if (eqns[i+nc*j] !== 0) {
+            np = kp;
+            do { // do line( i ) = line( i ) + line( k )
+            p = kp - np;
+            eqns[p+nc*i] += eqns[p+nc*j];
+            } while (--np);
+            break;
+        }
+        }
+    }
+    if (eqns[i+nc*i] !== 0) {
+        for (j = i + 1; j < k; j++) {
+        var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+        np = kp;
+        do { // do line( k ) = line( k ) - multiplier * line( i )
+            p = kp - np;
+            eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+        } while (--np);
+        }
+    }
     } while (--n);
   
   // eliminate the upper left triangle of the matrix
   i = 2
     do {
-	j = i-1;
-	do {
-	    var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
-	    np = nc;
-	    do { 
-		p = nc - np;
-		eqns[p+nc*j] =  eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
-	    } while (--np);
-	} while (j--);
+    j = i-1;
+    do {
+        var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+        np = nc;
+        do { 
+        p = nc - np;
+        eqns[p+nc*j] =  eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+        } while (--np);
+    } while (j--);
     } while (--i);
   
   // operations on the diagonal
     i = 2;
     do {
-	var multiplier = 1 / eqns[i+nc*i];
-	np = nc;
-	do { 
-	    p = nc - np;
-	    eqns[p+nc*i] = eqns[p+nc*i] * multiplier ;
-	} while (--np);
+    var multiplier = 1 / eqns[i+nc*i];
+    np = nc;
+    do { 
+        p = nc - np;
+        eqns[p+nc*i] = eqns[p+nc*i] * multiplier ;
+    } while (--np);
     } while (i--);
   
   
     i = 2;
     do {
-	j = 2;
-	do {
-	    p = eqns[nr+j+nc*i];
-	    if( isNaN( p ) || p ===Infinity )
-		throw "Could not reverse! A=["+this.toString()+"]";
-	    target.e( i , j , p );
-	} while (j--);
+    j = 2;
+    do {
+        p = eqns[nr+j+nc*i];
+        if( isNaN( p ) || p ===Infinity )
+        throw "Could not reverse! A=["+this.toString()+"]";
+        target.e( i , j , p );
+    } while (j--);
     } while (i--);
     
     return target;
@@ -3698,19 +3700,27 @@ CANNON.World.prototype.remove = function(body){
  */
 CANNON.World.prototype.addMaterial = function(m){
     if(m.id==-1){
+        var n = this.materials.length;
         this.materials.push(m);
         m.id = this.materials.length-1;
 
-        // Enlarge matrix
-        var newcm = new Int16Array((this.materials.length) * (this.materials.length));
-        for(var i=0; i<newcm.length; i++)
-            newcm[i] = -1;
+        if(true){
+            // Increase size of collision matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
+            for(var i=0; i<2*n+1; i++)
+                this.mats2cmat.push(-1);
+            //this.mats2cmat[];
+        } else {
+            // Enlarge matrix
+            var newcm = new Int16Array((this.materials.length) * (this.materials.length));
+            for(var i=0; i<newcm.length; i++)
+                newcm[i] = -1;
 
-        // Copy over old values
-        for(var i=0; i<this.materials.length-1; i++)
-            for(var j=0; j<this.materials.length-1; j++)
-                newcm[i+this.materials.length*j] = this.mats2cmat[i+(this.materials.length-1)*j];
-        this.mats2cmat = newcm;
+            // Copy over old values
+            for(var i=0; i<this.materials.length-1; i++)
+                for(var j=0; j<this.materials.length-1; j++)
+                    newcm[i+this.materials.length*j] = this.mats2cmat[i+(this.materials.length-1)*j];
+            this.mats2cmat = newcm;
+        }
     }
 };
 
