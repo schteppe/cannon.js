@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - splitsolver demo</title>
+    <meta charset="utf-8">
+    <style>
+        * {
+            margin:0;
+            padding:0;
+        }
+        body {
+            overflow: hidden;
+        }
+    </style>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+      var demo = new CANNON.Demo();
+      var size = 0.5;
+      
+      demo.addScene("split",function(){
+          var sphereShape = new CANNON.Sphere(size);
+          createScene(demo,sphereShape,true);
+        });
+      demo.addScene("without split",function(){
+          var sphereShape = new CANNON.Sphere(size);
+          createScene(demo,sphereShape,false);
+        });
+      
+      demo.start();
+      
+      function createScene(demo,shape,split){
+      
+        // Create world
+        var world = demo.getWorld();
+        world.gravity.set(0,0,-10);
+        world.broadphase = new CANNON.NaiveBroadphase();
+
+        var solver = new CANNON.GSSolver();
+        solver.iterations = 10;
+        solver.setSpookParams(1e7,4);
+        solver.tolerance = 0.001;
+        if(split)
+            world.solver = new CANNON.SplitSolver(solver);
+        else
+            world.solver = solver;
+      
+        // ground plane
+        var groundShape = new CANNON.Plane();
+        var groundBody = new CANNON.RigidBody(0,groundShape);
+        world.add(groundBody);
+        demo.addVisual(groundBody);
+      
+        // Shape on plane
+        var N = 10;
+        for(var i=0; i<N; i++){
+            var shapeBody = new CANNON.RigidBody(30,shape);
+            shapeBody.position.set((i-N*0.5)*size*2*1.1,size,size*1.05);
+            world.add(shapeBody);
+            demo.addVisual(shapeBody);
+        }
+      }
+            
+    </script>
+  </body>
+</html>
