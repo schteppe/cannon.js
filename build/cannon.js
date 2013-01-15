@@ -3108,18 +3108,19 @@ CANNON.GSSolver.prototype.setSpookParams = function(k,d){
 
 CANNON.GSSolver.prototype.solve = function(dt,world){
 
-    var d = this.d;
-    var ks = this.k;
-    var iter = 0;
-    var maxIter = this.iterations;
-    var tol = this.tolerance;
-    var a = this.a;
-    var b = this.b;
-    var eps = this.eps;
-    var equations = this.equations;
-    var Neq = equations.length;
-    var bodies = world.bodies;
-    var h = dt;
+    var d = this.d,
+        ks = this.k,
+        iter = 0,
+        maxIter = this.iterations,
+        tol = this.tolerance,
+        a = this.a,
+        b = this.b,
+        eps = this.eps,
+        equations = this.equations,
+        Neq = equations.length,
+        bodies = world.bodies,
+        Nbodies = world.bodies.length,
+        h = dt;
 
     // Things that does not change during iteration can be computed once
     var Cs = [];
@@ -3142,8 +3143,10 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
     if(Neq > 0){
 
+        var i,j,abs=Math.abs;
+
         // Reset vlambda
-        for(var i=0; i<bodies.length; i++){
+        for(i=0; i<Nbodies; i++){
             var b = bodies[i];
             b.vlambda.set(0,0,0);
             if(b.wlambda) b.wlambda.set(0,0,0);
@@ -3155,7 +3158,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
 
-            for(var j=0; j<Neq; j++){
+            for(j=0; j<Neq; j++){
 
                 var c = equations[j];
 
@@ -3170,7 +3173,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 }
                 lambda[j] += deltalambda;
 
-                deltalambdaTot += Math.abs(deltalambda);
+                deltalambdaTot += abs(deltalambda);
 
                 c.addToWlambda(deltalambda);
             }
@@ -3180,7 +3183,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         }
 
         // Add result to velocity
-        for(var i=0; i<bodies.length; i++){
+        for(i=0; i<Nbodies; i++){
             var b = bodies[i];
             b.velocity.vadd(b.vlambda, b.velocity);
             if(b.angularVelocity)
