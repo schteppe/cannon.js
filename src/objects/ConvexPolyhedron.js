@@ -639,7 +639,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         }
         return Math.sqrt(max2);
     }
-    
+
     this.computeAABB();
 };
 
@@ -664,4 +664,8 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
     } 
     min.set(minx,miny,minz);
     max.set(maxx,maxy,maxz);
+};
+
+CANNON.ConvexPolyhedron.prototype.volume = function(){
+    return 4.0 * Math.PI * this.boundingSphereRadius() / 3.0;
 };

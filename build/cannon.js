@@ -1466,7 +1466,7 @@ CANNON.Shape.prototype.boundingSphereRadius = function(){
  * @return float
  */
 CANNON.Shape.prototype.volume = function(){
-  throw "volume() not implemented for shape type "+this.type;
+    throw "volume() not implemented for shape type "+this.type;
 };
 
 /**
@@ -1492,7 +1492,8 @@ CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
 
   // Compute inertia in the world frame
   quat.normalize();
-  var localInertia = this.calculateLocalInertia(mass);
+  var localInertia = new CANNON.Vec3();
+  this.calculateLocalInertia(mass,localInertia);
 
   // @todo Is this rotation OK? Check!
   var worldInertia = quat.vmult(localInertia);
@@ -2879,7 +2880,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         }
         return Math.sqrt(max2);
     }
-    
+
     this.computeAABB();
 };
 
@@ -2905,7 +2906,10 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
     min.set(minx,miny,minz);
     max.set(maxx,maxy,maxz);
 };
-/**
+
+CANNON.ConvexPolyhedron.prototype.volume = function(){
+    return 4.0 * Math.PI * this.boundingSphereRadius() / 3.0;
+};/**
  * @class CANNON.Cylinder
  * @extends CANNON.ConvexPolyhedron
  * @author schteppe / https://github.com/schteppe
