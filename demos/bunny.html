@@ -19,6 +19,7 @@
         var demo = new CANNON.Demo();
         var size = 1;
         var scale = 20;
+        var offset = new CANNON.Vec3(0,0.11,0); // to apply before scale
 
         // Spheres
         demo.addScene("Bunny",function(){
@@ -51,7 +52,7 @@
 
             var compound = new CANNON.Compound();
             for(var i=0; i<bunny.length; i++){
-                if(i==8 || i==3) continue;
+                if(i==8 || i==3) continue; // These parts seem to be dead
                 var rawVerts = bunny[i].verts;
                 var rawFaces = bunny[i].faces;
 
@@ -59,15 +60,17 @@
 
                 // Get vertices
                 for(var j=0; j<rawVerts.length; j+=3){
-                    verts.push(new CANNON.Vec3( scale*rawVerts[j],
-                                                scale*rawVerts[j+1],
-                                                scale*rawVerts[j+2]));
-
+                    verts.push(new CANNON.Vec3( scale*(rawVerts[j]+offset.x),
+                                                scale*(rawVerts[j+1]+offset.y),
+                                                scale*(rawVerts[j+2]+offset.z)));
                 }
 
                 // Get faces
                 for(var j=0; j<rawFaces.length; j+=3){
-                    faces.push([rawFaces[j],rawFaces[j+1],rawFaces[j+2]]);
+                    if(i!=6)
+                        faces.push([rawFaces[j],rawFaces[j+1],rawFaces[j+2]]);
+                    else
+                        faces.push([rawFaces[j],rawFaces[j+2],rawFaces[j+1]]);
                 }
 
                 // Compute normals
@@ -89,6 +92,7 @@
 
             // Create body
             var bunnyBody = new CANNON.RigidBody(1,compound);
+            bunnyBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
             world.add(bunnyBody);
             demo.addVisual(bunnyBody);
 
