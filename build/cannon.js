@@ -425,7 +425,7 @@ CANNON.Ray.prototype.constructor = CANNON.Ray;
  */
 CANNON.Mat3 = function(elements){
     /**
-    * @property Float32Array elements
+    * @property Array elements
     * @memberof CANNON.Mat3
     * @brief A vector of length 9, containing all matrix elements
     * The values in the array are stored in the following order:
@@ -435,9 +435,9 @@ CANNON.Mat3 = function(elements){
     * 
     */
     if(elements){
-        this.elements = elements; //new Float32Array(elements);
+        this.elements = elements;
     } else {
-        this.elements = [0,0,0,0,0,0,0,0,0]; //new Float32Array(9);
+        this.elements = [0,0,0,0,0,0,0,0,0];
     }
 };
 
@@ -532,13 +532,13 @@ CANNON.Mat3.prototype.smult = function(s){
 CANNON.Mat3.prototype.mmult = function(m){
     var r = new CANNON.Mat3();
     for(var i=0; i<3; i++){
-	for(var j=0; j<3; j++){
-	    var sum = 0.0;
-	    for(var k=0; k<3; k++){
-		sum += m.elements[i+k*3] * this.elements[k+j*3];
-	    }
-	    r.elements[i+j*3] = sum;
-	}
+    for(var j=0; j<3; j++){
+        var sum = 0.0;
+        for(var k=0; k<3; k++){
+        sum += m.elements[i+k*3] * this.elements[k+j*3];
+        }
+        r.elements[i+j*3] = sum;
+    }
     }
     return r;
 };
@@ -558,7 +558,8 @@ CANNON.Mat3.prototype.solve = function(b,target){
     // Construct equations
     var nr = 3; // num rows
     var nc = 4; // num cols
-    var eqns = new Float32Array(nr*nc);
+    var eqns = [];
+    for(var i=0; i<nr*nc; i++) eqns.push(0);
     var i,j;
     for(i=0; i<3; i++){
         for(j=0; j<3; j++){
@@ -623,10 +624,10 @@ do {
  */
 CANNON.Mat3.prototype.e = function( row , column ,value){
     if(value===undefined){
-	return this.elements[column+3*row];
+    return this.elements[column+3*row];
     } else {
     // Set value
-	this.elements[column+3*row] = value;
+    this.elements[column+3*row] = value;
     }
 };
 
@@ -674,12 +675,13 @@ CANNON.Mat3.prototype.reverse = function(target){
   // Construct equations
     var nr = 3; // num rows
     var nc = 6; // num cols
-    var eqns = new Float32Array(nr*nc);
+    var eqns = [];
+    for(var i=0; i<nr*nc; i++) eqns.push(0);
     var i,j;
     for(i=0; i<3; i++){
-	for(j=0; j<3; j++){
-	    eqns[i+nc*j] = this.elements[i+3*j];
-	}
+        for(j=0; j<3; j++){
+            eqns[i+nc*j] = this.elements[i+3*j];
+        }
     }
     eqns[3+6*0] = 1;
     eqns[3+6*1] = 0;
@@ -696,67 +698,67 @@ CANNON.Mat3.prototype.reverse = function(target){
     var kp = nc; // num rows
     var p;
     do {
-	i = k - n;
-	if (eqns[i+nc*i] === 0) {
-	    // the pivot is null, swap lines
-	    for (j = i + 1; j < k; j++) {
-		if (eqns[i+nc*j] !== 0) {
-		    np = kp;
-		    do { // do line( i ) = line( i ) + line( k )
-			p = kp - np;
-			eqns[p+nc*i] += eqns[p+nc*j];
-		    } while (--np);
-		    break;
-		}
-	    }
-	}
-	if (eqns[i+nc*i] !== 0) {
-	    for (j = i + 1; j < k; j++) {
-		var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
-		np = kp;
-		do { // do line( k ) = line( k ) - multiplier * line( i )
-		    p = kp - np;
-		    eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
-		} while (--np);
-	    }
-	}
+    i = k - n;
+    if (eqns[i+nc*i] === 0) {
+        // the pivot is null, swap lines
+        for (j = i + 1; j < k; j++) {
+        if (eqns[i+nc*j] !== 0) {
+            np = kp;
+            do { // do line( i ) = line( i ) + line( k )
+            p = kp - np;
+            eqns[p+nc*i] += eqns[p+nc*j];
+            } while (--np);
+            break;
+        }
+        }
+    }
+    if (eqns[i+nc*i] !== 0) {
+        for (j = i + 1; j < k; j++) {
+        var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+        np = kp;
+        do { // do line( k ) = line( k ) - multiplier * line( i )
+            p = kp - np;
+            eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+        } while (--np);
+        }
+    }
     } while (--n);
   
   // eliminate the upper left triangle of the matrix
   i = 2
     do {
-	j = i-1;
-	do {
-	    var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
-	    np = nc;
-	    do { 
-		p = nc - np;
-		eqns[p+nc*j] =  eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
-	    } while (--np);
-	} while (j--);
+    j = i-1;
+    do {
+        var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+        np = nc;
+        do { 
+        p = nc - np;
+        eqns[p+nc*j] =  eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+        } while (--np);
+    } while (j--);
     } while (--i);
   
   // operations on the diagonal
     i = 2;
     do {
-	var multiplier = 1 / eqns[i+nc*i];
-	np = nc;
-	do { 
-	    p = nc - np;
-	    eqns[p+nc*i] = eqns[p+nc*i] * multiplier ;
-	} while (--np);
+    var multiplier = 1 / eqns[i+nc*i];
+    np = nc;
+    do { 
+        p = nc - np;
+        eqns[p+nc*i] = eqns[p+nc*i] * multiplier ;
+    } while (--np);
     } while (i--);
   
   
     i = 2;
     do {
-	j = 2;
-	do {
-	    p = eqns[nr+j+nc*i];
-	    if( isNaN( p ) || p ===Infinity )
-		throw "Could not reverse! A=["+this.toString()+"]";
-	    target.e( i , j , p );
-	} while (j--);
+    j = 2;
+    do {
+        p = eqns[nr+j+nc*i];
+        if( isNaN( p ) || p ===Infinity )
+        throw "Could not reverse! A=["+this.toString()+"]";
+        target.e( i , j , p );
+    } while (j--);
     } while (i--);
     
     return target;
@@ -3110,18 +3112,19 @@ CANNON.GSSolver.prototype.setSpookParams = function(k,d){
 
 CANNON.GSSolver.prototype.solve = function(dt,world){
 
-    var d = this.d;
-    var ks = this.k;
-    var iter = 0;
-    var maxIter = this.iterations;
-    var tol = this.tolerance;
-    var a = this.a;
-    var b = this.b;
-    var eps = this.eps;
-    var equations = this.equations;
-    var Neq = equations.length;
-    var bodies = world.bodies;
-    var h = dt;
+    var d = this.d,
+        ks = this.k,
+        iter = 0,
+        maxIter = this.iterations,
+        tol = this.tolerance,
+        a = this.a,
+        b = this.b,
+        eps = this.eps,
+        equations = this.equations,
+        Neq = equations.length,
+        bodies = world.bodies,
+        Nbodies = world.bodies.length,
+        h = dt;
 
     // Things that does not change during iteration can be computed once
     var Cs = [];
@@ -3144,8 +3147,10 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
     if(Neq > 0){
 
+        var i,j,abs=Math.abs;
+
         // Reset vlambda
-        for(var i=0; i<bodies.length; i++){
+        for(i=0; i<Nbodies; i++){
             var b = bodies[i];
             b.vlambda.set(0,0,0);
             if(b.wlambda) b.wlambda.set(0,0,0);
@@ -3157,7 +3162,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
 
-            for(var j=0; j<Neq; j++){
+            for(j=0; j<Neq; j++){
 
                 var c = equations[j];
 
@@ -3172,7 +3177,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 }
                 lambda[j] += deltalambda;
 
-                deltalambdaTot += Math.abs(deltalambda);
+                deltalambdaTot += abs(deltalambda);
 
                 c.addToWlambda(deltalambda);
             }
@@ -3182,7 +3187,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         }
 
         // Add result to velocity
-        for(var i=0; i<bodies.length; i++){
+        for(i=0; i<Nbodies; i++){
             var b = bodies[i];
             b.velocity.vadd(b.vlambda, b.velocity);
             if(b.angularVelocity)
@@ -3193,6 +3198,101 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
     errorTot = deltalambdaTot;
 
     return iter; 
+};
+/*global CANNON:true */
+
+CANNON.SplitSolver = function(subsolver){
+    CANNON.Solver.call(this);
+    this.subsolver = subsolver;
+};
+CANNON.SplitSolver.prototype = new CANNON.Solver();
+
+CANNON.SplitSolver.prototype.solve = function(dt,world){
+    var islands=[], subsolver=this.subsolver;
+
+    for(var i=0; i<this.equations.length; i++){
+        var eq = this.equations[i];
+
+        // Is any of the bodies inside an island?
+        var island_bi, island_bj, STATIC = CANNON.Body.STATIC;
+        for(var j=0; j<islands.length && !island_bi && !island_bj; j++){
+            var island = islands[j];
+            //if(!(eq.bi.motionstate & STATIC) && !(eq.bj.motionstate & STATIC)){
+                if(island.bodies.indexOf(eq.bi) != -1) island_bi = island;
+                if(island.bodies.indexOf(eq.bj) != -1) island_bj = island;
+            //}
+        }
+
+        if(island_bi && island_bj && island_bi.id!=island_bj.id){
+            console.log("Merge");
+            // Merge the two islands and add the constraint to that
+            var island = island_bi;
+            island.bodies = island.bodies.concat(island_bj.bodies);
+            island.equations = island.equations.concat(island_bj.equations);
+            island.equations.push(eq);
+            if(island.bodies.indexOf(eq.bi) == -1) island.bodies.push(eq.bi);
+            if(island.bodies.indexOf(eq.bj) == -1) island.bodies.push(eq.bj);
+            // Kill the old
+            islands.splice(islands.indexOf(island_bj),1);
+
+        } else if(island_bi && island_bj){
+            //console.log("Add, found bodies "+eq.bi.id+" and "+eq.bj.id+" in same island",island_bi,island_bj);
+            // Found both bodies in the same island. Add the constraint to there
+            var island = island_bi;
+
+            // Check if the same bodies are participating in the constraint
+            var found = false;
+            for(var k=0; k<island.equations.length; k++){
+                var eqj = island.equations[k];
+                // If there is an equation with the same body pair, add!
+                if( (eqj.bi.id == eq.bi.id && eqj.bj.id == eq.bj.id) ||  (eqj.bi.id == eq.bj.id && eqj.bj.id == eq.bi.id)){
+                    found = true;
+                }
+            }
+            if(found){
+                console.log("Pair bodies!",eq);
+                island.equations.push(eq);
+                if(island.bodies.indexOf(eq.bi) == -1) island.bodies.push(eq.bi);
+                if(island.bodies.indexOf(eq.bj) == -1) island.bodies.push(eq.bj);
+            } else {
+                console.log("Non Pair bodies!",eq);
+                // add new island
+                var island2 = {equations:[eq],bodies:[eq.bi,eq.bj],id:islands.length};
+                islands.push(island2);
+            }
+
+
+        } else if((island_bi && !island_bj) || (!island_bi && island_bj)){
+            //console.log("Add",island_bi,island_bj);
+            // Found one body in one island. Add the constraint to there
+            var island = island_bi || island_bj;
+            island.equations.push(eq);
+            if(island.bodies.indexOf(eq.bi) == -1) island.bodies.push(eq.bi);
+            if(island.bodies.indexOf(eq.bj) == -1) island.bodies.push(eq.bj);
+        } else {
+            //console.log("Create");
+            // Didn't find the constraint anywhere... Add a new island
+            var island = {equations:[eq],bodies:[eq.bi,eq.bj],id:islands.length};
+            islands.push(island);
+        }
+    }
+
+    // Solve each island
+    console.log(islands.length+" islands");
+
+    for(var i=0; i<islands.length; i++){
+        var island = islands[i];
+        // Add all equations
+        for(var j=0; j<island.equations.length; j++)
+            subsolver.addEquation(island.equations[j]);
+        var iter = subsolver.solve(dt,{bodies:island.bodies});
+        //console.log(iter);
+        subsolver.removeAllEquations();
+    }
+
+    //if(islands.length) console.log(islands);
+
+    return 0;
 };
 /*global CANNON:true */
 
@@ -3702,19 +3802,27 @@ CANNON.World.prototype.remove = function(body){
  */
 CANNON.World.prototype.addMaterial = function(m){
     if(m.id==-1){
+        var n = this.materials.length;
         this.materials.push(m);
         m.id = this.materials.length-1;
 
-        // Enlarge matrix
-        var newcm = new Int16Array((this.materials.length) * (this.materials.length));
-        for(var i=0; i<newcm.length; i++)
-            newcm[i] = -1;
+        if(true){
+            // Increase size of collision matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
+            for(var i=0; i<2*n+1; i++)
+                this.mats2cmat.push(-1);
+            //this.mats2cmat[];
+        } else {
+            // Enlarge matrix
+            var newcm = new Int16Array((this.materials.length) * (this.materials.length));
+            for(var i=0; i<newcm.length; i++)
+                newcm[i] = -1;
 
-        // Copy over old values
-        for(var i=0; i<this.materials.length-1; i++)
-            for(var j=0; j<this.materials.length-1; j++)
-                newcm[i+this.materials.length*j] = this.mats2cmat[i+(this.materials.length-1)*j];
-        this.mats2cmat = newcm;
+            // Copy over old values
+            for(var i=0; i<this.materials.length-1; i++)
+                for(var j=0; j<this.materials.length-1; j++)
+                    newcm[i+this.materials.length*j] = this.mats2cmat[i+(this.materials.length-1)*j];
+            this.mats2cmat = newcm;
+        }
     }
 };
 

@@ -26,6 +26,7 @@
        gy:0.0,
        gz:0.0,
        iterations:3,
+       tolerance:0.0001,
        k:1000,
        d:3,
        scene:0,
@@ -740,6 +741,9 @@
         });
         sf.add(settings, 'd',0,20).step(0.1).onChange(function(d){
             world.solver.setSpookParams(world.solver.k,d);
+        });
+        sf.add(settings, 'tolerance',0.0,10.0).step(0.01).onChange(function(t){
+            world.solver.tolerance = t;
         });
 
         // Scene picker
