@@ -115,7 +115,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         h = dt;
 
     // Things that does not change during iteration can be computed once
-    var Cs = [];
+    var invCs = [];
     var Bs = [];
 
     // Create array for lambdas
@@ -124,14 +124,10 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         var c = equations[i];
         lambda.push(0.0);
         Bs.push(c.computeB(a,b,h));
-        Cs.push(c.computeC(eps));
+        invCs.push(1.0 / c.computeC(eps));
     }
 
-    // Each body has a lambdaVel property that we will delete later..
-    var q;               //Penetration depth
-    var B;
-    var deltalambda;
-    var deltalambdaTot;
+    var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda;
 
     if(Neq > 0){
 
@@ -152,13 +148,13 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
             for(j=0; j<Neq; j++){
 
-                var c = equations[j];
+                c = equations[j];
 
                 // Compute iteration
                 B = Bs[j];
-                var C = Cs[j];
-                var GWlambda = c.computeGWlambda(eps);
-                deltalambda = ( 1.0 / C ) * ( B - GWlambda - eps * lambda[j] );
+                invC = invCs[j];
+                GWlambda = c.computeGWlambda(eps);
+                deltalambda = invC * ( B - GWlambda - eps * lambda[j] );
 
                 if(lambda[j] + deltalambda < c.minForce || lambda[j] + deltalambda > c.maxForce){
                     deltalambda = -lambda[j];
