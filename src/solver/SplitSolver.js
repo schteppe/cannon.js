@@ -6,90 +6,73 @@ CANNON.SplitSolver = function(subsolver){
 };
 CANNON.SplitSolver.prototype = new CANNON.Solver();
 
+// Returns the number of subsystems
 CANNON.SplitSolver.prototype.solve = function(dt,world){
-    var islands=[], subsolver=this.subsolver;
+    var nodes=[],
+        bodies=world.bodies,
+        equations=this.equations,
+        Neq=equations.length,
+        Nbodies=bodies.length,
+        subsolver=this.subsolver;
+    for(var i=0; i<Nbodies; i++)
+        nodes.push({ body:bodies[i], children:[], eqs:[], visited:false });
+    for(var k=0; k<Neq; k++){
+        var eq=equations[k],
+            i=bodies.indexOf(eq.bi),
+            j=bodies.indexOf(eq.bj),
+            ni=nodes[i],
+            nj=nodes[j];
+        ni.children.push(nj);
+        ni.eqs.push(eq);
+        nj.children.push(ni);
+        nj.eqs.push(eq);
+    }
 
-    for(var i=0; i<this.equations.length; i++){
-        var eq = this.equations[i];
-
-        // Is any of the bodies inside an island?
-        var island_bi, island_bj, STATIC = CANNON.Body.STATIC;
-        for(var j=0; j<islands.length && !island_bi && !island_bj; j++){
-            var island = islands[j];
-            //if(!(eq.bi.motionstate & STATIC) && !(eq.bj.motionstate & STATIC)){
-                if(island.bodies.indexOf(eq.bi) != -1) island_bi = island;
-                if(island.bodies.indexOf(eq.bj) != -1) island_bj = island;
-            //}
+    var STATIC = CANNON.Body.STATIC;
+    function getUnvisitedNode(nodes){
+        var N = nodes.length;
+        for(var i=0; i<N; i++){
+            var node = nodes[i];
+            if(!node.visited && !(node.body.motionstate & STATIC))
+                return node;
         }
+        return false;
+    }
 
-        if(island_bi && island_bj && island_bi.id!=island_bj.id){
-            console.log("Merge");
-            // Merge the two islands and add the constraint to that
-            var island = island_bi;
-            island.bodies = island.bodies.concat(island_bj.bodies);
-            island.equations = island.equations.concat(island_bj.equations);
-            island.equations.push(eq);
-            if(island.bodies.indexOf(eq.bi) == -1) island.bodies.push(eq.bi);
-            if(island.bodies.indexOf(eq.bj) == -1) island.bodies.push(eq.bj);
-            // Kill the old
-            islands.splice(islands.indexOf(island_bj),1);
-
-        } else if(island_bi && island_bj){
-            //console.log("Add, found bodies "+eq.bi.id+" and "+eq.bj.id+" in same island",island_bi,island_bj);
-            // Found both bodies in the same island. Add the constraint to there
-            var island = island_bi;
-
-            // Check if the same bodies are participating in the constraint
-            var found = false;
-            for(var k=0; k<island.equations.length; k++){
-                var eqj = island.equations[k];
-                // If there is an equation with the same body pair, add!
-                if( (eqj.bi.id == eq.bi.id && eqj.bj.id == eq.bj.id) ||  (eqj.bi.id == eq.bj.id && eqj.bj.id == eq.bi.id)){
-                    found = true;
-                }
+    function bfs(root,visitFunc){
+        var queue = [];
+        queue.push(root);
+        root.visited = true;
+        visitFunc(root);
+        while(queue.length) {
+            var node = queue.pop();
+            // Loop over unvisited child nodes
+            var child;
+            while((child = getUnvisitedNode(node.children))) {
+                child.visited = true;
+                visitFunc(child);
+                queue.push(child);
             }
-            if(found){
-                console.log("Pair bodies!",eq);
-                island.equations.push(eq);
-                if(island.bodies.indexOf(eq.bi) == -1) island.bodies.push(eq.bi);
-                if(island.bodies.indexOf(eq.bj) == -1) island.bodies.push(eq.bj);
-            } else {
-                console.log("Non Pair bodies!",eq);
-                // add new island
-                var island2 = {equations:[eq],bodies:[eq.bi,eq.bj],id:islands.length};
-                islands.push(island2);
-            }
-
-
-        } else if((island_bi && !island_bj) || (!island_bi && island_bj)){
-            //console.log("Add",island_bi,island_bj);
-            // Found one body in one island. Add the constraint to there
-            var island = island_bi || island_bj;
-            island.equations.push(eq);
-            if(island.bodies.indexOf(eq.bi) == -1) island.bodies.push(eq.bi);
-            if(island.bodies.indexOf(eq.bj) == -1) island.bodies.push(eq.bj);
-        } else {
-            //console.log("Create");
-            // Didn't find the constraint anywhere... Add a new island
-            var island = {equations:[eq],bodies:[eq.bi,eq.bj],id:islands.length};
-            islands.push(island);
         }
     }
 
-    // Solve each island
-    console.log(islands.length+" islands");
+    var child, n=0;
+    while((child = getUnvisitedNode(nodes))){
+        var eqs=[], bds=[];
+        bfs(child,function(node){
+            bds.push(node.body);
+            for(var i=0; i<node.eqs.length; i++)
+                if(eqs.indexOf(node.eqs[i]) == -1)
+                    eqs.push(node.eqs[i]);
+        });
 
-    for(var i=0; i<islands.length; i++){
-        var island = islands[i];
-        // Add all equations
-        for(var j=0; j<island.equations.length; j++)
-            subsolver.addEquation(island.equations[j]);
-        var iter = subsolver.solve(dt,{bodies:island.bodies});
-        //console.log(iter);
+        for(var i=0; i<eqs.length; i++)
+            subsolver.addEquation(eqs[i]);
+
+        var iter = subsolver.solve(dt,{bodies:bds});
         subsolver.removeAllEquations();
+        n++;
     }
 
-    //if(islands.length) console.log(islands);
-
-    return 0;
+    return n;
 };
