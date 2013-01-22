@@ -174,9 +174,17 @@
                 world = new CANNON.World();
                 world.quatNormalizeSkip = 0;
                 world.quatNormalizeFast = false;
-                world.solver.setSpookParams(1000000000,7);
-                world.solver.iterations = 5;
-	        world.solver.tolerance = 0.1;
+
+                var solver = new CANNON.GSSolver();
+                solver.setSpookParams(1e9,4);
+                solver.iterations = 7;
+                solver.tolerance = 0.1;
+                var split = true;
+                if(split)
+                    world.solver = new CANNON.SplitSolver(solver);
+                else
+                    world.solver = solver;
+
                 world.gravity.set(0,-20,0);
                 world.broadphase = new CANNON.NaiveBroadphase();
 
