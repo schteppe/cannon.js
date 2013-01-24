@@ -1,7 +1,7 @@
 <!DOCTYPE html>
     <html>
     <head>
-        <title>cannon.js - pile demo</title>
+        <title>cannon.js - bunny demo</title>
         <meta charset="utf-8">
         <style>* {margin:0;padding:0}</style>
     </head>
@@ -19,7 +19,8 @@
         var demo = new CANNON.Demo();
         var size = 1;
         var scale = 20;
-        var offset = new CANNON.Vec3(0,0.11,0); // to apply before scale
+        var offset = new CANNON.Vec3(0.04,0.15,0.01); // to apply before scale
+        var compoundOffset = new CANNON.Vec3(0,-0.9,0.1);
 
         // Spheres
         demo.addScene("Bunny",function(){
@@ -28,15 +29,8 @@
 
             world.gravity.set(0,0,-50);
             world.broadphase = new CANNON.NaiveBroadphase();
-            world.solver.iterations = 5;
-            world.solver.setSpookParams(5000000,10);
-
-            // ground plane
-            var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
-            var groundBody = new CANNON.RigidBody(0,groundShape);
-            groundBody.position.set(0,0,-5);
-            world.add(groundBody);
-            demo.addVisual(groundBody);
+            world.solver.iterations = 20;
+            world.solver.setSpookParams(6000,3);
 
             // Construct a normal given 3 vertices
             var ab = new CANNON.Vec3();
@@ -52,8 +46,7 @@
 
             var compound = new CANNON.Compound();
             for(var i=0; i<bunny.length; i++){
-                //if(i!=0) continue;
-                if(i==8 || i==3) continue; // These parts seem to be dead
+                //if(i==8 || i==3) continue; // These parts seem to be dead
                 var rawVerts = bunny[i].verts;
                 var rawFaces = bunny[i].faces;
 
@@ -68,14 +61,14 @@
 
                 // Get faces
                 for(var j=0; j<rawFaces.length; j+=3){
-                    faces.push([rawFaces[j],rawFaces[j+1],rawFaces[j+2]]);
+                    faces.push([rawFaces[j+1],rawFaces[j],rawFaces[j+2]]);
                 }
 
                 // Compute normals
                 for(var j=0; j<faces.length; j++){
-                    var va = verts[faces[i][0]];
-                    var vb = verts[faces[i][1]];
-                    var vc = verts[faces[i][2]];
+                    var va = verts[faces[j][0]];
+                    var vb = verts[faces[j][1]];
+                    var vc = verts[faces[j][2]];
                     var n = new CANNON.Vec3();
                     normal(va,vb,vc,n);
                     normals.push(n);
@@ -84,15 +77,28 @@
                 // Construct polyhedron
                 var bunnyPart = new CANNON.ConvexPolyhedron(verts,faces,normals);
 
+                var centerPoint = bunnyPart.getAveragePointLocal();
+                bunnyPart.transformAllPoints(centerPoint.negate());
+
                 // Add to compound
-                compound.addChild(bunnyPart);
+                compound.addChild(bunnyPart,centerPoint.vadd(compoundOffset));
             }
 
             // Create body
             var bunnyBody = new CANNON.RigidBody(1,compound);
             bunnyBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+            var z180 = new CANNON.Quaternion();
+            z180.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI);
+            bunnyBody.quaternion = z180.mult(bunnyBody.quaternion);
             world.add(bunnyBody);
             demo.addVisual(bunnyBody);
+
+            // ground plane
+            var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+            var groundBody = new CANNON.RigidBody(0,groundShape);
+            groundBody.position.set(0,0,-5);
+            world.add(groundBody);
+            demo.addVisual(groundBody);
 
         });
 

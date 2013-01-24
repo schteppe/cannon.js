@@ -44,7 +44,7 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
 
     // Calculate the total volume, we will spread out this objects' mass on the sub shapes
     var V = this.volume();
-
+    var childInertia = new CANNON.Vec3();
     for(var i = 0; i<this.childShapes.length; i++){
         // Get child information
         var b = this.childShapes[i];
@@ -53,18 +53,21 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
         var m = b.volume() / V * mass;
 
         // Get the child inertia, transformed relative to local frame
-        var inertia = b.calculateTransformedInertia(m,q);
+        //var inertia = b.calculateTransformedInertia(m,q);
+        b.calculateLocalInertia(m,childInertia); // Todo transform!
+        //console.log(childInertia,m,b.volume(),V);
 
         // Add its inertia using the parallel axis theorem, i.e.
         // I += I_child;    
         // I += m_child * r^2
 
-        target.vadd(inertia,target);
+        target.vadd(childInertia,target);
         var mr2 = new CANNON.Vec3(m*o.x*o.x,
                                   m*o.y*o.y,
                                   m*o.z*o.z);
         target.vadd(mr2,target);
     }
+
     return target;
 };
 

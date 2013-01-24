@@ -50,7 +50,8 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             throw "Argument 1 must be instance of CANNON.Vec3";
             return false;
         }
-        this.vertices.push(p);
+        //this.vertices.push(p);
+        this.uniqueEdges.push(p);
     }
 
     for(var i=0; i<this.faces.length; i++){
@@ -274,45 +275,45 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      */
     var WorldNormal = new CANNON.Vec3();
     this.clipAgainstHull = function(posA,quatA,hullB,posB,quatB,separatingNormal,minDist,maxDist,result){
-    if(!(posA instanceof CANNON.Vec3))
-        throw new Error("posA must be Vec3");
-    if(!(quatA instanceof CANNON.Quaternion))
-        throw new Error("quatA must be Quaternion");
-    var hullA = this;
-    var curMaxDist = maxDist;
-    var closestFaceB = -1;
-    var dmax = -Infinity;
-    for(var face=0; face < hullB.faces.length; face++){
-        hullB.faceNormals[face].copy(WorldNormal);
-        quatB.vmult(WorldNormal,WorldNormal);
-        posB.vadd(WorldNormal,WorldNormal);
-
-        var d = WorldNormal.dot(separatingNormal);
-        if (d > dmax){
-        dmax = d;
-        closestFaceB = face;
+        if(!(posA instanceof CANNON.Vec3))
+            throw new Error("posA must be Vec3");
+        if(!(quatA instanceof CANNON.Quaternion))
+            throw new Error("quatA must be Quaternion");
+        var hullA = this;
+        var curMaxDist = maxDist;
+        var closestFaceB = -1;
+        var dmax = -Infinity;
+        for(var face=0; face < hullB.faces.length; face++){
+            hullB.faceNormals[face].copy(WorldNormal);
+            quatB.vmult(WorldNormal,WorldNormal);
+            posB.vadd(WorldNormal,WorldNormal);
+            var d = WorldNormal.dot(separatingNormal);
+            if (d > dmax){
+                dmax = d;
+                closestFaceB = face;
+            }
         }
-    }
-    var worldVertsB1 = [];
-    polyB = hullB.faces[closestFaceB];
-    var numVertices = polyB.length;
-    for(var e0=0; e0<numVertices; e0++){
-        var b = hullB.vertices[polyB[e0]];
-        var worldb = new CANNON.Vec3();
-        b.copy(worldb);
-        quatB.vmult(worldb,worldb);
-        posB.vadd(worldb,worldb);
-        worldVertsB1.push(worldb);
-    }
-    //console.log("--- clipping face: ",worldVertsB1);
-    if (closestFaceB>=0)
-        this.clipFaceAgainstHull(separatingNormal,
-                     posA,
-                     quatA,
-                     worldVertsB1,
-                     minDist,
-                     maxDist,
-                     result);
+        var worldVertsB1 = [];
+        polyB = hullB.faces[closestFaceB];
+        var numVertices = polyB.length;
+        for(var e0=0; e0<numVertices; e0++){
+            var b = hullB.vertices[polyB[e0]];
+            var worldb = new CANNON.Vec3();
+            b.copy(worldb);
+            quatB.vmult(worldb,worldb);
+            posB.vadd(worldb,worldb);
+            worldVertsB1.push(worldb);
+        }
+
+        //console.log("--- clipping face: ",worldVertsB1);
+        if (closestFaceB>=0)
+            this.clipFaceAgainstHull(separatingNormal,
+                         posA,
+                         quatA,
+                         worldVertsB1,
+                         minDist,
+                         maxDist,
+                         result);
     };
 
     /**
@@ -603,9 +604,10 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     this.calculateLocalInertia = function(mass,target){
         // Approximate with box inertia
         // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
+        that.computeAABB();
         var x = this.aabbmax.x - this.aabbmin.x,
-        y = this.aabbmax.y - this.aabbmin.y,
-        z = this.aabbmax.z - this.aabbmin.z;
+            y = this.aabbmax.y - this.aabbmin.y,
+            z = this.aabbmax.z - this.aabbmin.z;
         target.x = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*z*2*z );
         target.y = 1.0 / 12.0 * mass * ( 2*x*2*x + 2*z*2*z );
         target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
@@ -669,4 +671,38 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
 
 CANNON.ConvexPolyhedron.prototype.volume = function(){
     return 4.0 * Math.PI * this.boundingSphereRadius() / 3.0;
+};
+
+// Get an average of all the vertices
+CANNON.ConvexPolyhedron.prototype.getAveragePointLocal = function(target){
+    target = target || new CANNON.Vec3();
+    var n = this.vertices.length,
+        verts = this.vertices;
+    for(var i=0; i<n; i++){
+        target.vadd(verts[i],target);
+    }
+    target.mult(1/n,target);
+    return target;
+};
+
+// Transforms all points
+CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
+    var n = this.vertices.length,
+        verts = this.vertices;
+
+    // Apply rotation
+    if(quat){
+        for(var i=0; i<n; i++){
+            var v = verts[i];
+            quat.vmult(v,v);
+        }
+    }
+
+    // Apply offset
+    if(offset){
+        for(var i=0; i<n; i++){
+            var v = verts[i];
+            v.vadd(offset,v);
+        }
+    }
 };

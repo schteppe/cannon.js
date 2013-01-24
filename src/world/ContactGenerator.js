@@ -337,7 +337,6 @@ CANNON.ContactGenerator = function(){
                     // Create a virtual box polyhedron for the plane
                     var t1 = v3pool.get();
                     var t2 = v3pool.get();
-                    //si.normal.tangents(t1,t2);
                     t1.set(1,0,0);
                     t2.set(0,1,0);
                     qi.vmult(t1,t1); // Rotate the tangents
@@ -348,14 +347,14 @@ CANNON.ContactGenerator = function(){
                     n.set(0,0,1);
                     qi.vmult(n,n);
 
-                    planehull.vertices[0].set(-t1.x -t2.x -n.x, -t1.y -t2.y -n.y, -t1.z -t2.z -n.z); //---
-                    planehull.vertices[1].set( t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
-                    planehull.vertices[2].set( t1.x +t2.x -n.x,  t1.y +t2.y -n.y,  t1.z +t2.z -n.z); // ++- 
-                    planehull.vertices[3].set(-t1.x +t2.x -n.x, -t1.y +t2.y -n.y, -t1.z +t2.z -n.z); // -+-
-                    planehull.vertices[4].set(-t1.x -t2.x +0*n.x, -t1.y -t2.y +0*n.y, -t1.z -t2.z +0*n.z); // --+
-                    planehull.vertices[5].set(+t1.x -t2.x +0*n.x,  t1.y -t2.y +0*n.y,  t1.z -t2.z +0*n.z); // +-+
-                    planehull.vertices[6].set(+t1.x +t2.x +0*n.x, +t1.y +t2.y +0*n.y,  t1.z +t2.z +0*n.z); // +++
-                    planehull.vertices[7].set(-t1.x +t2.x +0*n.x, -t1.y +t2.y +0*n.y, -t1.z +t2.z +0*n.z); // -++
+                    planehull.vertices[0].set(-t1.x -t2.x   -n.x,   -t1.y -t2.y   -n.y,  -t1.z -t2.z   -n.z); // ---
+                    planehull.vertices[1].set( t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
+                    planehull.vertices[2].set( t1.x +t2.x   -n.x,    t1.y +t2.y   -n.y,   t1.z +t2.z   -n.z); // ++- 
+                    planehull.vertices[3].set(-t1.x +t2.x   -n.x,   -t1.y +t2.y   -n.y,  -t1.z +t2.z   -n.z); // -+-
+                    planehull.vertices[4].set(-t1.x -t2.x +0*n.x,   -t1.y -t2.y +0*n.y,  -t1.z -t2.z +0*n.z); // --+
+                    planehull.vertices[5].set(+t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
+                    planehull.vertices[6].set(+t1.x +t2.x +0*n.x,   +t1.y +t2.y +0*n.y,   t1.z +t2.z +0*n.z); // +++
+                    planehull.vertices[7].set(-t1.x +t2.x +0*n.x,   -t1.y +t2.y +0*n.y,  -t1.z +t2.z +0*n.z); // -++
                     t1.normalize();
                     t2.normalize();
                     planehull.faceNormals[0].set( -n.x, -n.y, -n.z);
@@ -364,7 +363,7 @@ CANNON.ContactGenerator = function(){
                     planehull.faceNormals[3].set( t2.x, t2.y, t2.z);
                     planehull.faceNormals[4].set(-t1.x,-t1.y,-t1.z);
                     planehull.faceNormals[5].set( t1.x, t1.y, t1.z);
-                    
+
                     var sepAxis = v3pool.get();
                     n.negate(sepAxis);
                     var q = v3pool.get();
