@@ -2213,7 +2213,7 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
 var aabbmaxTemp = new CANNON.Vec3();
 var aabbminTemp = new CANNON.Vec3();
 var childPosTemp = new CANNON.Vec3();
-var childQuatTemp = new CANNON.Vec3();
+var childQuatTemp = new CANNON.Quaternion();
 CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var N=this.childShapes.length;
     min.set(Infinity,Infinity,Infinity);
@@ -2225,11 +2225,12 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
         this.childOffsets[i].copy(childPosTemp);
         quat.vmult(childPosTemp,childPosTemp);
         pos.vadd(childPosTemp,childPosTemp);
-        //quat.mult(this.childOrientations[i],childQuatTemp);
+
+        quat.mult(this.childOrientations[i],childQuatTemp);
 
         // Get child AABB
         this.childShapes[i].calculateWorldAABB(childPosTemp,
-                                               this.childOrientations[i],
+                                               childQuatTemp,//this.childOrientations[i],
                                                aabbminTemp,
                                                aabbmaxTemp);
 
@@ -2854,6 +2855,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
     }
 
+    var worldVert = new CANNON.Vec3();
     this.computeAABB = function(){
         var n = this.vertices.length,
         aabbmin = this.aabbmin,
@@ -2883,7 +2885,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return Math.sqrt(max2);
     }
 
-    this.computeAABB();
+    //this.computeAABB();
 };
 
 CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
@@ -2898,12 +2900,12 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
         quat.vmult(tempWorldVertex,tempWorldVertex);
         pos.vadd(tempWorldVertex,tempWorldVertex);
         var v = tempWorldVertex;
-        if     (v.x < minx || minx==undefined) minx = v.x;
-        else if(v.x > maxx || maxx==undefined) maxx = v.x;
-        if     (v.y < miny || miny==undefined) miny = v.y;
-        else if(v.y > maxy || maxy==undefined) maxy = v.y;
-        if     (v.z < minz || minz==undefined) minz = v.z;
-        else if(v.z > maxz || maxz==undefined) maxz = v.z;
+        if     (v.x < minx || minx===undefined) minx = v.x;
+        else if(v.x > maxx || maxx===undefined) maxx = v.x;
+        if     (v.y < miny || miny===undefined) miny = v.y;
+        else if(v.y > maxy || maxy===undefined) maxy = v.y;
+        if     (v.z < minz || minz===undefined) minz = v.z;
+        else if(v.z > maxz || maxz===undefined) maxz = v.z;
     } 
     min.set(minx,miny,minz);
     max.set(maxx,maxy,maxz);

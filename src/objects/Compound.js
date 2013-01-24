@@ -81,7 +81,7 @@ CANNON.Compound.prototype.boundingSphereRadius = function(){
 var aabbmaxTemp = new CANNON.Vec3();
 var aabbminTemp = new CANNON.Vec3();
 var childPosTemp = new CANNON.Vec3();
-var childQuatTemp = new CANNON.Vec3();
+var childQuatTemp = new CANNON.Quaternion();
 CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var N=this.childShapes.length;
     min.set(Infinity,Infinity,Infinity);
@@ -93,11 +93,12 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
         this.childOffsets[i].copy(childPosTemp);
         quat.vmult(childPosTemp,childPosTemp);
         pos.vadd(childPosTemp,childPosTemp);
-        //quat.mult(this.childOrientations[i],childQuatTemp);
+
+        quat.mult(this.childOrientations[i],childQuatTemp);
 
         // Get child AABB
         this.childShapes[i].calculateWorldAABB(childPosTemp,
-                                               this.childOrientations[i],
+                                               childQuatTemp,//this.childOrientations[i],
                                                aabbminTemp,
                                                aabbmaxTemp);
 

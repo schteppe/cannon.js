@@ -52,6 +52,7 @@
 
             var compound = new CANNON.Compound();
             for(var i=0; i<bunny.length; i++){
+                //if(i!=0) continue;
                 if(i==8 || i==3) continue; // These parts seem to be dead
                 var rawVerts = bunny[i].verts;
                 var rawFaces = bunny[i].faces;
@@ -67,10 +68,7 @@
 
                 // Get faces
                 for(var j=0; j<rawFaces.length; j+=3){
-                    if(i!=6)
-                        faces.push([rawFaces[j],rawFaces[j+1],rawFaces[j+2]]);
-                    else
-                        faces.push([rawFaces[j],rawFaces[j+2],rawFaces[j+1]]);
+                    faces.push([rawFaces[j],rawFaces[j+1],rawFaces[j+2]]);
                 }
 
                 // Compute normals
