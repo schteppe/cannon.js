@@ -4269,7 +4269,6 @@ CANNON.ContactGenerator = function(){
         var r = makeResult(bi,bj);
 
         // Contact normal
-        //sj.normal.copy(r.ni);
         r.ni.set(0,0,1);
         qj.vmult(r.ni,r.ni);
         r.ni.negate(r.ni); // body i is the sphere, flip normal
@@ -4284,6 +4283,39 @@ CANNON.ContactGenerator = function(){
         r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
         if(plane_to_sphere_ortho.norm() <= si.radius)
             result.push(r);
+    }
+
+    // See http://bulletphysics.com/Bullet/BulletFull/SphereTriangleDetector_8cpp_source.html
+    function pointInPolygon(verts, normal, p){
+        var positiveResult = null;
+        var N = verts.length;
+        for(var i=0; i<N; i++){
+            var v = verts[i];
+
+            // Get edge to the next vertex
+            var edge = new CANNON.Vec3();
+            verts[(i+1) % (N-1)].vsub(v,edge);
+
+            // Get cross product between polygon normal and the edge
+            var edge_x_normal = new CANNON.Vec3();
+            edge.cross(normal,edge_x_normal);
+
+            // Get vector between point and current vertex
+            var vertex_to_p = new CANNON.Vec3();
+            p.vsub(v,vertex_to_p);
+
+            // This dot product determines which side of the edge the point is
+            var r = edge_x_normal.dot(vertex_to_p);
+
+            // If all such dot products have same sign, we are inside the polygon.
+            if(positiveResult===null || (r>0 && positiveResult===true) || (r<=0 && positiveResult===false))
+                continue;
+            else
+                return false; // Encountered some other sign. Exit.
+        }
+
+        // If we got here, all dot products were of the same sign.
+        return true;
     }
 
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
