@@ -297,7 +297,6 @@ CANNON.ContactGenerator = function(){
     }
 
     function planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
-
         // Separating axis is the plane normal
         // Create a virtual box polyhedron for the plane
         var t1 = v3pool.get();
@@ -312,22 +311,25 @@ CANNON.ContactGenerator = function(){
         n.set(0,0,1);
         qi.vmult(n,n);
 
-        planehull.vertices[0].set(-t1.x -t2.x   -n.x,   -t1.y -t2.y   -n.y,  -t1.z -t2.z   -n.z); // ---
-        planehull.vertices[1].set( t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
-        planehull.vertices[2].set( t1.x +t2.x   -n.x,    t1.y +t2.y   -n.y,   t1.z +t2.z   -n.z); // ++- 
-        planehull.vertices[3].set(-t1.x +t2.x   -n.x,   -t1.y +t2.y   -n.y,  -t1.z +t2.z   -n.z); // -+-
-        planehull.vertices[4].set(-t1.x -t2.x +0*n.x,   -t1.y -t2.y +0*n.y,  -t1.z -t2.z +0*n.z); // --+
-        planehull.vertices[5].set(+t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
-        planehull.vertices[6].set(+t1.x +t2.x +0*n.x,   +t1.y +t2.y +0*n.y,   t1.z +t2.z +0*n.z); // +++
-        planehull.vertices[7].set(-t1.x +t2.x +0*n.x,   -t1.y +t2.y +0*n.y,  -t1.z +t2.z +0*n.z); // -++
+        var v = planehull.vertices,
+            f = planehull.faceNormals;
+
+        v[0].set(-t1.x -t2.x   -n.x,   -t1.y -t2.y   -n.y,  -t1.z -t2.z   -n.z); // ---
+        v[1].set( t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
+        v[2].set( t1.x +t2.x   -n.x,    t1.y +t2.y   -n.y,   t1.z +t2.z   -n.z); // ++- 
+        v[3].set(-t1.x +t2.x   -n.x,   -t1.y +t2.y   -n.y,  -t1.z +t2.z   -n.z); // -+-
+        v[4].set(-t1.x -t2.x +0*n.x,   -t1.y -t2.y +0*n.y,  -t1.z -t2.z +0*n.z); // --+
+        v[5].set(+t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
+        v[6].set(+t1.x +t2.x +0*n.x,   +t1.y +t2.y +0*n.y,   t1.z +t2.z +0*n.z); // +++
+        v[7].set(-t1.x +t2.x +0*n.x,   -t1.y +t2.y +0*n.y,  -t1.z +t2.z +0*n.z); // -++
         t1.normalize();
         t2.normalize();
-        planehull.faceNormals[0].set( -n.x, -n.y, -n.z);
-        planehull.faceNormals[1].set(  n.x,  n.y,  n.z);
-        planehull.faceNormals[2].set(-t2.x,-t2.y,-t2.z);
-        planehull.faceNormals[3].set( t2.x, t2.y, t2.z);
-        planehull.faceNormals[4].set(-t1.x,-t1.y,-t1.z);
-        planehull.faceNormals[5].set( t1.x, t1.y, t1.z);
+        f[0].set( -n.x, -n.y, -n.z);
+        f[1].set(  n.x,  n.y,  n.z);
+        f[2].set(-t2.x,-t2.y,-t2.z);
+        f[3].set( t2.x, t2.y, t2.z);
+        f[4].set(-t1.x,-t1.y,-t1.z);
+        f[5].set( t1.x, t1.y, t1.z);
 
         var sepAxis = v3pool.get();
         n.negate(sepAxis);
@@ -355,28 +357,74 @@ CANNON.ContactGenerator = function(){
         v3pool.release(q,t1,t2,sepAxis,n);
     }
 
+    var convexConvex_sepAxis = new CANNON.Vec3();
+    var convexConvex_q = new CANNON.Vec3();
     function convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
-        var sepAxis = new CANNON.Vec3();
+        var sepAxis = convexConvex_sepAxis;
         if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
             var res = [];
-            var q = new CANNON.Vec3();
+            var q = convexConvex_q;
             si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
             for(var j=0; j<res.length; j++){
                 var r = makeResult(bi,bj);
                 sepAxis.negate(r.ni);
                 res[j].normal.negate(q);
                 q.mult(res[j].depth,q);
-                r.ri.set(res[j].point.x + q.x,
-                         res[j].point.y + q.y,
-                         res[j].point.z + q.z);
-                r.rj.set(res[j].point.x,
-                         res[j].point.y,
-                         res[j].point.z);
+                res[j].point.vadd(q,r.ri);
+                res[j].point.copy(r.rj);
                 // Contact points are in world coordinates. Transform back to relative
                 r.rj.vsub(xj,r.rj);
                 r.ri.vsub(xi,r.ri);
                 result.push(r);
             }
+        }
+    }
+
+    var particlePlane_normal = new CANNON.Vec3();
+    var particlePlane_relpos = new CANNON.Vec3();
+    var particlePlane_projected = new CANNON.Vec3();
+    function particlePlane(result,si,sj,xi,xj,qi,qj,bi,bj){
+        var normal = particlePlane_normal;
+        normal.set(0,0,1);
+        bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
+        var relpos = particlePlane_relpos;
+        xi.vsub(bj.position,relpos);
+        var dot = normal.dot(relpos);
+        if(dot<=0.0){
+            var r = makeResult(bi,bj);
+            normal.copy( r.ni ); // Contact normal is the plane normal
+            r.ni.negate(r.ni);
+            r.ri.set(0,0,0); // Center of particle
+
+            // Get particle position projected on plane
+            var projected = particlePlane_projected;
+            normal.mult(normal.dot(xi),projected);
+            xi.vsub(projected,projected);
+            //projected.vadd(bj.position,projected);
+
+            // rj is now the projected world position minus plane position
+            projected.copy(r.rj);
+            result.push(r);
+        }
+    }
+
+    var particleSphere_normal = new CANNON.Vec3();
+    function particleSphere(result,si,sj,xi,xj,qi,qj,bi,bj){
+        // The normal is the unit vector from sphere center to particle center
+        var normal = particleSphere_normal;
+        normal.set(0,0,1);
+        xi.vsub(xj,normal);
+        var lengthSquared = normal.norm2();
+
+        if(lengthSquared <= sj.radius * sj.radius){
+            var r = makeResult(bi,bj);
+            normal.normalize();
+            normal.copy(r.rj);
+            r.rj.mult(sj.radius,r.rj);
+            normal.copy( r.ni ); // Contact normal
+            r.ni.negate(r.ni);
+            r.ri.set(0,0,0); // Center of particle
+            result.push(r);
         }
     }
 
@@ -497,7 +545,7 @@ CANNON.ContactGenerator = function(){
             }
 
         } else {
-            
+
             // Particle!
             var particle = si ? bj : bi;
             var other = si ? bi : bj;
@@ -505,44 +553,9 @@ CANNON.ContactGenerator = function(){
             var type = otherShape.type;
 
             if(type == CANNON.Shape.types.PLANE){ // Particle vs plane
-                var normal = new CANNON.Vec3(0,0,1); // todo: cache
-                other.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
-                var relpos = new CANNON.Vec3(); // todo: cache
-                particle.position.vsub(other.position,relpos);
-                var dot = normal.dot(relpos);
-                if(dot<=0.0){
-                    var r = makeResult(particle,other);
-                    normal.copy( r.ni ); // Contact normal is the plane normal
-                    r.ni.negate(r.ni);
-                    r.ri.set(0,0,0); // Center of particle
-
-                    // Get particle position projected on plane
-                    var projected = new CANNON.Vec3(); // todo: cache
-                    normal.mult(normal.dot(particle.position),projected);
-                    particle.position.vsub(projected,projected);
-                    //projected.vadd(other.position,projected);
-
-                    // rj is now the projected world position minus plane position
-                    projected.copy(r.rj);
-                    result.push(r);
-                }
+                particlePlane(result,null,otherShape,xi,xj,null,qj,bi,bj);
             } else if(type == CANNON.Shape.types.SPHERE){ // Particle vs sphere
-
-                // The normal is the unit vector from sphere center to particle center
-                var normal = new CANNON.Vec3(0,0,1); // todo: cache
-                particle.position.vsub(other.position,normal);
-                var lengthSquared = normal.norm2();
-
-                if(lengthSquared <= Math.pow(otherShape.radius,2)){
-                    var r = makeResult(particle,other);
-                    normal.normalize();
-                    normal.copy(r.rj);
-                    r.rj.mult(otherShape.radius,r.rj);
-                    normal.copy( r.ni ); // Contact normal
-                    r.ni.negate(r.ni);
-                    r.ri.set(0,0,0); // Center of particle
-                    result.push(r);
-                }
+                particleSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
             } else if(type == CANNON.Shape.types.CONVEXPOLYHEDRON){ // particle-convex
                 // Todo
             }
