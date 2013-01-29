@@ -49,6 +49,224 @@ CANNON.ContactGenerator = function(){
                                                 tempnormals);
     
     /*
+     * Make a contact object.
+     * @return object
+     * @todo reuse old contact point objects
+     */
+    function makeResult(bi,bj){
+        if(contactPointPool.length){
+            var c = contactPointPool.pop();
+            c.bi = bi;
+            c.bj = bj;
+            return c;
+        } else
+            return new CANNON.ContactEquation(bi,bj);
+    }
+
+    /*
+     * Swaps the body references in the contact
+     * @param object r
+     */
+    function swapResult(r){
+        var temp;
+        temp = r.ri; r.ri = r.rj; r.rj = temp;
+        r.ni.negate(r.ni);
+        temp = r.bi; r.bi = r.bj; r.bj = temp;
+    }
+
+    function sphereSphere(result,si,sj,xi,xj,qi,qj,bi,bj){
+        // We will have only one contact in this case
+        var r = makeResult(bi,bj);
+
+        // Contact normal
+        bj.position.vsub(xi, r.ni);
+        r.ni.normalize();
+
+        // Contact point locations
+        r.ni.copy(r.ri);
+        r.ni.copy(r.rj);
+        r.ri.mult(si.radius, r.ri);
+        r.rj.mult(-sj.radius, r.rj);
+        result.push(r);
+    }
+
+    function spherePlane(result,si,sj,xi,xj,qi,qj,bi,bj){
+        // We will have one contact in this case
+        var r = makeResult(bi,bj);
+
+        // Contact normal
+        //sj.normal.copy(r.ni);
+        r.ni.set(0,0,1);
+        qj.vmult(r.ni,r.ni);
+        r.ni.negate(r.ni); // body i is the sphere, flip normal
+        r.ni.normalize();
+
+        // Vector from sphere center to contact point
+        r.ni.mult(si.radius,r.ri);
+
+        // Project down sphere on plane
+        var point_on_plane_to_sphere = xi.vsub(xj);
+        var plane_to_sphere_ortho = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
+        r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
+        if(plane_to_sphere_ortho.norm() <= si.radius)
+            result.push(r);
+    }
+
+    function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
+        // we refer to the box as body j
+        var si = bi.shape;
+        var sj = bj.shape;
+        var qi = bi.quaternion;
+        var qj = bj.quaternion;
+        var xi = bi.position;
+        var xj = bj.position;
+
+        var box_to_sphere =  xi.vsub(xj);
+        var sides = sj.getSideNormals(true,qj);
+        var R =     si.radius;
+        var penetrating_sides = [];
+
+        // Check side (plane) intersections
+        var found = false;
+        for(var idx=0; idx<sides.length && !found; idx++){ // Max 3 penetrating sides
+            var ns = sides[idx].copy();
+            var h = ns.norm();
+            ns.normalize();
+            var dot = box_to_sphere.dot(ns);
+            if(dot<h+R && dot>0){
+                // Intersects plane. Now check the other two dimensions
+                var ns1 = sides[(idx+1)%3].copy();
+                var ns2 = sides[(idx+2)%3].copy();
+                var h1 = ns1.norm();
+                var h2 = ns2.norm();
+                ns1.normalize();
+                ns2.normalize();
+                var dot1 = box_to_sphere.dot(ns1);
+                var dot2 = box_to_sphere.dot(ns2);
+                if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
+                    found = true;
+                    var r = makeResult(bi,bj);
+                    ns.mult(-R,r.ri); // Sphere r
+                    ns.copy(r.ni);
+                    r.ni.negate(r.ni); // Normal should be out of sphere
+                    ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
+                    result.push(r);
+                }
+            }
+        }
+
+        // Check corners
+        var rj = v3pool.get();
+        for(var j=0; j<2 && !found; j++){
+            for(var k=0; k<2 && !found; k++){
+                for(var l=0; l<2 && !found; l++){
+                    rj.set(0,0,0);
+                    if(j) rj.vadd(sides[0],rj);
+                    else  rj.vsub(sides[0],rj);
+                    if(k) rj.vadd(sides[1],rj);
+                    else  rj.vsub(sides[1],rj);
+                    if(l) rj.vadd(sides[2],rj);
+                    else  rj.vsub(sides[2],rj);
+
+                    // World position of corner
+                    var sphere_to_corner = xj.vadd(rj).vsub(xi);
+                    if(sphere_to_corner.norm()<R){
+                        found = true;
+                        var r = makeResult(bi,bj);
+                        sphere_to_corner.copy(r.ri);
+                        r.ri.normalize();
+                        r.ri.copy(r.ni);
+                        r.ri.mult(R,r.ri);
+                        rj.copy(r.rj);
+                        result.push(r);
+                    }
+                }
+            }
+        }
+        v3pool.release(rj);
+        rj = null;
+
+        // Check edges
+        var edgeTangent = v3pool.get();
+        var edgeCenter = v3pool.get();
+        var r = v3pool.get(); // r = edge center to sphere center
+        var orthogonal = v3pool.get();
+        var dist = v3pool.get();
+        for(var j=0; j<sides.length && !found; j++){
+            for(var k=0; k<sides.length && !found; k++){
+                if(j%3!=k%3){
+                    // Get edge tangent
+                    sides[k].cross(sides[j],edgeTangent);
+                    edgeTangent.normalize();
+                    sides[j].vadd(sides[k], edgeCenter);
+                    xi.copy(r);
+                    r.vsub(edgeCenter,r);
+                    r.vsub(xj,r);
+                    var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
+                    edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
+                    
+                    // Find the third side orthogonal to this one
+                    var l = 0;
+                    while(l==j%3 || l==k%3) l++;
+
+                    // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
+                    xi.copy(dist);
+                    dist.vsub(orthogonal,dist);
+                    dist.vsub(edgeCenter,dist);
+                    dist.vsub(xj,dist);
+
+                    // Distances in tangent direction and distance in the plane orthogonal to it
+                    var tdist = Math.abs(orthonorm);
+                    var ndist = dist.norm();
+                    
+                    if(tdist < sides[l].norm() && ndist<R){
+                        found = true;
+                        var res = makeResult(bi,bj);
+                        edgeCenter.vadd(orthogonal,res.rj); // box rj
+                        res.rj.copy(res.rj);
+                        dist.negate(res.ni);
+                        res.ni.normalize();
+
+                        res.rj.copy(res.ri);
+                        res.ri.vadd(xj,res.ri);
+                        res.ri.vsub(xi,res.ri);
+                        res.ri.normalize();
+                        res.ri.mult(R,res.ri);
+
+                        result.push(res);
+                    }
+                }
+            }
+        }
+        v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
+    }
+
+    /*
+     * Go recursive for compound shapes
+     * @param Shape si
+     * @param CompoundShape sj
+     */
+    function recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj){
+        for(var i=0; i<sj.childShapes.length; i++){
+            var r = [];
+            nearPhase(r,
+                      si,
+                      sj.childShapes[i],
+                      xi,
+                      xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
+                      qi,
+                      qj.mult(sj.childOrientations[i]),
+                      bi,
+                      bj);
+            // Transform back
+            for(var j=0; j<r.length; j++){
+                r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
+                result.push(r[j]);
+            }
+        }
+    }
+
+    /*
      * Near phase calculation, get the contact point, normal, etc.
      * @param array result The result one will get back with all the contact point information
      * @param Shape si Colliding shape. If not given, particle is assumed.
@@ -74,222 +292,17 @@ CANNON.ContactGenerator = function(){
             // Particle!
         }
 
-        /*
-         * Make a contact object.
-         * @return object
-         * @todo reuse old contact point objects
-         */
-        function makeResult(bi,bj){
-            if(contactPointPool.length){
-                var c = contactPointPool.pop();
-                c.bi = bi;
-                c.bj = bj;
-                return c;
-            } else
-                return new CANNON.ContactEquation(bi,bj);
-        }
-
-        /*
-         * Swaps the body references in the contact
-         * @param object r
-         */
-        function swapResult(r){
-            var temp;
-            temp = r.ri; r.ri = r.rj; r.rj = temp;
-            r.ni.negate(r.ni);
-            temp = r.bi; r.bi = r.bj; r.bj = temp;
-        }
-
-        /*
-         * Go recursive for compound shapes
-         * @param Shape si
-         * @param CompoundShape sj
-         */
-        function recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj){
-            for(var i=0; i<sj.childShapes.length; i++){
-                var r = [];
-                nearPhase(r,
-                          si,
-                          sj.childShapes[i],
-                          xi,
-                          xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
-                          qi,
-                          qj.mult(sj.childOrientations[i]),
-                          bi,
-                          bj);
-                // Transform back
-                for(var j=0; j<r.length; j++){
-                    r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
-                    result.push(r[j]);
-                }
-            }
-        }
-
         if(si && sj){
             if(si.type==CANNON.Shape.types.SPHERE){
+
                 if(sj.type==CANNON.Shape.types.SPHERE){ // sphere-sphere
-
-                    // We will have one contact in this case
-                    var r = makeResult(bi,bj);
-
-                    // Contact normal
-                    xj.vsub(xi,r.ni);
-                    r.ni.normalize();
-
-                    // Contact point locations
-                    r.ni.copy(r.ri);
-                    r.ni.copy(r.rj);
-                    r.ri.mult(si.radius,r.ri);
-                    r.rj.mult(-sj.radius,r.rj);
-                    result.push(r);
-
+                    sphereSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
                 } else if(sj.type==CANNON.Shape.types.PLANE){ // sphere-plane
-
-                    // We will have one contact in this case
-                    var r = makeResult(bi,bj);
-
-                    // Contact normal
-                    //sj.normal.copy(r.ni);
-                    r.ni.set(0,0,1);
-                    qj.vmult(r.ni,r.ni);
-                    r.ni.negate(r.ni); // body i is the sphere, flip normal
-                    r.ni.normalize();
-
-                    // Vector from sphere center to contact point
-                    r.ni.mult(si.radius,r.ri);
-
-                    // Project down sphere on plane
-                    var point_on_plane_to_sphere = xi.vsub(xj);
-                    var plane_to_sphere_ortho = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
-                    r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
-                    if(plane_to_sphere_ortho.norm() <= si.radius)
-                    result.push(r);
-                    
+                    spherePlane(result,si,sj,xi,xj,qi,qj,bi,bj);
                 } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
-
-                    // we refer to the box as body j
-                    var box_to_sphere =  xi.vsub(xj);
-                    var sides = sj.getSideNormals(true,qj);
-                    var R =     si.radius;
-                    var penetrating_sides = [];
-
-                    // Check side (plane) intersections
-                    var found = false;
-                    for(var idx=0; idx<sides.length && !found; idx++){ // Max 3 penetrating sides
-                        var ns = sides[idx].copy();
-                        var h = ns.norm();
-                        ns.normalize();
-                        var dot = box_to_sphere.dot(ns);
-                        if(dot<h+R && dot>0){
-                            // Intersects plane. Now check the other two dimensions
-                            var ns1 = sides[(idx+1)%3].copy();
-                            var ns2 = sides[(idx+2)%3].copy();
-                            var h1 = ns1.norm();
-                            var h2 = ns2.norm();
-                            ns1.normalize();
-                            ns2.normalize();
-                            var dot1 = box_to_sphere.dot(ns1);
-                            var dot2 = box_to_sphere.dot(ns2);
-                            if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
-                                found = true;
-                                var r = makeResult(bi,bj);
-                                ns.mult(-R,r.ri); // Sphere r
-                                ns.copy(r.ni);
-                                r.ni.negate(r.ni); // Normal should be out of sphere
-                                ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
-                                result.push(r);
-                            }
-                        }
-                    }
-
-                    // Check corners
-                    var rj = v3pool.get();
-                    for(var j=0; j<2 && !found; j++){
-                        for(var k=0; k<2 && !found; k++){
-                            for(var l=0; l<2 && !found; l++){
-                                rj.set(0,0,0);
-                                if(j) rj.vadd(sides[0],rj);
-                                else  rj.vsub(sides[0],rj);
-                                if(k) rj.vadd(sides[1],rj);
-                                else  rj.vsub(sides[1],rj);
-                                if(l) rj.vadd(sides[2],rj);
-                                else  rj.vsub(sides[2],rj);
-
-                                // World position of corner
-                                var sphere_to_corner = xj.vadd(rj).vsub(xi);
-                                if(sphere_to_corner.norm()<R){
-                                    found = true;
-                                    var r = makeResult(bi,bj);
-                                    sphere_to_corner.copy(r.ri);
-                                    r.ri.normalize();
-                                    r.ri.copy(r.ni);
-                                    r.ri.mult(R,r.ri);
-                                    rj.copy(r.rj);
-                                    result.push(r);
-                                }
-                            }
-                        }
-                    }
-                    v3pool.release(rj);
-                    rj = null;
-
-                    // Check edges
-                    var edgeTangent = v3pool.get();
-                    var edgeCenter = v3pool.get();
-                    var r = v3pool.get(); // r = edge center to sphere center
-                    var orthogonal = v3pool.get();
-                    var dist = v3pool.get();
-                    for(var j=0; j<sides.length && !found; j++){
-                        for(var k=0; k<sides.length && !found; k++){
-                            if(j%3!=k%3){
-                                // Get edge tangent
-                                sides[k].cross(sides[j],edgeTangent);
-                                edgeTangent.normalize();
-                                sides[j].vadd(sides[k], edgeCenter);
-                                xi.copy(r);
-                                r.vsub(edgeCenter,r);
-                                r.vsub(xj,r);
-                                var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
-                                edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
-                                
-                                // Find the third side orthogonal to this one
-                                var l = 0;
-                                while(l==j%3 || l==k%3) l++;
-
-                                // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-                                xi.copy(dist);
-                                dist.vsub(orthogonal,dist);
-                                dist.vsub(edgeCenter,dist);
-                                dist.vsub(xj,dist);
-
-                                // Distances in tangent direction and distance in the plane orthogonal to it
-                                var tdist = Math.abs(orthonorm);
-                                var ndist = dist.norm();
-                                
-                                if(tdist < sides[l].norm() && ndist<R){
-                                    found = true;
-                                    var res = makeResult(bi,bj);
-                                    edgeCenter.vadd(orthogonal,res.rj); // box rj
-                                    res.rj.copy(res.rj);
-                                    dist.negate(res.ni);
-                                    res.ni.normalize();
-
-                                    res.rj.copy(res.ri);
-                                    res.ri.vadd(xj,res.ri);
-                                    res.ri.vsub(xi,res.ri);
-                                    res.ri.normalize();
-                                    res.ri.mult(R,res.ri);
-
-                                    result.push(res);
-                                }
-                            }
-                        }
-                    }
-                    v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
-
+                    sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj);
                 } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-
                 } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // sphere-convexpolyhedron
                     throw new Error("sphere/convexpolyhedron contacts not implemented yet.");
                 }
@@ -297,7 +310,7 @@ CANNON.ContactGenerator = function(){
             } else if(si.type==CANNON.Shape.types.PLANE){
                 
                 if(sj.type==CANNON.Shape.types.PLANE){ // plane-plane
-                    throw "Plane-plane collision... wait, you did WHAT?";
+                    throw new Error("Plane-plane collision... wait, you did WHAT?");
                     
                 } else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
 
@@ -490,6 +503,8 @@ CANNON.ContactGenerator = function(){
                     r.ri.set(0,0,0); // Center of particle
                     result.push(r);
                 }
+            } else if(type == CANNON.Shape.types.CONVEXPOLYHEDRON){ // particle-convex
+                // Todo
             }
         }
     
