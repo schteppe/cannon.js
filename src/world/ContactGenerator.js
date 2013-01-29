@@ -95,7 +95,6 @@ CANNON.ContactGenerator = function(){
         var r = makeResult(bi,bj);
 
         // Contact normal
-        //sj.normal.copy(r.ni);
         r.ni.set(0,0,1);
         qj.vmult(r.ni,r.ni);
         r.ni.negate(r.ni); // body i is the sphere, flip normal
@@ -114,13 +113,6 @@ CANNON.ContactGenerator = function(){
 
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // we refer to the box as body j
-        var si = bi.shape;
-        var sj = bj.shape;
-        var qi = bi.quaternion;
-        var qj = bj.quaternion;
-        var xi = bi.position;
-        var xj = bj.position;
-
         var box_to_sphere =  xi.vsub(xj);
         var sides = sj.getSideNormals(true,qj);
         var R =     si.radius;
