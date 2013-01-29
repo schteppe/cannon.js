@@ -4415,6 +4415,36 @@ CANNON.ContactGenerator = function(){
         v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
     }
 
+    function planeBox(result,si,sj,xi,xj,qi,qj,bi,bj){
+        // Collision normal
+        var n = new CANNON.Vec3(0,0,1);
+        qi.vmult(n,n);
+
+        // Loop over corners
+        var numcontacts = 0;
+        var corners = sj.getCorners(qj);
+        for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
+            var r = makeResult(bi,bj);
+            var worldCorner = corners[idx].vadd(xj);
+            corners[idx].copy(r.rj);
+
+            // Project down corner to plane to get xj
+            var point_on_plane_to_corner = worldCorner.vsub(xi);
+            var d = n.dot(point_on_plane_to_corner);
+            if(d<=0){
+                numcontacts++;
+                var plane_to_corner = n.mult(d);
+                point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
+                
+                // Set contact normal
+                n.copy(r.ni);
+                
+                // Add contact
+                result.push(r);
+            }
+        }
+    }
+
     /*
      * Go recursive for compound shapes
      * @param Shape si
@@ -4440,6 +4470,90 @@ CANNON.ContactGenerator = function(){
         }
     }
 
+    function planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
+
+        // Separating axis is the plane normal
+        // Create a virtual box polyhedron for the plane
+        var t1 = v3pool.get();
+        var t2 = v3pool.get();
+        t1.set(1,0,0);
+        t2.set(0,1,0);
+        qi.vmult(t1,t1); // Rotate the tangents
+        qi.vmult(t2,t2);
+        t1.mult(100000,t1);
+        t2.mult(100000,t2);
+        var n = v3pool.get();
+        n.set(0,0,1);
+        qi.vmult(n,n);
+
+        planehull.vertices[0].set(-t1.x -t2.x   -n.x,   -t1.y -t2.y   -n.y,  -t1.z -t2.z   -n.z); // ---
+        planehull.vertices[1].set( t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
+        planehull.vertices[2].set( t1.x +t2.x   -n.x,    t1.y +t2.y   -n.y,   t1.z +t2.z   -n.z); // ++- 
+        planehull.vertices[3].set(-t1.x +t2.x   -n.x,   -t1.y +t2.y   -n.y,  -t1.z +t2.z   -n.z); // -+-
+        planehull.vertices[4].set(-t1.x -t2.x +0*n.x,   -t1.y -t2.y +0*n.y,  -t1.z -t2.z +0*n.z); // --+
+        planehull.vertices[5].set(+t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
+        planehull.vertices[6].set(+t1.x +t2.x +0*n.x,   +t1.y +t2.y +0*n.y,   t1.z +t2.z +0*n.z); // +++
+        planehull.vertices[7].set(-t1.x +t2.x +0*n.x,   -t1.y +t2.y +0*n.y,  -t1.z +t2.z +0*n.z); // -++
+        t1.normalize();
+        t2.normalize();
+        planehull.faceNormals[0].set( -n.x, -n.y, -n.z);
+        planehull.faceNormals[1].set(  n.x,  n.y,  n.z);
+        planehull.faceNormals[2].set(-t2.x,-t2.y,-t2.z);
+        planehull.faceNormals[3].set( t2.x, t2.y, t2.z);
+        planehull.faceNormals[4].set(-t1.x,-t1.y,-t1.z);
+        planehull.faceNormals[5].set( t1.x, t1.y, t1.z);
+
+        var sepAxis = v3pool.get();
+        n.negate(sepAxis);
+        var q = v3pool.get();
+        if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)!==false){
+            var res = [];
+            planehull.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
+            for(var j=0; j<res.length; j++){
+                var r = makeResult(bi,bj);
+                sepAxis.negate(r.ni);
+                res[j].normal.negate(q);
+                q.mult(res[j].depth,q);
+                r.ri.set(res[j].point.x + q.x,
+                         res[j].point.y + q.y,
+                         res[j].point.z + q.z);
+                r.rj.set(res[j].point.x,
+                         res[j].point.y,
+                         res[j].point.z);
+                // Contact points are in world coordinates. Transform back to relative
+                r.rj.vsub(xj,r.rj);
+                r.ri.vsub(xi,r.ri);
+                result.push(r);
+            }
+        }
+        v3pool.release(q,t1,t2,sepAxis,n);
+    }
+
+    function convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
+        var sepAxis = new CANNON.Vec3();
+        if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
+            var res = [];
+            var q = new CANNON.Vec3();
+            si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
+            for(var j=0; j<res.length; j++){
+                var r = makeResult(bi,bj);
+                sepAxis.negate(r.ni);
+                res[j].normal.negate(q);
+                q.mult(res[j].depth,q);
+                r.ri.set(res[j].point.x + q.x,
+                         res[j].point.y + q.y,
+                         res[j].point.z + q.z);
+                r.rj.set(res[j].point.x,
+                         res[j].point.y,
+                         res[j].point.z);
+                // Contact points are in world coordinates. Transform back to relative
+                r.rj.vsub(xj,r.rj);
+                r.ri.vsub(xi,r.ri);
+                result.push(r);
+            }
+        }
+    }
+
     /*
      * Near phase calculation, get the contact point, normal, etc.
      * @param array result The result one will get back with all the contact point information
@@ -4452,7 +4566,7 @@ CANNON.ContactGenerator = function(){
      * @todo All collision cases
      */
     function nearPhase(result,si,sj,xi,xj,qi,qj,bi,bj){
-        var swapped = false;
+        var swapped = false, types = CANNON.Shape.types;
         if(si && sj){
             if(si.type>sj.type){
                 var temp;
@@ -4467,169 +4581,93 @@ CANNON.ContactGenerator = function(){
         }
 
         if(si && sj){
-            if(si.type==CANNON.Shape.types.SPHERE){
+            if(si.type==types.SPHERE){
 
-                if(sj.type==CANNON.Shape.types.SPHERE){ // sphere-sphere
+                switch(sj.type){
+                case types.SPHERE: // sphere-sphere
                     sphereSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
-                } else if(sj.type==CANNON.Shape.types.PLANE){ // sphere-plane
+                    break;
+                case types.PLANE: // sphere-plane
                     spherePlane(result,si,sj,xi,xj,qi,qj,bi,bj);
-                } else if(sj.type==CANNON.Shape.types.BOX){ // sphere-box
+                    break;
+                case types.BOX: // sphere-box
                     sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj);
-                } else if(sj.type==CANNON.Shape.types.COMPOUND){ // sphere-compound
+                    break;
+                case types.COMPOUND: // sphere-compound
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // sphere-convexpolyhedron
-                    throw new Error("sphere/convexpolyhedron contacts not implemented yet.");
+                    break;
+                case types.CONVEXPOLYHEDRON: // sphere-convexpolyhedron
+                    console.warn("sphere/convexpolyhedron contacts not implemented yet.");
+                    break;
+                default:
+                    console.warn("Collision between CANNON.Shape.types.SPHERE and "+sj.type+" not implemented yet.");
+                    break;
                 }
             
-            } else if(si.type==CANNON.Shape.types.PLANE){
+            } else if(si.type==types.PLANE){
                 
-                if(sj.type==CANNON.Shape.types.PLANE){ // plane-plane
+                switch(sj.type){
+                case types.PLANE: // plane-plane
                     throw new Error("Plane-plane collision... wait, you did WHAT?");
-                    
-                } else if(sj.type==CANNON.Shape.types.BOX){ // plane-box
-
-                    // Collision normal
-                    var n = new CANNON.Vec3(0,0,1); //si.normal.copy();
-                    qi.vmult(n,n);
-
-                    // Loop over corners
-                    var numcontacts = 0;
-                    var corners = sj.getCorners(qj);
-                    for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
-                        var r = makeResult(bi,bj);
-                        var worldCorner = corners[idx].vadd(xj);
-                        corners[idx].copy(r.rj);
-
-                        // Project down corner to plane to get xj
-                        var point_on_plane_to_corner = worldCorner.vsub(xi);
-                        var d = n.dot(point_on_plane_to_corner);
-                        if(d<=0){
-                            numcontacts++;
-                            var plane_to_corner = n.mult(d);
-                            point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
-                            
-                            // Set contact normal
-                            n.copy(r.ni);
-                            
-                            // Add contact
-                            result.push(r);
-                        }
-                    }
-                    
-                } else if(sj.type==CANNON.Shape.types.COMPOUND){ // plane-compound
+                    break;
+                case types.BOX: // plane-box
+                    planeBox(result,si,sj,xi,xj,qi,qj,bi,bj);
+                    break;
+                case types.COMPOUND: // plane-compound
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-
-                } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // plane-convex polyhedron
-                    // Separating axis is the plane normal
-                    // Create a virtual box polyhedron for the plane
-                    var t1 = v3pool.get();
-                    var t2 = v3pool.get();
-                    t1.set(1,0,0);
-                    t2.set(0,1,0);
-                    qi.vmult(t1,t1); // Rotate the tangents
-                    qi.vmult(t2,t2);
-                    t1.mult(100000,t1);
-                    t2.mult(100000,t2);
-                    var n = v3pool.get();
-                    n.set(0,0,1);
-                    qi.vmult(n,n);
-
-                    planehull.vertices[0].set(-t1.x -t2.x   -n.x,   -t1.y -t2.y   -n.y,  -t1.z -t2.z   -n.z); // ---
-                    planehull.vertices[1].set( t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
-                    planehull.vertices[2].set( t1.x +t2.x   -n.x,    t1.y +t2.y   -n.y,   t1.z +t2.z   -n.z); // ++- 
-                    planehull.vertices[3].set(-t1.x +t2.x   -n.x,   -t1.y +t2.y   -n.y,  -t1.z +t2.z   -n.z); // -+-
-                    planehull.vertices[4].set(-t1.x -t2.x +0*n.x,   -t1.y -t2.y +0*n.y,  -t1.z -t2.z +0*n.z); // --+
-                    planehull.vertices[5].set(+t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
-                    planehull.vertices[6].set(+t1.x +t2.x +0*n.x,   +t1.y +t2.y +0*n.y,   t1.z +t2.z +0*n.z); // +++
-                    planehull.vertices[7].set(-t1.x +t2.x +0*n.x,   -t1.y +t2.y +0*n.y,  -t1.z +t2.z +0*n.z); // -++
-                    t1.normalize();
-                    t2.normalize();
-                    planehull.faceNormals[0].set( -n.x, -n.y, -n.z);
-                    planehull.faceNormals[1].set(  n.x,  n.y,  n.z);
-                    planehull.faceNormals[2].set(-t2.x,-t2.y,-t2.z);
-                    planehull.faceNormals[3].set( t2.x, t2.y, t2.z);
-                    planehull.faceNormals[4].set(-t1.x,-t1.y,-t1.z);
-                    planehull.faceNormals[5].set( t1.x, t1.y, t1.z);
-
-                    var sepAxis = v3pool.get();
-                    n.negate(sepAxis);
-                    var q = v3pool.get();
-                    if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)!==false){
-                        var res = [];
-                        planehull.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
-                        for(var j=0; j<res.length; j++){
-                            var r = makeResult(bi,bj);
-                            sepAxis.negate(r.ni);
-                            res[j].normal.negate(q);
-                            q.mult(res[j].depth,q);
-                            r.ri.set(res[j].point.x + q.x,
-                                     res[j].point.y + q.y,
-                                     res[j].point.z + q.z);
-                            r.rj.set(res[j].point.x,
-                                     res[j].point.y,
-                                     res[j].point.z);
-                            // Contact points are in world coordinates. Transform back to relative
-                            r.rj.vsub(xj,r.rj);
-                            r.ri.vsub(xi,r.ri);
-                            result.push(r);
-                        }
-                    }
-                    v3pool.release(q,t1,t2,sepAxis,n);
+                    break;
+                case types.CONVEXPOLYHEDRON: // plane-convex polyhedron
+                    planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
+                    break;
+                default:
+                    console.warn("Collision between CANNON.Shape.types.PLANE and "+sj.type+" not implemented yet.");
+                    break;
                 }
 
-            } else if(si.type==CANNON.Shape.types.BOX){
+            } else if(si.type==types.BOX){
                 
-                if(sj.type==CANNON.Shape.types.BOX){ // box-box
-                    // Do convex polyhedron instead
-                    nearPhase(result,
-                              si.convexPolyhedronRepresentation,
-                              sj.convexPolyhedronRepresentation,
-                              xi,xj,qi,qj,bi,bj);
-
-                } else if(sj.type==CANNON.Shape.types.COMPOUND){ // box-compound
+                switch(sj.type){
+                case types.BOX: // box-box
+                    // Do convex/convex instead
+                    nearPhase(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
+                    break;
+                case types.COMPOUND: // box-compound
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                    
-                } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // box-convexpolyhedron
-                    nearPhase(result,
-                              si.convexPolyhedronRepresentation,
-                              sj,xi,xj,qi,qj,bi,bj);
+                    break;
+                case types.CONVEXPOLYHEDRON: // box-convexpolyhedron
+                    // Do convex/convex instead
+                    nearPhase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+                    break;
+                default:
+                    console.warn("Collision between CANNON.Shape.types.BOX and "+sj.type+" not implemented yet.");
+                    break;
                 }
             
-            } else if(si.type==CANNON.Shape.types.COMPOUND){
+            } else if(si.type==types.COMPOUND){
                 
-                if(sj.type==CANNON.Shape.types.COMPOUND){ // compound-compound
+                switch(sj.type){
+                case types.COMPOUND: // compound-compound
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                    
-                } else if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // compound-convex polyhedron
-                    recurseCompound(result,sj,si,xj,xi,qj,qi,bj,bi);    
+                    break;
+                case types.CONVEXPOLYHEDRON: // compound-convex polyhedron
+                    recurseCompound(result,sj,si,xj,xi,qj,qi,bj,bi);
+                    break;
+                default:
+                    console.warn("Collision between CANNON.Shape.types.COMPOUND and "+sj.type+" not implemented yet.");
+                    break;
                 }
 
-            } else if(si.type==CANNON.Shape.types.CONVEXPOLYHEDRON){
+            } else if(si.type==types.CONVEXPOLYHEDRON){
 
-                if(sj.type==CANNON.Shape.types.CONVEXPOLYHEDRON){ // convex polyhedron - convex polyhedron
-                    var sepAxis = new CANNON.Vec3();
-                    if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
-                        var res = [];
-                        var q = new CANNON.Vec3();
-                        si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
-                        for(var j=0; j<res.length; j++){
-                            var r = makeResult(bi,bj);
-                            sepAxis.negate(r.ni);
-                            res[j].normal.negate(q);
-                            q.mult(res[j].depth,q);
-                            r.ri.set(res[j].point.x + q.x,
-                                     res[j].point.y + q.y,
-                                     res[j].point.z + q.z);
-                            r.rj.set(res[j].point.x,
-                                     res[j].point.y,
-                                     res[j].point.z);
-                            // Contact points are in world coordinates. Transform back to relative
-                            r.rj.vsub(xj,r.rj);
-                            r.ri.vsub(xi,r.ri);
-                            result.push(r);
-                        }
-                    }
+                switch(sj.type){
+                case types.CONVEXPOLYHEDRON: // convex polyhedron - convex polyhedron
+                    convexConvex(result,sj,si,xj,xi,qj,qi,bj,bi);
+                    break;
+                default:
+                    console.warn("Collision between CANNON.Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
+                    break;
                 }
+
             }
         } else {
             // Particle!
