@@ -3157,7 +3157,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         ks = this.k,
         iter = 0,
         maxIter = this.iterations,
-        tol = this.tolerance,
+        tolSquared = this.tolerance*this.tolerance,
         a = this.a,
         b = this.b,
         eps = this.eps,
@@ -3173,44 +3173,47 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
     // Create array for lambdas
     var lambda = [];
-    for(var i=0; i<Neq; i++){
+    for(var i=0; i!==Neq; i++){
         var c = equations[i];
         lambda.push(0.0);
         Bs.push(c.computeB(a,b,h));
         invCs.push(1.0 / c.computeC(eps));
     }
 
-    var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda;
+    var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
 
-    if(Neq > 0){
+    if(Neq !== 0){
 
         var i,j,abs=Math.abs;
 
         // Reset vlambda
-        for(i=0; i<Nbodies; i++){
-            var b = bodies[i];
-            b.vlambda.set(0,0,0);
-            if(b.wlambda) b.wlambda.set(0,0,0);
+        for(i=0; i!==Nbodies; i++){
+            var b=bodies[i],
+                vlambda=b.vlambda,
+                wlambda=b.wlambda;
+            vlambda.set(0,0,0);
+            if(wlambda) wlambda.set(0,0,0);
         }
 
         // Iterate over equations
-        for(iter=0; iter<maxIter; iter++){
+        for(iter=0; iter!==maxIter; iter++){
 
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
 
-            for(j=0; j<Neq; j++){
+            for(j=0; j!==Neq; j++){
 
                 c = equations[j];
 
                 // Compute iteration
                 B = Bs[j];
                 invC = invCs[j];
+                lambdaj = lambda[j];
                 GWlambda = c.computeGWlambda(eps);
-                deltalambda = invC * ( B - GWlambda - eps * lambda[j] );
+                deltalambda = invC * ( B - GWlambda - eps * lambdaj );
 
-                if(lambda[j] + deltalambda < c.minForce || lambda[j] + deltalambda > c.maxForce){
-                    deltalambda = -lambda[j];
+                if(lambdaj + deltalambda < c.minForce || lambdaj + deltalambda > c.maxForce){
+                    deltalambda = -lambdaj;
                 }
                 lambda[j] += deltalambda;
 
@@ -3220,15 +3223,15 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
             }
 
             // If the total error is small enough - stop iterate
-            if(deltalambdaTot < tol) break;
+            if(deltalambdaTot*deltalambdaTot < tolSquared) break;
         }
 
         // Add result to velocity
-        for(i=0; i<Nbodies; i++){
-            var b = bodies[i];
-            b.velocity.vadd(b.vlambda, b.velocity);
-            if(b.angularVelocity)
-                b.angularVelocity.vadd(b.wlambda, b.angularVelocity);
+        for(i=0; i!==Nbodies; i++){
+            var b=bodies[i], v=b.velocity, w=b.angularVelocity;
+            v.vadd(b.vlambda, v);
+            if(w)
+                w.vadd(b.wlambda, w);
         }
     }
 
@@ -4932,16 +4935,17 @@ CANNON.ContactEquation.prototype.computeC = function(eps){
     C += invIi.vmult(rixn).dot(rixn);
     C += invIj.vmult(rjxn).dot(rjxn);
 
-
     return C;
 };
 
+var computeGWlambda_ulambda = new CANNON.Vec3();
 CANNON.ContactEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
+    var ulambda = computeGWlambda_ulambda;
 
     var GWlambda = 0.0;
-    var ulambda = bj.vlambda.vsub(bi.vlambda);
+    bj.vlambda.vsub(bi.vlambda, ulambda);
     GWlambda += ulambda.dot(this.ni);
 
     // Angular

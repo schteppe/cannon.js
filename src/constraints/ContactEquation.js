@@ -108,16 +108,17 @@ CANNON.ContactEquation.prototype.computeC = function(eps){
     C += invIi.vmult(rixn).dot(rixn);
     C += invIj.vmult(rjxn).dot(rjxn);
 
-
     return C;
 };
 
+var computeGWlambda_ulambda = new CANNON.Vec3();
 CANNON.ContactEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
+    var ulambda = computeGWlambda_ulambda;
 
     var GWlambda = 0.0;
-    var ulambda = bj.vlambda.vsub(bi.vlambda);
+    bj.vlambda.vsub(bi.vlambda, ulambda);
     GWlambda += ulambda.dot(this.ni);
 
     // Angular
