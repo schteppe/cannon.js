@@ -35,10 +35,10 @@
 
             var world = demo.getWorld();
 
-            world.gravity.set(0,0,-50);
+            world.gravity.set(0,0,-20);
             world.broadphase = new CANNON.NaiveBroadphase();
             world.solver.iterations = 20;
-            world.solver.setSpookParams(6000,3);
+            world.solver.setSpookParams(1e10,10);
 
             // Construct a normal given 3 vertices
             var ab = new CANNON.Vec3();
@@ -94,17 +94,17 @@
 
             // Create body
             var bunnyBody = new CANNON.RigidBody(1,compound);
-            bunnyBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+            /*bunnyBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
             var z180 = new CANNON.Quaternion();
             z180.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI);
-            bunnyBody.quaternion = z180.mult(bunnyBody.quaternion);
+            bunnyBody.quaternion = z180.mult(bunnyBody.quaternion);*/   
             world.add(bunnyBody);
             demo.addVisual(bunnyBody);
 
             // ground plane
-            var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+            var groundShape = new CANNON.Plane();
             var groundBody = new CANNON.RigidBody(0,groundShape);
-            groundBody.position.set(0,0,-5);
+            groundBody.position.set(0,0,0);
             world.add(groundBody);
             demo.addVisual(groundBody);
 

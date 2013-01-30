@@ -2292,6 +2292,8 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @todo Needed?
      */
     this.faceNormals = normals||[];
+    for(var i=0; i<this.faceNormals.length; i++)
+        this.faceNormals[i].normalize();
 
     /**
      * @property array uniqueEdges
@@ -2542,7 +2544,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         for(var face=0; face < hullB.faces.length; face++){
             hullB.faceNormals[face].copy(WorldNormal);
             quatB.vmult(WorldNormal,WorldNormal);
-            posB.vadd(WorldNormal,WorldNormal);
+            //posB.vadd(WorldNormal,WorldNormal);
             var d = WorldNormal.dot(separatingNormal);
             if (d > dmax){
                 dmax = d;
@@ -2561,15 +2563,14 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             worldVertsB1.push(worldb);
         }
 
-        //console.log("--- clipping face: ",worldVertsB1);
         if (closestFaceB>=0)
             this.clipFaceAgainstHull(separatingNormal,
-                         posA,
-                         quatA,
-                         worldVertsB1,
-                         minDist,
-                         maxDist,
-                         result);
+                                     posA,
+                                     quatA,
+                                     worldVertsB1,
+                                     minDist,
+                                     maxDist,
+                                     result);
     };
 
     /**
@@ -2610,7 +2611,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         for(var face=0; face<hullA.faces.length; face++){
             hullA.faceNormals[face].copy(faceANormalWS);
             quatA.vmult(faceANormalWS,faceANormalWS);
-            posA.vadd(faceANormalWS,faceANormalWS);
+            //posA.vadd(faceANormalWS,faceANormalWS);
             var d = faceANormalWS.dot(separatingNormal);
             if (d < dmin){
             dmin = d;
@@ -4533,17 +4534,20 @@ CANNON.ContactGenerator = function(){
     function recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj){
         for(var i=0; i<sj.childShapes.length; i++){
             var r = [];
+            var newQuat = qj.mult(sj.childOrientations[i]);
+            newQuat.normalize();
+            var newPos = xj.vadd(sj.childOffsets[i]);
             nearPhase(r,
                       si,
                       sj.childShapes[i],
                       xi,
-                      xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
+                      newPos,//xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
                       qi,
-                      qj.mult(sj.childOrientations[i]),
+                      newQuat, // Accumulate orientation
                       bi,
                       bj);
-            // Transform back
             for(var j=0; j<r.length; j++){
+                // The "rj" vector is in world coords, though we must add the world child offset vector.
                 r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
                 result.push(r[j]);
             }
@@ -4551,19 +4555,20 @@ CANNON.ContactGenerator = function(){
     }
 
     function planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
+        
         // Separating axis is the plane normal
         // Create a virtual box polyhedron for the plane
         var t1 = v3pool.get();
         var t2 = v3pool.get();
         t1.set(1,0,0);
         t2.set(0,1,0);
-        qi.vmult(t1,t1); // Rotate the tangents
-        qi.vmult(t2,t2);
+        //qi.vmult(t1,t1); // Rotate the tangents
+        //qi.vmult(t2,t2);
         t1.mult(100000,t1);
         t2.mult(100000,t2);
         var n = v3pool.get();
         n.set(0,0,1);
-        qi.vmult(n,n);
+        //qi.vmult(n,n);
 
         var v = planehull.vertices,
             f = planehull.faceNormals;
@@ -4588,7 +4593,7 @@ CANNON.ContactGenerator = function(){
         var sepAxis = v3pool.get();
         n.negate(sepAxis);
         var q = v3pool.get();
-        if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)!==false){
+        if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)){
             var res = [];
             planehull.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
             for(var j=0; j<res.length; j++){
@@ -4596,6 +4601,7 @@ CANNON.ContactGenerator = function(){
                 sepAxis.negate(r.ni);
                 res[j].normal.negate(q);
                 q.mult(res[j].depth,q);
+                //console.log(q.toString());
                 r.ri.set(res[j].point.x + q.x,
                          res[j].point.y + q.y,
                          res[j].point.z + q.z);
@@ -4852,7 +4858,13 @@ CANNON.ContactGenerator = function(){
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 case types.CONVEXPOLYHEDRON: // compound-convex polyhedron
-                    recurseCompound(result,sj,si,xj,xi,qj,qi,bj,bi);
+                    // Must swap
+                    var r = [];
+                    recurseCompound(r,sj,si,xj,xi,qj,qi,bj,bi);
+                    for(var ri=0; ri<r.length; ri++){
+                        swapResult(r[ri]);
+                        result.push(r[ri]);
+                    }
                     break;
                 default:
                     console.warn("Collision between CANNON.Shape.types.COMPOUND and "+sj.type+" not implemented yet.");
@@ -4863,7 +4875,7 @@ CANNON.ContactGenerator = function(){
 
                 switch(sj.type){
                 case types.CONVEXPOLYHEDRON: // convex polyhedron - convex polyhedron
-                    convexConvex(result,sj,si,xj,xi,qj,qi,bj,bi);
+                    convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 default:
                     console.warn("Collision between CANNON.Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
