@@ -146,16 +146,17 @@ CANNON.ContactGenerator = function(){
         return true;
     }
 
+    var box_to_sphere = new CANNON.Vec3();
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // we refer to the box as body j
-        var box_to_sphere =  xi.vsub(xj);
+        xi.vsub(xj,box_to_sphere);
         var sides = sj.getSideNormals(true,qj);
         var R =     si.radius;
         var penetrating_sides = [];
 
         // Check side (plane) intersections
         var found = false;
-        for(var idx=0; idx<sides.length && !found; idx++){ // Max 3 penetrating sides
+        for(var idx=0,nsides=sides.length; idx!==nsides && found===false; idx++){ // Max 3 penetrating sides
             var ns = sides[idx].copy();
             var h = ns.norm();
             ns.normalize();
@@ -268,15 +269,18 @@ CANNON.ContactGenerator = function(){
         v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
     }
 
+    var planeBox_normal = new CANNON.Vec3();
+    var plane_to_corner = new CANNON.Vec3();
     function planeBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // Collision normal
-        var n = new CANNON.Vec3(0,0,1);
+        var n = planeBox_normal;
+        n.set(0,0,1);
         qi.vmult(n,n);
 
         // Loop over corners
         var numcontacts = 0;
         var corners = sj.getCorners(qj);
-        for(var idx=0; idx<corners.length && numcontacts<=4; idx++){ // max 4 corners against plane
+        for(var idx=0, ncorners=corners.length; idx!==ncorners && numcontacts<=4; idx++){ // max 4 corners against plane
             var r = makeResult(bi,bj);
             var worldCorner = corners[idx].vadd(xj);
             corners[idx].copy(r.rj);
@@ -286,7 +290,7 @@ CANNON.ContactGenerator = function(){
             var d = n.dot(point_on_plane_to_corner);
             if(d<=0){
                 numcontacts++;
-                var plane_to_corner = n.mult(d);
+                n.mult(d,plane_to_corner);
                 point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
                 
                 // Set contact normal
