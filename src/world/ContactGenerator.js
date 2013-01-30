@@ -90,6 +90,8 @@ CANNON.ContactGenerator = function(){
         result.push(r);
     }
 
+    var point_on_plane_to_sphere = new CANNON.Vec3();
+    var plane_to_sphere_ortho = new CANNON.Vec3();
     function spherePlane(result,si,sj,xi,xj,qi,qj,bi,bj){
         // We will have one contact in this case
         var r = makeResult(bi,bj);
@@ -104,10 +106,10 @@ CANNON.ContactGenerator = function(){
         r.ni.mult(si.radius,r.ri);
 
         // Project down sphere on plane
-        var point_on_plane_to_sphere = xi.vsub(xj);
-        var plane_to_sphere_ortho = r.ni.mult(r.ni.dot(point_on_plane_to_sphere));
-        r.rj = point_on_plane_to_sphere.vsub(plane_to_sphere_ortho); // The sphere position projected to plane
-        if(plane_to_sphere_ortho.norm() <= si.radius)
+        xi.vsub(xj,point_on_plane_to_sphere);
+        r.ni.mult(r.ni.dot(point_on_plane_to_sphere),plane_to_sphere_ortho);
+        point_on_plane_to_sphere.vsub(plane_to_sphere_ortho,r.rj); // The sphere position projected to plane
+        if(plane_to_sphere_ortho.norm2() <= si.radius*si.radius)
             result.push(r);
     }
 
