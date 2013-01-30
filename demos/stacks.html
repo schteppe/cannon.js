@@ -360,6 +360,7 @@
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape);
+        groundBody.position.set(0,0,-1);
         world.add(groundBody);
         demo.addVisual(groundBody);
         return world;

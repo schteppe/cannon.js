@@ -272,34 +272,7 @@ CANNON.ContactGenerator = function(){
     var planeBox_normal = new CANNON.Vec3();
     var plane_to_corner = new CANNON.Vec3();
     function planeBox(result,si,sj,xi,xj,qi,qj,bi,bj){
-        // Collision normal
-        var n = planeBox_normal;
-        n.set(0,0,1);
-        qi.vmult(n,n);
-
-        // Loop over corners
-        var numcontacts = 0;
-        var corners = sj.getCorners(qj);
-        for(var idx=0, ncorners=corners.length; idx!==ncorners && numcontacts<=4; idx++){ // max 4 corners against plane
-            var r = makeResult(bi,bj);
-            var worldCorner = corners[idx].vadd(xj);
-            corners[idx].copy(r.rj);
-
-            // Project down corner to plane to get xj
-            var point_on_plane_to_corner = worldCorner.vsub(xi);
-            var d = n.dot(point_on_plane_to_corner);
-            if(d<=0){
-                numcontacts++;
-                n.mult(d,plane_to_corner);
-                point_on_plane_to_corner.vsub(plane_to_corner,r.ri);
-                
-                // Set contact normal
-                n.copy(r.ni);
-                
-                // Add contact
-                result.push(r);
-            }
-        }
+        planeConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
     }
 
     /*
@@ -312,7 +285,7 @@ CANNON.ContactGenerator = function(){
             var r = [];
             var newQuat = qj.mult(sj.childOrientations[i]);
             newQuat.normalize();
-            var newPos = xj.vadd(sj.childOffsets[i]);
+            var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
             nearPhase(r,
                       si,
                       sj.childShapes[i],
@@ -331,66 +304,37 @@ CANNON.ContactGenerator = function(){
     }
 
     function planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
-        
-        // Separating axis is the plane normal
-        // Create a virtual box polyhedron for the plane
-        var t1 = v3pool.get();
-        var t2 = v3pool.get();
-        t1.set(1,0,0);
-        t2.set(0,1,0);
-        //qi.vmult(t1,t1); // Rotate the tangents
-        //qi.vmult(t2,t2);
-        t1.mult(100000,t1);
-        t2.mult(100000,t2);
-        var n = v3pool.get();
-        n.set(0,0,1);
-        //qi.vmult(n,n);
+        // Simply return the points behind the plane.
+        var v = new CANNON.Vec3();
+        var normal = new CANNON.Vec3();
+        normal.set(0,0,1);
+        qi.vmult(normal,normal); // Turn normal according to plane orientation
+        var relpos = new CANNON.Vec3();
+        for(var i=0; i<sj.vertices.length; i++){
+            sj.vertices[i].copy(v);
+            // Transform to world coords
+            qj.vmult(v,v);
+            xj.vadd(v,v);
+            v.vsub(xi,relpos);
 
-        var v = planehull.vertices,
-            f = planehull.faceNormals;
+            var dot = normal.dot(relpos);
+            if(dot<=0.0){
+                // Get vertex position projected on plane
+                var projected = new CANNON.Vec3();
+                normal.mult(normal.dot(v),projected);
+                v.vsub(projected,projected);
 
-        v[0].set(-t1.x -t2.x   -n.x,   -t1.y -t2.y   -n.y,  -t1.z -t2.z   -n.z); // ---
-        v[1].set( t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
-        v[2].set( t1.x +t2.x   -n.x,    t1.y +t2.y   -n.y,   t1.z +t2.z   -n.z); // ++- 
-        v[3].set(-t1.x +t2.x   -n.x,   -t1.y +t2.y   -n.y,  -t1.z +t2.z   -n.z); // -+-
-        v[4].set(-t1.x -t2.x +0*n.x,   -t1.y -t2.y +0*n.y,  -t1.z -t2.z +0*n.z); // --+
-        v[5].set(+t1.x -t2.x +0*n.x,    t1.y -t2.y +0*n.y,   t1.z -t2.z +0*n.z); // +-+
-        v[6].set(+t1.x +t2.x +0*n.x,   +t1.y +t2.y +0*n.y,   t1.z +t2.z +0*n.z); // +++
-        v[7].set(-t1.x +t2.x +0*n.x,   -t1.y +t2.y +0*n.y,  -t1.z +t2.z +0*n.z); // -++
-        t1.normalize();
-        t2.normalize();
-        f[0].set( -n.x, -n.y, -n.z);
-        f[1].set(  n.x,  n.y,  n.z);
-        f[2].set(-t2.x,-t2.y,-t2.z);
-        f[3].set( t2.x, t2.y, t2.z);
-        f[4].set(-t1.x,-t1.y,-t1.z);
-        f[5].set( t1.x, t1.y, t1.z);
-
-        var sepAxis = v3pool.get();
-        n.negate(sepAxis);
-        var q = v3pool.get();
-        if(sj.testSepAxis(sepAxis,planehull,xj,qj,xi,qi)){
-            var res = [];
-            planehull.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
-            for(var j=0; j<res.length; j++){
                 var r = makeResult(bi,bj);
-                sepAxis.negate(r.ni);
-                res[j].normal.negate(q);
-                q.mult(res[j].depth,q);
-                //console.log(q.toString());
-                r.ri.set(res[j].point.x + q.x,
-                         res[j].point.y + q.y,
-                         res[j].point.z + q.z);
-                r.rj.set(res[j].point.x,
-                         res[j].point.y,
-                         res[j].point.z);
-                // Contact points are in world coordinates. Transform back to relative
-                r.rj.vsub(xj,r.rj);
-                r.ri.vsub(xi,r.ri);
+                normal.copy( r.ni ); // Contact normal is the plane normal out from plane
+
+                projected.copy(r.ri); // From plane to vertex projected on plane
+
+                // rj is now just the vertex position
+                v.vsub(xj,r.rj);
+
                 result.push(r);
             }
         }
-        v3pool.release(q,t1,t2,sepAxis,n);
     }
 
     var convexConvex_sepAxis = new CANNON.Vec3();
