@@ -42,7 +42,11 @@
         world.solver.setSpookParams(100000000000,2);
         world.solver.iterations = 10;
         world.gravity.set(0,0,-30);
-      
+
+        // Since we have many bodies and they don't move very much, we can use the less accurate quaternion normalization
+        world.quatNormalizeFast = true;
+        world.quatNormalizeSkip = 8; // ...and we do not have to normalize every step.
+
         // Materials
         var stone = new CANNON.Material('stone');
         var stone_stone = new CANNON.ContactMaterial(stone,

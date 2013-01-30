@@ -20,19 +20,19 @@ CANNON.World = function(){
 
     /**
      * @property int quatNormalizeSkip
-     * @brief How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.
+     * @brief How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).
      * @memberof CANNON.World
      */
-    this.quatNormalizeSkip = 2;
+    this.quatNormalizeSkip = 0;
 
     /**
      * @property bool quatNormalizeFast
-     * @brief Whether to use fast quaternion normalization or normal (slower, but more accurate) normalization.
+     * @brief Set to true to use fast quaternion normalization. It is often enough accurate to use. If bodies tend to explode, set to false.
      * @memberof CANNON.World
      * @see CANNON.Quaternion.normalizeFast
      * @see CANNON.Quaternion.normalize
      */
-    this.quatNormalizeFast = true;
+    this.quatNormalizeFast = false;
 
     /**
      * @property float time

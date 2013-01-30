@@ -38,6 +38,10 @@
             world.solver.iterations = 5;
             world.solver.setSpookParams(5000000,10);
 
+            // Since we have many bodies and they don't move very much, we can use the less accurate quaternion normalization
+            world.quatNormalizeFast = true;
+            world.quatNormalizeSkip = 4; // ...and we do not have to normalize every step.
+
             // ground plane
             var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
             var groundBody = new CANNON.RigidBody(0,groundShape);
