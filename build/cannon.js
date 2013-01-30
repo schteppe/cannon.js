@@ -164,17 +164,26 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                     var type = otherShape.type;
 
                     if(type & BOX_SPHERE_COMPOUND_CONVEX){
-                        // todo: particle vs box,sphere,compound,convex
-                        if(type === types.SPHERE){
+                        // todo: particle vs box,compound,convex
+
+                        if(type === types.SPHERE){ // particle-sphere
                             particle.position.vsub(other.position,relpos);
-                            if(Math.pow(otherShape.radius,2) >= relpos.norm2()){
+                            if(otherShape.radius*otherShape.radius >= relpos.norm2()){
+                                pairs1.push(particle);
+                                pairs2.push(other);
+                            }
+                        } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX){
+                            var R = otherShape.boundingSphereRadius();
+                            particle.position.vsub(other.position,relpos);
+                            if(R*R >= relpos.norm2()){
                                 pairs1.push(particle);
                                 pairs2.push(other);
                             }
                         }
-                    } else if(type & types.PLANE){
+                    } else if(type === types.PLANE){
                         // particle/plane
                         var plane = other;
+                        normal.set(0,0,1);
                         plane.quaternion.vmult(normal,normal);
                         particle.position.vsub(plane.position,relpos);
                         if(normal.dot(relpos)<=0.0){
@@ -2879,22 +2888,23 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         }
     }
 
-    this.boundingSphereRadius = function(){
-        // Assume points are distributed with local (0,0,0) as center
-        var max2 = 0;
-        for(var i=0; i<this.vertices.length; i++) {
-            var norm2 = this.vertices[i].norm2();
-            if(norm2>max2)
-            max2 = norm2;
-        }
-        return Math.sqrt(max2);
-    }
-
     //this.computeAABB();
 };
 
 CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
 CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
+
+CANNON.ConvexPolyhedron.prototype.boundingSphereRadius = function(){
+    // Assume points are distributed with local (0,0,0) as center
+    var max2 = 0;
+    var verts = this.vertices;
+    for(var i=0, N=verts.length; i!==N; i++) {
+        var norm2 = verts[i].norm2();
+        if(norm2>max2)
+            max2 = norm2;
+    }
+    return Math.sqrt(max2);
+};
 
 var tempWorldVertex = new CANNON.Vec3();
 CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
@@ -2952,7 +2962,42 @@ CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
             v.vadd(offset,v);
         }
     }
-};/**
+};
+
+// Checks whether p is inside the polyhedra. Must be in local coords.
+// The point lies outside of the convex hull of the other points
+// if and only if the direction of all the vectors from it to those
+// other points are on less than one half of a sphere around it.
+CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
+    var n = this.vertices.length,
+        verts = this.vertices,
+        faces = this.faces,
+        normals = this.faceNormals;
+    var positiveResult = null;
+    var N = this.faces.length;
+    var pointInside = this.getAveragePointLocal();
+    for(var i=0; i<N; i++){
+        var numVertices = this.faces[i].length;
+        var n = normals[i];
+        var v = verts[faces[i][0]]; // We only need one point in the face
+
+        // This dot product determines which side of the edge the point is
+        var r1 = n.dot(p.vsub(v));
+        var r2 = n.dot(pointInside.vsub(v));
+
+        if((r1<0 && r2>0) || (r1>0 && r2<0)){
+            return false; // Encountered some other sign. Exit.
+        } else {
+        }
+    }
+
+    // If we got here, all dot products were of the same sign.
+    return positiveResult ? 1 : -1;
+};
+
+
+function pointInConvex(p){
+}/**
  * @class CANNON.Cylinder
  * @extends CANNON.ConvexPolyhedron
  * @author schteppe / https://github.com/schteppe
@@ -4321,7 +4366,7 @@ CANNON.ContactGenerator = function(){
         }
 
         // If we got here, all dot products were of the same sign.
-        return true;
+        return positiveResult ? 1 : -1;
     }
 
     var box_to_sphere = new CANNON.Vec3();
@@ -4637,6 +4682,72 @@ CANNON.ContactGenerator = function(){
         }
     }
 
+    // WIP
+    function particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
+
+        var penetratedFaceIndex = -1;
+        var minPenetration = null;
+        var numDetectedFaces = 0;
+
+        // Convert particle position xi to local coords in the convex
+        var local = xi.copy();
+        local = local.vsub(xj); // Convert position to relative the convex origin
+        var cqj = qj.conjugate();
+        cqj.vmult(local,local);
+
+        //console.log("from the box perspective",local.toString());
+
+        if(sj.pointIsInside(local)){
+
+            // For each world polygon in the polyhedra
+            for(var i=0,nfaces=sj.faces.length; i!==nfaces; i++){
+
+                // Construct world face vertices
+                var verts = [];
+                for(var j=0,nverts=sj.faces[i].length; j!==nverts; j++){
+                    var worldVertex = new CANNON.Vec3();
+                    sj.vertices[sj.faces[i][j]].copy(worldVertex);
+                    qj.vmult(worldVertex,worldVertex);
+                    worldVertex.vadd(xj,worldVertex);
+                    verts.push(worldVertex);
+                }
+
+                var normal = sj.faceNormals[i].copy();
+                normal.normalize();
+                qj.vmult(normal,normal);
+
+                // Check if the particle is in the polygon
+                /*var inside = pointInPolygon(verts,normal,xi);
+                if(inside){*/
+                    // Check how much the particle penetrates the polygon plane.
+                    var penetration = -normal.dot(xi.vsub(verts[0]));
+                    if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
+                        minPenetration = penetration;
+                        penetratedFaceIndex = i;
+                        penetratedFaceNormal = normal;
+                        numDetectedFaces++;
+                    }
+                /*}*/
+            }
+
+            if(penetratedFaceIndex!==-1){
+                // Setup contact
+                var r = makeResult(bi,bj);
+                // rj is the particle position projected to the face
+                var worldPenetrationVec = penetratedFaceNormal.mult(minPenetration);
+                //console.log("pen vec:",worldPenetrationVec.toString());
+                var projectedToFace = xi.vsub(xj).vadd(worldPenetrationVec);
+                projectedToFace.copy(r.rj);
+                //qj.vmult(r.rj,r.rj);
+                penetratedFaceNormal.negate( r.ni ); // Contact normal
+                r.ri.set(0,0,0); // Center of particle
+                result.push(r);
+            } else {
+                console.warn("Point found inside convex, but did not find penetrating face!");
+            }
+        }
+    }
+
     /*
      * Near phase calculation, get the contact point, normal, etc.
      * @param array result The result one will get back with all the contact point information
@@ -4661,6 +4772,14 @@ CANNON.ContactGenerator = function(){
             }
         } else {
             // Particle!
+            if(si && !sj){
+                var temp;
+                temp=sj;   sj=si;   si=temp;
+                temp=xj;   xj=xi;   xi=temp;
+                temp=qj;   qj=qi;   qi=temp;
+                temp=bj;   bj=bi;   bi=temp;
+                swapped = true;
+            }
         }
 
         if(si && sj){
@@ -4756,17 +4875,22 @@ CANNON.ContactGenerator = function(){
         } else {
 
             // Particle!
-            var particle = si ? bj : bi;
-            var other = si ? bi : bj;
-            var otherShape = other.shape;
-            var type = otherShape.type;
-
-            if(type == CANNON.Shape.types.PLANE){ // Particle vs plane
-                particlePlane(result,null,otherShape,xi,xj,null,qj,bi,bj);
-            } else if(type == CANNON.Shape.types.SPHERE){ // Particle vs sphere
+            switch(sj.type){
+            case types.PLANE: // Particle vs plane
+                particlePlane(result,si,sj,xi,xj,qi,qj,bi,bj);
+                break;
+            case types.SPHERE: // Particle vs sphere
                 particleSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
-            } else if(type == CANNON.Shape.types.CONVEXPOLYHEDRON){ // particle-convex
-                // Todo
+                break;
+            case types.BOX: // Particle vs box
+                particleConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
+                break;
+            case types.CONVEXPOLYHEDRON: // particle-convex
+                particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
+                break;
+            default:
+                console.warn("Collision between CANNON.Particle and "+sj.type+" not implemented yet.");
+                break;
             }
         }
     

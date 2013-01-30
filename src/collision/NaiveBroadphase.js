@@ -95,17 +95,26 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                     var type = otherShape.type;
 
                     if(type & BOX_SPHERE_COMPOUND_CONVEX){
-                        // todo: particle vs box,sphere,compound,convex
-                        if(type === types.SPHERE){
+                        // todo: particle vs box,compound,convex
+
+                        if(type === types.SPHERE){ // particle-sphere
                             particle.position.vsub(other.position,relpos);
-                            if(Math.pow(otherShape.radius,2) >= relpos.norm2()){
+                            if(otherShape.radius*otherShape.radius >= relpos.norm2()){
+                                pairs1.push(particle);
+                                pairs2.push(other);
+                            }
+                        } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX){
+                            var R = otherShape.boundingSphereRadius();
+                            particle.position.vsub(other.position,relpos);
+                            if(R*R >= relpos.norm2()){
                                 pairs1.push(particle);
                                 pairs2.push(other);
                             }
                         }
-                    } else if(type & types.PLANE){
+                    } else if(type === types.PLANE){
                         // particle/plane
                         var plane = other;
+                        normal.set(0,0,1);
                         plane.quaternion.vmult(normal,normal);
                         particle.position.vsub(plane.position,relpos);
                         if(normal.dot(relpos)<=0.0){

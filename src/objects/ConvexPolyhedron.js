@@ -632,22 +632,23 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         }
     }
 
-    this.boundingSphereRadius = function(){
-        // Assume points are distributed with local (0,0,0) as center
-        var max2 = 0;
-        for(var i=0; i<this.vertices.length; i++) {
-            var norm2 = this.vertices[i].norm2();
-            if(norm2>max2)
-            max2 = norm2;
-        }
-        return Math.sqrt(max2);
-    }
-
     //this.computeAABB();
 };
 
 CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
 CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
+
+CANNON.ConvexPolyhedron.prototype.boundingSphereRadius = function(){
+    // Assume points are distributed with local (0,0,0) as center
+    var max2 = 0;
+    var verts = this.vertices;
+    for(var i=0, N=verts.length; i!==N; i++) {
+        var norm2 = verts[i].norm2();
+        if(norm2>max2)
+            max2 = norm2;
+    }
+    return Math.sqrt(max2);
+};
 
 var tempWorldVertex = new CANNON.Vec3();
 CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
@@ -706,3 +707,38 @@ CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
         }
     }
 };
+
+// Checks whether p is inside the polyhedra. Must be in local coords.
+// The point lies outside of the convex hull of the other points
+// if and only if the direction of all the vectors from it to those
+// other points are on less than one half of a sphere around it.
+CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
+    var n = this.vertices.length,
+        verts = this.vertices,
+        faces = this.faces,
+        normals = this.faceNormals;
+    var positiveResult = null;
+    var N = this.faces.length;
+    var pointInside = this.getAveragePointLocal();
+    for(var i=0; i<N; i++){
+        var numVertices = this.faces[i].length;
+        var n = normals[i];
+        var v = verts[faces[i][0]]; // We only need one point in the face
+
+        // This dot product determines which side of the edge the point is
+        var r1 = n.dot(p.vsub(v));
+        var r2 = n.dot(pointInside.vsub(v));
+
+        if((r1<0 && r2>0) || (r1>0 && r2<0)){
+            return false; // Encountered some other sign. Exit.
+        } else {
+        }
+    }
+
+    // If we got here, all dot products were of the same sign.
+    return positiveResult ? 1 : -1;
+};
+
+
+function pointInConvex(p){
+}
