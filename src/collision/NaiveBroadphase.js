@@ -103,7 +103,7 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                                 pairs1.push(particle);
                                 pairs2.push(other);
                             }
-                        } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX){
+                        } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
                             var R = otherShape.boundingSphereRadius();
                             particle.position.vsub(other.position,relpos);
                             if(R*R >= relpos.norm2()){

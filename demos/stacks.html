@@ -154,6 +154,22 @@
       // -------------------
       // SPHERE-CONVEX: TODO
       // -------------------
+      demo.addScene("sphere/convex",function(){
+          var world = setupWorld(demo);
+          
+          // Sphere
+          var sphereShape = new CANNON.Sphere(size*0.5);
+          var b = new CANNON.RigidBody(5,sphereShape);
+          b.position.set(0,0,6*size);
+          world.add(b);
+          demo.addVisual(b);
+      
+          var shape = createTetra();
+          var b1 = new CANNON.RigidBody(5,shape);
+          b1.position.set(0,0,1*size);
+          world.add(b1);
+          demo.addVisual(b1);
+        });
 
       demo.addScene("sphere/particle",function(){
           var world = setupWorld(demo);

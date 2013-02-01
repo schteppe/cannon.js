@@ -620,6 +620,9 @@ CANNON.ContactGenerator = function(){
             case types.CONVEXPOLYHEDRON: // particle-convex
                 particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
+            case types.COMPOUND: // particle-compound
+                recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+                break;
             default:
                 console.warn("Collision between CANNON.Particle and "+sj.type+" not implemented yet.");
                 break;

@@ -172,7 +172,7 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                                 pairs1.push(particle);
                                 pairs2.push(other);
                             }
-                        } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX){
+                        } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
                             var R = otherShape.boundingSphereRadius();
                             particle.position.vsub(other.position,relpos);
                             if(R*R >= relpos.norm2()){
@@ -4843,6 +4843,9 @@ CANNON.ContactGenerator = function(){
                 break;
             case types.CONVEXPOLYHEDRON: // particle-convex
                 particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
+                break;
+            case types.COMPOUND: // particle-compound
+                recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
                 console.warn("Collision between CANNON.Particle and "+sj.type+" not implemented yet.");
