@@ -164,7 +164,7 @@
           world.add(b);
           demo.addVisual(b);
       
-          var shape = createTetra();
+          var shape = createTetra();//createBoxPolyhedron(size);
           var b1 = new CANNON.RigidBody(5,shape);
           b1.position.set(0,0,1*size);
           world.add(b1);

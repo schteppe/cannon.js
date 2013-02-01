@@ -269,6 +269,130 @@ CANNON.ContactGenerator = function(){
         v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
     }
 
+
+
+    var convex_to_sphere = new CANNON.Vec3();
+    function sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
+        xi.vsub(xj,convex_to_sphere);
+        var normals = sj.faceNormals;
+        var faces = sj.faces;
+        var verts = sj.vertices;
+        var R =     si.radius;
+        var penetrating_sides = [];
+
+
+        // Check corners
+        for(var i=0; i<verts.length; i++){
+            var v = verts[i];
+
+            // World position of corner
+            var worldCorner = xj.vadd(qj.vmult(v));
+            var sphere_to_corner = worldCorner.vsub(xi);
+            console.log(sphere_to_corner.toString());
+            if(sphere_to_corner.norm2()<R*R){
+                found = true;
+                var r = makeResult(bi,bj);
+                sphere_to_corner.copy(r.ri);
+                r.ri.normalize();
+                r.ri.copy(r.ni);
+                r.ri.mult(R,r.ri);
+                worldCorner.vsub(xj,r.rj);
+                result.push(r);
+                console.log("corner");
+                return;
+            }
+        }
+
+
+        // Check side (plane) intersections
+        var found = false;
+        for(var i=0,nfaces=faces.length; i!==nfaces && found===false; i++){
+            var normal = normals[i];
+            var face = faces[i];
+            var worldNormal = qj.vmult(normal);
+            var worldPoint = qj.vmult(verts[face[0]]).vadd(xj); // Arbitrary point in the face
+
+            var worldSpherePointClosestToPlane = xi.vadd(worldNormal.mult(-R));
+            var penetration = worldSpherePointClosestToPlane.vsub(worldPoint).dot(worldNormal);
+
+            if(penetration<0 && xi.vsub(worldPoint).dot(worldNormal)>0){
+                // Intersects plane. Now check if the sphere is inside the face polygon
+                var faceVerts = [];
+                for(var j=0; j<face.length; j++){
+                    faceVerts.push(qj.vmult(verts[face[j]]).vadd(xj));
+                }
+                if(pointInPolygon(faceVerts,worldNormal,worldSpherePointClosestToPlane)){ // Is the sphere center in the polygon?
+                    found = true;
+                    var r = makeResult(bi,bj);
+                    worldNormal.mult(-R,r.ri); // Sphere r
+                    worldNormal.negate(r.ni); // Normal should be out of sphere
+
+                    xi.vsub(xj).vadd(worldNormal.mult(-R)).vadd(worldNormal.mult(-penetration) , r.rj);
+                    result.push(r);
+                    console.log("face");
+                    return; // We only expect *one* face contact
+                }
+            }
+        }
+
+        /*
+        // Check edges
+        var edgeTangent = v3pool.get();
+        var edgeCenter = v3pool.get();
+        var r = v3pool.get(); // r = edge center to sphere center
+        var orthogonal = v3pool.get();
+        var dist = v3pool.get();
+        for(var j=0; j<sides.length && !found; j++){
+            for(var k=0; k<sides.length && !found; k++){
+                if(j%3!=k%3){
+                    // Get edge tangent
+                    sides[k].cross(sides[j],edgeTangent);
+                    edgeTangent.normalize();
+                    sides[j].vadd(sides[k], edgeCenter);
+                    xi.copy(r);
+                    r.vsub(edgeCenter,r);
+                    r.vsub(xj,r);
+                    var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
+                    edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
+                    
+                    // Find the third side orthogonal to this one
+                    var l = 0;
+                    while(l==j%3 || l==k%3) l++;
+
+                    // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
+                    xi.copy(dist);
+                    dist.vsub(orthogonal,dist);
+                    dist.vsub(edgeCenter,dist);
+                    dist.vsub(xj,dist);
+
+                    // Distances in tangent direction and distance in the plane orthogonal to it
+                    var tdist = Math.abs(orthonorm);
+                    var ndist = dist.norm();
+                    
+                    if(tdist < sides[l].norm() && ndist<R){
+                        found = true;
+                        var res = makeResult(bi,bj);
+                        edgeCenter.vadd(orthogonal,res.rj); // box rj
+                        res.rj.copy(res.rj);
+                        dist.negate(res.ni);
+                        res.ni.normalize();
+
+                        res.rj.copy(res.ri);
+                        res.ri.vadd(xj,res.ri);
+                        res.ri.vsub(xi,res.ri);
+                        res.ri.normalize();
+                        res.ri.mult(R,res.ri);
+
+                        result.push(res);
+                    }
+                }
+            }
+        }
+        v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
+        */
+    }
+
+
     var planeBox_normal = new CANNON.Vec3();
     var plane_to_corner = new CANNON.Vec3();
     function planeBox(result,si,sj,xi,xj,qi,qj,bi,bj){
@@ -525,6 +649,7 @@ CANNON.ContactGenerator = function(){
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 case types.CONVEXPOLYHEDRON: // sphere-convexpolyhedron
+                    //sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                     console.warn("sphere/convexpolyhedron contacts not implemented yet.");
                     break;
                 default:
