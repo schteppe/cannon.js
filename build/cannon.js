@@ -4346,7 +4346,7 @@ CANNON.ContactGenerator = function(){
 
             // Get edge to the next vertex
             var edge = new CANNON.Vec3();
-            verts[(i+1) % (N-1)].vsub(v,edge);
+            verts[(i+1) % (N)].vsub(v,edge);
 
             // Get cross product between polygon normal and the edge
             var edge_x_normal = new CANNON.Vec3();
@@ -4360,14 +4360,15 @@ CANNON.ContactGenerator = function(){
             var r = edge_x_normal.dot(vertex_to_p);
 
             // If all such dot products have same sign, we are inside the polygon.
-            if(positiveResult===null || (r>0 && positiveResult===true) || (r<=0 && positiveResult===false))
+            if(positiveResult===null || (r>0 && positiveResult===true) || (r<=0 && positiveResult===false)){
+                if(positiveResult===null) positiveResult = r>0;
                 continue;
-            else
+            } else
                 return false; // Encountered some other sign. Exit.
         }
 
         // If we got here, all dot products were of the same sign.
-        return positiveResult ? 1 : -1;
+        return true;
     }
 
     var box_to_sphere = new CANNON.Vec3();
@@ -4512,7 +4513,6 @@ CANNON.ContactGenerator = function(){
             // World position of corner
             var worldCorner = xj.vadd(qj.vmult(v));
             var sphere_to_corner = worldCorner.vsub(xi);
-            console.log(sphere_to_corner.toString());
             if(sphere_to_corner.norm2()<R*R){
                 found = true;
                 var r = makeResult(bi,bj);
@@ -4522,7 +4522,6 @@ CANNON.ContactGenerator = function(){
                 r.ri.mult(R,r.ri);
                 worldCorner.vsub(xj,r.rj);
                 result.push(r);
-                console.log("corner");
                 return;
             }
         }
@@ -4542,10 +4541,11 @@ CANNON.ContactGenerator = function(){
             if(penetration<0 && xi.vsub(worldPoint).dot(worldNormal)>0){
                 // Intersects plane. Now check if the sphere is inside the face polygon
                 var faceVerts = [];
+
                 for(var j=0; j<face.length; j++){
-                    faceVerts.push(qj.vmult(verts[face[j]]).vadd(xj));
+                    faceVerts.push(xj.vadd(qj.vmult(verts[face[j]])));
                 }
-                if(pointInPolygon(faceVerts,worldNormal,worldSpherePointClosestToPlane)){ // Is the sphere center in the polygon?
+                if(pointInPolygon(faceVerts,worldNormal,xi)){ // Is the sphere center in the face polygon?
                     found = true;
                     var r = makeResult(bi,bj);
                     worldNormal.mult(-R,r.ri); // Sphere r
@@ -4553,7 +4553,6 @@ CANNON.ContactGenerator = function(){
 
                     xi.vsub(xj).vadd(worldNormal.mult(-R)).vadd(worldNormal.mult(-penetration) , r.rj);
                     result.push(r);
-                    console.log("face");
                     return; // We only expect *one* face contact
                 }
             }
