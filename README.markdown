@@ -41,6 +41,16 @@ setInterval(function(){
 
 If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](https://github.com/schteppe/cannon.js/tree/master/examples).
 
+### Supported collision shapes
+|           | Sphere | Plane | Box | Compound | Convex | Particle |
+| :-------: |:------:|:-----:|:---:|:--------:|:------:|:--------:|
+| Sphere    | Yes    | Yes   | Yes | Yes      | Yes    | Yes      |
+| Plane     | -      | -     | Yes | Yes      | Yes    | Yes      |
+| Box       | -      | -     | Yes | Yes      | Yes    | Yes      |
+| Compound  | -      | -     | -   | Yes      | Yes    | Yes      |
+| Convex    | -      | -     | -   | -        | Yes    | Yes      |
+| Particle  | -      | -     | -   | -        | -      | -        |
+
 ### Change log
 **0.5.0 Current**
  * Added method ```Mat3.setTrace```
