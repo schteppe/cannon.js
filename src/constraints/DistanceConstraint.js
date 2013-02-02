@@ -1,10 +1,11 @@
 /**
  * @class CANNON.DistanceConstraint
- * @brief Distance constraint class
+ * @brief Constrains two bodies to be at a constant distance from each other.
  * @author schteppe
  * @param CANNON.Body bodyA
- * @param CANNON.Body bodyB Could optionally be a CANNON.Vec3 to constrain a body to a static point in space
+ * @param CANNON.Body bodyB
  * @param float distance
+ * @param float maxForce
  */
 CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
     if(typeof(maxForce)=="undefined" )
