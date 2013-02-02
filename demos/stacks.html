@@ -58,10 +58,10 @@
                                  
                                                      [[0,1,2,3], // -z
                                                       [4,5,6,7], // +z
-                                                      [0,1,4,5], // -y
-                                                      [2,3,6,7], // +y
-                                                      [0,3,4,7], // -x
-                                                      [1,2,5,6], // +x
+                                                      [0,1,5,4], // -y
+                                                      [2,3,7,6], // +y
+                                                      [0,3,7,4], // -x
+                                                      [1,2,6,5], // +x
                                                       ],
                                  
                                                       [new CANNON.Vec3( 0, 0,-1),
@@ -151,9 +151,6 @@
             demo.addVisual(compoundBody);
         });
 
-      // -------------------
-      // SPHERE-CONVEX: TODO
-      // -------------------
       demo.addScene("sphere/convex",function(){
           var world = setupWorld(demo);
           
@@ -164,7 +161,7 @@
           world.add(b);
           demo.addVisual(b);
       
-          var shape = createBoxPolyhedron(size);//createTetra();//createBoxPolyhedron(size);
+          var shape = createTetra();//createBoxPolyhedron(size);
           var b1 = new CANNON.RigidBody(5,shape);
           b1.position.set(0,0,1*size);
           world.add(b1);

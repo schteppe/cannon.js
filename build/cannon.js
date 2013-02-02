@@ -4554,6 +4554,27 @@ CANNON.ContactGenerator = function(){
                     xi.vsub(xj).vadd(worldNormal.mult(-R)).vadd(worldNormal.mult(-penetration) , r.rj);
                     result.push(r);
                     return; // We only expect *one* face contact
+                } else {
+                    // Edge?
+                    for(var j=0; j<face.length; j++){
+                        var v1 = xj.vadd(qj.vmult(verts[face[(j+1)%face.length]]));
+                        var v2 = xj.vadd(qj.vmult(verts[face[(j+2)%face.length]]));
+                        var edge = v2.vsub(v1);
+                        edgeUnit = edge.unit();
+                        var p = edgeUnit.mult(xi.vsub(v1).dot(edgeUnit)).vadd(v1);
+                        if(p.vsub(xi).norm2() < R*R){
+                            // Edge contact!
+                            var r = makeResult(bi,bj);
+                            p.vsub(xj,r.rj);
+
+                            p.vsub(xi,r.ni);
+                            r.ni.normalize();
+
+                            r.ni.mult(R,r.ri);
+                            result.push(r);
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -4872,8 +4893,8 @@ CANNON.ContactGenerator = function(){
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 case types.CONVEXPOLYHEDRON: // sphere-convexpolyhedron
-                    //sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
-                    console.warn("sphere/convexpolyhedron contacts not implemented yet.");
+                    sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
+                    //console.warn("sphere/convexpolyhedron contacts not implemented yet.");
                     break;
                 default:
                     console.warn("Collision between CANNON.Shape.types.SPHERE and "+sj.type+" not implemented yet.");
