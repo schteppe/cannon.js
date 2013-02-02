@@ -41,7 +41,7 @@ setInterval(function(){
 
 If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](https://github.com/schteppe/cannon.js/tree/master/examples).
 
-### Supported collision shapes
+### Supported contact shape pairs
 |           | Sphere | Plane | Box | Compound | Convex | Particle |
 | :-------: |:------:|:-----:|:---:|:--------:|:------:|:--------:|
 | Sphere    | Yes    | Yes   | Yes | Yes      | Yes    | Yes      |
@@ -53,6 +53,14 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.5.0 Current**
+ * Added contact support for all possible ```Shape.types``` (see table above).
+ * Fixed convex contact bugs.
+ * Added method ```ConvexPolyhedron.getAveragePointLocal```.
+ * Added method ```ConvexPolyhedron.transformAllPoints```.
+ * Added ```SplitSolver```.
+ * Removed use of typed arrays, since they are slower than ordinary ones.   
+ * Corrected applying of linear and angular damping, should now be physically correct and independent of timestep size.
+ * Renamed ```Solver``` to ```GSSolver```, made ```Solver``` a base class instead.
  * Added method ```Mat3.setTrace```
  * ```ContactGenerator``` now produces ```ContactEquation``` instead of ```ContactPoint```
  * Added property ```Solver.tolerance```
