@@ -160,7 +160,7 @@ CANNON.Vec3.prototype.unit = function(target){
         target.y = y * ninv;
         target.z = z * ninv;
     } else {
-        target.x = 0;
+        target.x = 1;
         target.y = 0;
         target.z = 0;
     }
