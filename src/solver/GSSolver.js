@@ -177,6 +177,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         for(i=0; i!==Nbodies; i++){
             var b=bodies[i], v=b.velocity, w=b.angularVelocity;
             v.vadd(b.vlambda, v);
+            //console.log("adding",b.wlambda.toString()," to body "+i);
             if(w)
                 w.vadd(b.wlambda, w);
         }

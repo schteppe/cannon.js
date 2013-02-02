@@ -1,7 +1,13 @@
 START     = LICENSE src/wrapper/Start.js
 CANNON    = src/Cannon.js
 COLLISION = src/collision/*.js
-CONSTRAINTS = src/constraints/Equation.js src/constraints/ContactEquation.js src/constraints/FrictionEquation.js src/constraints/DistanceConstraint.js src/constraints/PointToPointConstraint.js
+CONSTRAINTS = 	src/constraints/Equation.js \
+				src/constraints/ContactEquation.js \
+				src/constraints/FrictionEquation.js \
+				src/constraints/RotationalEquation.js \
+				src/constraints/DistanceConstraint.js \
+				src/constraints/RotationalConstraint.js \
+				src/constraints/PointToPointConstraint.js
 MATH      = src/math/Mat3.js src/math/Vec3.js src/math/Quaternion.js
 OBJECTS   = src/objects/Shape.js src/objects/Body.js src/objects/Particle.js src/objects/RigidBody.js src/objects/Sphere.js src/objects/Box.js src/objects/Plane.js src/objects/Compound.js src/objects/ConvexPolyhedron.js src/objects/Cylinder.js
 SOLVER    = src/solver/Solver.js src/solver/GSSolver.js src/solver/SplitSolver.js
