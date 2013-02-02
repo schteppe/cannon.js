@@ -26,31 +26,6 @@
         var demo = new CANNON.Demo();
         var mass = 1;
 
-        demo.addScene("hinge",function(){
-            var world = demo.getWorld();
-            world.gravity.set(0,5,-20);
-
-            var s = 5, d = 0.1*s;
-            var shape = new CANNON.Box(new CANNON.Vec3(s*0.5,s*0.1,s*0.5));
-            var body = new CANNON.RigidBody(mass,shape);
-            var staticBody = new CANNON.RigidBody(0,shape);
-            staticBody.position.z = s + d*2;
-
-            // Hinge it
-            var pivotA = new CANNON.Vec3(0,0,-s*0.5-d);
-            var axisA = new CANNON.Vec3(1,0,0);
-            var axisB = axisA;
-            var pivotB = new CANNON.Vec3(0,0,s*0.5+d);
-            var c = new CANNON.HingeConstraint( staticBody, pivotA, axisA,
-                                                body,       pivotB, axisB);            
-            world.addConstraint(c); 
-
-            world.add(body);
-            world.add(staticBody);
-            demo.addVisual(body);
-            demo.addVisual(staticBody);
-        });
-
         demo.addScene("car",function(){
             var world = demo.getWorld();
             world.gravity.set(1,0,-10);
@@ -100,6 +75,30 @@
 
         });
 
+        demo.addScene("hinge",function(){
+            var world = demo.getWorld();
+            world.gravity.set(0,5,-20);
+
+            var s = 5, d = 0.1*s;
+            var shape = new CANNON.Box(new CANNON.Vec3(s*0.5,s*0.1,s*0.5));
+            var body = new CANNON.RigidBody(mass,shape);
+            var staticBody = new CANNON.RigidBody(0,shape);
+            staticBody.position.z = s + d*2;
+
+            // Hinge it
+            var pivotA = new CANNON.Vec3(0,0,-s*0.5-d);
+            var axisA = new CANNON.Vec3(1,0,0);
+            var axisB = axisA;
+            var pivotB = new CANNON.Vec3(0,0,s*0.5+d);
+            var c = new CANNON.HingeConstraint( staticBody, pivotA, axisA,
+                                                body,       pivotB, axisB);            
+            world.addConstraint(c); 
+
+            world.add(body);
+            world.add(staticBody);
+            demo.addVisual(body);
+            demo.addVisual(staticBody);
+        });
 
         demo.start();
       
