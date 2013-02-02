@@ -48,14 +48,13 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                                          new v( sx, sy, sz),
                                          new v(-sx, sy, sz)],
                                         
-                                        [
-                                            [0,1,2,3], // -z
-                                            [4,5,6,7], // +z
-                                            [0,1,4,5], // -y
-                                            [2,3,6,7], // +y
-                                            [0,3,4,7], // -x
-                                            [1,2,5,6], // +x
-                                        ],
+                                         [[0,1,2,3], // -z
+                                          [4,5,6,7], // +z
+                                          [0,1,5,4], // -y
+                                          [2,3,7,6], // +y
+                                          [0,3,7,4], // -x
+                                          [1,2,6,5], // +x
+                                          ],
                                         
                                         [new v( 0, 0,-1),
                                          new v( 0, 0, 1),

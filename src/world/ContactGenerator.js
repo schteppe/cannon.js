@@ -19,34 +19,6 @@ CANNON.ContactGenerator = function(){
     var contactPointPool = [];
 
     var v3pool = new CANNON.Vec3Pool();
-
-    // temp vertices for plane/polyhedron collision tests
-    var tempverts = [new CANNON.Vec3(),
-                     new CANNON.Vec3(),
-                     new CANNON.Vec3(),
-                     new CANNON.Vec3(),
-                     new CANNON.Vec3(),
-                     new CANNON.Vec3(),
-                     new CANNON.Vec3(),
-                     new CANNON.Vec3()];
-    // temp normals for plane/polyhedron
-    var tempnormals = [new CANNON.Vec3(),
-                       new CANNON.Vec3(),
-                       new CANNON.Vec3(),
-                       new CANNON.Vec3(),
-                       new CANNON.Vec3(),
-                       new CANNON.Vec3()];
-
-    var planehull = new CANNON.ConvexPolyhedron(tempverts,
-                                                [
-                                                    [0,1,2,3], // -z
-                                                    [4,5,6,7], // +z
-                                                    [0,1,4,5], // -y
-                                                    [2,3,6,7], // +y
-                                                    [0,3,4,7], // -x
-                                                    [1,2,5,6], // +x
-                                                ],
-                                                tempnormals);
     
     /*
      * Make a contact object.
@@ -281,7 +253,6 @@ CANNON.ContactGenerator = function(){
         var R =     si.radius;
         var penetrating_sides = [];
 
-
         // Check corners
         for(var i=0; i<verts.length; i++){
             var v = verts[i];
@@ -301,7 +272,6 @@ CANNON.ContactGenerator = function(){
                 return;
             }
         }
-
 
         // Check side (plane) intersections
         var found = false;
@@ -354,64 +324,7 @@ CANNON.ContactGenerator = function(){
                 }
             }
         }
-
-        /*
-        // Check edges
-        var edgeTangent = v3pool.get();
-        var edgeCenter = v3pool.get();
-        var r = v3pool.get(); // r = edge center to sphere center
-        var orthogonal = v3pool.get();
-        var dist = v3pool.get();
-        for(var j=0; j<sides.length && !found; j++){
-            for(var k=0; k<sides.length && !found; k++){
-                if(j%3!=k%3){
-                    // Get edge tangent
-                    sides[k].cross(sides[j],edgeTangent);
-                    edgeTangent.normalize();
-                    sides[j].vadd(sides[k], edgeCenter);
-                    xi.copy(r);
-                    r.vsub(edgeCenter,r);
-                    r.vsub(xj,r);
-                    var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
-                    edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
-                    
-                    // Find the third side orthogonal to this one
-                    var l = 0;
-                    while(l==j%3 || l==k%3) l++;
-
-                    // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-                    xi.copy(dist);
-                    dist.vsub(orthogonal,dist);
-                    dist.vsub(edgeCenter,dist);
-                    dist.vsub(xj,dist);
-
-                    // Distances in tangent direction and distance in the plane orthogonal to it
-                    var tdist = Math.abs(orthonorm);
-                    var ndist = dist.norm();
-                    
-                    if(tdist < sides[l].norm() && ndist<R){
-                        found = true;
-                        var res = makeResult(bi,bj);
-                        edgeCenter.vadd(orthogonal,res.rj); // box rj
-                        res.rj.copy(res.rj);
-                        dist.negate(res.ni);
-                        res.ni.normalize();
-
-                        res.rj.copy(res.ri);
-                        res.ri.vadd(xj,res.ri);
-                        res.ri.vsub(xi,res.ri);
-                        res.ri.normalize();
-                        res.ri.mult(R,res.ri);
-
-                        result.push(res);
-                    }
-                }
-            }
-        }
-        v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
-        */
     }
-
 
     var planeBox_normal = new CANNON.Vec3();
     var plane_to_corner = new CANNON.Vec3();
@@ -425,6 +338,7 @@ CANNON.ContactGenerator = function(){
      * @param CompoundShape sj
      */
     function recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj){
+        var nr = 0;
         for(var i=0; i<sj.childShapes.length; i++){
             var r = [];
             var newQuat = qj.mult(sj.childOrientations[i]);
@@ -439,6 +353,7 @@ CANNON.ContactGenerator = function(){
                       newQuat, // Accumulate orientation
                       bi,
                       bj);
+            if(!si) nr+= r.length;
             for(var j=0; j<r.length; j++){
                 // The "rj" vector is in world coords, though we must add the world child offset vector.
                 r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
@@ -565,8 +480,6 @@ CANNON.ContactGenerator = function(){
         var cqj = qj.conjugate();
         cqj.vmult(local,local);
 
-        //console.log("from the box perspective",local.toString());
-
         if(sj.pointIsInside(local)){
 
             // For each world polygon in the polyhedra
@@ -586,18 +499,14 @@ CANNON.ContactGenerator = function(){
                 normal.normalize();
                 qj.vmult(normal,normal);
 
-                // Check if the particle is in the polygon
-                /*var inside = pointInPolygon(verts,normal,xi);
-                if(inside){*/
-                    // Check how much the particle penetrates the polygon plane.
-                    var penetration = -normal.dot(xi.vsub(verts[0]));
-                    if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
-                        minPenetration = penetration;
-                        penetratedFaceIndex = i;
-                        penetratedFaceNormal = normal;
-                        numDetectedFaces++;
-                    }
-                /*}*/
+                // Check how much the particle penetrates the polygon plane.
+                var penetration = -normal.dot(xi.vsub(verts[0]));
+                if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
+                    minPenetration = penetration;
+                    penetratedFaceIndex = i;
+                    penetratedFaceNormal = normal;
+                    numDetectedFaces++;
+                }
             }
 
             if(penetratedFaceIndex!==-1){
@@ -605,7 +514,6 @@ CANNON.ContactGenerator = function(){
                 var r = makeResult(bi,bj);
                 // rj is the particle position projected to the face
                 var worldPenetrationVec = penetratedFaceNormal.mult(minPenetration);
-                //console.log("pen vec:",worldPenetrationVec.toString());
                 var projectedToFace = xi.vsub(xj).vadd(worldPenetrationVec);
                 projectedToFace.copy(r.rj);
                 //qj.vmult(r.rj,r.rj);
@@ -670,7 +578,6 @@ CANNON.ContactGenerator = function(){
                     break;
                 case types.CONVEXPOLYHEDRON: // sphere-convexpolyhedron
                     sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
-                    //console.warn("sphere/convexpolyhedron contacts not implemented yet.");
                     break;
                 default:
                     console.warn("Collision between CANNON.Shape.types.SPHERE and "+sj.type+" not implemented yet.");
