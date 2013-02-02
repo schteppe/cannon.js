@@ -256,6 +256,22 @@
           demo.addVisual(b1);
         });
 
+      demo.addScene("box/convex",function(){
+          var world = setupWorld(demo);
+          
+          var shape = createTetra(size);
+          var b2 = new CANNON.RigidBody(5,shape);
+          b2.position.set(0,0,5*size);
+          world.add(b2);
+          demo.addVisual(b2);
+
+          var boxShape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+          var b1 = new CANNON.RigidBody(5,boxShape);
+          b1.position.set(0,0,2*size);
+          world.add(b1);
+          demo.addVisual(b1);
+        });
+
       demo.addScene("box/particle",function(){
           var world = setupWorld(demo);
           
