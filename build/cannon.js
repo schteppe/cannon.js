@@ -5643,11 +5643,6 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     t1.minForce = t2.minForce = normal.minForce = -maxForce;
     t1.maxForce = t2.maxForce = normal.maxForce =  maxForce;
 
-    var worldAxisA = new CANNON.Vec3();
-    var worldAxisB = new CANNON.Vec3();
-    var worldPivotA = new CANNON.Vec3();
-    var worldPivotB = new CANNON.Vec3();
-
     var unitPivotA = pivotA.unit();
     var unitPivotB = pivotB.unit();
 
@@ -5656,12 +5651,6 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
 
     axisA_x_pivotA.normalize();
     axisB_x_pivotB.normalize();
-
-    var normalA = axisA.cross(axisA_x_pivotA);
-    var normalB = axisB.cross(axisB_x_pivotB);
-    normalA.normalize();
-    normalB.normalize();
-
 
     // Motor stuff
     var motorEnabled = false;
@@ -5679,7 +5668,6 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         }
     };
 
-
     // Update 
     this.update = function(){
         // Update world positions of pivots
@@ -5695,10 +5683,10 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         normal.rj.copy(t2.rj);
 
         // update rotational constraints
-        bodyA.quaternion.vmult(axisA,      r1.ni);
-        bodyB.quaternion.vmult(unitPivotB, r1.nj);
-        bodyA.quaternion.vmult(axisA_x_pivotA, r2.ni);
-        bodyB.quaternion.vmult(axisB,   r2.nj);
+        bodyA.quaternion.vmult(axisA,           r1.ni);
+        bodyB.quaternion.vmult(unitPivotB,      r1.nj);
+        bodyA.quaternion.vmult(axisA_x_pivotA,  r2.ni);
+        bodyB.quaternion.vmult(axisB,           r2.nj);
 
         if(motorEnabled){
             bodyA.quaternion.vmult(axisA,eqs.motor.axis);

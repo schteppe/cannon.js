@@ -1,11 +1,9 @@
 /**
  * @class CANNON.RotationalMotorEquation
- * @brief Rotational constraint. Works to keep the local vectors orthogonal to each other.
+ * @brief Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
  * @author schteppe
- * @param CANNON.RigidBody bj
- * @param CANNON.Vec3 localVectorInBodyA
- * @param CANNON.RigidBody bi
- * @param CANNON.Vec3 localVectorInBodyB
+ * @param CANNON.RigidBody bodyA
+ * @param CANNON.RigidBody bodyB
  * @extends CANNON.Equation
  */
 CANNON.RotationalMotorEquation = function(bodyA, bodyB){
