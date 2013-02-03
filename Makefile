@@ -7,6 +7,7 @@ CONSTRAINTS = 	src/constraints/Equation.js \
 				src/constraints/RotationalEquation.js \
 				src/constraints/DistanceConstraint.js \
 				src/constraints/RotationalConstraint.js \
+				src/constraints/RotationalMotorEquation.js \
 				src/constraints/HingeConstraint.js \
 				src/constraints/PointToPointConstraint.js
 MATH      = src/math/Mat3.js src/math/Vec3.js src/math/Quaternion.js

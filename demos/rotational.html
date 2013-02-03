@@ -28,7 +28,7 @@
 
         demo.addScene("car",function(){
             var world = demo.getWorld();
-            world.gravity.set(1,0,-10);
+            world.gravity.set(0,0,-5);
 
             var wheelShape =      new CANNON.Sphere(1.2);
             var leftFrontWheel =  new CANNON.RigidBody(mass,wheelShape);
@@ -73,7 +73,15 @@
             world.add(ground);
             demo.addVisual(ground);
 
+            var frontLeftHinge = constraints[0];
+            var frontRightHinge = constraints[1];
+            frontLeftHinge.enableMotor();
+            frontRightHinge.enableMotor();
+            frontLeftHinge.motorTargetVelocity = 2;
+            frontRightHinge.motorTargetVelocity = 2;
+
         });
+
 
         demo.addScene("hinge",function(){
             var world = demo.getWorld();

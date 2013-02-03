@@ -13,7 +13,8 @@
  * @param float maxForce
  */
 CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, maxForce){
-    maxForce = maxForce || 1e6; 
+    maxForce = maxForce || 1e6;
+    var that = this;
     // Equations to be fed to the solver
     var eqs = this.equations = {
         rotational1: new CANNON.RotationalEquation(bodyA,bodyB),
@@ -51,6 +52,24 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     normalA.normalize();
     normalB.normalize();
 
+
+    // Motor stuff
+    var motorEnabled = false;
+    this.motorTargetVelocity = 0;
+    this.enableMotor = function(){
+        if(!motorEnabled){
+            eqs.motor = new CANNON.RotationalMotorEquation(bodyA,bodyB);
+            motorEnabled = true;
+        }
+    };
+    this.disableMotor = function(){
+        if(motorEnabled){
+            motorEnabled = false;
+            delete eqs.motor;
+        }
+    };
+
+
     // Update 
     this.update = function(){
         // Update world positions of pivots
@@ -71,6 +90,9 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         bodyA.quaternion.vmult(axisA_x_pivotA, r2.ni);
         bodyB.quaternion.vmult(axisB,   r2.nj);
 
-        //console.log("ni=",r1.ni.toString(),"nj=",r1.nj.toString());
+        if(motorEnabled){
+            bodyA.quaternion.vmult(axisA,eqs.motor.axis);
+            eqs.motor.targetVelocity = that.motorTargetVelocity;
+        }
     };
 };
