@@ -3257,8 +3257,11 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 GWlambda = c.computeGWlambda(eps);
                 deltalambda = invC * ( B - GWlambda - eps * lambdaj );
 
-                if(lambdaj + deltalambda < c.minForce || lambdaj + deltalambda > c.maxForce){
-                    deltalambda = -lambdaj;
+                // Clamp if we are not within the min/max interval
+                if(lambdaj + deltalambda < c.minForce){
+                    deltalambda = c.minForce - lambdaj;
+                } else if(lambdaj + deltalambda > c.maxForce){
+                    deltalambda = c.maxForce - lambdaj;
                 }
                 lambda[j] += deltalambda;
 
@@ -5483,12 +5486,10 @@ CANNON.RotationalConstraint = function(bodyA, localVectorInBodyA, bodyB, localVe
 };
 /**
  * @class CANNON.RotationalMotorEquation
- * @brief Rotational constraint. Works to keep the local vectors orthogonal to each other.
+ * @brief Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
  * @author schteppe
- * @param CANNON.RigidBody bj
- * @param CANNON.Vec3 localVectorInBodyA
- * @param CANNON.RigidBody bi
- * @param CANNON.Vec3 localVectorInBodyB
+ * @param CANNON.RigidBody bodyA
+ * @param CANNON.RigidBody bodyB
  * @extends CANNON.Equation
  */
 CANNON.RotationalMotorEquation = function(bodyA, bodyB){

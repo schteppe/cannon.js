@@ -159,8 +159,11 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 GWlambda = c.computeGWlambda(eps);
                 deltalambda = invC * ( B - GWlambda - eps * lambdaj );
 
-                if(lambdaj + deltalambda < c.minForce || lambdaj + deltalambda > c.maxForce){
-                    deltalambda = -lambdaj;
+                // Clamp if we are not within the min/max interval
+                if(lambdaj + deltalambda < c.minForce){
+                    deltalambda = c.minForce - lambdaj;
+                } else if(lambdaj + deltalambda > c.maxForce){
+                    deltalambda = c.maxForce - lambdaj;
                 }
                 lambda[j] += deltalambda;
 

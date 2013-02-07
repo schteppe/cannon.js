@@ -79,8 +79,9 @@
             var frontRightHinge = constraints[1];
             frontLeftHinge.enableMotor();
             frontRightHinge.enableMotor();
-            frontLeftHinge.motorTargetVelocity = 2;
-            frontRightHinge.motorTargetVelocity = -2;
+            var v = 10;
+            frontLeftHinge.motorTargetVelocity = v;
+            frontRightHinge.motorTargetVelocity = -v;
 
         });
 
