@@ -45,9 +45,11 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     // Motor stuff
     var motorEnabled = false;
     this.motorTargetVelocity = 0;
+    this.motorMinForce = -maxForce;
+    this.motorMaxForce = maxForce;
     this.enableMotor = function(){
         if(!motorEnabled){
-            eqs.motor = new CANNON.RotationalMotorEquation(bodyA,bodyB);
+            eqs.motor = new CANNON.RotationalMotorEquation(bodyA,bodyB,maxForce);
             motorEnabled = true;
         }
     };
@@ -79,8 +81,11 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         bodyB.quaternion.vmult(axisB,           r2.nj);
 
         if(motorEnabled){
-            bodyA.quaternion.vmult(axisA,eqs.motor.axis);
+            bodyA.quaternion.vmult(axisA,eqs.motor.axisA);
+            bodyB.quaternion.vmult(axisB,eqs.motor.axisB);
             eqs.motor.targetVelocity = that.motorTargetVelocity;
+            eqs.motor.maxForce = that.motorMaxForce;
+            eqs.motor.minForce = that.motorMinForce;
         }
     };
 };

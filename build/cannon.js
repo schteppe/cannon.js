@@ -5492,9 +5492,11 @@ CANNON.RotationalConstraint = function(bodyA, localVectorInBodyA, bodyB, localVe
  * @param CANNON.RigidBody bodyB
  * @extends CANNON.Equation
  */
-CANNON.RotationalMotorEquation = function(bodyA, bodyB){
-    CANNON.Equation.call(this,bodyA,bodyB,-1e6,1e6);
-    this.axis = new CANNON.Vec3(); // World oriented rotational axis
+CANNON.RotationalMotorEquation = function(bodyA, bodyB, maxForce){
+    maxForce = maxForce || 1e6;
+    CANNON.Equation.call(this,bodyA,bodyB,-maxForce,maxForce);
+    this.axisA = new CANNON.Vec3(); // World oriented rotational axis
+    this.axisB = new CANNON.Vec3(); // World oriented rotational axis
 
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
@@ -5508,7 +5510,8 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(a,b,h){
     var bi = this.bi;
     var bj = this.bj;
 
-    var axis = this.axis;
+    var axisA = this.axisA;
+    var axisB = this.axisB;
 
     var vi = bi.velocity;
     var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
@@ -5532,11 +5535,11 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(a,b,h){
     else              invIj.identity(); // ok?
 
     // g = 0
-    // gdot = axis * wi - axis * wj
-    // G = [0 axis 0 -axis]
+    // gdot = axisA * wi - axisB * wj
+    // G = [0 axisA 0 -axisB]
     // W = [vi wi vj wj]
     var Gq = 0;
-    var GW = axis.dot(wi) + axis.dot(wj) + this.targetVelocity;
+    var GW = axisA.dot(wi) + axisB.dot(wj) + this.targetVelocity;
     var GiMf = 0;//axis.dot(invIi.vmult(taui)) + axis.dot(invIj.vmult(tauj));
 
     var B = - Gq * a - GW * b - h*GiMf;
@@ -5548,7 +5551,8 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(a,b,h){
 CANNON.RotationalMotorEquation.prototype.computeC = function(eps){
     var bi = this.bi;
     var bj = this.bj;
-    var axis = this.axis;
+    var axisA = this.axisA;
+    var axisB = this.axisB;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
@@ -5562,8 +5566,8 @@ CANNON.RotationalMotorEquation.prototype.computeC = function(eps){
     if(bj.invInertia) invIj.setTrace(bj.invInertia);
     else              invIj.identity(); // ok?
 
-    C += invIi.vmult(axis).dot(axis);
-    C += invIj.vmult(axis).dot(axis);
+    C += invIi.vmult(axisA).dot(axisB);
+    C += invIj.vmult(axisB).dot(axisB);
 
     return C;
 };
@@ -5573,15 +5577,16 @@ CANNON.RotationalMotorEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
     var ulambda = computeGWlambda_ulambda;
-    var axis = this.axis;
+    var axisA = this.axisA;
+    var axisB = this.axisB;
 
     var GWlambda = 0.0;
     //bj.vlambda.vsub(bi.vlambda, ulambda);
     //GWlambda += ulambda.dot(this.ni);
 
     // Angular
-    if(bi.wlambda) GWlambda += bi.wlambda.dot(axis);
-    if(bj.wlambda) GWlambda += bj.wlambda.dot(axis);
+    if(bi.wlambda) GWlambda += bi.wlambda.dot(axisA);
+    if(bj.wlambda) GWlambda += bj.wlambda.dot(axisB);
 
     //console.log("GWlambda:",GWlambda);
 
@@ -5591,7 +5596,8 @@ CANNON.RotationalMotorEquation.prototype.computeGWlambda = function(){
 CANNON.RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
-    var axis = this.axis;
+    var axisA = this.axisA;
+    var axisB = this.axisB;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
@@ -5602,11 +5608,11 @@ CANNON.RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
     // Add to angular velocity
     if(bi.wlambda){
         var I = this.invIi;
-        bi.wlambda.vsub(I.vmult(axis).mult(deltalambda),bi.wlambda);
+        bi.wlambda.vsub(I.vmult(axisA).mult(deltalambda),bi.wlambda);
     }
     if(bj.wlambda){
         var I = this.invIj;
-        bj.wlambda.vadd(I.vmult(axis).mult(deltalambda),bj.wlambda);
+        bj.wlambda.vadd(I.vmult(axisB).mult(deltalambda),bj.wlambda);
     }
 };
 /*global CANNON:true */
@@ -5656,9 +5662,11 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     // Motor stuff
     var motorEnabled = false;
     this.motorTargetVelocity = 0;
+    this.motorMinForce = -maxForce;
+    this.motorMaxForce = maxForce;
     this.enableMotor = function(){
         if(!motorEnabled){
-            eqs.motor = new CANNON.RotationalMotorEquation(bodyA,bodyB);
+            eqs.motor = new CANNON.RotationalMotorEquation(bodyA,bodyB,maxForce);
             motorEnabled = true;
         }
     };
@@ -5690,8 +5698,11 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         bodyB.quaternion.vmult(axisB,           r2.nj);
 
         if(motorEnabled){
-            bodyA.quaternion.vmult(axisA,eqs.motor.axis);
+            bodyA.quaternion.vmult(axisA,eqs.motor.axisA);
+            bodyB.quaternion.vmult(axisB,eqs.motor.axisB);
             eqs.motor.targetVelocity = that.motorTargetVelocity;
+            eqs.motor.maxForce = that.motorMaxForce;
+            eqs.motor.minForce = that.motorMinForce;
         }
     };
 };

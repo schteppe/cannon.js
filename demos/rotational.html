@@ -30,11 +30,16 @@
             var world = demo.getWorld();
             world.gravity.set(0,0,-5);
 
+            var groundMaterial = new CANNON.Material("groundMaterial");
+            var wheelMaterial = new CANNON.Material("wheelMaterial");
+            var wheelGroundContactMaterial = new CANNON.ContactMaterial(groundMaterial,wheelMaterial, 0.1, 0.3);
+            world.addContactMaterial(wheelGroundContactMaterial);
+
             var wheelShape =      new CANNON.Sphere(1.2);
-            var leftFrontWheel =  new CANNON.RigidBody(mass,wheelShape);
-            var rightFrontWheel = new CANNON.RigidBody(mass,wheelShape);
-            var leftRearWheel =   new CANNON.RigidBody(mass,wheelShape);
-            var rightRearWheel =  new CANNON.RigidBody(mass,wheelShape);
+            var leftFrontWheel =  new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
+            var rightFrontWheel = new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
+            var leftRearWheel =   new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
+            var rightRearWheel =  new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
 
             var chassisShape = new CANNON.Box(new CANNON.Vec3(5,2,0.5));
             var chassis = new CANNON.RigidBody(mass,chassisShape);
@@ -47,14 +52,22 @@
             rightRearWheel .position.set( -5, -5, 0);
 
             // Constrain wheels
-            var up = new CANNON.Vec3(0,1,0);
             var constraints = [];
             
             // Hinge the wheels
-            var leftAxis = new CANNON.Vec3(0,1,0);
-            var rightAxis = new CANNON.Vec3(0,-1,0);
-            constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3( 5, 5, 0), leftAxis,  leftFrontWheel,  zero, leftAxis));
-            constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3( 5,-5, 0), rightAxis, rightFrontWheel, zero, rightAxis));
+            var leftAxis =       new CANNON.Vec3(0,1,0);
+            var rightAxis =      new CANNON.Vec3(0,-1,0);
+            var leftFrontAxis =  new CANNON.Vec3(0,1,0);
+            var rightFrontAxis = new CANNON.Vec3(0,-1,0);
+            if(false){
+                leftFrontAxis =  new CANNON.Vec3(-0.3,0.7,0);
+                rightFrontAxis = new CANNON.Vec3(0.3,-0.7,0);
+                leftFrontAxis.normalize();
+                rightFrontAxis.normalize();
+            }
+
+            constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3( 5, 5, 0), leftFrontAxis,  leftFrontWheel,  zero, leftAxis));
+            constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3( 5,-5, 0), rightFrontAxis, rightFrontWheel, zero, rightAxis));
             constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3(-5, 5, 0), leftAxis,  leftRearWheel,   zero, leftAxis));
             constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3(-5,-5, 0), rightAxis, rightRearWheel,  zero, rightAxis));
 
@@ -69,17 +82,17 @@
 
             // Ground 
             var groundShape = new CANNON.Plane();
-            var ground = new CANNON.RigidBody(0,groundShape);
+            var ground = new CANNON.RigidBody(0,groundShape,groundMaterial);
             ground.position.z = -3;
             world.add(ground);
             demo.addVisual(ground);
 
             // Enable motors and set their velocities
-            var frontLeftHinge = constraints[0];
-            var frontRightHinge = constraints[1];
+            var frontLeftHinge = constraints[2];
+            var frontRightHinge = constraints[3];
             frontLeftHinge.enableMotor();
             frontRightHinge.enableMotor();
-            var v = 10;
+            var v = -8;
             frontLeftHinge.motorTargetVelocity = v;
             frontRightHinge.motorTargetVelocity = -v;
 
