@@ -5654,6 +5654,7 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     var unitPivotB = pivotB.unit();
 
     var axisA_x_pivotA = axisA.cross(unitPivotA);
+    var axisA_x_axisA_x_pivotA = axisA.cross(axisA_x_pivotA);
     var axisB_x_pivotB = axisB.cross(unitPivotB);
 
     axisA_x_pivotA.normalize();
@@ -5692,9 +5693,9 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         normal.rj.copy(t2.rj);
 
         // update rotational constraints
-        bodyA.quaternion.vmult(axisA,           r1.ni);
-        bodyB.quaternion.vmult(unitPivotB,      r1.nj);
-        bodyA.quaternion.vmult(axisA_x_pivotA,  r2.ni);
+        bodyA.quaternion.vmult(axisA_x_pivotA, r1.ni);
+        bodyB.quaternion.vmult(axisB,          r1.nj);
+        bodyA.quaternion.vmult(axisA_x_axisA_x_pivotA,  r2.ni);
         bodyB.quaternion.vmult(axisB,           r2.nj);
 
         if(motorEnabled){
