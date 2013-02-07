@@ -5681,12 +5681,17 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     // Update 
     this.update = function(){
         // Update world positions of pivots
+        /*
         bodyB.position.vsub(bodyA.position,normal.ni);
         normal.ni.normalize();
+        */
+       normal.ni.set(1,0,0);
+       t1.ni.set(0,1,0);
+       t2.ni.set(0,0,1);
         bodyA.quaternion.vmult(pivotA,normal.ri);
         bodyB.quaternion.vmult(pivotB,normal.rj);
 
-        normal.ni.tangents(t1.ni,t2.ni);
+        //normal.ni.tangents(t1.ni,t2.ni);
         normal.ri.copy(t1.ri);
         normal.rj.copy(t1.rj);
         normal.ri.copy(t2.ri);
