@@ -3489,6 +3489,13 @@ CANNON.World = function(){
     this.allowSleep = false;
 
     /**
+     * @property Array contacts
+     * @brief All the current contacts (instances of CANNON.ContactEquation) in the world.
+     * @memberof CANNON.World
+     */
+    this.contacts = [];
+
+    /**
      * @property bool enableImpulses
      * @brief Whether to enable impulses or not. This is a quite unstable feature for now.
      * @memberof CANNON.World
