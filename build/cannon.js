@@ -1540,6 +1540,7 @@ CANNON.Shape.types = {
  * @brief Base class for all body types.
  * @param string type
  * @extends CANNON.EventTarget
+ * @event collide The body object dispatches a "collide" event whenever it collides with another body. Event parameters are "with" (the body it collides with) and "contact" (the contact equation that is generated).
  */
 CANNON.Body = function(type){
 
@@ -4072,8 +4073,8 @@ CANNON.World.prototype.step = function(dt){
 
             if(this.collisionMatrixGet(i,j,true)!=this.collisionMatrixGet(i,j,false)){
                 // First contact!
-                bi.dispatchEvent({type:"collide", "with":bj});
-                bj.dispatchEvent({type:"collide", "with":bi});
+                bi.dispatchEvent({type:"collide", "with":bj, contact:c });
+                bj.dispatchEvent({type:"collide", "with":bi, contact:c });
                 bi.wakeUp();
                 bj.wakeUp();
                 if(enableImpulses)

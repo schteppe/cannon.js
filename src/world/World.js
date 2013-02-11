@@ -595,8 +595,8 @@ CANNON.World.prototype.step = function(dt){
 
             if(this.collisionMatrixGet(i,j,true)!=this.collisionMatrixGet(i,j,false)){
                 // First contact!
-                bi.dispatchEvent({type:"collide", "with":bj});
-                bj.dispatchEvent({type:"collide", "with":bi});
+                bi.dispatchEvent({type:"collide", "with":bj, contact:c });
+                bj.dispatchEvent({type:"collide", "with":bi, contact:c });
                 bi.wakeUp();
                 bj.wakeUp();
                 if(enableImpulses)

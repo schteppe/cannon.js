@@ -5,6 +5,7 @@
  * @brief Base class for all body types.
  * @param string type
  * @extends CANNON.EventTarget
+ * @event collide The body object dispatches a "collide" event whenever it collides with another body. Event parameters are "with" (the body it collides with) and "contact" (the contact equation that is generated).
  */
 CANNON.Body = function(type){
 
