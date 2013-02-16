@@ -176,7 +176,10 @@
                 world.quatNormalizeFast = false;
 
                 var solver = new CANNON.GSSolver();
-                solver.setSpookParams(1e9,4);
+
+                world.defaultContactMaterial.contactEquationStiffness = 1e9;
+                world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+
                 solver.iterations = 7;
                 solver.tolerance = 0.1;
                 var split = true;

@@ -4914,20 +4914,40 @@ CANNON.ContactGenerator = function(){
  */
 CANNON.Equation = function(bi,bj,minForce,maxForce){
     this.id = -1;
+
+    /**
+     * @property float minForce
+     * @memberof CANNON.Equation
+     */
     this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
+
+    /**
+     * @property float maxForce
+     * @memberof CANNON.Equation
+     */
     this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
+
+    /**
+     * @property CANNON.Body bi
+     * @memberof CANNON.Equation
+     */
     this.bi = bi;
+
+    /**
+     * @property CANNON.Body bj
+     * @memberof CANNON.Equation
+     */
     this.bj = bj;
 
     /**
-     * @property float k
+     * @property float stiffness
      * @brief Corresponds to spring stiffness. Makes constraints stiffer, but harder to solve.
      * @memberof CANNON.Equation
      */
     this.stiffness = 1e7;
 
     /**
-     * @property float d
+     * @property float regularizationTime
      * @brief Similar to damping. Represents the number of timesteps needed to stabilize the constraint.
      * @memberof CANNON.Equation
      */
@@ -4963,13 +4983,19 @@ CANNON.Equation = function(bi,bj,minForce,maxForce){
 };
 CANNON.Equation.prototype.constructor = CANNON.Equation;
 
+/**
+ * @method updateSpookParams
+ * @brief Recalculates a,b,eps.
+ * @memberof CANNON.Equation
+ */
 CANNON.Equation.prototype.updateSpookParams = function(h){
     var d = this.regularizationTime,
         k = this.stiffness;
     this.a = 4.0 / (h * (1 + 4 * d));
     this.b = (4.0 * d) / (1 + 4 * d);
     this.eps = 4.0 / (h * h * k * (1 + 4 * d));
-};/**
+};
+/**
  * @class CANNON.ContactEquation
  * @brief Contact/non-penetration constraint equation
  * @author schteppe
