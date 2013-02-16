@@ -39,13 +39,15 @@ CANNON.Compound.prototype.volume = function(){
     return r;
 };
 
+var Compound_calculateLocalInertia_mr2 = new CANNON.Vec3();
+var Compound_calculateLocalInertia_childInertia = new CANNON.Vec3();
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
     target = target || new CANNON.Vec3();
 
     // Calculate the total volume, we will spread out this objects' mass on the sub shapes
     var V = this.volume();
-    var childInertia = new CANNON.Vec3();
-    for(var i = 0; i<this.childShapes.length; i++){
+    var childInertia = Compound_calculateLocalInertia_childInertia;
+    for(var i=0, Nchildren=this.childShapes.length; i!==Nchildren; i++){
         // Get child information
         var b = this.childShapes[i];
         var o = this.childOffsets[i];
@@ -62,9 +64,10 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
         // I += m_child * r^2
 
         target.vadd(childInertia,target);
-        var mr2 = new CANNON.Vec3(m*o.x*o.x,
-                                  m*o.y*o.y,
-                                  m*o.z*o.z);
+        var mr2 = Compound_calculateLocalInertia_mr2;
+        mr2.set(m*o.x*o.x,
+                m*o.y*o.y,
+                m*o.z*o.z);
         target.vadd(mr2,target);
     }
 
