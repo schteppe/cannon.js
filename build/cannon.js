@@ -2776,25 +2776,6 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return outVertices;
     }
 
-    /*
-     * Whether the face is visible from the vertex
-     * @param array face
-     * @param CANNON.Vec3 vertex
-     */
-    function visible( face, vertex ) {
-        var va = that.vertices[ face[ 0 ] ];
-        var vb = that.vertices[ face[ 1 ] ];
-        var vc = that.vertices[ face[ 2 ] ];
-    
-        var n = new CANNON.Vec3();
-        normal( va, vb, vc, n );
-    
-        // distance from face to origin
-        var dist = n.dot( va );
-    
-        return n.dot( vertex ) >= dist;
-    }
-
     var that = this;
     function normalOfFace(i,target){
         var f = that.faces[i];
@@ -2926,6 +2907,7 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
     max.set(maxx,maxy,maxz);
 };
 
+// Just approximate volume!
 CANNON.ConvexPolyhedron.prototype.volume = function(){
     if(this.boundingSphereRadiusNeedsUpdate) this.computeBoundingSphereRadius();
     return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
