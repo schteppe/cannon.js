@@ -1028,17 +1028,24 @@ CANNON.Vec3.prototype.negate = function(target){
  * @param CANNON.Vec3 t1 Vector object to save the first tangent in
  * @param CANNON.Vec3 t2 Vector object to save the second tangent in
  */
+var Vec3_tangents_n = new CANNON.Vec3();
+var Vec3_tangents_randVec = new CANNON.Vec3();
 CANNON.Vec3.prototype.tangents = function(t1,t2){
     var norm = this.norm();
     if(norm>0.0){
-        var n = new CANNON.Vec3(this.x/norm,
-                                this.y/norm,
-                                this.z/norm);
+        var n = Vec3_tangents_n;
+        n.set(this.x/norm,this.y/norm,this.z/norm);
+        var randVec = Vec3_tangents_randVec;
         if(n.x<0.9){
             var rand = Math.random();
-            n.cross(new CANNON.Vec3(rand,0.0000001,0).unit(),t1);
-        } else
-            n.cross(new CANNON.Vec3(0.0000001,rand,0).unit(),t1);
+            randVec.set(rand,0.0000001,0);
+            randVec.normalize();
+            n.cross(randVec,t1);
+        } else {
+            randVec.set(0.0000001,rand,0);
+            randVec.normalize();
+            n.cross(randVec,t1);
+        }
         n.cross(t1,t2);
     } else {
         // The normal length is zero, make something up
@@ -3433,6 +3440,8 @@ CANNON.World = function(){
      * @memberof CANNON.World
      */
     this.contacts = [];
+    this.frictionEquations = [];
+    this.frictionEquationPool = [];
 
     /**
      * @property bool enableImpulses
@@ -3986,6 +3995,10 @@ CANNON.World.prototype.step = function(dt){
     var temp = this.temp;
     var contacts = this.contacts;
     var ncontacts = contacts.length;
+
+    this.frictionEquationPool = this.frictionEquationPool.concat(this.frictionEquations);
+    this.frictionEquations = [];
+
     for(var k=0; k!==ncontacts; k++){
 
         // Current contact
@@ -4024,8 +4037,18 @@ CANNON.World.prototype.step = function(dt){
                 var mug = mu*gravity.norm();
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass != 0) reducedMass = 1/reducedMass;
-                var c1 = new FrictionEquation(bi,bj,mug*reducedMass);
-                var c2 = new FrictionEquation(bi,bj,mug*reducedMass);
+                //console.log("reusable:",pool.length);
+                var pool = this.frictionEquationPool;
+                var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+                var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+                this.frictionEquations.push(c1);
+                this.frictionEquations.push(c2);
+                //console.log(c1)
+               
+                c1.bi = c2.bi = bi;
+                c1.bj = c2.bj = bj;
+                c1.minForce = c2.minForce = -mug*reducedMass;
+                c1.maxForce = c2.maxForce = mug*reducedMass;
 
                 // Copy over the relative vectors
                 c.ri.copy(c1.ri);
@@ -5242,7 +5265,6 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
 CANNON.FrictionEquation = function(bi,bj,slipForce){
     CANNON.Equation.call(this,bi,bj,-slipForce,slipForce);
     this.ri = new CANNON.Vec3();
-    this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
     this.t = new CANNON.Vec3(); // tangent
 
@@ -5287,7 +5309,6 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
 
     var relVel = this.relVel;
     var relForce = this.relForce;
-    var penetrationVec = this.penetrationVec;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 

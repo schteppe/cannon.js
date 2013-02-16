@@ -10,7 +10,6 @@
 CANNON.FrictionEquation = function(bi,bj,slipForce){
     CANNON.Equation.call(this,bi,bj,-slipForce,slipForce);
     this.ri = new CANNON.Vec3();
-    this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
     this.t = new CANNON.Vec3(); // tangent
 
@@ -55,7 +54,6 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
 
     var relVel = this.relVel;
     var relForce = this.relForce;
-    var penetrationVec = this.penetrationVec;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 

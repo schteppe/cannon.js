@@ -255,17 +255,24 @@ CANNON.Vec3.prototype.negate = function(target){
  * @param CANNON.Vec3 t1 Vector object to save the first tangent in
  * @param CANNON.Vec3 t2 Vector object to save the second tangent in
  */
+var Vec3_tangents_n = new CANNON.Vec3();
+var Vec3_tangents_randVec = new CANNON.Vec3();
 CANNON.Vec3.prototype.tangents = function(t1,t2){
     var norm = this.norm();
     if(norm>0.0){
-        var n = new CANNON.Vec3(this.x/norm,
-                                this.y/norm,
-                                this.z/norm);
+        var n = Vec3_tangents_n;
+        n.set(this.x/norm,this.y/norm,this.z/norm);
+        var randVec = Vec3_tangents_randVec;
         if(n.x<0.9){
             var rand = Math.random();
-            n.cross(new CANNON.Vec3(rand,0.0000001,0).unit(),t1);
-        } else
-            n.cross(new CANNON.Vec3(0.0000001,rand,0).unit(),t1);
+            randVec.set(rand,0.0000001,0);
+            randVec.normalize();
+            n.cross(randVec,t1);
+        } else {
+            randVec.set(0.0000001,rand,0);
+            randVec.normalize();
+            n.cross(randVec,t1);
+        }
         n.cross(t1,t2);
     } else {
         // The normal length is zero, make something up

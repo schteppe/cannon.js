@@ -21,6 +21,8 @@ CANNON.World = function(){
      * @memberof CANNON.World
      */
     this.contacts = [];
+    this.frictionEquations = [];
+    this.frictionEquationPool = [];
 
     /**
      * @property bool enableImpulses
@@ -574,6 +576,10 @@ CANNON.World.prototype.step = function(dt){
     var temp = this.temp;
     var contacts = this.contacts;
     var ncontacts = contacts.length;
+
+    this.frictionEquationPool = this.frictionEquationPool.concat(this.frictionEquations);
+    this.frictionEquations = [];
+
     for(var k=0; k!==ncontacts; k++){
 
         // Current contact
@@ -612,8 +618,16 @@ CANNON.World.prototype.step = function(dt){
                 var mug = mu*gravity.norm();
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass != 0) reducedMass = 1/reducedMass;
-                var c1 = new FrictionEquation(bi,bj,mug*reducedMass);
-                var c2 = new FrictionEquation(bi,bj,mug*reducedMass);
+                var pool = this.frictionEquationPool;
+                var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+                var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+                this.frictionEquations.push(c1);
+                this.frictionEquations.push(c2);
+               
+                c1.bi = c2.bi = bi;
+                c1.bj = c2.bj = bj;
+                c1.minForce = c2.minForce = -mug*reducedMass;
+                c1.maxForce = c2.maxForce = mug*reducedMass;
 
                 // Copy over the relative vectors
                 c.ri.copy(c1.ri);
