@@ -513,17 +513,14 @@ CANNON.Mat3.prototype.setTrace = function(vec3){
 CANNON.Mat3.prototype.vmult = function(v,target){
     target = target || new CANNON.Vec3();
 
-    var vec = [v.x, v.y, v.z];
-    var targetvec = [0, 0, 0];
-    for(var i=0; i<3; i++){
-        for(var j=0; j<3; j++){
-          targetvec[j] += this.elements[i+3*j]*vec[i];
-        }
-    }
+    var e = this.elements,
+        x = v.x,
+        y = v.y,
+        z = v.z;
+    target.x = e[0]*x + e[1]*y + e[2]*z;
+    target.y = e[3]*x + e[4]*y + e[5]*z;
+    target.z = e[6]*x + e[7]*y + e[8]*z;
 
-    target.x = targetvec[0];
-    target.y = targetvec[1];
-    target.z = targetvec[2];
     return target;
 };
 
