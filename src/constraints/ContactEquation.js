@@ -8,6 +8,8 @@
  */
 CANNON.ContactEquation = function(bi,bj){
     CANNON.Equation.call(this,bi,bj,0,1e6);
+
+    this.restitution = 0.0; // "bounciness": u1 = -e*u0
     this.penetration = 0.0;
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
@@ -86,8 +88,9 @@ CANNON.ContactEquation.prototype.computeB = function(h){
     invIj.vmult(tauj,invIj_vmult_tauj);
 
     // Compute iteration
-    var GW = vj.dot(n) - vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui) ;
+    var ePlusOne = this.restitution+1;
+    var GW = ePlusOne*vj.dot(n) - ePlusOne*vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
+    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui);
 
     var B = - Gq * a - GW * b - h*GiMf;
 

@@ -3418,13 +3418,6 @@ CANNON.World = function(){
     this.frictionEquationPool = [];
 
     /**
-     * @property bool enableImpulses
-     * @brief Whether to enable impulses or not. This is a quite unstable feature for now.
-     * @memberof CANNON.World
-     */
-    this.enableImpulses = false;
-
-    /**
      * @property int quatNormalizeSkip
      * @brief How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).
      * @memberof CANNON.World
@@ -3521,7 +3514,7 @@ CANNON.World = function(){
      * @brief This contact material is used if no suitable contactmaterial is found for a contact.
      * @memberof CANNON.World
      */
-    this.defaultContactMaterial = new CANNON.ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.2);
+    this.defaultContactMaterial = new CANNON.ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.0);
 
     this.temp = {
         gvec:new CANNON.Vec3(),
@@ -3581,106 +3574,6 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
 };
 
 /**
- * @method _addImpulse
- * @memberof CANNON.World
- * @brief Add an impulse to the colliding bodies i and j
- * @param int i Body number 1
- * @param int i Body number 2
- * @param CANNON.Vec3 ri Vector from body 1's center of mass to the contact point on its surface
- * @param CANNON.Vec3 ri Vector from body 1's center of mass to the contact point on its surface
- * @param CANNON.Vec3 ui The relative velocity eg. vj+wj*rj - (vi+wj*rj)
- * @param CANNON.Vec3 ni The contact normal pointing out from body i.
- * @param float e The coefficient of restitution
- * @param float mu The contact friction
- * @todo Use it in the code!
- */
-CANNON.World.prototype.addCollisionImpulse = function(c,e,mu){
-    var ri = c.ri,
-        rj = c.rj,
-        ni = c.ni,
-        bi = c.bi
-        bj = c.bj;
-    var vi = bi.velocity,
-        vj = bj.velocity,
-        ui = vj.vsub(vi);
-    var ri_star = ri.crossmat();
-    var rj_star = rj.crossmat();
-
-    // Inverse inertia matrices
-    var ii = bi.inertia && bi.inertia.x>0 ? 1.0/bi.inertia.x : 0.0;
-    var Iinv_i = new CANNON.Mat3([ii,0,0,
-                                  0,ii,0,
-                                  0,0,ii]);
-    ii = bj.inertia && bj.inertia.x>0 ? 1.0/bj.inertia.x : 0.0;
-    var Iinv_j = new CANNON.Mat3([ii,0,0,
-                                  0,ii,0,
-                                  0,0,ii]);
-
-    // Collision matrix:
-    // K = 1/mi + 1/mj - ri_star*I_inv_i*ri_star - rj_star*I_inv_j*rj_star;
-    var im = bi.invMass + bj.invMass;
-    var K = new CANNON.Mat3([im,0,0,
-                             0,im,0,
-                             0,0,im]);
-    var rIr_i = ri_star.mmult(Iinv_i.mmult(ri_star));
-    var rIr_j = rj_star.mmult(Iinv_j.mmult(rj_star));
-
-    // @todo add back when this works
-    for(var el = 0; el<9; el++)
-        K.elements[el] -= (rIr_i.elements[el] + rIr_j.elements[el]);
-
-    // First assume stick friction
-    // Final velocity if stick:
-    var v_f = ni.mult(-e * ui.dot(ni));
-
-    var J =  K.solve(v_f.vsub(ui));
-
-    // Check if slide mode (J_t > J_n) - outside friction cone
-    if(mu>0){
-        var J_n = ni.mult(J.dot(ni));
-        var J_t = J.vsub(J_n);
-        if(J_t.norm2() > J_n.mult(mu).norm2()){
-            // Calculate impulse j = -(1+e)u_n / nK(n-mu*t)
-            var v_tang = ui.vsub(ni.mult(ui.dot(ni)));
-            var tangent = v_tang.mult(1.0/(v_tang.norm() + 0.0001));
-            var impulse = -(1+e)*(ui.dot(ni))/(ni.dot(K.vmult((ni.vsub(tangent.mult(mu))))));
-            J = ni.mult(impulse).vsub(tangent.mult(mu * impulse));
-        }
-    }
-
-    // Add to velocities
-    var imi = bi.invMass;
-    var imj = bj.invMass;
-
-    if(imi){
-        vi.x =  vi.x - J.x * imi;
-        vi.y =  vi.y - J.y * imi;
-        vi.z =  vi.z - J.z * imi;
-    }
-    if(imj) {
-        vj.x =  vj.x + J.x * imj;
-        vj.y =  vj.y + J.y * imj;
-        vj.z =  vj.z + J.z * imj;
-    }
-
-    if(bi.inertia || bj.inertia){
-        // Add rotational impulses
-        var wi = bi.angularVelocity,
-            wj = bj.angularVelocity;
-        if(bi.inertia){
-            var cr = ri.cross(J);
-            var wadd = cr.mult(bi.inertia.x ? 1.0/bi.inertia.x : 0.0);
-            wi.vsub(wadd,wi);
-        }
-        if(bj.inertia){
-            cr = rj.cross(J);
-            wadd = cr.mult(bj.inertia.x ? 1.0/bj.inertia.x : 0.0); // @todo fix to suit asymmetric inertia
-            wj.vadd(wadd,wj);
-        }
-    }
-};
-
-/**
  * @method numObjects
  * @memberof CANNON.World
  * @brief Get number of objects in the world.
@@ -3705,8 +3598,6 @@ CANNON.World.prototype.clearCollisionState = function(body){
         else    cm[i+j*n] = 0;
     }
 };
-
-
 
 // Keep track of contacts for current and previous timestep
 // 0: No contact between i and j
@@ -3920,8 +3811,7 @@ CANNON.World.prototype.step = function(dt){
         profilingStart,
         cm = this.collision_matrix,
         constraints = this.constraints,
-        FrictionEquation = CANNON.FrictionEquation,
-        enableImpulses = this.enableImpulses;
+        FrictionEquation = CANNON.FrictionEquation;
 
     if(doProfiling) profilingStart = now();
 
@@ -4045,8 +3935,7 @@ CANNON.World.prototype.step = function(dt){
                 bj.dispatchEvent({type:"collide", "with":bi, contact:c });
                 bi.wakeUp();
                 bj.wakeUp();
-                if(enableImpulses)
-                    this.addCollisionImpulse(c,e,mu);
+                c.restitution = cm.restitution;
             }
         }
     }
@@ -5055,6 +4944,8 @@ CANNON.Equation.prototype.updateSpookParams = function(h){
  */
 CANNON.ContactEquation = function(bi,bj){
     CANNON.Equation.call(this,bi,bj,0,1e6);
+
+    this.restitution = 0.0; // "bounciness": u1 = -e*u0
     this.penetration = 0.0;
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
@@ -5133,8 +5024,9 @@ CANNON.ContactEquation.prototype.computeB = function(h){
     invIj.vmult(tauj,invIj_vmult_tauj);
 
     // Compute iteration
-    var GW = vj.dot(n) - vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui) ;
+    var ePlusOne = this.restitution+1;
+    var GW = ePlusOne*vj.dot(n) - ePlusOne*vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
+    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui);
 
     var B = - Gq * a - GW * b - h*GiMf;
 
