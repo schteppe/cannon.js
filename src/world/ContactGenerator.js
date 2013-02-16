@@ -86,6 +86,9 @@ CANNON.ContactGenerator = function(){
     }
 
     // See http://bulletphysics.com/Bullet/BulletFull/SphereTriangleDetector_8cpp_source.html
+    var pointInPolygon_edge = new CANNON.Vec3();
+    var pointInPolygon_edge_x_normal = new CANNON.Vec3();
+    var pointInPolygon_vtp = new CANNON.Vec3();
     function pointInPolygon(verts, normal, p){
         var positiveResult = null;
         var N = verts.length;
@@ -93,15 +96,16 @@ CANNON.ContactGenerator = function(){
             var v = verts[i];
 
             // Get edge to the next vertex
-            var edge = new CANNON.Vec3();
+            var edge = pointInPolygon_edge;
             verts[(i+1) % (N)].vsub(v,edge);
 
             // Get cross product between polygon normal and the edge
-            var edge_x_normal = new CANNON.Vec3();
+            var edge_x_normal = pointInPolygon_edge_x_normal;
+            //var edge_x_normal = new CANNON.Vec3();
             edge.cross(normal,edge_x_normal);
 
             // Get vector between point and current vertex
-            var vertex_to_p = new CANNON.Vec3();
+            var vertex_to_p = pointInPolygon_vtp;
             p.vsub(v,vertex_to_p);
 
             // This dot product determines which side of the edge the point is
@@ -245,6 +249,8 @@ CANNON.ContactGenerator = function(){
 
 
     var convex_to_sphere = new CANNON.Vec3();
+    var sphereConvex_edge = new CANNON.Vec3();
+    var sphereConvex_edgeUnit = new CANNON.Vec3();
     function sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
         xi.vsub(xj,convex_to_sphere);
         var normals = sj.faceNormals;
@@ -305,8 +311,10 @@ CANNON.ContactGenerator = function(){
                     for(var j=0; j<face.length; j++){
                         var v1 = xj.vadd(qj.vmult(verts[face[(j+1)%face.length]]));
                         var v2 = xj.vadd(qj.vmult(verts[face[(j+2)%face.length]]));
-                        var edge = v2.vsub(v1);
-                        edgeUnit = edge.unit();
+                        var edge = sphereConvex_edge;
+                        v2.vsub(v1,edge);
+                        edgeUnit = sphereConvex_edgeUnit;
+                        edge.unit(edgeUnit);
                         var p = edgeUnit.mult(xi.vsub(v1).dot(edgeUnit)).vadd(v1);
                         if(p.vsub(xi).norm2() < R*R){
                             // Edge contact!
@@ -341,7 +349,7 @@ CANNON.ContactGenerator = function(){
         var nr = 0;
         for(var i=0; i<sj.childShapes.length; i++){
             var r = [];
-            var newQuat = qj.mult(sj.childOrientations[i]);
+            var newQuat = qj.mult(sj.childOrientations[i]); // Can't reuse these since nearPhase() may recurse
             newQuat.normalize();
             var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
             nearPhase(r,
@@ -362,13 +370,17 @@ CANNON.ContactGenerator = function(){
         }
     }
 
+    var planeConvex_v = new CANNON.Vec3();
+    var planeConvex_normal = new CANNON.Vec3();
+    var planeConvex_relpos = new CANNON.Vec3();
+    var planeConvex_projected = new CANNON.Vec3();
     function planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
         // Simply return the points behind the plane.
-        var v = new CANNON.Vec3();
-        var normal = new CANNON.Vec3();
+        var v = planeConvex_v;
+        var normal = planeConvex_normal;
         normal.set(0,0,1);
         qi.vmult(normal,normal); // Turn normal according to plane orientation
-        var relpos = new CANNON.Vec3();
+        var relpos = planeConvex_relpos;
         for(var i=0; i<sj.vertices.length; i++){
             sj.vertices[i].copy(v);
             // Transform to world coords
@@ -379,7 +391,7 @@ CANNON.ContactGenerator = function(){
             var dot = normal.dot(relpos);
             if(dot<=0.0){
                 // Get vertex position projected on plane
-                var projected = new CANNON.Vec3();
+                var projected = planeConvex_projected;
                 normal.mult(normal.dot(v),projected);
                 v.vsub(projected,projected);
 
