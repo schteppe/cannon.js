@@ -55,6 +55,8 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.5.0 Current**
+ * Changed property ```Shape.boundingSphereRadius``` to being a number, added method ```Shape.computeBoundingSphereRadius``` and ```.boundingSphereRadiusNeedsUpdate```
+ * Removed ```Box.getCorners```
  * Added properties to ```ContactMaterial```:  ```.contactEquationStiffness```, ```.contactEquationRegularizationTime```, ```.frictionEquationStiffness```, ```.frictionEquationRegularizationTime``` to be able to control settings for the on-the-fly created contact constraints
  * Renamed the solver parameter "damping" to "regularizationTime", since it is a more correct name.
  * Solver parameters (stiffness, damping etc) were moved from ```Solver``` to ```Equation```. Now you control the solver parameters per constraint instead of globally.
