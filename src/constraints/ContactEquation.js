@@ -28,6 +28,8 @@ CANNON.ContactEquation = function(bi,bj){
 CANNON.ContactEquation.prototype = new CANNON.Equation();
 CANNON.ContactEquation.prototype.constructor = CANNON.ContactEquation;
 
+var ContactEquation_computeB_temp1 = new CANNON.Vec3();
+var ContactEquation_computeB_temp2 = new CANNON.Vec3();
 CANNON.ContactEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b;
@@ -78,9 +80,14 @@ CANNON.ContactEquation.prototype.computeB = function(h){
 
     var Gq = n.dot(penetrationVec);//-Math.abs(this.penetration);
 
+    var invIi_vmult_taui = ContactEquation_computeB_temp1;
+    var invIj_vmult_tauj = ContactEquation_computeB_temp2;
+    invIi.vmult(taui,invIi_vmult_taui);
+    invIj.vmult(tauj,invIj_vmult_tauj);
+
     // Compute iteration
     var GW = vj.dot(n) - vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj.vmult(tauj)) - rixn.dot(invIi.vmult(taui)) ;
+    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui) ;
 
     var B = - Gq * a - GW * b - h*GiMf;
 
@@ -88,6 +95,8 @@ CANNON.ContactEquation.prototype.computeB = function(h){
 };
 
 // Compute C = GMG+eps in the SPOOK equation
+var computeC_temp1 = new CANNON.Vec3();
+var computeC_temp2 = new CANNON.Vec3();
 CANNON.ContactEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -107,8 +116,10 @@ CANNON.ContactEquation.prototype.computeC = function(){
     else              invIj.identity(); // ok?
 
     // Compute rxn * I * rxn for each body
-    C += invIi.vmult(rixn).dot(rixn);
-    C += invIj.vmult(rjxn).dot(rjxn);
+    invIi.vmult(rixn,computeC_temp1); 
+    invIj.vmult(rjxn,computeC_temp2);
+    C += computeC_temp1.dot(rixn);
+    C += computeC_temp2.dot(rjxn);
 
     return C;
 };
@@ -132,6 +143,8 @@ CANNON.ContactEquation.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
+var ContactEquation_addToWlambda_temp1 = new CANNON.Vec3();
+var ContactEquation_addToWlambda_temp2 = new CANNON.Vec3();
 CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
@@ -140,18 +153,28 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
     var n = this.ni;
+    var temp1 = ContactEquation_addToWlambda_temp1;
+    var temp2 = ContactEquation_addToWlambda_temp2;
 
     // Add to linear velocity
-    bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
-    bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
+    n.mult(invMassi * deltalambda, temp2);
+    bi.vlambda.vsub(temp2,bi.vlambda);
+    n.mult(invMassj * deltalambda, temp2);
+    bj.vlambda.vadd(temp2,bj.vlambda);
 
     // Add to angular velocity
     if(bi.wlambda){
         var I = this.invIi;
-        bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
+        I.vmult(rixn,temp1);
+        temp1.mult(deltalambda,temp1);
+        //bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
+        bi.wlambda.vsub(temp1,bi.wlambda);
     }
     if(bj.wlambda){
         var I = this.invIj;
-        bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
+        I.vmult(rjxn,temp1);
+        temp1.mult(deltalambda,temp1);
+        //bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
+        bj.wlambda.vadd(temp1,bj.wlambda);
     }
 };
