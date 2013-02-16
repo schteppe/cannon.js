@@ -55,6 +55,10 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.5.0 Current**
+ * Added properties to ```ContactMaterial```:  ```.contactEquationStiffness```, ```.contactEquationRegularizationTime```, ```.frictionEquationStiffness```, ```.frictionEquationRegularizationTime``` to be able to control settings for the on-the-fly created contact constraints
+ * Renamed the solver parameter "damping" to "regularizationTime", since it is a more correct name.
+ * Solver parameters (stiffness, damping etc) were moved from ```Solver``` to ```Equation```. Now you control the solver parameters per constraint instead of globally.
+ * Added ```HingeConstraint``` and its ```Constraint``` base class
  * Added contact support for all possible ```Shape.types``` (see table above).
  * Fixed convex contact bugs.
  * Added method ```ConvexPolyhedron.getAveragePointLocal```.
@@ -90,4 +94,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
  * Code seem stable enough to start a change log.
 
 ### Todo
-For developers. The simpler todos are marked with ```@todo``` in the code. Github Issues can and should also be used for todos.
+The simpler todos are marked with ```@todo``` in the code. Github Issues can and should also be used for todos.
+
+### Help
+Create an issue on here if you need help.
