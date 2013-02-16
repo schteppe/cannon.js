@@ -13,23 +13,31 @@
  * @param float maxForce
  */
 CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, maxForce){
+    CANNON.Constraint.call(this,bodyA,bodyB);
+
     maxForce = maxForce || 1e6;
     var that = this;
     // Equations to be fed to the solver
-    // @todo should be an ordinary array for faster indexing when adding to solver
-    var eqs = this.equations = {
-        rotational1: new CANNON.RotationalEquation(bodyA,bodyB),
-        rotational2: new CANNON.RotationalEquation(bodyA,bodyB),
-        p2pNormal:   new CANNON.ContactEquation(bodyA,bodyB),
-        p2pTangent1: new CANNON.ContactEquation(bodyA,bodyB),
-        p2pTangent2: new CANNON.ContactEquation(bodyA,bodyB),
-    };
+    var eqs = this.equations = [
+        new CANNON.RotationalEquation(bodyA,bodyB), // rotational1
+        new CANNON.RotationalEquation(bodyA,bodyB), // rotational2
+        new CANNON.ContactEquation(bodyA,bodyB),    // p2pNormal
+        new CANNON.ContactEquation(bodyA,bodyB),    // p2pTangent1
+        new CANNON.ContactEquation(bodyA,bodyB),    // p2pTangent2
+    ];
 
-    var r1 = eqs.rotational1;
-    var r2 = eqs.rotational2;
-    var normal = eqs.p2pNormal;
-    var t1 = eqs.p2pTangent1;
-    var t2 = eqs.p2pTangent2;
+    this.getRotationalEquation1 =   function(){ return eqs[0]; };
+    this.getRotationalEquation2 =   function(){ return eqs[1]; };
+    this.getPointToPointEquation1 = function(){ return eqs[2]; };
+    this.getPointToPointEquation2 = function(){ return eqs[3]; };
+    this.getPointToPointEquation3 = function(){ return eqs[4]; };
+
+    var r1 =        this.getRotationalEquation1();
+    var r2 =        this.getRotationalEquation2();
+    var normal =    this.getPointToPointEquation1();
+    var t1 =        this.getPointToPointEquation2();
+    var t2 =        this.getPointToPointEquation3();
+    var motor; // not activated by default
 
     t1.minForce = t2.minForce = normal.minForce = -maxForce;
     t1.maxForce = t2.maxForce = normal.maxForce =  maxForce;
@@ -51,14 +59,16 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     this.motorMaxForce = maxForce;
     this.enableMotor = function(){
         if(!motorEnabled){
-            eqs.motor = new CANNON.RotationalMotorEquation(bodyA,bodyB,maxForce);
+            motor = new CANNON.RotationalMotorEquation(bodyA,bodyB,maxForce);
+            eqs.push(motor);
             motorEnabled = true;
         }
     };
     this.disableMotor = function(){
         if(motorEnabled){
             motorEnabled = false;
-            delete eqs.motor;
+            motor = null;
+            eqs.pop();
         }
     };
 
@@ -88,11 +98,12 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         bodyB.quaternion.vmult(axisB,           r2.nj);
 
         if(motorEnabled){
-            bodyA.quaternion.vmult(axisA,eqs.motor.axisA);
-            bodyB.quaternion.vmult(axisB,eqs.motor.axisB);
-            eqs.motor.targetVelocity = that.motorTargetVelocity;
-            eqs.motor.maxForce = that.motorMaxForce;
-            eqs.motor.minForce = that.motorMinForce;
+            bodyA.quaternion.vmult(axisA,motor.axisA);
+            bodyB.quaternion.vmult(axisB,motor.axisB);
+            motor.targetVelocity = that.motorTargetVelocity;
+            motor.maxForce = that.motorMaxForce;
+            motor.minForce = that.motorMinForce;
         }
     };
 };
+CANNON.HingeConstraint.prototype = new CANNON.Constraint();

@@ -9,18 +9,21 @@
  * @param CANNON.Body bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
  * @param CANNON.Vec3 pivotB See pivotA.
  * @param float maxForce The maximum force that should be applied to constrain the bodies.
+ * @extends CANNON.Constraint
  */
 CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
-    // Equations to be fed to the solver
-    var eqs = this.equations = {
-        normal: new CANNON.ContactEquation(bodyA,bodyB),
-        tangent1: new CANNON.ContactEquation(bodyA,bodyB),
-        tangent2: new CANNON.ContactEquation(bodyA,bodyB),
-    };
+    CANNON.Constraint.call(this,bodyA,bodyB);
 
-    var normal = eqs.normal;
-    var t1 = eqs.tangent1;
-    var t2 = eqs.tangent2;
+    // Equations to be fed to the solver
+    var eqs = this.equations = [
+        new CANNON.ContactEquation(bodyA,bodyB), // Normal
+        new CANNON.ContactEquation(bodyA,bodyB), // Tangent2
+        new CANNON.ContactEquation(bodyA,bodyB), // Tangent2
+    ];
+
+    var normal = eqs[0];
+    var t1 = eqs[1];
+    var t2 = eqs[2];
 
     t1.minForce = t2.minForce = normal.minForce = -maxForce;
     t1.maxForce = t2.maxForce = normal.maxForce =  maxForce;
@@ -39,3 +42,4 @@ CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
         normal.rj.copy(t2.rj);
     };
 };
+CANNON.PointToPointConstraint.prototype = new CANNON.Constraint();

@@ -5,8 +5,8 @@ CONSTRAINTS = 	src/constraints/Equation.js \
 				src/constraints/ContactEquation.js \
 				src/constraints/FrictionEquation.js \
 				src/constraints/RotationalEquation.js \
+				src/constraints/Constraint.js \
 				src/constraints/DistanceConstraint.js \
-				src/constraints/RotationalConstraint.js \
 				src/constraints/RotationalMotorEquation.js \
 				src/constraints/HingeConstraint.js \
 				src/constraints/PointToPointConstraint.js

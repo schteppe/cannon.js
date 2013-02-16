@@ -616,8 +616,8 @@ CANNON.World.prototype.step = function(dt){
     for(var i=0, Nconstraints=constraints.length; i!==Nconstraints; i++){
         var c = constraints[i];
         c.update();
-        for(var name in c.equations){
-            var eq = c.equations[name];
+        for(var j=0, Neq=c.equations.length; j!==Neq; j++){
+            var eq = c.equations[j];
             solver.addEquation(eq);
         }
     }
