@@ -3422,7 +3422,11 @@ CANNON.World = function(){
 
     CANNON.EventTarget.apply(this);
 
-    /// Makes bodies go to sleep when they've been inactive
+    /**
+     * @property bool allowSleep
+     * @brief Makes bodies go to sleep when they've been inactive
+     * @memberof CANNON.World
+     */
     this.allowSleep = false;
 
     /**
@@ -3479,6 +3483,11 @@ CANNON.World = function(){
      * @memberof CANNON.World
      */
     this.gravity = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Broadphase broadphase
+     * @memberof CANNON.World
+     */
     this.broadphase = null;
 
     /**
@@ -3495,21 +3504,42 @@ CANNON.World = function(){
      */
     this.solver = new CANNON.GSSolver();
 
-    // User defined constraints
+    /**
+     * @property Array constraints
+     * @memberof CANNON.World
+     */
     this.constraints = [];
 
-    // Contact generator
+    /**
+     * @property CANNON.ContactGenerator contactgen
+     * @memberof CANNON.World
+     */
     this.contactgen = new CANNON.ContactGenerator();
 
     // Collision matrix, size N*N
     this.collision_matrix = [];
 
-    // Materials
+    /**
+     * @property Array materials
+     * @memberof CANNON.World
+     */
     this.materials = []; // References to all added materials
+
+    /**
+     * @property Array contactmaterials
+     * @memberof CANNON.World
+     */
     this.contactmaterials = []; // All added contact materials
+
     this.mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
 
     this.defaultMaterial = new CANNON.Material("default");
+
+    /**
+     * @property CANNON.ContactMaterial defaultContactMaterial
+     * @brief This contact material is used if no suitable contactmaterial is found for a contact.
+     * @memberof CANNON.World
+     */
     this.defaultContactMaterial = new CANNON.ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.2);
 
     this.temp = {
@@ -3527,9 +3557,16 @@ CANNON.World = function(){
         step_wq:new CANNON.Quaternion()
     };
 
+    /**
+     * @property bool doProfiling
+     * @memberof CANNON.World
+     */
     this.doProfiling = false;
 
-    // Profiling data in milliseconds
+    /**
+     * @property Object profile
+     * @memberof CANNON.World
+     */
     this.profile = {
         solve:0,
         makeContactConstraints:0,
