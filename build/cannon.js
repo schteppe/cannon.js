@@ -5383,17 +5383,19 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
     bj.vlambda.vadd(tmp,bj.vlambda);
 
     // Add to angular velocity
-    if(bi.wlambda){
+    var wi = bi.wlambda;
+    if(wi){
         var I = this.invIi;
         I.vmult(rixt,tmp);
         tmp.mult(deltalambda,tmp);
-        bi.wlambda.vsub(tmp,bi.wlambda);
+        wi.vsub(tmp,wi);
     }
-    if(bj.wlambda){
+    var wj = bj.wlambda;
+    if(wj){
         var I = this.invIj;
         I.vmult(rjxt,tmp);
         tmp.mult(deltalambda,tmp);
-        bj.wlambda.vadd(tmp,bj.wlambda);
+        wj.vadd(tmp,wj);
     }
 };/**
  * @class CANNON.RotationalEquation
