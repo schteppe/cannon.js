@@ -104,8 +104,9 @@ CANNON.Box.prototype.volume = function(){
     return 8.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
 };
 
-CANNON.Box.prototype.boundingSphereRadius = function(){
-    return this.halfExtents.norm();
+CANNON.Box.prototype.computeBoundingSphereRadius = function(){
+    this.boundingSphereRadius = this.halfExtents.norm();
+    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var worldCornerTempPos = new CANNON.Vec3();

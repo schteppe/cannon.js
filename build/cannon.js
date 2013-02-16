@@ -131,7 +131,11 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                     // Rel. position
                     bj.position.vsub(bi.position,r);
 
-                    var boundingRadiusSum = bishape.boundingSphereRadius() + bjshape.boundingSphereRadius();
+                    // Update bounding spheres if needed
+                    if(bishape.boundingSphereRadiusNeedsUpdate) bishape.computeBoundingSphereRadius();
+                    if(bjshape.boundingSphereRadiusNeedsUpdate) bjshape.computeBoundingSphereRadius();
+
+                    var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
                     if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
                         pairs1.push(bi);
                         pairs2.push(bj);
@@ -147,7 +151,9 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                     normal.set(0,0,1);
                     bodies[pi].quaternion.vmult(normal,normal);
                     
-                    var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
+                    if(bodies[oi].shape.boundingSphereRadiusNeedsUpdate) bodies[oi].shape.computeBoundingSphereRadius();
+
+                    var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius;
                     if(q<0.0){
                         pairs1.push(bi);
                         pairs2.push(bj);
@@ -173,7 +179,9 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                                 pairs2.push(other);
                             }
                         } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
-                            var R = otherShape.boundingSphereRadius();
+
+                            if(otherShape.boundingSphereRadiusNeedsUpdate) otherShape.computeBoundingSphereRadius();
+                            var R = otherShape.boundingSphereRadius;
                             particle.position.vsub(other.position,relpos);
                             if(R*R >= relpos.norm2()){
                                 pairs1.push(particle);
@@ -1461,20 +1469,22 @@ CANNON.Shape = function(){
      */
     this.type = 0;
 
-    // Local AABB's
     this.aabbmin = new CANNON.Vec3();
     this.aabbmax = new CANNON.Vec3();
+
+    this.boundingSphereRadius = 0;
+    this.boundingSphereRadiusNeedsUpdate = true;
 };
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
 /**
- * @method boundingSphereRadius
+ * @method computeBoundingSphereRadius
  * @memberof CANNON.Shape
- * @brief Get the bounding sphere radius from this shape
+ * @brief Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius
  * @return float
  */
-CANNON.Shape.prototype.boundingSphereRadius = function(){
-  throw "boundingSphereRadius() not implemented for shape type "+this.type;
+CANNON.Shape.prototype.computeBoundingSphereRadius = function(){
+  throw "computeBoundingSphereRadius() not implemented for shape type "+this.type;
 };
 
 /**
@@ -1919,8 +1929,9 @@ CANNON.Sphere.prototype.volume = function(){
     return 4.0 * Math.PI * this.radius / 3.0;
 };
 
-CANNON.Sphere.prototype.boundingSphereRadius = function(){
-    return this.radius;
+CANNON.Sphere.prototype.computeBoundingSphereRadius = function(){
+    this.boundingSphereRadiusNeedsUpdate = false;
+    this.boundingSphereRadius = this.radius;
 };
 
 CANNON.Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){
@@ -2037,8 +2048,9 @@ CANNON.Box.prototype.volume = function(){
     return 8.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
 };
 
-CANNON.Box.prototype.boundingSphereRadius = function(){
-    return this.halfExtents.norm();
+CANNON.Box.prototype.computeBoundingSphereRadius = function(){
+    this.boundingSphereRadius = this.halfExtents.norm();
+    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var worldCornerTempPos = new CANNON.Vec3();
@@ -2192,14 +2204,17 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
     return target;
 };
 
-CANNON.Compound.prototype.boundingSphereRadius = function(){
+CANNON.Compound.prototype.computeBoundingSphereRadius = function(){
     var r = 0.0;
     for(var i = 0; i<this.childShapes.length; i++){
-        var candidate = this.childOffsets[i].norm() + this.childShapes[i].boundingSphereRadius();
+        var si = this.childShapes[i];
+        if(si.boundingSphereRadiusNeedsUpdate) si.computeBoundingSphereRadius();
+        var candidate = this.childOffsets[i].norm() + si.boundingSphereRadius;
         if(r < candidate)
             r = candidate;
     }
-    return r;
+    this.boundingSphereRadius = r;
+    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var aabbmaxTemp = new CANNON.Vec3();
@@ -2875,7 +2890,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
 CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
 
-CANNON.ConvexPolyhedron.prototype.boundingSphereRadius = function(){
+CANNON.ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
     // Assume points are distributed with local (0,0,0) as center
     var max2 = 0;
     var verts = this.vertices;
@@ -2884,7 +2899,8 @@ CANNON.ConvexPolyhedron.prototype.boundingSphereRadius = function(){
         if(norm2>max2)
             max2 = norm2;
     }
-    return Math.sqrt(max2);
+    this.boundingSphereRadius = Math.sqrt(max2);
+    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var tempWorldVertex = new CANNON.Vec3();
@@ -2908,7 +2924,8 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
 };
 
 CANNON.ConvexPolyhedron.prototype.volume = function(){
-    return 4.0 * Math.PI * this.boundingSphereRadius() / 3.0;
+    if(this.boundingSphereRadiusNeedsUpdate) this.computeBoundingSphereRadius();
+    return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
 };
 
 // Get an average of all the vertices

@@ -71,14 +71,17 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
     return target;
 };
 
-CANNON.Compound.prototype.boundingSphereRadius = function(){
+CANNON.Compound.prototype.computeBoundingSphereRadius = function(){
     var r = 0.0;
     for(var i = 0; i<this.childShapes.length; i++){
-        var candidate = this.childOffsets[i].norm() + this.childShapes[i].boundingSphereRadius();
+        var si = this.childShapes[i];
+        if(si.boundingSphereRadiusNeedsUpdate) si.computeBoundingSphereRadius();
+        var candidate = this.childOffsets[i].norm() + si.boundingSphereRadius;
         if(r < candidate)
             r = candidate;
     }
-    return r;
+    this.boundingSphereRadius = r;
+    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var aabbmaxTemp = new CANNON.Vec3();

@@ -33,8 +33,9 @@ CANNON.Sphere.prototype.volume = function(){
     return 4.0 * Math.PI * this.radius / 3.0;
 };
 
-CANNON.Sphere.prototype.boundingSphereRadius = function(){
-    return this.radius;
+CANNON.Sphere.prototype.computeBoundingSphereRadius = function(){
+    this.boundingSphereRadiusNeedsUpdate = false;
+    this.boundingSphereRadius = this.radius;
 };
 
 CANNON.Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){

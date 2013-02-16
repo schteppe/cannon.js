@@ -62,7 +62,11 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                     // Rel. position
                     bj.position.vsub(bi.position,r);
 
-                    var boundingRadiusSum = bishape.boundingSphereRadius() + bjshape.boundingSphereRadius();
+                    // Update bounding spheres if needed
+                    if(bishape.boundingSphereRadiusNeedsUpdate) bishape.computeBoundingSphereRadius();
+                    if(bjshape.boundingSphereRadiusNeedsUpdate) bjshape.computeBoundingSphereRadius();
+
+                    var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
                     if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
                         pairs1.push(bi);
                         pairs2.push(bj);
@@ -78,7 +82,9 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                     normal.set(0,0,1);
                     bodies[pi].quaternion.vmult(normal,normal);
                     
-                    var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius();
+                    if(bodies[oi].shape.boundingSphereRadiusNeedsUpdate) bodies[oi].shape.computeBoundingSphereRadius();
+
+                    var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius;
                     if(q<0.0){
                         pairs1.push(bi);
                         pairs2.push(bj);
@@ -104,7 +110,9 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                                 pairs2.push(other);
                             }
                         } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
-                            var R = otherShape.boundingSphereRadius();
+
+                            if(otherShape.boundingSphereRadiusNeedsUpdate) otherShape.computeBoundingSphereRadius();
+                            var R = otherShape.boundingSphereRadius;
                             particle.position.vsub(other.position,relpos);
                             if(R*R >= relpos.norm2()){
                                 pairs1.push(particle);

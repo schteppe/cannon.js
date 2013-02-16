@@ -639,7 +639,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
 CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
 
-CANNON.ConvexPolyhedron.prototype.boundingSphereRadius = function(){
+CANNON.ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
     // Assume points are distributed with local (0,0,0) as center
     var max2 = 0;
     var verts = this.vertices;
@@ -648,7 +648,8 @@ CANNON.ConvexPolyhedron.prototype.boundingSphereRadius = function(){
         if(norm2>max2)
             max2 = norm2;
     }
-    return Math.sqrt(max2);
+    this.boundingSphereRadius = Math.sqrt(max2);
+    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var tempWorldVertex = new CANNON.Vec3();
@@ -672,7 +673,8 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
 };
 
 CANNON.ConvexPolyhedron.prototype.volume = function(){
-    return 4.0 * Math.PI * this.boundingSphereRadius() / 3.0;
+    if(this.boundingSphereRadiusNeedsUpdate) this.computeBoundingSphereRadius();
+    return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
 };
 
 // Get an average of all the vertices

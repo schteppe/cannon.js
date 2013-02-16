@@ -16,20 +16,22 @@ CANNON.Shape = function(){
      */
     this.type = 0;
 
-    // Local AABB's
     this.aabbmin = new CANNON.Vec3();
     this.aabbmax = new CANNON.Vec3();
+
+    this.boundingSphereRadius = 0;
+    this.boundingSphereRadiusNeedsUpdate = true;
 };
 CANNON.Shape.prototype.constructor = CANNON.Shape;
 
 /**
- * @method boundingSphereRadius
+ * @method computeBoundingSphereRadius
  * @memberof CANNON.Shape
- * @brief Get the bounding sphere radius from this shape
+ * @brief Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius
  * @return float
  */
-CANNON.Shape.prototype.boundingSphereRadius = function(){
-  throw "boundingSphereRadius() not implemented for shape type "+this.type;
+CANNON.Shape.prototype.computeBoundingSphereRadius = function(){
+  throw "computeBoundingSphereRadius() not implemented for shape type "+this.type;
 };
 
 /**
