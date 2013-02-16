@@ -16,11 +16,12 @@
     <script>
 
       /**
-       * Callback related demos
+       * A demo showing how to use the preStep callback to add a force to a body.
+       * This will act like a force field.
        */
+      
       var demo = new CANNON.Demo();
       
-      // Using the preStep callback to add a force
       demo.addScene("Moon",function(){
           var world = demo.getWorld();
       
@@ -34,8 +35,9 @@
           moon.linearDamping = 0.0;
       
           // Use the preStep callback to apply the gravity force on the moon.
-          // This callback is evoked each timestep
+          // This callback is evoked each timestep.
           moon.preStep = function(){
+
             // Get the vector pointing from the moon to the planet center
             var moon_to_planet = new CANNON.Vec3();
             this.position.negate(moon_to_planet);
@@ -47,10 +49,14 @@
             // Fore is pointing in the moon-planet direction
             moon_to_planet.normalize();
             moon_to_planet.mult(1500/Math.pow(distance,2),this.force);
+
           }
       
+          // We add the objects to the world to simulate them
           world.add(moon);
           world.add(planet);
+
+          // And we add them to the demo to make them visible
           demo.addVisual(moon);
           demo.addVisual(planet);
         });

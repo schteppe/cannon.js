@@ -15,24 +15,40 @@
     <script src="../libs/smoothie.js"></script>
     <script>
 
+    /**
+     * A Compound shape is a shape built out of other shapes called child-shapes.
+     * You can see it as a holder of a group of other shapes.
+     * Use the compound shape to build rigid bodies that have more complex geometry.
+     * For example, you can build concave shapes. When a child shape is added to
+     * the Compound shape, a transform consisting of a position and a quaternion is
+     * needed. This enables you to add child shapes at any position, rotated however
+     * you like inside the local coordinate system of the Compound shape.
+     */
+
       var demo = new CANNON.Demo();
       
+      // A compound shape consisting of a number of boxes.
       demo.addScene("Boxes",function(){
           var world = setupWorld(demo);
       
-          // Compound shape
+          // Create the compound shape
           var compoundShape = new CANNON.Compound();
           var s = 1.5;
+
+          // Use a box shape as child shape
           var shape = new CANNON.Box(new CANNON.Vec3(0.5*s,0.5*s,0.5*s));
+
+          // We can add the same shape several times to position child shapes within the Compound.
           compoundShape.addChild(shape,new CANNON.Vec3( s, 0,-s));
           compoundShape.addChild(shape,new CANNON.Vec3( s, 0, s));
           compoundShape.addChild(shape,new CANNON.Vec3(-s, 0,-s));
           compoundShape.addChild(shape,new CANNON.Vec3(-s, 0, s));
-      
+          // Note: we only use translational offsets. The third argument could be a CANNON.Quaternion to rotate the child shape.
           compoundShape.addChild(shape,new CANNON.Vec3(-s, 0, 0));
           compoundShape.addChild(shape,new CANNON.Vec3( 0, 0,-s));
           compoundShape.addChild(shape,new CANNON.Vec3( 0, 0, s));
       
+          // Now create a RigidBody for our Compound
           var mass = 10;
           var body = new CANNON.RigidBody(mass,compoundShape);
           body.position.set(0,0,6);
@@ -42,6 +58,7 @@
 
         });
       
+      // Here we create a compound made out of spheres
       demo.addScene("Spheres",function(){
           var world = setupWorld(demo);
       

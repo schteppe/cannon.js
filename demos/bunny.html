@@ -17,12 +17,13 @@
         <script>
 
         var demo = new CANNON.Demo();
+
+        // Parameters for transforming the loaded model
         var size = 1;
         var scale = 20;
         var offset = new CANNON.Vec3(0.04,0.15,0.01); // to apply before scale
         var compoundOffset = new CANNON.Vec3(0,-0.9,0.1);
 
-        // Spheres
         demo.addScene("Bunny",function(){
 
             var world = demo.getWorld();
@@ -33,7 +34,7 @@
             world.defaultContactMaterial.contactEquationStiffness = 1e10;
             world.defaultContactMaterial.contactEquationRegularizationTime = 10;
 
-            // Construct a normal given 3 vertices
+            // Constructs a normal given 3 vertices
             var ab = new CANNON.Vec3();
             var cb = new CANNON.Vec3();
             function normal( va, vb, vc, target ) {

@@ -30,7 +30,8 @@
           var mass = 5, boxMass = 0;
       
           // Kinematic Box
-          // Does only collide with dynamic bodies, but does not respond to any force. Can be controlled by setting its velocity.
+          // Does only collide with dynamic bodies, but does not respond to any force.
+          // Its movement can be controlled by setting its velocity.
           var b1 = new CANNON.RigidBody(boxMass,boxShape);
           b1.motionstate = CANNON.Body.KINEMATIC;
           b1.position.set(0,0,0.5*size);
@@ -64,7 +65,7 @@
 
         world.defaultContactMaterial.contactEquationStiffness = 1e8;
         world.defaultContactMaterial.contactEquationRegularizationTime = 10;
-      
+
         // Static ground plane
         // Static bodies only interacts with dynamic bodies. Velocity is always zero.
         var groundShape = new CANNON.Plane();
@@ -72,7 +73,7 @@
         var groundBody = new CANNON.RigidBody(mass,groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
-      
+
         return world;
       }
             

@@ -15,6 +15,10 @@
     <script src="../libs/smoothie.js"></script>
     <script>
 
+    /**
+     * For demonstrating events.
+     */
+
       var demo = new CANNON.Demo();
       var size = 1;
       
@@ -42,10 +46,10 @@
           world.add(sphereBody);
           demo.addVisual(sphereBody);
           
-          // Add collide event
+          // When a body collides with another body, they both dispatch the "collide" event.
           sphereBody.addEventListener("collide",function(e){
               alert("The sphere just collided with the ground!");
-              console.log(e);
+              console.log(e); // Print the object to console to inspect it
           });
           
         });

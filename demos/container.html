@@ -15,9 +15,14 @@
     <script src="../libs/smoothie.js"></script>
     <script>
 
+     /**
+      * A container filled with spheres.
+      */
+
       var demo = new CANNON.Demo();
       var nx=4, ny=4;
 
+      // Test scalability - add scenes for different number of spheres
       demo.addScene((nx*ny*4)+ " spheres", function(){   createContainer(demo,nx,ny,4);    });
       demo.addScene((nx*ny*8)+ " spheres", function(){   createContainer(demo,nx,ny,8);    });
       demo.addScene((nx*ny*15)+" spheres", function(){   createContainer(demo,nx,ny,15);   });
@@ -32,10 +37,13 @@
         // Create world
         var world = demo.getWorld();
 
-        world.defaultContactMaterial.contactEquationStiffness = 1e11;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 2;
+        // Tweak contact properties.
+        world.defaultContactMaterial.contactEquationStiffness = 1e11; // Contact stiffness - use to make softer/harder contacts
+        world.defaultContactMaterial.contactEquationRegularizationTime = 2; // Stabilization time in number of timesteps
         
+        // Max solver iterations: Use more for better force propagation, but keep in mind that it's not very computationally cheap!
         world.solver.iterations = 10;
+
         world.gravity.set(0,0,-30);
 
         // Since we have many bodies and they don't move very much, we can use the less accurate quaternion normalization
@@ -85,7 +93,7 @@
         planeYmax.position.set(0,5,0);
         world.add(planeYmax);
       
-        // Sphere on plane
+        // Create spheres
         var rand = 0.1;
         var h = 0;
         var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory

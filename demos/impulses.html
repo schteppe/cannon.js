@@ -15,11 +15,18 @@
     <script src="../libs/smoothie.js"></script>
     <script>
 
+    /**
+     * Demonstrates how to add an impulse to a body in an easy way.
+     * Think of this impulse as a force added in a short period of time on a point on the body.
+     * You can add the impulse to any point on the body.
+     */
+
         var demo = new CANNON.Demo();
 
         var radius=1, mass=1, f=500;
         var dt=1/60, damping=0.5;
       
+        // Add impulse to the body center
         demo.addScene("center",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
@@ -34,7 +41,7 @@
             body.applyImpulse(worldPoint,force,dt);
         });
 
-      
+        // Add impulse to the top of the sphere
         demo.addScene("top",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
