@@ -20,7 +20,9 @@ CANNON.RotationalMotorEquation = function(bodyA, bodyB, maxForce){
 CANNON.RotationalMotorEquation.prototype = new CANNON.Equation();
 CANNON.RotationalMotorEquation.prototype.constructor = CANNON.RotationalMotorEquation;
 
-CANNON.RotationalMotorEquation.prototype.computeB = function(a,b,h){
+CANNON.RotationalMotorEquation.prototype.computeB = function(h){
+    var a = this.a,
+        b = this.b;
     var bi = this.bi;
     var bj = this.bj;
 
@@ -62,7 +64,7 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(a,b,h){
 };
 
 // Compute C = GMG+eps
-CANNON.RotationalMotorEquation.prototype.computeC = function(eps){
+CANNON.RotationalMotorEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
     var axisA = this.axisA;
@@ -70,7 +72,7 @@ CANNON.RotationalMotorEquation.prototype.computeC = function(eps){
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
-    var C = eps;
+    var C = this.eps;
 
     var invIi = this.invIi;
     var invIj = this.invIj;

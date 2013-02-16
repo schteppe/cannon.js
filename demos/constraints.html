@@ -21,7 +21,6 @@
       demo.addScene("links",function(){
             var world = setupWorld(demo);
             world.gravity.set(0,-1,-20);
-            world.solver.setSpookParams(1e7,5);
             var size = 1;
             var boxShape = new CANNON.Box(new CANNON.Vec3(size,size*0.1,size));
             var mass = 0;
@@ -57,7 +56,6 @@
       // Particle cloth on sphere
       demo.addScene("cloth on sphere",function(){
           var world = setupWorld(demo);
-          world.solver.setSpookParams(1000000000,2);
           world.solver.iterations = 10;
           var dist = 0.2;
           var mass = 0.5;
@@ -120,7 +118,7 @@
           var size = 0.5;
           var dist = size*2+0.12;
           var world = setupWorld(demo);
-          world.solver.setSpookParams(1e20,3);
+          //world.solver.setSpookParams(1e20,3);
           var sphereShape = new CANNON.Sphere(size);
           var mass = 1;
           var lastBody = null;
@@ -153,7 +151,7 @@
       // Particle cloth
       demo.addScene("Particle cloth",function(){
           var world = setupWorld(demo);
-          world.solver.setSpookParams(1e20,3);
+          //world.solver.setSpookParams(1e20,3);
           world.solver.iterations = 18;
           var dist = 0.2;
           var mass = 0.5;
@@ -184,7 +182,7 @@
       // Particle 3d object
       demo.addScene("3D cloth structure",function(){
           var world = setupWorld(demo);
-          world.solver.setSpookParams(1e9,2);
+          //world.solver.setSpookParams(1e9,2);
           world.solver.iterations = 10;
           var dist = 1;
           var mass = 1;

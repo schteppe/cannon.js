@@ -26,7 +26,9 @@ CANNON.RotationalEquation = function(bodyA, bodyB){
 CANNON.RotationalEquation.prototype = new CANNON.Equation();
 CANNON.RotationalEquation.prototype.constructor = CANNON.RotationalEquation;
 
-CANNON.RotationalEquation.prototype.computeB = function(a,b,h){
+CANNON.RotationalEquation.prototype.computeB = function(h){
+    var a = this.a,
+        b = this.b;
     var bi = this.bi;
     var bj = this.bj;
 
@@ -67,18 +69,15 @@ CANNON.RotationalEquation.prototype.computeB = function(a,b,h){
     // W = [vi wi vj wj]
     var Gq = -ni.dot(nj);
     var GW = njxni.dot(wi) + nixnj.dot(wj);
-    //console.log(njxni.dot(wi),nixnj.dot(wj));
     var GiMf = 0//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
 
     var B = - Gq * a - GW * b - h*GiMf;
-
-    //console.log("GW=",GW);
 
     return B;
 };
 
 // Compute C = GMG+eps
-CANNON.RotationalEquation.prototype.computeC = function(eps){
+CANNON.RotationalEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
     var nixnj = this.nixnj;
@@ -86,7 +85,7 @@ CANNON.RotationalEquation.prototype.computeC = function(eps){
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
-    var C = /*invMassi + invMassj +*/ eps;
+    var C = /*invMassi + invMassj +*/ this.eps;
 
     var invIi = this.invIi;
     var invIj = this.invIj;

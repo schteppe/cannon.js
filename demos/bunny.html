@@ -30,7 +30,8 @@
             world.gravity.set(0,0,-20);
             world.broadphase = new CANNON.NaiveBroadphase();
             world.solver.iterations = 20;
-            world.solver.setSpookParams(1e10,10);
+            world.defaultContactMaterial.contactEquationStiffness = 1e10;
+            world.defaultContactMaterial.contactEquationRegularizationTime = 10;
 
             // Construct a normal given 3 vertices
             var ab = new CANNON.Vec3();

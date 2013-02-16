@@ -197,8 +197,10 @@
         world.gravity.set(0,0,-30);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
-        world.solver.setSpookParams(5000000,3);
-      
+
+        world.defaultContactMaterial.contactEquationStiffness = 5e6;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 3;
+
         // ground plane
         var n = new CANNON.Vec3(0,0,1);
         n.normalize();

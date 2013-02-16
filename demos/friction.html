@@ -24,11 +24,25 @@
         var world = demo.getWorld();
         world.broadphase = new CANNON.NaiveBroadphase();
         world.iterations = 10;
-        world.solver.setSpookParams(1e8,3);
       
         // Materials
         var groundMaterial = new CANNON.Material("groundMaterial");
       
+
+        var ground_ground_cm = new CANNON.ContactMaterial(groundMaterial,
+                                                          groundMaterial,
+                                                          0.4, // friction coefficient
+                                                          0.3  // restitution
+                                                          );
+        // Adjust constraint equation parameters for ground/ground contact
+        ground_ground_cm.contactEquationStiffness = 1e8;
+        ground_ground_cm.contactEquationRegularizationTime = 3;
+        ground_ground_cm.frictionEquationStiffness = 1e8;
+        ground_ground_cm.frictionEquationRegularizationTime = 3;
+
+        // Add contact material to the world
+        world.addContactMaterial(ground_ground_cm);
+
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape,groundMaterial);
@@ -45,6 +59,10 @@
                                                             0.0, // friction coefficient
                                                             0.3  // restitution
                                                             );
+        // Adjust constraint equation parameters
+        slippery_ground_cm.contactEquationStiffness = 1e8;
+        slippery_ground_cm.contactEquationRegularizationTime = 3;
+
         // We must add the contact materials to the world
         world.addContactMaterial(slippery_ground_cm);
       

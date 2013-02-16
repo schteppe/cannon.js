@@ -95,6 +95,9 @@ CANNON.World = function(){
     this.contactmaterials = []; // All added contact materials
     this.mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
 
+    this.defaultMaterial = new CANNON.Material("default");
+    this.defaultContactMaterial = new CANNON.ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.2);
+
     this.temp = {
         gvec:new CANNON.Vec3(),
         vi:new CANNON.Vec3(),
@@ -539,7 +542,6 @@ CANNON.World.prototype.step = function(dt){
         // Current contact
         var c = contacts[k];
 
-
         // Get current collision indeces
         var bi=c.bi, bj=c.bj;
 
@@ -547,12 +549,9 @@ CANNON.World.prototype.step = function(dt){
         var i = bodies.indexOf(bi), j = bodies.indexOf(bj);
 
         // Get collision properties
-        var mu = 0.3, e = 0.2;
-        var cm = this.getContactMaterial(bi.material,bj.material);
-        if(cm){
-            mu = cm.friction;
-            e = cm.restitution;
-        }
+        var cm = this.getContactMaterial(bi.material,bj.material) || this.defaultContactMaterial;
+        var mu = cm.friction;
+        var e = cm.restitution;
           
         // g = ( xj + rj - xi - ri ) .dot ( ni )
         var gvec = temp.gvec;
@@ -564,6 +563,9 @@ CANNON.World.prototype.step = function(dt){
         // Action if penetration
         if(g<0.0){
             c.penetration = g;
+            c.stiffness = cm.contactEquationStiffness;
+            c.regularizationTime = cm.contactEquationRegularizationTime;
+
             solver.addEquation(c);
 
             // Add friction constraint equation

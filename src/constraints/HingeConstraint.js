@@ -16,6 +16,7 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     maxForce = maxForce || 1e6;
     var that = this;
     // Equations to be fed to the solver
+    // @todo should be an ordinary array for faster indexing when adding to solver
     var eqs = this.equations = {
         rotational1: new CANNON.RotationalEquation(bodyA,bodyB),
         rotational2: new CANNON.RotationalEquation(bodyA,bodyB),
@@ -68,9 +69,9 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         bodyB.position.vsub(bodyA.position,normal.ni);
         normal.ni.normalize();
         */
-       normal.ni.set(1,0,0);
-       t1.ni.set(0,1,0);
-       t2.ni.set(0,0,1);
+        normal.ni.set(1,0,0);
+        t1.ni.set(0,1,0);
+        t2.ni.set(0,0,1);
         bodyA.quaternion.vmult(pivotA,normal.ri);
         bodyB.quaternion.vmult(pivotB,normal.rj);
 

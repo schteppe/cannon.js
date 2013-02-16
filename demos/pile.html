@@ -28,7 +28,9 @@
         world.gravity.set(0,0,-50);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 5;
-        world.solver.setSpookParams(5000000,10);
+
+        world.defaultContactMaterial.contactEquationStiffness = 5e6;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 10;
 
         // Since we have many bodies and they don't move very much, we can use the less accurate quaternion normalization
         world.quatNormalizeFast = true;

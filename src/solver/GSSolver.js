@@ -20,83 +20,12 @@ CANNON.GSSolver = function(){
     this.iterations = 10;
 
     /**
-    * @property float h
-    * @brief Time step size. The larger timestep, the less computationally heavy will your simulation be. But watch out, you don't want your bodies to tunnel each instead of colliding!
-    * @memberof CANNON.GSSolver
-    */
-    this.h = 1.0/60.0;
-
-    /**
-    * @property float k
-    * @brief SPOOK parameter, spring stiffness
-    * @memberof CANNON.Solver
-    */
-    this.k = 1e7;
-
-    /**
-    * @property float d
-    * @brief SPOOK parameter, similar to damping
-    * @memberof CANNON.GSSolver
-    */
-    this.d = 5;
-
-    /**
-    * @property float a
-    * @brief SPOOK parameter
-    * @memberof CANNON.GSSolver
-    */
-    this.a = 0.0;
-
-    /**
-    * @property float b
-    * @brief SPOOK parameter
-    * @memberof CANNON.GSSolver
-    */
-    this.b = 0.0;
-
-    /**
-    * @property float eps
-    * @brief SPOOK parameter
-    * @memberof CANNON.GSSolver
-    */
-    this.eps = 0.0;
-
-    /**
      * When tolerance is reached, the system is assumed to be converged.
      * @property float tolerance
      */
     this.tolerance = 0;
-
-    this.setSpookParams(this.k,this.d);
-
-    /**
-    * @property bool debug
-    * @brief Debug flag, will output solver data to console if true
-    * @memberof CANNON.GSSolver
-    */
-    this.debug = false;
-
-    if(this.debug)
-        console.log("a:",this.a,"b",this.b,"eps",this.eps,"k",this.k,"d",this.d);
 };
 CANNON.GSSolver.prototype = new CANNON.Solver();
-
-/**
- * @method setSpookParams
- * @memberof CANNON.GSSolver
- * @brief Sets the SPOOK parameters k and d, and updates the other parameters a, b and eps accordingly.
- * @param float k
- * @param float d
- */
-CANNON.GSSolver.prototype.setSpookParams = function(k,d){
-    var h=this.h;
-    this.k = k;
-    this.d = d;
-    this.a = 4.0 / (h * (1 + 4 * d));
-    this.b = (4.0 * d) / (1 + 4 * d);
-    this.eps = 4.0 / (h * h * k * (1 + 4 * d));
-};
-
 
 CANNON.GSSolver.prototype.solve = function(dt,world){
 
@@ -107,7 +36,6 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         tolSquared = this.tolerance*this.tolerance,
         a = this.a,
         b = this.b,
-        eps = this.eps,
         equations = this.equations,
         Neq = equations.length,
         bodies = world.bodies,
@@ -122,9 +50,13 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
     var lambda = [];
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
+        if(c.spookParamsNeedsUpdate){
+            c.updateSpookParams(h);
+            c.spookParamsNeedsUpdate = false;
+        }
         lambda.push(0.0);
-        Bs.push(c.computeB(a,b,h));
-        invCs.push(1.0 / c.computeC(eps));
+        Bs.push(c.computeB(h));
+        invCs.push(1.0 / c.computeC());
     }
 
     var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
@@ -156,8 +88,8 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 B = Bs[j];
                 invC = invCs[j];
                 lambdaj = lambda[j];
-                GWlambda = c.computeGWlambda(eps);
-                deltalambda = invC * ( B - GWlambda - eps * lambdaj );
+                GWlambda = c.computeGWlambda(c.eps);
+                deltalambda = invC * ( B - GWlambda - c.eps * lambdaj );
 
                 // Clamp if we are not within the min/max interval
                 if(lambdaj + deltalambda < c.minForce){
@@ -180,7 +112,6 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         for(i=0; i!==Nbodies; i++){
             var b=bodies[i], v=b.velocity, w=b.angularVelocity;
             v.vadd(b.vlambda, v);
-            //console.log("adding",b.wlambda.toString()," to body "+i);
             if(w)
                 w.vadd(b.wlambda, w);
         }

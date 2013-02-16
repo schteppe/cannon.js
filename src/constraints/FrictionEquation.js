@@ -29,7 +29,9 @@ CANNON.FrictionEquation = function(bi,bj,slipForce){
 CANNON.FrictionEquation.prototype = new CANNON.Equation();
 CANNON.FrictionEquation.prototype.constructor = CANNON.FrictionEquation;
 
-CANNON.FrictionEquation.prototype.computeB = function(a,b,h){
+CANNON.FrictionEquation.prototype.computeB = function(h){
+    var a = this.a,
+        b = this.b;
     var bi = this.bi;
     var bj = this.bj;
     var ri = this.ri;
@@ -80,7 +82,7 @@ CANNON.FrictionEquation.prototype.computeB = function(a,b,h){
 };
 
 // Compute C = G * Minv * G + eps
-CANNON.FrictionEquation.prototype.computeC = function(eps){
+CANNON.FrictionEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
     var rixt = this.rixt;
@@ -88,7 +90,7 @@ CANNON.FrictionEquation.prototype.computeC = function(eps){
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
-    var C = invMassi + invMassj + eps;
+    var C = invMassi + invMassj + this.eps;
 
     var invIi = this.invIi;
     var invIj = this.invIj;

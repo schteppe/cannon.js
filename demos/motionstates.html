@@ -61,7 +61,9 @@
         world.gravity.set(0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
-        world.solver.setSpookParams(100000000,10);
+
+        world.defaultContactMaterial.contactEquationStiffness = 1e8;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 10;
       
         // Static ground plane
         // Static bodies only interacts with dynamic bodies. Velocity is always zero.

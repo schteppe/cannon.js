@@ -28,7 +28,9 @@ CANNON.ContactEquation = function(bi,bj){
 CANNON.ContactEquation.prototype = new CANNON.Equation();
 CANNON.ContactEquation.prototype.constructor = CANNON.ContactEquation;
 
-CANNON.ContactEquation.prototype.computeB = function(a,b,h){
+CANNON.ContactEquation.prototype.computeB = function(h){
+    var a = this.a,
+        b = this.b;
     var bi = this.bi;
     var bj = this.bj;
     var ri = this.ri;
@@ -86,7 +88,7 @@ CANNON.ContactEquation.prototype.computeB = function(a,b,h){
 };
 
 // Compute C = GMG+eps in the SPOOK equation
-CANNON.ContactEquation.prototype.computeC = function(eps){
+CANNON.ContactEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
     var rixn = this.rixn;
@@ -94,7 +96,7 @@ CANNON.ContactEquation.prototype.computeC = function(eps){
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
-    var C = invMassi + invMassj + eps;
+    var C = invMassi + invMassj + this.eps;
 
     var invIi = this.invIi;
     var invIj = this.invIj;

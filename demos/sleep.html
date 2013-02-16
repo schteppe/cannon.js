@@ -30,7 +30,9 @@
         var world = demo.getWorld();
         world.gravity.set(0,0,-10);
         world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.setSpookParams(1e7,5);
+
+        world.defaultContactMaterial.contactEquationStiffness = 1e7;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 5;
 
         // Create ground plane
         var groundShape = new CANNON.Plane();

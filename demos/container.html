@@ -31,7 +31,10 @@
       
         // Create world
         var world = demo.getWorld();
-        world.solver.setSpookParams(100000000000,2);
+
+        world.defaultContactMaterial.contactEquationStiffness = 1e11;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 2;
+        
         world.solver.iterations = 10;
         world.gravity.set(0,0,-30);
 

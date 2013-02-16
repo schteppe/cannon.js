@@ -24,7 +24,7 @@
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
             var body = new CANNON.RigidBody(mass,shape);
-	    body.linearDamping = body.angularDamping = damping;
+            body.linearDamping = body.angularDamping = damping;
             world.add(body);
             demo.addVisual(body);
 
@@ -39,7 +39,7 @@
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
             var body = new CANNON.RigidBody(mass,shape);
-	    body.linearDamping = body.angularDamping = damping;
+            body.linearDamping = body.angularDamping = damping;
             world.add(body);
             demo.addVisual(body);
 
@@ -49,11 +49,11 @@
             body.applyImpulse(worldPoint,force,dt);
         });
       
-      function setupWorld(demo){
-        var world = demo.getWorld();
-        world.broadphase = new CANNON.NaiveBroadphase();
-        return world;
-      };
+        function setupWorld(demo){
+            var world = demo.getWorld();
+            world.broadphase = new CANNON.NaiveBroadphase();
+            return world;
+        };
       
       demo.start();
       

@@ -22,7 +22,10 @@
       
           // Create world
           var world = demo.getWorld();
-          world.solver.setSpookParams(50000000,4);
+
+          world.defaultContactMaterial.contactEquationStiffness = 5e7;
+          world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+
           world.gravity.set(0,0,-20);
       
           // ground plane

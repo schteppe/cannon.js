@@ -128,7 +128,8 @@
         world.gravity.set(0,0,0); // no gravity
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 5;
-        world.solver.setSpookParams(1e6,10);
+        world.defaultContactMaterial.contactEquationStiffness = 1e6;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 10;
         return world;
       }
       
