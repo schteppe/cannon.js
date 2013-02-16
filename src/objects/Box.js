@@ -67,37 +67,12 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
   target = target || new CANNON.Vec3();
-  target.x = 1.0 / 12.0 * mass * (   2*this.halfExtents.y*2*this.halfExtents.y + 2*this.halfExtents.z*2*this.halfExtents.z );
-  target.y = 1.0 / 12.0 * mass * (   2*this.halfExtents.x*2*this.halfExtents.x + 2*this.halfExtents.z*2*this.halfExtents.z );
-  target.z = 1.0 / 12.0 * mass * (   2*this.halfExtents.y*2*this.halfExtents.y + 2*this.halfExtents.x*2*this.halfExtents.x );
+  var e = this.halfExtents;
+  target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
+  target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
+  target.z = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.x*2*e.x );
   return target;
 };
-
-/**
- * @method getCorners
- * @memberof CANNON.Box
- * @brief Get the box corners
- * @param CANNON.Quaternion quat Orientation to apply to the corner vectors. If not provided, the vectors will be in respect to the local frame.
- * @return array
- */
-CANNON.Box.prototype.getCorners = function(quat){
-    var corners = [];
-    var ex = this.halfExtents;
-    corners.push(new CANNON.Vec3(  ex.x,  ex.y,  ex.z));
-    corners.push(new CANNON.Vec3( -ex.x,  ex.y,  ex.z));
-    corners.push(new CANNON.Vec3( -ex.x, -ex.y,  ex.z));
-    corners.push(new CANNON.Vec3( -ex.x, -ex.y, -ex.z));
-    corners.push(new CANNON.Vec3(  ex.x, -ex.y, -ex.z));
-    corners.push(new CANNON.Vec3(  ex.x,  ex.y, -ex.z));
-    corners.push(new CANNON.Vec3( -ex.x,  ex.y, -ex.z));
-    corners.push(new CANNON.Vec3(  ex.x, -ex.y,  ex.z));
-
-    for(var i=0; quat!=undefined && i<corners.length; i++)
-        quat.vmult(corners[i],corners[i]);
-
-    return corners;
-};
-
 
 /**
  * @method getSideNormals
