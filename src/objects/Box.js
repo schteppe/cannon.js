@@ -107,17 +107,15 @@ CANNON.Box.prototype.getCorners = function(quat){
  * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
  * @return array
  */
-CANNON.Box.prototype.getSideNormals = function(includeNegative,quat){
-    var sides = [];
+CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,quat){
+    var sides = sixTargetVectors;
     var ex = this.halfExtents;
-    sides.push(new CANNON.Vec3(  ex.x,     0,     0));
-    sides.push(new CANNON.Vec3(     0,  ex.y,     0));
-    sides.push(new CANNON.Vec3(     0,     0,  ex.z));
-    if(includeNegative!=undefined && includeNegative){
-        sides.push(new CANNON.Vec3( -ex.x,     0,     0));
-        sides.push(new CANNON.Vec3(     0, -ex.y,     0));
-        sides.push(new CANNON.Vec3(     0,     0, -ex.z));
-    }
+    sides[0].set(  ex.x,     0,     0);
+    sides[1].set(     0,  ex.y,     0);
+    sides[2].set(     0,     0,  ex.z);
+    sides[3].set( -ex.x,     0,     0);
+    sides[4].set(     0, -ex.y,     0);
+    sides[5].set(     0,     0, -ex.z);
 
     if(quat!=undefined){
         for(var i=0; i<sides.length; i++)

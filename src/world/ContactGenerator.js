@@ -124,24 +124,32 @@ CANNON.ContactGenerator = function(){
     }
 
     var box_to_sphere = new CANNON.Vec3();
+    var sphereBox_ns = new CANNON.Vec3();
+    var sphereBox_ns1 = new CANNON.Vec3();
+    var sphereBox_ns2 = new CANNON.Vec3();
+    var sphereBox_sides = [new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3()];
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // we refer to the box as body j
+        var sides = sphereBox_sides;
         xi.vsub(xj,box_to_sphere);
-        var sides = sj.getSideNormals(true,qj);
+        sj.getSideNormals(sides,qj);
         var R =     si.radius;
         var penetrating_sides = [];
 
         // Check side (plane) intersections
         var found = false;
         for(var idx=0,nsides=sides.length; idx!==nsides && found===false; idx++){ // Max 3 penetrating sides
-            var ns = sides[idx].copy();
+            var ns = sphereBox_ns;
+            sides[idx].copy(ns);
             var h = ns.norm();
             ns.normalize();
             var dot = box_to_sphere.dot(ns);
             if(dot<h+R && dot>0){
                 // Intersects plane. Now check the other two dimensions
-                var ns1 = sides[(idx+1)%3].copy();
-                var ns2 = sides[(idx+2)%3].copy();
+                var ns1 = sphereBox_ns1;
+                var ns2 = sphereBox_ns2;
+                sides[(idx+1)%3].copy(ns1);
+                sides[(idx+2)%3].copy(ns2);
                 var h1 = ns1.norm();
                 var h2 = ns2.norm();
                 ns1.normalize();
