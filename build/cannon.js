@@ -4443,20 +4443,49 @@ CANNON.ContactGenerator = function(){
                     worldNormal.mult(-R,r.ri); // Sphere r
                     worldNormal.negate(r.ni); // Normal should be out of sphere
 
-                    xi.vsub(xj).vadd(worldNormal.mult(-R)).vadd(worldNormal.mult(-penetration) , r.rj);
+                    var penetrationVec2 = v3pool.get();
+                    worldNormal.mult(-penetration,penetrationVec2);
+                    var penetrationSpherePoint = v3pool.get();
+                    worldNormal.mult(-R,penetrationSpherePoint);
+
+                    //xi.vsub(xj).vadd(penetrationSpherePoint).vadd(penetrationVec2 , r.rj);
+                    xi.vsub(xj,r.rj);
+                    r.rj.vadd(penetrationSpherePoint,r.rj);
+                    r.rj.vadd(penetrationVec2 , r.rj);
+
+                    v3pool.release(penetrationVec2);
+                    v3pool.release(penetrationSpherePoint);
+
                     result.push(r);
                     return; // We only expect *one* face contact
                 } else {
                     // Edge?
                     for(var j=0; j<face.length; j++){
-                        var v1 = xj.vadd(qj.vmult(verts[face[(j+1)%face.length]]));
-                        var v2 = xj.vadd(qj.vmult(verts[face[(j+2)%face.length]]));
+
+                        // Get two world transformed vertices
+                        var v1 = v3pool.get();
+                        var v2 = v3pool.get();
+                        qj.vmult(verts[face[(j+1)%face.length]], v1);
+                        qj.vmult(verts[face[(j+2)%face.length]], v2);
+                        xj.vadd(v1, v1);
+                        xj.vadd(v2, v2);
+
+                        // Construct edge vector
                         var edge = sphereConvex_edge;
                         v2.vsub(v1,edge);
                         edgeUnit = sphereConvex_edgeUnit;
                         edge.unit(edgeUnit);
-                        var p = edgeUnit.mult(xi.vsub(v1).dot(edgeUnit)).vadd(v1);
-                        if(p.vsub(xi).norm2() < R*R){
+
+                        // p is xi projected onto the edge
+                        var p = v3pool.get();
+                        var v1_to_xi = v3pool.get();
+                        xi.vsub(v1, v1_to_xi);
+                        edgeUnit.mult(v1_to_xi.dot(edgeUnit), p);
+                        p.vadd(v1, p);
+
+                        var xi_to_p = v3pool.get();
+                        p.vsub(xi, xi_to_p);
+                        if(xi_to_p.norm2() < R*R){
                             // Edge contact!
                             var r = makeResult(bi,bj);
                             p.vsub(xj,r.rj);
@@ -4468,6 +4497,12 @@ CANNON.ContactGenerator = function(){
                             result.push(r);
                             return;
                         }
+
+                        v3pool.release(v1);
+                        v3pool.release(v2);
+                        v3pool.release(p);
+                        v3pool.release(xi_to_p);
+                        v3pool.release(v1_to_xi);
                     }
                 }
 
