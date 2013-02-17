@@ -786,6 +786,7 @@ CANNON.Mat3.prototype.reverse = function(target){
  * @param float z
  * @author schteppe
  */
+var numVecs = 0;
 CANNON.Vec3 = function(x,y,z){
     /**
     * @property float x
@@ -802,6 +803,9 @@ CANNON.Vec3 = function(x,y,z){
     * @memberof CANNON.Vec3
     */
     this.z = z||0.0;
+
+    numVecs++;
+    //console.log(numVecs+" created");
 };
 
 /**
@@ -4220,6 +4224,7 @@ CANNON.ContactGenerator = function(){
     var sphereBox_ns1 = new CANNON.Vec3();
     var sphereBox_ns2 = new CANNON.Vec3();
     var sphereBox_sides = [new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3()];
+    var sphereBox_sphere_to_corner = new CANNON.Vec3();
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // we refer to the box as body j
         var sides = sphereBox_sides;
@@ -4254,7 +4259,12 @@ CANNON.ContactGenerator = function(){
                     ns.mult(-R,r.ri); // Sphere r
                     ns.copy(r.ni);
                     r.ni.negate(r.ni); // Normal should be out of sphere
-                    ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
+                    //ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
+                    ns.mult(h,ns);
+                    ns1.mult(dot1,ns1);
+                    ns.vadd(ns1,ns);
+                    ns2.mult(dot2,ns2);
+                    ns.vadd(ns2,r.rj);
                     result.push(r);
                 }
             }
@@ -4262,9 +4272,10 @@ CANNON.ContactGenerator = function(){
 
         // Check corners
         var rj = v3pool.get();
-        for(var j=0; j<2 && !found; j++){
-            for(var k=0; k<2 && !found; k++){
-                for(var l=0; l<2 && !found; l++){
+        var sphere_to_corner = sphereBox_sphere_to_corner;
+        for(var j=0; j!==2 && !found; j++){
+            for(var k=0; k!==2 && !found; k++){
+                for(var l=0; l!==2 && !found; l++){
                     rj.set(0,0,0);
                     if(j) rj.vadd(sides[0],rj);
                     else  rj.vsub(sides[0],rj);
@@ -4274,8 +4285,10 @@ CANNON.ContactGenerator = function(){
                     else  rj.vsub(sides[2],rj);
 
                     // World position of corner
-                    var sphere_to_corner = xj.vadd(rj).vsub(xi);
-                    if(sphere_to_corner.norm()<R){
+                    xj.vadd(rj,sphere_to_corner);
+                    sphere_to_corner.vsub(xi,sphere_to_corner);
+
+                    if(sphere_to_corner.norm2() < R*R){
                         found = true;
                         var r = makeResult(bi,bj);
                         sphere_to_corner.copy(r.ri);
@@ -4297,8 +4310,9 @@ CANNON.ContactGenerator = function(){
         var r = v3pool.get(); // r = edge center to sphere center
         var orthogonal = v3pool.get();
         var dist = v3pool.get();
-        for(var j=0; j<sides.length && !found; j++){
-            for(var k=0; k<sides.length && !found; k++){
+        var Nsides = sides.length;
+        for(var j=0; j<Nsides && !found; j++){
+            for(var k=0; k<Nsides && !found; k++){
                 if(j%3!=k%3){
                     // Get edge tangent
                     sides[k].cross(sides[j],edgeTangent);

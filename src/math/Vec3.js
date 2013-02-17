@@ -8,6 +8,7 @@
  * @param float z
  * @author schteppe
  */
+var numVecs = 0;
 CANNON.Vec3 = function(x,y,z){
     /**
     * @property float x
@@ -24,6 +25,9 @@ CANNON.Vec3 = function(x,y,z){
     * @memberof CANNON.Vec3
     */
     this.z = z||0.0;
+
+    numVecs++;
+    //console.log(numVecs+" created");
 };
 
 /**
