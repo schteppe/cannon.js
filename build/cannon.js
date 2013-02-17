@@ -4677,16 +4677,22 @@ CANNON.ContactGenerator = function(){
     }
 
     // WIP
+    var cqj = new CANNON.Quaternion();
+    var particleConvex_local = new CANNON.Vec3();
+    var particleConvex_normal = new CANNON.Vec3();
+    var particleConvex_penetratedFaceNormal = new CANNON.Vec3();
     function particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
 
         var penetratedFaceIndex = -1;
+        var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
         var minPenetration = null;
         var numDetectedFaces = 0;
 
         // Convert particle position xi to local coords in the convex
-        var local = xi.copy();
-        local = local.vsub(xj); // Convert position to relative the convex origin
-        var cqj = qj.conjugate();
+        var local = particleConvex_local;
+        xi.copy(local);
+        local.vsub(xj,local); // Convert position to relative the convex origin
+        qj.conjugate(cqj);
         cqj.vmult(local,local);
 
         if(sj.pointIsInside(local)){
@@ -4704,7 +4710,8 @@ CANNON.ContactGenerator = function(){
                     verts.push(worldVertex);
                 }
 
-                var normal = sj.faceNormals[i].copy();
+                var normal = particleConvex_normal;
+                sj.faceNormals[i].copy(normal);
                 normal.normalize();
                 qj.vmult(normal,normal);
 
@@ -4713,7 +4720,7 @@ CANNON.ContactGenerator = function(){
                 if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
                     minPenetration = penetration;
                     penetratedFaceIndex = i;
-                    penetratedFaceNormal = normal;
+                    normal.copy(penetratedFaceNormal);
                     numDetectedFaces++;
                 }
             }
