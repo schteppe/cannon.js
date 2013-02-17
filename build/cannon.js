@@ -3888,6 +3888,7 @@ CANNON.World.prototype.step = function(dt){
 
         // Action if penetration
         if(g<0.0){
+            c.restitution = cm.restitution;
             c.penetration = g;
             c.stiffness = cm.contactEquationStiffness;
             c.regularizationTime = cm.contactEquationRegularizationTime;
@@ -3935,7 +3936,6 @@ CANNON.World.prototype.step = function(dt){
                 bj.dispatchEvent({type:"collide", "with":bi, contact:c });
                 bi.wakeUp();
                 bj.wakeUp();
-                c.restitution = cm.restitution;
             }
         }
     }

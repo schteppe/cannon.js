@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - bounce demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+        var demo = new CANNON.Demo();
+        var size = 1;
+        var height = 5;
+        var damping = 0.01;
+
+        demo.addScene("Bounce",function(){
+
+            var world = demo.getWorld();
+            world.gravity.set(0,0,-10);
+            world.broadphase = new CANNON.NaiveBroadphase();
+          
+            // ground plane
+            var groundMaterial = new CANNON.Material();
+            var groundShape = new CANNON.Plane();
+            var groundBody = new CANNON.RigidBody(0,groundShape,groundMaterial);
+            world.add(groundBody);
+            demo.addVisual(groundBody);
+
+            var mass = 10;
+            var sphereShape = new CANNON.Sphere(size);
+
+            // Shape on plane
+            var mat1 = new CANNON.Material();
+            var shapeBody1 = new CANNON.RigidBody(mass,sphereShape,mat1);
+            shapeBody1.position.set(3*size, size, height);
+            shapeBody1.linearDamping = damping;
+            world.add(shapeBody1);
+            demo.addVisual(shapeBody1);
+
+            var mat2 = new CANNON.Material();
+            var shapeBody2 = new CANNON.RigidBody(mass,sphereShape,mat2);
+            shapeBody2.position.set(0 , size , height);
+            shapeBody2.linearDamping = damping;
+            world.add(shapeBody2);
+            demo.addVisual(shapeBody2);
+
+            var mat3 = new CANNON.Material();
+            var shapeBody3 = new CANNON.RigidBody(mass,sphereShape,mat3);
+            shapeBody3.position.set(-3*size , size , height);
+            shapeBody3.linearDamping = damping;
+            world.add(shapeBody3);
+            demo.addVisual(shapeBody3);
+          
+            // Create contact material behaviour
+            var mat1_ground = new CANNON.ContactMaterial(groundMaterial,mat1,0.0,0.0);
+            var mat2_ground = new CANNON.ContactMaterial(groundMaterial,mat2,0.0,0.7);
+            var mat3_ground = new CANNON.ContactMaterial(groundMaterial,mat3,0.0,0.9);
+
+            world.addContactMaterial(mat1_ground);
+            world.addContactMaterial(mat2_ground);
+            world.addContactMaterial(mat3_ground);
+        });
+      
+      demo.start();
+            
+    </script>
+  </body>
+</html>
