@@ -320,11 +320,14 @@ CANNON.World.prototype.add = function(body){
     body.world = this;
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
+    if (body instanceof CANNON.Particle) {
+        body.timeLastSleepy = this.time;
+    }
     if(body instanceof CANNON.RigidBody){
         body.angularVelocity.copy(body.initAngularVelocity);
         body.quaternion.copy(body.initQuaternion);
     }
-    
+
     // Create collision matrix
     this.collision_matrix = new Int16Array((n+1)*(n+1));
 };
@@ -872,7 +875,7 @@ CANNON.World.prototype.step = function(dt){
     // Sleeping update
     if(world.allowSleep){
         for(var i=0; i<N; i++){
-           bodies[i].sleepTick();
+           bodies[i].sleepTick(this.time);
         }
     }
 };

@@ -89,28 +89,28 @@ CANNON.Particle = function(mass,material){
     this.allowSleep = true;
 
     // 0:awake, 1:sleepy, 2:sleeping
-    var sleepState = 0;
+    this.sleepState = 0;
 
     /**
     * @method isAwake
     * @memberof CANNON.Particle
     * @return bool
     */
-    this.isAwake = function(){ return sleepState == 0; }
+    this.isAwake = function(){ return this.sleepState == 0; }
 
     /**
     * @method isSleepy
     * @memberof CANNON.Particle
     * @return bool
     */
-    this.isSleepy = function(){ return sleepState == 1; }
+    this.isSleepy = function(){ return this.sleepState == 1; }
 
     /**
     * @method isSleeping
     * @memberof CANNON.Particle
     * @return bool
     */
-    this.isSleeping = function(){ return sleepState == 2; }
+    this.isSleeping = function(){ return this.sleepState == 2; }
 
     /**
     * @property float sleepSpeedLimit
@@ -125,7 +125,7 @@ CANNON.Particle = function(mass,material){
     * @brief If the body has been sleepy for this sleepTimeLimit milliseconds, it is considered sleeping.
     */
     this.sleepTimeLimit = 1000;
-    var timeLastSleepy = new Date().getTime();
+    this.timeLastSleepy = 0;
 
     /**
     * @method wakeUp
@@ -133,7 +133,7 @@ CANNON.Particle = function(mass,material){
     * @brief Wake the body up.
     */
     this.wakeUp = function(){
-        sleepState = 0;
+        this.sleepState = 0;
         that.dispatchEvent({type:"wakeup"});
     };
 
@@ -143,7 +143,7 @@ CANNON.Particle = function(mass,material){
     * @brief Force body sleep
     */
     this.sleep = function(){
-        sleepState = 2;
+        this.sleepState = 2;
     };
 
     /**
@@ -151,16 +151,16 @@ CANNON.Particle = function(mass,material){
     * @memberof CANNON.Particle
     * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
     */
-    this.sleepTick = function(){
+    this.sleepTick = function(time){
         if(that.allowSleep){
-          if(sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
-              sleepState = 1; // Sleepy
-              timeLastSleepy = new Date().getTime();
+          if(this.sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
+              this.sleepState = 1; // Sleepy
+              this.timeLastSleepy = time;
               that.dispatchEvent({type:"sleepy"});
-          } else if(sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
+          } else if(this.sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
               that.wakeUp(); // Wake up
-          } else if(sleepState==1 && (new Date().getTime() - timeLastSleepy)>that.sleepTimeLimit){
-              sleepState = 2; // Sleeping
+          } else if(this.sleepState==1 && (time - this.timeLastSleepy)>that.sleepTimeLimit){
+              this.sleepState = 2; // Sleeping
               that.dispatchEvent({type:"sleep"});
           }
         }
