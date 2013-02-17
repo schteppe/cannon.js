@@ -4365,6 +4365,13 @@ CANNON.ContactGenerator = function(){
     var convex_to_sphere = new CANNON.Vec3();
     var sphereConvex_edge = new CANNON.Vec3();
     var sphereConvex_edgeUnit = new CANNON.Vec3();
+    var sphereConvex_sphereToCorner = new CANNON.Vec3();
+    var sphereConvex_worldCorner = new CANNON.Vec3();
+    var sphereConvex_worldNormal = new CANNON.Vec3();
+    var sphereConvex_worldPoint = new CANNON.Vec3();
+    var sphereConvex_worldSpherePointClosestToPlane = new CANNON.Vec3();
+    var sphereConvex_penetrationVec = new CANNON.Vec3();
+    var sphereConvex_sphereToWorldPoint = new CANNON.Vec3();
     function sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
         xi.vsub(xj,convex_to_sphere);
         var normals = sj.faceNormals;
@@ -4378,8 +4385,11 @@ CANNON.ContactGenerator = function(){
             var v = verts[i];
 
             // World position of corner
-            var worldCorner = xj.vadd(qj.vmult(v));
-            var sphere_to_corner = worldCorner.vsub(xi);
+            var worldCorner = sphereConvex_worldCorner;
+            qj.vmult(v,worldCorner);
+            xj.vadd(worldCorner,worldCorner);
+            var sphere_to_corner = sphereConvex_sphereToCorner;
+            worldCorner.vsub(xi, sphere_to_corner);
             if(sphere_to_corner.norm2()<R*R){
                 found = true;
                 var r = makeResult(bi,bj);
@@ -4398,19 +4408,35 @@ CANNON.ContactGenerator = function(){
         for(var i=0,nfaces=faces.length; i!==nfaces && found===false; i++){
             var normal = normals[i];
             var face = faces[i];
-            var worldNormal = qj.vmult(normal);
-            var worldPoint = qj.vmult(verts[face[0]]).vadd(xj); // Arbitrary point in the face
 
-            var worldSpherePointClosestToPlane = xi.vadd(worldNormal.mult(-R));
-            var penetration = worldSpherePointClosestToPlane.vsub(worldPoint).dot(worldNormal);
+            var worldNormal = sphereConvex_worldNormal;
+            qj.vmult(normal,worldNormal);
 
-            if(penetration<0 && xi.vsub(worldPoint).dot(worldNormal)>0){
+            var worldPoint = sphereConvex_worldPoint;
+            qj.vmult(verts[face[0]],worldPoint);
+            worldPoint.vadd(xj,worldPoint); // Arbitrary point in the face
+
+            var worldSpherePointClosestToPlane = sphereConvex_worldSpherePointClosestToPlane;
+            worldNormal.mult(-R,worldSpherePointClosestToPlane)
+            xi.vadd(worldSpherePointClosestToPlane,worldSpherePointClosestToPlane);
+
+            var penetrationVec = sphereConvex_penetrationVec;
+            worldSpherePointClosestToPlane.vsub(worldPoint,penetrationVec);
+            var penetration = penetrationVec.dot(worldNormal);
+
+            var sphereToWorldPoint = sphereConvex_sphereToWorldPoint;
+            xi.vsub(worldPoint,sphereToWorldPoint);
+
+            if(penetration<0 && sphereToWorldPoint.dot(worldNormal)>0){
                 // Intersects plane. Now check if the sphere is inside the face polygon
-                var faceVerts = [];
-
-                for(var j=0; j<face.length; j++){
-                    faceVerts.push(xj.vadd(qj.vmult(verts[face[j]])));
+                var faceVerts = []; // Face vertices, in world coords
+                for(var j=0, Nverts=face.length; j!==Nverts; j++){
+                    var worldVertex = v3pool.get();
+                    qj.vmult(verts[face[j]], worldVertex);
+                    xj.vadd(worldVertex,worldVertex);
+                    faceVerts.push(worldVertex);
                 }
+
                 if(pointInPolygon(faceVerts,worldNormal,xi)){ // Is the sphere center in the face polygon?
                     found = true;
                     var r = makeResult(bi,bj);
@@ -4443,6 +4469,11 @@ CANNON.ContactGenerator = function(){
                             return;
                         }
                     }
+                }
+
+                // Release world vertices
+                for(var j=0, Nfaceverts=faceVerts.length; j!==Nfaceverts; j++){
+                    v3pool.release(faceVerts[j]);
                 }
             }
         }
@@ -4496,7 +4527,7 @@ CANNON.ContactGenerator = function(){
                 r[j].rj.vadd(tempVec,r[j].rj);
                 result.push(r[j]);
             }
-            
+
             v3pool.push(newPos);
         }
     }
