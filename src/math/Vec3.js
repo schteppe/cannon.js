@@ -261,11 +261,11 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
         var n = new CANNON.Vec3(this.x/norm,
                                 this.y/norm,
                                 this.z/norm);
-        if(n.x<0.9){
-            var rand = Math.random();
+        if(Math.abs(n.x)<0.9){
+            var rand = (n.y + n.z) * 1024 % 1;
             n.cross(new CANNON.Vec3(rand,0.0000001,0).unit(),t1);
         } else
-            n.cross(new CANNON.Vec3(0.0000001,rand,0).unit(),t1);
+            n.cross(new CANNON.Vec3(0.0000001,n.x,0).unit(),t1);
         n.cross(t1,t2);
     } else {
         // The normal length is zero, make something up
