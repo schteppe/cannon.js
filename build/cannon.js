@@ -2952,6 +2952,9 @@ CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
 // The point lies outside of the convex hull of the other points
 // if and only if the direction of all the vectors from it to those
 // other points are on less than one half of a sphere around it.
+var ConvexPolyhedron_pointIsInside = new CANNON.Vec3();
+var ConvexPolyhedron_vToP = new CANNON.Vec3();
+var ConvexPolyhedron_vToPointInside = new CANNON.Vec3();
 CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
     var n = this.vertices.length,
         verts = this.vertices,
@@ -2959,15 +2962,21 @@ CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
         normals = this.faceNormals;
     var positiveResult = null;
     var N = this.faces.length;
-    var pointInside = this.getAveragePointLocal();
+    var pointInside = ConvexPolyhedron_pointIsInside;
+    this.getAveragePointLocal(pointInside);
     for(var i=0; i<N; i++){
         var numVertices = this.faces[i].length;
         var n = normals[i];
         var v = verts[faces[i][0]]; // We only need one point in the face
 
         // This dot product determines which side of the edge the point is
-        var r1 = n.dot(p.vsub(v));
-        var r2 = n.dot(pointInside.vsub(v));
+        var vToP = ConvexPolyhedron_vToP;
+        p.vsub(v,vToP);
+        var r1 = n.dot(vToP);
+
+        var vToPointInside = ConvexPolyhedron_vToPointInside;
+        pointInside.vsub(v,vToPointInside);
+        var r2 = n.dot(vToPointInside);
 
         if((r1<0 && r2>0) || (r1>0 && r2<0)){
             return false; // Encountered some other sign. Exit.
@@ -4714,7 +4723,7 @@ CANNON.ContactGenerator = function(){
                 sj.faceNormals[i].copy(normal);
                 normal.normalize();
                 qj.vmult(normal,normal);
-
+                
                 // Check how much the particle penetrates the polygon plane.
                 var penetration = -normal.dot(xi.vsub(verts[0]));
                 if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){

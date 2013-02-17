@@ -618,7 +618,7 @@ CANNON.ContactGenerator = function(){
                 sj.faceNormals[i].copy(normal);
                 normal.normalize();
                 qj.vmult(normal,normal);
-
+                
                 // Check how much the particle penetrates the polygon plane.
                 var penetration = -normal.dot(xi.vsub(verts[0]));
                 if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
