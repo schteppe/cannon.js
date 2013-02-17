@@ -363,13 +363,21 @@ CANNON.ContactGenerator = function(){
      * @param Shape si
      * @param CompoundShape sj
      */
+    var recurseCompound_v3pool = [];
+    var recurseCompound_quatpool = [];
     function recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj){
+        var v3pool = recurseCompound_v3pool;
+        var quatPool = recurseCompound_quatpool;
         var nr = 0;
-        for(var i=0; i<sj.childShapes.length; i++){
+        for(var i=0, Nchildren=sj.childShapes.length; i!==Nchildren; i++){
             var r = [];
-            var newQuat = qj.mult(sj.childOrientations[i]); // Can't reuse these since nearPhase() may recurse
+            var newQuat = quatPool.pop() || new CANNON.Quaternion();
+            var newPos = v3pool.pop() || new CANNON.Vec3();
+            qj.mult(sj.childOrientations[i],newQuat); // Can't reuse these since nearPhase() may recurse
             newQuat.normalize();
-            var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
+            //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
+            qj.vmult(sj.childOffsets[i],newPos);
+            xj.vadd(newPos,newPos);
             nearPhase(r,
                       si,
                       sj.childShapes[i],
@@ -379,12 +387,21 @@ CANNON.ContactGenerator = function(){
                       newQuat, // Accumulate orientation
                       bi,
                       bj);
+            // Release vector and quat
+            quatPool.push(newQuat);
+
+            var tempVec = newPos;
+
             if(!si) nr+= r.length;
             for(var j=0; j<r.length; j++){
                 // The "rj" vector is in world coords, though we must add the world child offset vector.
-                r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
+                //r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
+                qj.vmult(sj.childOffsets[i],tempVec);
+                r[j].rj.vadd(tempVec,r[j].rj);
                 result.push(r[j]);
             }
+            
+            v3pool.push(newPos);
         }
     }
 
