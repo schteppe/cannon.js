@@ -50,7 +50,7 @@
 
         // Sleep parameters
         sphereBody.sleepSpeedLimit = 0.1; // Body will feel sleepy if speed<1 (speed == norm of velocity)
-        sphereBody.sleepTimeLimit = 1000; // Body falls asleep after 1000ms of sleepiness
+        sphereBody.sleepTimeLimit = 1; // Body falls asleep after 1s of sleepiness
 
         sphereBody.addEventListener("sleepy",function(event){
           console.log("The sphere is feeling sleepy...");

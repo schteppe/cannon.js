@@ -262,6 +262,7 @@ CANNON.World.prototype.add = function(body){
     body.world = this;
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
+    body.timeLastSleepy = this.time;
     if(body instanceof CANNON.RigidBody){
         body.angularVelocity.copy(body.initAngularVelocity);
         body.quaternion.copy(body.initQuaternion);
@@ -655,8 +656,8 @@ CANNON.World.prototype.step = function(dt){
     if(doProfiling) profile.integrate = now() - profilingStart;
 
     // Update world time
-    world.time += dt;
-    world.stepnumber += 1;
+    this.time += dt;
+    this.stepnumber += 1;
 
     that.dispatchEvent({type:"postStep"});
 
@@ -679,7 +680,7 @@ CANNON.World.prototype.step = function(dt){
     // Sleeping update
     if(world.allowSleep){
         for(var i=0; i!==N; i++){
-           bodies[i].sleepTick();
+           bodies[i].sleepTick(this.time);
         }
     }
 };

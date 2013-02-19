@@ -265,16 +265,14 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
     var norm = this.norm();
     if(norm>0.0){
         var n = Vec3_tangents_n;
-        n.set(this.x/norm,this.y/norm,this.z/norm);
+	var inorm = 1/norm;
+        n.set(this.x*inorm,this.y*inorm,this.z*inorm);
         var randVec = Vec3_tangents_randVec;
-        if(n.x<0.9){
-            var rand = Math.random();
-            randVec.set(rand,0.0000001,0);
-            randVec.normalize();
+	if(Math.abs(n.x) < 0.9){
+            randVec.set(1,0,0);
             n.cross(randVec,t1);
         } else {
-            randVec.set(0.0000001,rand,0);
-            randVec.normalize();
+            randVec.set(0,1,0);
             n.cross(randVec,t1);
         }
         n.cross(t1,t2);

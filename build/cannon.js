@@ -1043,16 +1043,14 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
     var norm = this.norm();
     if(norm>0.0){
         var n = Vec3_tangents_n;
-        n.set(this.x/norm,this.y/norm,this.z/norm);
+	var inorm = 1/norm;
+        n.set(this.x*inorm,this.y*inorm,this.z*inorm);
         var randVec = Vec3_tangents_randVec;
-        if(n.x<0.9){
-            var rand = Math.random();
-            randVec.set(rand,0.0000001,0);
-            randVec.normalize();
+	if(Math.abs(n.x) < 0.9){
+            randVec.set(1,0,0);
             n.cross(randVec,t1);
         } else {
-            randVec.set(0.0000001,rand,0);
-            randVec.normalize();
+            randVec.set(0,1,0);
             n.cross(randVec,t1);
         }
         n.cross(t1,t2);
@@ -1136,7 +1134,8 @@ CANNON.Vec3.prototype.almostZero = function(precision){
         Math.abs(this.z)>precision)
         return false;
     return true;
-}/*global CANNON:true */
+}
+/*global CANNON:true */
 
 /**
  * @class CANNON.Quaternion
@@ -1698,28 +1697,28 @@ CANNON.Particle = function(mass,material){
     this.allowSleep = true;
 
     // 0:awake, 1:sleepy, 2:sleeping
-    var sleepState = 0;
+    this.sleepState = 0;
 
     /**
     * @method isAwake
     * @memberof CANNON.Particle
     * @return bool
     */
-    this.isAwake = function(){ return sleepState == 0; }
+    this.isAwake = function(){ return that.sleepState == 0; }
 
     /**
     * @method isSleepy
     * @memberof CANNON.Particle
     * @return bool
     */
-    this.isSleepy = function(){ return sleepState == 1; }
+    this.isSleepy = function(){ return that.sleepState == 1; }
 
     /**
     * @method isSleeping
     * @memberof CANNON.Particle
     * @return bool
     */
-    this.isSleeping = function(){ return sleepState == 2; }
+    this.isSleeping = function(){ return that.sleepState == 2; }
 
     /**
     * @property float sleepSpeedLimit
@@ -1731,10 +1730,11 @@ CANNON.Particle = function(mass,material){
     /**
     * @property float sleepTimeLimit
     * @memberof CANNON.Particle
-    * @brief If the body has been sleepy for this sleepTimeLimit milliseconds, it is considered sleeping.
+    * @brief If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
     */
-    this.sleepTimeLimit = 1000;
-    var timeLastSleepy = new Date().getTime();
+    this.sleepTimeLimit = 1;
+
+    this.timeLastSleepy = 0;
 
     /**
     * @method wakeUp
@@ -1742,7 +1742,7 @@ CANNON.Particle = function(mass,material){
     * @brief Wake the body up.
     */
     this.wakeUp = function(){
-        sleepState = 0;
+        that.sleepState = 0;
         that.dispatchEvent({type:"wakeup"});
     };
 
@@ -1752,24 +1752,25 @@ CANNON.Particle = function(mass,material){
     * @brief Force body sleep
     */
     this.sleep = function(){
-        sleepState = 2;
+        that.sleepState = 2;
     };
 
     /**
     * @method sleepTick
     * @memberof CANNON.Particle
+    * @param float time The world time in seconds
     * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
     */
-    this.sleepTick = function(){
+    this.sleepTick = function(time){
         if(that.allowSleep){
-          if(sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
-              sleepState = 1; // Sleepy
-              timeLastSleepy = new Date().getTime();
+          if(that.sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
+              that.sleepState = 1; // Sleepy
+              timeLastSleepy = time;
               that.dispatchEvent({type:"sleepy"});
-          } else if(sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
+          } else if(that.sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
               that.wakeUp(); // Wake up
-          } else if(sleepState==1 && (new Date().getTime() - timeLastSleepy)>that.sleepTimeLimit){
-              sleepState = 2; // Sleeping
+          } else if(that.sleepState==1 && (time - timeLastSleepy)>that.sleepTimeLimit){
+              that.sleepState = 2; // Sleeping
               that.dispatchEvent({type:"sleep"});
           }
         }
@@ -3668,6 +3669,7 @@ CANNON.World.prototype.add = function(body){
     body.world = this;
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
+    body.timeLastSleepy = this.time;
     if(body instanceof CANNON.RigidBody){
         body.angularVelocity.copy(body.initAngularVelocity);
         body.quaternion.copy(body.initQuaternion);
@@ -4061,8 +4063,8 @@ CANNON.World.prototype.step = function(dt){
     if(doProfiling) profile.integrate = now() - profilingStart;
 
     // Update world time
-    world.time += dt;
-    world.stepnumber += 1;
+    this.time += dt;
+    this.stepnumber += 1;
 
     that.dispatchEvent({type:"postStep"});
 
@@ -4085,7 +4087,7 @@ CANNON.World.prototype.step = function(dt){
     // Sleeping update
     if(world.allowSleep){
         for(var i=0; i!==N; i++){
-           bodies[i].sleepTick();
+           bodies[i].sleepTick(this.time);
         }
     }
 };

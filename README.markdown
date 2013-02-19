@@ -55,6 +55,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.5.0 Current**
+ * Changed unit of sleep properties in ```Particle``` to seconds instead of milliseconds, made ```Particle.sleepState``` public. (schteppe,airbaggins).
  * Changed property ```Shape.boundingSphereRadius``` to being a number, added method ```Shape.computeBoundingSphereRadius``` and ```.boundingSphereRadiusNeedsUpdate```
  * Removed ```Box.getCorners```
  * Added properties to ```ContactMaterial```:  ```.contactEquationStiffness```, ```.contactEquationRegularizationTime```, ```.frictionEquationStiffness```, ```.frictionEquationRegularizationTime``` to be able to control settings for the on-the-fly created contact constraints
