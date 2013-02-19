@@ -4234,6 +4234,9 @@ CANNON.ContactGenerator = function(){
     var sphereBox_ns2 = new CANNON.Vec3();
     var sphereBox_sides = [new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3()];
     var sphereBox_sphere_to_corner = new CANNON.Vec3();
+    var sphereBox_side_ns = new CANNON.Vec3();
+    var sphereBox_side_ns1 = new CANNON.Vec3();
+    var sphereBox_side_ns2 = new CANNON.Vec3();
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // we refer to the box as body j
         var sides = sphereBox_sides;
@@ -4244,12 +4247,26 @@ CANNON.ContactGenerator = function(){
 
         // Check side (plane) intersections
         var found = false;
-        for(var idx=0,nsides=sides.length; idx!==nsides && found===false; idx++){ // Max 3 penetrating sides
+	// Store the resulting side penetration info
+	var side_ns = sphereBox_side_ns;
+	var side_ns1 = sphereBox_side_ns1;
+	var side_ns2 = sphereBox_side_ns2;
+	var side_h = null;
+	var side_penetrations = 0;
+	var side_dot1 = 0;
+	var side_dot2 = 0;
+	var side_distance = null;
+        for(var idx=0,nsides=sides.length; idx!==nsides && found===false; idx++){
+	    // Get the plane side normal (ns)
             var ns = sphereBox_ns;
             sides[idx].copy(ns);
+
             var h = ns.norm();
             ns.normalize();
+
+	    // The normal/distance dot product tells which side of the plane we are
             var dot = box_to_sphere.dot(ns);
+
             if(dot<h+R && dot>0){
                 // Intersects plane. Now check the other two dimensions
                 var ns1 = sphereBox_ns1;
@@ -4263,21 +4280,33 @@ CANNON.ContactGenerator = function(){
                 var dot1 = box_to_sphere.dot(ns1);
                 var dot2 = box_to_sphere.dot(ns2);
                 if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
-                    found = true;
-                    var r = makeResult(bi,bj);
-                    ns.mult(-R,r.ri); // Sphere r
-                    ns.copy(r.ni);
-                    r.ni.negate(r.ni); // Normal should be out of sphere
-                    //ns.mult(h).vadd(ns1.mult(dot1)).vadd(ns2.mult(dot2),r.rj); // box
-                    ns.mult(h,ns);
-                    ns1.mult(dot1,ns1);
-                    ns.vadd(ns1,ns);
-                    ns2.mult(dot2,ns2);
-                    ns.vadd(ns2,r.rj);
-                    result.push(r);
+		    var dist = Math.abs(dot-h-R);
+		    if(side_distance===null || dist < side_distance){
+			side_distance = dist;
+			side_dot1 = dot1;
+			side_dot2 = dot2;
+			side_h = h;
+			ns.copy(side_ns);
+			ns1.copy(side_ns1);
+			ns2.copy(side_ns2);
+			side_penetrations++;
+		    }
                 }
             }
         }
+	if(side_penetrations){
+	    found = true;
+            var r = makeResult(bi,bj);
+            side_ns.mult(-R,r.ri); // Sphere r
+            side_ns.copy(r.ni);
+            r.ni.negate(r.ni); // Normal should be out of sphere
+            side_ns.mult(side_h,side_ns);
+            side_ns1.mult(side_dot1,side_ns1);
+            side_ns.vadd(side_ns1,side_ns);
+            side_ns2.mult(side_dot2,side_ns2);
+            side_ns.vadd(side_ns2,r.rj);
+            result.push(r);
+	}
 
         // Check corners
         var rj = v3pool.get();
