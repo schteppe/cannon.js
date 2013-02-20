@@ -1255,21 +1255,25 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
  */ 
-var va = new CANNON.Vec3();
-var vb = new CANNON.Vec3();
-var vaxvb = new CANNON.Vec3();
+var Quaternion_mult_va = new CANNON.Vec3();
+var Quaternion_mult_vb = new CANNON.Vec3();
+var Quaternion_mult_vaxvb = new CANNON.Vec3();
 CANNON.Quaternion.prototype.mult = function(q,target){
-    var w = this.w;
-    if(target==undefined)
-        target = new CANNON.Quaternion();
+    target = target || new CANNON.Quaternion();
+    var w = this.w,
+        va = Quaternion_mult_va,
+        vb = Quaternion_mult_vb,
+        vaxvb = Quaternion_mult_vaxvb;
     
     va.set(this.x,this.y,this.z);
     vb.set(q.x,q.y,q.z);
     target.w = w*q.w - va.dot(vb);
     va.cross(vb,vaxvb);
+
     target.x = w * vb.x + q.w*va.x + vaxvb.x;
     target.y = w * vb.y + q.w*va.y + vaxvb.y;
     target.z = w * vb.z + q.w*va.z + vaxvb.z;
+
     return target;
 };
 
@@ -1514,22 +1518,23 @@ CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
  * @brief Calculates inertia in a specified frame for this shape.
  * @return CANNON.Vec3
  */
+var Shape_calculateTransformedInertia_localInertia = new CANNON.Vec3();
+var Shape_calculateTransformedInertia_worldInertia = new CANNON.Vec3();
 CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
-  if(target==undefined)
-    target = new CANNON.Vec3();
+    target = target || new CANNON.Vec3();
 
-  // Compute inertia in the world frame
-  quat.normalize();
-  var localInertia = new CANNON.Vec3();
-  this.calculateLocalInertia(mass,localInertia);
+    // Compute inertia in the world frame
+    //quat.normalize();
+    var localInertia = Shape_calculateTransformedInertia_localInertia;
+    var worldInertia = Shape_calculateTransformedInertia_worldInertia;
+    this.calculateLocalInertia(mass,localInertia);
 
-  // @todo Is this rotation OK? Check!
-  var worldInertia = quat.vmult(localInertia);
-  target.x = Math.abs(worldInertia.x);
-  target.y = Math.abs(worldInertia.y);
-  target.z = Math.abs(worldInertia.z);
-  return target;
-  //throw "calculateInertia() not implemented for shape type "+this.type;
+    // @todo Is this rotation OK? Check!
+    quat.vmult(localInertia,worldInertia);
+    target.x = Math.abs(worldInertia.x);
+    target.y = Math.abs(worldInertia.y);
+    target.z = Math.abs(worldInertia.z);
+    return target;
 };
 
 // Calculates the local aabb and sets the result to .aabbmax and .aabbmin
@@ -4020,6 +4025,7 @@ CANNON.World.prototype.step = function(dt){
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
+
     for(var i=0; i!==N; i++){
         var b = bodies[i],
             force = b.force,
@@ -4040,7 +4046,7 @@ CANNON.World.prototype.step = function(dt){
                 angularVelo.y += tau.y * invInertia.y * dt;
                 angularVelo.z += tau.z * invInertia.z * dt;
             }
-          
+            
             // Use new velocity  - leap frog
             if(!b.isSleeping()){
                 pos.x += velo.x * dt;
@@ -4048,7 +4054,7 @@ CANNON.World.prototype.step = function(dt){
                 pos.z += velo.z * dt;
 
                 if(b.angularVelocity){
-                    w.set(  angularVelo.x, angularVelo.y, angularVelo.z, 0);
+                    w.set(angularVelo.x, angularVelo.y, angularVelo.z, 0);
                     w.mult(quat,wq);
                     quat.x += half_dt * wq.x;
                     quat.y += half_dt * wq.y;

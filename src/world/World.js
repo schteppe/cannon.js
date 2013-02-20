@@ -610,6 +610,7 @@ CANNON.World.prototype.step = function(dt){
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
+
     for(var i=0; i!==N; i++){
         var b = bodies[i],
             force = b.force,
@@ -630,7 +631,7 @@ CANNON.World.prototype.step = function(dt){
                 angularVelo.y += tau.y * invInertia.y * dt;
                 angularVelo.z += tau.z * invInertia.z * dt;
             }
-          
+            
             // Use new velocity  - leap frog
             if(!b.isSleeping()){
                 pos.x += velo.x * dt;
@@ -638,7 +639,7 @@ CANNON.World.prototype.step = function(dt){
                 pos.z += velo.z * dt;
 
                 if(b.angularVelocity){
-                    w.set(  angularVelo.x, angularVelo.y, angularVelo.z, 0);
+                    w.set(angularVelo.x, angularVelo.y, angularVelo.z, 0);
                     w.mult(quat,wq);
                     quat.x += half_dt * wq.x;
                     quat.y += half_dt * wq.y;
