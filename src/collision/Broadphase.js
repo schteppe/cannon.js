@@ -6,8 +6,12 @@
  * @brief Base class for broadphase implementations
  */
 CANNON.Broadphase = function(){
-  /// The world to search for collisions in.
-  this.world = null;
+    /**
+    * @property CANNON.World world
+    * @brief The world to search for collisions in.
+    * @memberof CANNON.Broadphase
+    */
+    this.world = null;
 };
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 
@@ -19,6 +23,6 @@ CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
  * @return array An array with two subarrays of body indices
  */
 CANNON.Broadphase.prototype.collisionPairs = function(world){
-  throw "collisionPairs not implemented for this BroadPhase class!";
+    throw "collisionPairs not implemented for this BroadPhase class!";
 };
 

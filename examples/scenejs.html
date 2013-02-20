@@ -1,4 +1,4 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>SceneJS / cannon.js example</title>
@@ -34,6 +34,7 @@
           mass = 1;
           body = new CANNON.RigidBody(mass,shape);
           body.angularVelocity.set(0,10,0);
+          body.angularDamping = 0.5;
           world.add(body);
 
       }

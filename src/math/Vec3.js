@@ -8,22 +8,26 @@
  * @param float z
  * @author schteppe
  */
+var numVecs = 0;
 CANNON.Vec3 = function(x,y,z){
-  /**
-   * @property float x
-   * @memberof CANNON.Vec3
-   */
-  this.x = x||0.0;
-  /**
-   * @property float y
-   * @memberof CANNON.Vec3
-   */
-  this.y = y||0.0;
-  /**
-   * @property float z
-   * @memberof CANNON.Vec3
-   */
-  this.z = z||0.0;
+    /**
+    * @property float x
+    * @memberof CANNON.Vec3
+    */
+    this.x = x||0.0;
+    /**
+    * @property float y
+    * @memberof CANNON.Vec3
+    */
+    this.y = y||0.0;
+    /**
+    * @property float z
+    * @memberof CANNON.Vec3
+    */
+    this.z = z||0.0;
+
+    numVecs++;
+    //console.log(numVecs+" created");
 };
 
 /**
@@ -61,10 +65,10 @@ CANNON.Vec3.prototype.cross = function(v,target){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.set = function(x,y,z){
-  this.x = x;
-  this.y = y;
-  this.z = z;
-  return this;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    return this;
 };
     
 /**
@@ -76,15 +80,15 @@ CANNON.Vec3.prototype.set = function(x,y,z){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.vadd = function(v,target){
-  if(target){
-    target.x = v.x + this.x;
-    target.y = v.y + this.y;
-    target.z = v.z + this.z;
-  } else {
-    return new CANNON.Vec3(this.x + v.x,
-			   this.y + v.y,
-			   this.z + v.z);
-  }  
+    if(target){
+        target.x = v.x + this.x;
+        target.y = v.y + this.y;
+        target.z = v.z + this.z;
+    } else {
+        return new CANNON.Vec3(this.x + v.x,
+                               this.y + v.y,
+                               this.z + v.z);
+    }  
 };
     
 /**
@@ -96,15 +100,15 @@ CANNON.Vec3.prototype.vadd = function(v,target){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.vsub = function(v,target){
-  if(target){
-    target.x = this.x - v.x;
-    target.y = this.y - v.y;
-    target.z = this.z - v.z;
-  } else {
-    return new CANNON.Vec3(this.x-v.x,
-			   this.y-v.y,
-			   this.z-v.z);
-  }
+    if(target){
+        target.x = this.x - v.x;
+        target.y = this.y - v.y;
+        target.z = this.z - v.z;
+    } else {
+        return new CANNON.Vec3(this.x-v.x,
+                               this.y-v.y,
+                               this.z-v.z);
+    }
 };
 
 /**
@@ -115,9 +119,9 @@ CANNON.Vec3.prototype.vsub = function(v,target){
  * @return CANNON.Mat3
  */
 CANNON.Vec3.prototype.crossmat = function(){
-  return new CANNON.Mat3([      0,  -this.z,   this.y,
-			    this.z,        0,  -this.x,
-			   -this.y,   this.x,        0]);
+    return new CANNON.Mat3([     0,  -this.z,   this.y,
+                            this.z,        0,  -this.x,
+                           -this.y,   this.x,        0]);
 };
 
 /**
@@ -130,15 +134,15 @@ CANNON.Vec3.prototype.normalize = function(){
     var x=this.x, y=this.y, z=this.z;
     var n = Math.sqrt(x*x + y*y + z*z);
     if(n>0.0){
-	var invN = 1/n;
-	this.x *= invN;
-	this.y *= invN;
-	this.z *= invN;
+        var invN = 1/n;
+        this.x *= invN;
+        this.y *= invN;
+        this.z *= invN;
     } else {
-	// Make something up
-	this.x = 0;
-	this.y = 0;
-	this.z = 0;
+        // Make something up
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
     }
     return n;
 };
@@ -155,14 +159,14 @@ CANNON.Vec3.prototype.unit = function(target){
     var x=this.x, y=this.y, z=this.z;
     var ninv = Math.sqrt(x*x + y*y + z*z);
     if(ninv>0.0){
-	ninv = 1.0/ninv;
-	target.x = x * ninv;
-	target.y = y * ninv;
-	target.z = z * ninv;
+        ninv = 1.0/ninv;
+        target.x = x * ninv;
+        target.y = y * ninv;
+        target.z = z * ninv;
     } else {
-	target.x = 0;
-	target.y = 0;
-	target.z = 0;
+        target.x = 1;
+        target.y = 0;
+        target.z = 0;
     }
     return target;
 };
@@ -192,8 +196,8 @@ CANNON.Vec3.prototype.distanceTo = function(p){
     var x=this.x, y=this.y, z=this.z;
     var px=p.x, py=p.y, pz=p.z;
     return Math.sqrt((px-x)*(px-x)+
-		     (py-y)*(py-y)+
-		     (pz-z)*(pz-z));
+                     (py-y)*(py-y)+
+                     (pz-z)*(pz-z));
 };
 
 /**
@@ -205,12 +209,12 @@ CANNON.Vec3.prototype.distanceTo = function(p){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.mult = function(scalar,target){
-  if(!target)
-    target = new CANNON.Vec3();
-  target.x = scalar*this.x;
-  target.y = scalar*this.y;
-  target.z = scalar*this.z;
-  return target;
+    if(!target)
+        target = new CANNON.Vec3();
+    target.x = scalar*this.x;
+    target.y = scalar*this.y;
+    target.z = scalar*this.z;
+    return target;
 };
 
 /**
@@ -221,7 +225,7 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
  * @return float
  */
 CANNON.Vec3.prototype.dot = function(v){
-  return (this.x * v.x + this.y * v.y + this.z * v.z);
+    return (this.x * v.x + this.y * v.y + this.z * v.z);
 };
 
 /**
@@ -230,7 +234,7 @@ CANNON.Vec3.prototype.dot = function(v){
  * @return bool
  */
 CANNON.Vec3.prototype.isZero = function(){
-  return this.x===0 && this.y===0 && this.z===0;
+    return this.x===0 && this.y===0 && this.z===0;
 }
 
 /**
@@ -241,11 +245,11 @@ CANNON.Vec3.prototype.isZero = function(){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.negate = function(target){
-  target = target || new CANNON.Vec3();
-  target.x = -this.x;
-  target.y = -this.y;
-  target.z = -this.z;
-  return target;
+    target = target || new CANNON.Vec3();
+    target.x = -this.x;
+    target.y = -this.y;
+    target.z = -this.z;
+    return target;
 };
 
 /**
@@ -255,23 +259,28 @@ CANNON.Vec3.prototype.negate = function(target){
  * @param CANNON.Vec3 t1 Vector object to save the first tangent in
  * @param CANNON.Vec3 t2 Vector object to save the second tangent in
  */
+var Vec3_tangents_n = new CANNON.Vec3();
+var Vec3_tangents_randVec = new CANNON.Vec3();
 CANNON.Vec3.prototype.tangents = function(t1,t2){
-  var norm = this.norm();
-  if(norm>0.0){
-    var n = new CANNON.Vec3(this.x/norm,
-			    this.y/norm,
-			    this.z/norm);
-    if(n.x<0.9){
-      var rand = Math.random();
-      n.cross(new CANNON.Vec3(rand,0.0000001,0).unit(),t1);
-    } else
-      n.cross(new CANNON.Vec3(0.0000001,rand,0).unit(),t1);
-    n.cross(t1,t2);
-  } else {
-    // The normal length is zero, make something up
-    t1.set(1,0,0).normalize();
-    t2.set(0,1,0).normalize();
-  }
+    var norm = this.norm();
+    if(norm>0.0){
+        var n = Vec3_tangents_n;
+	var inorm = 1/norm;
+        n.set(this.x*inorm,this.y*inorm,this.z*inorm);
+        var randVec = Vec3_tangents_randVec;
+	if(Math.abs(n.x) < 0.9){
+            randVec.set(1,0,0);
+            n.cross(randVec,t1);
+        } else {
+            randVec.set(0,1,0);
+            n.cross(randVec,t1);
+        }
+        n.cross(t1,t2);
+    } else {
+        // The normal length is zero, make something up
+        t1.set(1,0,0).normalize();
+        t2.set(0,1,0).normalize();
+    }
 };
 
 /**
@@ -281,7 +290,7 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
  * @return string
  */
 CANNON.Vec3.prototype.toString = function(){
-  return this.x+","+this.y+","+this.z;
+    return this.x+","+this.y+","+this.z;
 };
 
 /**
@@ -292,11 +301,11 @@ CANNON.Vec3.prototype.toString = function(){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.copy = function(target){
-  target = target || new CANNON.Vec3();
-  target.x = this.x;
-  target.y = this.y;
-  target.z = this.z;
-  return target;
+    target = target || new CANNON.Vec3();
+    target.x = this.x;
+    target.y = this.y;
+    target.z = this.z;
+    return target;
 };
 
 
@@ -324,24 +333,27 @@ CANNON.Vec3.prototype.lerp = function(v,t,target){
  * @return bool
  */
 CANNON.Vec3.prototype.almostEquals = function(v,precision){
-  if(precision===undefined)
-    precision = 1e-6;
-  if(Math.abs(this.x-v.x)>precision ||
-     Math.abs(this.y-v.y)>precision ||
-     Math.abs(this.z-v.z)>precision)
-    return false;
-  return true;
+    if(precision===undefined)
+        precision = 1e-6;
+    if( Math.abs(this.x-v.x)>precision ||
+        Math.abs(this.y-v.y)>precision ||
+        Math.abs(this.z-v.z)>precision)
+        return false;
+    return true;
 }
 
 /**
- * Check if a vector is almost zero
+ * @method almostZero
+ * @brief Check if a vector is almost zero
+ * @param float precision
+ * @memberof CANNON.Vec3
  */
 CANNON.Vec3.prototype.almostZero = function(precision){
-  if(precision===undefined)
-    precision = 1e-6;
-  if(Math.abs(this.x)>precision ||
-     Math.abs(this.y)>precision ||
-     Math.abs(this.z)>precision)
-    return false;
-  return true;
+    if(precision===undefined)
+        precision = 1e-6;
+    if( Math.abs(this.x)>precision ||
+        Math.abs(this.y)>precision ||
+        Math.abs(this.z)>precision)
+        return false;
+    return true;
 }

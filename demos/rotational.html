@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - callbacks demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+        /**
+         * Demonstrates how to use the HingeConstraint.
+         * A hinge constraint makes sure that two bodies can rotate around a common axis. For example, think of a door hinge.
+         */
+
+        var demo = new CANNON.Demo();
+        var mass = 1;
+
+        demo.addScene("car",function(){
+            var world = demo.getWorld();
+            world.gravity.set(0,0,-20);
+
+            var groundMaterial = new CANNON.Material("groundMaterial");
+            var wheelMaterial = new CANNON.Material("wheelMaterial");
+            var wheelGroundContactMaterial = new CANNON.ContactMaterial(groundMaterial,wheelMaterial, 0.5, 0.3);
+            world.addContactMaterial(wheelGroundContactMaterial);
+
+            var wheelShape =      new CANNON.Sphere(1.2);
+            var leftFrontWheel =  new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
+            var rightFrontWheel = new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
+            var leftRearWheel =   new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
+            var rightRearWheel =  new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
+
+            var chassisShape = new CANNON.Box(new CANNON.Vec3(5,2,0.5));
+            var chassis = new CANNON.RigidBody(mass,chassisShape);
+
+            // Position constrain wheels
+            var zero = new CANNON.Vec3();
+            leftFrontWheel .position.set(  5,  5, 0); 
+            rightFrontWheel.position.set(  5, -5, 0);
+            leftRearWheel  .position.set( -5,  5, 0);
+            rightRearWheel .position.set( -5, -5, 0);
+
+            // Constrain wheels
+            var constraints = [];
+            
+            // Hinge the wheels
+            var leftAxis =       new CANNON.Vec3(0,1,0);
+            var rightAxis =      new CANNON.Vec3(0,-1,0);
+            var leftFrontAxis =  new CANNON.Vec3(0,1,0);
+            var rightFrontAxis = new CANNON.Vec3(0,-1,0);
+            if(true){
+                leftFrontAxis =  new CANNON.Vec3(0.3,0.7,0);
+                rightFrontAxis = new CANNON.Vec3(-0.3,-0.7,0);
+                leftFrontAxis.normalize();
+                rightFrontAxis.normalize();
+            }
+
+            constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3( 5, 5, 0), leftFrontAxis,  leftFrontWheel,  zero, leftAxis));
+            constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3( 5,-5, 0), rightFrontAxis, rightFrontWheel, zero, rightAxis));
+            constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3(-5, 5, 0), leftAxis,  leftRearWheel,   zero, leftAxis));
+            constraints.push(new CANNON.HingeConstraint(chassis, new CANNON.Vec3(-5,-5, 0), rightAxis, rightRearWheel,  zero, rightAxis));
+
+            for(var i=0; i<constraints.length; i++)
+                world.addConstraint(constraints[i]);
+
+            var bodies = [chassis,leftFrontWheel,rightFrontWheel,leftRearWheel,rightRearWheel];
+            for(var i=0; i<bodies.length; i++){
+                world.add(bodies[i]);
+                demo.addVisual(bodies[i]);
+            }
+
+            // Ground 
+            var groundShape = new CANNON.Plane();
+            var ground = new CANNON.RigidBody(0,groundShape,groundMaterial);
+            ground.position.z = -3;
+            world.add(ground);
+            demo.addVisual(ground);
+
+            // Enable motors and set their velocities
+            var frontLeftHinge = constraints[2];
+            var frontRightHinge = constraints[3];
+            frontLeftHinge.enableMotor();
+            frontRightHinge.enableMotor();
+            var v = -14;
+            frontLeftHinge.motorTargetVelocity = v;
+            frontRightHinge.motorTargetVelocity = -v;
+
+        });
+
+
+        demo.addScene("hinge",function(){
+            var world = demo.getWorld();
+            world.gravity.set(0,5,-20);
+
+            var s = 5, d = 0.1*s;
+            var shape = new CANNON.Box(new CANNON.Vec3(s*0.5,s*0.1,s*0.5));
+            var body = new CANNON.RigidBody(mass,shape);
+            var staticBody = new CANNON.RigidBody(0,shape);
+            staticBody.position.z = s + d*2;
+
+            // Hinge it
+            var pivotA = new CANNON.Vec3(0,0,-s*0.5-d);
+            var axisA = new CANNON.Vec3(1,0,0);
+            var axisB = axisA;
+            var pivotB = new CANNON.Vec3(0,0,s*0.5+d);
+            var c = new CANNON.HingeConstraint( staticBody, pivotA, axisA,
+                                                body,       pivotB, axisB);            
+            world.addConstraint(c); 
+
+            world.add(body);
+            world.add(staticBody);
+            demo.addVisual(body);
+            demo.addVisual(staticBody);
+        });
+
+        demo.start();
+      
+    </script>
+  </body>
+</html>

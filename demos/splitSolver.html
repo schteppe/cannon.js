@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - splitsolver demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+    /**
+     * This demonstrates why it can be good to use the SplitSolver.
+     * If you have put a nonzero tolerance on a solver, it will in stop iterating when
+     * the total error is small, in other words: when the system is solved "good enough".
+     * When simulating larger systems with more equations, the error will add up,
+     * and the solver will need more iterations/work to reach the "good enough" level.
+     * 
+     * The SplitSolver splits the system into independent parts, and runs a subsolver
+     * on each part. The total error in a subsystem will many times be smaller than in
+     * the large system, so we can many times cut down on the total number of iterations we do.
+     *
+     * Another interesting fact is that we *could* run the subsystems in separate threads and
+     * speed up the computing even more. However, CANNON runs in one thread for now.
+     *
+     * The first scene uses the split solver and the second one does not. Turn on the
+     * profiling plot and enjoy!
+     */
+
+      var demo = new CANNON.Demo();
+      var size = 0.5;
+      
+      var shape = new CANNON.Sphere(size);
+      var shape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+      demo.addScene("with split",function(){
+          createScene(demo,shape,true);
+        });
+      demo.addScene("without split",function(){
+          createScene(demo,shape,false);
+        });
+      
+      demo.start();
+      
+      function createScene(demo,shape,split){
+      
+        // Create world
+        var world = demo.getWorld();
+        world.gravity.set(0,0,-10);
+        world.broadphase = new CANNON.NaiveBroadphase();
+
+        var solver = new CANNON.GSSolver();
+        solver.iterations = 50;
+        world.defaultContactMaterial.contactEquationStiffness = 1e7;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 5;
+        solver.tolerance = 0.0001;
+        if(split)
+            world.solver = new CANNON.SplitSolver(solver);
+        else
+            world.solver = solver;
+      
+        // ground plane
+        var groundShape = new CANNON.Plane();
+        var groundBody = new CANNON.RigidBody(0,groundShape);
+        world.add(groundBody);
+        demo.addVisual(groundBody);
+      
+        // Shape on plane
+        var N = 5;
+        for(var i=0; i<N; i++){
+            for(var j=0; j<N; j++){
+                var shapeBody = new CANNON.RigidBody(1,shape);
+                shapeBody.position.set( (i-N*0.5)*size*2*1.1,
+                                        (j-N*0.5)*size*2*1.1,
+                                        size*1.05);
+                world.add(shapeBody);
+                demo.addVisual(shapeBody);
+            }
+        }
+
+
+        var shapeBody = new CANNON.RigidBody(1,shape);
+        shapeBody.position.set( size,size,
+                                size*5);
+        world.add(shapeBody);
+        demo.addVisual(shapeBody);
+      }
+            
+    </script>
+  </body>
+</html>

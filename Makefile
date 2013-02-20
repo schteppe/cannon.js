@@ -1,10 +1,18 @@
 START     = LICENSE src/wrapper/Start.js
 CANNON    = src/Cannon.js
 COLLISION = src/collision/*.js
-CONSTRAINTS = src/constraints/*.js
+CONSTRAINTS = 	src/constraints/Equation.js \
+				src/constraints/ContactEquation.js \
+				src/constraints/FrictionEquation.js \
+				src/constraints/RotationalEquation.js \
+				src/constraints/Constraint.js \
+				src/constraints/DistanceConstraint.js \
+				src/constraints/RotationalMotorEquation.js \
+				src/constraints/HingeConstraint.js \
+				src/constraints/PointToPointConstraint.js
 MATH      = src/math/Mat3.js src/math/Vec3.js src/math/Quaternion.js
-OBJECTS   = src/objects/Shape.js src/objects/Body.js src/objects/Particle.js src/objects/RigidBody.js src/objects/Sphere.js src/objects/Box.js src/objects/Plane.js src/objects/Compound.js src/objects/ConvexPolyhedron.js
-SOLVER    = src/solver/*.js
+OBJECTS   = src/objects/Shape.js src/objects/Body.js src/objects/Particle.js src/objects/RigidBody.js src/objects/Sphere.js src/objects/Box.js src/objects/Plane.js src/objects/Compound.js src/objects/ConvexPolyhedron.js src/objects/Cylinder.js
+SOLVER    = src/solver/Solver.js src/solver/GSSolver.js src/solver/SplitSolver.js
 UTILS    = src/utils/*.js
 MATERIAL  = src/material/Material.js src/material/ContactMaterial.js
 WORLD     = src/world/World.js src/world/ContactPoint.js src/world/ContactGenerator.js

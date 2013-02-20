@@ -1,9 +1,9 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>cannon.js - events demo</title>
     <meta charset="utf-8">
-    <style>* {margin:0;padding:0}</style>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -12,24 +12,31 @@
     <script src="../libs/Three.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
     <script>
+
+    /**
+     * For demonstrating events.
+     */
 
       var demo = new CANNON.Demo();
       var size = 1;
       
-      demo.addScene(function(app){
+      demo.addScene("'collide' event",function(){
       
           // Create world
-          var world = new CANNON.World();
-          app.setWorld(world);
+          var world = demo.getWorld();
+
+          world.defaultContactMaterial.contactEquationStiffness = 5e7;
+          world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+
           world.gravity.set(0,0,-20);
-          world.broadphase = new CANNON.NaiveBroadphase();
       
           // ground plane
-          var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+          var groundShape = new CANNON.Plane();
           var groundBody = new CANNON.RigidBody(0,groundShape);
           world.add(groundBody);
-          app.addVisual(groundBody);
+          demo.addVisual(groundBody);
       
           // Sphere
           var sphere = new CANNON.Sphere(size);
@@ -37,12 +44,12 @@
           var pos = new CANNON.Vec3(0,0,size);
           sphereBody.position.set(0,0,size*6);
           world.add(sphereBody);
-          app.addVisual(sphereBody);
+          demo.addVisual(sphereBody);
           
-          // Add collide event
+          // When a body collides with another body, they both dispatch the "collide" event.
           sphereBody.addEventListener("collide",function(e){
               alert("The sphere just collided with the ground!");
-              sphereBody.velocity.set(0,0,0);
+              console.log(e); // Print the object to console to inspect it
           });
           
         });

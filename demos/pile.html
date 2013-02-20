@@ -1,85 +1,98 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>cannon.js - pile demo</title>
     <meta charset="utf-8">
-    <style>* {margin:0;padding:0}</style>
-  </head>
-  <body>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+</head>
+<body>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
     <script>
 
-      var demo = new CANNON.Demo();
-      var size = 1;
-      
-      // Spheres
-      demo.addScene(function(app){
-          // Create world
-          var world = new CANNON.World();
-          app.setWorld(world);
-          world.gravity.set(0,0,-50);
-          world.broadphase = new CANNON.NaiveBroadphase();
-          world.solver.iterations = 2;
-          
-          // ground plane
-          var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
-          var groundBody = new CANNON.RigidBody(0,groundShape);
-          groundBody.position.set(0,0,0);
-          world.add(groundBody);
-          app.addVisual(groundBody);
-      
-          // plane -x
-          var planeShapeXmin = new CANNON.Plane(new CANNON.Vec3(0,1,0));
-          var planeXmin = new CANNON.RigidBody(0, planeShapeXmin);
-          planeXmin.position.set(0,-5,0);
-          world.add(planeXmin);
-      
-          // Plane +x
-          var planeShapeXmax = new CANNON.Plane(new CANNON.Vec3(0,-1,0));
-          var planeXmax = new CANNON.RigidBody(0, planeShapeXmax);
-          planeXmax.position.set(0,5,0);
-          world.add(planeXmax);
-      
-          // Plane -y
-          var planeShapeYmin = new CANNON.Plane(new CANNON.Vec3(1,0,0));
-          var planeYmin = new CANNON.RigidBody(0, planeShapeYmin);
-          planeYmin.position.set(-5,0,0);
-          world.add(planeYmin);
-      
-          // Plane +y
-          var planeShapeYmax = new CANNON.Plane(new CANNON.Vec3(-1,0,0));
-          var planeYmax = new CANNON.RigidBody(0, planeShapeYmax);
-          planeYmax.position.set(5,0,0);
-          world.add(planeYmax);
-      
-          var bodies = [];
-          var i = 0;
-          var interval = setInterval(function(){
-              // Sphere
-              i++;
-              var sphereShape = new CANNON.Sphere(size);
-              var b1 = new CANNON.RigidBody(5,sphereShape);
-              b1.position.set(2*size*Math.sin(i),2*size*Math.cos(i),7*2*size);
-              world.add(b1);
-              app.addVisual(b1);
-              bodies.push(b1);
-              
-              if(bodies.length>80){
+    var demo = new CANNON.Demo();
+    var size = 1;
+    var interval;
+
+    // Spheres
+    demo.addScene("Pile",function(){
+        if(interval) clearInterval(interval);
+
+        var world = demo.getWorld();
+
+        world.gravity.set(0,0,-50);
+        world.broadphase = new CANNON.NaiveBroadphase();
+        world.solver.iterations = 5;
+
+        world.defaultContactMaterial.contactEquationStiffness = 5e6;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 10;
+
+        // Since we have many bodies and they don't move very much, we can use the less accurate quaternion normalization
+        world.quatNormalizeFast = true;
+        world.quatNormalizeSkip = 4; // ...and we do not have to normalize every step.
+
+        // ground plane
+        var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+        var groundBody = new CANNON.RigidBody(0,groundShape);
+        groundBody.position.set(0,0,0);
+        world.add(groundBody);
+        demo.addVisual(groundBody);
+
+        // plane -x
+        var planeShapeXmin = new CANNON.Plane();
+        var planeXmin = new CANNON.RigidBody(0, planeShapeXmin);
+        planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
+        planeXmin.position.set(-5,0,0);
+        world.add(planeXmin);
+
+        // Plane +x
+        var planeShapeXmax = new CANNON.Plane();
+        var planeXmax = new CANNON.RigidBody(0, planeShapeXmax);
+        planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
+        planeXmax.position.set(5,0,0);
+        world.add(planeXmax);
+
+        // Plane -y
+        var planeShapeYmin = new CANNON.Plane();
+        var planeYmin = new CANNON.RigidBody(0, planeShapeYmin);
+        planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+        planeYmin.position.set(0,-5,0);
+        world.add(planeYmin);
+
+        // Plane +y
+        var planeShapeYmax = new CANNON.Plane();
+        var planeYmax = new CANNON.RigidBody(0, planeShapeYmax);
+        planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
+        planeYmax.position.set(0,5,0);
+        world.add(planeYmax);
+
+        var bodies = [];
+        var i = 0;
+        interval = setInterval(function(){
+            // Sphere
+            i++;
+            var sphereShape = new CANNON.Sphere(size);
+            var b1 = new CANNON.RigidBody(5,sphereShape);
+            b1.position.set(2*size*Math.sin(i),2*size*Math.cos(i),7*2*size);
+            world.add(b1);
+            demo.addVisual(b1);
+            bodies.push(b1);
+
+            if(bodies.length>80){
                 var b = bodies.shift();
-                app.removeVisual(b);
+                demo.removeVisual(b);
                 world.remove(b);
-                /*clearInterval(interval);*/
-              }
-            },100);
-        });
-      
-      demo.start();
-            
+            }
+        },100);
+    });
+
+    demo.start();
+
     </script>
-  </body>
+</body>
 </html>

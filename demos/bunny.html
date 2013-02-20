@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>cannon.js - bunny demo</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="style.css" type="text/css"/>
+    </head>
+    <body>
+        <script src="../build/cannon.js"></script>
+        <script src="../build/cannon.demo.js"></script>
+        <script src="../libs/dat.gui.js"></script>
+        <script src="../libs/Three.js"></script>
+        <script src="../libs/Detector.js"></script>
+        <script src="../libs/Stats.js"></script>
+        <script src="../libs/smoothie.js"></script>
+        <script src="bunny.js"></script>
+        <script>
+
+        var demo = new CANNON.Demo();
+
+        // Parameters for transforming the loaded model
+        var size = 1;
+        var scale = 20;
+        var offset = new CANNON.Vec3(0.04,0.15,0.01); // to apply before scale
+        var compoundOffset = new CANNON.Vec3(0,-0.9,0.1);
+
+        demo.addScene("Bunny",function(){
+
+            var world = demo.getWorld();
+
+            world.gravity.set(0,0,-20);
+            world.broadphase = new CANNON.NaiveBroadphase();
+            world.solver.iterations = 20;
+            world.defaultContactMaterial.contactEquationStiffness = 1e10;
+            world.defaultContactMaterial.contactEquationRegularizationTime = 10;
+
+            // Constructs a normal given 3 vertices
+            var ab = new CANNON.Vec3();
+            var cb = new CANNON.Vec3();
+            function normal( va, vb, vc, target ) {
+                vb.vsub(va,ab);
+                vc.vsub(vb,cb);
+                cb.cross(ab,target);
+                if ( !target.isZero() ) {
+                    target.normalize();
+                }
+            }
+
+            var compound = new CANNON.Compound();
+            for(var i=0; i<bunny.length; i++){
+                //if(i==8 || i==3) continue; // These parts seem to be dead
+                var rawVerts = bunny[i].verts;
+                var rawFaces = bunny[i].faces;
+
+                var verts=[], faces=[], normals=[];
+
+                // Get vertices
+                for(var j=0; j<rawVerts.length; j+=3){
+                    verts.push(new CANNON.Vec3( scale*(rawVerts[j]+offset.x),
+                                                scale*(rawVerts[j+1]+offset.y),
+                                                scale*(rawVerts[j+2]+offset.z)));
+                }
+
+                // Get faces
+                for(var j=0; j<rawFaces.length; j+=3){
+                    faces.push([rawFaces[j+1],rawFaces[j],rawFaces[j+2]]);
+                }
+
+                // Compute normals
+                for(var j=0; j<faces.length; j++){
+                    var va = verts[faces[j][0]];
+                    var vb = verts[faces[j][1]];
+                    var vc = verts[faces[j][2]];
+                    var n = new CANNON.Vec3();
+                    normal(va,vb,vc,n);
+                    normals.push(n);
+                }
+
+                // Construct polyhedron
+                var bunnyPart = new CANNON.ConvexPolyhedron(verts,faces,normals);
+
+                var centerPoint = bunnyPart.getAveragePointLocal();
+                bunnyPart.transformAllPoints(centerPoint.negate());
+
+                // Add to compound
+                compound.addChild(bunnyPart,centerPoint.vadd(compoundOffset));
+            }
+
+            // Create body
+            var bunnyBody = new CANNON.RigidBody(1,compound);
+            bunnyBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+            var z180 = new CANNON.Quaternion();
+            z180.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI);
+            bunnyBody.quaternion = z180.mult(bunnyBody.quaternion);
+            world.add(bunnyBody);
+            demo.addVisual(bunnyBody);
+
+            // ground plane
+            var groundShape = new CANNON.Plane();
+            var groundBody = new CANNON.RigidBody(0,groundShape);
+            groundBody.position.set(0,0,-5);
+            world.add(groundBody);
+            demo.addVisual(groundBody);
+
+        });
+
+        demo.start();
+
+        </script>
+    </body>
+</html>

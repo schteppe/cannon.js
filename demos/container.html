@@ -1,9 +1,9 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>cannon.js - container demo</title>
     <meta charset="utf-8">
-    <style>* {margin:0;padding:0}</style>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -12,88 +12,89 @@
     <script src="../libs/Three.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
     <script>
+
+     /**
+      * A container filled with spheres.
+      */
 
       var demo = new CANNON.Demo();
       var nx=4, ny=4;
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,4);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,8);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,15);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,20);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,25);
-        });
-      
-      demo.addScene(function(app){
-          createContainer(app,nx,ny,30);
-        });
+
+      // Test scalability - add scenes for different number of spheres
+      demo.addScene((nx*ny*4)+ " spheres", function(){   createContainer(demo,nx,ny,4);    });
+      demo.addScene((nx*ny*8)+ " spheres", function(){   createContainer(demo,nx,ny,8);    });
+      demo.addScene((nx*ny*15)+" spheres", function(){   createContainer(demo,nx,ny,15);   });
+      demo.addScene((nx*ny*20)+" spheres", function(){   createContainer(demo,nx,ny,20);   });
+      demo.addScene((nx*ny*25)+" spheres", function(){   createContainer(demo,nx,ny,25);   });
+      demo.addScene((nx*ny*30)+" spheres", function(){   createContainer(demo,nx,ny,30);   });
       
       demo.start();
       
-      function createContainer(app,nx,ny,nz){
-      
-        console.log((nx*ny*nz)+" spheres");
+      function createContainer(demo,nx,ny,nz){
       
         // Create world
-        var world = new CANNON.World();
-        app.setWorld(world);
-        world.gravity.set(0,0,-40);
-        world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 5;
-      
+        var world = demo.getWorld();
+
+        // Tweak contact properties.
+        world.defaultContactMaterial.contactEquationStiffness = 1e11; // Contact stiffness - use to make softer/harder contacts
+        world.defaultContactMaterial.contactEquationRegularizationTime = 2; // Stabilization time in number of timesteps
+        
+        // Max solver iterations: Use more for better force propagation, but keep in mind that it's not very computationally cheap!
+        world.solver.iterations = 10;
+
+        world.gravity.set(0,0,-30);
+
+        // Since we have many bodies and they don't move very much, we can use the less accurate quaternion normalization
+        world.quatNormalizeFast = true;
+        world.quatNormalizeSkip = 8; // ...and we do not have to normalize every step.
+
         // Materials
         var stone = new CANNON.Material('stone');
         var stone_stone = new CANNON.ContactMaterial(stone,
       					       stone,
       					       0.3, // friction
-      					       0.3  // Restitution
+      					       0.2  // Restitution
       					       );
         world.addContactMaterial(stone_stone);
       
         // ground plane
-        var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+        var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape,stone);
         world.add(groundBody);
-        app.addVisual(groundBody);
+        demo.addVisual(groundBody);
       
         // plane -x
-        var planeShapeXmin = new CANNON.Plane(new CANNON.Vec3(0,1,0));
+        var planeShapeXmin = new CANNON.Plane();
         var planeXmin = new CANNON.RigidBody(0, planeShapeXmin,stone);
-        planeXmin.position.set(0,-5,0);
+        planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
+        planeXmin.position.set(-5,0,0);
         world.add(planeXmin);
       
         // Plane +x
-        var planeShapeXmax = new CANNON.Plane(new CANNON.Vec3(0,-1,0));
+        var planeShapeXmax = new CANNON.Plane();
         var planeXmax = new CANNON.RigidBody(0, planeShapeXmax,stone);
-        planeXmax.position.set(0,5,0);
+        planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
+        planeXmax.position.set(5,0,0);
         world.add(planeXmax);
       
         // Plane -y
-        var planeShapeYmin = new CANNON.Plane(new CANNON.Vec3(1,0,0));
+        var planeShapeYmin = new CANNON.Plane();
         var planeYmin = new CANNON.RigidBody(0, planeShapeYmin,stone);
-        planeYmin.position.set(-5,0,0);
+        planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+        planeYmin.position.set(0,-5,0);
         world.add(planeYmin);
-      
+
         // Plane +y
-        var planeShapeYmax = new CANNON.Plane(new CANNON.Vec3(-1,0,0));
+        var planeShapeYmax = new CANNON.Plane();
         var planeYmax = new CANNON.RigidBody(0, planeShapeYmax, stone);
-        planeYmax.position.set(5,0,0);
+        planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
+        planeYmax.position.set(0,5,0);
         world.add(planeYmax);
       
-        // Sphere on plane
-        var rand = 0.01;
+        // Create spheres
+        var rand = 0.1;
         var h = 0;
         var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
         for(var i=0; i<nx; i++){
@@ -104,7 +105,7 @@
       				      j*2-ny*0.5 + (Math.random()-0.5)*rand,
       				      1+k*2.1+h+(i+j)*0.0);
               world.add(sphereBody);
-      	      app.addVisual(sphereBody);
+      	      demo.addVisual(sphereBody);
             }
           }
         }

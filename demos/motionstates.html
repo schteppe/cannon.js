@@ -1,9 +1,9 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>cannon.js - motion states demo</title>
     <meta charset="utf-8">
-    <style>* {margin:0;padding:0}</style>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -12,6 +12,7 @@
     <script src="../libs/Three.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
     <script>
 
       /**
@@ -20,9 +21,8 @@
       var demo = new CANNON.Demo();
       var size = 2;
       
-      // Sphere / box side
-      demo.addScene(function(app){
-          var world = setupWorld(app);
+      demo.addScene("Moving box",function(){
+          var world = setupWorld(demo);
       
           var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
           var sphereShape = new CANNON.Sphere(size);
@@ -30,12 +30,13 @@
           var mass = 5, boxMass = 0;
       
           // Kinematic Box
-          // Does only collide with dynamic bodies, but does not respond to any force. Can be controlled by setting its velocity.
+          // Does only collide with dynamic bodies, but does not respond to any force.
+          // Its movement can be controlled by setting its velocity.
           var b1 = new CANNON.RigidBody(boxMass,boxShape);
           b1.motionstate = CANNON.Body.KINEMATIC;
           b1.position.set(0,0,0.5*size);
           world.add(b1);
-          app.addVisual(b1);
+          demo.addVisual(b1);
       
           // To control the box movement we must set its velocity
           b1.velocity.set(0,0,5);
@@ -51,27 +52,28 @@
           var b2 = new CANNON.RigidBody(mass,sphereShape);
           b2.position.set(0,0,3*size);
           world.add(b2);
-          app.addVisual(b2);
+          demo.addVisual(b2);
         });
       
       demo.start();
       
-      function setupWorld(app){
-        // Create world
-        var world = new CANNON.World();
-        app.setWorld(world);
-        world.gravity.set(0,0,-50);
+      function setupWorld(demo){
+        var world = demo.getWorld();
+        world.gravity.set(0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
-      
+
+        world.defaultContactMaterial.contactEquationStiffness = 1e8;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 10;
+
         // Static ground plane
         // Static bodies only interacts with dynamic bodies. Velocity is always zero.
-        var groundShape = new CANNON.Plane(new CANNON.Vec3(0,0,1));
+        var groundShape = new CANNON.Plane();
         var mass = 0; // mass=0 will produce a static body automatically
         var groundBody = new CANNON.RigidBody(mass,groundShape);
         world.add(groundBody);
-        app.addVisual(groundBody);
-      
+        demo.addVisual(groundBody);
+
         return world;
       }
             
