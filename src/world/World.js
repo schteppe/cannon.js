@@ -405,6 +405,8 @@ CANNON.World.prototype._now = function(){
  * @brief Step the simulation
  * @param float dt
  */
+var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
+    World_step_preStepEvent = {type:"preStep"};
 CANNON.World.prototype.step = function(dt){
     var world = this,
         that = this,
@@ -587,7 +589,7 @@ CANNON.World.prototype.step = function(dt){
         }
     }
 
-    that.dispatchEvent({type:"preStep"});
+    this.dispatchEvent(World_step_postStepEvent);
 
     // Invoke pre-step callbacks
     for(var i=0; i!==N; i++){
@@ -659,7 +661,7 @@ CANNON.World.prototype.step = function(dt){
     this.time += dt;
     this.stepnumber += 1;
 
-    that.dispatchEvent({type:"postStep"});
+    this.dispatchEvent(World_step_postStepEvent);
 
     // Invoke post-step callbacks
     for(var i=0; i!==N; i++){
