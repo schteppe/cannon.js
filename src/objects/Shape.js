@@ -74,22 +74,23 @@ CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
  * @brief Calculates inertia in a specified frame for this shape.
  * @return CANNON.Vec3
  */
+var Shape_calculateTransformedInertia_localInertia = new CANNON.Vec3();
+var Shape_calculateTransformedInertia_worldInertia = new CANNON.Vec3();
 CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
-  if(target==undefined)
-    target = new CANNON.Vec3();
+    target = target || new CANNON.Vec3();
 
-  // Compute inertia in the world frame
-  quat.normalize();
-  var localInertia = new CANNON.Vec3();
-  this.calculateLocalInertia(mass,localInertia);
+    // Compute inertia in the world frame
+    //quat.normalize();
+    var localInertia = Shape_calculateTransformedInertia_localInertia;
+    var worldInertia = Shape_calculateTransformedInertia_worldInertia;
+    this.calculateLocalInertia(mass,localInertia);
 
-  // @todo Is this rotation OK? Check!
-  var worldInertia = quat.vmult(localInertia);
-  target.x = Math.abs(worldInertia.x);
-  target.y = Math.abs(worldInertia.y);
-  target.z = Math.abs(worldInertia.z);
-  return target;
-  //throw "calculateInertia() not implemented for shape type "+this.type;
+    // @todo Is this rotation OK? Check!
+    quat.vmult(localInertia,worldInertia);
+    target.x = Math.abs(worldInertia.x);
+    target.y = Math.abs(worldInertia.y);
+    target.z = Math.abs(worldInertia.z);
+    return target;
 };
 
 // Calculates the local aabb and sets the result to .aabbmax and .aabbmin

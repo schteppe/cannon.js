@@ -1255,21 +1255,25 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
  */ 
-var va = new CANNON.Vec3();
-var vb = new CANNON.Vec3();
-var vaxvb = new CANNON.Vec3();
+var Quaternion_mult_va = new CANNON.Vec3();
+var Quaternion_mult_vb = new CANNON.Vec3();
+var Quaternion_mult_vaxvb = new CANNON.Vec3();
 CANNON.Quaternion.prototype.mult = function(q,target){
-    var w = this.w;
-    if(target==undefined)
-        target = new CANNON.Quaternion();
+    target = target || new CANNON.Quaternion();
+    var w = this.w,
+        va = Quaternion_mult_va,
+        vb = Quaternion_mult_vb,
+        vaxvb = Quaternion_mult_vaxvb;
     
     va.set(this.x,this.y,this.z);
     vb.set(q.x,q.y,q.z);
     target.w = w*q.w - va.dot(vb);
     va.cross(vb,vaxvb);
+
     target.x = w * vb.x + q.w*va.x + vaxvb.x;
     target.y = w * vb.y + q.w*va.y + vaxvb.y;
     target.z = w * vb.z + q.w*va.z + vaxvb.z;
+
     return target;
 };
 
@@ -1592,22 +1596,23 @@ CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
  * @brief Calculates inertia in a specified frame for this shape.
  * @return CANNON.Vec3
  */
+var Shape_calculateTransformedInertia_localInertia = new CANNON.Vec3();
+var Shape_calculateTransformedInertia_worldInertia = new CANNON.Vec3();
 CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
-  if(target==undefined)
-    target = new CANNON.Vec3();
+    target = target || new CANNON.Vec3();
 
-  // Compute inertia in the world frame
-  quat.normalize();
-  var localInertia = new CANNON.Vec3();
-  this.calculateLocalInertia(mass,localInertia);
+    // Compute inertia in the world frame
+    //quat.normalize();
+    var localInertia = Shape_calculateTransformedInertia_localInertia;
+    var worldInertia = Shape_calculateTransformedInertia_worldInertia;
+    this.calculateLocalInertia(mass,localInertia);
 
-  // @todo Is this rotation OK? Check!
-  var worldInertia = quat.vmult(localInertia);
-  target.x = Math.abs(worldInertia.x);
-  target.y = Math.abs(worldInertia.y);
-  target.z = Math.abs(worldInertia.z);
-  return target;
-  //throw "calculateInertia() not implemented for shape type "+this.type;
+    // @todo Is this rotation OK? Check!
+    quat.vmult(localInertia,worldInertia);
+    target.x = Math.abs(worldInertia.x);
+    target.y = Math.abs(worldInertia.y);
+    target.z = Math.abs(worldInertia.z);
+    return target;
 };
 
 // Calculates the local aabb and sets the result to .aabbmax and .aabbmin
@@ -1842,13 +1847,16 @@ CANNON.Particle.prototype.sleep = function(){
 */
 CANNON.Particle.prototype.sleepTick = function(time){
 	if(this.allowSleep){
-		if(this.sleepState==0 && this.velocity.norm()<this.sleepSpeedLimit){
+		var sleepState = this.sleepState;
+		var speedSquared = this.velocity.norm2();
+		var speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
+		if(sleepState==0 && speedSquared < speedLimitSquared){
 			this.sleepState = 1; // Sleepy
 			this.timeLastSleepy = time;
 			this.dispatchEvent({type:"sleepy"});
-		} else if(this.sleepState>0 && this.velocity.norm()>this.sleepSpeedLimit){
+		} else if(sleepState>0 && speedSquared > speedLimitSquared){
 			this.wakeUp(); // Wake up
-		} else if(this.sleepState==1 && (time - this.timeLastSleepy)>this.sleepTimeLimit){
+		} else if(sleepState==1 && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
 			this.sleepState = 2; // Sleeping
 			this.dispatchEvent({type:"sleep"});
 		}
@@ -3166,7 +3174,7 @@ CANNON.Solver.prototype.removeEquation = function(eq){
 };
 
 CANNON.Solver.prototype.removeAllEquations = function(){
-    this.equations = [];
+    this.equations.length = 0;
 };
 
 /*global CANNON:true */
@@ -3198,6 +3206,9 @@ CANNON.GSSolver = function(){
 };
 CANNON.GSSolver.prototype = new CANNON.Solver();
 
+var GSSolver_solve_lambda = []; // Just temporary number holders that we want to reuse each solve.
+var GSSolver_solve_invCs = [];
+var GSSolver_solve_Bs = [];
 CANNON.GSSolver.prototype.solve = function(dt,world){
 
     var d = this.d,
@@ -3214,20 +3225,20 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         h = dt;
 
     // Things that does not change during iteration can be computed once
-    var invCs = [];
-    var Bs = [];
+    var invCs = GSSolver_solve_invCs;
+    var Bs = GSSolver_solve_Bs;
 
     // Create array for lambdas
-    var lambda = [];
+    var lambda = GSSolver_solve_lambda;
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
         if(c.spookParamsNeedsUpdate){
             c.updateSpookParams(h);
             c.spookParamsNeedsUpdate = false;
         }
-        lambda.push(0.0);
-        Bs.push(c.computeB(h));
-        invCs.push(1.0 / c.computeC());
+        lambda[i] = 0.0;
+        Bs[i] = c.computeB(h);
+        invCs[i] = 1.0 / c.computeC();
     }
 
     var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
@@ -3826,6 +3837,8 @@ CANNON.World.prototype._now = function(){
  * @brief Step the simulation
  * @param float dt
  */
+var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
+    World_step_preStepEvent = {type:"preStep"};
 CANNON.World.prototype.step = function(dt){
     var world = this,
         that = this,
@@ -3840,7 +3853,11 @@ CANNON.World.prototype.step = function(dt){
         profilingStart,
         cm = this.collision_matrix,
         constraints = this.constraints,
-        FrictionEquation = CANNON.FrictionEquation;
+        FrictionEquation = CANNON.FrictionEquation,
+        gnorm = gravity.norm(),
+        gx = gravity.x,
+        gy = gravity.y,
+        gz = gravity.z;
 
     if(doProfiling) profilingStart = now();
 
@@ -3850,9 +3867,6 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Add gravity to all objects
-    var gx = gravity.x,
-        gy = gravity.y,
-        gz = gravity.z;
     for(var i=0; i!==N; i++){
         var bi = bodies[i];
         if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
@@ -3928,7 +3942,7 @@ CANNON.World.prototype.step = function(dt){
             if(mu > 0){
 
                 // Create 2 tangent equations
-                var mug = mu*gravity.norm();
+                var mug = mu*gnorm;
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass != 0) reducedMass = 1/reducedMass;
                 var pool = this.frictionEquationPool;
@@ -3985,7 +3999,7 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Solve the constrained system
-    solver.solve(dt,world);
+    solver.solve(dt,this);
 
     if(doProfiling) profile.solve = now() - profilingStart;
 
@@ -4008,7 +4022,7 @@ CANNON.World.prototype.step = function(dt){
         }
     }
 
-    that.dispatchEvent({type:"preStep"});
+    this.dispatchEvent(World_step_postStepEvent);
 
     // Invoke pre-step callbacks
     for(var i=0; i!==N; i++){
@@ -4023,11 +4037,12 @@ CANNON.World.prototype.step = function(dt){
     var q = temp.step_q; 
     var w = temp.step_w;
     var wq = temp.step_wq;
-    var stepnumber = world.stepnumber;
+    var stepnumber = this.stepnumber;
     var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
+
     for(var i=0; i!==N; i++){
         var b = bodies[i],
             force = b.force,
@@ -4048,7 +4063,7 @@ CANNON.World.prototype.step = function(dt){
                 angularVelo.y += tau.y * invInertia.y * dt;
                 angularVelo.z += tau.z * invInertia.z * dt;
             }
-          
+            
             // Use new velocity  - leap frog
             if(!b.isSleeping()){
                 pos.x += velo.x * dt;
@@ -4056,7 +4071,7 @@ CANNON.World.prototype.step = function(dt){
                 pos.z += velo.z * dt;
 
                 if(b.angularVelocity){
-                    w.set(  angularVelo.x, angularVelo.y, angularVelo.z, 0);
+                    w.set(angularVelo.x, angularVelo.y, angularVelo.z, 0);
                     w.mult(quat,wq);
                     quat.x += half_dt * wq.x;
                     quat.y += half_dt * wq.y;
@@ -4080,7 +4095,7 @@ CANNON.World.prototype.step = function(dt){
     this.time += dt;
     this.stepnumber += 1;
 
-    that.dispatchEvent({type:"postStep"});
+    this.dispatchEvent(World_step_postStepEvent);
 
     // Invoke post-step callbacks
     for(var i=0; i!==N; i++){
@@ -4099,7 +4114,7 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Sleeping update
-    if(world.allowSleep){
+    if(this.allowSleep){
         for(var i=0; i!==N; i++){
            bodies[i].sleepTick(this.time);
         }

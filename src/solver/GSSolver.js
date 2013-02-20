@@ -27,6 +27,9 @@ CANNON.GSSolver = function(){
 };
 CANNON.GSSolver.prototype = new CANNON.Solver();
 
+var GSSolver_solve_lambda = []; // Just temporary number holders that we want to reuse each solve.
+var GSSolver_solve_invCs = [];
+var GSSolver_solve_Bs = [];
 CANNON.GSSolver.prototype.solve = function(dt,world){
 
     var d = this.d,
@@ -43,20 +46,20 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         h = dt;
 
     // Things that does not change during iteration can be computed once
-    var invCs = [];
-    var Bs = [];
+    var invCs = GSSolver_solve_invCs;
+    var Bs = GSSolver_solve_Bs;
 
     // Create array for lambdas
-    var lambda = [];
+    var lambda = GSSolver_solve_lambda;
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
         if(c.spookParamsNeedsUpdate){
             c.updateSpookParams(h);
             c.spookParamsNeedsUpdate = false;
         }
-        lambda.push(0.0);
-        Bs.push(c.computeB(h));
-        invCs.push(1.0 / c.computeC());
+        lambda[i] = 0.0;
+        Bs[i] = c.computeB(h);
+        invCs[i] = 1.0 / c.computeC();
     }
 
     var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;

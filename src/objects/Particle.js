@@ -158,13 +158,16 @@ CANNON.Particle.prototype.sleep = function(){
 */
 CANNON.Particle.prototype.sleepTick = function(time){
 	if(this.allowSleep){
-		if(this.sleepState==0 && this.velocity.norm()<this.sleepSpeedLimit){
+		var sleepState = this.sleepState;
+		var speedSquared = this.velocity.norm2();
+		var speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
+		if(sleepState==0 && speedSquared < speedLimitSquared){
 			this.sleepState = 1; // Sleepy
 			this.timeLastSleepy = time;
 			this.dispatchEvent({type:"sleepy"});
-		} else if(this.sleepState>0 && this.velocity.norm()>this.sleepSpeedLimit){
+		} else if(sleepState>0 && speedSquared > speedLimitSquared){
 			this.wakeUp(); // Wake up
-		} else if(this.sleepState==1 && (time - this.timeLastSleepy)>this.sleepTimeLimit){
+		} else if(sleepState==1 && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
 			this.sleepState = 2; // Sleeping
 			this.dispatchEvent({type:"sleep"});
 		}

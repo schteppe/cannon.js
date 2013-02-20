@@ -49,7 +49,10 @@ function TimeSeries(options) {
   this.options = options;
   this.data = [];
   this.label = options.label || "";
-  
+
+  this.maxDataLength = options.maxDataLength || 1000;
+  this.dataPool = [];
+
   this.maxValue = Number.NaN; // The maximum value ever seen in this time series.
   this.minValue = Number.NaN; // The minimum value ever seen in this time series.
 
@@ -71,9 +74,14 @@ TimeSeries.prototype.resetBounds = function() {
 
 TimeSeries.prototype.append = function(timestamp, value) {
     this.lastTimeStamp = timestamp;
-    this.data.push([timestamp, value]);
+    var newData = this.dataPool.length ? this.dataPool.pop() : [timestamp, value];
+    newData[0] = timestamp;
+    newData[1] = value;
+    this.data.push(newData);
     this.maxValue = !isNaN(this.maxValue) ? Math.max(this.maxValue, value) : value;
     this.minValue = !isNaN(this.minValue) ? Math.min(this.minValue, value) : value;
+    while(this.data.length > this.maxDataLength)
+        this.dataPool.push(this.data.shift());
 };
 
 function SmoothieChart(options) {

@@ -118,21 +118,25 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
  */ 
-var va = new CANNON.Vec3();
-var vb = new CANNON.Vec3();
-var vaxvb = new CANNON.Vec3();
+var Quaternion_mult_va = new CANNON.Vec3();
+var Quaternion_mult_vb = new CANNON.Vec3();
+var Quaternion_mult_vaxvb = new CANNON.Vec3();
 CANNON.Quaternion.prototype.mult = function(q,target){
-    var w = this.w;
-    if(target==undefined)
-        target = new CANNON.Quaternion();
+    target = target || new CANNON.Quaternion();
+    var w = this.w,
+        va = Quaternion_mult_va,
+        vb = Quaternion_mult_vb,
+        vaxvb = Quaternion_mult_vaxvb;
     
     va.set(this.x,this.y,this.z);
     vb.set(q.x,q.y,q.z);
     target.w = w*q.w - va.dot(vb);
     va.cross(vb,vaxvb);
+
     target.x = w * vb.x + q.w*va.x + vaxvb.x;
     target.y = w * vb.y + q.w*va.y + vaxvb.y;
     target.z = w * vb.z + q.w*va.z + vaxvb.z;
+
     return target;
 };
 

@@ -405,6 +405,8 @@ CANNON.World.prototype._now = function(){
  * @brief Step the simulation
  * @param float dt
  */
+var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
+    World_step_preStepEvent = {type:"preStep"};
 CANNON.World.prototype.step = function(dt){
     var world = this,
         that = this,
@@ -419,7 +421,11 @@ CANNON.World.prototype.step = function(dt){
         profilingStart,
         cm = this.collision_matrix,
         constraints = this.constraints,
-        FrictionEquation = CANNON.FrictionEquation;
+        FrictionEquation = CANNON.FrictionEquation,
+        gnorm = gravity.norm(),
+        gx = gravity.x,
+        gy = gravity.y,
+        gz = gravity.z;
 
     if(doProfiling) profilingStart = now();
 
@@ -429,9 +435,6 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Add gravity to all objects
-    var gx = gravity.x,
-        gy = gravity.y,
-        gz = gravity.z;
     for(var i=0; i!==N; i++){
         var bi = bodies[i];
         if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
@@ -507,7 +510,7 @@ CANNON.World.prototype.step = function(dt){
             if(mu > 0){
 
                 // Create 2 tangent equations
-                var mug = mu*gravity.norm();
+                var mug = mu*gnorm;
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass != 0) reducedMass = 1/reducedMass;
                 var pool = this.frictionEquationPool;
@@ -564,7 +567,7 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Solve the constrained system
-    solver.solve(dt,world);
+    solver.solve(dt,this);
 
     if(doProfiling) profile.solve = now() - profilingStart;
 
@@ -587,7 +590,7 @@ CANNON.World.prototype.step = function(dt){
         }
     }
 
-    that.dispatchEvent({type:"preStep"});
+    this.dispatchEvent(World_step_postStepEvent);
 
     // Invoke pre-step callbacks
     for(var i=0; i!==N; i++){
@@ -602,11 +605,12 @@ CANNON.World.prototype.step = function(dt){
     var q = temp.step_q; 
     var w = temp.step_w;
     var wq = temp.step_wq;
-    var stepnumber = world.stepnumber;
+    var stepnumber = this.stepnumber;
     var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
+
     for(var i=0; i!==N; i++){
         var b = bodies[i],
             force = b.force,
@@ -627,7 +631,7 @@ CANNON.World.prototype.step = function(dt){
                 angularVelo.y += tau.y * invInertia.y * dt;
                 angularVelo.z += tau.z * invInertia.z * dt;
             }
-          
+            
             // Use new velocity  - leap frog
             if(!b.isSleeping()){
                 pos.x += velo.x * dt;
@@ -635,7 +639,7 @@ CANNON.World.prototype.step = function(dt){
                 pos.z += velo.z * dt;
 
                 if(b.angularVelocity){
-                    w.set(  angularVelo.x, angularVelo.y, angularVelo.z, 0);
+                    w.set(angularVelo.x, angularVelo.y, angularVelo.z, 0);
                     w.mult(quat,wq);
                     quat.x += half_dt * wq.x;
                     quat.y += half_dt * wq.y;
@@ -659,7 +663,7 @@ CANNON.World.prototype.step = function(dt){
     this.time += dt;
     this.stepnumber += 1;
 
-    that.dispatchEvent({type:"postStep"});
+    this.dispatchEvent(World_step_postStepEvent);
 
     // Invoke post-step callbacks
     for(var i=0; i!==N; i++){
@@ -678,7 +682,7 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Sleeping update
-    if(world.allowSleep){
+    if(this.allowSleep){
         for(var i=0; i!==N; i++){
            bodies[i].sleepTick(this.time);
         }
