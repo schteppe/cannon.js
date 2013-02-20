@@ -289,7 +289,7 @@ CANNON.Ray = function(origin, direction){
             // Checking boundingSphere
 
             var distance = distanceFromIntersection( this.origin, this.direction, position );
-            if ( distance > shape.boundingSphereRadius() ) {
+            if ( distance > shape.getBoundingSphereRadius() ) {
                 return intersects;
             }
 
@@ -297,7 +297,7 @@ CANNON.Ray = function(origin, direction){
             var dot, scalar, faces = shape.faces, vertices = shape.vertices, normals = shape.faceNormals;
 
 
-            for ( fi = 0; fi < faces.length; fi++ ) {
+            for (var fi = 0; fi < faces.length; fi++ ) {
 
                 var face = faces[ fi ];
                 var faceNormal = normals[ fi ];
@@ -1454,6 +1454,71 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
 };/*global CANNON:true */
 
 /**
+ * @class CANNON.EventTarget
+ * @see https://github.com/mrdoob/eventtarget.js/
+ */
+CANNON.EventTarget = function () {
+    var listeners = {};
+    this.addEventListener = function ( type, listener ) {
+        if ( listeners[ type ] == undefined ) {
+            listeners[ type ] = [];
+        }
+        if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+            listeners[ type ].push( listener );
+        }
+    };
+    this.dispatchEvent = function ( event ) {
+        for ( var listener in listeners[ event.type ] ) {
+            listeners[ event.type ][ listener ]( event );
+        }
+    };
+    this.removeEventListener = function ( type, listener ) {
+        var index = listeners[ type ].indexOf( listener );
+        if ( index !== - 1 ) {
+            listeners[ type ].splice( index, 1 );
+        }
+    };
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.ObjectPool
+ * @brief For pooling objects that can be reused.
+ */
+CANNON.ObjectPool = function(){
+    this.objects = [];
+    this.type = Object;
+};
+
+CANNON.ObjectPool.prototype.release = function(){
+    for(var i in arguments)
+        this.objects.push(arguments[i]);
+};
+
+CANNON.ObjectPool.prototype.get = function(){
+    if(this.objects.length===0)
+        return this.constructObject();
+    else
+        return this.objects.pop();
+};
+
+CANNON.ObjectPool.prototype.constructObject = function(){
+    throw new Error("constructObject() not implemented in this ObjectPool subclass yet!");
+};/*global CANNON:true */
+
+/**
+ * @class CANNON.Vec3Pool
+ */
+CANNON.Vec3Pool = function(){
+    CANNON.ObjectPool.call(this);
+    this.type = CANNON.Vec3;
+};
+CANNON.Vec3Pool.prototype = new CANNON.ObjectPool();
+
+CANNON.Vec3Pool.prototype.constructObject = function(){
+    return new CANNON.Vec3();
+};/*global CANNON:true */
+
+/**
  * @class CANNON.Shape
  * @author schteppe
  * @brief Base class for shapes
@@ -1485,6 +1550,19 @@ CANNON.Shape.prototype.constructor = CANNON.Shape;
  */
 CANNON.Shape.prototype.computeBoundingSphereRadius = function(){
   throw "computeBoundingSphereRadius() not implemented for shape type "+this.type;
+};
+
+/**
+ * @method getBoundingSphereRadius
+ * @memberof CANNON.Shape
+ * @brief Returns the bounding sphere radius. The result is stored in the property .boundingSphereRadius
+ * @return float
+ */
+CANNON.Shape.prototype.getBoundingSphereRadius = function(){
+	if (this.boundingSphereRadiusNeedsUpdate) {
+		this.computeBoundingSphereRadius();
+	}
+	return this.boundingSphereRadius;
 };
 
 /**
@@ -1565,8 +1643,6 @@ CANNON.Body = function(type){
 
     this.type = type;
 
-    var that = this;
-
     /**
     * @property CANNON.World world
     * @memberof CANNON.Body
@@ -1623,8 +1699,6 @@ CANNON.Particle = function(mass,material){
         throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
 
     CANNON.Body.call(this,"particle");
-
-    var that = this;
 
     /**
     * @property CANNON.Vec3 position
@@ -1700,27 +1774,6 @@ CANNON.Particle = function(mass,material){
     this.sleepState = 0;
 
     /**
-    * @method isAwake
-    * @memberof CANNON.Particle
-    * @return bool
-    */
-    this.isAwake = function(){ return that.sleepState == 0; }
-
-    /**
-    * @method isSleepy
-    * @memberof CANNON.Particle
-    * @return bool
-    */
-    this.isSleepy = function(){ return that.sleepState == 1; }
-
-    /**
-    * @method isSleeping
-    * @memberof CANNON.Particle
-    * @return bool
-    */
-    this.isSleeping = function(){ return that.sleepState == 2; }
-
-    /**
     * @property float sleepSpeedLimit
     * @memberof CANNON.Particle
     * @brief If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
@@ -1736,45 +1789,70 @@ CANNON.Particle = function(mass,material){
 
     this.timeLastSleepy = 0;
 
-    /**
-    * @method wakeUp
-    * @memberof CANNON.Particle
-    * @brief Wake the body up.
-    */
-    this.wakeUp = function(){
-        that.sleepState = 0;
-        that.dispatchEvent({type:"wakeup"});
-    };
+};
 
-    /**
-    * @method sleep
-    * @memberof CANNON.Particle
-    * @brief Force body sleep
-    */
-    this.sleep = function(){
-        that.sleepState = 2;
-    };
+CANNON.Particle.prototype = new CANNON.Body();
+CANNON.Particle.prototype.constructor = CANNON.Particle;
 
-    /**
-    * @method sleepTick
-    * @memberof CANNON.Particle
-    * @param float time The world time in seconds
-    * @brief Called every timestep to update internal sleep timer and change sleep state if needed.
-    */
-    this.sleepTick = function(time){
-        if(that.allowSleep){
-          if(that.sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
-              that.sleepState = 1; // Sleepy
-              timeLastSleepy = time;
-              that.dispatchEvent({type:"sleepy"});
-          } else if(that.sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
-              that.wakeUp(); // Wake up
-          } else if(that.sleepState==1 && (time - timeLastSleepy)>that.sleepTimeLimit){
-              that.sleepState = 2; // Sleeping
-              that.dispatchEvent({type:"sleep"});
-          }
-        }
-    };
+/**
+* @method isAwake
+* @memberof CANNON.Particle
+* @return bool
+*/
+CANNON.Particle.prototype.isAwake = function(){ return this.sleepState == 0; }
+
+/**
+* @method isSleepy
+* @memberof CANNON.Particle
+* @return bool
+*/
+CANNON.Particle.prototype.isSleepy = function(){ return this.sleepState == 1; }
+
+/**
+* @method isSleeping
+* @memberof CANNON.Particle
+* @return bool
+*/
+CANNON.Particle.prototype.isSleeping = function(){ return this.sleepState == 2; }
+
+/**
+* @method wakeUp
+* @memberof CANNON.Particle
+* @brief Wake the body up.
+*/
+CANNON.Particle.prototype.wakeUp = function(){
+	this.sleepState = 0;
+	this.dispatchEvent({type:"wakeup"});
+};
+
+/**
+* @method sleep
+* @memberof CANNON.Particle
+* @brief Force body sleep
+*/
+CANNON.Particle.prototype.sleep = function(){
+	this.sleepState = 2;
+};
+
+/**
+* @method sleepTick
+* @memberof CANNON.Particle
+* @param float time The world time in seconds
+* @brief Called every timestep to update internal sleep timer and change sleep state if needed.
+*/
+CANNON.Particle.prototype.sleepTick = function(time){
+	if(this.allowSleep){
+		if(this.sleepState==0 && this.velocity.norm()<this.sleepSpeedLimit){
+			this.sleepState = 1; // Sleepy
+			this.timeLastSleepy = time;
+			this.dispatchEvent({type:"sleepy"});
+		} else if(this.sleepState>0 && this.velocity.norm()>this.sleepSpeedLimit){
+			this.wakeUp(); // Wake up
+		} else if(this.sleepState==1 && (time - this.timeLastSleepy)>this.sleepTimeLimit){
+			this.sleepState = 2; // Sleeping
+			this.dispatchEvent({type:"sleep"});
+		}
+	}
 };
 /*global CANNON:true */
 
@@ -1880,7 +1958,8 @@ CANNON.RigidBody = function(mass,shape,material){
     this.wlambda = new CANNON.Vec3();
 };
 
-CANNON.RigidBody.constructor = CANNON.RigidBody;
+CANNON.RigidBody.prototype = new CANNON.Particle(0);
+CANNON.RigidBody.prototype.constructor = CANNON.RigidBody;
 
 CANNON.RigidBody.prototype.calculateAABB = function(){
     this.shape.calculateWorldAABB(this.position,
@@ -3292,71 +3371,6 @@ CANNON.SplitSolver.prototype.solve = function(dt,world){
     return n;
 };
 /*global CANNON:true */
-
-/**
- * @class CANNON.EventTarget
- * @see https://github.com/mrdoob/eventtarget.js/
- */
-CANNON.EventTarget = function () {
-    var listeners = {};
-    this.addEventListener = function ( type, listener ) {
-        if ( listeners[ type ] == undefined ) {
-            listeners[ type ] = [];
-        }
-        if ( listeners[ type ].indexOf( listener ) === - 1 ) {
-            listeners[ type ].push( listener );
-        }
-    };
-    this.dispatchEvent = function ( event ) {
-        for ( var listener in listeners[ event.type ] ) {
-            listeners[ event.type ][ listener ]( event );
-        }
-    };
-    this.removeEventListener = function ( type, listener ) {
-        var index = listeners[ type ].indexOf( listener );
-        if ( index !== - 1 ) {
-            listeners[ type ].splice( index, 1 );
-        }
-    };
-};/*global CANNON:true */
-
-/**
- * @class CANNON.ObjectPool
- * @brief For pooling objects that can be reused.
- */
-CANNON.ObjectPool = function(){
-    this.objects = [];
-    this.type = Object;
-};
-
-CANNON.ObjectPool.prototype.release = function(){
-    for(var i in arguments)
-        this.objects.push(arguments[i]);
-};
-
-CANNON.ObjectPool.prototype.get = function(){
-    if(this.objects.length===0)
-        return this.constructObject();
-    else
-        return this.objects.pop();
-};
-
-CANNON.ObjectPool.prototype.constructObject = function(){
-    throw new Error("constructObject() not implemented in this ObjectPool subclass yet!");
-};/*global CANNON:true */
-
-/**
- * @class CANNON.Vec3Pool
- */
-CANNON.Vec3Pool = function(){
-    CANNON.ObjectPool.call(this);
-    this.type = CANNON.Vec3;
-};
-CANNON.Vec3Pool.prototype = new CANNON.ObjectPool();
-
-CANNON.Vec3Pool.prototype.constructObject = function(){
-    return new CANNON.Vec3();
-};/*global CANNON:true */
 
 /**
  * @class CANNON.Material
