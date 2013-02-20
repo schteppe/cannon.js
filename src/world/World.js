@@ -566,7 +566,7 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Solve the constrained system
-    solver.solve(dt,world);
+    solver.solve(dt,this);
 
     if(doProfiling) profile.solve = now() - profilingStart;
 
@@ -604,7 +604,7 @@ CANNON.World.prototype.step = function(dt){
     var q = temp.step_q; 
     var w = temp.step_w;
     var wq = temp.step_wq;
-    var stepnumber = world.stepnumber;
+    var stepnumber = this.stepnumber;
     var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
@@ -680,7 +680,7 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Sleeping update
-    if(world.allowSleep){
+    if(this.allowSleep){
         for(var i=0; i!==N; i++){
            bodies[i].sleepTick(this.time);
         }
