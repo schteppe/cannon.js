@@ -82,7 +82,7 @@ CANNON.Ray = function(origin, direction){
             // Checking boundingSphere
 
             var distance = distanceFromIntersection( this.origin, this.direction, position );
-            if ( distance > shape.boundingSphereRadius() ) {
+            if ( distance > shape.getBoundingSphereRadius() ) {
                 return intersects;
             }
 
@@ -90,7 +90,7 @@ CANNON.Ray = function(origin, direction){
             var dot, scalar, faces = shape.faces, vertices = shape.vertices, normals = shape.faceNormals;
 
 
-            for ( fi = 0; fi < faces.length; fi++ ) {
+            for (var fi = 0; fi < faces.length; fi++ ) {
 
                 var face = faces[ fi ];
                 var faceNormal = normals[ fi ];
