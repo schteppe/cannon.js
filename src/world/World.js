@@ -421,7 +421,11 @@ CANNON.World.prototype.step = function(dt){
         profilingStart,
         cm = this.collision_matrix,
         constraints = this.constraints,
-        FrictionEquation = CANNON.FrictionEquation;
+        FrictionEquation = CANNON.FrictionEquation,
+        gnorm = gravity.norm(),
+        gx = gravity.x,
+        gy = gravity.y,
+        gz = gravity.z;
 
     if(doProfiling) profilingStart = now();
 
@@ -431,9 +435,6 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Add gravity to all objects
-    var gx = gravity.x,
-        gy = gravity.y,
-        gz = gravity.z;
     for(var i=0; i!==N; i++){
         var bi = bodies[i];
         if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
@@ -509,7 +510,7 @@ CANNON.World.prototype.step = function(dt){
             if(mu > 0){
 
                 // Create 2 tangent equations
-                var mug = mu*gravity.norm();
+                var mug = mu*gnorm;
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass != 0) reducedMass = 1/reducedMass;
                 var pool = this.frictionEquationPool;
