@@ -155,16 +155,19 @@ CANNON.Particle = function(mass,material){
     */
     this.sleepTick = function(time){
         if(that.allowSleep){
-          if(that.sleepState==0 && that.velocity.norm()<that.sleepSpeedLimit){
-              that.sleepState = 1; // Sleepy
-              timeLastSleepy = time;
-              that.dispatchEvent({type:"sleepy"});
-          } else if(that.sleepState==1 && that.velocity.norm()>that.sleepSpeedLimit){
-              that.wakeUp(); // Wake up
-          } else if(that.sleepState==1 && (time - timeLastSleepy)>that.sleepTimeLimit){
-              that.sleepState = 2; // Sleeping
-              that.dispatchEvent({type:"sleep"});
-          }
+            var sleepState = that.sleepState;
+            var speedSquared = that.velocity.norm2();
+            var speedLimitSquared = Math.pow(that.sleepSpeedLimit,2);
+            if(sleepState==0 && speedSquared < speedLimitSquared){
+                that.sleepState = 1; // Sleepy
+                that.timeLastSleepy = time;
+                that.dispatchEvent({type:"sleepy"});
+            } else if(sleepState==1 && speedSquared > speedLimitSquared){
+                that.wakeUp(); // Wake up
+            } else if(sleepState==1 && (time - that.timeLastSleepy ) > that.sleepTimeLimit){
+                that.sleepState = 2; // Sleeping
+                that.dispatchEvent({type:"sleep"});
+            }
         }
     };
 };
