@@ -3095,7 +3095,7 @@ CANNON.Solver.prototype.removeEquation = function(eq){
 };
 
 CANNON.Solver.prototype.removeAllEquations = function(){
-    this.equations = [];
+    this.equations.length = 0;
 };
 
 /*global CANNON:true */
