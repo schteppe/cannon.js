@@ -508,15 +508,18 @@
             var c = colors[i%colors.length];
             lines[label] = new TimeSeries({
                 label : label,
-                fillStyle : "rgb("+c[0]+","+c[1]+","+c[2]+")"
+                fillStyle : "rgb("+c[0]+","+c[1]+","+c[2]+")",
+                maxDataLength : 500,
             });
             i++;
         }
+
         // Add a random value to each line every second
         world.addEventListener("postStep",function(evt) {
             for(var label in world.profile)
                 lines[label].append(world.time * 1000, world.profile[label]);
         });
+
         // Add to SmoothieChart
         var i=0;
         for(var label in world.profile){
