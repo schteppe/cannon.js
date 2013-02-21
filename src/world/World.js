@@ -670,6 +670,7 @@ CANNON.World.prototype.step = function(dt){
         b.force.set(0,0,0);
         if(b.tau) b.tau.set(0,0,0);
     }
+
     if(doProfiling) profile.integrate = now() - profilingStart;
 
     // Update world time

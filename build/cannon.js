@@ -4105,6 +4105,7 @@ CANNON.World.prototype.step = function(dt){
         b.force.set(0,0,0);
         if(b.tau) b.tau.set(0,0,0);
     }
+
     if(doProfiling) profile.integrate = now() - profilingStart;
 
     // Update world time
@@ -4983,7 +4984,7 @@ CANNON.ContactGenerator = function(){
         }
     
         // Swap back if we swapped bodies in the beginning
-        for(var i=0; swapped && i<result.length; i++)
+        for(var i=0, Nresults=result.length; swapped && i!=Nresults; i++)
             swapResult(result[i]);
     }
 
@@ -5010,10 +5011,10 @@ CANNON.ContactGenerator = function(){
         // Save old contact objects
         contactPointPool = oldcontacts;
 
-        for(var k=0; k<p1.length; k++){
+        for(var k=0, N=p1.length; k!=N; k++){
             // Get current collision indeces
             var bi = p1[k],
-            bj = p2[k];
+                bj = p2[k];
 
             // Get contacts
             nearPhase(  result,
