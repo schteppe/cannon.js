@@ -142,24 +142,25 @@ CANNON.ContactGenerator = function(){
 
         // Check side (plane) intersections
         var found = false;
-	// Store the resulting side penetration info
-	var side_ns = sphereBox_side_ns;
-	var side_ns1 = sphereBox_side_ns1;
-	var side_ns2 = sphereBox_side_ns2;
-	var side_h = null;
-	var side_penetrations = 0;
-	var side_dot1 = 0;
-	var side_dot2 = 0;
-	var side_distance = null;
+
+        // Store the resulting side penetration info
+        var side_ns = sphereBox_side_ns;
+        var side_ns1 = sphereBox_side_ns1;
+        var side_ns2 = sphereBox_side_ns2;
+        var side_h = null;
+        var side_penetrations = 0;
+        var side_dot1 = 0;
+        var side_dot2 = 0;
+        var side_distance = null;
         for(var idx=0,nsides=sides.length; idx!==nsides && found===false; idx++){
-	    // Get the plane side normal (ns)
+            // Get the plane side normal (ns)
             var ns = sphereBox_ns;
             sides[idx].copy(ns);
 
             var h = ns.norm();
             ns.normalize();
 
-	    // The normal/distance dot product tells which side of the plane we are
+            // The normal/distance dot product tells which side of the plane we are
             var dot = box_to_sphere.dot(ns);
 
             if(dot<h+R && dot>0){
@@ -175,22 +176,22 @@ CANNON.ContactGenerator = function(){
                 var dot1 = box_to_sphere.dot(ns1);
                 var dot2 = box_to_sphere.dot(ns2);
                 if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
-		    var dist = Math.abs(dot-h-R);
-		    if(side_distance===null || dist < side_distance){
-			side_distance = dist;
-			side_dot1 = dot1;
-			side_dot2 = dot2;
-			side_h = h;
-			ns.copy(side_ns);
-			ns1.copy(side_ns1);
-			ns2.copy(side_ns2);
-			side_penetrations++;
-		    }
+                    var dist = Math.abs(dot-h-R);
+                    if(side_distance===null || dist < side_distance){
+                    side_distance = dist;
+                    side_dot1 = dot1;
+                    side_dot2 = dot2;
+                    side_h = h;
+                    ns.copy(side_ns);
+                    ns1.copy(side_ns1);
+                    ns2.copy(side_ns2);
+                    side_penetrations++;
+                    }
                 }
             }
         }
-	if(side_penetrations){
-	    found = true;
+        if(side_penetrations){
+            found = true;
             var r = makeResult(bi,bj);
             side_ns.mult(-R,r.ri); // Sphere r
             side_ns.copy(r.ni);
@@ -201,7 +202,7 @@ CANNON.ContactGenerator = function(){
             side_ns2.mult(side_dot2,side_ns2);
             side_ns.vadd(side_ns2,r.rj);
             result.push(r);
-	}
+        }
 
         // Check corners
         var rj = v3pool.get();
@@ -292,8 +293,6 @@ CANNON.ContactGenerator = function(){
         }
         v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
     }
-
-
 
     var convex_to_sphere = new CANNON.Vec3();
     var sphereConvex_edge = new CANNON.Vec3();
