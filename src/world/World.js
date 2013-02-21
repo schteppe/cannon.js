@@ -407,11 +407,15 @@ CANNON.World.prototype._now = function(){
 var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
     World_step_preStepEvent = {type:"preStep"},
     World_step_oldContacts = [],
-    World_step_frictionEquationPool = [];
+    World_step_frictionEquationPool = [],
+    World_step_p1 = [],
+    World_step_p2 = [];
 CANNON.World.prototype.step = function(dt){
     var world = this,
         that = this,
         contacts = this.contacts,
+        p1 = World_step_p1,
+        p2 = World_step_p2,
         N = this.numObjects(),
         bodies = this.bodies,
         solver = this.solver,
@@ -450,9 +454,9 @@ CANNON.World.prototype.step = function(dt){
 
     // 1. Collision detection
     if(doProfiling) profilingStart = now();
-    var pairs = this.broadphase.collisionPairs(this);
-    var p1 = pairs[0];
-    var p2 = pairs[1];
+    p1.length = 0; // Clean up pair arrays from last step
+    p2.length = 0;
+    this.broadphase.collisionPairs(this,p1,p2);
     if(doProfiling) profile.broadphase = now() - profilingStart;
 
     this.collisionMatrixTick();
@@ -476,7 +480,6 @@ CANNON.World.prototype.step = function(dt){
     // Loop over all collisions
     if(doProfiling) profilingStart = now();
     var temp = this.temp;
-    var contacts = this.contacts;
     var ncontacts = contacts.length;
 
     // Transfer FrictionEquation from current list to the pool for reuse

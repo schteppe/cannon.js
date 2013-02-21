@@ -24,8 +24,7 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @param CANNON.World world
  * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
- CANNON.NaiveBroadphase.prototype.collisionPairs = function(world){
-    var pairs1 = [], pairs2 = [];
+ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var n = world.numObjects(),
     bodies = world.bodies;
 
@@ -134,5 +133,4 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
             }
         }
     }
-    return [pairs1,pairs2];
 };
