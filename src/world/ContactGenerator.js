@@ -856,8 +856,7 @@ CANNON.ContactGenerator = function(){
     this.getContacts = function(p1,p2,world,result,oldcontacts){
     
         // Save old contact objects
-        for(var i=0; oldcontacts && i<oldcontacts.length; i++)
-            contactPointPool.push(oldcontacts[i]);
+        contactPointPool = oldcontacts;
 
         for(var k=0; k<p1.length; k++){
             // Get current collision indeces

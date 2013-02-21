@@ -3841,10 +3841,12 @@ CANNON.World.prototype._now = function(){
  * @param float dt
  */
 var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
-    World_step_preStepEvent = {type:"preStep"};
+    World_step_preStepEvent = {type:"preStep"},
+    World_step_oldContacts = [];
 CANNON.World.prototype.step = function(dt){
     var world = this,
         that = this,
+        contacts = this.contacts,
         N = this.numObjects(),
         bodies = this.bodies,
         solver = this.solver,
@@ -3891,11 +3893,16 @@ CANNON.World.prototype.step = function(dt){
 
     // Generate contacts
     if(doProfiling) profilingStart = now();
-    var oldcontacts = this.contacts;
-    this.contacts = [];
+    var oldcontacts = World_step_oldContacts;
+    var NoldContacts = contacts.length;
+    
+    for(var i=0; i!==NoldContacts; i++)
+        oldcontacts.push(contacts[i]);
+    contacts.length = 0;
+
     this.contactgen.getContacts(p1,p2,
                                 this,
-                                this.contacts,
+                                contacts,
                                 oldcontacts // To be reused
                                 );
     if(doProfiling) profile.nearphase = now() - profilingStart;
@@ -4995,8 +5002,7 @@ CANNON.ContactGenerator = function(){
     this.getContacts = function(p1,p2,world,result,oldcontacts){
     
         // Save old contact objects
-        for(var i=0; oldcontacts && i<oldcontacts.length; i++)
-            contactPointPool.push(oldcontacts[i]);
+        contactPointPool = oldcontacts;
 
         for(var k=0; k<p1.length; k++){
             // Get current collision indeces
