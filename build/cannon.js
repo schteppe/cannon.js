@@ -3457,7 +3457,6 @@ CANNON.World = function(){
      */
     this.contacts = [];
     this.frictionEquations = [];
-    this.frictionEquationPool = [];
 
     /**
      * @property int quatNormalizeSkip
@@ -3842,7 +3841,8 @@ CANNON.World.prototype._now = function(){
  */
 var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
     World_step_preStepEvent = {type:"preStep"},
-    World_step_oldContacts = [];
+    World_step_oldContacts = [],
+    World_step_frictionEquationPool = [];
 CANNON.World.prototype.step = function(dt){
     var world = this,
         that = this,
@@ -3859,6 +3859,7 @@ CANNON.World.prototype.step = function(dt){
         cm = this.collision_matrix,
         constraints = this.constraints,
         FrictionEquation = CANNON.FrictionEquation,
+        frictionEquationPool = World_step_frictionEquationPool,
         gnorm = gravity.norm(),
         gx = gravity.x,
         gy = gravity.y,
@@ -3913,8 +3914,10 @@ CANNON.World.prototype.step = function(dt){
     var contacts = this.contacts;
     var ncontacts = contacts.length;
 
-    this.frictionEquationPool = this.frictionEquationPool.concat(this.frictionEquations);
-    this.frictionEquations = [];
+    // Transfer FrictionEquation from current list to the pool for reuse
+    for(var i=0, NoldFrictionEquations=this.frictionEquations.length; i!==NoldFrictionEquations; i++)
+        frictionEquationPool.push(this.frictionEquations[i]);
+    this.frictionEquations.length = 0;
 
     for(var k=0; k!==ncontacts; k++){
 
@@ -3955,7 +3958,7 @@ CANNON.World.prototype.step = function(dt){
                 var mug = mu*gnorm;
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass != 0) reducedMass = 1/reducedMass;
-                var pool = this.frictionEquationPool;
+                var pool = frictionEquationPool;
                 var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
                 var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
                 this.frictionEquations.push(c1);
