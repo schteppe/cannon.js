@@ -35,6 +35,19 @@ CANNON.Shape.prototype.computeBoundingSphereRadius = function(){
 };
 
 /**
+ * @method getBoundingSphereRadius
+ * @memberof CANNON.Shape
+ * @brief Returns the bounding sphere radius. The result is stored in the property .boundingSphereRadius
+ * @return float
+ */
+CANNON.Shape.prototype.getBoundingSphereRadius = function(){
+	if (this.boundingSphereRadiusNeedsUpdate) {
+		this.computeBoundingSphereRadius();
+	}
+	return this.boundingSphereRadius;
+};
+
+/**
  * @method volume
  * @memberof CANNON.Shape
  * @brief Get the volume of this shape

@@ -102,7 +102,8 @@ CANNON.RigidBody = function(mass,shape,material){
     this.wlambda = new CANNON.Vec3();
 };
 
-CANNON.RigidBody.constructor = CANNON.RigidBody;
+CANNON.RigidBody.prototype = new CANNON.Particle(0);
+CANNON.RigidBody.prototype.constructor = CANNON.RigidBody;
 
 CANNON.RigidBody.prototype.calculateAABB = function(){
     this.shape.calculateWorldAABB(this.position,

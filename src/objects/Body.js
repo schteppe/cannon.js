@@ -13,8 +13,6 @@ CANNON.Body = function(type){
 
     this.type = type;
 
-    var that = this;
-
     /**
     * @property CANNON.World world
     * @memberof CANNON.Body
