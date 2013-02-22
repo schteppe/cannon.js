@@ -54,6 +54,9 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 ¹ including Cylinder
 
 ### Change log
+**0.6.0**
+ * Changed the signature of ```Broadphase.collisionPairs``` to ```Broadphase.collisionPairs(world,pairs1,pairs2)```, removing the need of an array return value.
+
 **0.5.0**
  * Changed unit of sleep properties in ```Particle``` to seconds instead of milliseconds, made ```Particle.sleepState``` public. (schteppe,airbaggins).
  * Changed property ```Shape.boundingSphereRadius``` to being a number, added method ```Shape.computeBoundingSphereRadius``` and ```.boundingSphereRadiusNeedsUpdate```
