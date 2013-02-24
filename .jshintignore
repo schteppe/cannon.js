@@ -1,5 +1,6 @@
 src/wrapper
 src/objects/sph.js
+src/demo
 build
 examples
 demos

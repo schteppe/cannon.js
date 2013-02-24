@@ -3,7 +3,7 @@
  * @brief Demo framework class. If you want to learn how to connect Cannon.js with Three.js, please look at the examples/ instead.
  * @param Object options
  */
- CANNON.Demo = function(options){
+CANNON.Demo = function(options){
 
     // API
     this.removeVisual = removeVisual;
@@ -17,29 +17,28 @@
 
     // Global settings
     var settings = {
-       stepFrequency:60,
-       quatNormalizeSkip:2,
-       quatNormalizeFast:true,
-       gx:0.0,
-       gy:0.0,
-       gz:0.0,
-       iterations:3,
-       tolerance:0.0001,
-       k:1000,
-       d:3,
-       scene:0,
-       paused:false,
-       rendermode:"solid",
-       constraints:false,
-       contacts:false,  // Contact points
-       cm2contact:false, // center of mass to contact points
-       normals:false, // contact normals
-       axes:false, // "local" frame axes
-       particleSize:0.1,
-       paused:false,
-       shadows:true,
-       aabbs:false,
-       profiling:false,
+        stepFrequency:60,
+        quatNormalizeSkip:2,
+        quatNormalizeFast:true,
+        gx:0.0,
+        gy:0.0,
+        gz:0.0,
+        iterations:3,
+        tolerance:0.0001,
+        k:1000,
+        d:3,
+        scene:0,
+        paused:false,
+        rendermode:"solid",
+        constraints:false,
+        contacts:false,  // Contact points
+        cm2contact:false, // center of mass to contact points
+        normals:false, // contact normals
+        axes:false, // "local" frame axes
+        particleSize:0.1,
+        shadows:true,
+        aabbs:false,
+        profiling:false,
     };
 
     // Extend settings with options
@@ -50,8 +49,9 @@
         }
     }
 
-    if(settings.stepFrequency % 60 != 0)
+    if(settings.stepFrequency % 60 !== 0){
         throw new Error("stepFrequency must be a multiple of 60.");
+    }
 
     var bodies = [];
     var visuals = [];
@@ -85,11 +85,11 @@
     });
     var bboxGeometry = new THREE.CubeGeometry(1,1,1);
     var bboxMaterial = new THREE.MeshBasicMaterial({
-    color: materialColor,
-    wireframe:true
+        color: materialColor,
+        wireframe:true
     });
     var bboxMeshCache = new GeometryCache(function(){
-    return new THREE.Mesh(bboxGeometry,bboxMaterial);
+        return new THREE.Mesh(bboxGeometry,bboxMaterial);
     });
     var distanceConstraintMeshCache = new GeometryCache(function(){
         var geometry = new THREE.Geometry();
@@ -164,35 +164,39 @@
                 }
             }
         }
-    };
+    }
 
     var light, scene, ambient, stats, info;
 
     function setRenderMode(mode){
-        if(renderModes.indexOf(mode)==-1)
+        if(renderModes.indexOf(mode) === -1){
             throw new Error("Render mode "+mode+" not found!");
+        }
 
         switch(mode){
-            case "solid":
-                currentMaterial = solidMaterial;
-                light.intensity = 1;
-                ambient.color.setHex(0x222222);
-                break;
-            case "wireframe":
-                currentMaterial = wireframeMaterial;
-                light.intensity = 0;
-                ambient.color.setHex(0xffffff);
-                break;
+        case "solid":
+            currentMaterial = solidMaterial;
+            light.intensity = 1;
+            ambient.color.setHex(0x222222);
+            break;
+        case "wireframe":
+            currentMaterial = wireframeMaterial;
+            light.intensity = 0;
+            ambient.color.setHex(0xffffff);
+            break;
         }
 
         function setMaterial(node,mat){
-            if(node.material)
+            if(node.material){
                 node.material = mat;
-            for(var i=0; i<node.children.length; i++)
+            }
+            for(var i=0; i<node.children.length; i++){
                 setMaterial(node.children[i],mat);
+            }
         }
-        for(var i=0; i<visuals.length; i++)
+        for(var i=0; i<visuals.length; i++){
             setMaterial(visuals[i],currentMaterial);
+        }
         settings.rendermode = mode;
     }
 
@@ -204,17 +208,19 @@
     * @param function A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
     */
     function addScene(title,initfunc){
-        if(typeof(title)!="string")
+        if(typeof(title) !== "string"){
             throw new Error("1st argument of Demo.addScene(title,initfunc) must be a string!");
-        if(typeof(initfunc)!="function")
+        }
+        if(typeof(initfunc)!=="function"){
             throw new Error("2nd argument of Demo.addScene(title,initfunc) must be a function!");
+        }
         scenes.push(initfunc);
         var idx = scenes.length-1;
         scenePicker[title] = function(){
             changeScene(idx);
         };
         sceneFolder.add(scenePicker,title);
-    };
+    }
 
     /**
     * @method restartCurrentScene
@@ -232,12 +238,18 @@
                 b.initQuaternion.copy(b.quaternion);
             }
         }
-    };
+    }
 
     function makeSureNotZero(vec){
-        if(vec.x==0.0) vec.x = 1e-6;
-        if(vec.y==0.0) vec.y = 1e-6;
-        if(vec.z==0.0) vec.z = 1e-6;
+        if(vec.x===0.0){
+            vec.x = 1e-6;
+        }
+        if(vec.y===0.0){
+            vec.y = 1e-6;
+        }
+        if(vec.z===0.0){
+            vec.z = 1e-6;
+        }
     }
 
     function updateVisuals(){
@@ -259,8 +271,8 @@
                 for(var ij=0; ij < 2; ij++){
                     var  mesh = contactMeshCache.request(),
                     c = world.contacts[ci],
-                    b = ij==0 ? c.bi : c.bj,
-                    r = ij==0 ? c.ri : c.rj;
+                    b = ij===0 ? c.bi : c.bj,
+                    r = ij===0 ? c.ri : c.rj;
                     mesh.position.set( b.position.x + r.x , b.position.y + r.y , b.position.z + r.z );
                 }
             }
@@ -274,8 +286,8 @@
                 for(var ij=0; ij < 2; ij++){
                     var  line = cm2contactMeshCache.request(),
                     c = world.contacts[ci],
-                    b = ij==0 ? c.bi : c.bj,
-                    r = ij==0 ? c.ri : c.rj;
+                    b = ij===0 ? c.bi : c.bj,
+                    r = ij===0 ? c.ri : c.rj;
                     line.scale.set( r.x, r.y, r.z);
                     makeSureNotZero(line.scale);
                     b.position.copy(line.position);
@@ -290,8 +302,9 @@
             // Lines for distance constraints
             for(var ci=0; ci<world.constraints.length; ci++){
                 var c = world.constraints[ci];
-                if(!(c instanceof CANNON.DistanceConstraint))
+                if(!(c instanceof CANNON.DistanceConstraint)){
                     continue;
+                }
 
                 var nc = c.equations.normal;
 
@@ -300,10 +313,11 @@
 
                 // Remember, bj is either a Vec3 or a Body.
                 var v;
-                if(bj.position)
+                if(bj.position){
                     v = bj.position;
-                else
+                } else {
                     v = bj;
+                }
                 line.scale.set( v.x-bi.position.x,
                                 v.y-bi.position.y,
                                 v.z-bi.position.z );
@@ -315,8 +329,9 @@
             // Lines for distance constraints
             for(var ci=0; ci<world.constraints.length; ci++){
                 var c = world.constraints[ci];
-                if(!(c instanceof CANNON.PointToPointConstraint))
+                if(!(c instanceof CANNON.PointToPointConstraint)){
                     continue;
+                }
                 var n = c.equations.normal;
                 var bi=n.bi, bj=n.bj, relLine1 = p2pConstraintMeshCache.request(), relLine2 = p2pConstraintMeshCache.request(), diffLine = p2pConstraintMeshCache.request();
                 var i=bi.id, j=bj.id;
@@ -610,11 +625,11 @@
 
         if(e.keyCode){
             switch(e.keyCode){
-                case 32: // Space - restart
+            case 32: // Space - restart
                 restartCurrentScene();
                 break;
 
-                case 104: // h - toggle widgets
+            case 104: // h - toggle widgets
                 if(stats.domElement.style.display=="none"){
                     stats.domElement.style.display = "block";
                     info.style.display = "block";
@@ -624,27 +639,27 @@
                 }
                 break;
 
-                case 97: // a - AABBs
+            case 97: // a - AABBs
                 settings.aabbs = !settings.aabbs;
                 updategui();
                 break;
 
-                case 99: // c - constraints
+            case 99: // c - constraints
                 settings.constraints = !settings.constraints;
                 updategui();
                 break;
 
-                case 112: // p
+            case 112: // p
                 settings.paused = !settings.paused;
                 updategui();
                 break;
 
-                case 115: // s
+            case 115: // s
                 updatePhysics();
                 updateVisuals();
                 break;
 
-                case 109: // m - toggle materials
+            case 109: // m - toggle materials
                 var idx = renderModes.indexOf(settings.rendermode);
                 idx++;
                 idx = idx % renderModes.length; // begin at 0 if we exceeded number of modes
@@ -652,15 +667,15 @@
                 updategui();
                 break;
 
-                case 49:
-                case 50:
-                case 51:
-                case 52:
-                case 53:
-                case 54:
-                case 55:
-                case 56:
-                case 57:
+            case 49:
+            case 50:
+            case 51:
+            case 52:
+            case 53:
+            case 54:
+            case 55:
+            case 56:
+            case 57:
                 // Change scene
                 // Only for numbers 1-9 and if no input field is active
                 if(scenes.length > e.keyCode-49 && !document.activeElement.localName.match(/input/)){
@@ -776,12 +791,12 @@
         var mesh;
         switch(shape.type){
 
-            case CANNON.Shape.types.SPHERE:
+        case CANNON.Shape.types.SPHERE:
             var sphere_geometry = new THREE.SphereGeometry( shape.radius, 8, 8);
             mesh = new THREE.Mesh( sphere_geometry, currentMaterial );
             break;
 
-            case CANNON.Shape.types.PLANE:
+        case CANNON.Shape.types.PLANE:
             var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
             mesh = new THREE.Object3D();
             var submesh = new THREE.Object3D();
@@ -795,15 +810,14 @@
             mesh.add(submesh);
             break;
 
-            case CANNON.Shape.types.BOX:
+        case CANNON.Shape.types.BOX:
             var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
                                                         shape.halfExtents.y*2,
                                                         shape.halfExtents.z*2 );
             mesh = new THREE.Mesh( box_geometry, currentMaterial );
             break;
 
-            case CANNON.Shape.types.CONVEXPOLYHEDRON:
-
+        case CANNON.Shape.types.CONVEXPOLYHEDRON:
             var verts = [];
             for(var i=0; i<shape.vertices.length; i++){
                 verts.push(new THREE.Vector3(shape.vertices[i].x,
@@ -815,7 +829,7 @@
 
             break;
 
-            case CANNON.Shape.types.COMPOUND:
+        case CANNON.Shape.types.COMPOUND:
             // recursive compounds
             var o3d = new THREE.Object3D();
             for(var i = 0; i<shape.childShapes.length; i++){
@@ -835,7 +849,7 @@
             }
             break;
 
-            default:
+        default:
             throw "Visual type not recognized: "+shape.type;
         }
 
@@ -911,7 +925,7 @@
     };
 
     function removeVisual(body){
-        if(body.visualref!=undefined){
+        if(body.visualref){
             var old_b = [];
             var old_v = [];
             var n = bodies.length;
@@ -921,7 +935,7 @@
             }
             var id = body.visualref.visualId;
             for(var j=0; j<old_b.length; j++){
-                if(j!=id){
+                if(j !== id){
                     var i = j>id ? j-1 : j;
                     bodies[i] = old_b[j];
                     visuals[i] = old_v[j];
@@ -942,10 +956,11 @@
     function GeometryCache(createFunc){
         var that=this, geometries=[], gone=[];
         this.request = function(){
-            if(geometries.length)
+            if(geometries.length){
                 geo = geometries.pop();
-            else
+            } else{
                 geo = createFunc();
+            }
             scene.add(geo);
             gone.push(geo);
             return geo;

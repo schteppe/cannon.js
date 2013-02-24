@@ -4,13 +4,15 @@
  * @param float mass
  * @param CANNON.Material material
  */
- CANNON.Particle = function(mass,material){
+CANNON.Particle = function(mass,material){
 
     // Check input
-    if(typeof(mass)!="number")
+    if(typeof(mass)!=="number"){
         throw new Error("Argument 1 (mass) must be a number.");
-    if(typeof(material)!="undefined" && !(material instanceof(CANNON.Material)))
+    }
+    if(typeof(material)!=="undefined" && !(material instanceof(CANNON.Material))){
         throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+    }
 
     CANNON.Body.call(this,"particle");
 
@@ -113,21 +115,27 @@ CANNON.Particle.prototype.constructor = CANNON.Particle;
 * @memberof CANNON.Particle
 * @return bool
 */
-CANNON.Particle.prototype.isAwake = function(){ return this.sleepState == 0; }
+CANNON.Particle.prototype.isAwake = function(){
+    return this.sleepState === 0;
+};
 
 /**
 * @method isSleepy
 * @memberof CANNON.Particle
 * @return bool
 */
-CANNON.Particle.prototype.isSleepy = function(){ return this.sleepState == 1; }
+CANNON.Particle.prototype.isSleepy = function(){
+    return this.sleepState === 1;
+};
 
 /**
 * @method isSleeping
 * @memberof CANNON.Particle
 * @return bool
 */
-CANNON.Particle.prototype.isSleeping = function(){ return this.sleepState == 2; }
+CANNON.Particle.prototype.isSleeping = function(){
+    return this.sleepState === 2;
+};
 
 /**
 * @method wakeUp
@@ -137,7 +145,7 @@ CANNON.Particle.prototype.isSleeping = function(){ return this.sleepState == 2; 
 CANNON.Particle.prototype.wakeUp = function(){
     var s = this.sleepState;
     this.sleepState = 0;
-    if(s == 2){
+    if(s === 2){
         this.dispatchEvent({type:"wakeup"});
     }
 };
@@ -162,13 +170,13 @@ CANNON.Particle.prototype.sleepTick = function(time){
         var sleepState = this.sleepState;
         var speedSquared = this.velocity.norm2();
         var speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
-        if(sleepState==0 && speedSquared < speedLimitSquared){
+        if(sleepState===0 && speedSquared < speedLimitSquared){
             this.sleepState = 1; // Sleepy
             this.timeLastSleepy = time;
             this.dispatchEvent({type:"sleepy"});
-        } else if(sleepState==1 && speedSquared > speedLimitSquared){
+        } else if(sleepState===1 && speedSquared > speedLimitSquared){
             this.wakeUp(); // Wake up
-        } else if(sleepState==1 && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
+        } else if(sleepState===1 && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
             this.sleepState = 2; // Sleeping
             this.dispatchEvent({type:"sleep"});
         }

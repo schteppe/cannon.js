@@ -30,9 +30,11 @@ CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var axes = ['x','y','z'];
     for(var i=0; i<axes.length; i++){
         var ax = axes[i];
-        if(tempNormal[ax]==1)
+        if(tempNormal[ax] === 1){
             max[ax] = pos[ax];
-        if(tempNormal[ax]==-1)
+        }
+        if(tempNormal[ax] === -1){
             min[ax] = pos[ax];
+        }
     }
 };

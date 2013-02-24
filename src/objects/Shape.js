@@ -29,7 +29,7 @@ CANNON.Shape.prototype.constructor = CANNON.Shape;
  * @return float
  */
 CANNON.Shape.prototype.computeBoundingSphereRadius = function(){
-  throw "computeBoundingSphereRadius() not implemented for shape type "+this.type;
+    throw "computeBoundingSphereRadius() not implemented for shape type "+this.type;
 };
 
 /**
@@ -63,7 +63,7 @@ CANNON.Shape.prototype.volume = function(){
  * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
  */
 CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
-  throw "calculateLocalInertia() not implemented for shape type "+this.type;
+    throw "calculateLocalInertia() not implemented for shape type "+this.type;
 };
 
 /**
@@ -102,10 +102,10 @@ CANNON.Shape.calculateLocalAABB = function(){
  * @brief The available shape types.
  */
 CANNON.Shape.types = {
-  SPHERE:1,
-  PLANE:2,
-  BOX:4,
-  COMPOUND:8,
-  CONVEXPOLYHEDRON:16
+    SPHERE:1,
+    PLANE:2,
+    BOX:4,
+    COMPOUND:8,
+    CONVEXPOLYHEDRON:16
 };
 

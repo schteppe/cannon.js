@@ -12,7 +12,7 @@ CANNON.Sphere = function(radius){
      * @property float radius
      * @memberof CANNON.Sphere
      */
-    this.radius = radius!=undefined ? Number(radius) : 1.0;
+    this.radius = radius!==undefined ? Number(radius) : 1.0;
     this.type = CANNON.Shape.types.SPHERE;
 };
 CANNON.Sphere.prototype = new CANNON.Shape();
