@@ -168,7 +168,7 @@
         }
     };
 
-    var light, scene, ambient, stats;
+    var light, scene, ambient, stats, info;
 
     function setRenderMode(mode){
         if(renderModes.indexOf(mode)==-1)
@@ -419,6 +419,7 @@
     animate();
 
     function init() {
+
         container = document.createElement( 'div' );
         document.body.appendChild( container );
 
@@ -462,6 +463,15 @@
         renderer.domElement.style.position = "relative";
         renderer.domElement.style.top = MARGIN + 'px';
         container.appendChild( renderer.domElement );
+
+        // Add info
+        info = document.createElement( 'div' );
+        info.style.position = 'absolute';
+        info.style.top = '10px';
+        info.style.width = '100%';
+        info.style.textAlign = 'center';
+        info.innerHTML = '<a href="http://github.com/schteppe/cannon.js">cannon.js</a> - javascript 3d physics';
+        container.appendChild( info );
 
         document.addEventListener('mousemove',onDocumentMouseMove);
         window.addEventListener('resize',onWindowResize);
@@ -606,11 +616,14 @@
                 restartCurrentScene();
                 break;
 
-                case 104:
-                if(stats.domElement.style.display=="none")
+                case 104: // h - toggle widgets
+                if(stats.domElement.style.display=="none"){
                     stats.domElement.style.display = "block";
-                else
+                    info.style.display = "block";
+                } else {
                     stats.domElement.style.display = "none";
+                    info.style.display = "none";
+                }
                 break;
 
                 case 97: // a - AABBs
