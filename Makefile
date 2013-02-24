@@ -19,7 +19,7 @@ WORLD     = src/world/World.js src/world/ContactGenerator.js
 DEMO      = src/demo/Demo.js
 END       = src/wrapper/End.js
 
-ALL_CORE_FILES = $(CANNON) $(MATH) $(COLLISION) $(UTILS) $(OBJECTS) $(SOLVER) $(MATERIAL) $(WORLD) $(CONSTRAINTS)
+ALL_CORE_FILES = $(CANNON) $(MATH)  $(UTILS) $(OBJECTS) $(COLLISION) $(SOLVER) $(MATERIAL) $(WORLD) $(CONSTRAINTS)
 ALL_FILES = $(START) $(ALL_CORE_FILES) $(END)
 DEMO_FILES = $(DEMO)
 

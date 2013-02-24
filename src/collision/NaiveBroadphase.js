@@ -42,9 +42,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         for(var j=0; j!==i; j++){
             var bi = bodies[i], bj = bodies[j];
 
-            if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
-               ((bj.motionstate & STATIC_OR_KINEMATIC)!==0 || bj.isSleeping())) {
-                // Both bodies are static, kinematic or sleeping. Skip.
+            if(!this.needBroadphaseCollision(bi,bj)){
                 continue;
             }
 
