@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Quaternion
  * @brief A Quaternion describes a rotation in 3D space.
