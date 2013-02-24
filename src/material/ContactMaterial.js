@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.ContactMaterial
  * @brief Defines what happens when two materials meet.
@@ -18,10 +16,10 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
     this.materials = [m1,m2];
 
     /// Kinetic friction
-    this.friction = friction!=undefined ? Number(friction) : 0.3;
+    this.friction = friction!==undefined ? Number(friction) : 0.3;
 
     /// Restitution
-    this.restitution =      restitution!=undefined ?      Number(restitution) :      0.3;
+    this.restitution =      restitution !== undefined ?      Number(restitution) :      0.3;
 
     // Parameters to pass to the constraint when it is created
     this.contactEquationStiffness = 1e7;

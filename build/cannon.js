@@ -3391,8 +3391,6 @@ CANNON.SplitSolver.prototype.solve = function(dt,world){
 
     return n;
 };
-/*global CANNON:true */
-
 /**
  * @class CANNON.Material
  * @brief Defines a physics material.
@@ -3407,8 +3405,6 @@ CANNON.Material = function(name){
     this.name = name;
     this.id = -1;
 };
-
-/*global CANNON:true */
 
 /**
  * @class CANNON.ContactMaterial
@@ -3428,10 +3424,10 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
     this.materials = [m1,m2];
 
     /// Kinetic friction
-    this.friction = friction!=undefined ? Number(friction) : 0.3;
+    this.friction = friction!==undefined ? Number(friction) : 0.3;
 
     /// Restitution
-    this.restitution =      restitution!=undefined ?      Number(restitution) :      0.3;
+    this.restitution =      restitution !== undefined ?      Number(restitution) :      0.3;
 
     // Parameters to pass to the constraint when it is created
     this.contactEquationStiffness = 1e7;
