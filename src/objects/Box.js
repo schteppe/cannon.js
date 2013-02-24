@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Box
  * @brief A 3d box shape.
@@ -38,16 +36,15 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sx = this.halfExtents.x;
     var sy = this.halfExtents.y;
     var sz = this.halfExtents.z;
-    var v = CANNON.Vec3;
-    var h = new CANNON.ConvexPolyhedron([new v(-sx,-sy,-sz),
-                                         new v( sx,-sy,-sz),
-                                         new v( sx, sy,-sz),
-                                         new v(-sx, sy,-sz),
-                                         new v(-sx,-sy, sz),
-                                         new v( sx,-sy, sz),
-                                         new v( sx, sy, sz),
-                                         new v(-sx, sy, sz)],
-                                        
+    var V = CANNON.Vec3;
+    var h = new CANNON.ConvexPolyhedron([new V(-sx,-sy,-sz),
+                                         new V( sx,-sy,-sz),
+                                         new V( sx, sy,-sz),
+                                         new V(-sx, sy,-sz),
+                                         new V(-sx,-sy, sz),
+                                         new V( sx,-sy, sz),
+                                         new V( sx, sy, sz),
+                                         new V(-sx, sy, sz)],
                                          [[0,1,2,3], // -z
                                           [4,5,6,7], // +z
                                           [0,1,5,4], // -y
@@ -55,23 +52,22 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                                           [0,3,7,4], // -x
                                           [1,2,6,5], // +x
                                           ],
-                                        
-                                        [new v( 0, 0,-1),
-                                         new v( 0, 0, 1),
-                                         new v( 0,-1, 0),
-                                         new v( 0, 1, 0),
-                                         new v(-1, 0, 0),
-                                         new v( 1, 0, 0)]);
+                                        [new V( 0, 0,-1),
+                                         new V( 0, 0, 1),
+                                         new V( 0,-1, 0),
+                                         new V( 0, 1, 0),
+                                         new V(-1, 0, 0),
+                                         new V( 1, 0, 0)]);
     this.convexPolyhedronRepresentation = h;
 };
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
-  target = target || new CANNON.Vec3();
-  var e = this.halfExtents;
-  target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
-  target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
-  target.z = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.x*2*e.x );
-  return target;
+    target = target || new CANNON.Vec3();
+    var e = this.halfExtents;
+    target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
+    target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
+    target.z = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.x*2*e.x );
+    return target;
 };
 
 /**
@@ -92,9 +88,10 @@ CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,quat){
     sides[4].set(     0, -ex.y,     0);
     sides[5].set(     0,     0, -ex.z);
 
-    if(quat!=undefined){
-        for(var i=0; i<sides.length; i++)
+    if(quat!==undefined){
+        for(var i=0; i!==sides.length; i++){
             quat.vmult(sides[i],sides[i]);
+        }
     }
 
     return sides;
@@ -122,7 +119,6 @@ CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
                    [  e.x,  e.y, -e.z],
                    [ -e.x,  e.y, -e.z],
                    [  e.x, -e.y,  e.z]];
-           
     for(var i=0; i<corners.length; i++){
         worldCornerTempPos.set(corners[i][0],corners[i][1],corners[i][2]);
         quat.vmult(worldCornerTempPos,worldCornerTempPos);
@@ -138,14 +134,24 @@ CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
     min.set(Infinity,Infinity,Infinity);
     max.set(-Infinity,-Infinity,-Infinity);
     this.forEachWorldCorner(pos,quat,function(x,y,z){
+        if(x > max.x){
+            max.x = x;
+        }
+        if(y > max.y){
+            max.y = y;
+        }
+        if(z > max.z){
+            max.z = z;
+        }
 
-        if(x > max.x) max.x = x;
-        if(y > max.y) max.y = y;
-        if(z > max.z) max.z = z;
-
-        if(x < min.x) min.x = x;
-        if(y < min.y) min.y = y;
-        if(z < min.z) min.z = z;
-
-    });    
+        if(x < min.x){
+            min.x = x;
+        }
+        if(y < min.y){
+            min.y = y;
+        }
+        if(z < min.z){
+            min.z = z;
+        }
+    });
 };
