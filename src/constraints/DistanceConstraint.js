@@ -10,8 +10,9 @@
 CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
     CANNON.Constraint.call(this,bodyA,bodyB);
 
-    if(typeof(maxForce)=="undefined" )
+    if(typeof(maxForce)==="undefined" ) {
         maxForce = 1e6;
+    }
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
