@@ -745,8 +745,6 @@ CANNON.Vec3.prototype.almostZero = function(precision){
     }
     return true;
 };
-/*global CANNON:true */
-
 /**
  * @class CANNON.Quaternion
  * @brief A Quaternion describes a rotation in 3D space.
@@ -2236,9 +2234,7 @@ CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
         if(tempNormal[ax]==-1)
             min[ax] = pos[ax];
     }
-};/*global CANNON:true */
-
-/**
+};/**
  * @class CANNON.Compound
  * @extends CANNON.Shape
  * @brief A shape made of several other shapes.
@@ -2272,8 +2268,10 @@ CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
 
 CANNON.Compound.prototype.volume = function(){
     var r = 0.0;
-    for(var i = 0; i<this.childShapes.length; i++)
+    var Nchildren = this.childShapes.length;
+    for(var i=0; i!==Nchildren; i++){
         r += this.childShapes[i].volume();
+    }
     return r;
 };
 
@@ -2316,10 +2314,13 @@ CANNON.Compound.prototype.computeBoundingSphereRadius = function(){
     var r = 0.0;
     for(var i = 0; i<this.childShapes.length; i++){
         var si = this.childShapes[i];
-        if(si.boundingSphereRadiusNeedsUpdate) si.computeBoundingSphereRadius();
+        if(si.boundingSphereRadiusNeedsUpdate){
+            si.computeBoundingSphereRadius();
+        }
         var candidate = this.childOffsets[i].norm() + si.boundingSphereRadius;
-        if(r < candidate)
+        if(r < candidate){
             r = candidate;
+        }
     }
     this.boundingSphereRadius = r;
     this.boundingSphereRadiusNeedsUpdate = false;
@@ -2334,7 +2335,7 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
     min.set(Infinity,Infinity,Infinity);
     max.set(-Infinity,-Infinity,-Infinity);
     // Get each axis max
-    for(var i=0; i<N; i++){
+    for(var i=0; i!==N; i++){
 
         // Accumulate transformation to child
         this.childOffsets[i].copy(childPosTemp);
@@ -2349,13 +2350,25 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
                                                aabbminTemp,
                                                aabbmaxTemp);
 
-        if(aabbminTemp.x < min.x) min.x = aabbminTemp.x;
-        if(aabbminTemp.y < min.y) min.y = aabbminTemp.y;
-        if(aabbminTemp.z < min.z) min.z = aabbminTemp.z;
-        
-        if(aabbmaxTemp.x > max.x) max.x = aabbmaxTemp.x;
-        if(aabbmaxTemp.y > max.y) max.y = aabbmaxTemp.y;
-        if(aabbmaxTemp.z > max.z) max.z = aabbmaxTemp.z;
+        if(aabbminTemp.x < min.x){
+            min.x = aabbminTemp.x;
+        }
+        if(aabbminTemp.y < min.y){
+            min.y = aabbminTemp.y;
+        }
+        if(aabbminTemp.z < min.z){
+            min.z = aabbminTemp.z;
+        }
+
+        if(aabbmaxTemp.x > max.x){
+            max.x = aabbmaxTemp.x;
+        }
+        if(aabbmaxTemp.y > max.y){
+            max.y = aabbmaxTemp.y;
+        }
+        if(aabbmaxTemp.z > max.z){
+            max.z = aabbmaxTemp.z;
+        }
     }
 };/**
  * @class CANNON.ConvexPolyhedron
