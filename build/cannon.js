@@ -69,15 +69,13 @@ CANNON.Broadphase.prototype.collisionPairs = function(world,p1,p2){
     throw "collisionPairs not implemented for this BroadPhase class!";
 };
 
-/*global CANNON:true */
-
 /**
  * @class CANNON.NaiveBroadphase
  * @brief Naive broadphase implementation, used in lack of better ones.
  * @description The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
  * @extends CANNON.Broadphase
  */
- CANNON.NaiveBroadphase = function(){
+CANNON.NaiveBroadphase = function(){
     this.temp = {
         r: new CANNON.Vec3(),
         normal: new CANNON.Vec3(),
@@ -95,7 +93,7 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @param CANNON.World world
  * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
- CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
+CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var n = world.numObjects(),
     bodies = world.bodies;
 
@@ -133,8 +131,12 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                     bj.position.vsub(bi.position,r);
 
                     // Update bounding spheres if needed
-                    if(bishape.boundingSphereRadiusNeedsUpdate) bishape.computeBoundingSphereRadius();
-                    if(bjshape.boundingSphereRadiusNeedsUpdate) bjshape.computeBoundingSphereRadius();
+                    if(bishape.boundingSphereRadiusNeedsUpdate){
+                        bishape.computeBoundingSphereRadius();
+                    }
+                    if(bjshape.boundingSphereRadiusNeedsUpdate){
+                        bjshape.computeBoundingSphereRadius();
+                    }
 
                     var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
                     if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
@@ -146,13 +148,15 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                 } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
                     var pi = (ti===PLANE) ? i : j, // Plane
                     oi = (ti!==PLANE) ? i : j; // Other
-                    
+
                     // Rel. position
                     bodies[oi].position.vsub(bodies[pi].position,r);
                     normal.set(0,0,1);
                     bodies[pi].quaternion.vmult(normal,normal);
-                    
-                    if(bodies[oi].shape.boundingSphereRadiusNeedsUpdate) bodies[oi].shape.computeBoundingSphereRadius();
+
+                    if(bodies[oi].shape.boundingSphereRadiusNeedsUpdate){
+                        bodies[oi].shape.computeBoundingSphereRadius();
+                    }
 
                     var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius;
                     if(q<0.0){
@@ -181,7 +185,9 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
                             }
                         } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
 
-                            if(otherShape.boundingSphereRadiusNeedsUpdate) otherShape.computeBoundingSphereRadius();
+                            if(otherShape.boundingSphereRadiusNeedsUpdate){
+                                otherShape.computeBoundingSphereRadius();
+                            }
                             var R = otherShape.boundingSphereRadius;
                             particle.position.vsub(other.position,relpos);
                             if(R*R >= relpos.norm2()){
