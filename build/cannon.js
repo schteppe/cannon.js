@@ -3530,6 +3530,7 @@ CANNON.World = function(){
     this.contactgen = new CANNON.ContactGenerator();
 
     // Collision matrix, size N*N
+    // @todo rename to collisionMatrix
     this.collision_matrix = [];
 
     /**
@@ -3804,11 +3805,12 @@ CANNON.World.prototype._now = function(){
  */
 var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
     World_step_preStepEvent = {type:"preStep"},
-    World_step_oldContacts = [],
+    World_step_collideEvent = {type:"collide", "with":null, contact:null },
+    World_step_oldContacts = [], // Pools for unused objects
     World_step_frictionEquationPool = [],
-    World_step_p1 = [],
+    World_step_p1 = [], // Reusable arrays for collision pairs
     World_step_p2 = [],
-    World_step_gvec = new CANNON.Vec3(),
+    World_step_gvec = new CANNON.Vec3(), // Temporary vectors and quats
     World_step_vi = new CANNON.Vec3(),
     World_step_vj = new CANNON.Vec3(),
     World_step_wi = new CANNON.Vec3(),
@@ -3974,8 +3976,13 @@ CANNON.World.prototype.step = function(dt){
 
             if(this.collisionMatrixGet(i,j,true)!==this.collisionMatrixGet(i,j,false)){
                 // First contact!
-                bi.dispatchEvent({type:"collide", "with":bj, contact:c });
-                bj.dispatchEvent({type:"collide", "with":bi, contact:c });
+                World_step_collideEvent.with = bj;
+                World_step_collideEvent.contact = c;
+                bi.dispatchEvent(World_step_collideEvent);
+
+                World_step_collideEvent.with = bi;
+                bj.dispatchEvent(World_step_collideEvent);
+
                 bi.wakeUp();
                 bj.wakeUp();
             }
