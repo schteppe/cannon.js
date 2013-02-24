@@ -55,6 +55,9 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.6.0**
+ * Removed World.temp.
+ * Reuse of various event objects to minimize object creation in the step loop.
+ * Removed unused class ```ContactPoint```.
  * Changed the signature of ```Broadphase.collisionPairs``` to ```Broadphase.collisionPairs(world,pairs1,pairs2)```, removing the need of an array return value.
 
 **0.5.0**
