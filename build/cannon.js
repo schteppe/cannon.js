@@ -35,10 +35,9 @@
 var CANNON = CANNON || {};
 
 // Maintain compatibility with older browsers
-// @todo: check so ordinary Arrays work.
 if(!this.Int32Array){
-  this.Int32Array=Array;
-  this.Float32Array=Array;
+    this.Int32Array=Array;
+    this.Float32Array=Array;
 }/**
  * @class CANNON.Mat3
  * @brief A 3x3 matrix.
@@ -977,7 +976,7 @@ CANNON.Quaternion.prototype.normalizeFast = function () {
  */
 CANNON.Quaternion.prototype.vmult = function(v,target){
     target = target || new CANNON.Vec3();
-    if(this.w==0.0){
+    if(this.w===0.0){
         target.x = v.x;
         target.y = v.y;
         target.z = v.z;

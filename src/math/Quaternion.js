@@ -230,7 +230,7 @@ CANNON.Quaternion.prototype.normalizeFast = function () {
  */
 CANNON.Quaternion.prototype.vmult = function(v,target){
     target = target || new CANNON.Vec3();
-    if(this.w==0.0){
+    if(this.w===0.0){
         target.x = v.x;
         target.y = v.y;
         target.z = v.z;

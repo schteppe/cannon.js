@@ -12,8 +12,7 @@
 var CANNON = CANNON || {};
 
 // Maintain compatibility with older browsers
-// @todo: check so ordinary Arrays work.
 if(!this.Int32Array){
-  this.Int32Array=Array;
-  this.Float32Array=Array;
+    this.Int32Array=Array;
+    this.Float32Array=Array;
 }
