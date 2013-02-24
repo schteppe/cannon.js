@@ -27,6 +27,7 @@
     "trailing" : true,
     "undef": true,
     "indent":4,
+    "shadow" : true,
     "globals": {
         "CANNON": true
     }
