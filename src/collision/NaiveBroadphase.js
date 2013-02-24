@@ -5,12 +5,7 @@
  * @extends CANNON.Broadphase
  */
 CANNON.NaiveBroadphase = function(){
-    this.temp = {
-        r: new CANNON.Vec3(),
-        normal: new CANNON.Vec3(),
-        quat: new CANNON.Quaternion(),
-        relpos : new CANNON.Vec3(),
-    };
+    CANNON.Broadphase.apply(this);
 };
 CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
 CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
@@ -22,6 +17,10 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @param CANNON.World world
  * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
+var NaiveBroadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
+    NaiveBroadphase_collisionPairs_normal =  new CANNON.Vec3(),
+    NaiveBroadphase_collisionPairs_quat =  new CANNON.Quaternion(),
+    NaiveBroadphase_collisionPairs_relpos  =  new CANNON.Vec3();
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var n = world.numObjects(),
     bodies = world.bodies;
@@ -33,15 +32,14 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 
     // Temp vecs
-    var temp = this.temp;
-    var r = temp.r,
-    normal = temp.normal,
-    quat = temp.quat,
-    relpos = temp.relpos;
+    var r = NaiveBroadphase_collisionPairs_r,
+        normal = NaiveBroadphase_collisionPairs_normal,
+        quat = NaiveBroadphase_collisionPairs_quat,
+        relpos = NaiveBroadphase_collisionPairs_relpos;
 
     // Naive N^2 ftw!
-    for(var i=0; i<n; i++){
-        for(var j=0; j<i; j++){
+    for(var i=0; i!==n; i++){
+        for(var j=0; j!==i; j++){
             var bi = bodies[i], bj = bodies[j];
 
             if(((bi.motionstate & STATIC_OR_KINEMATIC)!==0 || bi.isSleeping()) &&
