@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Mat3
  * @brief A 3x3 matrix.
@@ -112,13 +110,13 @@ CANNON.Mat3.prototype.smult = function(s){
 CANNON.Mat3.prototype.mmult = function(m){
     var r = new CANNON.Mat3();
     for(var i=0; i<3; i++){
-    for(var j=0; j<3; j++){
-        var sum = 0.0;
-        for(var k=0; k<3; k++){
-        sum += m.elements[i+k*3] * this.elements[k+j*3];
+        for(var j=0; j<3; j++){
+            var sum = 0.0;
+            for(var k=0; k<3; k++){
+                sum += m.elements[i+k*3] * this.elements[k+j*3];
+            }
+            r.elements[i+j*3] = sum;
         }
-        r.elements[i+j*3] = sum;
-    }
     }
     return r;
 };
@@ -130,16 +128,18 @@ CANNON.Mat3.prototype.mmult = function(m){
  * @param CANNON.Vec3 b The right hand side
  * @param CANNON.Vec3 target Optional. Target vector to save in.
  * @return CANNON.Vec3 The solution x
+ * @todo should reuse arrays
  */
 CANNON.Mat3.prototype.solve = function(b,target){
-
     target = target || new CANNON.Vec3();
 
     // Construct equations
     var nr = 3; // num rows
     var nc = 4; // num cols
     var eqns = [];
-    for(var i=0; i<nr*nc; i++) eqns.push(0);
+    for(var i=0; i<nr*nc; i++){
+        eqns.push(0);
+    }
     var i,j;
     for(i=0; i<3; i++){
         for(j=0; j<3; j++){
@@ -154,32 +154,32 @@ CANNON.Mat3.prototype.solve = function(b,target){
     var n = 3, k = n, np;
     var kp = 4; // num rows
     var p, els;
-do {
-    i = k - n;
-    if (eqns[i+nc*i] === 0) {
-        // the pivot is null, swap lines
-      for (j = i + 1; j < k; j++) {
-        if (eqns[i+nc*j] !== 0) {
-          np = kp;
-          do {  // do ligne( i ) = ligne( i ) + ligne( k )
-            p = kp - np;
-            eqns[p+nc*i] += eqns[p+nc*j]; 
-          } while (--np);
-          break;
+    do {
+        i = k - n;
+        if (eqns[i+nc*i] === 0) {
+            // the pivot is null, swap lines
+            for (j = i + 1; j < k; j++) {
+                if (eqns[i+nc*j] !== 0) {
+                    np = kp;
+                    do {  // do ligne( i ) = ligne( i ) + ligne( k )
+                        p = kp - np;
+                        eqns[p+nc*i] += eqns[p+nc*j];
+                    } while (--np);
+                    break;
+                }
+            }
         }
-      }
-    }
-    if (eqns[i+nc*i] !== 0) {
-      for (j = i + 1; j < k; j++) {
-        var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
-        np = kp;
-        do {  // do ligne( k ) = ligne( k ) - multiplier * ligne( i )
-          p = kp - np;
-          eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
-        } while (--np);
-      }
-    }
-  } while (--n);
+        if (eqns[i+nc*i] !== 0) {
+            for (j = i + 1; j < k; j++) {
+                var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+                np = kp;
+                do {  // do ligne( k ) = ligne( k ) - multiplier * ligne( i )
+                    p = kp - np;
+                    eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+                } while (--np);
+            }
+        }
+    } while (--n);
 
     // Get the solution
     target.z = eqns[2*nc+3] / eqns[2*nc+2];
@@ -204,10 +204,10 @@ do {
  */
 CANNON.Mat3.prototype.e = function( row , column ,value){
     if(value===undefined){
-    return this.elements[column+3*row];
+        return this.elements[column+3*row];
     } else {
-    // Set value
-    this.elements[column+3*row] = value;
+        // Set value
+        this.elements[column+3*row] = value;
     }
 };
 
@@ -252,11 +252,13 @@ CANNON.Mat3.prototype.reverse = function(target){
 
     target = target || new CANNON.Mat3();
 
-  // Construct equations
+    // Construct equations
     var nr = 3; // num rows
     var nc = 6; // num cols
     var eqns = [];
-    for(var i=0; i<nr*nc; i++) eqns.push(0);
+    for(var i=0; i<nr*nc; i++){
+        eqns.push(0);
+    }
     var i,j;
     for(i=0; i<3; i++){
         for(j=0; j<3; j++){
@@ -272,74 +274,74 @@ CANNON.Mat3.prototype.reverse = function(target){
     eqns[5+6*0] = 0;
     eqns[5+6*1] = 0;
     eqns[5+6*2] = 1;
-  
-  // Compute right upper triangular version of the matrix - Gauss elimination
+
+    // Compute right upper triangular version of the matrix - Gauss elimination
     var n = 3, k = n, np;
     var kp = nc; // num rows
     var p;
     do {
-    i = k - n;
-    if (eqns[i+nc*i] === 0) {
-        // the pivot is null, swap lines
-        for (j = i + 1; j < k; j++) {
-        if (eqns[i+nc*j] !== 0) {
-            np = kp;
-            do { // do line( i ) = line( i ) + line( k )
-            p = kp - np;
-            eqns[p+nc*i] += eqns[p+nc*j];
-            } while (--np);
-            break;
+        i = k - n;
+        if (eqns[i+nc*i] === 0) {
+            // the pivot is null, swap lines
+            for (j = i + 1; j < k; j++) {
+                if (eqns[i+nc*j] !== 0) {
+                    np = kp;
+                    do { // do line( i ) = line( i ) + line( k )
+                        p = kp - np;
+                        eqns[p+nc*i] += eqns[p+nc*j];
+                    } while (--np);
+                    break;
+                }
+            }
         }
+        if (eqns[i+nc*i] !== 0) {
+            for (j = i + 1; j < k; j++) {
+                var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+                np = kp;
+                do { // do line( k ) = line( k ) - multiplier * line( i )
+                    p = kp - np;
+                    eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+                } while (--np);
+            }
         }
-    }
-    if (eqns[i+nc*i] !== 0) {
-        for (j = i + 1; j < k; j++) {
-        var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
-        np = kp;
-        do { // do line( k ) = line( k ) - multiplier * line( i )
-            p = kp - np;
-            eqns[p+nc*j] = p <= i ? 0 : eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
-        } while (--np);
-        }
-    }
     } while (--n);
-  
-  // eliminate the upper left triangle of the matrix
-  i = 2
+
+    // eliminate the upper left triangle of the matrix
+    i = 2;
     do {
-    j = i-1;
-    do {
-        var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
-        np = nc;
-        do { 
-        p = nc - np;
-        eqns[p+nc*j] =  eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
-        } while (--np);
-    } while (j--);
+        j = i-1;
+        do {
+            var multiplier = eqns[i+nc*j] / eqns[i+nc*i];
+            np = nc;
+            do {
+                p = nc - np;
+                eqns[p+nc*j] =  eqns[p+nc*j] - eqns[p+nc*i] * multiplier ;
+            } while (--np);
+        } while (j--);
     } while (--i);
-  
-  // operations on the diagonal
+
+    // operations on the diagonal
     i = 2;
     do {
-    var multiplier = 1 / eqns[i+nc*i];
-    np = nc;
-    do { 
-        p = nc - np;
-        eqns[p+nc*i] = eqns[p+nc*i] * multiplier ;
-    } while (--np);
+        var multiplier = 1 / eqns[i+nc*i];
+        np = nc;
+        do {
+            p = nc - np;
+            eqns[p+nc*i] = eqns[p+nc*i] * multiplier ;
+        } while (--np);
     } while (i--);
-  
-  
+
     i = 2;
     do {
-    j = 2;
-    do {
-        p = eqns[nr+j+nc*i];
-        if( isNaN( p ) || p ===Infinity )
-        throw "Could not reverse! A=["+this.toString()+"]";
-        target.e( i , j , p );
-    } while (j--);
+        j = 2;
+        do {
+            p = eqns[nr+j+nc*i];
+            if( isNaN( p ) || p ===Infinity ){
+                throw "Could not reverse! A=["+this.toString()+"]";
+            }
+            target.e( i , j , p );
+        } while (j--);
     } while (i--);
-    
+
     return target;
 };
