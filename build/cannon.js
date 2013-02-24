@@ -4161,9 +4161,7 @@ CANNON.ContactPoint = function(bi, bj, normalConstraint, contactMaterial, tangen
     this.t1 = tangentConstraint1;
     this.t2 = tangentConstraint2;
     this.contactMaterial = contactMaterial;
-};/*global CANNON:true */
-
-/**
+};/**
  * @class CANNON.ContactGenerator
  * @brief Helper class for the World. Generates ContactPoints.
  * @todo Sphere-ConvexPolyhedron contacts
@@ -4261,7 +4259,7 @@ CANNON.ContactGenerator = function(){
     function pointInPolygon(verts, normal, p){
         var positiveResult = null;
         var N = verts.length;
-        for(var i=0; i<N; i++){
+        for(var i=0; i!==N; i++){
             var v = verts[i];
 
             // Get edge to the next vertex
@@ -4496,7 +4494,7 @@ CANNON.ContactGenerator = function(){
         var penetrating_sides = [];
 
         // Check corners
-        for(var i=0; i<verts.length; i++){
+        for(var i=0; i!==verts.length; i++){
             var v = verts[i];
 
             // World position of corner
@@ -4575,7 +4573,7 @@ CANNON.ContactGenerator = function(){
                     return; // We only expect *one* face contact
                 } else {
                     // Edge?
-                    for(var j=0; j<face.length; j++){
+                    for(var j=0; j!==face.length; j++){
 
                         // Get two world transformed vertices
                         var v1 = v3pool.get();
@@ -4672,7 +4670,7 @@ CANNON.ContactGenerator = function(){
             if(!si){
                 nr+= r.length;
             }
-            for(var j=0; j<r.length; j++){
+            for(var j=0; j!==r.length; j++){
                 // The "rj" vector is in world coords, though we must add the world child offset vector.
                 //r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
                 qj.vmult(sj.childOffsets[i],tempVec);
@@ -4695,7 +4693,7 @@ CANNON.ContactGenerator = function(){
         normal.set(0,0,1);
         qi.vmult(normal,normal); // Turn normal according to plane orientation
         var relpos = planeConvex_relpos;
-        for(var i=0; i<sj.vertices.length; i++){
+        for(var i=0; i!==sj.vertices.length; i++){
             sj.vertices[i].copy(v);
             // Transform to world coords
             qj.vmult(v,v);
@@ -4730,7 +4728,7 @@ CANNON.ContactGenerator = function(){
             var res = [];
             var q = convexConvex_q;
             si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
-            for(var j=0; j<res.length; j++){
+            for(var j=0; j!==res.length; j++){
                 var r = makeResult(bi,bj);
                 sepAxis.negate(r.ni);
                 res[j].normal.negate(q);
@@ -4989,7 +4987,7 @@ CANNON.ContactGenerator = function(){
                     // Must swap
                     var r = [];
                     recurseCompound(r,sj,si,xj,xi,qj,qi,bj,bi);
-                    for(var ri=0; ri<r.length; ri++){
+                    for(var ri=0; ri!==r.length; ri++){
                         swapResult(r[ri]);
                         result.push(r[ri]);
                     }
