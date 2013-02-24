@@ -15,23 +15,23 @@ CANNON.Quaternion = function(x,y,z,w){
     * @property float x
     * @memberof CANNON.Quaternion
     */
-    this.x = x!=undefined ? x : 0;
+    this.x = x!==undefined ? x : 0;
     /**
     * @property float y
     * @memberof CANNON.Quaternion
     */
-    this.y = y!=undefined ? y : 0;
+    this.y = y!==undefined ? y : 0;
     /**
     * @property float z
     * @memberof CANNON.Quaternion
     */
-    this.z = z!=undefined ? z : 0;
+    this.z = z!==undefined ? z : 0;
     /**
     * @property float w
     * @memberof CANNON.Quaternion
     * @brief The multiplier of the real quaternion basis vector.
     */
-    this.w = w!=undefined ? w : 1;
+    this.w = w!==undefined ? w : 1;
 };
 
 /**
@@ -117,7 +117,7 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
  * @param CANNON.Quaternion q
  * @param CANNON.Quaternion target Optional.
  * @return CANNON.Quaternion
- */ 
+ */
 var Quaternion_mult_va = new CANNON.Vec3();
 var Quaternion_mult_vb = new CANNON.Vec3();
 var Quaternion_mult_vaxvb = new CANNON.Vec3();
@@ -127,7 +127,7 @@ CANNON.Quaternion.prototype.mult = function(q,target){
         va = Quaternion_mult_va,
         vb = Quaternion_mult_vb,
         vaxvb = Quaternion_mult_vaxvb;
-    
+
     va.set(this.x,this.y,this.z);
     vb.set(q.x,q.y,q.z);
     target.w = w*q.w - va.dot(vb);
@@ -149,16 +149,15 @@ CANNON.Quaternion.prototype.mult = function(q,target){
  */
 CANNON.Quaternion.prototype.inverse = function(target){
     var x = this.x, y = this.y, z = this.z, w = this.w;
-    if(target==undefined)
-        target = new CANNON.Quaternion();
-    
+    target = target || new CANNON.Quaternion();
+
     this.conjugate(target);
     var inorm2 = 1/(x*x + y*y + z*z + w*w);
     target.x *= inorm2;
     target.y *= inorm2;
     target.z *= inorm2;
     target.w *= inorm2;
-    
+
     return target;
 };
 
@@ -170,8 +169,7 @@ CANNON.Quaternion.prototype.inverse = function(target){
  * @return CANNON.Quaternion
  */
 CANNON.Quaternion.prototype.conjugate = function(target){
-    if(target==undefined)
-        target = new CANNON.Quaternion();
+    target = target || new CANNON.Quaternion();
 
     target.x = -this.x;
     target.y = -this.y;
@@ -222,7 +220,7 @@ CANNON.Quaternion.prototype.normalizeFast = function () {
         this.z *= f;
         this.w *= f;
     }
-}
+};
 
 /**
  * @method vmult
@@ -241,13 +239,13 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
     } else {
 
         var x = v.x,
-        y = v.y,
-        z = v.z;
+            y = v.y,
+            z = v.z;
 
         var qx = this.x,
-        qy = this.y,
-        qz = this.z,
-        qw = this.w;
+            qy = this.y,
+            qz = this.z,
+            qw = this.w;
 
         // q*v
         var ix =  qw * x + qy * z - qz * y,
@@ -312,7 +310,6 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
         break;
     default:
         throw new Error("Euler order "+order+" not supported yet.");
-        break;
     }
 
     target.y = heading;
