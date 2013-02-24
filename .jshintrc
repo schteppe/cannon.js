@@ -25,5 +25,9 @@
     "sub": true,
     "strict": false,
     "trailing" : true,
-    "undef": true
+    "undef": true,
+    "indent":4,
+    "globals": {
+        "CANNON": true
+    }
 }
