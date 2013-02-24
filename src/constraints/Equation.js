@@ -16,13 +16,13 @@ CANNON.Equation = function(bi,bj,minForce,maxForce){
      * @property float minForce
      * @memberof CANNON.Equation
      */
-    this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
+    this.minForce = typeof(minForce)==="undefined" ? -1e6 : minForce;
 
     /**
      * @property float maxForce
      * @memberof CANNON.Equation
      */
-    this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
+    this.maxForce = typeof(maxForce)==="undefined" ? 1e6 : maxForce;
 
     /**
      * @property CANNON.Body bi
