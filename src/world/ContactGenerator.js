@@ -19,7 +19,7 @@ CANNON.ContactGenerator = function(){
     var contactPointPool = [];
 
     var v3pool = new CANNON.Vec3Pool();
-    
+
     /*
      * Make a contact object.
      * @return object
@@ -31,8 +31,9 @@ CANNON.ContactGenerator = function(){
             c.bi = bi;
             c.bj = bj;
             return c;
-        } else
+        } else {
             return new CANNON.ContactEquation(bi,bj);
+        }
     }
 
     /*
@@ -41,9 +42,13 @@ CANNON.ContactGenerator = function(){
      */
     function swapResult(r){
         var temp;
-        temp = r.ri; r.ri = r.rj; r.rj = temp;
+        temp = r.ri;
+        r.ri = r.rj;
+        r.rj = temp;
         r.ni.negate(r.ni);
-        temp = r.bi; r.bi = r.bj; r.bj = temp;
+        temp = r.bi;
+        r.bi = r.bj;
+        r.bj = temp;
     }
 
     function sphereSphere(result,si,sj,xi,xj,qi,qj,bi,bj){
@@ -81,8 +86,9 @@ CANNON.ContactGenerator = function(){
         xi.vsub(xj,point_on_plane_to_sphere);
         r.ni.mult(r.ni.dot(point_on_plane_to_sphere),plane_to_sphere_ortho);
         point_on_plane_to_sphere.vsub(plane_to_sphere_ortho,r.rj); // The sphere position projected to plane
-        if(plane_to_sphere_ortho.norm2() <= si.radius*si.radius)
+        if(plane_to_sphere_ortho.norm2() <= si.radius*si.radius){
             result.push(r);
+        }
     }
 
     // See http://bulletphysics.com/Bullet/BulletFull/SphereTriangleDetector_8cpp_source.html
@@ -113,10 +119,13 @@ CANNON.ContactGenerator = function(){
 
             // If all such dot products have same sign, we are inside the polygon.
             if(positiveResult===null || (r>0 && positiveResult===true) || (r<=0 && positiveResult===false)){
-                if(positiveResult===null) positiveResult = r>0;
+                if(positiveResult===null){
+                    positiveResult = r>0;
+                }
                 continue;
-            } else
+            } else {
                 return false; // Encountered some other sign. Exit.
+            }
         }
 
         // If we got here, all dot products were of the same sign.
@@ -178,14 +187,14 @@ CANNON.ContactGenerator = function(){
                 if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
                     var dist = Math.abs(dot-h-R);
                     if(side_distance===null || dist < side_distance){
-                    side_distance = dist;
-                    side_dot1 = dot1;
-                    side_dot2 = dot2;
-                    side_h = h;
-                    ns.copy(side_ns);
-                    ns1.copy(side_ns1);
-                    ns2.copy(side_ns2);
-                    side_penetrations++;
+                        side_distance = dist;
+                        side_dot1 = dot1;
+                        side_dot2 = dot2;
+                        side_h = h;
+                        ns.copy(side_ns);
+                        ns1.copy(side_ns1);
+                        ns2.copy(side_ns2);
+                        side_penetrations++;
                     }
                 }
             }
@@ -211,12 +220,21 @@ CANNON.ContactGenerator = function(){
             for(var k=0; k!==2 && !found; k++){
                 for(var l=0; l!==2 && !found; l++){
                     rj.set(0,0,0);
-                    if(j) rj.vadd(sides[0],rj);
-                    else  rj.vsub(sides[0],rj);
-                    if(k) rj.vadd(sides[1],rj);
-                    else  rj.vsub(sides[1],rj);
-                    if(l) rj.vadd(sides[2],rj);
-                    else  rj.vsub(sides[2],rj);
+                    if(j){
+                        rj.vadd(sides[0],rj);
+                    } else {
+                        rj.vsub(sides[0],rj);
+                    }
+                    if(k){
+                        rj.vadd(sides[1],rj);
+                    } else {
+                        rj.vsub(sides[1],rj);
+                    }
+                    if(l){
+                        rj.vadd(sides[2],rj);
+                    } else {
+                        rj.vsub(sides[2],rj);
+                    }
 
                     // World position of corner
                     xj.vadd(rj,sphere_to_corner);
@@ -245,9 +263,9 @@ CANNON.ContactGenerator = function(){
         var orthogonal = v3pool.get();
         var dist = v3pool.get();
         var Nsides = sides.length;
-        for(var j=0; j<Nsides && !found; j++){
-            for(var k=0; k<Nsides && !found; k++){
-                if(j%3!=k%3){
+        for(var j=0; j!==Nsides && !found; j++){
+            for(var k=0; k!==Nsides && !found; k++){
+                if(j%3 !== k%3){
                     // Get edge tangent
                     sides[k].cross(sides[j],edgeTangent);
                     edgeTangent.normalize();
@@ -257,10 +275,12 @@ CANNON.ContactGenerator = function(){
                     r.vsub(xj,r);
                     var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
                     edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
-                    
+
                     // Find the third side orthogonal to this one
                     var l = 0;
-                    while(l==j%3 || l==k%3) l++;
+                    while(l===j%3 || l===k%3){
+                        l++;
+                    }
 
                     // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
                     xi.copy(dist);
@@ -271,7 +291,7 @@ CANNON.ContactGenerator = function(){
                     // Distances in tangent direction and distance in the plane orthogonal to it
                     var tdist = Math.abs(orthonorm);
                     var ndist = dist.norm();
-                    
+
                     if(tdist < sides[l].norm() && ndist<R){
                         found = true;
                         var res = makeResult(bi,bj);
@@ -349,7 +369,7 @@ CANNON.ContactGenerator = function(){
             worldPoint.vadd(xj,worldPoint); // Arbitrary point in the face
 
             var worldSpherePointClosestToPlane = sphereConvex_worldSpherePointClosestToPlane;
-            worldNormal.mult(-R,worldSpherePointClosestToPlane)
+            worldNormal.mult(-R,worldSpherePointClosestToPlane);
             xi.vadd(worldSpherePointClosestToPlane,worldSpherePointClosestToPlane);
 
             var penetrationVec = sphereConvex_penetrationVec;
@@ -405,7 +425,7 @@ CANNON.ContactGenerator = function(){
                         // Construct edge vector
                         var edge = sphereConvex_edge;
                         v2.vsub(v1,edge);
-                        edgeUnit = sphereConvex_edgeUnit;
+                        var edgeUnit = sphereConvex_edgeUnit;
                         edge.unit(edgeUnit);
 
                         // p is xi projected onto the edge
@@ -486,7 +506,9 @@ CANNON.ContactGenerator = function(){
 
             var tempVec = newPos;
 
-            if(!si) nr+= r.length;
+            if(!si){
+                nr+= r.length;
+            }
             for(var j=0; j<r.length; j++){
                 // The "rj" vector is in world coords, though we must add the world child offset vector.
                 //r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
@@ -646,7 +668,7 @@ CANNON.ContactGenerator = function(){
                 sj.faceNormals[i].copy(normal);
                 normal.normalize();
                 qj.vmult(normal,normal);
-                
+
                 // Check how much the particle penetrates the polygon plane.
                 var penetration = -normal.dot(xi.vsub(verts[0]));
                 if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
@@ -688,28 +710,52 @@ CANNON.ContactGenerator = function(){
     function nearPhase(result,si,sj,xi,xj,qi,qj,bi,bj){
         var swapped = false, types = CANNON.Shape.types;
         if(si && sj){
-            if(si.type>sj.type){
+            if(si.type > sj.type){
                 var temp;
-                temp=sj;   sj=si;   si=temp;
-                temp=xj;   xj=xi;   xi=temp;
-                temp=qj;   qj=qi;   qi=temp;
-                temp=bj;   bj=bi;   bi=temp;
+                temp=sj;
+                sj=si;
+                si=temp;
+
+                temp=xj;
+                xj=xi;
+                xi=temp;
+
+                temp=qj;
+                qj=qi;
+                qi=temp;
+
+                temp=bj;
+                bj=bi;
+                bi=temp;
+
                 swapped = true;
             }
         } else {
             // Particle!
             if(si && !sj){
                 var temp;
-                temp=sj;   sj=si;   si=temp;
-                temp=xj;   xj=xi;   xi=temp;
-                temp=qj;   qj=qi;   qi=temp;
-                temp=bj;   bj=bi;   bi=temp;
+                temp=sj;
+                sj=si;
+                si=temp;
+
+                temp=xj;
+                xj=xi;
+                xi=temp;
+
+                temp=qj;
+                qj=qi;
+                qi=temp;
+
+                temp=bj;
+                bj=bi;
+                bi=temp;
+
                 swapped = true;
             }
         }
 
         if(si && sj){
-            if(si.type==types.SPHERE){
+            if(si.type === types.SPHERE){
 
                 switch(sj.type){
                 case types.SPHERE: // sphere-sphere
@@ -731,13 +777,12 @@ CANNON.ContactGenerator = function(){
                     console.warn("Collision between CANNON.Shape.types.SPHERE and "+sj.type+" not implemented yet.");
                     break;
                 }
-            
-            } else if(si.type==types.PLANE){
-                
+
+            } else if(si.type === types.PLANE){
+
                 switch(sj.type){
                 case types.PLANE: // plane-plane
                     throw new Error("Plane-plane collision... wait, you did WHAT?");
-                    break;
                 case types.BOX: // plane-box
                     planeBox(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
@@ -752,8 +797,8 @@ CANNON.ContactGenerator = function(){
                     break;
                 }
 
-            } else if(si.type==types.BOX){
-                
+            } else if(si.type===types.BOX){
+
                 switch(sj.type){
                 case types.BOX: // box-box
                     // Do convex/convex instead
@@ -770,9 +815,9 @@ CANNON.ContactGenerator = function(){
                     console.warn("Collision between CANNON.Shape.types.BOX and "+sj.type+" not implemented yet.");
                     break;
                 }
-            
-            } else if(si.type==types.COMPOUND){
-                
+
+            } else if(si.type===types.COMPOUND){
+
                 switch(sj.type){
                 case types.COMPOUND: // compound-compound
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
@@ -791,7 +836,7 @@ CANNON.ContactGenerator = function(){
                     break;
                 }
 
-            } else if(si.type==types.CONVEXPOLYHEDRON){
+            } else if(si.type===types.CONVEXPOLYHEDRON){
 
                 switch(sj.type){
                 case types.CONVEXPOLYHEDRON: // convex polyhedron - convex polyhedron
@@ -828,10 +873,11 @@ CANNON.ContactGenerator = function(){
                 break;
             }
         }
-    
+
         // Swap back if we swapped bodies in the beginning
-        for(var i=0, Nresults=result.length; swapped && i!=Nresults; i++)
+        for(var i=0, Nresults=result.length; swapped && i!==Nresults; i++){
             swapResult(result[i]);
+        }
     }
 
     /**
@@ -840,8 +886,8 @@ CANNON.ContactGenerator = function(){
      * @brief Removes unnecessary members of an array of CANNON.ContactPoint.
      */
     this.reduceContacts = function(contacts){
-    
-    }
+
+    };
 
     /**
      * @method getContacts
@@ -853,11 +899,10 @@ CANNON.ContactGenerator = function(){
      * @param array oldcontacts Optional. Array of reusable contact objects
      */
     this.getContacts = function(p1,p2,world,result,oldcontacts){
-    
         // Save old contact objects
         contactPointPool = oldcontacts;
 
-        for(var k=0, N=p1.length; k!=N; k++){
+        for(var k=0, N=p1.length; k!==N; k++){
             // Get current collision indeces
             var bi = p1[k],
                 bj = p2[k];
@@ -874,5 +919,5 @@ CANNON.ContactGenerator = function(){
                         bj
                         );
         }
-    }
+    };
 };
