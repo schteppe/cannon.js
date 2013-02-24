@@ -120,21 +120,6 @@ CANNON.World = function(){
      */
     this.defaultContactMaterial = new CANNON.ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.0);
 
-    this.temp = {
-        gvec:new CANNON.Vec3(),
-        vi:new CANNON.Vec3(),
-        vj:new CANNON.Vec3(),
-        wi:new CANNON.Vec3(),
-        wj:new CANNON.Vec3(),
-        t1:new CANNON.Vec3(),
-        t2:new CANNON.Vec3(),
-        rixn:new CANNON.Vec3(),
-        rjxn:new CANNON.Vec3(),
-        step_q:new CANNON.Quaternion(),
-        step_w:new CANNON.Quaternion(),
-        step_wq:new CANNON.Quaternion()
-    };
-
     /**
      * @property bool doProfiling
      * @memberof CANNON.World
@@ -387,7 +372,19 @@ var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to s
     World_step_oldContacts = [],
     World_step_frictionEquationPool = [],
     World_step_p1 = [],
-    World_step_p2 = [];
+    World_step_p2 = [],
+    World_step_gvec = new CANNON.Vec3(),
+    World_step_vi = new CANNON.Vec3(),
+    World_step_vj = new CANNON.Vec3(),
+    World_step_wi = new CANNON.Vec3(),
+    World_step_wj = new CANNON.Vec3(),
+    World_step_t1 = new CANNON.Vec3(),
+    World_step_t2 = new CANNON.Vec3(),
+    World_step_rixn = new CANNON.Vec3(),
+    World_step_rjxn = new CANNON.Vec3(),
+    World_step_step_q = new CANNON.Quaternion(),
+    World_step_step_w = new CANNON.Quaternion(),
+    World_step_step_wq = new CANNON.Quaternion();
 CANNON.World.prototype.step = function(dt){
     var world = this,
         that = this,
@@ -463,7 +460,6 @@ CANNON.World.prototype.step = function(dt){
     if(doProfiling){
         profilingStart = now();
     }
-    var temp = this.temp;
     var ncontacts = contacts.length;
 
     // Transfer FrictionEquation from current list to the pool for reuse
@@ -489,7 +485,7 @@ CANNON.World.prototype.step = function(dt){
         var e = cm.restitution;
 
         // g = ( xj + rj - xi - ri ) .dot ( ni )
-        var gvec = temp.gvec;
+        var gvec = World_step_gvec;
         gvec.set(bj.position.x + c.rj.x - bi.position.x - c.ri.x,
                  bj.position.y + c.rj.y - bi.position.y - c.ri.y,
                  bj.position.z + c.rj.z - bi.position.z - c.ri.z);
@@ -610,9 +606,9 @@ CANNON.World.prototype.step = function(dt){
     if(doProfiling){
         profilingStart = now();
     }
-    var q = temp.step_q;
-    var w = temp.step_w;
-    var wq = temp.step_wq;
+    var q = World_step_step_q;
+    var w = World_step_step_w;
+    var wq = World_step_step_wq;
     var stepnumber = this.stepnumber;
     var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
