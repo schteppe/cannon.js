@@ -1,7 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>three.js webgl - cloth simulation</title>
+        <title>cannon.js cloth simulation</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <style>
@@ -12,7 +12,6 @@
                 margin: 0px;
                 overflow: hidden;
             }
-
             #info {
                 text-align: center;
                 padding: 10px;
@@ -20,7 +19,6 @@
                 width: 100%;
                 position: absolute;
             }
-
             a {
                 text-decoration: underline;
                 cursor: pointer;
@@ -268,13 +266,12 @@
 
             }
 
-            var startTime = new Date().getTime() / 1000;
             function animate() {
                 requestAnimationFrame( animate );
                 controls.update();
                 world.step(dt);
-                var time = new Date().getTime() / 1000 - startTime;
-                sphereBody.position.set(R*Math.sin(2*time),0,R*Math.cos(2*time));
+                var t = world.time;
+                sphereBody.position.set(R*Math.sin(2*t),0,R*Math.cos(2*t));
                 render();
             }
 
