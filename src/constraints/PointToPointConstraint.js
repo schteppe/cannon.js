@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.PointToPointConstraint
  * @brief Connects two bodies at given offset points

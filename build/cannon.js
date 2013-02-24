@@ -5092,13 +5092,13 @@ CANNON.Equation = function(bi,bj,minForce,maxForce){
      * @property float minForce
      * @memberof CANNON.Equation
      */
-    this.minForce = typeof(minForce)=="undefined" ? -1e6 : minForce;
+    this.minForce = typeof(minForce)==="undefined" ? -1e6 : minForce;
 
     /**
      * @property float maxForce
      * @memberof CANNON.Equation
      */
-    this.maxForce = typeof(maxForce)=="undefined" ? 1e6 : maxForce;
+    this.maxForce = typeof(maxForce)==="undefined" ? 1e6 : maxForce;
 
     /**
      * @property CANNON.Body bi
@@ -5427,8 +5427,12 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    }
 
     var t = this.t;
 
@@ -5469,11 +5473,15 @@ CANNON.FrictionEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    }
 
     // Compute rxt * I * rxt for each body
-    invIi.vmult(rixt,FEcomputeC_temp1); 
+    invIi.vmult(rixt,FEcomputeC_temp1);
     invIj.vmult(rjxt,FEcomputeC_temp2);
     C += FEcomputeC_temp1.dot(rixt);
     C += FEcomputeC_temp2.dot(rjxt);
@@ -5486,7 +5494,7 @@ var FrictionEquation_computeGWlambda_ulambda = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.computeGWlambda = function(){
 
     // Correct at all ???
-    
+
     var bi = this.bi;
     var bj = this.bj;
 
@@ -5496,10 +5504,12 @@ CANNON.FrictionEquation.prototype.computeGWlambda = function(){
     GWlambda += ulambda.dot(this.t);
 
     // Angular
-    if(bi.wlambda)
+    if(bi.wlambda){
         GWlambda -= bi.wlambda.dot(this.rixt);
-    if(bj.wlambda)
+    }
+    if(bj.wlambda){
         GWlambda += bj.wlambda.dot(this.rjxt);
+    }
 
     return GWlambda;
 };
@@ -5593,10 +5603,16 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity(); // ok?
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity(); // ok?
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    } else {
+        invIi.identity(); // ok?
+    }
+    if(bj.invInertia) {
+        invIj.setTrace(bj.invInertia);
+    } else {
+        invIj.identity(); // ok?
+    }
 
     // Caluclate cross products
     ni.cross(nj,nixnj);
@@ -5608,7 +5624,7 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     // W = [vi wi vj wj]
     var Gq = -ni.dot(nj);
     var GW = njxni.dot(wi) + nixnj.dot(wj);
-    var GiMf = 0//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
+    var GiMf = 0;//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
 
     var B = - Gq * a - GW * b - h*GiMf;
 
@@ -5629,10 +5645,16 @@ CANNON.RotationalEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity(); // ok?
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity(); // ok?
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    } else {
+        invIi.identity(); // ok?
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    } else {
+        invIj.identity(); // ok?
+    }
 
     C += invIi.vmult(njxni).dot(njxni);
     C += invIj.vmult(nixnj).dot(nixnj);
@@ -5651,8 +5673,12 @@ CANNON.RotationalEquation.prototype.computeGWlambda = function(){
     //GWlambda += ulambda.dot(this.ni);
 
     // Angular
-    if(bi.wlambda) GWlambda += bi.wlambda.dot(this.njxni);
-    if(bj.wlambda) GWlambda += bj.wlambda.dot(this.nixnj);
+    if(bi.wlambda){
+        GWlambda += bi.wlambda.dot(this.njxni);
+    }
+    if(bj.wlambda){
+        GWlambda += bj.wlambda.dot(this.nixnj);
+    }
 
     //console.log("GWlambda:",GWlambda);
 
@@ -5681,8 +5707,6 @@ CANNON.RotationalEquation.prototype.addToWlambda = function(deltalambda){
         bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
     }
 };
-/*global CANNON:true */
-
 /**
  * @class CANNON.Constraint
  * @brief Constraint base class
@@ -5717,8 +5741,9 @@ CANNON.Constraint.prototype.update = function(){
 CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
     CANNON.Constraint.call(this,bodyA,bodyB);
 
-    if(typeof(maxForce)=="undefined" )
+    if(typeof(maxForce)==="undefined" ) {
         maxForce = 1e6;
+    }
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
@@ -5874,8 +5899,6 @@ CANNON.RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
         bj.wlambda.vadd(I.vmult(axisB).mult(deltalambda),bj.wlambda);
     }
 };
-/*global CANNON:true */
-
 /**
  * @class CANNON.HingeConstraint
  * @brief Hinge constraint. Tries to keep the local body axes equal.
@@ -5982,9 +6005,7 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         }
     };
 };
-CANNON.HingeConstraint.prototype = new CANNON.Constraint();/*global CANNON:true */
-
-/**
+CANNON.HingeConstraint.prototype = new CANNON.Constraint();/**
  * @class CANNON.PointToPointConstraint
  * @brief Connects two bodies at given offset points
  * @author schteppe

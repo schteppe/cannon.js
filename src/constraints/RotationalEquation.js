@@ -54,10 +54,16 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity(); // ok?
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity(); // ok?
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    } else {
+        invIi.identity(); // ok?
+    }
+    if(bj.invInertia) {
+        invIj.setTrace(bj.invInertia);
+    } else {
+        invIj.identity(); // ok?
+    }
 
     // Caluclate cross products
     ni.cross(nj,nixnj);
@@ -69,7 +75,7 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     // W = [vi wi vj wj]
     var Gq = -ni.dot(nj);
     var GW = njxni.dot(wi) + nixnj.dot(wj);
-    var GiMf = 0//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
+    var GiMf = 0;//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
 
     var B = - Gq * a - GW * b - h*GiMf;
 
@@ -90,10 +96,16 @@ CANNON.RotationalEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity(); // ok?
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity(); // ok?
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    } else {
+        invIi.identity(); // ok?
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    } else {
+        invIj.identity(); // ok?
+    }
 
     C += invIi.vmult(njxni).dot(njxni);
     C += invIj.vmult(nixnj).dot(nixnj);
@@ -112,8 +124,12 @@ CANNON.RotationalEquation.prototype.computeGWlambda = function(){
     //GWlambda += ulambda.dot(this.ni);
 
     // Angular
-    if(bi.wlambda) GWlambda += bi.wlambda.dot(this.njxni);
-    if(bj.wlambda) GWlambda += bj.wlambda.dot(this.nixnj);
+    if(bi.wlambda){
+        GWlambda += bi.wlambda.dot(this.njxni);
+    }
+    if(bj.wlambda){
+        GWlambda += bj.wlambda.dot(this.nixnj);
+    }
 
     //console.log("GWlambda:",GWlambda);
 

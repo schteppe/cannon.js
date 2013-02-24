@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.HingeConstraint
  * @brief Hinge constraint. Tries to keep the local body axes equal.

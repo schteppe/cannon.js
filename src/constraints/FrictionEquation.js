@@ -60,8 +60,12 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    }
 
     var t = this.t;
 
@@ -102,11 +106,15 @@ CANNON.FrictionEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    }
 
     // Compute rxt * I * rxt for each body
-    invIi.vmult(rixt,FEcomputeC_temp1); 
+    invIi.vmult(rixt,FEcomputeC_temp1);
     invIj.vmult(rjxt,FEcomputeC_temp2);
     C += FEcomputeC_temp1.dot(rixt);
     C += FEcomputeC_temp2.dot(rjxt);
@@ -119,7 +127,7 @@ var FrictionEquation_computeGWlambda_ulambda = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.computeGWlambda = function(){
 
     // Correct at all ???
-    
+
     var bi = this.bi;
     var bj = this.bj;
 
@@ -129,10 +137,12 @@ CANNON.FrictionEquation.prototype.computeGWlambda = function(){
     GWlambda += ulambda.dot(this.t);
 
     // Angular
-    if(bi.wlambda)
+    if(bi.wlambda){
         GWlambda -= bi.wlambda.dot(this.rixt);
-    if(bj.wlambda)
+    }
+    if(bj.wlambda){
         GWlambda += bj.wlambda.dot(this.rjxt);
+    }
 
     return GWlambda;
 };
