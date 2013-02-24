@@ -429,14 +429,14 @@ CANNON.Vec3.prototype.cross = function(v,target){
 
     var A = [this.x, this.y, this.z];
     var B = [v.x, v.y, v.z];
-    
+
     /*target.x = (A[1] * B[2]) - (A[2] * B[1]);
     target.y = (A[2] * B[0]) - (A[0] * B[2]);
     target.z = (A[0] * B[1]) - (A[1] * B[0]);*/
     target.x = (y * vz) - (z * vy);
     target.y = (z * vx) - (x * vz);
     target.z = (x * vy) - (y * vx);
-    
+
     return target;
 };
 
@@ -455,7 +455,7 @@ CANNON.Vec3.prototype.set = function(x,y,z){
     this.z = z;
     return this;
 };
-    
+
 /**
  * @method vadd
  * @memberof CANNON.Vec3
@@ -473,9 +473,9 @@ CANNON.Vec3.prototype.vadd = function(v,target){
         return new CANNON.Vec3(this.x + v.x,
                                this.y + v.y,
                                this.z + v.z);
-    }  
+    }
 };
-    
+
 /**
  * @method vsub
  * @memberof CANNON.Vec3
@@ -594,8 +594,7 @@ CANNON.Vec3.prototype.distanceTo = function(p){
  * @return CANNON.Vec3
  */
 CANNON.Vec3.prototype.mult = function(scalar,target){
-    if(!target)
-        target = new CANNON.Vec3();
+    target = target || new CANNON.Vec3();
     target.x = scalar*this.x;
     target.y = scalar*this.y;
     target.z = scalar*this.z;
@@ -620,7 +619,7 @@ CANNON.Vec3.prototype.dot = function(v){
  */
 CANNON.Vec3.prototype.isZero = function(){
     return this.x===0 && this.y===0 && this.z===0;
-}
+};
 
 /**
  * @method negate
@@ -650,10 +649,10 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
     var norm = this.norm();
     if(norm>0.0){
         var n = Vec3_tangents_n;
-	var inorm = 1/norm;
+        var inorm = 1/norm;
         n.set(this.x*inorm,this.y*inorm,this.z*inorm);
         var randVec = Vec3_tangents_randVec;
-	if(Math.abs(n.x) < 0.9){
+        if(Math.abs(n.x) < 0.9){
             randVec.set(1,0,0);
             n.cross(randVec,t1);
         } else {
@@ -718,14 +717,16 @@ CANNON.Vec3.prototype.lerp = function(v,t,target){
  * @return bool
  */
 CANNON.Vec3.prototype.almostEquals = function(v,precision){
-    if(precision===undefined)
+    if(precision===undefined){
         precision = 1e-6;
+    }
     if( Math.abs(this.x-v.x)>precision ||
         Math.abs(this.y-v.y)>precision ||
-        Math.abs(this.z-v.z)>precision)
+        Math.abs(this.z-v.z)>precision){
         return false;
+    }
     return true;
-}
+};
 
 /**
  * @method almostZero
@@ -734,14 +735,16 @@ CANNON.Vec3.prototype.almostEquals = function(v,precision){
  * @memberof CANNON.Vec3
  */
 CANNON.Vec3.prototype.almostZero = function(precision){
-    if(precision===undefined)
+    if(precision===undefined){
         precision = 1e-6;
+    }
     if( Math.abs(this.x)>precision ||
         Math.abs(this.y)>precision ||
-        Math.abs(this.z)>precision)
+        Math.abs(this.z)>precision){
         return false;
+    }
     return true;
-}
+};
 /*global CANNON:true */
 
 /**
