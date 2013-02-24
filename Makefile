@@ -15,7 +15,7 @@ OBJECTS   = src/objects/Shape.js src/objects/Body.js src/objects/Particle.js src
 SOLVER    = src/solver/Solver.js src/solver/GSSolver.js src/solver/SplitSolver.js
 UTILS    = src/utils/*.js
 MATERIAL  = src/material/Material.js src/material/ContactMaterial.js
-WORLD     = src/world/World.js src/world/ContactPoint.js src/world/ContactGenerator.js
+WORLD     = src/world/World.js src/world/ContactGenerator.js
 DEMO      = src/demo/Demo.js
 END       = src/wrapper/End.js
 

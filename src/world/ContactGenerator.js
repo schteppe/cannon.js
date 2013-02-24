@@ -1,6 +1,6 @@
 /**
  * @class CANNON.ContactGenerator
- * @brief Helper class for the World. Generates ContactPoints.
+ * @brief Helper class for the World. Generates ContactEquations.
  * @todo Sphere-ConvexPolyhedron contacts
  * @todo Contact reduction
  */
