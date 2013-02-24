@@ -45,10 +45,16 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity(); // ok?
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity(); // ok?
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    } else {
+        invIi.identity(); // ok?
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    } else {
+        invIj.identity(); // ok?
+    }
 
     // g = 0
     // gdot = axisA * wi - axisB * wj
@@ -77,10 +83,16 @@ CANNON.RotationalMotorEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity(); // ok?
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity(); // ok?
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    } else {
+        invIi.identity(); // ok?
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    } else {
+        invIj.identity(); // ok?
+    }
 
     C += invIi.vmult(axisA).dot(axisB);
     C += invIj.vmult(axisB).dot(axisB);
@@ -101,8 +113,12 @@ CANNON.RotationalMotorEquation.prototype.computeGWlambda = function(){
     //GWlambda += ulambda.dot(this.ni);
 
     // Angular
-    if(bi.wlambda) GWlambda += bi.wlambda.dot(axisA);
-    if(bj.wlambda) GWlambda += bj.wlambda.dot(axisB);
+    if(bi.wlambda){
+        GWlambda += bi.wlambda.dot(axisA);
+    }
+    if(bj.wlambda){
+        GWlambda += bj.wlambda.dot(axisB);
+    }
 
     //console.log("GWlambda:",GWlambda);
 
