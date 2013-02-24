@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 CANNON.SplitSolver = function(subsolver){
     CANNON.Solver.call(this);
     this.subsolver = subsolver;

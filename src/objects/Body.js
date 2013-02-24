@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Body
  * @brief Base class for all body types.

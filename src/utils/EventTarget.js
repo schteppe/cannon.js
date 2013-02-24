@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.EventTarget
  * @see https://github.com/mrdoob/eventtarget.js/
@@ -7,7 +5,7 @@
 CANNON.EventTarget = function () {
     var listeners = {};
     this.addEventListener = function ( type, listener ) {
-        if ( listeners[ type ] == undefined ) {
+        if ( listeners[ type ] === undefined ) {
             listeners[ type ] = [];
         }
         if ( listeners[ type ].indexOf( listener ) === - 1 ) {

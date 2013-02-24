@@ -51,11 +51,10 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
             faces.push([2*i, 2*i+1, 2*(i+1), 2*(i+1)+1]);
         } else {
             faces.push([2*i, 2*i+1, 0, 1]);
-          
             // Normal
             normals.push(new CANNON.Vec3(cos(thetaN),sin(thetaN),0));
         }
-    } 
+    }
     faces.push(topface);
     normals.push(new CANNON.Vec3(0,0,1));
     faces.push(bottomface);

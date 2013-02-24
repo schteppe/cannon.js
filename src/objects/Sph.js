@@ -1,7 +1,3 @@
-/*global CANNON:true */
-
-
-
 
 
 

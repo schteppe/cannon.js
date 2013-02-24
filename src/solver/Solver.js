@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Solver
  * @brief Constraint equation solver base class.
@@ -21,9 +19,11 @@ CANNON.Solver.prototype.addEquation = function(eq){
 };
 
 CANNON.Solver.prototype.removeEquation = function(eq){
-    var i = this.equations.indexOf(eq);
-    if(i!=-1)
-        this.equations.splice(i,1);
+    var eqs = this.equations;
+    var i = eqs.indexOf(eq);
+    if(i !== -1){
+        eqs.splice(i,1);
+    }
 };
 
 CANNON.Solver.prototype.removeAllEquations = function(){

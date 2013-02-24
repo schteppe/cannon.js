@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Ray
  * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.

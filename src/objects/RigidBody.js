@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.RigidBody
  * @brief Rigid body base class

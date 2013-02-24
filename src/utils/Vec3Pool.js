@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Vec3Pool
  */

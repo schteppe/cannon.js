@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Particle
  * @brief A body consisting of one point mass. Does not have orientation.

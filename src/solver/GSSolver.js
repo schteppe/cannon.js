@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.Solver
  * @brief Constraint equation Gauss-Seidel solver.
@@ -74,7 +72,9 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 vlambda=b.vlambda,
                 wlambda=b.wlambda;
             vlambda.set(0,0,0);
-            if(wlambda) wlambda.set(0,0,0);
+            if(wlambda){
+                wlambda.set(0,0,0);
+            }
         }
 
         // Iterate over equations
@@ -108,19 +108,20 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
             }
 
             // If the total error is small enough - stop iterate
-            if(deltalambdaTot*deltalambdaTot < tolSquared) break;
+            if(deltalambdaTot*deltalambdaTot < tolSquared){
+                break;
+            }
         }
 
         // Add result to velocity
         for(i=0; i!==Nbodies; i++){
             var b=bodies[i], v=b.velocity, w=b.angularVelocity;
             v.vadd(b.vlambda, v);
-            if(w)
+            if(w){
                 w.vadd(b.wlambda, w);
+            }
         }
     }
 
-    errorTot = deltalambdaTot;
-
-    return iter; 
+    return iter;
 };

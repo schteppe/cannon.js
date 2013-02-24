@@ -1,5 +1,3 @@
-/*global CANNON:true */
-
 /**
  * @class CANNON.MatN
  * @brief Any matrix size class

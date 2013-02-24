@@ -1060,9 +1060,7 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
     target.y = heading;
     target.z = attitude;
     target.x = bank;
-};/*global CANNON:true */
-
-/**
+};/**
  * @class CANNON.Broadphase
  * @author schteppe
  * @brief Base class for broadphase implementations
@@ -1230,8 +1228,6 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         }
     }
 };
-/*global CANNON:true */
-
 /**
  * @class CANNON.Ray
  * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.
@@ -1460,8 +1456,6 @@ CANNON.Ray = function(origin, direction){
     }
 };
 CANNON.Ray.prototype.constructor = CANNON.Ray;
-/*global CANNON:true */
-
 /**
  * @class CANNON.EventTarget
  * @see https://github.com/mrdoob/eventtarget.js/
@@ -1469,7 +1463,7 @@ CANNON.Ray.prototype.constructor = CANNON.Ray;
 CANNON.EventTarget = function () {
     var listeners = {};
     this.addEventListener = function ( type, listener ) {
-        if ( listeners[ type ] == undefined ) {
+        if ( listeners[ type ] === undefined ) {
             listeners[ type ] = [];
         }
         if ( listeners[ type ].indexOf( listener ) === - 1 ) {
@@ -1487,9 +1481,7 @@ CANNON.EventTarget = function () {
             listeners[ type ].splice( index, 1 );
         }
     };
-};/*global CANNON:true */
-
-/**
+};/**
  * @class CANNON.ObjectPool
  * @brief For pooling objects that can be reused.
  */
@@ -1499,22 +1491,23 @@ CANNON.ObjectPool = function(){
 };
 
 CANNON.ObjectPool.prototype.release = function(){
-    for(var i in arguments)
+    var Nargs = arguments.length;
+    for(var i=0; i!==Nargs; i++){
         this.objects.push(arguments[i]);
+    }
 };
 
 CANNON.ObjectPool.prototype.get = function(){
-    if(this.objects.length===0)
+    if(this.objects.length===0){
         return this.constructObject();
-    else
+    } else {
         return this.objects.pop();
+    }
 };
 
 CANNON.ObjectPool.prototype.constructObject = function(){
     throw new Error("constructObject() not implemented in this ObjectPool subclass yet!");
-};/*global CANNON:true */
-
-/**
+};/**
  * @class CANNON.Vec3Pool
  */
 CANNON.Vec3Pool = function(){
@@ -1525,9 +1518,7 @@ CANNON.Vec3Pool.prototype = new CANNON.ObjectPool();
 
 CANNON.Vec3Pool.prototype.constructObject = function(){
     return new CANNON.Vec3();
-};/*global CANNON:true */
-
-/**
+};/**
  * @class CANNON.Shape
  * @author schteppe
  * @brief Base class for shapes
@@ -1638,8 +1629,6 @@ CANNON.Shape.types = {
   CONVEXPOLYHEDRON:16
 };
 
-/*global CANNON:true */
-
 /**
  * @class CANNON.Body
  * @brief Base class for all body types.
@@ -1692,9 +1681,7 @@ CANNON.Body.STATIC = 2;
 /*
  * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
  */
-CANNON.Body.KINEMATIC = 4;/*global CANNON:true */
-
-/**
+CANNON.Body.KINEMATIC = 4;/**
  * @class CANNON.Particle
  * @brief A body consisting of one point mass. Does not have orientation.
  * @param float mass
@@ -1870,8 +1857,6 @@ CANNON.Particle.prototype.sleepTick = function(time){
         }
     }
 };
-/*global CANNON:true */
-
 /**
  * @class CANNON.RigidBody
  * @brief Rigid body base class
@@ -1991,9 +1976,7 @@ CANNON.RigidBody.prototype.applyImpulse = function(worldPoint,force,dt){
     r.cross(force,rotForce);
     this.velocity.vadd(force.mult(dt),this.velocity);
     this.angularVelocity.vadd(rotForce.mult(dt),this.angularVelocity);
-};/*global CANNON:true */
-
-/**
+};/**
  * @brief Spherical rigid body
  * @class CANNON.Sphere
  * @extends CANNON.Shape
@@ -2195,9 +2178,7 @@ CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
             min.z = z;
         }
     });
-};/*global CANNON:true */
-
-/**
+};/**
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
@@ -3160,11 +3141,10 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
             faces.push([2*i, 2*i+1, 2*(i+1), 2*(i+1)+1]);
         } else {
             faces.push([2*i, 2*i+1, 0, 1]);
-          
             // Normal
             normals.push(new CANNON.Vec3(cos(thetaN),sin(thetaN),0));
         }
-    } 
+    }
     faces.push(topface);
     normals.push(new CANNON.Vec3(0,0,1));
     faces.push(bottomface);
@@ -3174,9 +3154,7 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
     CANNON.ConvexPolyhedron.call( this, verts, faces, normals );
 };
 
-CANNON.Cylinder.prototype = new CANNON.ConvexPolyhedron();/*global CANNON:true */
-
-/**
+CANNON.Cylinder.prototype = new CANNON.ConvexPolyhedron();/**
  * @class CANNON.Solver
  * @brief Constraint equation solver base class.
  * @author schteppe / https://github.com/schteppe
@@ -3197,16 +3175,16 @@ CANNON.Solver.prototype.addEquation = function(eq){
 };
 
 CANNON.Solver.prototype.removeEquation = function(eq){
-    var i = this.equations.indexOf(eq);
-    if(i!=-1)
-        this.equations.splice(i,1);
+    var eqs = this.equations;
+    var i = eqs.indexOf(eq);
+    if(i !== -1){
+        eqs.splice(i,1);
+    }
 };
 
 CANNON.Solver.prototype.removeAllEquations = function(){
     this.equations.length = 0;
 };
-
-/*global CANNON:true */
 
 /**
  * @class CANNON.Solver
@@ -3282,7 +3260,9 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 vlambda=b.vlambda,
                 wlambda=b.wlambda;
             vlambda.set(0,0,0);
-            if(wlambda) wlambda.set(0,0,0);
+            if(wlambda){
+                wlambda.set(0,0,0);
+            }
         }
 
         // Iterate over equations
@@ -3316,24 +3296,23 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
             }
 
             // If the total error is small enough - stop iterate
-            if(deltalambdaTot*deltalambdaTot < tolSquared) break;
+            if(deltalambdaTot*deltalambdaTot < tolSquared){
+                break;
+            }
         }
 
         // Add result to velocity
         for(i=0; i!==Nbodies; i++){
             var b=bodies[i], v=b.velocity, w=b.angularVelocity;
             v.vadd(b.vlambda, v);
-            if(w)
+            if(w){
                 w.vadd(b.wlambda, w);
+            }
         }
     }
 
-    errorTot = deltalambdaTot;
-
-    return iter; 
+    return iter;
 };
-/*global CANNON:true */
-
 CANNON.SplitSolver = function(subsolver){
     CANNON.Solver.call(this);
     this.subsolver = subsolver;
@@ -5089,9 +5068,7 @@ CANNON.ContactGenerator = function(){
                         );
         }
     };
-};/*global CANNON:true */
-
-/**
+};/**
  * @class CANNON.Equation
  * @brief Equation base class
  * @author schteppe
