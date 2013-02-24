@@ -5231,10 +5231,16 @@ CANNON.ContactEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity(); // ok?
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity(); // ok?
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    } else {
+        invIi.identity(); // ok?
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    } else {
+        invIj.identity(); // ok?
+    }
 
     var n = this.ni;
 
@@ -5283,13 +5289,19 @@ CANNON.ContactEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia) invIi.setTrace(bi.invInertia);
-    else              invIi.identity(); // ok?
-    if(bj.invInertia) invIj.setTrace(bj.invInertia);
-    else              invIj.identity(); // ok?
+    if(bi.invInertia){
+        invIi.setTrace(bi.invInertia);
+    } else {
+        invIi.identity(); // ok?
+    }
+    if(bj.invInertia){
+        invIj.setTrace(bj.invInertia);
+    } else {
+        invIj.identity(); // ok?
+    }
 
     // Compute rxn * I * rxn for each body
-    invIi.vmult(rixn,computeC_temp1); 
+    invIi.vmult(rixn,computeC_temp1);
     invIj.vmult(rjxn,computeC_temp2);
     C += computeC_temp1.dot(rixn);
     C += computeC_temp2.dot(rjxn);
@@ -5308,10 +5320,12 @@ CANNON.ContactEquation.prototype.computeGWlambda = function(){
     GWlambda += ulambda.dot(this.ni);
 
     // Angular
-    if(bi.wlambda)
+    if(bi.wlambda){
         GWlambda -= bi.wlambda.dot(this.rixn);
-    if(bj.wlambda)
+    }
+    if(bj.wlambda){
         GWlambda += bj.wlambda.dot(this.rjxn);
+    }
 
     return GWlambda;
 };
