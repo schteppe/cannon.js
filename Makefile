@@ -1,6 +1,8 @@
 START     = LICENSE src/wrapper/Start.js
 CANNON    = src/Cannon.js
-COLLISION = src/collision/*.js
+COLLISION = src/collision/Broadphase.js \
+			src/collision/NaiveBroadphase.js \
+			src/collision/GridBroadphase.js
 CONSTRAINTS = 	src/constraints/Equation.js \
 				src/constraints/ContactEquation.js \
 				src/constraints/FrictionEquation.js \

@@ -89,16 +89,18 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
             var planeBody = (ti===PLANE) ? bi : bj, // Plane
                 otherBody = (ti!==PLANE) ? bi : bj; // Other
 
+            var otherShape = otherBody.shape;
+
             // Rel. position
             otherBody.position.vsub(planeBody.position,r);
             normal.set(0,0,1);
             planeBody.quaternion.vmult(normal,normal);
 
-            if(otherBody.shape.boundingSphereRadiusNeedsUpdate){
-                otherBody.shape.computeBoundingSphereRadius();
+            if(otherShape.boundingSphereRadiusNeedsUpdate){
+                otherShape.computeBoundingSphereRadius();
             }
 
-            var q = r.dot(normal) - otherBody.shape.boundingSphereRadius;
+            var q = r.dot(normal) - otherShape.boundingSphereRadius;
             if(q < 0.0){
                 pairs1.push(bi);
                 pairs2.push(bj);
@@ -145,5 +147,37 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
                 }
             }
         }
+    }
+};
+
+var Broadphase_makePairsUnique_temp = {},
+    Broadphase_makePairsUnique_p1 = [],
+    Broadphase_makePairsUnique_p2 = [];
+CANNON.Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
+    var t = Broadphase_makePairsUnique_temp,
+        p1 = Broadphase_makePairsUnique_p1,
+        p2 = Broadphase_makePairsUnique_p2,
+        N = pairs1.length;
+
+    for(var i=0; i!==N; i++){
+        p1[i] = pairs1[i];
+        p2[i] = pairs2[i];
+    }
+
+    pairs1.length = 0;
+    pairs2.length = 0;
+
+    for(var i=0; i!==N; i++){
+        var id1 = p1[i].id,
+            id2 = p2[i].id;
+        var idx = id1 < id2 ? id1+","+id2 :  id2+","+id1;
+        t[idx] = i;
+    }
+
+    for(var idx in t){
+        var i = t[idx];
+        pairs1.push(p1[i]);
+        pairs2.push(p2[i]);
+        delete t[idx];
     }
 };

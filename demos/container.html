@@ -36,6 +36,7 @@
       
         // Create world
         var world = demo.getWorld();
+        world.broadphase = new CANNON.GridBroadphase(new CANNON.Vec3(-10,-10,0),new CANNON.Vec3(10,10,20),5,5,10);
 
         // Tweak contact properties.
         world.defaultContactMaterial.contactEquationStiffness = 1e11; // Contact stiffness - use to make softer/harder contacts

@@ -2893,16 +2893,18 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
             var planeBody = (ti===PLANE) ? bi : bj, // Plane
                 otherBody = (ti!==PLANE) ? bi : bj; // Other
 
+            var otherShape = otherBody.shape;
+
             // Rel. position
             otherBody.position.vsub(planeBody.position,r);
             normal.set(0,0,1);
             planeBody.quaternion.vmult(normal,normal);
 
-            if(otherBody.shape.boundingSphereRadiusNeedsUpdate){
-                otherBody.shape.computeBoundingSphereRadius();
+            if(otherShape.boundingSphereRadiusNeedsUpdate){
+                otherShape.computeBoundingSphereRadius();
             }
 
-            var q = r.dot(normal) - otherBody.shape.boundingSphereRadius;
+            var q = r.dot(normal) - otherShape.boundingSphereRadius;
             if(q < 0.0){
                 pairs1.push(bi);
                 pairs2.push(bj);
@@ -2951,6 +2953,38 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
         }
     }
 };
+
+var Broadphase_makePairsUnique_temp = {},
+    Broadphase_makePairsUnique_p1 = [],
+    Broadphase_makePairsUnique_p2 = [];
+CANNON.Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
+    var t = Broadphase_makePairsUnique_temp,
+        p1 = Broadphase_makePairsUnique_p1,
+        p2 = Broadphase_makePairsUnique_p2,
+        N = pairs1.length;
+
+    for(var i=0; i!==N; i++){
+        p1[i] = pairs1[i];
+        p2[i] = pairs2[i];
+    }
+
+    pairs1.length = 0;
+    pairs2.length = 0;
+
+    for(var i=0; i!==N; i++){
+        var id1 = p1[i].id,
+            id2 = p2[i].id;
+        var idx = id1 < id2 ? id1+","+id2 :  id2+","+id1;
+        t[idx] = i;
+    }
+
+    for(var idx in t){
+        var i = t[idx];
+        pairs1.push(p1[i]);
+        pairs2.push(p2[i]);
+        delete t[idx];
+    }
+};
 /**
  * @class CANNON.NaiveBroadphase
  * @brief Naive broadphase implementation, used in lack of better ones.
@@ -2988,233 +3022,159 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     }
 };
 /**
- * @class CANNON.Ray
- * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.
- * @brief A line in 3D space that intersects bodies and return points.
- * @param CANNON.Vec3 origin
- * @param CANNON.Vec3 direction
+ * @class CANNON.GridBroadphase
+ * @brief Axis aligned uniform grid broadphase.
+ * @extends CANNON.Broadphase
  */
-CANNON.Ray = function(origin, direction){
-    /**
-    * @property CANNON.Vec3 origin
-    * @memberof CANNON.Ray
-    */
-    this.origin = origin || new CANNON.Vec3();
+CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
+    CANNON.Broadphase.apply(this);
+    this.nx = nx || 10;
+    this.ny = ny || 10;
+    this.nz = nz || 10;
+    this.aabbMin = aabbMin || new CANNON.Vec3(100,100,100);
+    this.aabbMax = aabbMax || new CANNON.Vec3(-100,-100,-100);
+    this.bins = [];
+};
+CANNON.GridBroadphase.prototype = new CANNON.Broadphase();
+CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
 
-    /**
-    * @property CANNON.Vec3 direction
-    * @memberof CANNON.Ray
-    */
-    this.direction = direction || new CANNON.Vec3();
+/**
+ * @method collisionPairs
+ * @memberof CANNON.GridBroadphase
+ * @brief Get all the collision pairs in the physics world
+ * @param CANNON.World world
+ */
+CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
+    var N = world.numObjects(),
+        bodies = world.bodies;
 
-    var precision = 0.0001;
+    var max = this.aabbMax,
+        min = this.aabbMin,
+        nx = this.nx,
+        ny = this.ny,
+        nz = this.nz;
 
-    /**
-     * @method setPrecision
-     * @memberof CANNON.Ray
-     * @param float value
-     * @brief Sets the precision of the ray. Used when checking parallelity etc.
-     */
-    this.setPrecision = function ( value ) {
-        precision = value;
-    };
+    var xmax = max.x,
+        ymax = max.y,
+        zmax = max.z,
+        xmin = min.x,
+        ymin = min.y,
+        zmin = min.z;
 
-    var a = new CANNON.Vec3();
-    var b = new CANNON.Vec3();
-    var c = new CANNON.Vec3();
-    var d = new CANNON.Vec3();
+    var xmult = nx / (xmax-xmin),
+        ymult = ny / (ymax-ymin),
+        zmult = nz / (zmax-zmin);
 
-    var directionCopy = new CANNON.Vec3();
+    var binsizeX = (xmax - xmin) / nx,
+        binsizeY = (ymax - ymin) / ny,
+        binsizeZ = (zmax - zmin) / nz;
 
-    var vector = new CANNON.Vec3();
-    var normal = new CANNON.Vec3();
-    var intersectPoint = new CANNON.Vec3();
+    var types = CANNON.Shape.types;
+    var SPHERE =            types.SPHERE,
+        PLANE =             types.PLANE,
+        BOX =               types.BOX,
+        COMPOUND =          types.COMPOUND,
+        CONVEXPOLYHEDRON =  types.CONVEXPOLYHEDRON;
 
-    /**
-     * @method intersectBody
-     * @memberof CANNON.Ray
-     * @param CANNON.RigidBody body
-     * @brief Shoot a ray at a body, get back information about the hit.
-     * @return Array An array of results. The result objects has properties: distance (float), point (CANNON.Vec3) and body (CANNON.RigidBody).
-     */
-    this.intersectBody = function ( body ) {
-        if(body.shape instanceof CANNON.ConvexPolyhedron){
-            return this.intersectShape(body.shape,
-                                       body.quaternion,
-                                       body.position,
-                                       body);
-        } else if(body.shape instanceof CANNON.Box){
-            return this.intersectShape(body.shape.convexPolyhedronRepresentation,
-                                       body.quaternion,
-                                       body.position,
-                                       body);
-        } else {
-            console.warn("Ray intersection is this far only implemented for ConvexPolyhedron and Box shapes.");
-        }
-    };
+    var bins=this.bins,
+        Nbins=nx*ny*nz;
 
-    /**
-     * @method intersectShape
-     * @memberof CANNON.Ray
-     * @param CANNON.Shape shape
-     * @param CANNON.Quaternion quat
-     * @param CANNON.Vec3 position
-     * @param CANNON.RigidBody body
-     * @return Array See intersectBody()
-     */
-    this.intersectShape = function(shape,quat,position,body){
+    // Reset bins
+    for(var i=bins.length-1; i!==Nbins; i++){
+        bins.push([]);
+    }
+    for(var i=0; i!==Nbins; i++){
+        bins[i].length = 0;
+    }
 
-        var intersect, intersects = [];
+    var floor = Math.floor;
 
-        if ( shape instanceof CANNON.ConvexPolyhedron ) {
-            // Checking boundingSphere
+    // Put all bodies into the bins
+    for(var i=0; i!==N; i++){
+        var bi = bodies[i];
+        var si = bi.shape;
 
-            var distance = distanceFromIntersection( this.origin, this.direction, position );
-            if ( distance > shape.getBoundingSphereRadius() ) {
-                return intersects;
-            }
+        switch(si.type){
+        case SPHERE:
+            // Put in bin
+            // check if overlap with other bins
+            var x = bi.position.x,
+                y = bi.position.y,
+                z = bi.position.z;
+            var r = si.radius;
 
-            // Checking faces
-            var dot, scalar, faces = shape.faces, vertices = shape.vertices, normals = shape.faceNormals;
+            var xi1 = floor(xmult * (x-r - xmin)),
+                yi1 = floor(ymult * (y-r - ymin)),
+                zi1 = floor(zmult * (z-r - zmin)),
+                xi2 = floor(xmult * (x+r - xmin)),
+                yi2 = floor(ymult * (y+r - ymin)),
+                zi2 = floor(zmult * (z+r - zmin));
 
-
-            for (var fi = 0; fi < faces.length; fi++ ) {
-
-                var face = faces[ fi ];
-                var faceNormal = normals[ fi ];
-                var q = quat;
-                var x = position;
-
-                // determine if ray intersects the plane of the face
-                // note: this works regardless of the direction of the face normal
-
-                // Get plane point in world coordinates...
-                vertices[face[0]].copy(vector);
-                q.vmult(vector,vector);
-                vector.vadd(x,vector);
-
-                // ...but make it relative to the ray origin. We'll fix this later.
-                vector.vsub(this.origin,vector);
-
-                // Get plane normal
-                q.vmult(faceNormal,normal);
-
-                // If this dot product is negative, we have something interesting
-                dot = this.direction.dot(normal);
-
-                // bail if ray and plane are parallel
-                if ( Math.abs( dot ) < precision ){
-                    continue;
-                }
-
-                // calc distance to plane
-                scalar = normal.dot( vector ) / dot;
-
-                // if negative distance, then plane is behind ray
-                if ( scalar < 0 ){
-                    continue;
-                }
-
-                if (  dot < 0 ) {
-
-                    // Intersection point is origin + direction * scalar
-                    this.direction.mult(scalar,intersectPoint);
-                    intersectPoint.vadd(this.origin,intersectPoint);
-
-                    // a is the point we compare points b and c with.
-                    vertices[ face[0] ].copy(a);
-                    q.vmult(a,a);
-                    x.vadd(a,a);
-
-                    for(var i=1; i<face.length-1; i++){
-                        // Transform 3 vertices to world coords
-                        vertices[ face[i] ].copy(b);
-                        vertices[ face[i+1] ].copy(c);
-                        q.vmult(b,b);
-                        q.vmult(c,c);
-                        x.vadd(b,b);
-                        x.vadd(c,c);
-
-                        if ( pointInTriangle( intersectPoint, a, b, c ) ) {
-
-                            intersect = {
-                                distance: this.origin.distanceTo( intersectPoint ),
-                                point: intersectPoint.copy(),
-                                face: face,
-                                body: body
-                            };
-
-                            intersects.push( intersect );
-                            break;
+            for(var j=xi1; j!==xi2+1; j++){
+                for(var k=yi1; k!==yi2+1; k++){
+                    for(var l=zi1; l!==zi2+1; l++){
+                        var xi = j,
+                            yi = k,
+                            zi = l;
+                        var idx = xi * ( ny - 1 ) * ( nz - 1 ) + yi * ( nz - 1 ) + zi;
+                        if(idx >= 0 && idx < Nbins){
+                            bins[ idx ].push( bi );
                         }
                     }
                 }
             }
+            break;
+
+        case PLANE:
+            // Put in all bins for now
+            // @todo put only in bins that are actually intersecting the plane
+            var d = new CANNON.Vec3();
+            var binPos = new CANNON.Vec3();
+            var binRadiusSquared = (binsizeX*binsizeX + binsizeY*binsizeY + binsizeZ*binsizeZ) * 0.25;
+            var planeNormal = new CANNON.Vec3(0,0,1);
+            bi.quaternion.vmult(planeNormal,planeNormal);
+            for(var j=0; j!==nx; j++){
+                for(var k=0; k!==ny; k++){
+                    for(var l=0; l!==nz; l++){
+                        var xi = j,
+                            yi = k,
+                            zi = l;
+
+                        binPos.set(xi*binsizeX+xmin, yi*binsizeY+ymin, zi*binsizeZ+zmin);
+                        binPos.vsub(bi.position, d);
+
+                        if(d.dot(planeNormal) < binRadiusSquared){
+                            var idx = xi * ( ny - 1 ) * ( nz - 1 ) + yi * ( nz - 1 ) + zi;
+                            bins[ idx ].push( bi );
+                        }
+                    }
+                }
+            }
+            break;
+
+        default:
+            console.warn("Shape "+si.type+" not supported in GridBroadphase!");
+            break;
         }
-        return intersects;
-    };
-
-    /**
-     * @method intersectBodies
-     * @memberof CANNON.Ray
-     * @param Array bodies An array of CANNON.RigidBody objects.
-     * @return Array See intersectBody
-     */
-    this.intersectBodies = function ( bodies ) {
-
-        var intersects = [];
-
-        for ( var i = 0, l = bodies.length; i < l; i ++ ) {
-            var result = this.intersectBody( bodies[ i ] );
-            Array.prototype.push.apply( intersects, result );
-        }
-
-        intersects.sort( function ( a, b ) { return a.distance - b.distance; } );
-        return intersects;
-    };
-
-    var v0 = new CANNON.Vec3(), intersect = new CANNON.Vec3();
-    var dot, distance;
-
-    function distanceFromIntersection( origin, direction, position ) {
-
-        // v0 is vector from origin to position
-        position.vsub(origin,v0);
-        dot = v0.dot( direction );
-
-        // intersect = direction*dot + origin
-        direction.mult(dot,intersect);
-        intersect.vadd(origin,intersect);
-
-        distance = position.distanceTo( intersect );
-
-        return distance;
     }
 
-    // http://www.blackpawn.com/texts/pointinpoly/default.html
+    // Check each bin
+    for(var i=0; i!==Nbins; i++){
+        var bin = bins[i];
 
-    var dot00, dot01, dot02, dot11, dot12, invDenom, u, v;
-    var v1 = new CANNON.Vec3(), v2 = new CANNON.Vec3();
+        // Do N^2 broadphase inside
+        for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
+            var bi = bin[j];
 
-    function pointInTriangle( p, a, b, c ) {
-        c.vsub(a,v0);
-        b.vsub(a,v1);
-        p.vsub(a,v2);
-
-        dot00 = v0.dot( v0 );
-        dot01 = v0.dot( v1 );
-        dot02 = v0.dot( v2 );
-        dot11 = v1.dot( v1 );
-        dot12 = v1.dot( v2 );
-
-        invDenom = 1 / ( dot00 * dot11 - dot01 * dot01 );
-        u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
-        v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
-
-        return ( u >= 0 ) && ( v >= 0 ) && ( u + v < 1 );
+            for(var k=0; k!==j; k++){
+                var bj = bin[k];
+                this.doBoundingSphereBroadphase(bi,bj,pairs1,pairs2);
+            }
+        }
     }
+
+    this.makePairsUnique(pairs1,pairs2);
 };
-CANNON.Ray.prototype.constructor = CANNON.Ray;
 /**
  * @class CANNON.Solver
  * @brief Constraint equation solver base class.
