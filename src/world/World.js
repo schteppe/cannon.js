@@ -622,9 +622,11 @@ CANNON.World.prototype.step = function(dt){
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
+    var PLANE = CANNON.Shape.types.PLANE;
 
     for(var i=0; i!==N; i++){
         var b = bodies[i],
+            s = b.shape,
             force = b.force,
             tau = b.tau;
         if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
@@ -665,6 +667,10 @@ CANNON.World.prototype.step = function(dt){
                         }
                     }
                 }
+            }
+
+            if(s.type === PLANE){
+                s.worldNormalNeedsUpdate = true;
             }
         }
         b.force.set(0,0,0);

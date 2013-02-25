@@ -9,9 +9,20 @@
 CANNON.Plane = function(){
     CANNON.Shape.call(this);
     this.type = CANNON.Shape.types.PLANE;
+
+    // World oriented normal
+    this.worldNormal = new CANNON.Vec3();
+    this.worldNormalNeedsUpdate = true;
 };
 CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;
+
+CANNON.Plane.prototype.computeWorldNormal = function(quat){
+    var n = this.worldNormal;
+    n.set(0,0,1);
+    quat.vmult(n,n);
+    this.worldNormalNeedsUpdate = false;
+};
 
 CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
     target = target || new CANNON.Vec3();

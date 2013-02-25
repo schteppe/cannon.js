@@ -79,7 +79,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
             }
 
             var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
-            if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
+            if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
                 pairs1.push(bi);
                 pairs2.push(bj);
             }
@@ -90,11 +90,16 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
                 otherBody = (ti!==PLANE) ? bi : bj; // Other
 
             var otherShape = otherBody.shape;
+            var planeShape = planeBody.shape;
 
             // Rel. position
             otherBody.position.vsub(planeBody.position,r);
-            normal.set(0,0,1);
-            planeBody.quaternion.vmult(normal,normal);
+
+            if(planeShape.worldNormalNeedsUpdate){
+                planeShape.computeWorldNormal(planeBody.quaternion);
+            }
+
+            normal = planeShape.worldNormal;
 
             if(otherShape.boundingSphereRadiusNeedsUpdate){
                 otherShape.computeBoundingSphereRadius();

@@ -21,6 +21,8 @@ CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
  * @brief Get all the collision pairs in the physics world
  * @param CANNON.World world
  */
+var GridBroadphase_collisionPairs_d = new CANNON.Vec3();
+var GridBroadphase_collisionPairs_binPos = new CANNON.Vec3();
 CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var N = world.numObjects(),
         bodies = world.bodies;
@@ -105,11 +107,15 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         case PLANE:
             // Put in all bins for now
             // @todo put only in bins that are actually intersecting the plane
-            var d = new CANNON.Vec3();
-            var binPos = new CANNON.Vec3();
+            var d = GridBroadphase_collisionPairs_d;
+            var binPos = GridBroadphase_collisionPairs_binPos;
             var binRadiusSquared = (binsizeX*binsizeX + binsizeY*binsizeY + binsizeZ*binsizeZ) * 0.25;
-            var planeNormal = new CANNON.Vec3(0,0,1);
-            bi.quaternion.vmult(planeNormal,planeNormal);
+
+            var planeNormal = si.worldNormal;
+            if(si.worldNormalNeedsUpdate){
+                si.computeWorldNormal(bi.quaternion);
+            }
+
             for(var j=0; j!==nx; j++){
                 for(var k=0; k!==ny; k++){
                     for(var l=0; l!==nz; l++){

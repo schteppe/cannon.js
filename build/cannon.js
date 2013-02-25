@@ -1805,9 +1805,21 @@ CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
 CANNON.Plane = function(){
     CANNON.Shape.call(this);
     this.type = CANNON.Shape.types.PLANE;
+
+    // World oriented normal
+    this.worldNormal = new CANNON.Vec3();
+    this.worldNormalNeedsUpdate = true;
 };
 CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;
+
+CANNON.Plane.prototype.computeWorldNormal = function(quat){
+    var n = this.worldNormal;
+    n.set(0,0,1);
+    quat.vmult(n,n);
+    this.worldNormalNeedsUpdate = false;
+    console.log("computing");
+};
 
 CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
     target = target || new CANNON.Vec3();
@@ -2883,7 +2895,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
             }
 
             var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
-            if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
+            if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
                 pairs1.push(bi);
                 pairs2.push(bj);
             }
@@ -2894,11 +2906,16 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
                 otherBody = (ti!==PLANE) ? bi : bj; // Other
 
             var otherShape = otherBody.shape;
+            var planeShape = planeBody.shape;
 
             // Rel. position
             otherBody.position.vsub(planeBody.position,r);
-            normal.set(0,0,1);
-            planeBody.quaternion.vmult(normal,normal);
+
+            if(planeShape.worldNormalNeedsUpdate){
+                planeShape.computeWorldNormal(planeBody.quaternion);
+            }
+
+            normal = planeShape.worldNormal;
 
             if(otherShape.boundingSphereRadiusNeedsUpdate){
                 otherShape.computeBoundingSphereRadius();
@@ -3044,6 +3061,8 @@ CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
  * @brief Get all the collision pairs in the physics world
  * @param CANNON.World world
  */
+var GridBroadphase_collisionPairs_d = new CANNON.Vec3();
+var GridBroadphase_collisionPairs_binPos = new CANNON.Vec3();
 CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var N = world.numObjects(),
         bodies = world.bodies;
@@ -3128,11 +3147,15 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         case PLANE:
             // Put in all bins for now
             // @todo put only in bins that are actually intersecting the plane
-            var d = new CANNON.Vec3();
-            var binPos = new CANNON.Vec3();
+            var d = GridBroadphase_collisionPairs_d;
+            var binPos = GridBroadphase_collisionPairs_binPos;
             var binRadiusSquared = (binsizeX*binsizeX + binsizeY*binsizeY + binsizeZ*binsizeZ) * 0.25;
-            var planeNormal = new CANNON.Vec3(0,0,1);
-            bi.quaternion.vmult(planeNormal,planeNormal);
+
+            var planeNormal = si.worldNormal;
+            if(si.worldNormalNeedsUpdate){
+                si.computeWorldNormal(bi.quaternion);
+            }
+
             for(var j=0; j!==nx; j++){
                 for(var k=0; k!==ny; k++){
                     for(var l=0; l!==nz; l++){
@@ -4105,9 +4128,11 @@ CANNON.World.prototype.step = function(dt){
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
+    var PLANE = CANNON.Shape.types.PLANE;
 
     for(var i=0; i!==N; i++){
         var b = bodies[i],
+            s = b.shape,
             force = b.force,
             tau = b.tau;
         if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
@@ -4148,6 +4173,10 @@ CANNON.World.prototype.step = function(dt){
                         }
                     }
                 }
+            }
+
+            if(s.type === PLANE){
+                s.worldNormalNeedsUpdate = true;
             }
         }
         b.force.set(0,0,0);
