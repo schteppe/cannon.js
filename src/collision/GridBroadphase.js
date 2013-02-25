@@ -2,6 +2,7 @@
  * @class CANNON.GridBroadphase
  * @brief Axis aligned uniform grid broadphase.
  * @extends CANNON.Broadphase
+ * @todo Needs support for more than just planes and spheres.
  */
 CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
     CANNON.Broadphase.apply(this);

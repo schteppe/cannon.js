@@ -3041,6 +3041,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
  * @class CANNON.GridBroadphase
  * @brief Axis aligned uniform grid broadphase.
  * @extends CANNON.Broadphase
+ * @todo Needs support for more than just planes and spheres.
  */
 CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
     CANNON.Broadphase.apply(this);
@@ -4174,7 +4175,7 @@ CANNON.World.prototype.step = function(dt){
                 }
             }
 
-            if(s.type === PLANE){
+            if(s && s.type === PLANE){
                 s.worldNormalNeedsUpdate = true;
             }
         }

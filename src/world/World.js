@@ -669,7 +669,7 @@ CANNON.World.prototype.step = function(dt){
                 }
             }
 
-            if(s.type === PLANE){
+            if(s && s.type === PLANE){
                 s.worldNormalNeedsUpdate = true;
             }
         }
