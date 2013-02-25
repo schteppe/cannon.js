@@ -2845,7 +2845,113 @@ CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
     }
 
     return true;
-};/**
+};
+
+var Broadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
+    Broadphase_collisionPairs_normal =  new CANNON.Vec3(),
+    Broadphase_collisionPairs_quat =  new CANNON.Quaternion(),
+    Broadphase_collisionPairs_relpos  =  new CANNON.Vec3();
+CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
+
+    // Local fast access
+    var types = CANNON.Shape.types;
+    var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
+        PLANE = types.PLANE,
+        STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
+
+    // Temp vecs
+    var r = Broadphase_collisionPairs_r,
+        normal = Broadphase_collisionPairs_normal,
+        quat = Broadphase_collisionPairs_quat,
+        relpos = Broadphase_collisionPairs_relpos;
+
+    var bishape = bi.shape, bjshape = bj.shape;
+    if(bishape && bjshape){
+        var ti = bishape.type, tj = bjshape.type;
+
+        // --- Box / sphere / compound / convexpolyhedron collision ---
+        if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
+            // Rel. position
+            bj.position.vsub(bi.position,r);
+
+            // Update bounding spheres if needed
+            if(bishape.boundingSphereRadiusNeedsUpdate){
+                bishape.computeBoundingSphereRadius();
+            }
+            if(bjshape.boundingSphereRadiusNeedsUpdate){
+                bjshape.computeBoundingSphereRadius();
+            }
+
+            var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
+            if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
+                pairs1.push(bi);
+                pairs2.push(bj);
+            }
+
+            // --- Sphere/box/compound/convexpoly versus plane ---
+        } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
+            var planeBody = (ti===PLANE) ? bi : bj, // Plane
+                otherBody = (ti!==PLANE) ? bi : bj; // Other
+
+            // Rel. position
+            otherBody.position.vsub(planeBody.position,r);
+            normal.set(0,0,1);
+            planeBody.quaternion.vmult(normal,normal);
+
+            if(otherBody.shape.boundingSphereRadiusNeedsUpdate){
+                otherBody.shape.computeBoundingSphereRadius();
+            }
+
+            var q = r.dot(normal) - otherBody.shape.boundingSphereRadius;
+            if(q < 0.0){
+                pairs1.push(bi);
+                pairs2.push(bj);
+            }
+        }
+    } else {
+        // Particle without shape
+        if(!bishape && !bjshape){
+            // No collisions between 2 particles
+        } else {
+            var particle = bishape ? bj : bi;
+            var other = bishape ? bi : bj;
+            var otherShape = other.shape;
+            var type = otherShape.type;
+
+            if(type & BOX_SPHERE_COMPOUND_CONVEX){
+                if(type === types.SPHERE){ // particle-sphere
+                    particle.position.vsub(other.position,relpos);
+                    if(otherShape.radius*otherShape.radius >= relpos.norm2()){
+                        pairs1.push(particle);
+                        pairs2.push(other);
+                    }
+                } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
+
+                    if(otherShape.boundingSphereRadiusNeedsUpdate){
+                        otherShape.computeBoundingSphereRadius();
+                    }
+                    var R = otherShape.boundingSphereRadius;
+                    particle.position.vsub(other.position,relpos);
+                    if(R*R >= relpos.norm2()){
+                        pairs1.push(particle);
+                        pairs2.push(other);
+                    }
+                }
+            } else if(type === types.PLANE){
+                // particle/plane
+                var plane = other;
+                normal.set(0,0,1);
+                plane.quaternion.vmult(normal,normal);
+                particle.position.vsub(plane.position,relpos);
+                if(normal.dot(relpos)<=0.0){
+                    pairs1.push(particle);
+                    pairs2.push(other);
+                }
+            }
+        }
+    }
+};
+/**
  * @class CANNON.NaiveBroadphase
  * @brief Naive broadphase implementation, used in lack of better ones.
  * @description The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
@@ -2864,25 +2970,9 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @param CANNON.World world
  * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
-var NaiveBroadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
-    NaiveBroadphase_collisionPairs_normal =  new CANNON.Vec3(),
-    NaiveBroadphase_collisionPairs_quat =  new CANNON.Quaternion(),
-    NaiveBroadphase_collisionPairs_relpos  =  new CANNON.Vec3();
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var n = world.numObjects(),
     bodies = world.bodies;
-
-    // Local fast access
-    var types = CANNON.Shape.types;
-    var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
-        PLANE = types.PLANE,
-        STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
-
-    // Temp vecs
-    var r = NaiveBroadphase_collisionPairs_r,
-        normal = NaiveBroadphase_collisionPairs_normal,
-        quat = NaiveBroadphase_collisionPairs_quat,
-        relpos = NaiveBroadphase_collisionPairs_relpos;
 
     // Naive N^2 ftw!
     for(var i=0; i!==n; i++){
@@ -2893,93 +2983,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
                 continue;
             }
 
-            var bishape = bi.shape, bjshape = bj.shape;
-            if(bishape && bjshape){
-                var ti = bishape.type, tj = bjshape.type;
-
-                // --- Box / sphere / compound / convexpolyhedron collision ---
-                if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
-                    // Rel. position
-                    bj.position.vsub(bi.position,r);
-
-                    // Update bounding spheres if needed
-                    if(bishape.boundingSphereRadiusNeedsUpdate){
-                        bishape.computeBoundingSphereRadius();
-                    }
-                    if(bjshape.boundingSphereRadiusNeedsUpdate){
-                        bjshape.computeBoundingSphereRadius();
-                    }
-
-                    var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
-                    if(r.norm2()<boundingRadiusSum*boundingRadiusSum){
-                        pairs1.push(bi);
-                        pairs2.push(bj);
-                    }
-
-                    // --- Sphere/box/compound/convexpoly versus plane ---
-                } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
-                    var pi = (ti===PLANE) ? i : j, // Plane
-                    oi = (ti!==PLANE) ? i : j; // Other
-
-                    // Rel. position
-                    bodies[oi].position.vsub(bodies[pi].position,r);
-                    normal.set(0,0,1);
-                    bodies[pi].quaternion.vmult(normal,normal);
-
-                    if(bodies[oi].shape.boundingSphereRadiusNeedsUpdate){
-                        bodies[oi].shape.computeBoundingSphereRadius();
-                    }
-
-                    var q = r.dot(normal) - bodies[oi].shape.boundingSphereRadius;
-                    if(q<0.0){
-                        pairs1.push(bi);
-                        pairs2.push(bj);
-                    }
-                }
-            } else {
-                // Particle without shape
-                if(!bishape && !bjshape){
-                    // No collisions between 2 particles
-                } else {
-                    var particle = bishape ? bj : bi;
-                    var other = bishape ? bi : bj;
-                    var otherShape = other.shape;
-                    var type = otherShape.type;
-
-                    if(type & BOX_SPHERE_COMPOUND_CONVEX){
-                        // todo: particle vs box,compound,convex
-
-                        if(type === types.SPHERE){ // particle-sphere
-                            particle.position.vsub(other.position,relpos);
-                            if(otherShape.radius*otherShape.radius >= relpos.norm2()){
-                                pairs1.push(particle);
-                                pairs2.push(other);
-                            }
-                        } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
-
-                            if(otherShape.boundingSphereRadiusNeedsUpdate){
-                                otherShape.computeBoundingSphereRadius();
-                            }
-                            var R = otherShape.boundingSphereRadius;
-                            particle.position.vsub(other.position,relpos);
-                            if(R*R >= relpos.norm2()){
-                                pairs1.push(particle);
-                                pairs2.push(other);
-                            }
-                        }
-                    } else if(type === types.PLANE){
-                        // particle/plane
-                        var plane = other;
-                        normal.set(0,0,1);
-                        plane.quaternion.vmult(normal,normal);
-                        particle.position.vsub(plane.position,relpos);
-                        if(normal.dot(relpos)<=0.0){
-                            pairs1.push(particle);
-                            pairs2.push(other);
-                        }
-                    }
-                }
-            }
+            this.doBoundingSphereBroadphase(bi,bj,pairs1,pairs2);
         }
     }
 };
