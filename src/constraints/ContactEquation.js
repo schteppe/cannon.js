@@ -25,13 +25,23 @@ CANNON.ContactEquation = function(bi,bj){
 
     this.relVel = new CANNON.Vec3();
     this.relForce = new CANNON.Vec3();
+
+    // Cache
+    this.biInvInertiaTimesRixn =  new CANNON.Vec3();
+    this.bjInvInertiaTimesRjxn =  new CANNON.Vec3();
 };
 
 CANNON.ContactEquation.prototype = new CANNON.Equation();
 CANNON.ContactEquation.prototype.constructor = CANNON.ContactEquation;
 
-var ContactEquation_computeB_temp1 = new CANNON.Vec3();
+// To be used before object reuse
+CANNON.ContactEquation.prototype.reset = function(){
+    this.invInertiaTimesRxnNeedsUpdate = true;
+};
+
+var ContactEquation_computeB_temp1 = new CANNON.Vec3(); // Temp vectors
 var ContactEquation_computeB_temp2 = new CANNON.Vec3();
+var ContactEquation_computeB_zero = new CANNON.Vec3();
 CANNON.ContactEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b;
@@ -42,15 +52,17 @@ CANNON.ContactEquation.prototype.computeB = function(h){
     var rixn = this.rixn;
     var rjxn = this.rjxn;
 
+    var zero = ContactEquation_computeB_zero;
+
     var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
+    var wi = bi.angularVelocity ? bi.angularVelocity : zero;
     var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new CANNON.Vec3();
+    var taui = bi.tau ? bi.tau : zero;
 
     var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new CANNON.Vec3();
+    var wj = bj.angularVelocity ? bj.angularVelocity : zero;
     var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new CANNON.Vec3();
+    var tauj = bj.tau ? bj.tau : zero;
 
     var relVel = this.relVel;
     var relForce = this.relForce;
@@ -131,10 +143,18 @@ CANNON.ContactEquation.prototype.computeC = function(){
     }
 
     // Compute rxn * I * rxn for each body
+    invIi.vmult(rixn, this.biInvInertiaTimesRixn);
+    invIj.vmult(rjxn, this.bjInvInertiaTimesRjxn);
+
+    /*
     invIi.vmult(rixn,computeC_temp1);
     invIj.vmult(rjxn,computeC_temp2);
+    
     C += computeC_temp1.dot(rixn);
     C += computeC_temp2.dot(rjxn);
+     */
+    C += this.biInvInertiaTimesRixn.dot(rixn);
+    C += this.bjInvInertiaTimesRjxn.dot(rjxn);
 
     return C;
 };
@@ -181,17 +201,27 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
 
     // Add to angular velocity
     if(bi.wlambda){
+        /*
         var I = this.invIi;
         I.vmult(rixn,temp1);
         temp1.mult(deltalambda,temp1);
         //bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
+         */
+        
+        this.biInvInertiaTimesRixn.mult(deltalambda,temp1);
+
         bi.wlambda.vsub(temp1,bi.wlambda);
     }
     if(bj.wlambda){
+        /*
         var I = this.invIj;
         I.vmult(rjxn,temp1);
         temp1.mult(deltalambda,temp1);
         //bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
+         */
+        
+        this.bjInvInertiaTimesRjxn.mult(deltalambda,temp1);
+
         bj.wlambda.vadd(temp1,bj.wlambda);
     }
 };

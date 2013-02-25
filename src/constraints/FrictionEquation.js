@@ -23,6 +23,10 @@ CANNON.FrictionEquation = function(bi,bj,slipForce){
 
     this.relVel = new CANNON.Vec3();
     this.relForce = new CANNON.Vec3();
+
+    // Cache
+    this.biInvInertiaTimesRixt =  new CANNON.Vec3();
+    this.bjInvInertiaTimesRjxt =  new CANNON.Vec3();
 };
 
 CANNON.FrictionEquation.prototype = new CANNON.Equation();
@@ -114,11 +118,17 @@ CANNON.FrictionEquation.prototype.computeC = function(){
     }
 
     // Compute rxt * I * rxt for each body
+    
+    /*
     invIi.vmult(rixt,FEcomputeC_temp1);
     invIj.vmult(rjxt,FEcomputeC_temp2);
     C += FEcomputeC_temp1.dot(rixt);
     C += FEcomputeC_temp2.dot(rjxt);
-
+      */
+    invIi.vmult(rixt,this.biInvInertiaTimesRixt);
+    invIj.vmult(rjxt,this.bjInvInertiaTimesRjxt);
+    C += this.biInvInertiaTimesRixt.dot(rixt);
+    C += this.bjInvInertiaTimesRjxt.dot(rjxt);
 
     return C;
 };
@@ -168,16 +178,22 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
     // Add to angular velocity
     var wi = bi.wlambda;
     if(wi){
+        /*
         var I = this.invIi;
         I.vmult(rixt,tmp);
         tmp.mult(deltalambda,tmp);
+         */
+        this.biInvInertiaTimesRixt.mult(deltalambda,tmp);
         wi.vsub(tmp,wi);
     }
     var wj = bj.wlambda;
     if(wj){
+        /*
         var I = this.invIj;
         I.vmult(rjxt,tmp);
         tmp.mult(deltalambda,tmp);
+         */
+        this.bjInvInertiaTimesRjxt.mult(deltalambda,tmp);
         wj.vadd(tmp,wj);
     }
 };
