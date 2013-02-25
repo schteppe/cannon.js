@@ -55,6 +55,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.6.0**
+ * Added ```Body.collisionFilterGroup``` and ```Body.collisionFilterMask```.
  * Removed World.temp.
  * Reuse of various event objects to minimize object creation in the step loop.
  * Removed unused class ```ContactPoint```.
