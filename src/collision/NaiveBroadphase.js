@@ -100,8 +100,6 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
                     var type = otherShape.type;
 
                     if(type & BOX_SPHERE_COMPOUND_CONVEX){
-                        // todo: particle vs box,compound,convex
-
                         if(type === types.SPHERE){ // particle-sphere
                             particle.position.vsub(other.position,relpos);
                             if(otherShape.radius*otherShape.radius >= relpos.norm2()){
