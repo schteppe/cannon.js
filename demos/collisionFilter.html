@@ -54,7 +54,7 @@
             boxBody.collisionFilterMask =  GROUP1;                // It can only collide with group 1 (the sphere)
 
             // Cylinder
-            var cylinderShape = new CANNON.Cylinder(size,size,size*2,10);
+            var cylinderShape = new CANNON.Cylinder(size,size,size*2.2,10);
             var cylinderBody = new CANNON.RigidBody(mass,cylinderShape);
             cylinderBody.position.set(-5,0,0);
             cylinderBody.collisionFilterGroup = GROUP3;           // Put the cylinder in group 3
