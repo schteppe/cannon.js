@@ -1818,7 +1818,6 @@ CANNON.Plane.prototype.computeWorldNormal = function(quat){
     n.set(0,0,1);
     quat.vmult(n,n);
     this.worldNormalNeedsUpdate = false;
-    console.log("computing");
 };
 
 CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
