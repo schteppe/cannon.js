@@ -110,12 +110,14 @@ CANNON.FrictionEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertia){
         invIi.setTrace(bi.invInertia);
     }
     if(bj.invInertia){
         invIj.setTrace(bj.invInertia);
     }
+     */
 
     // Compute rxt * I * rxt for each body
     

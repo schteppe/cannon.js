@@ -5368,6 +5368,7 @@ CANNON.ContactEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertia){
         invIi.setTrace(bi.invInertia);
     } else {
@@ -5378,6 +5379,7 @@ CANNON.ContactEquation.prototype.computeC = function(){
     } else {
         invIj.identity(); // ok?
     }
+     */
 
     // Compute rxn * I * rxn for each body
     invIi.vmult(rixn, this.biInvInertiaTimesRixn);
@@ -5574,12 +5576,14 @@ CANNON.FrictionEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertia){
         invIi.setTrace(bi.invInertia);
     }
     if(bj.invInertia){
         invIj.setTrace(bj.invInertia);
     }
+     */
 
     // Compute rxt * I * rxt for each body
     

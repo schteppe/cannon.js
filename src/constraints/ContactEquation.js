@@ -131,6 +131,7 @@ CANNON.ContactEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertia){
         invIi.setTrace(bi.invInertia);
     } else {
@@ -141,6 +142,7 @@ CANNON.ContactEquation.prototype.computeC = function(){
     } else {
         invIj.identity(); // ok?
     }
+     */
 
     // Compute rxn * I * rxn for each body
     invIi.vmult(rixn, this.biInvInertiaTimesRixn);
