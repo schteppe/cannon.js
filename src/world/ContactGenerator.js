@@ -412,7 +412,7 @@ CANNON.ContactGenerator = function(){
                     for(var j=0, Nfaceverts=faceVerts.length; j!==Nfaceverts; j++){
                         v3pool.release(faceVerts[j]);
                     }
-                    
+
                     return; // We only expect *one* face contact
                 } else {
                     // Edge?
@@ -456,6 +456,12 @@ CANNON.ContactGenerator = function(){
                             for(var j=0, Nfaceverts=faceVerts.length; j!==Nfaceverts; j++){
                                 v3pool.release(faceVerts[j]);
                             }
+                            
+                            v3pool.release(v1);
+                            v3pool.release(v2);
+                            v3pool.release(p);
+                            v3pool.release(xi_to_p);
+                            v3pool.release(v1_to_xi);
 
                             return;
                         }
