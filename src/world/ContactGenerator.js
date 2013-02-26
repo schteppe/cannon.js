@@ -407,6 +407,12 @@ CANNON.ContactGenerator = function(){
                     v3pool.release(penetrationSpherePoint);
 
                     result.push(r);
+
+                    // Release world vertices
+                    for(var j=0, Nfaceverts=faceVerts.length; j!==Nfaceverts; j++){
+                        v3pool.release(faceVerts[j]);
+                    }
+                    
                     return; // We only expect *one* face contact
                 } else {
                     // Edge?
@@ -445,6 +451,12 @@ CANNON.ContactGenerator = function(){
 
                             r.ni.mult(R,r.ri);
                             result.push(r);
+
+                            // Release world vertices
+                            for(var j=0, Nfaceverts=faceVerts.length; j!==Nfaceverts; j++){
+                                v3pool.release(faceVerts[j]);
+                            }
+
                             return;
                         }
 

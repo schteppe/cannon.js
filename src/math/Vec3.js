@@ -24,8 +24,11 @@ CANNON.Vec3 = function(x,y,z){
     */
     this.z = z||0.0;
 
+    /*
     numVecs++;
-    //console.log(numVecs+" created");
+    if(numVecs > 180)
+        console.log(numVecs+" created");
+     */
 };
 
 /**
