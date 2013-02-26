@@ -23,9 +23,6 @@ CANNON.ContactEquation = function(bi,bj){
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
 
-    this.relVel = new CANNON.Vec3();
-    this.relForce = new CANNON.Vec3();
-
     // Cache
     this.biInvInertiaTimesRixn =  new CANNON.Vec3();
     this.bjInvInertiaTimesRjxn =  new CANNON.Vec3();
@@ -64,8 +61,6 @@ CANNON.ContactEquation.prototype.computeB = function(h){
     var fj = bj.force;
     var tauj = bj.tau ? bj.tau : zero;
 
-    var relVel = this.relVel;
-    var relForce = this.relForce;
     var penetrationVec = this.penetrationVec;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
