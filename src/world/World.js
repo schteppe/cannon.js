@@ -622,7 +622,8 @@ CANNON.World.prototype.step = function(dt){
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
-    var PLANE = CANNON.Shape.types.PLANE;
+    var PLANE = CANNON.Shape.types.PLANE,
+        CONVEX = CANNON.Shape.types.CONVEXPOLYHEDRON;
 
     for(var i=0; i!==N; i++){
         var b = bodies[i],
@@ -669,8 +670,16 @@ CANNON.World.prototype.step = function(dt){
                 }
             }
 
-            if(s && s.type === PLANE){
-                s.worldNormalNeedsUpdate = true;
+            if(s){
+                switch(s.type){
+                case PLANE:
+                    s.worldNormalNeedsUpdate = true;
+                    break;
+                case CONVEX:
+                    s.worldFaceNormalsNeedsUpdate = true;
+                    s.worldVerticesNeedsUpdate = true;
+                    break;
+                }
             }
         }
         b.force.set(0,0,0);

@@ -8,6 +8,8 @@
  * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
  * @todo move the clipping functions to ContactGenerator?
  * @param array points An array of CANNON.Vec3's
+ * @param array faces
+ * @param array normals
  */
 CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var that = this;
@@ -20,6 +22,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     * @brief Array of CANNON.Vec3
     */
     this.vertices = points||[];
+
+    this.worldVertices = []; // World transformed version of .vertices
+    this.worldVerticesNeedsUpdate = true;
 
     /**
     * @property array faces
@@ -39,6 +44,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     for(var i=0; i<this.faceNormals.length; i++){
         this.faceNormals[i].normalize();
     }
+
+    this.worldFaceNormalsNeedsUpdate = true;
+    this.worldFaceNormals = []; // World transformed version of .faceNormals
 
     /**
      * @property array uniqueEdges
@@ -635,6 +643,39 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 
 CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
 CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
+
+// Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
+CANNON.ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat){
+    var N = this.vertices.length;
+    while(this.worldVertices.length < N){
+        this.worldVertices.push( new CANNON.Vec3() );
+    }
+
+    var verts = this.vertices,
+        worldVerts = this.worldVertices;
+    for(var i=0; i!==N; i++){
+        quat.vmult( verts[i] , worldVerts[i] );
+        position.vadd( worldVerts[i] , worldVerts[i] );
+    }
+
+    this.worldVerticesNeedsUpdate = false;
+};
+
+// Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
+CANNON.ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
+    var N = this.faceNormals.length;
+    while(this.worldFaceNormals.length < N){
+        this.worldFaceNormals.push( new CANNON.Vec3() );
+    }
+
+    var normals = this.faceNormals,
+        worldNormals = this.worldFaceNormals;
+    for(var i=0; i!==N; i++){
+        quat.vmult( normals[i] , worldFaceNormals[i] );
+    }
+
+    this.worldFaceNormalsNeedsUpdate = false;
+};
 
 CANNON.ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
     // Assume points are distributed with local (0,0,0) as center

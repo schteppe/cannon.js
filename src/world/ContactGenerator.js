@@ -652,7 +652,7 @@ CANNON.ContactGenerator = function(){
     var particleConvex_normal = new CANNON.Vec3();
     var particleConvex_penetratedFaceNormal = new CANNON.Vec3();
     function particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
-
+        console.log("BEFORE");
         var penetratedFaceIndex = -1;
         var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
         var minPenetration = null;
@@ -710,6 +710,8 @@ CANNON.ContactGenerator = function(){
                 console.warn("Point found inside convex, but did not find penetrating face!");
             }
         }
+
+        console.log("AFTER");
     }
 
     /*

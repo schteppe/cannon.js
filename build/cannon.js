@@ -1993,6 +1993,8 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
  * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
  * @todo move the clipping functions to ContactGenerator?
  * @param array points An array of CANNON.Vec3's
+ * @param array faces
+ * @param array normals
  */
 CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var that = this;
@@ -2005,6 +2007,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     * @brief Array of CANNON.Vec3
     */
     this.vertices = points||[];
+
+    this.worldVertices = []; // World transformed version of .vertices
+    this.worldVerticesNeedsUpdate = true;
 
     /**
     * @property array faces
@@ -2024,6 +2029,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     for(var i=0; i<this.faceNormals.length; i++){
         this.faceNormals[i].normalize();
     }
+
+    this.worldFaceNormalsNeedsUpdate = true;
+    this.worldFaceNormals = []; // World transformed version of .faceNormals
 
     /**
      * @property array uniqueEdges
@@ -2620,6 +2628,39 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 
 CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
 CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
+
+// Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
+CANNON.ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat){
+    var N = this.vertices.length;
+    while(this.worldVertices.length < N){
+        this.worldVertices.push( new CANNON.Vec3() );
+    }
+
+    var verts = this.vertices,
+        worldVerts = this.worldVertices;
+    for(var i=0; i!==N; i++){
+        quat.vmult( verts[i] , worldVerts[i] );
+        position.vadd( worldVerts[i] , worldVerts[i] );
+    }
+
+    this.worldVerticesNeedsUpdate = false;
+};
+
+// Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
+CANNON.ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
+    var N = this.faceNormals.length;
+    while(this.worldFaceNormals.length < N){
+        this.worldFaceNormals.push( new CANNON.Vec3() );
+    }
+
+    var normals = this.faceNormals,
+        worldNormals = this.worldFaceNormals;
+    for(var i=0; i!==N; i++){
+        quat.vmult( normals[i] , worldFaceNormals[i] );
+    }
+
+    this.worldFaceNormalsNeedsUpdate = false;
+};
 
 CANNON.ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
     // Assume points are distributed with local (0,0,0) as center
@@ -4131,7 +4172,8 @@ CANNON.World.prototype.step = function(dt){
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
-    var PLANE = CANNON.Shape.types.PLANE;
+    var PLANE = CANNON.Shape.types.PLANE,
+        CONVEX = CANNON.Shape.types.CONVEXPOLYHEDRON;
 
     for(var i=0; i!==N; i++){
         var b = bodies[i],
@@ -4178,8 +4220,16 @@ CANNON.World.prototype.step = function(dt){
                 }
             }
 
-            if(s && s.type === PLANE){
-                s.worldNormalNeedsUpdate = true;
+            if(s){
+                switch(s.type){
+                case PLANE:
+                    s.worldNormalNeedsUpdate = true;
+                    break;
+                case CONVEX:
+                    s.worldFaceNormalsNeedsUpdate = true;
+                    s.worldVerticesNeedsUpdate = true;
+                    break;
+                }
             }
         }
         b.force.set(0,0,0);
@@ -4880,7 +4930,7 @@ CANNON.ContactGenerator = function(){
     var particleConvex_normal = new CANNON.Vec3();
     var particleConvex_penetratedFaceNormal = new CANNON.Vec3();
     function particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
-
+        console.log("BEFORE");
         var penetratedFaceIndex = -1;
         var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
         var minPenetration = null;
@@ -4938,6 +4988,8 @@ CANNON.ContactGenerator = function(){
                 console.warn("Point found inside convex, but did not find penetrating face!");
             }
         }
+
+        console.log("AFTER");
     }
 
     /*
