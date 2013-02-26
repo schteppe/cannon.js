@@ -671,7 +671,7 @@ CANNON.ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
     var normals = this.faceNormals,
         worldNormals = this.worldFaceNormals;
     for(var i=0; i!==N; i++){
-        quat.vmult( normals[i] , worldFaceNormals[i] );
+        quat.vmult( normals[i] , worldNormals[i] );
     }
 
     this.worldFaceNormalsNeedsUpdate = false;

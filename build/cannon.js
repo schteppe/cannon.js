@@ -2656,7 +2656,7 @@ CANNON.ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
     var normals = this.faceNormals,
         worldNormals = this.worldFaceNormals;
     for(var i=0; i!==N; i++){
-        quat.vmult( normals[i] , worldFaceNormals[i] );
+        quat.vmult( normals[i] , worldNormals[i] );
     }
 
     this.worldFaceNormalsNeedsUpdate = false;
@@ -4929,9 +4929,12 @@ CANNON.ContactGenerator = function(){
     var particleConvex_local = new CANNON.Vec3();
     var particleConvex_normal = new CANNON.Vec3();
     var particleConvex_penetratedFaceNormal = new CANNON.Vec3();
+    var particleConvex_vertexToParticle = new CANNON.Vec3();
+    var particleConvex_worldPenetrationVec = new CANNON.Vec3();
     function particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
         var penetratedFaceIndex = -1;
         var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
+        var worldPenetrationVec = particleConvex_worldPenetrationVec;
         var minPenetration = null;
         var numDetectedFaces = 0;
 
@@ -4944,26 +4947,24 @@ CANNON.ContactGenerator = function(){
 
         if(sj.pointIsInside(local)){
 
+            if(sj.worldVerticesNeedsUpdate){
+                sj.computeWorldVertices(xj,qj);
+            }
+            if(sj.worldFaceNormalsNeedsUpdate){
+                sj.computeWorldFaceNormals(qj);
+            }
+
             // For each world polygon in the polyhedra
             for(var i=0,nfaces=sj.faces.length; i!==nfaces; i++){
 
                 // Construct world face vertices
-                var verts = [];
-                for(var j=0,nverts=sj.faces[i].length; j!==nverts; j++){
-                    var worldVertex = new CANNON.Vec3();
-                    sj.vertices[sj.faces[i][j]].copy(worldVertex);
-                    qj.vmult(worldVertex,worldVertex);
-                    worldVertex.vadd(xj,worldVertex);
-                    verts.push(worldVertex);
-                }
-
-                var normal = particleConvex_normal;
-                sj.faceNormals[i].copy(normal);
-                normal.normalize();
-                qj.vmult(normal,normal);
+                var verts = [ sj.worldVertices[ sj.faces[i][0] ] ];
+                
+                var normal = sj.worldFaceNormals[i];
 
                 // Check how much the particle penetrates the polygon plane.
-                var penetration = -normal.dot(xi.vsub(verts[0]));
+                xi.vsub(verts[0],particleConvex_vertexToParticle);
+                var penetration = -normal.dot(particleConvex_vertexToParticle);
                 if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
                     minPenetration = penetration;
                     penetratedFaceIndex = i;
@@ -4975,10 +4976,15 @@ CANNON.ContactGenerator = function(){
             if(penetratedFaceIndex!==-1){
                 // Setup contact
                 var r = makeResult(bi,bj);
+                penetratedFaceNormal.mult(minPenetration, worldPenetrationVec);
+
                 // rj is the particle position projected to the face
-                var worldPenetrationVec = penetratedFaceNormal.mult(minPenetration);
-                var projectedToFace = xi.vsub(xj).vadd(worldPenetrationVec);
-                projectedToFace.copy(r.rj);
+                worldPenetrationVec.vadd(xi,worldPenetrationVec);
+                worldPenetrationVec.vsub(xj,worldPenetrationVec);
+                worldPenetrationVec.copy(r.rj);
+                //var projectedToFace = xi.vsub(xj).vadd(worldPenetrationVec);
+                //projectedToFace.copy(r.rj);
+
                 //qj.vmult(r.rj,r.rj);
                 penetratedFaceNormal.negate( r.ni ); // Contact normal
                 r.ri.set(0,0,0); // Center of particle
