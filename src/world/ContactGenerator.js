@@ -456,7 +456,7 @@ CANNON.ContactGenerator = function(){
                             for(var j=0, Nfaceverts=faceVerts.length; j!==Nfaceverts; j++){
                                 v3pool.release(faceVerts[j]);
                             }
-                            
+
                             v3pool.release(v1);
                             v3pool.release(v2);
                             v3pool.release(p);

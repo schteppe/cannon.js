@@ -34,6 +34,7 @@ CANNON.FrictionEquation.prototype.constructor = CANNON.FrictionEquation;
 
 var FrictionEquation_computeB_temp1 = new CANNON.Vec3();
 var FrictionEquation_computeB_temp2 = new CANNON.Vec3();
+var FrictionEquation_computeB_zero = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b;
@@ -46,15 +47,17 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
     var wixri = this.wixri;
     var wjxrj = this.wjxrj;
 
+    var zero = FrictionEquation_computeB_zero;
+
     var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
+    var wi = bi.angularVelocity ? bi.angularVelocity : zero;
     var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new CANNON.Vec3();
+    var taui = bi.tau ? bi.tau : zero;
 
     var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new CANNON.Vec3();
+    var wj = bj.angularVelocity ? bj.angularVelocity : zero;
     var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new CANNON.Vec3();
+    var tauj = bj.tau ? bj.tau : zero;
 
     var relVel = this.relVel;
     var relForce = this.relForce;
