@@ -120,7 +120,6 @@ CANNON.FrictionEquation.prototype.computeC = function(){
      */
 
     // Compute rxt * I * rxt for each body
-    
     /*
     invIi.vmult(rixt,FEcomputeC_temp1);
     invIj.vmult(rjxt,FEcomputeC_temp2);

@@ -209,7 +209,6 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
         temp1.mult(deltalambda,temp1);
         //bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
          */
-        
         this.biInvInertiaTimesRixn.mult(deltalambda,temp1);
 
         bi.wlambda.vsub(temp1,bi.wlambda);
@@ -221,9 +220,7 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
         temp1.mult(deltalambda,temp1);
         //bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
          */
-        
         this.bjInvInertiaTimesRjxn.mult(deltalambda,temp1);
-
         bj.wlambda.vadd(temp1,bj.wlambda);
     }
 };
