@@ -5247,15 +5247,12 @@ CANNON.ContactEquation = function(bi,bj){
     CANNON.Equation.call(this,bi,bj,0,1e6);
 
     this.restitution = 0.0; // "bounciness": u1 = -e*u0
-    this.penetration = 0.0;
     this.ri = new CANNON.Vec3();
     this.penetrationVec = new CANNON.Vec3();
     this.rj = new CANNON.Vec3();
     this.ni = new CANNON.Vec3();
     this.rixn = new CANNON.Vec3();
     this.rjxn = new CANNON.Vec3();
-    this.rixw = new CANNON.Vec3();
-    this.rjxw = new CANNON.Vec3();
 
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
