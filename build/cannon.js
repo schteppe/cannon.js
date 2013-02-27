@@ -3953,7 +3953,8 @@ CANNON.World.prototype.step = function(dt){
         gnorm = gravity.norm(),
         gx = gravity.x,
         gy = gravity.y,
-        gz = gravity.z;
+        gz = gravity.z,
+        i=0;
 
     if(doProfiling){
         profilingStart = now();
@@ -3964,7 +3965,7 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Add gravity to all objects
-    for(var i=0; i!==N; i++){
+    for(i=0; i!==N; i++){
         var bi = bodies[i];
         if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
             var f = bi.force, m = bi.mass;
@@ -3988,7 +3989,7 @@ CANNON.World.prototype.step = function(dt){
     var oldcontacts = World_step_oldContacts;
     var NoldContacts = contacts.length;
 
-    for(var i=0; i!==NoldContacts; i++){
+    for(i=0; i!==NoldContacts; i++){
         oldcontacts.push(contacts[i]);
     }
     contacts.length = 0;
@@ -4009,7 +4010,8 @@ CANNON.World.prototype.step = function(dt){
     var ncontacts = contacts.length;
 
     // Transfer FrictionEquation from current list to the pool for reuse
-    for(var i=0, NoldFrictionEquations=this.frictionEquations.length; i!==NoldFrictionEquations; i++){
+    var NoldFrictionEquations = this.frictionEquations.length;
+    for(i=0; i!==NoldFrictionEquations; i++){
         frictionEquationPool.push(this.frictionEquations[i]);
     }
     this.frictionEquations.length = 0;
@@ -4107,7 +4109,8 @@ CANNON.World.prototype.step = function(dt){
     }
 
     // Add user-added constraints
-    for(var i=0, Nconstraints=constraints.length; i!==Nconstraints; i++){
+    var Nconstraints = constraints.length;
+    for(i=0; i!==Nconstraints; i++){
         var c = constraints[i];
         c.update();
         for(var j=0, Neq=c.equations.length; j!==Neq; j++){
@@ -4128,7 +4131,7 @@ CANNON.World.prototype.step = function(dt){
 
     // Apply damping, see http://code.google.com/p/bullet/issues/detail?id=74 for details
     var pow = Math.pow;
-    for(var i=0; i!==N; i++){
+    for(i=0; i!==N; i++){
         var bi = bodies[i];
         if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
             var ld = pow(1.0 - bi.linearDamping,dt);
@@ -4145,7 +4148,7 @@ CANNON.World.prototype.step = function(dt){
     this.dispatchEvent(World_step_postStepEvent);
 
     // Invoke pre-step callbacks
-    for(var i=0; i!==N; i++){
+    for(i=0; i!==N; i++){
         var bi = bodies[i];
         if(bi.preStep){
             bi.preStep.call(bi);
@@ -4169,7 +4172,7 @@ CANNON.World.prototype.step = function(dt){
     var PLANE = CANNON.Shape.types.PLANE,
         CONVEX = CANNON.Shape.types.CONVEXPOLYHEDRON;
 
-    for(var i=0; i!==N; i++){
+    for(i=0; i!==N; i++){
         var b = bodies[i],
             s = b.shape,
             force = b.force,
@@ -4243,7 +4246,7 @@ CANNON.World.prototype.step = function(dt){
     this.dispatchEvent(World_step_postStepEvent);
 
     // Invoke post-step callbacks
-    for(var i=0; i!==N; i++){
+    for(i=0; i!==N; i++){
         var bi = bodies[i];
         var postStep = bi.postStep;
         if(postStep){
@@ -4253,7 +4256,7 @@ CANNON.World.prototype.step = function(dt){
 
     // Update world inertias
     // @todo should swap autoUpdate mechanism for .xxxNeedsUpdate
-    for(var i=0; i!==N; i++){
+    for(i=0; i!==N; i++){
         var b = bodies[i];
         if(b.inertiaWorldAutoUpdate){
             b.quaternion.vmult(b.inertia,b.inertiaWorld);
@@ -4265,7 +4268,7 @@ CANNON.World.prototype.step = function(dt){
 
     // Sleeping update
     if(this.allowSleep){
-        for(var i=0; i!==N; i++){
+        for(i=0; i!==N; i++){
             bodies[i].sleepTick(this.time);
         }
     }
