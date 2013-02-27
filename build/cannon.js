@@ -3751,8 +3751,8 @@ CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
 // transfer old contact state data to T-1
 CANNON.World.prototype.collisionMatrixTick = function(){
     var N = this.bodies.length;
-    for(var i=0; i<N; i++){
-        for(var j=0; j<i; j++){
+    for(var i=0; i!==N; i++){
+        for(var j=0; j!==i; j++){
             var currentState = this.collisionMatrixGet(i,j,true);
             this.collisionMatrixSet(i,j,currentState,false);
             this.collisionMatrixSet(i,j,0,true);
@@ -3955,6 +3955,7 @@ CANNON.World.prototype.step = function(dt){
         gy = gravity.y,
         gz = gravity.z,
         i=0;
+
 
     if(doProfiling){
         profilingStart = now();
