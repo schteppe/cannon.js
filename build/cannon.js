@@ -429,12 +429,6 @@ CANNON.Vec3.prototype.cross = function(v,target){
     var vx=v.x, vy=v.y, vz=v.z, x=this.x, y=this.y, z=this.z;
     target = target || new CANNON.Vec3();
 
-    var A = [this.x, this.y, this.z];
-    var B = [v.x, v.y, v.z];
-
-    /*target.x = (A[1] * B[2]) - (A[2] * B[1]);
-    target.y = (A[2] * B[0]) - (A[0] * B[2]);
-    target.z = (A[0] * B[1]) - (A[1] * B[0]);*/
     target.x = (y * vz) - (z * vy);
     target.y = (z * vx) - (x * vz);
     target.z = (x * vy) - (y * vx);
