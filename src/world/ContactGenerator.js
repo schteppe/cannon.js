@@ -429,6 +429,8 @@ CANNON.ContactGenerator = function(){
                         // Construct edge vector
                         var edge = sphereConvex_edge;
                         v2.vsub(v1,edge);
+
+                        // Construct the same vector, but normalized
                         var edgeUnit = sphereConvex_edgeUnit;
                         edge.unit(edgeUnit);
 
@@ -436,12 +438,17 @@ CANNON.ContactGenerator = function(){
                         var p = v3pool.get();
                         var v1_to_xi = v3pool.get();
                         xi.vsub(v1, v1_to_xi);
-                        edgeUnit.mult(v1_to_xi.dot(edgeUnit), p);
+                        var dot = v1_to_xi.dot(edgeUnit);
+                        edgeUnit.mult(dot, p);
                         p.vadd(v1, p);
 
+                        // Compute a vector from p to the center of the sphere
                         var xi_to_p = v3pool.get();
                         p.vsub(xi, xi_to_p);
-                        if(xi_to_p.norm2() < R*R){
+
+                        // Collision if the edge-sphere distance is less than the radius
+                        // AND if p is in between v1 and v2
+                        if(dot > 0 && dot*dot<edge.norm2() && xi_to_p.norm2() < R*R){ // Collision if the edge-sphere distance is less than the radius
                             // Edge contact!
                             var r = makeResult(bi,bj);
                             p.vsub(xj,r.rj);
