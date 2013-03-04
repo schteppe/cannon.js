@@ -70,24 +70,29 @@
             demo.addVisual(compoundBody);
 
 
-      
             // ConvexPolyhedron tetra shape
-            var polyhedronShape = new CANNON.ConvexPolyhedron([ new CANNON.Vec3(0,0,0),
-                                                                new CANNON.Vec3(2,0,0),
-                                                                new CANNON.Vec3(0,2,0),
-                                                                new CANNON.Vec3(0,0,2)],
-                                                                [
-                                                                [0,3,2], // -x
-                                                                [0,1,3], // -y
-                                                                [0,1,2], // -z
-                                                                [1,3,2], // +xyz
-                                                                ],
-                                                                [
-                                                                new CANNON.Vec3(-1, 0, 0),
-                                                                new CANNON.Vec3( 0,-1, 0),
-                                                                new CANNON.Vec3( 0, 0,-1),
-                                                                new CANNON.Vec3( 1, 1, 1)
-                                                                ]);
+            var verts = [new CANNON.Vec3(0,0,0),
+                         new CANNON.Vec3(2,0,0),
+                         new CANNON.Vec3(0,2,0),
+                         new CANNON.Vec3(0,0,2)];
+            var offset = -0.35;
+            for(var i=0; i<verts.length; i++){
+                var v = verts[i];
+                v.x += offset;
+                v.y += offset;
+                v.z += offset;
+            }
+            var polyhedronShape = new CANNON.ConvexPolyhedron(verts,
+                                                [
+                                                    [0,3,2], // -x
+                                                    [0,1,3], // -y
+                                                    [0,1,2], // -z
+                                                    [1,3,2], // +xyz
+                                                ],
+                                                [new CANNON.Vec3(-1, 0, 0),
+                                                 new CANNON.Vec3( 0,-1, 0),
+                                                 new CANNON.Vec3( 0, 0,-1),
+                                                 new CANNON.Vec3( 1, 1, 1)]);
             var polyhedronBody = new CANNON.RigidBody(mass,polyhedronShape);
             polyhedronBody.position.set(size*2,-size*2,size+1);
             world.add(polyhedronBody);
