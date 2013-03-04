@@ -1,3 +1,5 @@
+# Deprecated. To be replaced by Gruntfile.
+
 START     = LICENSE src/wrapper/Start.js
 CANNON    = src/Cannon.js
 COLLISION = src/collision/Broadphase.js \

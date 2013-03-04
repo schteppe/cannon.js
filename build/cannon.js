@@ -20,7 +20,11 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+
 (function () {
+
+
 /**
  * @page About
  * cannon.js is a lightweight 3D physics engine for web applications. For more information and source code, go to the Github repository [schteppe/cannon.js](https://github.com/schteppe/cannon.js).
@@ -38,7 +42,9 @@ var CANNON = CANNON || {};
 if(!this.Int32Array){
     this.Int32Array=Array;
     this.Float32Array=Array;
-}/**
+}
+
+/**
  * @class CANNON.Mat3
  * @brief A 3x3 matrix.
  * @param array elements Array of nine elements. Optional.
@@ -384,7 +390,9 @@ CANNON.Mat3.prototype.reverse = function(target){
     } while (i--);
 
     return target;
-};/**
+};
+
+/**
  * @class CANNON.Vec3
  * @brief 3-dimensional vector
  * @param float x
@@ -741,6 +749,8 @@ CANNON.Vec3.prototype.almostZero = function(precision){
     }
     return true;
 };
+
+
 /**
  * @class CANNON.Quaternion
  * @brief A Quaternion describes a rotation in 3D space.
@@ -1056,7 +1066,9 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
     target.y = heading;
     target.z = attitude;
     target.x = bank;
-};/**
+};
+
+/**
  * @class CANNON.EventTarget
  * @see https://github.com/mrdoob/eventtarget.js/
  */
@@ -1081,7 +1093,9 @@ CANNON.EventTarget = function () {
             listeners[ type ].splice( index, 1 );
         }
     };
-};/**
+};
+
+/**
  * @class CANNON.ObjectPool
  * @brief For pooling objects that can be reused.
  */
@@ -1107,7 +1121,9 @@ CANNON.ObjectPool.prototype.get = function(){
 
 CANNON.ObjectPool.prototype.constructObject = function(){
     throw new Error("constructObject() not implemented in this ObjectPool subclass yet!");
-};/**
+};
+
+/**
  * @class CANNON.Vec3Pool
  */
 CANNON.Vec3Pool = function(){
@@ -1118,7 +1134,9 @@ CANNON.Vec3Pool.prototype = new CANNON.ObjectPool();
 
 CANNON.Vec3Pool.prototype.constructObject = function(){
     return new CANNON.Vec3();
-};/**
+};
+
+/**
  * @class CANNON.Shape
  * @author schteppe
  * @brief Base class for shapes
@@ -1229,6 +1247,8 @@ CANNON.Shape.types = {
     CONVEXPOLYHEDRON:16
 };
 
+
+
 /**
  * @class CANNON.Body
  * @brief Base class for all body types.
@@ -1284,7 +1304,9 @@ CANNON.Body.STATIC = 2;
 /*
  * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
  */
-CANNON.Body.KINEMATIC = 4;/**
+CANNON.Body.KINEMATIC = 4;
+
+/**
  * @class CANNON.Particle
  * @brief A body consisting of one point mass. Does not have orientation.
  * @param float mass
@@ -1468,6 +1490,8 @@ CANNON.Particle.prototype.sleepTick = function(time){
         }
     }
 };
+
+
 /**
  * @class CANNON.RigidBody
  * @brief Rigid body base class
@@ -1589,7 +1613,9 @@ CANNON.RigidBody.prototype.applyImpulse = function(worldPoint,force,dt){
     r.cross(force,rotForce);
     this.velocity.vadd(force.mult(dt),this.velocity);
     this.angularVelocity.vadd(rotForce.mult(dt),this.angularVelocity);
-};/**
+};
+
+/**
  * @brief Spherical rigid body
  * @class CANNON.Sphere
  * @extends CANNON.Shape
@@ -1635,7 +1661,9 @@ CANNON.Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){
         min[ax] = pos[ax] - r;
         max[ax] = pos[ax] + r;
     }
-};/**
+};
+
+/**
  * @class CANNON.Box
  * @brief A 3d box shape.
  * @param CANNON.Vec3 halfExtents
@@ -1791,7 +1819,9 @@ CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
             min.z = z;
         }
     });
-};/**
+};
+
+/**
  * @class CANNON.Plane
  * @extends CANNON.Shape
  * @param CANNON.Vec3 normal
@@ -1841,7 +1871,9 @@ CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
             min[ax] = pos[ax];
         }
     }
-};/**
+};
+
+/**
  * @class CANNON.Compound
  * @extends CANNON.Shape
  * @brief A shape made of several other shapes.
@@ -1977,7 +2009,9 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
             max.z = aabbmaxTemp.z;
         }
     }
-};/**
+};
+
+/**
  * @class CANNON.ConvexPolyhedron
  * @extends CANNON.Shape
  * @brief A set of points in space describing a convex shape.
@@ -2785,7 +2819,9 @@ CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
 
 
 function pointInConvex(p){
-}/**
+}
+
+/**
  * @class CANNON.Cylinder
  * @extends CANNON.ConvexPolyhedron
  * @author schteppe / https://github.com/schteppe
@@ -2851,7 +2887,9 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
     CANNON.ConvexPolyhedron.call( this, verts, faces, normals );
 };
 
-CANNON.Cylinder.prototype = new CANNON.ConvexPolyhedron();/**
+CANNON.Cylinder.prototype = new CANNON.ConvexPolyhedron();
+
+/**
  * @class CANNON.Broadphase
  * @author schteppe
  * @brief Base class for broadphase implementations
@@ -3039,6 +3077,8 @@ CANNON.Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
         delete t[idx];
     }
 };
+
+
 /**
  * @class CANNON.NaiveBroadphase
  * @brief Naive broadphase implementation, used in lack of better ones.
@@ -3075,6 +3115,8 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         }
     }
 };
+
+
 /**
  * @class CANNON.GridBroadphase
  * @brief Axis aligned uniform grid broadphase.
@@ -3236,6 +3278,8 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 
     this.makePairsUnique(pairs1,pairs2);
 };
+
+
 /**
  * @class CANNON.Solver
  * @brief Constraint equation solver base class.
@@ -3267,6 +3311,8 @@ CANNON.Solver.prototype.removeEquation = function(eq){
 CANNON.Solver.prototype.removeAllEquations = function(){
     this.equations.length = 0;
 };
+
+
 
 /**
  * @class CANNON.Solver
@@ -3395,6 +3441,8 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
     return iter;
 };
+
+
 CANNON.SplitSolver = function(subsolver){
     CANNON.Solver.call(this);
     this.subsolver = subsolver;
@@ -3497,6 +3545,8 @@ CANNON.SplitSolver.prototype.solve = function(dt,world){
 
     return n;
 };
+
+
 /**
  * @class CANNON.Material
  * @brief Defines a physics material.
@@ -3511,6 +3561,8 @@ CANNON.Material = function(name){
     this.name = name;
     this.id = -1;
 };
+
+
 
 /**
  * @class CANNON.ContactMaterial
@@ -3541,6 +3593,8 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
     this.frictionEquationStiffness = 1e7;
     this.frictionEquationRegularizationTime = 3;
 };
+
+
 
 /**
  * @class CANNON.World
@@ -4274,6 +4328,8 @@ CANNON.World.prototype.step = function(dt){
         }
     }
 };
+
+
 /**
  * @class CANNON.ContactGenerator
  * @brief Helper class for the World. Generates ContactEquations.
@@ -5224,7 +5280,9 @@ CANNON.ContactGenerator = function(){
                         );
         }
     };
-};/**
+};
+
+/**
  * @class CANNON.Equation
  * @brief Equation base class
  * @author schteppe
@@ -5316,6 +5374,8 @@ CANNON.Equation.prototype.updateSpookParams = function(h){
     this.b = (4.0 * d) / (1 + 4 * d);
     this.eps = 4.0 / (h * h * k * (1 + 4 * d));
 };
+
+
 /**
  * @class CANNON.ContactEquation
  * @brief Contact/non-penetration constraint equation
@@ -5534,6 +5594,8 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
         bj.wlambda.vadd(temp1,bj.wlambda);
     }
 };
+
+
 /**
  * @class CANNON.FrictionEquation
  * @brief Constrains the slipping in a contact along a tangent
@@ -5736,7 +5798,9 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
         this.bjInvInertiaTimesRjxt.mult(deltalambda,tmp);
         wj.vadd(tmp,wj);
     }
-};/**
+};
+
+/**
  * @class CANNON.RotationalEquation
  * @brief Rotational constraint. Works to keep the local vectors orthogonal to each other.
  * @author schteppe
@@ -5896,6 +5960,8 @@ CANNON.RotationalEquation.prototype.addToWlambda = function(deltalambda){
         bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
     }
 };
+
+
 /**
  * @class CANNON.Constraint
  * @brief Constraint base class
@@ -5918,7 +5984,9 @@ CANNON.Constraint = function(bodyA,bodyB){
 // Update constraint
 CANNON.Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
-};/**
+};
+
+/**
  * @class CANNON.DistanceConstraint
  * @brief Constrains two bodies to be at a constant distance from each other.
  * @author schteppe
@@ -5955,6 +6023,8 @@ CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
     };
 };
 CANNON.DistanceConstraint.prototype = new CANNON.Constraint();
+
+
 /**
  * @class CANNON.RotationalMotorEquation
  * @brief Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
@@ -6104,6 +6174,8 @@ CANNON.RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
         bj.wlambda.vadd(I.vmult(axisB).mult(deltalambda),bj.wlambda);
     }
 };
+
+
 /**
  * @class CANNON.HingeConstraint
  * @brief Hinge constraint. Tries to keep the local body axes equal.
@@ -6210,7 +6282,9 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         }
     };
 };
-CANNON.HingeConstraint.prototype = new CANNON.Constraint();/**
+CANNON.HingeConstraint.prototype = new CANNON.Constraint();
+
+/**
  * @class CANNON.PointToPointConstraint
  * @brief Connects two bodies at given offset points
  * @author schteppe
@@ -6253,6 +6327,8 @@ CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
     };
 };
 CANNON.PointToPointConstraint.prototype = new CANNON.Constraint();
+
+
 if (typeof module !== 'undefined') {
     // export for node
     module.exports = CANNON;
