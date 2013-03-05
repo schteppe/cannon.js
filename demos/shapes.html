@@ -62,6 +62,16 @@
             world.add(cylinderBody);
             demo.addVisual(cylinderBody);
 
+            // Cylinder shape 2
+            var cylinderShape2 = new CANNON.Cylinder(size,size,2*size,10);
+            var q = new CANNON.Quaternion();
+            q.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI / 2);
+            cylinderShape2.transformAllPoints(new CANNON.Vec3(),q);
+            var cylinderBody2 = new CANNON.RigidBody(mass,cylinderShape2);
+            cylinderBody2.position.set(-size*2,size*2,4*size+1);
+            world.add(cylinderBody2);
+            demo.addVisual(cylinderBody2);
+
 
             // Box shape
             var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));

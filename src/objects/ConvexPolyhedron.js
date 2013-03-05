@@ -775,10 +775,22 @@ CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
 
     // Apply rotation
     if(quat){
+        // Rotate vertices
         for(var i=0; i<n; i++){
             var v = verts[i];
             quat.vmult(v,v);
         }
+        // Rotate face normals
+        for(var i=0; i<this.faceNormals.length; i++){
+            var v = this.faceNormals[i];
+            quat.vmult(v,v);
+        }
+        /*
+        // Rotate edges
+        for(var i=0; i<this.uniqueEdges.length; i++){
+            var v = this.uniqueEdges[i];
+            quat.vmult(v,v);
+        }*/
     }
 
     // Apply offset
