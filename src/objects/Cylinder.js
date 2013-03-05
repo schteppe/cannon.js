@@ -37,27 +37,33 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
             verts.push(new CANNON.Vec3(radiusBottom*cos(theta),
                                        radiusBottom*sin(theta),
                                        -height*0.5));
-            bottomface.push(2*(i+1));
+            bottomface.push(2*i+2);
             // Top
             verts.push(new CANNON.Vec3(radiusTop*cos(theta),
                                        radiusTop*sin(theta),
                                        height*0.5));
-            topface.push(2*(i+1)+1);
+            topface.push(2*i+3);
             // Normal
             normals.push(new CANNON.Vec3(cos(thetaN),
                                          sin(thetaN),
                                          0));
             // Face
-            faces.push([2*i, 2*i+1, 2*(i+1), 2*(i+1)+1]);
+            faces.push([2*i+2, 2*i+3, 2*i+1,2*i]);
         } else {
-            faces.push([2*i, 2*i+1, 0, 1]);
+            faces.push([0,1, 2*i+1, 2*i]); // Connect
             // Normal
             normals.push(new CANNON.Vec3(cos(thetaN),sin(thetaN),0));
         }
     }
     faces.push(topface);
     normals.push(new CANNON.Vec3(0,0,1));
-    faces.push(bottomface);
+
+    // Reorder bottom face
+    var temp = [];
+    for(var i=0; i<bottomface.length; i++){
+        temp.push(bottomface[bottomface.length - i - 1]);
+    }
+    faces.push(temp);
     normals.push(new CANNON.Vec3(0,0,-1));
 
     this.type = CANNON.Shape.types.CONVEXPOLYHEDRON;

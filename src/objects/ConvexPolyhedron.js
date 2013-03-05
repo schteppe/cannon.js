@@ -16,6 +16,25 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     CANNON.Shape.call( this );
     this.type = CANNON.Shape.types.CONVEXPOLYHEDRON;
 
+    /*
+     * @brief Get face normal given 3 vertices
+     * @param CANNON.Vec3 va
+     * @param CANNON.Vec3 vb
+     * @param CANNON.Vec3 vc
+     * @param CANNON.Vec3 target
+     * @todo unit test?
+     */
+    var cb = new CANNON.Vec3();
+    var ab = new CANNON.Vec3();
+    function normal( va, vb, vc, target ) {
+        vb.vsub(va,ab);
+        vc.vsub(vb,cb);
+        cb.cross(ab,target);
+        if ( !target.isZero() ) {
+            target.normalize();
+        }
+    }
+
     /**
     * @property array vertices
     * @memberof CANNON.ConvexPolyhedron
@@ -40,9 +59,34 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @brief Array of CANNON.Vec3
      * @todo Needed?
      */
-    this.faceNormals = normals||[];
+    this.faceNormals = [];//normals||[];
+    /*
     for(var i=0; i<this.faceNormals.length; i++){
         this.faceNormals[i].normalize();
+    }
+     */
+    // Generate normals
+    for(var i=0; i<this.faces.length; i++){
+
+        // Check so all vertices exists for this face
+        for(var j=0; j<this.faces[i].length; j++){
+            if(!this.vertices[this.faces[i][j]]){
+                throw new Error("Vertex "+this.faces[i][j]+" not found!");
+            }
+        }
+
+        var n = new CANNON.Vec3();
+        normalOfFace(i,n);
+        n.negate(n);
+        this.faceNormals.push(n);
+        //console.log(n.toString());
+        var vertex = this.vertices[this.faces[i][0]];
+        if(n.dot(vertex)<0){
+            console.warn("Face normal "+i+" ("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
+            for(var j=0; j<this.faces[i].length; j++){
+                console.warn("Vertex "+this.faces[i][j]+": ("+this.vertices[faces[i][j]].toString()+")");
+            }
+        }
     }
 
     this.worldFaceNormalsNeedsUpdate = true;
@@ -553,24 +597,6 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return c;
     }
 
-    /*
-     * @brief Get face normal given 3 vertices
-     * @param CANNON.Vec3 va
-     * @param CANNON.Vec3 vb
-     * @param CANNON.Vec3 vc
-     * @param CANNON.Vec3 target
-     * @todo unit test?
-     */
-    var cb = new CANNON.Vec3();
-    var ab = new CANNON.Vec3();
-    function normal( va, vb, vc, target ) {
-        vb.vsub(va,ab);
-        vc.vsub(vb,cb);
-        cb.cross(ab,target);
-        if ( !target.isZero() ) {
-            target.normalize();
-        }
-    }
 
     function printFace(i){
         var f = that.faces[i], s = "";

@@ -36,8 +36,8 @@
                                                 [
                                                     [0,3,2], // -x
                                                     [0,1,3], // -y
-                                                    [0,1,2], // -z
-                                                    [1,3,2], // +xyz
+                                                    [0,2,1], // -z
+                                                    [1,2,3], // +xyz
                                                 ],
                                                 [new CANNON.Vec3(-1, 0, 0),
                                                  new CANNON.Vec3( 0,-1, 0),
@@ -55,11 +55,11 @@
                           new CANNON.Vec3( size,-size, size),
                           new CANNON.Vec3( size, size, size),
                           new CANNON.Vec3(-size, size, size)];
-          var faces =[[0,1,2,3], // -z
+          var faces =[[3,2,1,0], // -z
                       [4,5,6,7], // +z
-                      [0,1,4,5], // -y
+                      [5,4,1,0], // -y
                       [2,3,6,7], // +y
-                      [0,3,4,7], // -x
+                      [0,4,7,3 /*0,3,4,7*/ ], // -x
                       [1,2,5,6], // +x
                       ];
           var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
@@ -74,7 +74,6 @@
           return boxShape;
       }
 
-      
       // Just 1 box on a plane
       demo.addScene("Hull on plane",function(){
           var world = setupWorld(demo);
@@ -89,6 +88,8 @@
           world.add(boxbody1);
           demo.addVisual(boxbody1);
         });
+      
+      
 
       // Various shapes
       demo.addScene("various",function(){
@@ -110,56 +111,15 @@
           demo.addVisual(tetraBody);
       
           // ConvexPolyhedron cylinder shape
+          // Yes, the Cylinder is actually a ConvexPolyhedron.
           var num = 20;
           var verts = [];
           var normals = [];
           var faces = [];
           var bottomface = [];
           var topface = [];
-          var L = 1, R = 0.5;
-          verts.push(new CANNON.Vec3(R*Math.cos(0),
-                         R*Math.sin(0),
-                         -L));
-          bottomface.push(0);
-          verts.push(new CANNON.Vec3(R*Math.cos(0),
-                         R*Math.sin(0),
-                         L));
-          topface.push(1);
-          for(var i=0; i<num; i++){
-            // Bottom
-            var theta = 2*Math.PI/num * (i+1);
-            var thetaN = 2*Math.PI/num * (i+0.5);
-            if(i<num-1){
-              // Bottom
-              verts.push(new CANNON.Vec3(R*Math.cos(theta),
-                                         R*Math.sin(theta),
-                                         -L));
-              bottomface.push(2*(i+1));
-              // Top
-              verts.push(new CANNON.Vec3(R*Math.cos(theta),
-                                         R*Math.sin(theta),
-                         L));
-          topface.push(2*(i+1)+1);
-          // Normal
-          normals.push(new CANNON.Vec3(Math.cos(thetaN),
-                           Math.sin(thetaN),
-                           0));
-          // Face
-          faces.push([2*i, 2*i+1, 2*(i+1), 2*(i+1)+1]);
-            } else {
-          faces.push([2*i, 2*i+1, 0, 1]);
-          
-          // Normal
-          normals.push(new CANNON.Vec3(Math.cos(thetaN),
-                           Math.sin(thetaN),
-                           0));
-            }
-          } 
-          faces.push(topface);
-          normals.push(new CANNON.Vec3(0,0,1));
-          faces.push(bottomface);
-          normals.push(new CANNON.Vec3(0,0,-1));
-          var cylinderShape = new CANNON.ConvexPolyhedron(verts,faces,normals);
+          var L = 2, R = 0.5;
+          var cylinderShape = new CANNON.Cylinder(R,R,L,num);
           var cylinderBody = new CANNON.RigidBody(mass,cylinderShape);
           cylinderBody.position.set(0,0,size*4+1);
           cylinderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/3);
@@ -168,7 +128,7 @@
       
         });
 
-      
+
       // Box on box tilting over
       demo.addScene("Hull on hull",function(){
           var world = setupWorld(demo);

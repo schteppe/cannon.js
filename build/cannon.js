@@ -1702,6 +1702,38 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sy = this.halfExtents.y;
     var sz = this.halfExtents.z;
     var V = CANNON.Vec3;
+
+
+      function createBoxPolyhedron(size){
+          size = size || 1;
+          var vertices = [new CANNON.Vec3(-size,-size,-size),
+                          new CANNON.Vec3( size,-size,-size),
+                          new CANNON.Vec3( size, size,-size),
+                          new CANNON.Vec3(-size, size,-size),
+                          new CANNON.Vec3(-size,-size, size),
+                          new CANNON.Vec3( size,-size, size),
+                          new CANNON.Vec3( size, size, size),
+                          new CANNON.Vec3(-size, size, size)];
+          var faces =[[3,2,1,0], // -z
+                      [4,5,6,7], // +z
+                      [5,4,1,0], // -y
+                      [2,3,6,7], // +y
+                      [0,4,7,3 /*0,3,4,7*/ ], // -x
+                      [1,2,5,6], // +x
+                      ];
+          var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
+                               new CANNON.Vec3( 0, 0, 1),
+                               new CANNON.Vec3( 0,-1, 0),
+                               new CANNON.Vec3( 0, 1, 0),
+                               new CANNON.Vec3(-1, 0, 0),
+                               new CANNON.Vec3( 1, 0, 0)];
+          var boxShape = new CANNON.ConvexPolyhedron(vertices,
+                                                     faces,
+                                                     faceNormals);
+          return boxShape;
+      }
+
+
     var h = new CANNON.ConvexPolyhedron([new V(-sx,-sy,-sz),
                                          new V( sx,-sy,-sz),
                                          new V( sx, sy,-sz),
@@ -1710,13 +1742,19 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                                          new V( sx,-sy, sz),
                                          new V( sx, sy, sz),
                                          new V(-sx, sy, sz)],
-                                         [[0,1,2,3], // -z
+                                         [[3,2,1,0], // -z
+                      [4,5,6,7], // +z
+                      [5,4,1,0], // -y
+                      [2,3,6,7], // +y
+                      [0,4,7,3 /*0,3,4,7*/ ], // -x
+                      [1,2,5,6], // +x
+                      ]/*[[0,1,2,3], // -z
                                           [4,5,6,7], // +z
                                           [0,1,5,4], // -y
                                           [2,3,7,6], // +y
                                           [0,3,7,4], // -x
                                           [1,2,6,5], // +x
-                                          ],
+                                          ]*/,
                                         [new V( 0, 0,-1),
                                          new V( 0, 0, 1),
                                          new V( 0,-1, 0),
@@ -2029,6 +2067,25 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     CANNON.Shape.call( this );
     this.type = CANNON.Shape.types.CONVEXPOLYHEDRON;
 
+    /*
+     * @brief Get face normal given 3 vertices
+     * @param CANNON.Vec3 va
+     * @param CANNON.Vec3 vb
+     * @param CANNON.Vec3 vc
+     * @param CANNON.Vec3 target
+     * @todo unit test?
+     */
+    var cb = new CANNON.Vec3();
+    var ab = new CANNON.Vec3();
+    function normal( va, vb, vc, target ) {
+        vb.vsub(va,ab);
+        vc.vsub(vb,cb);
+        cb.cross(ab,target);
+        if ( !target.isZero() ) {
+            target.normalize();
+        }
+    }
+
     /**
     * @property array vertices
     * @memberof CANNON.ConvexPolyhedron
@@ -2053,9 +2110,34 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @brief Array of CANNON.Vec3
      * @todo Needed?
      */
-    this.faceNormals = normals||[];
+    this.faceNormals = [];//normals||[];
+    /*
     for(var i=0; i<this.faceNormals.length; i++){
         this.faceNormals[i].normalize();
+    }
+     */
+    // Generate normals
+    for(var i=0; i<this.faces.length; i++){
+
+        // Check so all vertices exists for this face
+        for(var j=0; j<this.faces[i].length; j++){
+            if(!this.vertices[this.faces[i][j]]){
+                throw new Error("Vertex "+this.faces[i][j]+" not found!");
+            }
+        }
+
+        var n = new CANNON.Vec3();
+        normalOfFace(i,n);
+        n.negate(n);
+        this.faceNormals.push(n);
+        //console.log(n.toString());
+        var vertex = this.vertices[this.faces[i][0]];
+        if(n.dot(vertex)<0){
+            console.warn("Face normal "+i+" ("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
+            for(var j=0; j<this.faces[i].length; j++){
+                console.warn("Vertex "+this.faces[i][j]+": ("+this.vertices[faces[i][j]].toString()+")");
+            }
+        }
     }
 
     this.worldFaceNormalsNeedsUpdate = true;
@@ -2566,24 +2648,6 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         return c;
     }
 
-    /*
-     * @brief Get face normal given 3 vertices
-     * @param CANNON.Vec3 va
-     * @param CANNON.Vec3 vb
-     * @param CANNON.Vec3 vc
-     * @param CANNON.Vec3 target
-     * @todo unit test?
-     */
-    var cb = new CANNON.Vec3();
-    var ab = new CANNON.Vec3();
-    function normal( va, vb, vc, target ) {
-        vb.vsub(va,ab);
-        vc.vsub(vb,cb);
-        cb.cross(ab,target);
-        if ( !target.isZero() ) {
-            target.normalize();
-        }
-    }
 
     function printFace(i){
         var f = that.faces[i], s = "";
@@ -2860,27 +2924,33 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
             verts.push(new CANNON.Vec3(radiusBottom*cos(theta),
                                        radiusBottom*sin(theta),
                                        -height*0.5));
-            bottomface.push(2*(i+1));
+            bottomface.push(2*i+2);
             // Top
             verts.push(new CANNON.Vec3(radiusTop*cos(theta),
                                        radiusTop*sin(theta),
                                        height*0.5));
-            topface.push(2*(i+1)+1);
+            topface.push(2*i+3);
             // Normal
             normals.push(new CANNON.Vec3(cos(thetaN),
                                          sin(thetaN),
                                          0));
             // Face
-            faces.push([2*i, 2*i+1, 2*(i+1), 2*(i+1)+1]);
+            faces.push([2*i+2, 2*i+3, 2*i+1,2*i]);
         } else {
-            faces.push([2*i, 2*i+1, 0, 1]);
+            faces.push([0,1, 2*i+1, 2*i]); // Connect
             // Normal
             normals.push(new CANNON.Vec3(cos(thetaN),sin(thetaN),0));
         }
     }
     faces.push(topface);
     normals.push(new CANNON.Vec3(0,0,1));
-    faces.push(bottomface);
+
+    // Reorder bottom face
+    var temp = [];
+    for(var i=0; i<bottomface.length; i++){
+        temp.push(bottomface[bottomface.length - i - 1]);
+    }
+    faces.push(temp);
     normals.push(new CANNON.Vec3(0,0,-1));
 
     this.type = CANNON.Shape.types.CONVEXPOLYHEDRON;
@@ -4922,6 +4992,7 @@ CANNON.ContactGenerator = function(){
             var res = [];
             var q = convexConvex_q;
             si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
+            //console.log(res.length);
             for(var j=0; j!==res.length; j++){
                 var r = makeResult(bi,bj);
                 sepAxis.negate(r.ni);

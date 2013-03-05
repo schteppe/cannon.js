@@ -590,6 +590,7 @@ CANNON.ContactGenerator = function(){
             var res = [];
             var q = convexConvex_q;
             si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
+            //console.log(res.length);
             for(var j=0; j!==res.length; j++){
                 var r = makeResult(bi,bj);
                 sepAxis.negate(r.ni);
