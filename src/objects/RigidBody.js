@@ -97,7 +97,7 @@ CANNON.RigidBody = function(mass,shape,material){
      */
     this.aabbmax = new CANNON.Vec3();
 
-    this.calculateAABB();
+    this.aabbNeedsUpdate = true;
 
     this.wlambda = new CANNON.Vec3();
 };
@@ -105,11 +105,12 @@ CANNON.RigidBody = function(mass,shape,material){
 CANNON.RigidBody.prototype = new CANNON.Particle(0);
 CANNON.RigidBody.prototype.constructor = CANNON.RigidBody;
 
-CANNON.RigidBody.prototype.calculateAABB = function(){
+CANNON.RigidBody.prototype.computeAABB = function(){
     this.shape.calculateWorldAABB(this.position,
-                  this.quaternion,
-                  this.aabbmin,
-                  this.aabbmax);
+                                  this.quaternion,
+                                  this.aabbmin,
+                                  this.aabbmax);
+    this.aabbNeedsUpdate = false;
 };
 
 CANNON.RigidBody.prototype.applyImpulse = function(worldPoint,force,dt){

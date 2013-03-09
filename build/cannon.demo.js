@@ -384,8 +384,12 @@ CANNON.Demo = function(options){
         if(settings.aabbs){
             for(var i=0; i<bodies.length; i++){
                 var b = bodies[i];
-                if(b.calculateAABB){
-                    b.calculateAABB();
+                if(b.computeAABB){
+                    
+                    if(b.aabbNeedsUpdate){
+                        b.computeAABB();
+                    }
+
                     // Todo: cap the infinite AABB to scene AABB, for now just dont render
                     if( isFinite(b.aabbmax.x) &&
                         isFinite(b.aabbmax.y) &&

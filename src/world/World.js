@@ -672,6 +672,10 @@ CANNON.World.prototype.step = function(dt){
                         }
                     }
                 }
+
+                if(b.aabbmin){
+                    b.aabbNeedsUpdate = true;
+                }
             }
 
             if(s){

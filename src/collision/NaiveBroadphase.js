@@ -19,18 +19,19 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var n = world.numObjects(),
-    bodies = world.bodies;
+        bodies = world.bodies;
 
     // Naive N^2 ftw!
     for(var i=0; i!==n; i++){
         for(var j=0; j!==i; j++){
-            var bi = bodies[i], bj = bodies[j];
+            var bi = bodies[i],
+                bj = bodies[j];
 
             if(!this.needBroadphaseCollision(bi,bj)){
                 continue;
             }
 
-            this.doBoundingSphereBroadphase(bi,bj,pairs1,pairs2);
+            this.intersectionTest(bi,bj,pairs1,pairs2);
         }
     }
 };

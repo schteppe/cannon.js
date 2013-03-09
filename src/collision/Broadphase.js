@@ -10,6 +10,9 @@ CANNON.Broadphase = function(){
     * @memberof CANNON.Broadphase
     */
     this.world = null;
+
+    // If true: uses bounding boxes, else it uses bounding spheres
+    this.useBoundingBoxes = false;
 };
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 
@@ -28,6 +31,9 @@ CANNON.Broadphase.prototype.collisionPairs = function(world,p1,p2){
 
 var Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
+
+
+
     // Check collision filter masks
     if( (bodyA.collisionFilterGroup & bodyB.collisionFilterMask)===0 || (bodyB.collisionFilterGroup & bodyA.collisionFilterMask)===0){
         return false;
@@ -40,7 +46,25 @@ CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
         return false;
     }
 
+    // Two particles don't collide
+    if(!bodyA.shape && !bodyB.shape){
+        return false;
+    }
+
+    // Two planes don't collide
+    if(bodyA.shape instanceof CANNON.Plane && bodyB.shape instanceof CANNON.Plane){
+        return false;
+    }
+
     return true;
+};
+
+CANNON.Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
+    if(this.useBoundingBoxes){
+        this.doBoundingBoxBroadphase(bi,bj,pairs1,pairs2);
+    } else {
+        this.doBoundingSphereBroadphase(bi,bj,pairs1,pairs2);
+    }
 };
 
 var Broadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
@@ -154,6 +178,56 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
         }
     }
 };
+
+
+CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
+    var bishape = bi.shape,
+        bjshape = bj.shape;
+
+    if(bi.aabbNeedsUpdate){
+        bi.computeAABB();
+    }
+    if(bj.aabbNeedsUpdate){
+        bj.computeAABB();
+    }
+
+    if(bishape && bjshape){
+        // Check AABB / AABB
+        if( !(  bi.aabbmax.x < bj.aabbmin.x || 
+                bi.aabbmax.y < bj.aabbmin.y || 
+                bi.aabbmax.z < bj.aabbmin.z || 
+                bi.aabbmin.x > bj.aabbmax.x || 
+                bi.aabbmin.y > bj.aabbmax.y || 
+                bi.aabbmin.z > bj.aabbmax.z   ) ){
+            pairs1.push(bi);
+            pairs2.push(bj);
+        }
+    } else {
+        // Particle without shape
+        if(!bishape && !bjshape){
+            // No collisions between 2 particles
+        } else {
+            // particle vs AABB
+            var p =      !bishape ? bi : bj;
+            var other =  !bishape ? bj : bi;
+
+            if(other.shape instanceof CANNON.Plane){
+                //console.log(p.position.z+"<"+other.aabbmin.z+" = ",p.position.z < other.aabbmin.z);
+            }
+
+            if( !(  p.position.x < other.aabbmin.x || 
+                    p.position.y < other.aabbmin.y || 
+                    p.position.z < other.aabbmin.z || 
+                    p.position.x > other.aabbmax.x || 
+                    p.position.y > other.aabbmax.y || 
+                    p.position.z > other.aabbmax.z   ) ){
+                pairs1.push(bi);
+                pairs2.push(bj);
+            }
+        }
+    }
+};
+
 
 var Broadphase_makePairsUnique_temp = {},
     Broadphase_makePairsUnique_p1 = [],

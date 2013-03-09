@@ -152,7 +152,9 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 
             for(var k=0; k!==j; k++){
                 var bj = bin[k];
-                this.doBoundingSphereBroadphase(bi,bj,pairs1,pairs2);
+                if(this.needBroadphaseCollision(bi,bj)){
+                    this.intersectionTest(bi,bj,pairs1,pairs2);
+                }
             }
         }
     }
