@@ -6381,9 +6381,12 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     var unitPivotA = pivotA.unit();
     var unitPivotB = pivotB.unit();
 
-    var axisA_x_pivotA = axisA.cross(unitPivotA);
-    var axisA_x_axisA_x_pivotA = axisA.cross(axisA_x_pivotA);
-    var axisB_x_pivotB = axisB.cross(unitPivotB);
+    var axisA_x_pivotA = new CANNON.Vec3();
+    var axisA_x_axisA_x_pivotA = new CANNON.Vec3();
+    var axisB_x_pivotB = new CANNON.Vec3();
+    axisA.cross(unitPivotA,axisA_x_pivotA);
+    axisA.cross(axisA_x_pivotA,axisA_x_axisA_x_pivotA);
+    axisB.cross(unitPivotB,axisB_x_pivotB);
 
     axisA_x_pivotA.normalize();
     axisB_x_pivotB.normalize();
