@@ -2983,7 +2983,11 @@ CANNON.Broadphase = function(){
     */
     this.world = null;
 
-    // If true: uses bounding boxes, else it uses bounding spheres
+    /**
+     * If set to true, the broadphase uses bounding boxes for intersection test, else it uses bounding spheres.
+     * @property bool useBoundingBoxes
+     * @memberof CANNON.Broadphase
+     */
     this.useBoundingBoxes = false;
 };
 CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
@@ -3001,6 +3005,14 @@ CANNON.Broadphase.prototype.collisionPairs = function(world,p1,p2){
     throw new Error("collisionPairs not implemented for this BroadPhase class!");
 };
 
+/**
+ * @method needBroadphaseCollision
+ * @memberof CANNON.Broadphase
+ * @brief Check if a body pair needs to be intersection tested at all.
+ * @param CANNON.Body bodyA
+ * @param CANNON.Body bodyB
+ * @return bool
+ */
 var Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
 
@@ -3029,6 +3041,14 @@ CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
     return true;
 };
 
+/**
+ * @method intersectionTest
+ * @memberof CANNON.Broadphase
+ * @brief Check if a body pair needs to be intersection tested at all.
+ * @param CANNON.Body bodyA
+ * @param CANNON.Body bodyB
+ * @return bool
+ */
 CANNON.Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
     if(this.useBoundingBoxes){
         this.doBoundingBoxBroadphase(bi,bj,pairs1,pairs2);
@@ -3037,6 +3057,15 @@ CANNON.Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
     }
 };
 
+/**
+ * @method doBoundingSphereBroadphase
+ * @memberof CANNON.Broadphase
+ * @brief Check if the bounding spheres of two bodies are intersecting.
+ * @param CANNON.Body bi
+ * @param CANNON.Body bj
+ * @param Array pairs1 bi is appended to this array if intersection
+ * @param Array pairs2 bj is appended to this array if intersection
+ */
 var Broadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
     Broadphase_collisionPairs_normal =  new CANNON.Vec3(),
     Broadphase_collisionPairs_quat =  new CANNON.Quaternion(),
@@ -3149,7 +3178,15 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
     }
 };
 
-
+/**
+ * @method doBoundingBoxBroadphase
+ * @memberof CANNON.Broadphase
+ * @brief Check if the bounding boxes of two bodies are intersecting.
+ * @param CANNON.Body bi
+ * @param CANNON.Body bj
+ * @param Array pairs1
+ * @param Array pairs2
+ */
 CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
     var bishape = bi.shape,
         bjshape = bj.shape;
@@ -3198,7 +3235,13 @@ CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pair
     }
 };
 
-
+/**
+ * @method makePairsUnique
+ * @memberof CANNON.Broadphase
+ * @brief Removes duplicate pairs from the pair arrays.
+ * @param Array pairs1
+ * @param Array pairs2
+ */
 var Broadphase_makePairsUnique_temp = {},
     Broadphase_makePairsUnique_p1 = [],
     Broadphase_makePairsUnique_p2 = [];
