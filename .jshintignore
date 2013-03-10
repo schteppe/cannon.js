@@ -8,3 +8,4 @@ libs
 node_modules
 test
 utils
+Gruntfile.js

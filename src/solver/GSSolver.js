@@ -31,6 +31,7 @@ var GSSolver_solve_Bs = [];
 CANNON.GSSolver.prototype.solve = function(dt,world){
     var d = this.d,
         ks = this.k,
+        iter = 0,
         maxIter = this.iterations,
         tolSquared = this.tolerance*this.tolerance,
         a = this.a,
@@ -75,7 +76,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         }
 
         // Iterate over equations
-        for(var iter=0; iter!==maxIter; iter++){
+        for(iter=0; iter!==maxIter; iter++){
 
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;

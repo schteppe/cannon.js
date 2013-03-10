@@ -48,7 +48,7 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
         wjxrj = this.wjxrj,
         zero = FrictionEquation_computeB_zero;
 
-        vi = bi.velocity,
+    var vi = bi.velocity,
         wi = bi.angularVelocity ? bi.angularVelocity : zero,
         fi = bi.force,
         taui = bi.tau ? bi.tau : zero,

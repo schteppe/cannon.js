@@ -38,36 +38,34 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sz = this.halfExtents.z;
     var V = CANNON.Vec3;
 
-
-      function createBoxPolyhedron(size){
-          size = size || 1;
-          var vertices = [new CANNON.Vec3(-size,-size,-size),
-                          new CANNON.Vec3( size,-size,-size),
-                          new CANNON.Vec3( size, size,-size),
-                          new CANNON.Vec3(-size, size,-size),
-                          new CANNON.Vec3(-size,-size, size),
-                          new CANNON.Vec3( size,-size, size),
-                          new CANNON.Vec3( size, size, size),
-                          new CANNON.Vec3(-size, size, size)];
-          var faces =[[3,2,1,0], // -z
-                      [4,5,6,7], // +z
-                      [5,4,1,0], // -y
-                      [2,3,6,7], // +y
-                      [0,4,7,3 /*0,3,4,7*/ ], // -x
-                      [1,2,5,6], // +x
-                      ];
-          var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
-                               new CANNON.Vec3( 0, 0, 1),
-                               new CANNON.Vec3( 0,-1, 0),
-                               new CANNON.Vec3( 0, 1, 0),
-                               new CANNON.Vec3(-1, 0, 0),
-                               new CANNON.Vec3( 1, 0, 0)];
-          var boxShape = new CANNON.ConvexPolyhedron(vertices,
-                                                     faces,
-                                                     faceNormals);
-          return boxShape;
-      }
-
+    function createBoxPolyhedron(size){
+        size = size || 1;
+        var vertices = [new CANNON.Vec3(-size,-size,-size),
+                        new CANNON.Vec3( size,-size,-size),
+                        new CANNON.Vec3( size, size,-size),
+                        new CANNON.Vec3(-size, size,-size),
+                        new CANNON.Vec3(-size,-size, size),
+                        new CANNON.Vec3( size,-size, size),
+                        new CANNON.Vec3( size, size, size),
+                        new CANNON.Vec3(-size, size, size)];
+        var faces =[[3,2,1,0], // -z
+                    [4,5,6,7], // +z
+                    [5,4,1,0], // -y
+                    [2,3,6,7], // +y
+                    [0,4,7,3 /*0,3,4,7*/ ], // -x
+                    [1,2,5,6], // +x
+                    ];
+        var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
+                           new CANNON.Vec3( 0, 0, 1),
+                           new CANNON.Vec3( 0,-1, 0),
+                           new CANNON.Vec3( 0, 1, 0),
+                           new CANNON.Vec3(-1, 0, 0),
+                           new CANNON.Vec3( 1, 0, 0)];
+        var boxShape = new CANNON.ConvexPolyhedron(vertices,
+                                                 faces,
+                                                 faceNormals);
+        return boxShape;
+    }
 
     var h = new CANNON.ConvexPolyhedron([new V(-sx,-sy,-sz),
                                          new V( sx,-sy,-sz),
@@ -78,18 +76,12 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                                          new V( sx, sy, sz),
                                          new V(-sx, sy, sz)],
                                          [[3,2,1,0], // -z
-                      [4,5,6,7], // +z
-                      [5,4,1,0], // -y
-                      [2,3,6,7], // +y
-                      [0,4,7,3 /*0,3,4,7*/ ], // -x
-                      [1,2,5,6], // +x
-                      ]/*[[0,1,2,3], // -z
                                           [4,5,6,7], // +z
-                                          [0,1,5,4], // -y
-                                          [2,3,7,6], // +y
-                                          [0,3,7,4], // -x
-                                          [1,2,6,5], // +x
-                                          ]*/,
+                                          [5,4,1,0], // -y
+                                          [2,3,6,7], // +y
+                                          [0,4,7,3], // -x
+                                          [1,2,5,6], // +x
+                                          ],
                                         [new V( 0, 0,-1),
                                          new V( 0, 0, 1),
                                          new V( 0,-1, 0),

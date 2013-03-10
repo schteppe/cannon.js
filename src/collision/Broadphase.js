@@ -191,11 +191,11 @@ CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pair
 
     if(bishape && bjshape){
         // Check AABB / AABB
-        if( !(  bi.aabbmax.x < bj.aabbmin.x || 
-                bi.aabbmax.y < bj.aabbmin.y || 
-                bi.aabbmax.z < bj.aabbmin.z || 
-                bi.aabbmin.x > bj.aabbmax.x || 
-                bi.aabbmin.y > bj.aabbmax.y || 
+        if( !(  bi.aabbmax.x < bj.aabbmin.x ||
+                bi.aabbmax.y < bj.aabbmin.y ||
+                bi.aabbmax.z < bj.aabbmin.z ||
+                bi.aabbmin.x > bj.aabbmax.x ||
+                bi.aabbmin.y > bj.aabbmax.y ||
                 bi.aabbmin.z > bj.aabbmax.z   ) ){
             pairs1.push(bi);
             pairs2.push(bj);
@@ -213,11 +213,11 @@ CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pair
                 //console.log(p.position.z+"<"+other.aabbmin.z+" = ",p.position.z < other.aabbmin.z);
             }
 
-            if( !(  p.position.x < other.aabbmin.x || 
-                    p.position.y < other.aabbmin.y || 
-                    p.position.z < other.aabbmin.z || 
-                    p.position.x > other.aabbmax.x || 
-                    p.position.y > other.aabbmax.y || 
+            if( !(  p.position.x < other.aabbmin.x ||
+                    p.position.y < other.aabbmin.y ||
+                    p.position.z < other.aabbmin.z ||
+                    p.position.x > other.aabbmax.x ||
+                    p.position.y > other.aabbmax.y ||
                     p.position.z > other.aabbmax.z   ) ){
                 pairs1.push(bi);
                 pairs2.push(bj);

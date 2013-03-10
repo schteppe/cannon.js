@@ -41,12 +41,12 @@ CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
     min.set(-Infinity,-Infinity,-Infinity);
     max.set(Infinity,Infinity,Infinity);
 
-    if(tempNormal.x === 1) max.x = pos.x;
-    if(tempNormal.y === 1) max.y = pos.y;
-    if(tempNormal.z === 1) max.z = pos.z;
+    if(tempNormal.x === 1){ max.x = pos.x; }
+    if(tempNormal.y === 1){ max.y = pos.y; }
+    if(tempNormal.z === 1){ max.z = pos.z; }
 
-    if(tempNormal.x === -1) min.x = pos.x;
-    if(tempNormal.y === -1) min.y = pos.y;
-    if(tempNormal.z === -1) min.z = pos.z;
+    if(tempNormal.x === -1){ min.x = pos.x; }
+    if(tempNormal.y === -1){ min.y = pos.y; }
+    if(tempNormal.z === -1){ min.z = pos.z; }
 
 };

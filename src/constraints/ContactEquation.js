@@ -194,7 +194,7 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
     bi.vlambda.vsub(temp2,bi.vlambda);
     n.mult(invMassj * deltalambda, temp2);
     bj.vlambda.vadd(temp2,bj.vlambda);
-  
+
     // Add to angular velocity
     if(bi.wlambda !== undefined){
         this.biInvInertiaTimesRixn.mult(deltalambda,temp1);

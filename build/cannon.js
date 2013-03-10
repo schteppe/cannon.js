@@ -1708,36 +1708,34 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sz = this.halfExtents.z;
     var V = CANNON.Vec3;
 
-
-      function createBoxPolyhedron(size){
-          size = size || 1;
-          var vertices = [new CANNON.Vec3(-size,-size,-size),
-                          new CANNON.Vec3( size,-size,-size),
-                          new CANNON.Vec3( size, size,-size),
-                          new CANNON.Vec3(-size, size,-size),
-                          new CANNON.Vec3(-size,-size, size),
-                          new CANNON.Vec3( size,-size, size),
-                          new CANNON.Vec3( size, size, size),
-                          new CANNON.Vec3(-size, size, size)];
-          var faces =[[3,2,1,0], // -z
-                      [4,5,6,7], // +z
-                      [5,4,1,0], // -y
-                      [2,3,6,7], // +y
-                      [0,4,7,3 /*0,3,4,7*/ ], // -x
-                      [1,2,5,6], // +x
-                      ];
-          var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
-                               new CANNON.Vec3( 0, 0, 1),
-                               new CANNON.Vec3( 0,-1, 0),
-                               new CANNON.Vec3( 0, 1, 0),
-                               new CANNON.Vec3(-1, 0, 0),
-                               new CANNON.Vec3( 1, 0, 0)];
-          var boxShape = new CANNON.ConvexPolyhedron(vertices,
-                                                     faces,
-                                                     faceNormals);
-          return boxShape;
-      }
-
+    function createBoxPolyhedron(size){
+        size = size || 1;
+        var vertices = [new CANNON.Vec3(-size,-size,-size),
+                        new CANNON.Vec3( size,-size,-size),
+                        new CANNON.Vec3( size, size,-size),
+                        new CANNON.Vec3(-size, size,-size),
+                        new CANNON.Vec3(-size,-size, size),
+                        new CANNON.Vec3( size,-size, size),
+                        new CANNON.Vec3( size, size, size),
+                        new CANNON.Vec3(-size, size, size)];
+        var faces =[[3,2,1,0], // -z
+                    [4,5,6,7], // +z
+                    [5,4,1,0], // -y
+                    [2,3,6,7], // +y
+                    [0,4,7,3 /*0,3,4,7*/ ], // -x
+                    [1,2,5,6], // +x
+                    ];
+        var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
+                           new CANNON.Vec3( 0, 0, 1),
+                           new CANNON.Vec3( 0,-1, 0),
+                           new CANNON.Vec3( 0, 1, 0),
+                           new CANNON.Vec3(-1, 0, 0),
+                           new CANNON.Vec3( 1, 0, 0)];
+        var boxShape = new CANNON.ConvexPolyhedron(vertices,
+                                                 faces,
+                                                 faceNormals);
+        return boxShape;
+    }
 
     var h = new CANNON.ConvexPolyhedron([new V(-sx,-sy,-sz),
                                          new V( sx,-sy,-sz),
@@ -1748,18 +1746,12 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                                          new V( sx, sy, sz),
                                          new V(-sx, sy, sz)],
                                          [[3,2,1,0], // -z
-                      [4,5,6,7], // +z
-                      [5,4,1,0], // -y
-                      [2,3,6,7], // +y
-                      [0,4,7,3 /*0,3,4,7*/ ], // -x
-                      [1,2,5,6], // +x
-                      ]/*[[0,1,2,3], // -z
                                           [4,5,6,7], // +z
-                                          [0,1,5,4], // -y
-                                          [2,3,7,6], // +y
-                                          [0,3,7,4], // -x
-                                          [1,2,6,5], // +x
-                                          ]*/,
+                                          [5,4,1,0], // -y
+                                          [2,3,6,7], // +y
+                                          [0,4,7,3], // -x
+                                          [1,2,5,6], // +x
+                                          ],
                                         [new V( 0, 0,-1),
                                          new V( 0, 0, 1),
                                          new V( 0,-1, 0),
@@ -1907,15 +1899,16 @@ CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
     min.set(-Infinity,-Infinity,-Infinity);
     max.set(Infinity,Infinity,Infinity);
 
-    if(tempNormal.x === 1) max.x = pos.x;
-    if(tempNormal.y === 1) max.y = pos.y;
-    if(tempNormal.z === 1) max.z = pos.z;
+    if(tempNormal.x === 1){ max.x = pos.x; }
+    if(tempNormal.y === 1){ max.y = pos.y; }
+    if(tempNormal.z === 1){ max.z = pos.z; }
 
-    if(tempNormal.x === -1) min.x = pos.x;
-    if(tempNormal.y === -1) min.y = pos.y;
-    if(tempNormal.z === -1) min.z = pos.z;
+    if(tempNormal.x === -1){ min.x = pos.x; }
+    if(tempNormal.y === -1){ min.y = pos.y; }
+    if(tempNormal.z === -1){ min.z = pos.z; }
 
 };
+
 
 /**
  * @class CANNON.Compound
@@ -3170,11 +3163,11 @@ CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pair
 
     if(bishape && bjshape){
         // Check AABB / AABB
-        if( !(  bi.aabbmax.x < bj.aabbmin.x || 
-                bi.aabbmax.y < bj.aabbmin.y || 
-                bi.aabbmax.z < bj.aabbmin.z || 
-                bi.aabbmin.x > bj.aabbmax.x || 
-                bi.aabbmin.y > bj.aabbmax.y || 
+        if( !(  bi.aabbmax.x < bj.aabbmin.x ||
+                bi.aabbmax.y < bj.aabbmin.y ||
+                bi.aabbmax.z < bj.aabbmin.z ||
+                bi.aabbmin.x > bj.aabbmax.x ||
+                bi.aabbmin.y > bj.aabbmax.y ||
                 bi.aabbmin.z > bj.aabbmax.z   ) ){
             pairs1.push(bi);
             pairs2.push(bj);
@@ -3192,11 +3185,11 @@ CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pair
                 //console.log(p.position.z+"<"+other.aabbmin.z+" = ",p.position.z < other.aabbmin.z);
             }
 
-            if( !(  p.position.x < other.aabbmin.x || 
-                    p.position.y < other.aabbmin.y || 
-                    p.position.z < other.aabbmin.z || 
-                    p.position.x > other.aabbmax.x || 
-                    p.position.y > other.aabbmax.y || 
+            if( !(  p.position.x < other.aabbmin.x ||
+                    p.position.y < other.aabbmin.y ||
+                    p.position.z < other.aabbmin.z ||
+                    p.position.x > other.aabbmax.x ||
+                    p.position.y > other.aabbmax.y ||
                     p.position.z > other.aabbmax.z   ) ){
                 pairs1.push(bi);
                 pairs2.push(bj);
@@ -3266,7 +3259,7 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     // Naive N^2 ftw!
     for(i=0; i!==n; i++){
         for(j=0; j!==i; j++){
-            
+
             bi = bodies[i];
             bj = bodies[j];
 
@@ -3512,6 +3505,7 @@ var GSSolver_solve_Bs = [];
 CANNON.GSSolver.prototype.solve = function(dt,world){
     var d = this.d,
         ks = this.k,
+        iter = 0,
         maxIter = this.iterations,
         tolSquared = this.tolerance*this.tolerance,
         a = this.a,
@@ -3556,7 +3550,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         }
 
         // Iterate over equations
-        for(var iter=0; iter!==maxIter; iter++){
+        for(iter=0; iter!==maxIter; iter++){
 
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
@@ -5191,7 +5185,6 @@ CANNON.ContactGenerator = function(){
 
                 // Construct world face vertices
                 var verts = [ sj.worldVertices[ sj.faces[i][0] ] ];
-                
                 var normal = sj.worldFaceNormals[i];
 
                 // Check how much the particle penetrates the polygon plane.
@@ -5750,7 +5743,7 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
     bi.vlambda.vsub(temp2,bi.vlambda);
     n.mult(invMassj * deltalambda, temp2);
     bj.vlambda.vadd(temp2,bj.vlambda);
-  
+
     // Add to angular velocity
     if(bi.wlambda !== undefined){
         this.biInvInertiaTimesRixn.mult(deltalambda,temp1);
@@ -5814,7 +5807,7 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
         wjxrj = this.wjxrj,
         zero = FrictionEquation_computeB_zero;
 
-        vi = bi.velocity,
+    var vi = bi.velocity,
         wi = bi.angularVelocity ? bi.angularVelocity : zero,
         fi = bi.force,
         taui = bi.tau ? bi.tau : zero,

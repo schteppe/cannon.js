@@ -689,7 +689,6 @@ CANNON.ContactGenerator = function(){
 
                 // Construct world face vertices
                 var verts = [ sj.worldVertices[ sj.faces[i][0] ] ];
-                
                 var normal = sj.worldFaceNormals[i];
 
                 // Check how much the particle penetrates the polygon plane.
