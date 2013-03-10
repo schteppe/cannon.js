@@ -160,6 +160,7 @@ CANNON.ContactEquation.prototype.computeGWlambda = function(){
     var ulambda = computeGWlambda_ulambda;
 
     var GWlambda = 0.0;
+
     bj.vlambda.vsub(bi.vlambda, ulambda);
     GWlambda += ulambda.dot(this.ni);
 
@@ -177,41 +178,30 @@ CANNON.ContactEquation.prototype.computeGWlambda = function(){
 var ContactEquation_addToWlambda_temp1 = new CANNON.Vec3();
 var ContactEquation_addToWlambda_temp2 = new CANNON.Vec3();
 CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi;
-    var bj = this.bj;
-    var rixn = this.rixn;
-    var rjxn = this.rjxn;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
-    var n = this.ni;
-    var temp1 = ContactEquation_addToWlambda_temp1;
-    var temp2 = ContactEquation_addToWlambda_temp2;
+    var bi = this.bi,
+        bj = this.bj,
+        rixn = this.rixn,
+        rjxn = this.rjxn,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
+        n = this.ni,
+        temp1 = ContactEquation_addToWlambda_temp1,
+        temp2 = ContactEquation_addToWlambda_temp2;
+
 
     // Add to linear velocity
     n.mult(invMassi * deltalambda, temp2);
     bi.vlambda.vsub(temp2,bi.vlambda);
     n.mult(invMassj * deltalambda, temp2);
     bj.vlambda.vadd(temp2,bj.vlambda);
-
+  
     // Add to angular velocity
-    if(bi.wlambda){
-        /*
-        var I = this.invIi;
-        I.vmult(rixn,temp1);
-        temp1.mult(deltalambda,temp1);
-        //bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
-         */
+    if(bi.wlambda !== undefined){
         this.biInvInertiaTimesRixn.mult(deltalambda,temp1);
 
         bi.wlambda.vsub(temp1,bi.wlambda);
     }
-    if(bj.wlambda){
-        /*
-        var I = this.invIj;
-        I.vmult(rjxn,temp1);
-        temp1.mult(deltalambda,temp1);
-        //bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
-         */
+    if(bj.wlambda !== undefined){
         this.bjInvInertiaTimesRjxn.mult(deltalambda,temp1);
         bj.wlambda.vadd(temp1,bj.wlambda);
     }

@@ -600,9 +600,12 @@ CANNON.Vec3.prototype.distanceTo = function(p){
  */
 CANNON.Vec3.prototype.mult = function(scalar,target){
     target = target || new CANNON.Vec3();
-    target.x = scalar*this.x;
-    target.y = scalar*this.y;
-    target.z = scalar*this.z;
+    var x = this.x,
+        y = this.y,
+        z = this.z;
+    target.x = scalar * x;
+    target.y = scalar * y;
+    target.z = scalar * z;
     return target;
 };
 
@@ -3509,7 +3512,6 @@ var GSSolver_solve_Bs = [];
 CANNON.GSSolver.prototype.solve = function(dt,world){
     var d = this.d,
         ks = this.k,
-        iter = 0,
         maxIter = this.iterations,
         tolSquared = this.tolerance*this.tolerance,
         a = this.a,
@@ -3519,12 +3521,15 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         bodies = world.bodies,
         Nbodies = bodies.length,
         h = dt,
-        q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
+        q, B, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
 
     // Things that does not change during iteration can be computed once
     var invCs = GSSolver_solve_invCs,
         Bs = GSSolver_solve_Bs,
         lambda = GSSolver_solve_lambda;
+    invCs.length = 0;
+    Bs.length = 0;
+    lambda.length = 0;
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
         if(c.spookParamsNeedsUpdate){
@@ -3539,10 +3544,8 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
     if(Neq !== 0){
 
-        var i,j/*,abs=Math.abs*/;
-
         // Reset vlambda
-        for(i=0; i!==Nbodies; i++){
+        for(var i=0; i!==Nbodies; i++){
             var b=bodies[i],
                 vlambda=b.vlambda,
                 wlambda=b.wlambda;
@@ -3553,14 +3556,14 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         }
 
         // Iterate over equations
-        for(iter=0; iter!==maxIter; iter++){
+        for(var iter=0; iter!==maxIter; iter++){
 
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
 
-            for(j=0; j!==Neq; j++){
+            for(var j=0; j!==Neq; j++){
 
-                c = equations[j];
+                var c = equations[j];
 
                 // Compute iteration
                 B = Bs[j];
@@ -3589,7 +3592,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         }
 
         // Add result to velocity
-        for(i=0; i!==Nbodies; i++){
+        for(var i=0; i!==Nbodies; i++){
             var b=bodies[i],
                 v=b.velocity,
                 w=b.angularVelocity;
@@ -5713,6 +5716,7 @@ CANNON.ContactEquation.prototype.computeGWlambda = function(){
     var ulambda = computeGWlambda_ulambda;
 
     var GWlambda = 0.0;
+
     bj.vlambda.vsub(bi.vlambda, ulambda);
     GWlambda += ulambda.dot(this.ni);
 
@@ -5730,41 +5734,30 @@ CANNON.ContactEquation.prototype.computeGWlambda = function(){
 var ContactEquation_addToWlambda_temp1 = new CANNON.Vec3();
 var ContactEquation_addToWlambda_temp2 = new CANNON.Vec3();
 CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi;
-    var bj = this.bj;
-    var rixn = this.rixn;
-    var rjxn = this.rjxn;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
-    var n = this.ni;
-    var temp1 = ContactEquation_addToWlambda_temp1;
-    var temp2 = ContactEquation_addToWlambda_temp2;
+    var bi = this.bi,
+        bj = this.bj,
+        rixn = this.rixn,
+        rjxn = this.rjxn,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
+        n = this.ni,
+        temp1 = ContactEquation_addToWlambda_temp1,
+        temp2 = ContactEquation_addToWlambda_temp2;
+
 
     // Add to linear velocity
     n.mult(invMassi * deltalambda, temp2);
     bi.vlambda.vsub(temp2,bi.vlambda);
     n.mult(invMassj * deltalambda, temp2);
     bj.vlambda.vadd(temp2,bj.vlambda);
-
+  
     // Add to angular velocity
-    if(bi.wlambda){
-        /*
-        var I = this.invIi;
-        I.vmult(rixn,temp1);
-        temp1.mult(deltalambda,temp1);
-        //bi.wlambda.vsub(I.vmult(rixn).mult(deltalambda),bi.wlambda);
-         */
+    if(bi.wlambda !== undefined){
         this.biInvInertiaTimesRixn.mult(deltalambda,temp1);
 
         bi.wlambda.vsub(temp1,bi.wlambda);
     }
-    if(bj.wlambda){
-        /*
-        var I = this.invIj;
-        I.vmult(rjxn,temp1);
-        temp1.mult(deltalambda,temp1);
-        //bj.wlambda.vadd(I.vmult(rjxn).mult(deltalambda),bj.wlambda);
-         */
+    if(bj.wlambda !== undefined){
         this.bjInvInertiaTimesRjxn.mult(deltalambda,temp1);
         bj.wlambda.vadd(temp1,bj.wlambda);
     }

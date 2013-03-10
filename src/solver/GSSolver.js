@@ -31,7 +31,6 @@ var GSSolver_solve_Bs = [];
 CANNON.GSSolver.prototype.solve = function(dt,world){
     var d = this.d,
         ks = this.k,
-        iter = 0,
         maxIter = this.iterations,
         tolSquared = this.tolerance*this.tolerance,
         a = this.a,
@@ -41,12 +40,15 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         bodies = world.bodies,
         Nbodies = bodies.length,
         h = dt,
-        q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
+        q, B, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
 
     // Things that does not change during iteration can be computed once
     var invCs = GSSolver_solve_invCs,
         Bs = GSSolver_solve_Bs,
         lambda = GSSolver_solve_lambda;
+    invCs.length = 0;
+    Bs.length = 0;
+    lambda.length = 0;
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
         if(c.spookParamsNeedsUpdate){
@@ -61,10 +63,8 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
     if(Neq !== 0){
 
-        var i,j/*,abs=Math.abs*/;
-
         // Reset vlambda
-        for(i=0; i!==Nbodies; i++){
+        for(var i=0; i!==Nbodies; i++){
             var b=bodies[i],
                 vlambda=b.vlambda,
                 wlambda=b.wlambda;
@@ -75,14 +75,14 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         }
 
         // Iterate over equations
-        for(iter=0; iter!==maxIter; iter++){
+        for(var iter=0; iter!==maxIter; iter++){
 
             // Accumulate the total error for each iteration.
             deltalambdaTot = 0.0;
 
-            for(j=0; j!==Neq; j++){
+            for(var j=0; j!==Neq; j++){
 
-                c = equations[j];
+                var c = equations[j];
 
                 // Compute iteration
                 B = Bs[j];
@@ -111,7 +111,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         }
 
         // Add result to velocity
-        for(i=0; i!==Nbodies; i++){
+        for(var i=0; i!==Nbodies; i++){
             var b=bodies[i],
                 v=b.velocity,
                 w=b.angularVelocity;

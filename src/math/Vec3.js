@@ -205,9 +205,12 @@ CANNON.Vec3.prototype.distanceTo = function(p){
  */
 CANNON.Vec3.prototype.mult = function(scalar,target){
     target = target || new CANNON.Vec3();
-    target.x = scalar*this.x;
-    target.y = scalar*this.y;
-    target.z = scalar*this.z;
+    var x = this.x,
+        y = this.y,
+        z = this.z;
+    target.x = scalar * x;
+    target.y = scalar * y;
+    target.z = scalar * z;
     return target;
 };
 
