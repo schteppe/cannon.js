@@ -55,7 +55,11 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.6.0**
+ * Renamed ```RigidBody.calculateAABB``` to ```.computeAABB```. Added ```RigidBody.aabbNeedsUpdate```.
+ * Added ```Broadphase.useBoundingBoxes```, ```.doBoundingBoxBroadphase``` and ```.intersectionTest```.
+ * ```ConvexPolyhedron``` constructor now calculates normals instead of taking them as a parameter.
  * Added ```Body.collisionFilterGroup``` and ```Body.collisionFilterMask```.
+ * Added ```GridBroadphase```, though it only supports ```Plane``` and ```Sphere``` for now.
  * Removed World.temp.
  * Reuse of various event objects to minimize object creation in the step loop.
  * Removed unused class ```ContactPoint```.
