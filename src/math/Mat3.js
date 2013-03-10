@@ -62,9 +62,10 @@ CANNON.Mat3.prototype.setZero = function(){
  * @brief Sets the matrix diagonal elements from a Vec3
  */
 CANNON.Mat3.prototype.setTrace = function(vec3){
-    this.elements[0] = vec3.x;
-    this.elements[4] = vec3.y;
-    this.elements[8] = vec3.z;
+    var e = this.elements;
+    e[0] = vec3.x;
+    e[4] = vec3.y;
+    e[8] = vec3.z;
 };
 
 /**

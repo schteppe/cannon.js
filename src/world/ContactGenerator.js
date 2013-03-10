@@ -737,7 +737,14 @@ CANNON.ContactGenerator = function(){
      * @todo All collision cases
      */
     function nearPhase(result,si,sj,xi,xj,qi,qj,bi,bj){
-        var swapped = false, types = CANNON.Shape.types;
+        var swapped = false,
+            types = CANNON.Shape.types,
+            SPHERE = types.SPHERE,
+            PLANE = types.PLANE,
+            BOX = types.BOX,
+            COMPOUND = types.COMPOUND,
+            CONVEXPOLYHEDRON = types.CONVEXPOLYHEDRON;
+
         if(si && sj){
             if(si.type > sj.type){
                 var temp;
@@ -784,22 +791,22 @@ CANNON.ContactGenerator = function(){
         }
 
         if(si && sj){
-            if(si.type === types.SPHERE){
+            if(si.type === SPHERE){
 
                 switch(sj.type){
-                case types.SPHERE: // sphere-sphere
+                case SPHERE: // sphere-sphere
                     sphereSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
-                case types.PLANE: // sphere-plane
+                case PLANE: // sphere-plane
                     spherePlane(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
-                case types.BOX: // sphere-box
+                case BOX: // sphere-box
                     sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
-                case types.COMPOUND: // sphere-compound
+                case COMPOUND: // sphere-compound
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
-                case types.CONVEXPOLYHEDRON: // sphere-convexpolyhedron
+                case CONVEXPOLYHEDRON: // sphere-convexpolyhedron
                     sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 default:

@@ -18,14 +18,16 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
-    var n = world.numObjects(),
-        bodies = world.bodies;
+    var bodies = world.bodies,
+        n = bodies.length,
+        i,j,bi,bj;
 
     // Naive N^2 ftw!
-    for(var i=0; i!==n; i++){
-        for(var j=0; j!==i; j++){
-            var bi = bodies[i],
-                bj = bodies[j];
+    for(i=0; i!==n; i++){
+        for(j=0; j!==i; j++){
+            
+            bi = bodies[i];
+            bj = bodies[j];
 
             if(!this.needBroadphaseCollision(bi,bj)){
                 continue;

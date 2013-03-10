@@ -29,7 +29,6 @@ var GSSolver_solve_lambda = []; // Just temporary number holders that we want to
 var GSSolver_solve_invCs = [];
 var GSSolver_solve_Bs = [];
 CANNON.GSSolver.prototype.solve = function(dt,world){
-
     var d = this.d,
         ks = this.k,
         iter = 0,
@@ -40,15 +39,14 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         equations = this.equations,
         Neq = equations.length,
         bodies = world.bodies,
-        Nbodies = world.bodies.length,
-        h = dt;
+        Nbodies = bodies.length,
+        h = dt,
+        q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
 
     // Things that does not change during iteration can be computed once
-    var invCs = GSSolver_solve_invCs;
-    var Bs = GSSolver_solve_Bs;
-
-    // Create array for lambdas
-    var lambda = GSSolver_solve_lambda;
+    var invCs = GSSolver_solve_invCs,
+        Bs = GSSolver_solve_Bs,
+        lambda = GSSolver_solve_lambda;
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
         if(c.spookParamsNeedsUpdate){
@@ -60,11 +58,10 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         invCs[i] = 1.0 / c.computeC();
     }
 
-    var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
 
     if(Neq !== 0){
 
-        var i,j,abs=Math.abs;
+        var i,j/*,abs=Math.abs*/;
 
         // Reset vlambda
         for(i=0; i!==Nbodies; i++){
@@ -91,7 +88,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 B = Bs[j];
                 invC = invCs[j];
                 lambdaj = lambda[j];
-                GWlambda = c.computeGWlambda(c.eps);
+                GWlambda = c.computeGWlambda();
                 deltalambda = invC * ( B - GWlambda - c.eps * lambdaj );
 
                 // Clamp if we are not within the min/max interval
@@ -102,7 +99,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 }
                 lambda[j] += deltalambda;
 
-                deltalambdaTot += abs(deltalambda);
+                deltalambdaTot += deltalambda > 0.0 ? deltalambda : -deltalambda; // abs(deltalambda)
 
                 c.addToWlambda(deltalambda);
             }
@@ -115,7 +112,9 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
         // Add result to velocity
         for(i=0; i!==Nbodies; i++){
-            var b=bodies[i], v=b.velocity, w=b.angularVelocity;
+            var b=bodies[i],
+                v=b.velocity,
+                w=b.angularVelocity;
             v.vadd(b.vlambda, v);
             if(w){
                 w.vadd(b.wlambda, w);

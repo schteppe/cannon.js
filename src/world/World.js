@@ -178,7 +178,7 @@ CANNON.World.prototype.numObjects = function(){
 // 1: Contact
 CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
     var N = this.bodies.length;
-    if(typeof(current)==="undefined"){
+    if(current===undefined){
         current = true;
     }
     // i == column
@@ -193,7 +193,7 @@ CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
 
 CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
     var N = this.bodies.length;
-    if(typeof(current)==="undefined"){
+    if(current===undefined){
         current = true;
     }
     if( (current && i<j) || (!current && i>j)){
@@ -206,10 +206,12 @@ CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
 
 // transfer old contact state data to T-1
 CANNON.World.prototype.collisionMatrixTick = function(){
-    var N = this.bodies.length;
-    for(var i=0; i!==N; i++){
-        for(var j=0; j!==i; j++){
-            var currentState = this.collisionMatrixGet(i,j,true);
+    var N = this.bodies.length,
+        currentState,
+        i,j;
+    for(i=0; i!==N; i++){
+        for(j=0; j!==i; j++){
+            currentState = this.collisionMatrixGet(i,j,true);
             this.collisionMatrixSet(i,j,currentState,false);
             this.collisionMatrixSet(i,j,0,true);
         }

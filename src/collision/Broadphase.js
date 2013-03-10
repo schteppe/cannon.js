@@ -32,8 +32,6 @@ CANNON.Broadphase.prototype.collisionPairs = function(world,p1,p2){
 var Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
 
-
-
     // Check collision filter masks
     if( (bodyA.collisionFilterGroup & bodyB.collisionFilterMask)===0 || (bodyB.collisionFilterGroup & bodyA.collisionFilterMask)===0){
         return false;
@@ -74,8 +72,8 @@ var Broadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
 CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
 
     // Local fast access
-    var types = CANNON.Shape.types;
-    var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
+    var types = CANNON.Shape.types,
+        BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
         PLANE = types.PLANE,
         STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 

@@ -108,9 +108,10 @@ CANNON.Mat3.prototype.setZero = function(){
  * @brief Sets the matrix diagonal elements from a Vec3
  */
 CANNON.Mat3.prototype.setTrace = function(vec3){
-    this.elements[0] = vec3.x;
-    this.elements[4] = vec3.y;
-    this.elements[8] = vec3.z;
+    var e = this.elements;
+    e[0] = vec3.x;
+    e[4] = vec3.y;
+    e[8] = vec3.z;
 };
 
 /**
@@ -613,7 +614,7 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
  * @return float
  */
 CANNON.Vec3.prototype.dot = function(v){
-    return (this.x * v.x + this.y * v.y + this.z * v.z);
+    return this.x * v.x + this.y * v.y + this.z * v.z;
 };
 
 /**
@@ -3007,8 +3008,6 @@ CANNON.Broadphase.prototype.collisionPairs = function(world,p1,p2){
 var Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
 
-
-
     // Check collision filter masks
     if( (bodyA.collisionFilterGroup & bodyB.collisionFilterMask)===0 || (bodyB.collisionFilterGroup & bodyA.collisionFilterMask)===0){
         return false;
@@ -3049,8 +3048,8 @@ var Broadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
 CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
 
     // Local fast access
-    var types = CANNON.Shape.types;
-    var BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
+    var types = CANNON.Shape.types,
+        BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
         PLANE = types.PLANE,
         STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 
@@ -3257,14 +3256,16 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
-    var n = world.numObjects(),
-        bodies = world.bodies;
+    var bodies = world.bodies,
+        n = bodies.length,
+        i,j,bi,bj;
 
     // Naive N^2 ftw!
-    for(var i=0; i!==n; i++){
-        for(var j=0; j!==i; j++){
-            var bi = bodies[i],
-                bj = bodies[j];
+    for(i=0; i!==n; i++){
+        for(j=0; j!==i; j++){
+            
+            bi = bodies[i];
+            bj = bodies[j];
 
             if(!this.needBroadphaseCollision(bi,bj)){
                 continue;
@@ -3506,7 +3507,6 @@ var GSSolver_solve_lambda = []; // Just temporary number holders that we want to
 var GSSolver_solve_invCs = [];
 var GSSolver_solve_Bs = [];
 CANNON.GSSolver.prototype.solve = function(dt,world){
-
     var d = this.d,
         ks = this.k,
         iter = 0,
@@ -3517,15 +3517,14 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         equations = this.equations,
         Neq = equations.length,
         bodies = world.bodies,
-        Nbodies = world.bodies.length,
-        h = dt;
+        Nbodies = bodies.length,
+        h = dt,
+        q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
 
     // Things that does not change during iteration can be computed once
-    var invCs = GSSolver_solve_invCs;
-    var Bs = GSSolver_solve_Bs;
-
-    // Create array for lambdas
-    var lambda = GSSolver_solve_lambda;
+    var invCs = GSSolver_solve_invCs,
+        Bs = GSSolver_solve_Bs,
+        lambda = GSSolver_solve_lambda;
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
         if(c.spookParamsNeedsUpdate){
@@ -3537,11 +3536,10 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
         invCs[i] = 1.0 / c.computeC();
     }
 
-    var q, B, c, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
 
     if(Neq !== 0){
 
-        var i,j,abs=Math.abs;
+        var i,j/*,abs=Math.abs*/;
 
         // Reset vlambda
         for(i=0; i!==Nbodies; i++){
@@ -3568,7 +3566,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 B = Bs[j];
                 invC = invCs[j];
                 lambdaj = lambda[j];
-                GWlambda = c.computeGWlambda(c.eps);
+                GWlambda = c.computeGWlambda();
                 deltalambda = invC * ( B - GWlambda - c.eps * lambdaj );
 
                 // Clamp if we are not within the min/max interval
@@ -3579,7 +3577,7 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
                 }
                 lambda[j] += deltalambda;
 
-                deltalambdaTot += abs(deltalambda);
+                deltalambdaTot += deltalambda > 0.0 ? deltalambda : -deltalambda; // abs(deltalambda)
 
                 c.addToWlambda(deltalambda);
             }
@@ -3592,7 +3590,9 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
 
         // Add result to velocity
         for(i=0; i!==Nbodies; i++){
-            var b=bodies[i], v=b.velocity, w=b.angularVelocity;
+            var b=bodies[i],
+                v=b.velocity,
+                w=b.angularVelocity;
             v.vadd(b.vlambda, v);
             if(w){
                 w.vadd(b.wlambda, w);
@@ -3937,7 +3937,7 @@ CANNON.World.prototype.numObjects = function(){
 // 1: Contact
 CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
     var N = this.bodies.length;
-    if(typeof(current)==="undefined"){
+    if(current===undefined){
         current = true;
     }
     // i == column
@@ -3952,7 +3952,7 @@ CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
 
 CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
     var N = this.bodies.length;
-    if(typeof(current)==="undefined"){
+    if(current===undefined){
         current = true;
     }
     if( (current && i<j) || (!current && i>j)){
@@ -3965,10 +3965,12 @@ CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
 
 // transfer old contact state data to T-1
 CANNON.World.prototype.collisionMatrixTick = function(){
-    var N = this.bodies.length;
-    for(var i=0; i!==N; i++){
-        for(var j=0; j!==i; j++){
-            var currentState = this.collisionMatrixGet(i,j,true);
+    var N = this.bodies.length,
+        currentState,
+        i,j;
+    for(i=0; i!==N; i++){
+        for(j=0; j!==i; j++){
+            currentState = this.collisionMatrixGet(i,j,true);
             this.collisionMatrixSet(i,j,currentState,false);
             this.collisionMatrixSet(i,j,0,true);
         }
@@ -5234,7 +5236,14 @@ CANNON.ContactGenerator = function(){
      * @todo All collision cases
      */
     function nearPhase(result,si,sj,xi,xj,qi,qj,bi,bj){
-        var swapped = false, types = CANNON.Shape.types;
+        var swapped = false,
+            types = CANNON.Shape.types,
+            SPHERE = types.SPHERE,
+            PLANE = types.PLANE,
+            BOX = types.BOX,
+            COMPOUND = types.COMPOUND,
+            CONVEXPOLYHEDRON = types.CONVEXPOLYHEDRON;
+
         if(si && sj){
             if(si.type > sj.type){
                 var temp;
@@ -5281,22 +5290,22 @@ CANNON.ContactGenerator = function(){
         }
 
         if(si && sj){
-            if(si.type === types.SPHERE){
+            if(si.type === SPHERE){
 
                 switch(sj.type){
-                case types.SPHERE: // sphere-sphere
+                case SPHERE: // sphere-sphere
                     sphereSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
-                case types.PLANE: // sphere-plane
+                case PLANE: // sphere-plane
                     spherePlane(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
-                case types.BOX: // sphere-box
+                case BOX: // sphere-box
                     sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
-                case types.COMPOUND: // sphere-compound
+                case COMPOUND: // sphere-compound
                     recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
-                case types.CONVEXPOLYHEDRON: // sphere-convexpolyhedron
+                case CONVEXPOLYHEDRON: // sphere-convexpolyhedron
                     sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 default:
@@ -5801,35 +5810,39 @@ var FrictionEquation_computeB_temp2 = new CANNON.Vec3();
 var FrictionEquation_computeB_zero = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.computeB = function(h){
     var a = this.a,
-        b = this.b;
-    var bi = this.bi;
-    var bj = this.bj;
-    var ri = this.ri;
-    var rj = this.rj;
-    var rixt = this.rixt;
-    var rjxt = this.rjxt;
-    var wixri = this.wixri;
-    var wjxrj = this.wjxrj;
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
+        ri = this.ri,
+        rj = this.rj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        wixri = this.wixri,
+        wjxrj = this.wjxrj,
+        zero = FrictionEquation_computeB_zero;
 
-    var zero = FrictionEquation_computeB_zero;
+        vi = bi.velocity,
+        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        fi = bi.force,
+        taui = bi.tau ? bi.tau : zero,
 
-    var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : zero;
-    var fi = bi.force;
-    var taui = bi.tau ? bi.tau : zero;
+        vj = bj.velocity,
+        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        fj = bj.force,
+        tauj = bj.tau ? bj.tau : zero,
 
-    var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : zero;
-    var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : zero;
+        relVel = this.relVel,
+        relForce = this.relForce,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
 
-    var relVel = this.relVel;
-    var relForce = this.relForce;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+        invIi = this.invIi,
+        invIj = this.invIj,
 
-    var invIi = this.invIi;
-    var invIj = this.invIj;
+        t = this.t,
+
+        invIi_vmult_taui = FrictionEquation_computeB_temp1,
+        invIj_vmult_tauj = FrictionEquation_computeB_temp2;
 
     if(bi.invInertia){
         invIi.setTrace(bi.invInertia);
@@ -5838,7 +5851,6 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
         invIj.setTrace(bj.invInertia);
     }
 
-    var t = this.t;
 
     // Caluclate cross products
     ri.cross(t,rixt);
@@ -5847,8 +5859,6 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
     wi.cross(ri,wixri);
     wj.cross(rj,wjxrj);
 
-    var invIi_vmult_taui = FrictionEquation_computeB_temp1;
-    var invIj_vmult_tauj = FrictionEquation_computeB_temp2;
     invIi.vmult(taui,invIi_vmult_taui);
     invIj.vmult(tauj,invIj_vmult_tauj);
 
@@ -5862,20 +5872,18 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
 };
 
 // Compute C = G * Minv * G + eps
-var FEcomputeC_temp1 = new CANNON.Vec3();
-var FEcomputeC_temp2 = new CANNON.Vec3();
+//var FEcomputeC_temp1 = new CANNON.Vec3();
+//var FEcomputeC_temp2 = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.computeC = function(){
-    var bi = this.bi;
-    var bj = this.bj;
-    var rixt = this.rixt;
-    var rjxt = this.rjxt;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
-
-    var C = invMassi + invMassj + this.eps;
-
-    var invIi = this.invIi;
-    var invIj = this.invIj;
+    var bi = this.bi,
+        bj = this.bj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
+        C = invMassi + invMassj + this.eps,
+        invIi = this.invIi,
+        invIj = this.invIj;
 
     /*
     if(bi.invInertia){
@@ -5927,14 +5935,16 @@ CANNON.FrictionEquation.prototype.computeGWlambda = function(){
 
 var FrictionEquation_addToWlambda_tmp = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi;
-    var bj = this.bj;
-    var rixt = this.rixt;
-    var rjxt = this.rjxt;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
-    var t = this.t;
-    var tmp = FrictionEquation_addToWlambda_tmp;
+    var bi = this.bi,
+        bj = this.bj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
+        t = this.t,
+        tmp = FrictionEquation_addToWlambda_tmp,
+        wi = bi.wlambda,
+        wj = bj.wlambda;
 
     // Add to linear velocity
     t.mult(invMassi * deltalambda, tmp);
@@ -5944,7 +5954,6 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
     bj.vlambda.vadd(tmp,bj.vlambda);
 
     // Add to angular velocity
-    var wi = bi.wlambda;
     if(wi){
         /*
         var I = this.invIi;
@@ -5954,7 +5963,6 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
         this.biInvInertiaTimesRixt.mult(deltalambda,tmp);
         wi.vsub(tmp,wi);
     }
-    var wj = bj.wlambda;
     if(wj){
         /*
         var I = this.invIj;

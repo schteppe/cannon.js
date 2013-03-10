@@ -37,35 +37,39 @@ var FrictionEquation_computeB_temp2 = new CANNON.Vec3();
 var FrictionEquation_computeB_zero = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.computeB = function(h){
     var a = this.a,
-        b = this.b;
-    var bi = this.bi;
-    var bj = this.bj;
-    var ri = this.ri;
-    var rj = this.rj;
-    var rixt = this.rixt;
-    var rjxt = this.rjxt;
-    var wixri = this.wixri;
-    var wjxrj = this.wjxrj;
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
+        ri = this.ri,
+        rj = this.rj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        wixri = this.wixri,
+        wjxrj = this.wjxrj,
+        zero = FrictionEquation_computeB_zero;
 
-    var zero = FrictionEquation_computeB_zero;
+        vi = bi.velocity,
+        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        fi = bi.force,
+        taui = bi.tau ? bi.tau : zero,
 
-    var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : zero;
-    var fi = bi.force;
-    var taui = bi.tau ? bi.tau : zero;
+        vj = bj.velocity,
+        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        fj = bj.force,
+        tauj = bj.tau ? bj.tau : zero,
 
-    var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : zero;
-    var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : zero;
+        relVel = this.relVel,
+        relForce = this.relForce,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
 
-    var relVel = this.relVel;
-    var relForce = this.relForce;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+        invIi = this.invIi,
+        invIj = this.invIj,
 
-    var invIi = this.invIi;
-    var invIj = this.invIj;
+        t = this.t,
+
+        invIi_vmult_taui = FrictionEquation_computeB_temp1,
+        invIj_vmult_tauj = FrictionEquation_computeB_temp2;
 
     if(bi.invInertia){
         invIi.setTrace(bi.invInertia);
@@ -74,7 +78,6 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
         invIj.setTrace(bj.invInertia);
     }
 
-    var t = this.t;
 
     // Caluclate cross products
     ri.cross(t,rixt);
@@ -83,8 +86,6 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
     wi.cross(ri,wixri);
     wj.cross(rj,wjxrj);
 
-    var invIi_vmult_taui = FrictionEquation_computeB_temp1;
-    var invIj_vmult_tauj = FrictionEquation_computeB_temp2;
     invIi.vmult(taui,invIi_vmult_taui);
     invIj.vmult(tauj,invIj_vmult_tauj);
 
@@ -98,20 +99,18 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
 };
 
 // Compute C = G * Minv * G + eps
-var FEcomputeC_temp1 = new CANNON.Vec3();
-var FEcomputeC_temp2 = new CANNON.Vec3();
+//var FEcomputeC_temp1 = new CANNON.Vec3();
+//var FEcomputeC_temp2 = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.computeC = function(){
-    var bi = this.bi;
-    var bj = this.bj;
-    var rixt = this.rixt;
-    var rjxt = this.rjxt;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
-
-    var C = invMassi + invMassj + this.eps;
-
-    var invIi = this.invIi;
-    var invIj = this.invIj;
+    var bi = this.bi,
+        bj = this.bj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
+        C = invMassi + invMassj + this.eps,
+        invIi = this.invIi,
+        invIj = this.invIj;
 
     /*
     if(bi.invInertia){
@@ -163,14 +162,16 @@ CANNON.FrictionEquation.prototype.computeGWlambda = function(){
 
 var FrictionEquation_addToWlambda_tmp = new CANNON.Vec3();
 CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi;
-    var bj = this.bj;
-    var rixt = this.rixt;
-    var rjxt = this.rjxt;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
-    var t = this.t;
-    var tmp = FrictionEquation_addToWlambda_tmp;
+    var bi = this.bi,
+        bj = this.bj,
+        rixt = this.rixt,
+        rjxt = this.rjxt,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
+        t = this.t,
+        tmp = FrictionEquation_addToWlambda_tmp,
+        wi = bi.wlambda,
+        wj = bj.wlambda;
 
     // Add to linear velocity
     t.mult(invMassi * deltalambda, tmp);
@@ -180,7 +181,6 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
     bj.vlambda.vadd(tmp,bj.vlambda);
 
     // Add to angular velocity
-    var wi = bi.wlambda;
     if(wi){
         /*
         var I = this.invIi;
@@ -190,7 +190,6 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
         this.biInvInertiaTimesRixt.mult(deltalambda,tmp);
         wi.vsub(tmp,wi);
     }
-    var wj = bj.wlambda;
     if(wj){
         /*
         var I = this.invIj;
