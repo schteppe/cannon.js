@@ -3,6 +3,11 @@
  * @brief Axis aligned uniform grid broadphase.
  * @extends CANNON.Broadphase
  * @todo Needs support for more than just planes and spheres.
+ * @param CANNON.Vec3 aabbMin
+ * @param CANNON.Vec3 aabbMax
+ * @param int nx Number of boxes along x
+ * @param int ny Number of boxes along y
+ * @param int nz Number of boxes along z
  */
 CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
     CANNON.Broadphase.apply(this);
@@ -21,6 +26,8 @@ CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
  * @memberof CANNON.GridBroadphase
  * @brief Get all the collision pairs in the physics world
  * @param CANNON.World world
+ * @param Array pairs1
+ * @param Array pairs2
  */
 var GridBroadphase_collisionPairs_d = new CANNON.Vec3();
 var GridBroadphase_collisionPairs_binPos = new CANNON.Vec3();

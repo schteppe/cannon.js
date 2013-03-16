@@ -2,22 +2,35 @@
  * @class CANNON.Constraint
  * @brief Constraint base class
  * @author schteppe
- * @param CANNON.RigidBody bodyA
- * @param CANNON.Vec3 pivotA A point defined locally in bodyA. This defines the offset of axisA.
- * @param CANNON.Vec3 axisA an axis that bodyA can rotate around.
- * @param CANNON.RigidBody bodyB
- * @param CANNON.Vec3 pivotB
- * @param CANNON.Vec3 axisB
- * @param float maxForce
+ * @param CANNON.Body bodyA
+ * @param CANNON.Body bodyB
  */
 CANNON.Constraint = function(bodyA,bodyB){
-    // Equations to be fed to the solver
+
+    /**
+     * @property Array equations
+     * @memberOf CANNON.Constraint
+     * @brief Equations to be solved in this constraint
+     */
     this.equations = [];
+
+    /**
+     * @property CANNON.Body bodyA
+     * @memberOf CANNON.Constraint
+     */
     this.bodyA = bodyA;
+
+    /**
+     * @property CANNON.Body bodyB
+     * @memberOf CANNON.Constraint
+     */
     this.bodyB = bodyB;
 };
 
-// Update constraint
+/**
+ * @method update
+ * @memberOf CANNON.Constraint
+ */
 CANNON.Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };

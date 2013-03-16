@@ -2,17 +2,34 @@
  * @class CANNON.ContactEquation
  * @brief Contact/non-penetration constraint equation
  * @author schteppe
- * @param CANNON.RigidBody bj
- * @param CANNON.RigidBody bi
+ * @param CANNON.Body bj
+ * @param CANNON.Body bi
  * @extends CANNON.Equation
  */
 CANNON.ContactEquation = function(bi,bj){
     CANNON.Equation.call(this,bi,bj,0,1e6);
 
+    /**
+     * @property float restitution
+     * @memberof CANNON.ContactEquation
+     */
     this.restitution = 0.0; // "bounciness": u1 = -e*u0
+
+    /**
+     * @property CANNON.Vec3 ri
+     * @memberof CANNON.ContactEquation
+     * @brief World-oriented vector that goes from the center of bi to the contact point in bi.
+     */
     this.ri = new CANNON.Vec3();
-    this.penetrationVec = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Vec3 rj
+     * @memberof CANNON.ContactEquation
+     */
     this.rj = new CANNON.Vec3();
+
+    this.penetrationVec = new CANNON.Vec3();
+
     this.ni = new CANNON.Vec3();
     this.rixn = new CANNON.Vec3();
     this.rjxn = new CANNON.Vec3();
@@ -28,7 +45,11 @@ CANNON.ContactEquation = function(bi,bj){
 CANNON.ContactEquation.prototype = new CANNON.Equation();
 CANNON.ContactEquation.prototype.constructor = CANNON.ContactEquation;
 
-// To be used before object reuse
+/**
+ * @method reset
+ * @memberof CANNON.ContactEquation
+ * @brief To be run before object reuse
+ */
 CANNON.ContactEquation.prototype.reset = function(){
     this.invInertiaTimesRxnNeedsUpdate = true;
 };

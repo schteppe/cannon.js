@@ -3292,7 +3292,8 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @memberof CANNON.NaiveBroadphase
  * @brief Get all the collision pairs in the physics world
  * @param CANNON.World world
- * @return array An array containing two arrays of integers. The integers corresponds to the body indices.
+ * @param Array pairs1
+ * @param Array pairs2
  */
 CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var bodies = world.bodies,
@@ -3321,6 +3322,11 @@ CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
  * @brief Axis aligned uniform grid broadphase.
  * @extends CANNON.Broadphase
  * @todo Needs support for more than just planes and spheres.
+ * @param CANNON.Vec3 aabbMin
+ * @param CANNON.Vec3 aabbMax
+ * @param int nx Number of boxes along x
+ * @param int ny Number of boxes along y
+ * @param int nz Number of boxes along z
  */
 CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
     CANNON.Broadphase.apply(this);
@@ -3339,6 +3345,8 @@ CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
  * @memberof CANNON.GridBroadphase
  * @brief Get all the collision pairs in the physics world
  * @param CANNON.World world
+ * @param Array pairs1
+ * @param Array pairs2
  */
 var GridBroadphase_collisionPairs_d = new CANNON.Vec3();
 var GridBroadphase_collisionPairs_binPos = new CANNON.Vec3();
@@ -5594,17 +5602,34 @@ CANNON.Equation.prototype.updateSpookParams = function(h){
  * @class CANNON.ContactEquation
  * @brief Contact/non-penetration constraint equation
  * @author schteppe
- * @param CANNON.RigidBody bj
- * @param CANNON.RigidBody bi
+ * @param CANNON.Body bj
+ * @param CANNON.Body bi
  * @extends CANNON.Equation
  */
 CANNON.ContactEquation = function(bi,bj){
     CANNON.Equation.call(this,bi,bj,0,1e6);
 
+    /**
+     * @property float restitution
+     * @memberof CANNON.ContactEquation
+     */
     this.restitution = 0.0; // "bounciness": u1 = -e*u0
+
+    /**
+     * @property CANNON.Vec3 ri
+     * @memberof CANNON.ContactEquation
+     * @brief World-oriented vector that goes from the center of bi to the contact point in bi.
+     */
     this.ri = new CANNON.Vec3();
-    this.penetrationVec = new CANNON.Vec3();
+
+    /**
+     * @property CANNON.Vec3 rj
+     * @memberof CANNON.ContactEquation
+     */
     this.rj = new CANNON.Vec3();
+
+    this.penetrationVec = new CANNON.Vec3();
+
     this.ni = new CANNON.Vec3();
     this.rixn = new CANNON.Vec3();
     this.rjxn = new CANNON.Vec3();
@@ -5620,7 +5645,11 @@ CANNON.ContactEquation = function(bi,bj){
 CANNON.ContactEquation.prototype = new CANNON.Equation();
 CANNON.ContactEquation.prototype.constructor = CANNON.ContactEquation;
 
-// To be used before object reuse
+/**
+ * @method reset
+ * @memberof CANNON.ContactEquation
+ * @brief To be run before object reuse
+ */
 CANNON.ContactEquation.prototype.reset = function(){
     this.invInertiaTimesRxnNeedsUpdate = true;
 };
@@ -5804,8 +5833,8 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
  * @class CANNON.FrictionEquation
  * @brief Constrains the slipping in a contact along a tangent
  * @author schteppe
- * @param CANNON.RigidBody bi
- * @param CANNON.RigidBody bj
+ * @param CANNON.Body bi
+ * @param CANNON.Body bj
  * @param float slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
  * @extends CANNON.Equation
  */
@@ -6169,22 +6198,35 @@ CANNON.RotationalEquation.prototype.addToWlambda = function(deltalambda){
  * @class CANNON.Constraint
  * @brief Constraint base class
  * @author schteppe
- * @param CANNON.RigidBody bodyA
- * @param CANNON.Vec3 pivotA A point defined locally in bodyA. This defines the offset of axisA.
- * @param CANNON.Vec3 axisA an axis that bodyA can rotate around.
- * @param CANNON.RigidBody bodyB
- * @param CANNON.Vec3 pivotB
- * @param CANNON.Vec3 axisB
- * @param float maxForce
+ * @param CANNON.Body bodyA
+ * @param CANNON.Body bodyB
  */
 CANNON.Constraint = function(bodyA,bodyB){
-    // Equations to be fed to the solver
+
+    /**
+     * @property Array equations
+     * @memberOf CANNON.Constraint
+     * @brief Equations to be solved in this constraint
+     */
     this.equations = [];
+
+    /**
+     * @property CANNON.Body bodyA
+     * @memberOf CANNON.Constraint
+     */
     this.bodyA = bodyA;
+
+    /**
+     * @property CANNON.Body bodyB
+     * @memberOf CANNON.Constraint
+     */
     this.bodyB = bodyB;
 };
 
-// Update constraint
+/**
+ * @method update
+ * @memberOf CANNON.Constraint
+ */
 CANNON.Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };

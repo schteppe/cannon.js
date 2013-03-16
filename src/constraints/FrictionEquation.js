@@ -2,8 +2,8 @@
  * @class CANNON.FrictionEquation
  * @brief Constrains the slipping in a contact along a tangent
  * @author schteppe
- * @param CANNON.RigidBody bi
- * @param CANNON.RigidBody bj
+ * @param CANNON.Body bi
+ * @param CANNON.Body bj
  * @param float slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
  * @extends CANNON.Equation
  */
@@ -13,6 +13,8 @@ CANNON.FrictionEquation = function(bi,bj,slipForce){
     this.rj = new CANNON.Vec3();
     this.t = new CANNON.Vec3(); // tangent
 
+
+    // The following is just cache
     this.rixt = new CANNON.Vec3();
     this.rjxt = new CANNON.Vec3();
     this.wixri = new CANNON.Vec3();
@@ -24,7 +26,6 @@ CANNON.FrictionEquation = function(bi,bj,slipForce){
     this.relVel = new CANNON.Vec3();
     this.relForce = new CANNON.Vec3();
 
-    // Cache
     this.biInvInertiaTimesRixt =  new CANNON.Vec3();
     this.bjInvInertiaTimesRjxt =  new CANNON.Vec3();
 };
