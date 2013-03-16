@@ -28,6 +28,7 @@ module.exports = function(grunt) {
                         "src/objects/Particle.js",
                         "src/objects/RigidBody.js",
                         "src/objects/Sphere.js",
+                        "src/objects/SPHSystem.js",
                         "src/objects/Box.js",
                         "src/objects/Plane.js",
                         "src/objects/Compound.js",

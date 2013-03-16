@@ -138,6 +138,12 @@ CANNON.World = function(){
         integrate:0,
         nearphase:0,
     };
+
+    /**
+     * @property Array subystems
+     * @memberof CANNON.World
+     */
+    this.subsystems = [];
 };
 
 /**
@@ -432,6 +438,11 @@ CANNON.World.prototype.step = function(dt){
             f.y += m*gy;
             f.z += m*gz;
         }
+    }
+
+    // Update subsystems
+    for(var i=0, Nsubsystems=this.subsystems.length; i!==Nsubsystems; i++){
+        this.subsystems[i].update();
     }
 
     // 1. Collision detection
