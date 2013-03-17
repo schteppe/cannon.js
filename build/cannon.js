@@ -1678,78 +1678,27 @@ CANNON.SPHSystem = function(){
     this.smoothingRadius = 1; // Adjust so there are about 15-20 neighbor particles within this radius
     this.speedOfSound = 1;
     this.viscosity = 0.01;
-    this.pressures = []; // Computed per particle
-    this.densities = []; // Computed per particle
-    this.neighbors = []; // Computed per particle
     this.eps = 0.000001;
+
+    // Stuff Computed per particle
+    this.pressures = [];
+    this.densities = [];
+    this.neighbors = [];
 }
 
-CANNON.SPHSystem.prototype.add = function(particle){ // l, u, nx, ny, nz, density, dyn_visc, speed_of_sound
+CANNON.SPHSystem.prototype.add = function(particle){
     this.particles.push(particle);
     if(this.neighbors.length < this.particles.length)
         this.neighbors.push([]);
+};
 
-    //var num_particles = nx*ny*nz;
-    
-    // Create broadphase
-    //sph_broadphase = new BroadPhase(5,5,5,l.x(),l.y(),l.z(),u.x(),u.y(),u.z());
-    //w.addSPHBroadPhase(sph_broadphase);
-    
-    // calc total volume
-    //var V = (u.x()-l.x())*(u.y()-l.y())*(u.z()-l.z());
-    
-    // mass
-    //var m=density*V/num_particles;
-    
-    // calculate radius of smoothing volume
-    //var smoothing_volume_r = pow(20*3*V/(num_particles*4*PI),0.33333);
-    //w.setSPHSmoothingVolumeRadius(smoothing_volume_r);
-    //w.setSPHSoundSpeed(speed_of_sound);
-    //w.setSPHDensity(density);
-    //w.setSPHViscosity(dyn_visc);
-    
-    // Create geometry
-    //Geode * particleGeode = createSphere(0.01);
-    
-    // Distance between particles   
-    /*
-    var dx = Vec3(0,0,0);
-    var dy = Vec3(0,0,0);
-    var dz = Vec3(0,0,0);
-    if(nx>1) dx = Vec3((u.x()-l.x())/(nx-1),0,0);
-    if(ny>1) dy = Vec3(0,(u.y()-l.y())/(ny-1),0);
-    if(nz>1) dz = Vec3(0,0,(u.z()-l.z())/(nz-1));
-    
-    var oid;
-    for (var i=0; i<nx; i++){
-    for (var j=0; j<ny; j++){
-        for (var k=0; k<nz; k++){
-        // Create particle transform and add to scenegraph
-        PositionAttitudeTransform * t = new PositionAttitudeTransform;  
-        t.addChild(particleGeode);
-        root.addChild(t);
-        
-        // Add to updating list and set current pos
-        transforms.push_back(t);
-        Vec3 pos = l+dx*i+dy*j+dz*k;
-        t.setPosition(pos);
-        
-        // Add particle to world
-        w.addObject(&oid,OBJECT_TYPE_SPH_PARTICLE);
-        
-        // add particle to broadphase
-            sph_broadphase.addParticle(oid,pos);
-        
-        // Set properties
-        w.setPos(oid,pos);
-        w.setMass(oid,m);
-        
-        // Add to object list
-        object_ids.push_back(oid);
-        }
+CANNON.SPHSystem.prototype.remove = function(particle){
+    var idx = this.particles.indexOf(particle);
+    if(idx !== -1){
+        this.particles.splice(idx,1);
+        if(this.neighbors.length > this.particles.length)
+            this.neighbors.pop();
     }
-    }
-     */
 };
 
 /**
