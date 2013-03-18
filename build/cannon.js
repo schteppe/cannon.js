@@ -3147,6 +3147,236 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
 CANNON.Cylinder.prototype = new CANNON.ConvexPolyhedron();
 
 /**
+ * @class CANNON.Ray
+ * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.
+ * @brief A line in 3D space that intersects bodies and return points.
+ * @param CANNON.Vec3 origin
+ * @param CANNON.Vec3 direction
+ */
+CANNON.Ray = function(origin, direction){
+    /**
+    * @property CANNON.Vec3 origin
+    * @memberof CANNON.Ray
+    */
+    this.origin = origin || new CANNON.Vec3();
+
+    /**
+    * @property CANNON.Vec3 direction
+    * @memberof CANNON.Ray
+    */
+    this.direction = direction || new CANNON.Vec3();
+
+    var precision = 0.0001;
+
+    /**
+     * @method setPrecision
+     * @memberof CANNON.Ray
+     * @param float value
+     * @brief Sets the precision of the ray. Used when checking parallelity etc.
+     */
+    this.setPrecision = function ( value ) {
+        precision = value;
+    };
+
+    var a = new CANNON.Vec3();
+    var b = new CANNON.Vec3();
+    var c = new CANNON.Vec3();
+    var d = new CANNON.Vec3();
+
+    var directionCopy = new CANNON.Vec3();
+
+    var vector = new CANNON.Vec3();
+    var normal = new CANNON.Vec3();
+    var intersectPoint = new CANNON.Vec3();
+
+    /**
+     * @method intersectBody
+     * @memberof CANNON.Ray
+     * @param CANNON.RigidBody body
+     * @brief Shoot a ray at a body, get back information about the hit.
+     * @return Array An array of results. The result objects has properties: distance (float), point (CANNON.Vec3) and body (CANNON.RigidBody).
+     */
+    this.intersectBody = function ( body ) {
+        if(body.shape instanceof CANNON.ConvexPolyhedron){
+            return this.intersectShape(body.shape,
+                                       body.quaternion,
+                                       body.position,
+                                       body);
+        } else if(body.shape instanceof CANNON.Box){
+            return this.intersectShape(body.shape.convexPolyhedronRepresentation,
+                                       body.quaternion,
+                                       body.position,
+                                       body);
+        } else {
+            console.warn("Ray intersection is this far only implemented for ConvexPolyhedron and Box shapes.");
+        }
+    };
+
+    /**
+     * @method intersectShape
+     * @memberof CANNON.Ray
+     * @param CANNON.Shape shape
+     * @param CANNON.Quaternion quat
+     * @param CANNON.Vec3 position
+     * @param CANNON.RigidBody body
+     * @return Array See intersectBody()
+     */
+    this.intersectShape = function(shape,quat,position,body){
+
+        var intersect, intersects = [];
+
+        if ( shape instanceof CANNON.ConvexPolyhedron ) {
+            // Checking boundingSphere
+
+            var distance = distanceFromIntersection( this.origin, this.direction, position );
+            if ( distance > shape.getBoundingSphereRadius() ) {
+                return intersects;
+            }
+
+            // Checking faces
+            var dot, scalar, faces = shape.faces, vertices = shape.vertices, normals = shape.faceNormals;
+
+
+            for (var fi = 0; fi < faces.length; fi++ ) {
+
+                var face = faces[ fi ];
+                var faceNormal = normals[ fi ];
+                var q = quat;
+                var x = position;
+
+                // determine if ray intersects the plane of the face
+                // note: this works regardless of the direction of the face normal
+
+                // Get plane point in world coordinates...
+                vertices[face[0]].copy(vector);
+                q.vmult(vector,vector);
+                vector.vadd(x,vector);
+
+                // ...but make it relative to the ray origin. We'll fix this later.
+                vector.vsub(this.origin,vector);
+
+                // Get plane normal
+                q.vmult(faceNormal,normal);
+
+                // If this dot product is negative, we have something interesting
+                dot = this.direction.dot(normal);
+
+                // bail if ray and plane are parallel
+                if ( Math.abs( dot ) < precision ){
+                    continue;
+                }
+
+                // calc distance to plane
+                scalar = normal.dot( vector ) / dot;
+
+                // if negative distance, then plane is behind ray
+                if ( scalar < 0 ){
+                    continue;
+                }
+
+                if (  dot < 0 ) {
+
+                    // Intersection point is origin + direction * scalar
+                    this.direction.mult(scalar,intersectPoint);
+                    intersectPoint.vadd(this.origin,intersectPoint);
+
+                    // a is the point we compare points b and c with.
+                    vertices[ face[0] ].copy(a);
+                    q.vmult(a,a);
+                    x.vadd(a,a);
+
+                    for(var i=1; i<face.length-1; i++){
+                        // Transform 3 vertices to world coords
+                        vertices[ face[i] ].copy(b);
+                        vertices[ face[i+1] ].copy(c);
+                        q.vmult(b,b);
+                        q.vmult(c,c);
+                        x.vadd(b,b);
+                        x.vadd(c,c);
+
+                        if ( pointInTriangle( intersectPoint, a, b, c ) ) {
+
+                            intersect = {
+                                distance: this.origin.distanceTo( intersectPoint ),
+                                point: intersectPoint.copy(),
+                                face: face,
+                                body: body
+                            };
+
+                            intersects.push( intersect );
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return intersects;
+    };
+
+    /**
+     * @method intersectBodies
+     * @memberof CANNON.Ray
+     * @param Array bodies An array of CANNON.RigidBody objects.
+     * @return Array See intersectBody
+     */
+    this.intersectBodies = function ( bodies ) {
+
+        var intersects = [];
+
+        for ( var i = 0, l = bodies.length; i < l; i ++ ) {
+            var result = this.intersectBody( bodies[ i ] );
+            Array.prototype.push.apply( intersects, result );
+        }
+
+        intersects.sort( function ( a, b ) { return a.distance - b.distance; } );
+        return intersects;
+    };
+
+    var v0 = new CANNON.Vec3(), intersect = new CANNON.Vec3();
+    var dot, distance;
+
+    function distanceFromIntersection( origin, direction, position ) {
+
+        // v0 is vector from origin to position
+        position.vsub(origin,v0);
+        dot = v0.dot( direction );
+
+        // intersect = direction*dot + origin
+        direction.mult(dot,intersect);
+        intersect.vadd(origin,intersect);
+
+        distance = position.distanceTo( intersect );
+
+        return distance;
+    }
+
+    // http://www.blackpawn.com/texts/pointinpoly/default.html
+
+    var dot00, dot01, dot02, dot11, dot12, invDenom, u, v;
+    var v1 = new CANNON.Vec3(), v2 = new CANNON.Vec3();
+
+    function pointInTriangle( p, a, b, c ) {
+        c.vsub(a,v0);
+        b.vsub(a,v1);
+        p.vsub(a,v2);
+
+        dot00 = v0.dot( v0 );
+        dot01 = v0.dot( v1 );
+        dot02 = v0.dot( v2 );
+        dot11 = v1.dot( v1 );
+        dot12 = v1.dot( v2 );
+
+        invDenom = 1 / ( dot00 * dot11 - dot01 * dot01 );
+        u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+        v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+
+        return ( u >= 0 ) && ( v >= 0 ) && ( u + v < 1 );
+    }
+};
+CANNON.Ray.prototype.constructor = CANNON.Ray;
+
+
+/**
  * @class CANNON.Broadphase
  * @author schteppe
  * @brief Base class for broadphase implementations
@@ -4077,9 +4307,16 @@ CANNON.World = function(){
      */
     this.contactgen = new CANNON.ContactGenerator();
 
-    // Collision matrix, size N*N
-    // @todo rename to collisionMatrix
-    this.collision_matrix = [];
+    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
+	 *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
+	 *  @memberof CANNON.World
+	 */
+	this.collisionMatrix = [];
+    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
+	 *  @brief collisionMatrix from the previous step
+	 *  @memberof CANNON.World
+	 */
+	this.collisionMatrixPrevious = [];
 
     /**
      * @property Array materials
@@ -4166,45 +4403,40 @@ CANNON.World.prototype.numObjects = function(){
 // 0: No contact between i and j
 // 1: Contact
 CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
-    var N = this.bodies.length;
-    if(current===undefined){
-        current = true;
-    }
-    // i == column
-    // j == row
-    if((current && i<j /* Current uses upper part of the matrix */) || (!current && i>j /* Previous uses lower part of the matrix */)){
+    if(j > i){
         var temp = j;
         j = i;
         i = temp;
     }
-    return this.collision_matrix[i+j*N];
+	// Reuse i for the index
+	i = (i*(i + 1)>>1) + j-1;
+    return (typeof(current)==="undefined" || current) ? this.collisionMatrix[i] : this.collisionMatrixPrevious[i];
 };
 
 CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
-    var N = this.bodies.length;
-    if(current===undefined){
-        current = true;
-    }
-    if( (current && i<j) || (!current && i>j)){
+    if(j > i){
         var temp = j;
         j = i;
         i = temp;
     }
-    this.collision_matrix[i+j*N] = value;
+	// Reuse i for the index
+	i = (i*(i + 1)>>1) + j-1;
+	if (typeof(current)==="undefined" || current) {
+		this.collisionMatrix[i] = value;
+	}
+	else {
+		this.collisionMatrixPrevious[i] = value;
+	}
 };
 
 // transfer old contact state data to T-1
 CANNON.World.prototype.collisionMatrixTick = function(){
-    var N = this.bodies.length,
-        currentState,
-        i,j;
-    for(i=0; i!==N; i++){
-        for(j=0; j!==i; j++){
-            currentState = this.collisionMatrixGet(i,j,true);
-            this.collisionMatrixSet(i,j,currentState,false);
-            this.collisionMatrixSet(i,j,0,true);
-        }
-    }
+	var temp = this.collisionMatrixPrevious;
+	this.collisionMatrixPrevious = this.collisionMatrix;
+	this.collisionMatrix = temp;
+	for (var i=0,l=this.collisionMatrix.length;i!==l;i++) {
+		this.collisionMatrix[i]=0;
+	}
 };
 
 /**
@@ -4216,9 +4448,9 @@ CANNON.World.prototype.collisionMatrixTick = function(){
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
 CANNON.World.prototype.add = function(body){
-    var n = this.numObjects();
+	body.id = this.id();
+    body.index = this.bodies.length;
     this.bodies.push(body);
-    body.id = this.id();
     body.world = this;
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
@@ -4228,10 +4460,8 @@ CANNON.World.prototype.add = function(body){
         body.quaternion.copy(body.initQuaternion);
     }
 
-    // Increase size of collision matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
-    for(var i=0; i<2*n+1; i++){
-        this.collision_matrix.push(0);
-    }
+    var n = this.numObjects();
+	this.collisionMatrix.length = n*(n-1)>>1;
 };
 
 /**
@@ -4276,23 +4506,15 @@ CANNON.World.prototype.id = function(){
  */
 CANNON.World.prototype.remove = function(body){
     body.world = null;
-    var n = this.numObjects();
+    var n = this.numObjects()-1;
     var bodies = this.bodies;
-    var i;
-    for(i=0; i!==bodies.length; i++){
-        if(bodies[i].id === body.id){
-            bodies.splice(i,1);
-            break;
-        }
-    }
-
-    // Reduce size of collision matrix to (n-1)*(n-1)=n*n-2*n+1 elements, it was n*n last.
-    for(i=0; i!==2*n-1; i++){
-        this.collision_matrix.pop();
-    }
-
-    // Reset collision matrix
-    //this.collision_matrix = new Int16Array((n-1)*(n-1));
+	bodies.splice(body.index, 1);
+	for(var i=body.index; i<n;i++) {
+		bodies[i].index=i;
+	}
+	//TODO: Maybe splice out the correct elements?
+	this.collisionMatrixPrevious.length = 
+	this.collisionMatrix.length = n*(n-1)>>1;
 };
 
 /**
@@ -4393,7 +4615,6 @@ CANNON.World.prototype.step = function(dt){
         DYNAMIC = CANNON.Body.DYNAMIC,
         now = this._now,
         profilingStart,
-        cm = this.collision_matrix,
         constraints = this.constraints,
         FrictionEquation = CANNON.FrictionEquation,
         frictionEquationPool = World_step_frictionEquationPool,
