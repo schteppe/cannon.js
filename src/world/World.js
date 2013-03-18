@@ -94,9 +94,16 @@ CANNON.World = function(){
      */
     this.contactgen = new CANNON.ContactGenerator();
 
-    // Collision matrix, size N*N
-    // @todo rename to collisionMatrix
-    this.collision_matrix = [];
+    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
+	 *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
+	 *  @memberof CANNON.World
+	 */
+	this.collisionMatrix = [];
+    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
+	 *  @brief collisionMatrix from the previous step
+	 *  @memberof CANNON.World
+	 */
+	this.collisionMatrixPrevious = [];
 
     /**
      * @property Array materials
@@ -183,45 +190,40 @@ CANNON.World.prototype.numObjects = function(){
 // 0: No contact between i and j
 // 1: Contact
 CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
-    var N = this.bodies.length;
-    if(current===undefined){
-        current = true;
-    }
-    // i == column
-    // j == row
-    if((current && i<j /* Current uses upper part of the matrix */) || (!current && i>j /* Previous uses lower part of the matrix */)){
+    if(j > i){
         var temp = j;
         j = i;
         i = temp;
     }
-    return this.collision_matrix[i+j*N];
+	// Reuse i for the index
+	i = (i*(i + 1)>>1) + j-1;
+    return (typeof(current)==="undefined" || current) ? this.collisionMatrix[i] : this.collisionMatrixPrevious[i];
 };
 
 CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
-    var N = this.bodies.length;
-    if(current===undefined){
-        current = true;
-    }
-    if( (current && i<j) || (!current && i>j)){
+    if(j > i){
         var temp = j;
         j = i;
         i = temp;
     }
-    this.collision_matrix[i+j*N] = value;
+	// Reuse i for the index
+	i = (i*(i + 1)>>1) + j-1;
+	if (typeof(current)==="undefined" || current) {
+		this.collisionMatrix[i] = value;
+	}
+	else {
+		this.collisionMatrixPrevious[i] = value;
+	}
 };
 
 // transfer old contact state data to T-1
 CANNON.World.prototype.collisionMatrixTick = function(){
-    var N = this.bodies.length,
-        currentState,
-        i,j;
-    for(i=0; i!==N; i++){
-        for(j=0; j!==i; j++){
-            currentState = this.collisionMatrixGet(i,j,true);
-            this.collisionMatrixSet(i,j,currentState,false);
-            this.collisionMatrixSet(i,j,0,true);
-        }
-    }
+	var temp = this.collisionMatrixPrevious;
+	this.collisionMatrixPrevious = this.collisionMatrix;
+	this.collisionMatrix = temp;
+	for (var i=0,l=this.collisionMatrix.length;i!==l;i++) {
+		this.collisionMatrix[i]=0;
+	}
 };
 
 /**
@@ -233,9 +235,9 @@ CANNON.World.prototype.collisionMatrixTick = function(){
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
 CANNON.World.prototype.add = function(body){
-    var n = this.numObjects();
+	body.id = this.id();
+    body.index = this.bodies.length;
     this.bodies.push(body);
-    body.id = this.id();
     body.world = this;
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
@@ -245,10 +247,8 @@ CANNON.World.prototype.add = function(body){
         body.quaternion.copy(body.initQuaternion);
     }
 
-    // Increase size of collision matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
-    for(var i=0; i<2*n+1; i++){
-        this.collision_matrix.push(0);
-    }
+    var n = this.numObjects();
+	this.collisionMatrix.length = n*(n-1)>>1;
 };
 
 /**
@@ -293,23 +293,15 @@ CANNON.World.prototype.id = function(){
  */
 CANNON.World.prototype.remove = function(body){
     body.world = null;
-    var n = this.numObjects();
+    var n = this.numObjects()-1;
     var bodies = this.bodies;
-    var i;
-    for(i=0; i!==bodies.length; i++){
-        if(bodies[i].id === body.id){
-            bodies.splice(i,1);
-            break;
-        }
-    }
-
-    // Reduce size of collision matrix to (n-1)*(n-1)=n*n-2*n+1 elements, it was n*n last.
-    for(i=0; i!==2*n-1; i++){
-        this.collision_matrix.pop();
-    }
-
-    // Reset collision matrix
-    //this.collision_matrix = new Int16Array((n-1)*(n-1));
+	bodies.splice(body.index, 1);
+	for(var i=body.index; i<n;i++) {
+		bodies[i].index=i;
+	}
+	//TODO: Maybe splice out the correct elements?
+	this.collisionMatrixPrevious.length = 
+	this.collisionMatrix.length = n*(n-1)>>1;
 };
 
 /**
@@ -410,7 +402,6 @@ CANNON.World.prototype.step = function(dt){
         DYNAMIC = CANNON.Body.DYNAMIC,
         now = this._now,
         profilingStart,
-        cm = this.collision_matrix,
         constraints = this.constraints,
         FrictionEquation = CANNON.FrictionEquation,
         frictionEquationPool = World_step_frictionEquationPool,
