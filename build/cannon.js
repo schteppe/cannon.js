@@ -798,6 +798,22 @@ CANNON.Vec3.prototype.almostZero = function(precision){
     return true;
 };
 
+// Clamps a vector a to be within the aabb spanned from min to max
+vec3.clamp = function(out,a,min,max){
+    vec3.copy(out,a);
+
+    if(a[0] < min[0]){ out[0] = min[0]; }
+    if(a[1] < min[1]){ out[1] = min[1]; }
+    if(a[2] < min[2]){ out[2] = min[2]; }
+
+    if(a[0] > max[0]){ out[0] = max[0]; }
+    if(a[1] > max[1]){ out[1] = max[1]; }
+    if(a[2] > max[2]){ out[2] = max[2]; }
+
+    return out;
+};
+
+
 
 /**
  * @class CANNON.Quaternion
@@ -2206,7 +2222,7 @@ CANNON.Compound.prototype.constructor = CANNON.Compound;
  */
 CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
     offset = offset || vec3.create();
-    orientation = orientation || new CANNON.Quaternion();
+    orientation = orientation || quat.create();
     this.childShapes.push(shape);
     this.childOffsets.push(offset);
     this.childOrientations.push(orientation);
@@ -2245,12 +2261,12 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
         // I += I_child;    
         // I += m_child * r^2
 
-        target.vadd(childInertia,target);
+        vec3.add(target,target,childInertia);
         var mr2 = Compound_calculateLocalInertia_mr2;
-        mr2.set(m*o.x*o.x,
-                m*o.y*o.y,
-                m*o.z*o.z);
-        target.vadd(mr2,target);
+        vec3.set(mr2,   m*o.x*o.x,
+                        m*o.y*o.y,
+                        m*o.z*o.z);
+        vec3.add(target,target,mr2);
     }
 
     return target;
@@ -2263,7 +2279,7 @@ CANNON.Compound.prototype.computeBoundingSphereRadius = function(){
         if(si.boundingSphereRadiusNeedsUpdate){
             si.computeBoundingSphereRadius();
         }
-        var candidate = this.childOffsets[i].norm() + si.boundingSphereRadius;
+        var candidate = vec3.length(this.childOffsets[i]) + si.boundingSphereRadius;
         if(r < candidate){
             r = candidate;
         }
@@ -2276,19 +2292,21 @@ var aabbmaxTemp = vec3.create();
 var aabbminTemp = vec3.create();
 var childPosTemp = vec3.create();
 var childQuatTemp = new CANNON.Quaternion();
-CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
+CANNON.Compound.prototype.calculateWorldAABB = function(pos,q,min,max){
     var N=this.childShapes.length;
-    min.set(Infinity,Infinity,Infinity);
-    max.set(-Infinity,-Infinity,-Infinity);
+    vec3.set(min,Infinity,Infinity,Infinity);
+    vec3.set(max,-Infinity,-Infinity,-Infinity);
+
     // Get each axis max
     for(var i=0; i!==N; i++){
 
         // Accumulate transformation to child
-        this.childOffsets[i].copy(childPosTemp);
-        quat.vmult(childPosTemp,childPosTemp);
-        pos.vadd(childPosTemp,childPosTemp);
+        vec3.copy(childPosTemp, this.childOffsets[i]);
 
-        quat.mult(this.childOrientations[i],childQuatTemp);
+        vec3.transformQuaternion(childPosTemp, childPosTemp, q); //q.vmult(childPosTemp,childPosTemp);
+        vec3.add(childPosTemp, childPosTemp, pos);//pos.vadd(childPosTemp,childPosTemp);
+
+        vec3.transformQuaternion(childQuatTemp, this.childOrientations[i], q); //q.mult(this.childOrientations[i],childQuatTemp);
 
         // Get child AABB
         this.childShapes[i].calculateWorldAABB(childPosTemp,
@@ -2296,25 +2314,13 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
                                                aabbminTemp,
                                                aabbmaxTemp);
 
-        if(aabbminTemp.x < min.x){
-            min.x = aabbminTemp.x;
-        }
-        if(aabbminTemp.y < min.y){
-            min.y = aabbminTemp.y;
-        }
-        if(aabbminTemp.z < min.z){
-            min.z = aabbminTemp.z;
-        }
+        if(aabbminTemp[0] < min[0]){ min[0] = aabbminTemp[0]; }
+        if(aabbminTemp[1] < min[1]){ min[1] = aabbminTemp[1]; }
+        if(aabbminTemp[2] < min[2]){ min[2] = aabbminTemp[2]; }
 
-        if(aabbmaxTemp.x > max.x){
-            max.x = aabbmaxTemp.x;
-        }
-        if(aabbmaxTemp.y > max.y){
-            max.y = aabbmaxTemp.y;
-        }
-        if(aabbmaxTemp.z > max.z){
-            max.z = aabbmaxTemp.z;
-        }
+        if(aabbmaxTemp[0] > max[0]){ max[0] = aabbmaxTemp[0]; }
+        if(aabbmaxTemp[1] > max[1]){ max[1] = aabbmaxTemp[1]; }
+        if(aabbmaxTemp[2] > max[2]){ max[2] = aabbmaxTemp[2]; }
     }
 };
 
@@ -4545,12 +4551,12 @@ CANNON.World.prototype.add = function(body){
     body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
-    vec3.copy(body.initPosition,body);
-    vec3.copy(body.initVelocity,body.velocity);
+    vec3.copy(body.initPosition, body.position);
+    vec3.copy(body.initVelocity, body.velocity);
     body.timeLastSleepy = this.time;
     if(body instanceof CANNON.RigidBody){
-        vec3.copy(body.initAngularVelocity,body.angularVelocity);
-        quat.copy(body.initQuaternion,body.quaternion);
+        vec3.copy(body.initAngularVelocity, body.angularVelocity);
+        quat.copy(body.initQuaternion, body.quaternion);
     }
 
     var n = this.numObjects();
@@ -5594,8 +5600,8 @@ CANNON.ContactGenerator = function(){
             var r = [];
             var newQuat = quatPool.pop() || new CANNON.Quaternion();
             var newPos = v3pool.pop() || vec3.create();
-            qj.mult(sj.childOrientations[i],newQuat); // Can't reuse these since nearPhase() may recurse
-            vec3.normalize(newQuat,newQuat);
+            quat.multiply(newQuat, qj, sj.childOrientations[i]); // Can't reuse these since nearPhase() may recurse
+            quat.normalize(newQuat,newQuat);
             //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
             vec3.transformQuat(newPos,sj.childOffsets[i],qj);
             vec3.add(newPos,xj,newPos);
@@ -5650,7 +5656,7 @@ CANNON.ContactGenerator = function(){
             if(dot<=0.0){
                 // Get vertex position projected on plane
                 var projected = planeConvex_projected;
-                normal.mult(vec3.dot(normal,v),projected);
+                vec3.scale(projected, normal, vec3.dot(normal,v)); // normal.mult(vec3.dot(normal,v),projected);
                 vec3.subtract(projected,v,projected);
 
                 var r = makeResult(bi,bj);

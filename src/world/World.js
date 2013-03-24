@@ -239,12 +239,12 @@ CANNON.World.prototype.add = function(body){
     body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
-    vec3.copy(body.initPosition,body);
-    vec3.copy(body.initVelocity,body.velocity);
+    vec3.copy(body.initPosition, body.position);
+    vec3.copy(body.initVelocity, body.velocity);
     body.timeLastSleepy = this.time;
     if(body instanceof CANNON.RigidBody){
-        vec3.copy(body.initAngularVelocity,body.angularVelocity);
-        quat.copy(body.initQuaternion,body.quaternion);
+        vec3.copy(body.initAngularVelocity, body.angularVelocity);
+        quat.copy(body.initQuaternion, body.quaternion);
     }
 
     var n = this.numObjects();

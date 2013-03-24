@@ -241,14 +241,14 @@ CANNON.Demo = function(options){
     }
 
     function makeSureNotZero(vec){
-        if(vec.x===0.0){
-            vec.x = 1e-6;
+        if(vec[0]===0.0){
+            vec[0] = 1e-6;
         }
-        if(vec.y===0.0){
-            vec.y = 1e-6;
+        if(vec[1]===0.0){
+            vec[1] = 1e-6;
         }
-        if(vec.z===0.0){
-            vec.z = 1e-6;
+        if(vec[2]===0.0){
+            vec[2] = 1e-6;
         }
     }
 
@@ -279,7 +279,7 @@ CANNON.Demo = function(options){
                     c = world.contacts[ci],
                     b = ij===0 ? c.bi : c.bj,
                     r = ij===0 ? c.ri : c.rj;
-                    mesh.position.set( b.position.x + r.x , b.position.y + r.y , b.position.z + r.z );
+                    mesh.position.set( b.position[0] + r[0] , b.position[1] + r[1] , b.position[2] + r[2] );
                 }
             }
         }
@@ -821,9 +821,9 @@ CANNON.Demo = function(options){
             break;
 
         case CANNON.Shape.types.BOX:
-            var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
-                                                        shape.halfExtents.y*2,
-                                                        shape.halfExtents.z*2 );
+            var box_geometry = new THREE.CubeGeometry(  shape.halfExtents[0]*2,
+                                                        shape.halfExtents[1]*2,
+                                                        shape.halfExtents[2]*2 );
             mesh = new THREE.Mesh( box_geometry, currentMaterial );
             break;
 
@@ -850,8 +850,8 @@ CANNON.Demo = function(options){
                 var q = shape.childOrientations[i];
         
                 var submesh = shape2mesh(subshape);
-                submesh.position.set(o.x,o.y,o.z);
-                submesh.quaternion.set(q.x,q.y,q.z,q.w);
+                submesh.position.set(o[0],o[1],o[2]);
+                submesh.quaternion.set(q[0],q[1],q[2],q[3]);
         
                 submesh.useQuaternion = true;
                 o3d.add(submesh);
@@ -901,9 +901,9 @@ CANNON.Demo = function(options){
 
         // Read the newly set data to the gui
         settings.iterations = world.solver.iterations;
-        settings.gx = world.gravity.x+0.0;
-        settings.gy = world.gravity.y+0.0;
-        settings.gz = world.gravity.z+0.0;
+        settings.gx = world.gravity[0]+0.0;
+        settings.gy = world.gravity[1]+0.0;
+        settings.gz = world.gravity[2]+0.0;
         settings.k = world.solver.k;
         settings.d = world.solver.d;
         settings.quatNormalizeSkip = world.quatNormalizeSkip;

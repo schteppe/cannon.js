@@ -512,8 +512,8 @@ CANNON.ContactGenerator = function(){
             var r = [];
             var newQuat = quatPool.pop() || new CANNON.Quaternion();
             var newPos = v3pool.pop() || vec3.create();
-            qj.mult(sj.childOrientations[i],newQuat); // Can't reuse these since nearPhase() may recurse
-            vec3.normalize(newQuat,newQuat);
+            quat.multiply(newQuat, qj, sj.childOrientations[i]); // Can't reuse these since nearPhase() may recurse
+            quat.normalize(newQuat,newQuat);
             //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
             vec3.transformQuat(newPos,sj.childOffsets[i],qj);
             vec3.add(newPos,xj,newPos);
@@ -568,7 +568,7 @@ CANNON.ContactGenerator = function(){
             if(dot<=0.0){
                 // Get vertex position projected on plane
                 var projected = planeConvex_projected;
-                normal.mult(vec3.dot(normal,v),projected);
+                vec3.scale(projected, normal, vec3.dot(normal,v)); // normal.mult(vec3.dot(normal,v),projected);
                 vec3.subtract(projected,v,projected);
 
                 var r = makeResult(bi,bj);

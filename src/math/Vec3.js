@@ -395,3 +395,19 @@ CANNON.Vec3.prototype.almostZero = function(precision){
     }
     return true;
 };
+
+// Clamps a vector a to be within the aabb spanned from min to max
+vec3.clamp = function(out,a,min,max){
+    vec3.copy(out,a);
+
+    if(a[0] < min[0]){ out[0] = min[0]; }
+    if(a[1] < min[1]){ out[1] = min[1]; }
+    if(a[2] < min[2]){ out[2] = min[2]; }
+
+    if(a[0] > max[0]){ out[0] = max[0]; }
+    if(a[1] > max[1]){ out[1] = max[1]; }
+    if(a[2] > max[2]){ out[2] = max[2]; }
+
+    return out;
+};
+
