@@ -36,7 +36,7 @@ CANNON.SPHSystem.prototype.remove = function(particle){
  * @param CANNON.Body particle
  * @param Array neighbors
  */
-var SPHSystem_getNeighbors_dist = new CANNON.Vec3();
+var SPHSystem_getNeighbors_dist = vec3.create();
 CANNON.SPHSystem.prototype.getNeighbors = function(particle,neighbors){
     var N = this.particles.length,
         id = particle.id,
@@ -52,12 +52,12 @@ CANNON.SPHSystem.prototype.getNeighbors = function(particle,neighbors){
 };
 
 // Temp vectors for calculation
-var SPHSystem_update_dist = new CANNON.Vec3(),
-    SPHSystem_update_a_pressure = new CANNON.Vec3(),
-    SPHSystem_update_a_visc = new CANNON.Vec3(),
-    SPHSystem_update_gradW = new CANNON.Vec3(),
-    SPHSystem_update_r_vec = new CANNON.Vec3(),
-    SPHSystem_update_u = new CANNON.Vec3(); // Relative velocity
+var SPHSystem_update_dist = vec3.create(),
+    SPHSystem_update_a_pressure = vec3.create(),
+    SPHSystem_update_a_visc = vec3.create(),
+    SPHSystem_update_gradW = vec3.create(),
+    SPHSystem_update_r_vec = vec3.create(),
+    SPHSystem_update_u = vec3.create(); // Relative velocity
 CANNON.SPHSystem.prototype.update = function(){
     var N = this.particles.length,
         dist = SPHSystem_update_dist,

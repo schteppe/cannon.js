@@ -14,8 +14,8 @@ CANNON.Shape = function(){
      */
     this.type = 0;
 
-    this.aabbmin = new CANNON.Vec3();
-    this.aabbmax = new CANNON.Vec3();
+    this.aabbmin = vec3.create();
+    this.aabbmax = vec3.create();
 
     this.boundingSphereRadius = 0;
     this.boundingSphereRadiusNeedsUpdate = true;
@@ -72,10 +72,10 @@ CANNON.Shape.prototype.calculateLocalInertia = function(mass,target){
  * @brief Calculates inertia in a specified frame for this shape.
  * @return CANNON.Vec3
  */
-var Shape_calculateTransformedInertia_localInertia = new CANNON.Vec3();
-var Shape_calculateTransformedInertia_worldInertia = new CANNON.Vec3();
+var Shape_calculateTransformedInertia_localInertia = vec3.create();
+var Shape_calculateTransformedInertia_worldInertia = vec3.create();
 CANNON.Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
-    target = target || new CANNON.Vec3();
+    target = target || vec3.create();
 
     // Compute inertia in the world frame
     //quat.normalize();

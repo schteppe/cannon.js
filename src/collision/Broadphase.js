@@ -94,10 +94,10 @@ CANNON.Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
  * @param Array pairs1 bi is appended to this array if intersection
  * @param Array pairs2 bj is appended to this array if intersection
  */
-var Broadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
-    Broadphase_collisionPairs_normal =  new CANNON.Vec3(),
-    Broadphase_collisionPairs_quat =  new CANNON.Quaternion(),
-    Broadphase_collisionPairs_relpos  =  new CANNON.Vec3();
+var Broadphase_collisionPairs_r = vec3.create(), // Temp objects
+    Broadphase_collisionPairs_normal =  vec3.create(),
+    Broadphase_collisionPairs_quat =  quat.create(),
+    Broadphase_collisionPairs_relpos  =  vec3.create();
 CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
 
     // Local fast access
@@ -119,7 +119,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
         // --- Box / sphere / compound / convexpolyhedron collision ---
         if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
             // Rel. position
-            bj.position.vsub(bi.position,r);
+            vec3.subtract(r,bj.position,bi.position);
 
             // Update bounding spheres if needed
             if(bishape.boundingSphereRadiusNeedsUpdate){
@@ -144,7 +144,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
             var planeShape = planeBody.shape;
 
             // Rel. position
-            otherBody.position.vsub(planeBody.position,r);
+            vec3.subtract(r,otherBody.position,planeBody.position);
 
             if(planeShape.worldNormalNeedsUpdate){
                 planeShape.computeWorldNormal(planeBody.quaternion);
@@ -156,7 +156,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
                 otherShape.computeBoundingSphereRadius();
             }
 
-            var q = r.dot(normal) - otherShape.boundingSphereRadius;
+            var q = vec3.dot(r,normal) - otherShape.boundingSphereRadius;
             if(q < 0.0){
                 pairs1.push(bi);
                 pairs2.push(bj);
@@ -174,7 +174,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
 
             if(type & BOX_SPHERE_COMPOUND_CONVEX){
                 if(type === types.SPHERE){ // particle-sphere
-                    particle.position.vsub(other.position,relpos);
+                    vec3.subtract(relpos,particle.position,other.position);
                     if(otherShape.radius*otherShape.radius >= relpos.norm2()){
                         pairs1.push(particle);
                         pairs2.push(other);
@@ -185,7 +185,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
                         otherShape.computeBoundingSphereRadius();
                     }
                     var R = otherShape.boundingSphereRadius;
-                    particle.position.vsub(other.position,relpos);
+                    vec3.subtract(relpos,particle.position,other.position);
                     if(R*R >= relpos.norm2()){
                         pairs1.push(particle);
                         pairs2.push(other);
@@ -196,8 +196,8 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
                 var plane = other;
                 normal.set(0,0,1);
                 plane.quaternion.vmult(normal,normal);
-                particle.position.vsub(plane.position,relpos);
-                if(normal.dot(relpos)<=0.0){
+                vec3.subtract(relpos,particle.position,plane.position);
+                if(vec3.dot(normal,relpos)<=0.0){
                     pairs1.push(particle);
                     pairs2.push(other);
                 }

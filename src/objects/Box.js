@@ -40,14 +40,14 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
 
     function createBoxPolyhedron(size){
         size = size || 1;
-        var vertices = [new CANNON.Vec3(-size,-size,-size),
-                        new CANNON.Vec3( size,-size,-size),
-                        new CANNON.Vec3( size, size,-size),
-                        new CANNON.Vec3(-size, size,-size),
-                        new CANNON.Vec3(-size,-size, size),
-                        new CANNON.Vec3( size,-size, size),
-                        new CANNON.Vec3( size, size, size),
-                        new CANNON.Vec3(-size, size, size)];
+        var vertices = [vec3.create(-size,-size,-size),
+                        vec3.create( size,-size,-size),
+                        vec3.create( size, size,-size),
+                        vec3.create(-size, size,-size),
+                        vec3.create(-size,-size, size),
+                        vec3.create( size,-size, size),
+                        vec3.create( size, size, size),
+                        vec3.create(-size, size, size)];
         var faces =[[3,2,1,0], // -z
                     [4,5,6,7], // +z
                     [5,4,1,0], // -y
@@ -55,12 +55,12 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                     [0,4,7,3 /*0,3,4,7*/ ], // -x
                     [1,2,5,6], // +x
                     ];
-        var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
-                           new CANNON.Vec3( 0, 0, 1),
-                           new CANNON.Vec3( 0,-1, 0),
-                           new CANNON.Vec3( 0, 1, 0),
-                           new CANNON.Vec3(-1, 0, 0),
-                           new CANNON.Vec3( 1, 0, 0)];
+        var faceNormals =   [vec3.create( 0, 0,-1),
+                           vec3.create( 0, 0, 1),
+                           vec3.create( 0,-1, 0),
+                           vec3.create( 0, 1, 0),
+                           vec3.create(-1, 0, 0),
+                           vec3.create( 1, 0, 0)];
         var boxShape = new CANNON.ConvexPolyhedron(vertices,
                                                  faces,
                                                  faceNormals);
@@ -92,7 +92,7 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
 };
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new CANNON.Vec3();
+    target = target || vec3.create();
     var e = this.halfExtents;
     target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
     target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
@@ -136,8 +136,8 @@ CANNON.Box.prototype.computeBoundingSphereRadius = function(){
     this.boundingSphereRadiusNeedsUpdate = false;
 };
 
-var worldCornerTempPos = new CANNON.Vec3();
-var worldCornerTempNeg = new CANNON.Vec3();
+var worldCornerTempPos = vec3.create();
+var worldCornerTempNeg = vec3.create();
 CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
 
     var e = this.halfExtents;

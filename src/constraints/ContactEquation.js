@@ -20,26 +20,26 @@ CANNON.ContactEquation = function(bi,bj){
      * @memberof CANNON.ContactEquation
      * @brief World-oriented vector that goes from the center of bi to the contact point in bi.
      */
-    this.ri = new CANNON.Vec3();
+    this.ri = vec3.create();
 
     /**
      * @property CANNON.Vec3 rj
      * @memberof CANNON.ContactEquation
      */
-    this.rj = new CANNON.Vec3();
+    this.rj = vec3.create();
 
-    this.penetrationVec = new CANNON.Vec3();
+    this.penetrationVec = vec3.create();
 
-    this.ni = new CANNON.Vec3();
-    this.rixn = new CANNON.Vec3();
-    this.rjxn = new CANNON.Vec3();
+    this.ni = vec3.create();
+    this.rixn = vec3.create();
+    this.rjxn = vec3.create();
 
     this.invIi = new CANNON.Mat3();
     this.invIj = new CANNON.Mat3();
 
     // Cache
-    this.biInvInertiaTimesRixn =  new CANNON.Vec3();
-    this.bjInvInertiaTimesRjxn =  new CANNON.Vec3();
+    this.biInvInertiaTimesRixn =  vec3.create();
+    this.bjInvInertiaTimesRjxn =  vec3.create();
 };
 
 CANNON.ContactEquation.prototype = new CANNON.Equation();
@@ -54,9 +54,9 @@ CANNON.ContactEquation.prototype.reset = function(){
     this.invInertiaTimesRxnNeedsUpdate = true;
 };
 
-var ContactEquation_computeB_temp1 = new CANNON.Vec3(); // Temp vectors
-var ContactEquation_computeB_temp2 = new CANNON.Vec3();
-var ContactEquation_computeB_zero = new CANNON.Vec3();
+var ContactEquation_computeB_temp1 = vec3.create(); // Temp vectors
+var ContactEquation_computeB_temp2 = vec3.create();
+var ContactEquation_computeB_zero = vec3.create();
 CANNON.ContactEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b;
@@ -100,18 +100,18 @@ CANNON.ContactEquation.prototype.computeB = function(h){
     var n = this.ni;
 
     // Caluclate cross products
-    ri.cross(n,rixn);
-    rj.cross(n,rjxn);
+    vec3.cross(rixn,ri,n);
+    vec3.cross(rjxn,rj,n);
 
     // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
     var penetrationVec = this.penetrationVec;
-    penetrationVec.set(0,0,0);
-    penetrationVec.vadd(bj.position,penetrationVec);
-    penetrationVec.vadd(rj,penetrationVec);
-    penetrationVec.vsub(bi.position,penetrationVec);
-    penetrationVec.vsub(ri,penetrationVec);
+    vec3.set(penetrationVec,0,0,0);
+    vec3.add(penetrationVec,penetrationVec,bj.position);
+    vec3.add(penetrationVec,penetrationVec,rj);
+    vec3.subtract(penetrationVec,penetrationVec,bi.position);
+    vec3.subtract(penetrationVec,penetrationVec,ri);
 
-    var Gq = n.dot(penetrationVec);//-Math.abs(this.penetration);
+    var Gq = vec3.dot(n,penetrationVec);//-Math.abs(this.penetration);
 
     var invIi_vmult_taui = ContactEquation_computeB_temp1;
     var invIj_vmult_tauj = ContactEquation_computeB_temp2;
@@ -120,8 +120,8 @@ CANNON.ContactEquation.prototype.computeB = function(h){
 
     // Compute iteration
     var ePlusOne = this.restitution+1;
-    var GW = ePlusOne*vj.dot(n) - ePlusOne*vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui);
+    var GW = ePlusOne*vec3.dot(vj,n) - ePlusOne*vec3.dot(vi,n) + vec3.dot(wj,rjxn) - vec3.dot(wi,rixn);
+    var GiMf = vec3.dot(fj,n)*invMassj - vec3.dot(fi,n)*invMassi + vec3.dot(rjxn,invIj_vmult_tauj) - vec3.dot(rixn,invIi_vmult_taui);
 
     var B = - Gq * a - GW * b - h*GiMf;
 
@@ -129,8 +129,8 @@ CANNON.ContactEquation.prototype.computeB = function(h){
 };
 
 // Compute C = GMG+eps in the SPOOK equation
-var computeC_temp1 = new CANNON.Vec3();
-var computeC_temp2 = new CANNON.Vec3();
+var computeC_temp1 = vec3.create();
+var computeC_temp2 = vec3.create();
 CANNON.ContactEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -165,16 +165,16 @@ CANNON.ContactEquation.prototype.computeC = function(){
     invIi.vmult(rixn,computeC_temp1);
     invIj.vmult(rjxn,computeC_temp2);
     
-    C += computeC_temp1.dot(rixn);
-    C += computeC_temp2.dot(rjxn);
+    C += vec3.dot(computeC_temp1,rixn);
+    C += vec3.dot(computeC_temp2,rjxn);
      */
-    C += this.biInvInertiaTimesRixn.dot(rixn);
-    C += this.bjInvInertiaTimesRjxn.dot(rjxn);
+    C += vec3.dot(this.biInvInertiaTimesRixn,rixn);
+    C += vec3.dot(this.bjInvInertiaTimesRjxn,rjxn);
 
     return C;
 };
 
-var computeGWlambda_ulambda = new CANNON.Vec3();
+var computeGWlambda_ulambda = vec3.create();
 CANNON.ContactEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -182,22 +182,22 @@ CANNON.ContactEquation.prototype.computeGWlambda = function(){
 
     var GWlambda = 0.0;
 
-    bj.vlambda.vsub(bi.vlambda, ulambda);
-    GWlambda += ulambda.dot(this.ni);
+    vec3.subtract( ulambda,bj.vlambda,bi.vlambda);
+    GWlambda += vec3.dot(ulambda,this.ni);
 
     // Angular
     if(bi.wlambda){
-        GWlambda -= bi.wlambda.dot(this.rixn);
+        GWlambda -= vec3.dot(bi.wlambda,this.rixn);
     }
     if(bj.wlambda){
-        GWlambda += bj.wlambda.dot(this.rjxn);
+        GWlambda += vec3.dot(bj.wlambda,this.rjxn);
     }
 
     return GWlambda;
 };
 
-var ContactEquation_addToWlambda_temp1 = new CANNON.Vec3();
-var ContactEquation_addToWlambda_temp2 = new CANNON.Vec3();
+var ContactEquation_addToWlambda_temp1 = vec3.create();
+var ContactEquation_addToWlambda_temp2 = vec3.create();
 CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi,
         bj = this.bj,
@@ -211,19 +211,18 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
 
 
     // Add to linear velocity
-    n.mult(invMassi * deltalambda, temp2);
-    bi.vlambda.vsub(temp2,bi.vlambda);
-    n.mult(invMassj * deltalambda, temp2);
-    bj.vlambda.vadd(temp2,bj.vlambda);
+    vec3.scale(temp2, n, invMassi * deltalambda);
+    vec3.subtract(bi.vlambda,bi.vlambda,temp2);
+    vec3.scale(temp2, n, invMassj * deltalambda);
+    vec3.add(bj.vlambda,bj.vlambda,temp2);
 
     // Add to angular velocity
     if(bi.wlambda !== undefined){
-        this.biInvInertiaTimesRixn.mult(deltalambda,temp1);
-
-        bi.wlambda.vsub(temp1,bi.wlambda);
+        vec3.scale(temp1,this.biInvInertiaTimesRixn,deltalambda);
+        vec3.subtract(bi.wlambda,bi.wlambda,temp1);
     }
     if(bj.wlambda !== undefined){
-        this.bjInvInertiaTimesRjxn.mult(deltalambda,temp1);
-        bj.wlambda.vadd(temp1,bj.wlambda);
+        vec3.scale(temp1,this.bjInvInertiaTimesRjxn,deltalambda);
+        vec3.add(bj.wlambda,bj.wlambda,temp1);
     }
 };

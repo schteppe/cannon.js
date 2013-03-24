@@ -11,21 +11,21 @@ CANNON.Plane = function(){
     this.type = CANNON.Shape.types.PLANE;
 
     // World oriented normal
-    this.worldNormal = new CANNON.Vec3();
+    this.worldNormal = vec3.create();
     this.worldNormalNeedsUpdate = true;
 };
 CANNON.Plane.prototype = new CANNON.Shape();
 CANNON.Plane.prototype.constructor = CANNON.Plane;
 
-CANNON.Plane.prototype.computeWorldNormal = function(quat){
+CANNON.Plane.prototype.computeWorldNormal = function(q){
     var n = this.worldNormal;
-    n.set(0,0,1);
-    quat.vmult(n,n);
+    vec3.set(n,0,0,1);
+    vec3.transformQuat(n,n,q);
     this.worldNormalNeedsUpdate = false;
 };
 
 CANNON.Plane.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new CANNON.Vec3();
+    target = target || vec3.create();
     return target;
 };
 
@@ -33,20 +33,20 @@ CANNON.Plane.prototype.volume = function(){
     return Infinity; // The plane is infinite...
 };
 
-var tempNormal = new CANNON.Vec3();
-CANNON.Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
+var tempNormal = vec3.create();
+CANNON.Plane.prototype.calculateWorldAABB = function(pos,q,min,max){
     // The plane AABB is infinite, except if the normal is pointing along any axis
-    tempNormal.set(0,0,1); // Default plane normal is z
-    quat.vmult(tempNormal,tempNormal);
-    min.set(-Infinity,-Infinity,-Infinity);
-    max.set(Infinity,Infinity,Infinity);
+    vec3.set(tempNormal,0,0,1); // Default plane normal is z
+    vec3.transformQuat( tempNormal, tempNormal, q );
+    vec3.set(min,-Infinity,-Infinity,-Infinity);
+    vec3.set(max,Infinity,Infinity,Infinity);
 
-    if(tempNormal.x === 1){ max.x = pos.x; }
-    if(tempNormal.y === 1){ max.y = pos.y; }
-    if(tempNormal.z === 1){ max.z = pos.z; }
+    if(tempNormal[0] === 1){ max[0] = pos[0]; }
+    if(tempNormal[1] === 1){ max[1] = pos[1]; }
+    if(tempNormal[2] === 1){ max[2] = pos[2]; }
 
-    if(tempNormal.x === -1){ min.x = pos.x; }
-    if(tempNormal.y === -1){ min.y = pos.y; }
-    if(tempNormal.z === -1){ min.z = pos.z; }
+    if(tempNormal[0] === -1){ min[0] = pos[0]; }
+    if(tempNormal[1] === -1){ min[1] = pos[1]; }
+    if(tempNormal[2] === -1){ min[2] = pos[2]; }
 
 };

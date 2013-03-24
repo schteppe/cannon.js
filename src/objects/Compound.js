@@ -23,7 +23,7 @@ CANNON.Compound.prototype.constructor = CANNON.Compound;
  * @param CANNON.Quaternion orientation
  */
 CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
-    offset = offset || new CANNON.Vec3();
+    offset = offset || vec3.create();
     orientation = orientation || new CANNON.Quaternion();
     this.childShapes.push(shape);
     this.childOffsets.push(offset);
@@ -39,10 +39,10 @@ CANNON.Compound.prototype.volume = function(){
     return r;
 };
 
-var Compound_calculateLocalInertia_mr2 = new CANNON.Vec3();
-var Compound_calculateLocalInertia_childInertia = new CANNON.Vec3();
+var Compound_calculateLocalInertia_mr2 = vec3.create();
+var Compound_calculateLocalInertia_childInertia = vec3.create();
 CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new CANNON.Vec3();
+    target = target || vec3.create();
 
     // Calculate the total volume, we will spread out this objects' mass on the sub shapes
     var V = this.volume();
@@ -90,9 +90,9 @@ CANNON.Compound.prototype.computeBoundingSphereRadius = function(){
     this.boundingSphereRadiusNeedsUpdate = false;
 };
 
-var aabbmaxTemp = new CANNON.Vec3();
-var aabbminTemp = new CANNON.Vec3();
-var childPosTemp = new CANNON.Vec3();
+var aabbmaxTemp = vec3.create();
+var aabbminTemp = vec3.create();
+var childPosTemp = vec3.create();
 var childQuatTemp = new CANNON.Quaternion();
 CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var N=this.childShapes.length;

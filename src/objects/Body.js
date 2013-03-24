@@ -34,7 +34,7 @@ CANNON.Body = function(type){
     */
     this.postStep = null;
 
-    this.vlambda = new CANNON.Vec3();
+    this.vlambda = vec3.create();
 
     this.collisionFilterGroup = 1;
     this.collisionFilterMask = 1;

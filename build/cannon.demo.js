@@ -231,11 +231,11 @@ CANNON.Demo = function(options){
         var N = bodies.length;
         for(var i=0; i<N; i++){
             var b = bodies[i];
-            b.initPosition.copy(b.position);
-            b.initVelocity.copy(b.velocity);
+            vec3.copy(b.position,b.initPosition);
+            vec3.copy(b.velocity,b.initVelocity);
             if(b.initAngularVelocity){
-                b.initAngularVelocity.copy(b.angularVelocity);
-                b.initQuaternion.copy(b.quaternion);
+                vec3.copy(b.angularVelocity,b.initAngularVelocity);
+                quat.copy(b.quaternion,b.initQuaternion);
             }
         }
     }
@@ -258,9 +258,15 @@ CANNON.Demo = function(options){
         // Read position data into visuals
         for(var i=0; i<N; i++){
             var b = bodies[i], visual = visuals[i];
-            b.position.copy(visual.position);
-            if(b.quaternion)
-                b.quaternion.copy(visual.quaternion);
+            visual.position.x = b.position[0];
+            visual.position.y = b.position[1];
+            visual.position.z = b.position[2];
+            if(b.quaternion){
+                visual.quaternion.x = b.quaternion[0];
+                visual.quaternion.y = b.quaternion[1];
+                visual.quaternion.z = b.quaternion[2];
+                visual.quaternion.w = b.quaternion[3];
+            }
         }
 
         // Render contacts

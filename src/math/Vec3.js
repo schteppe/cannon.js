@@ -280,6 +280,31 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
     }
 };
 
+// glMatrix extension
+var vec3_tangents_n = vec3.create();
+var vec3_tangents_randVec = vec3.create();
+vec3.tangents = function(out1,out2,a){
+    var norm = vec3.length(a);
+    if(norm > 0.0){
+        var n = vec3_tangents_n;
+        var inorm = 1.0 / norm;
+        vec3.set(n, a[0]*inorm, a[1]*inorm, a[2]*inorm);
+        var randVec = vec3_tangents_randVec;
+        if(Math.abs(n[0]) < 0.9){
+            vec3.set(randVec,1,0,0);
+            vec3.cross(out1,n,randVec);
+        } else {
+            vec3.set(randVec,0,1,0);
+            vec3.cross(out1,n,randVec);
+        }
+        vec3.cross(out2,n,out1);
+    } else {
+        // The normal length is zero, make something up
+        vec3.set(out1,1,0,0);
+        vec3.set(out2,0,1,0);
+    }
+};
+
 /**
  * @method toString
  * @memberof CANNON.Vec3

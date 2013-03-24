@@ -24,8 +24,8 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param CANNON.Vec3 target
      * @todo unit test?
      */
-    var cb = new CANNON.Vec3();
-    var ab = new CANNON.Vec3();
+    var cb = vec3.create();
+    var ab = vec3.create();
     function normal( va, vb, vc, target ) {
         vb.vsub(va,ab);
         vc.vsub(vb,cb);
@@ -75,7 +75,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             }
         }
 
-        var n = new CANNON.Vec3();
+        var n = vec3.create();
         normalOfFace(i,n);
         n.negate(n);
         this.faceNormals.push(n);
@@ -112,7 +112,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         var NbTris = numVertices;
         for(var j=0; j<NbTris; j++){
             var k = ( j+1 ) % numVertices;
-            var edge = new CANNON.Vec3();
+            var edge = vec3.create();
             this.vertices[this.faces[i][j]].vsub(this.vertices[this.faces[i][k]],edge);
             edge.normalize();
             var found = false;
@@ -147,7 +147,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param CANNON.Quaternion quat
      * @param array maxmin maxmin[0] and maxmin[1] will be set to maximum and minimum, respectively.
      */
-    var worldVertex = new CANNON.Vec3();
+    var worldVertex = vec3.create();
     function project(hull,axis,pos,quat,maxmin){
         var n = hull.vertices.length;
         var max = null;
@@ -219,12 +219,12 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param CANNON.Vec3 target The target vector to save the axis in
      * @return bool Returns false if a separation is found, else true
      */
-    var faceANormalWS3 = new CANNON.Vec3();
-    var Worldnormal1 = new CANNON.Vec3();
-    var deltaC = new CANNON.Vec3();
-    var worldEdge0 = new CANNON.Vec3();
-    var worldEdge1 = new CANNON.Vec3();
-    var Cross = new CANNON.Vec3();
+    var faceANormalWS3 = vec3.create();
+    var Worldnormal1 = vec3.create();
+    var deltaC = vec3.create();
+    var worldEdge0 = vec3.create();
+    var worldEdge1 = vec3.create();
+    var Cross = vec3.create();
     this.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
         var dmin = Infinity;
         var hullA = this;
@@ -323,7 +323,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param array result The an array of contact point objects, see clipFaceAgainstHull
      * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
      */
-    var WorldNormal = new CANNON.Vec3();
+    var WorldNormal = vec3.create();
     this.clipAgainstHull = function(posA,quatA,hullB,posB,quatB,separatingNormal,minDist,maxDist,result){
         if(!(posA instanceof CANNON.Vec3)){
             throw new Error("posA must be Vec3");
@@ -350,7 +350,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         var numVertices = polyB.length;
         for(var e0=0; e0<numVertices; e0++){
             var b = hullB.vertices[polyB[e0]];
-            var worldb = new CANNON.Vec3();
+            var worldb = vec3.create();
             b.copy(worldb);
             quatB.vmult(worldb,worldb);
             posB.vadd(worldb,worldb);
@@ -380,14 +380,14 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param float maxDist
      * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
      */
-    var faceANormalWS = new CANNON.Vec3();
-    var edge0 = new CANNON.Vec3();
-    var WorldEdge0 = new CANNON.Vec3();
-    var worldPlaneAnormal1 = new CANNON.Vec3();
-    var planeNormalWS1 = new CANNON.Vec3();
-    var worldA1 = new CANNON.Vec3();
-    var localPlaneNormal = new CANNON.Vec3();
-    var planeNormalWS = new CANNON.Vec3();
+    var faceANormalWS = vec3.create();
+    var edge0 = vec3.create();
+    var WorldEdge0 = vec3.create();
+    var worldPlaneAnormal1 = vec3.create();
+    var planeNormalWS1 = vec3.create();
+    var worldA1 = vec3.create();
+    var localPlaneNormal = vec3.create();
+    var planeNormalWS = vec3.create();
     this.clipFaceAgainstHull = function(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist,result){
         if(!(separatingNormal instanceof CANNON.Vec3)){
             throw new Error("sep normal must be vector");
@@ -552,12 +552,12 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             if(n_dot_first < 0){
                 if(n_dot_last < 0){
                     // Start < 0, end < 0, so output lastVertex
-                    var newv = new CANNON.Vec3();
+                    var newv = vec3.create();
                     lastVertex.copy(newv);
                     outVertices.push(newv);
                 } else {
                     // Start < 0, end >= 0, so output intersection
-                    var newv = new CANNON.Vec3();
+                    var newv = vec3.create();
                     firstVertex.lerp(lastVertex,
                                      n_dot_first / (n_dot_first - n_dot_last),
                                      newv);
@@ -566,7 +566,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             } else {
                 if(n_dot_last<0){
                     // Start >= 0, end < 0 so output intersection and end
-                    var newv = new CANNON.Vec3();
+                    var newv = vec3.create();
                     firstVertex.lerp(lastVertex,
                                      n_dot_first / (n_dot_first - n_dot_last),
                                      newv);
@@ -636,7 +636,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
     };
 
-    var worldVert = new CANNON.Vec3();
+    var worldVert = vec3.create();
     this.computeAABB = function(){
         var n = this.vertices.length,
         aabbmin = this.aabbmin,
@@ -674,7 +674,7 @@ CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
 CANNON.ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat){
     var N = this.vertices.length;
     while(this.worldVertices.length < N){
-        this.worldVertices.push( new CANNON.Vec3() );
+        this.worldVertices.push( vec3.create() );
     }
 
     var verts = this.vertices,
@@ -691,7 +691,7 @@ CANNON.ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat)
 CANNON.ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
     var N = this.faceNormals.length;
     while(this.worldFaceNormals.length < N){
-        this.worldFaceNormals.push( new CANNON.Vec3() );
+        this.worldFaceNormals.push( vec3.create() );
     }
 
     var normals = this.faceNormals,
@@ -717,7 +717,7 @@ CANNON.ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
     this.boundingSphereRadiusNeedsUpdate = false;
 };
 
-var tempWorldVertex = new CANNON.Vec3();
+var tempWorldVertex = vec3.create();
 CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var n = this.vertices.length, verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
@@ -758,7 +758,7 @@ CANNON.ConvexPolyhedron.prototype.volume = function(){
 
 // Get an average of all the vertices
 CANNON.ConvexPolyhedron.prototype.getAveragePointLocal = function(target){
-    target = target || new CANNON.Vec3();
+    target = target || vec3.create();
     var n = this.vertices.length,
         verts = this.vertices;
     for(var i=0; i<n; i++){
@@ -806,9 +806,9 @@ CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
 // The point lies outside of the convex hull of the other points
 // if and only if the direction of all the vectors from it to those
 // other points are on less than one half of a sphere around it.
-var ConvexPolyhedron_pointIsInside = new CANNON.Vec3();
-var ConvexPolyhedron_vToP = new CANNON.Vec3();
-var ConvexPolyhedron_vToPointInside = new CANNON.Vec3();
+var ConvexPolyhedron_pointIsInside = vec3.create();
+var ConvexPolyhedron_vToP = vec3.create();
+var ConvexPolyhedron_vToPointInside = vec3.create();
 CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
     var n = this.vertices.length,
         verts = this.vertices,

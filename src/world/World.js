@@ -60,7 +60,7 @@ CANNON.World = function(){
      * @property CANNON.Vec3 gravity
      * @memberof CANNON.World
      */
-    this.gravity = new CANNON.Vec3();
+    this.gravity = vec3.create();
 
     /**
      * @property CANNON.Broadphase broadphase
@@ -239,12 +239,12 @@ CANNON.World.prototype.add = function(body){
     body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
-    body.position.copy(body.initPosition);
-    body.velocity.copy(body.initVelocity);
+    vec3.copy(body.initPosition,body);
+    vec3.copy(body.initVelocity,body.velocity);
     body.timeLastSleepy = this.time;
     if(body instanceof CANNON.RigidBody){
-        body.angularVelocity.copy(body.initAngularVelocity);
-        body.quaternion.copy(body.initQuaternion);
+        vec3.copy(body.initAngularVelocity,body.angularVelocity);
+        quat.copy(body.initQuaternion,body.quaternion);
     }
 
     var n = this.numObjects();
@@ -375,18 +375,19 @@ var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to s
     World_step_frictionEquationPool = [],
     World_step_p1 = [], // Reusable arrays for collision pairs
     World_step_p2 = [],
-    World_step_gvec = new CANNON.Vec3(), // Temporary vectors and quats
-    World_step_vi = new CANNON.Vec3(),
-    World_step_vj = new CANNON.Vec3(),
-    World_step_wi = new CANNON.Vec3(),
-    World_step_wj = new CANNON.Vec3(),
-    World_step_t1 = new CANNON.Vec3(),
-    World_step_t2 = new CANNON.Vec3(),
-    World_step_rixn = new CANNON.Vec3(),
-    World_step_rjxn = new CANNON.Vec3(),
-    World_step_step_q = new CANNON.Quaternion(),
-    World_step_step_w = new CANNON.Quaternion(),
-    World_step_step_wq = new CANNON.Quaternion();
+    World_step_gvec = vec3.create(), // Temporary vectors and quats
+    World_step_vi = vec3.create(),
+    World_step_vj = vec3.create(),
+    World_step_wi = vec3.create(),
+    World_step_wj = vec3.create(),
+    World_step_t1 = vec3.create(),
+    World_step_t2 = vec3.create(),
+    World_step_rixn = vec3.create(),
+    World_step_rjxn = vec3.create(),
+    World_step_mg = vec3.create(),
+    World_step_step_q = quat.create(),
+    World_step_step_w = quat.create(),
+    World_step_step_wq = quat.create();
 CANNON.World.prototype.step = function(dt){
     var world = this,
         that = this,
@@ -405,10 +406,13 @@ CANNON.World.prototype.step = function(dt){
         constraints = this.constraints,
         FrictionEquation = CANNON.FrictionEquation,
         frictionEquationPool = World_step_frictionEquationPool,
-        gnorm = gravity.norm(),
+        gnorm = vec3.length(gravity),
+        mg = World_step_mg,
+        /*
         gx = gravity.x,
         gy = gravity.y,
         gz = gravity.z,
+         */
         i=0;
 
 
@@ -424,10 +428,15 @@ CANNON.World.prototype.step = function(dt){
     for(i=0; i!==N; i++){
         var bi = bodies[i];
         if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
-            var f = bi.force, m = bi.mass;
+            var f = bi.force,
+                m = bi.mass;
+            vec3.scaleAndAdd(f,f,gravity,m);
+            //vec3.add(f,mg);
+            /*
             f.x += m*gx;
             f.y += m*gy;
             f.z += m*gz;
+             */
         }
     }
 
@@ -495,10 +504,17 @@ CANNON.World.prototype.step = function(dt){
 
         // g = ( xj + rj - xi - ri ) .dot ( ni )
         var gvec = World_step_gvec;
-        gvec.set(bj.position.x + c.rj.x - bi.position.x - c.ri.x,
+        vec3.set(gvec,0,0,0);
+        vec3.add(gvec,gvec,bj.position);
+        vec3.add(gvec,gvec,c.rj);
+        vec3.subtract(gvec,gvec,bi.position);
+        vec3.subtract(gvec,gvec,c.ri);
+/*
+        .x + c.rj.x - bi.position.x - c.ri.x,
                  bj.position.y + c.rj.y - bi.position.y - c.ri.y,
                  bj.position.z + c.rj.z - bi.position.z - c.ri.z);
-        var g = gvec.dot(c.ni); // Gap, negative if penetration
+                  */
+        var g = vec3.dot(gvec,c.ni); // Gap, negative if penetration
 
         // Action if penetration
         if(g<0.0){
@@ -530,13 +546,13 @@ CANNON.World.prototype.step = function(dt){
                 c1.maxForce = c2.maxForce = mug*reducedMass;
 
                 // Copy over the relative vectors
-                c.ri.copy(c1.ri);
-                c.rj.copy(c1.rj);
-                c.ri.copy(c2.ri);
-                c.rj.copy(c2.rj);
+                vec3.copy(c1.ri,c.ri);
+                vec3.copy(c1.rj,c.rj);
+                vec3.copy(c2.ri,c.ri);
+                vec3.copy(c2.rj,c.rj);
 
                 // Construct tangents
-                c.ni.tangents(c1.t,c2.t);
+                vec3.tangents(c1.t,c2.t,c.ni); //c.ni.tangents(c1.t,c2.t);
 
                 // Add equations to solver
                 solver.addEquation(c1);
@@ -597,11 +613,11 @@ CANNON.World.prototype.step = function(dt){
         if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
             var ld = pow(1.0 - bi.linearDamping,dt);
             var v = bi.velocity;
-            v.mult(ld,v);
+            vec3.scale(v,v,ld);
             var av = bi.angularVelocity;
             if(av){
                 var ad = pow(1.0 - bi.angularDamping,dt);
-                av.mult(ad,av);
+                vec3.scale(av,av,ad);
             }
         }
     }
@@ -642,12 +658,16 @@ CANNON.World.prototype.step = function(dt){
             var velo = b.velocity,
                 angularVelo = b.angularVelocity,
                 pos = b.position,
-                quat = b.quaternion,
+                quaternion = b.quaternion,
                 invMass = b.invMass,
                 invInertia = b.invInertia;
+
+            vec3.scaleAndAdd(velo,velo,force,invMass*dt);
+            /*
             velo.x += force.x * invMass * dt;
             velo.y += force.y * invMass * dt;
             velo.z += force.z * invMass * dt;
+             */
 
             if(b.angularVelocity){
                 angularVelo.x += tau.x * invInertia.x * dt;
@@ -657,22 +677,29 @@ CANNON.World.prototype.step = function(dt){
 
             // Use new velocity  - leap frog
             if(!b.isSleeping()){
+                vec3.scaleAndAdd(pos,pos,velo,dt);
+                /*
                 pos.x += velo.x * dt;
                 pos.y += velo.y * dt;
                 pos.z += velo.z * dt;
+                 */
 
                 if(b.angularVelocity){
-                    w.set(angularVelo.x, angularVelo.y, angularVelo.z, 0);
-                    w.mult(quat,wq);
-                    quat.x += half_dt * wq.x;
-                    quat.y += half_dt * wq.y;
-                    quat.z += half_dt * wq.z;
-                    quat.w += half_dt * wq.w;
+                    quat.set(w, angularVelo[0], angularVelo[1], angularVelo[2], 0.0); // glMatrix extension?
+                    quat.mul(wq,w,quaternion);
+                    quat.scale(wq,wq,half_dt);
+                    quat.add(quaternion,quaternion,wq);
+                    /*
+                    quaternion.x += half_dt * wq.x;
+                    quaternion.y += half_dt * wq.y;
+                    quaternion.z += half_dt * wq.z;
+                    quaternion.w += half_dt * wq.w;
+                     */
                     if(quatNormalize){
                         if(quatNormalizeFast){
-                            quat.normalizeFast();
+                            quat.normalize(quaternion,quaternion); //.normalizeFast();
                         } else {
-                            quat.normalize();
+                            quat.normalize(quaternion,quaternion); //quaternion.normalize();
                         }
                     }
                 }
@@ -694,9 +721,9 @@ CANNON.World.prototype.step = function(dt){
                 }
             }
         }
-        b.force.set(0,0,0);
+        vec3.set(b.force,0,0,0);
         if(b.tau){
-            b.tau.set(0,0,0);
+            vec3.set(b.tau,0,0,0);
         }
     }
 

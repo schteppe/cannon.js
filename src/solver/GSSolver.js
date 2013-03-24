@@ -69,9 +69,9 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
             var b=bodies[i],
                 vlambda=b.vlambda,
                 wlambda=b.wlambda;
-            vlambda.set(0,0,0);
+            vec3.set(vlambda,0,0,0);
             if(wlambda){
-                wlambda.set(0,0,0);
+                vec3.set(wlambda,0,0,0);
             }
         }
 
@@ -116,9 +116,9 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
             var b=bodies[i],
                 v=b.velocity,
                 w=b.angularVelocity;
-            v.vadd(b.vlambda, v);
+            vec3.add( v,v,b.vlambda);
             if(w){
-                w.vadd(b.wlambda, w);
+                vec3.add( w,w,b.wlambda);
             }
         }
     }

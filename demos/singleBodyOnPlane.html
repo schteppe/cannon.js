@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -34,12 +35,13 @@
       
         // Create world
         var world = demo.getWorld();
-        world.gravity.set(0,0,-10);
+        vec3.set(world.gravity,0,0,-10);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
 
         world.defaultContactMaterial.contactEquationStiffness = 1e7;
         world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+        //world.defaultContactMaterial.friction = 0.0;
       
         // ground plane
         var groundShape = new CANNON.Plane();
@@ -50,9 +52,7 @@
         // Shape on plane
         var shapeBody = new CANNON.RigidBody(30,shape);
         var pos = new CANNON.Vec3(0,0,size);
-        shapeBody.position.set(0,size,size*2);
-        shapeBody.velocity.set(0,0,0);
-        shapeBody.angularVelocity.set(0,0,0);
+        vec3.set(shapeBody.position,0,size,size*2);
         world.add(shapeBody);
         demo.addVisual(shapeBody);
       }

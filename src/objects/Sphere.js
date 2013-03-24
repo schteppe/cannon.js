@@ -19,7 +19,7 @@ CANNON.Sphere.prototype = new CANNON.Shape();
 CANNON.Sphere.prototype.constructor = CANNON.Sphere;
 
 CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new CANNON.Vec3();
+    target = target || vec3.create();
     var I = 2.0*mass*this.radius*this.radius/5.0;
     target.x = I;
     target.y = I;

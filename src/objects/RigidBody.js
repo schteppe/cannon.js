@@ -24,32 +24,32 @@ CANNON.RigidBody = function(mass,shape,material){
      * @memberof CANNON.RigidBody
      * @brief Rotational force on the body, around center of mass
      */
-    this.tau = new CANNON.Vec3();
+    this.tau = vec3.create();
 
     /**
      * @property CANNON.Quaternion quaternion
      * @memberof CANNON.RigidBody
      * @brief Orientation of the body
      */
-    this.quaternion = new CANNON.Quaternion();
+    this.quaternion = quat.create();
 
     /**
      * @property CANNON.Quaternion initQuaternion
      * @memberof CANNON.RigidBody
      */
-    this.initQuaternion = new CANNON.Quaternion();
+    this.initQuaternion = quat.create();
 
     /**
      * @property CANNON.Vec3 angularVelocity
      * @memberof CANNON.RigidBody
      */
-    this.angularVelocity = new CANNON.Vec3();
+    this.angularVelocity = vec3.create();
 
     /**
      * @property CANNON.Vec3 initAngularVelocity
      * @memberof CANNON.RigidBody
      */
-    this.initAngularVelocity = new CANNON.Vec3();
+    this.initAngularVelocity = vec3.create();
 
     /**
      * @property CANNON.Shape shape
@@ -61,22 +61,22 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property CANNON.Vec3 inertia
      * @memberof CANNON.RigidBody
      */
-    this.inertia = new CANNON.Vec3();
+    this.inertia = vec3.create();
     shape.calculateLocalInertia(mass,this.inertia);
 
-    this.inertiaWorld = new CANNON.Vec3();
-    this.inertia.copy(this.inertiaWorld);
+    this.inertiaWorld = vec3.create();
+    vec3.copy(this.inertiaWorld, this.inertia);
     this.inertiaWorldAutoUpdate = false;
 
     /**
      * @property CANNON.Vec3 intInertia
      * @memberof CANNON.RigidBody
      */
-    this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
-                                      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
-                                      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
-    this.invInertiaWorld = new CANNON.Vec3();
-    this.invInertia.copy(this.invInertiaWorld);
+    this.invInertia = vec3.create(  this.inertia[0]>0 ? 1.0/this.inertia[0] : 0,
+                                    this.inertia[1]>0 ? 1.0/this.inertia[1] : 0,
+                                    this.inertia[2]>0 ? 1.0/this.inertia[2] : 0 );
+    this.invInertiaWorld = vec3.create();
+    vec3.copy(this.invInertiaWorld, this.invInertia);
     this.invInertiaWorldAutoUpdate = false;
 
     /**
@@ -89,13 +89,13 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property CANNON.Vec3 aabbmin
      * @memberof CANNON.RigidBody
      */
-    this.aabbmin = new CANNON.Vec3();
+    this.aabbmin = vec3.create();
 
     /**
      * @property CANNON.Vec3 aabbmax
      * @memberof CANNON.RigidBody
      */
-    this.aabbmax = new CANNON.Vec3();
+    this.aabbmax = vec3.create();
 
     /**
      * @property bool aabbNeedsUpdate
@@ -104,7 +104,7 @@ CANNON.RigidBody = function(mass,shape,material){
      */
     this.aabbNeedsUpdate = true;
 
-    this.wlambda = new CANNON.Vec3();
+    this.wlambda = vec3.create();
 };
 
 CANNON.RigidBody.prototype = new CANNON.Particle(0);
@@ -123,8 +123,8 @@ CANNON.RigidBody.prototype.computeAABB = function(){
  * @param  CANNON.Vec3 force The amount of force to add.
  * @param  CANNON.Vec3 worldPoint A world point to apply the force on.
  */
-var RigidBody_applyForce_r = new CANNON.Vec3();
-var RigidBody_applyForce_rotForce = new CANNON.Vec3();
+var RigidBody_applyForce_r = vec3.create();
+var RigidBody_applyForce_rotForce = vec3.create();
 CANNON.RigidBody.prototype.applyForce = function(force,worldPoint){
     // Compute point position relative to the body center
     var r = RigidBody_applyForce_r;
@@ -146,9 +146,9 @@ CANNON.RigidBody.prototype.applyForce = function(force,worldPoint){
  * @param  CANNON.Vec3 impulse The amount of impulse to add.
  * @param  CANNON.Vec3 worldPoint A world point to apply the force on.
  */
-var RigidBody_applyImpulse_r = new CANNON.Vec3();
-var RigidBody_applyImpulse_velo = new CANNON.Vec3();
-var RigidBody_applyImpulse_rotVelo = new CANNON.Vec3();
+var RigidBody_applyImpulse_r = vec3.create();
+var RigidBody_applyImpulse_velo = vec3.create();
+var RigidBody_applyImpulse_rotVelo = vec3.create();
 CANNON.RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
     // Compute point position relative to the body center
     var r = RigidBody_applyImpulse_r;

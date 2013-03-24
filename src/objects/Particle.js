@@ -20,33 +20,33 @@ CANNON.Particle = function(mass,material){
     * @property CANNON.Vec3 position
     * @memberof CANNON.Particle
     */
-    this.position = new CANNON.Vec3();
+    this.position = vec3.create();
 
     /**
     * @property CANNON.Vec3 initPosition
     * @memberof CANNON.Particle
     * @brief Initial position of the body
     */
-    this.initPosition = new CANNON.Vec3();
+    this.initPosition = vec3.create();
 
     /**
     * @property CANNON.Vec3 velocity
     * @memberof CANNON.Particle
     */
-    this.velocity = new CANNON.Vec3();
+    this.velocity = vec3.create();
 
     /**
     * @property CANNON.Vec3 initVelocity
     * @memberof CANNON.Particle
     */
-    this.initVelocity = new CANNON.Vec3();
+    this.initVelocity = vec3.create();
 
     /**
     * @property CANNON.Vec3 force
     * @memberof CANNON.Particle
     * @brief Linear force on the body
     */
-    this.force = new CANNON.Vec3();
+    this.force = vec3.create();
 
     /**
     * @property float mass
