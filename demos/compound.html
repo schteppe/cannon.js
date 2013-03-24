@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -36,23 +37,23 @@
           var s = 1.5;
 
           // Use a box shape as child shape
-          var shape = new CANNON.Box(new CANNON.Vec3(0.5*s,0.5*s,0.5*s));
+          var shape = new CANNON.Box(vec3.fromValues(0.5*s,0.5*s,0.5*s));
 
           // We can add the same shape several times to position child shapes within the Compound.
-          compoundShape.addChild(shape,new CANNON.Vec3( s, 0,-s));
-          compoundShape.addChild(shape,new CANNON.Vec3( s, 0, s));
-          compoundShape.addChild(shape,new CANNON.Vec3(-s, 0,-s));
-          compoundShape.addChild(shape,new CANNON.Vec3(-s, 0, s));
+          compoundShape.addChild(shape,vec3.fromValues( s, 0,-s));
+          compoundShape.addChild(shape,vec3.fromValues( s, 0, s));
+          compoundShape.addChild(shape,vec3.fromValues(-s, 0,-s));
+          compoundShape.addChild(shape,vec3.fromValues(-s, 0, s));
           // Note: we only use translational offsets. The third argument could be a CANNON.Quaternion to rotate the child shape.
-          compoundShape.addChild(shape,new CANNON.Vec3(-s, 0, 0));
-          compoundShape.addChild(shape,new CANNON.Vec3( 0, 0,-s));
-          compoundShape.addChild(shape,new CANNON.Vec3( 0, 0, s));
+          compoundShape.addChild(shape,vec3.fromValues(-s, 0, 0));
+          compoundShape.addChild(shape,vec3.fromValues( 0, 0,-s));
+          compoundShape.addChild(shape,vec3.fromValues( 0, 0, s));
       
           // Now create a RigidBody for our Compound
           var mass = 10;
           var body = new CANNON.RigidBody(mass,compoundShape);
-          body.position.set(0,0,6);
-          body.quaternion.set(0,1,0,0.2);
+          vec3.set(body.position,0,0,6);
+          quat.set(body.quaternion,0,1,0,0.2);
           world.add(body);
           demo.addVisual(body);
 
@@ -65,15 +66,15 @@
           // Compound shape
           var compoundShape = new CANNON.Compound();
           var sphereShape = new CANNON.Sphere(1);
-          compoundShape.addChild(sphereShape,new CANNON.Vec3( 1, 0,-1));
-          compoundShape.addChild(sphereShape,new CANNON.Vec3( 1, 0, 1));
-          compoundShape.addChild(sphereShape,new CANNON.Vec3(-1, 0,-1));
-          compoundShape.addChild(sphereShape,new CANNON.Vec3(-1, 0, 1));
+          compoundShape.addChild(sphereShape,vec3.fromValues( 1, 0,-1));
+          compoundShape.addChild(sphereShape,vec3.fromValues( 1, 0, 1));
+          compoundShape.addChild(sphereShape,vec3.fromValues(-1, 0,-1));
+          compoundShape.addChild(sphereShape,vec3.fromValues(-1, 0, 1));
       
           var mass = 10;
           var body = new CANNON.RigidBody(mass,compoundShape);
-          body.position.set(0,0,6);
-          body.quaternion.set(0,1,0,0.1);
+          vec3.set(body.position,0,0,6);
+          quat.set(body.quaternion,0,1,0,0.1);
           world.add(body);
           demo.addVisual(body);
       
@@ -81,7 +82,7 @@
       
       function setupWorld(demo){
         var world = demo.getWorld();
-        world.gravity.set(0,0,-30);
+        vec3.set(world.gravity,0,0,-30);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
       

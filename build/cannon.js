@@ -2263,9 +2263,9 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
 
         vec3.add(target,target,childInertia);
         var mr2 = Compound_calculateLocalInertia_mr2;
-        vec3.set(mr2,   m*o.x*o.x,
-                        m*o.y*o.y,
-                        m*o.z*o.z);
+        vec3.set(mr2,   m*o[0]*o[0],
+                        m*o[1]*o[1],
+                        m*o[2]*o[2]);
         vec3.add(target,target,mr2);
     }
 
@@ -6301,19 +6301,6 @@ CANNON.ContactEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    /*
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
-    } else {
-        invIj.identity(); // ok?
-    }
-     */
-
     if(bi.invInertia){
         mat3.setTrace(invIi,bi.invInertia);
     } else {
@@ -6324,20 +6311,8 @@ CANNON.ContactEquation.prototype.computeC = function(){
     } else {
         mat3.identity(invIj);
     }
+
     // Compute rxn * I * rxn for each body
-    /*
-    invIi.vmult(rixn, this.biInvInertiaTimesRixn);
-    invIj.vmult(rjxn, this.bjInvInertiaTimesRjxn);
-     */
-
-    /*
-    invIi.vmult(rixn,computeC_temp1);
-    invIj.vmult(rjxn,computeC_temp2);
-    
-    C += vec3.dot(computeC_temp1,rixn);
-    C += vec3.dot(computeC_temp2,rjxn);
-     */
-
     vec3.transformMat3(this.biInvInertiaTimesRixn, rixn, invIi); // invIi.vmult(rixt,this.biInvInertiaTimesRixt);
     vec3.transformMat3(this.bjInvInertiaTimesRjxn, rjxn, invIj); // invIj.vmult(rjxt,this.bjInvInertiaTimesRjxt);
 
@@ -6380,23 +6355,24 @@ CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
         invMassj = bj.invMass,
         n = this.ni,
         temp1 = ContactEquation_addToWlambda_temp1,
-        temp2 = ContactEquation_addToWlambda_temp2;
-
+        temp2 = ContactEquation_addToWlambda_temp2,
+        wi = bi.wlambda,
+        wj = bj.wlambda;
 
     // Add to linear velocity
     vec3.scale(temp2, n, invMassi * deltalambda);
-    vec3.subtract(bi.vlambda,bi.vlambda,temp2);
+    vec3.subtract(bi.vlambda, bi.vlambda, temp2);
     vec3.scale(temp2, n, invMassj * deltalambda);
-    vec3.add(bj.vlambda,bj.vlambda,temp2);
+    vec3.add(bj.vlambda, bj.vlambda, temp2);
 
     // Add to angular velocity
-    if(bi.wlambda !== undefined){
+    if(wi){
         vec3.scale(temp1,this.biInvInertiaTimesRixn,deltalambda);
-        vec3.subtract(bi.wlambda,bi.wlambda,temp1);
+        vec3.subtract(wi,wi,temp1);
     }
-    if(bj.wlambda !== undefined){
+    if(wj){
         vec3.scale(temp1,this.bjInvInertiaTimesRjxn,deltalambda);
-        vec3.add(bj.wlambda,bj.wlambda,temp1);
+        vec3.add(wj,wj,temp1);
     }
 };
 
@@ -6586,26 +6562,15 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
     // Add to linear velocity
     vec3.scale(tmp, t, invMassi * deltalambda);
     vec3.subtract(bi.vlambda, bi.vlambda, tmp);
-
     vec3.scale(tmp, t, invMassj * deltalambda);
     vec3.add(bj.vlambda, bj.vlambda, tmp);
 
     // Add to angular velocity
     if(wi){
-        /*
-        var I = this.invIi;
-        I.vmult(rixt,tmp);
-        vec3.scale(tmp,tmp,deltalambda);
-         */
         vec3.scale(tmp,this.biInvInertiaTimesRixt,deltalambda);
         vec3.subtract(wi,wi,tmp);
     }
     if(wj){
-        /*
-        var I = this.invIj;
-        I.vmult(rjxt,tmp);
-        vec3.scale(tmp,tmp,deltalambda);
-         */
         vec3.scale(tmp,this.bjInvInertiaTimesRjxt,deltalambda);
         vec3.add(wj,wj,tmp);
     }

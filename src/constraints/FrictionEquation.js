@@ -183,26 +183,15 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
     // Add to linear velocity
     vec3.scale(tmp, t, invMassi * deltalambda);
     vec3.subtract(bi.vlambda, bi.vlambda, tmp);
-
     vec3.scale(tmp, t, invMassj * deltalambda);
     vec3.add(bj.vlambda, bj.vlambda, tmp);
 
     // Add to angular velocity
     if(wi){
-        /*
-        var I = this.invIi;
-        I.vmult(rixt,tmp);
-        vec3.scale(tmp,tmp,deltalambda);
-         */
         vec3.scale(tmp,this.biInvInertiaTimesRixt,deltalambda);
         vec3.subtract(wi,wi,tmp);
     }
     if(wj){
-        /*
-        var I = this.invIj;
-        I.vmult(rjxt,tmp);
-        vec3.scale(tmp,tmp,deltalambda);
-         */
         vec3.scale(tmp,this.bjInvInertiaTimesRjxt,deltalambda);
         vec3.add(wj,wj,tmp);
     }

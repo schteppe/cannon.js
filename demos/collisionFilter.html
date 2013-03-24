@@ -49,7 +49,7 @@
             sphereBody.collisionFilterMask =  GROUP2 | GROUP3;    // It can only collide with group 2 and 3
 
             // Box
-            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+            var boxShape = new CANNON.Box(vec3.fromValues(size,size,size));
             var boxBody = new CANNON.RigidBody(mass,boxShape);
             boxBody.collisionFilterGroup = GROUP2;                // Put the box in group 2
             boxBody.collisionFilterMask =  GROUP1;                // It can only collide with group 1 (the sphere)

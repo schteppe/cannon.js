@@ -65,9 +65,9 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
 
         vec3.add(target,target,childInertia);
         var mr2 = Compound_calculateLocalInertia_mr2;
-        vec3.set(mr2,   m*o.x*o.x,
-                        m*o.y*o.y,
-                        m*o.z*o.z);
+        vec3.set(mr2,   m*o[0]*o[0],
+                        m*o[1]*o[1],
+                        m*o[2]*o[2]);
         vec3.add(target,target,mr2);
     }
 
