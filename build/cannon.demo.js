@@ -241,15 +241,21 @@ CANNON.Demo = function(options){
     }
 
     function makeSureNotZero(vec){
-        if(vec[0]===0.0){
-            vec[0] = 1e-6;
+        if(vec.x===0.0){
+            vec.x = 1e-6;
         }
-        if(vec[1]===0.0){
-            vec[1] = 1e-6;
+        if(vec.y===0.0){
+            vec.y = 1e-6;
         }
-        if(vec[2]===0.0){
-            vec[2] = 1e-6;
+        if(vec.z===0.0){
+            vec.z = 1e-6;
         }
+    }
+
+    vec3.copyCannonToThree = function(threeVec,cannonVec){
+        threeVec.x = cannonVec[0];
+        threeVec.y = cannonVec[1];
+        threeVec.z = cannonVec[2];
     }
 
     function updateVisuals(){
@@ -365,10 +371,12 @@ CANNON.Demo = function(options){
                 var i=bi.id, j=bj.id;
                 var n = c.ni;
                 var b = bi;
-                line.scale.set(n.x,n.y,n.z);
+                line.scale.set(n[0],n[1],n[2]);
                 makeSureNotZero(line.scale);
-                b.position.copy(line.position);
-                c.ri.vadd(line.position,line.position);
+                vec3.copyCannonToThree(line.position,b.position);
+                line.position.x += c.ri[0];
+                line.position.y += c.ri[1];
+                line.position.z += c.ri[2];
             }
         }
         normalMeshCache.hideCached();

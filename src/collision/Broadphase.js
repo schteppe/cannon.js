@@ -175,7 +175,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
             if(type & BOX_SPHERE_COMPOUND_CONVEX){
                 if(type === types.SPHERE){ // particle-sphere
                     vec3.subtract(relpos,particle.position,other.position);
-                    if(otherShape.radius*otherShape.radius >= relpos.norm2()){
+                    if(otherShape.radius*otherShape.radius >= vec3.squaredLength(relpos)){
                         pairs1.push(particle);
                         pairs2.push(other);
                     }
@@ -186,7 +186,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
                     }
                     var R = otherShape.boundingSphereRadius;
                     vec3.subtract(relpos,particle.position,other.position);
-                    if(R*R >= relpos.norm2()){
+                    if(R*R >= vec3.squaredLength(relpos)){
                         pairs1.push(particle);
                         pairs2.push(other);
                     }

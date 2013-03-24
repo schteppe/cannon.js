@@ -110,12 +110,12 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
 CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,q){
     var sides = sixTargetVectors;
     var ex = this.halfExtents;
-    vec3.set(sides[0],  ex.x,     0,     0);
-    vec3.set(sides[1],     0,  ex.y,     0);
-    vec3.set(sides[2],     0,     0,  ex.z);
-    vec3.set(sides[3], -ex.x,     0,     0);
-    vec3.set(sides[4],     0, -ex.y,     0);
-    vec3.set(sides[5],     0,     0, -ex.z);
+    vec3.set(sides[0],  ex[0],      0,      0);
+    vec3.set(sides[1],      0,  ex[1],      0);
+    vec3.set(sides[2],      0,      0,  ex[2]);
+    vec3.set(sides[3], -ex[0],      0,      0);
+    vec3.set(sides[4],      0, -ex[1],      0);
+    vec3.set(sides[5],      0,      0, -ex[2]);
 
     if(q!==undefined){
         for(var i=0; i!==sides.length; i++){
@@ -128,11 +128,11 @@ CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,q){
 };
 
 CANNON.Box.prototype.volume = function(){
-    return 8.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
+    return 8.0 * this.halfExtents[0] * this.halfExtents[1] * this.halfExtents[2];
 };
 
 CANNON.Box.prototype.computeBoundingSphereRadius = function(){
-    this.boundingSphereRadius = this.halfExtents.norm();
+    this.boundingSphereRadius = vec3.length(this.halfExtents);
     this.boundingSphereRadiusNeedsUpdate = false;
 };
 
@@ -141,21 +141,21 @@ var worldCornerTempNeg = vec3.create();
 CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
 
     var e = this.halfExtents;
-    var corners = [[  e.x,  e.y,  e.z],
-                   [ -e.x,  e.y,  e.z],
-                   [ -e.x, -e.y,  e.z],
-                   [ -e.x, -e.y, -e.z],
-                   [  e.x, -e.y, -e.z],
-                   [  e.x,  e.y, -e.z],
-                   [ -e.x,  e.y, -e.z],
-                   [  e.x, -e.y,  e.z]];
+    var corners = [[  e[0],  e[1],  e[2]],
+                   [ -e[0],  e[1],  e[2]],
+                   [ -e[0], -e[1],  e[2]],
+                   [ -e[0], -e[1], -e[2]],
+                   [  e[0], -e[1], -e[2]],
+                   [  e[0],  e[1], -e[2]],
+                   [ -e[0],  e[1], -e[2]],
+                   [  e[0], -e[1],  e[2]]];
     for(var i=0; i<corners.length; i++){
         worldCornerTempPos.set(corners[i][0],corners[i][1],corners[i][2]);
         quat.vmult(worldCornerTempPos,worldCornerTempPos);
         pos.vadd(worldCornerTempPos,worldCornerTempPos);
-        callback(worldCornerTempPos.x,
-                 worldCornerTempPos.y,
-                 worldCornerTempPos.z);
+        callback(worldCornerTempPos[0],
+                 worldCornerTempPos[1],
+                 worldCornerTempPos[2]);
     }
 };
 
@@ -164,24 +164,24 @@ CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
     min.set(Infinity,Infinity,Infinity);
     max.set(-Infinity,-Infinity,-Infinity);
     this.forEachWorldCorner(pos,quat,function(x,y,z){
-        if(x > max.x){
-            max.x = x;
+        if(x > max[0]){
+            max[0] = x;
         }
-        if(y > max.y){
-            max.y = y;
+        if(y > max[1]){
+            max[1] = y;
         }
-        if(z > max.z){
-            max.z = z;
+        if(z > max[2]){
+            max[2] = z;
         }
 
-        if(x < min.x){
-            min.x = x;
+        if(x < min[0]){
+            min[0] = x;
         }
-        if(y < min.y){
-            min.y = y;
+        if(y < min[1]){
+            min[1] = y;
         }
-        if(z < min.z){
-            min.z = z;
+        if(z < min[2]){
+            min[2] = z;
         }
     });
 };

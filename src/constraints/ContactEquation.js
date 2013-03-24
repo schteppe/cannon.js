@@ -34,8 +34,8 @@ CANNON.ContactEquation = function(bi,bj){
     this.rixn = vec3.create();
     this.rjxn = vec3.create();
 
-    this.invIi = new CANNON.Mat3();
-    this.invIj = new CANNON.Mat3();
+    this.invIi = mat3.create();
+    this.invIj = mat3.create();
 
     // Cache
     this.biInvInertiaTimesRixn =  vec3.create();
@@ -86,6 +86,7 @@ CANNON.ContactEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertia){
         invIi.setTrace(bi.invInertia);
     } else {
@@ -95,6 +96,18 @@ CANNON.ContactEquation.prototype.computeB = function(h){
         invIj.setTrace(bj.invInertia);
     } else {
         invIj.identity(); // ok?
+    }
+    */
+
+    if(bi.invInertia){
+        mat3.setTrace(invIi,bi.invInertia);
+    } else {
+        mat3.identity(invIi);
+    }
+    if(bj.invInertia){
+        mat3.setTrace(invIj,bj.invInertia);
+    } else {
+        mat3.identity(invIj);
     }
 
     var n = this.ni;
@@ -115,8 +128,9 @@ CANNON.ContactEquation.prototype.computeB = function(h){
 
     var invIi_vmult_taui = ContactEquation_computeB_temp1;
     var invIj_vmult_tauj = ContactEquation_computeB_temp2;
-    invIi.vmult(taui,invIi_vmult_taui);
-    invIj.vmult(tauj,invIj_vmult_tauj);
+
+    vec3.transformMat3(invIi_vmult_taui, taui, invIi); //invIi.vmult(taui,invIi_vmult_taui);
+    vec3.transformMat3(invIj_vmult_tauj, tauj, invIj); //invIj.vmult(tauj,invIj_vmult_tauj);
 
     // Compute iteration
     var ePlusOne = this.restitution+1;
@@ -144,30 +158,21 @@ CANNON.ContactEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    /*
     if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+        mat3.setTrace(invIi,bi.invInertia);
     } else {
-        invIi.identity(); // ok?
+        mat3.identity(invIi);
     }
     if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+        mat3.setTrace(invIj,bj.invInertia);
     } else {
-        invIj.identity(); // ok?
+        mat3.identity(invIj);
     }
-     */
-
-    // Compute rxn * I * rxn for each body
-    invIi.vmult(rixn, this.biInvInertiaTimesRixn);
-    invIj.vmult(rjxn, this.bjInvInertiaTimesRjxn);
-
-    /*
-    invIi.vmult(rixn,computeC_temp1);
-    invIj.vmult(rjxn,computeC_temp2);
     
-    C += vec3.dot(computeC_temp1,rixn);
-    C += vec3.dot(computeC_temp2,rjxn);
-     */
+    // Compute rxn * I * rxn for each body
+    vec3.transformMat3(this.biInvInertiaTimesRixn, rixn, invIi); // invIi.vmult(rixt,this.biInvInertiaTimesRixt);
+    vec3.transformMat3(this.bjInvInertiaTimesRjxn, rjxn, invIj); // invIj.vmult(rjxt,this.bjInvInertiaTimesRjxt);
+
     C += vec3.dot(this.biInvInertiaTimesRixn,rixn);
     C += vec3.dot(this.bjInvInertiaTimesRjxn,rjxn);
 
