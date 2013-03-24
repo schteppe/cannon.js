@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -23,7 +24,7 @@
         demo.addScene("Bounce",function(){
 
             var world = demo.getWorld();
-            world.gravity.set(0,0,-10);
+            vec3.set(world.gravity,0,0,-10);
             world.broadphase = new CANNON.NaiveBroadphase();
           
             // ground plane
@@ -39,21 +40,21 @@
             // Shape on plane
             var mat1 = new CANNON.Material();
             var shapeBody1 = new CANNON.RigidBody(mass,sphereShape,mat1);
-            shapeBody1.position.set(3*size, size, height);
+            vec3.set(shapeBody1.position,3*size, size, height);
             shapeBody1.linearDamping = damping;
             world.add(shapeBody1);
             demo.addVisual(shapeBody1);
 
             var mat2 = new CANNON.Material();
             var shapeBody2 = new CANNON.RigidBody(mass,sphereShape,mat2);
-            shapeBody2.position.set(0 , size , height);
+            vec3.set(shapeBody2.position,0 , size , height);
             shapeBody2.linearDamping = damping;
             world.add(shapeBody2);
             demo.addVisual(shapeBody2);
 
             var mat3 = new CANNON.Material();
             var shapeBody3 = new CANNON.RigidBody(mass,sphereShape,mat3);
-            shapeBody3.position.set(-3*size , size , height);
+            vec3.set(shapeBody3.position,-3*size , size , height);
             shapeBody3.linearDamping = damping;
             world.add(shapeBody3);
             demo.addVisual(shapeBody3);
