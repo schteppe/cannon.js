@@ -642,8 +642,8 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         aabbmin = this.aabbmin,
         aabbmax = this.aabbmax,
         vertices = this.vertices;
-        aabbmin.set(Infinity,Infinity,Infinity);
-        aabbmax.set(-Infinity,-Infinity,-Infinity);
+        vec3.set(aabbmin,Infinity,Infinity,Infinity);
+        vec3.set(aabbmax,-Infinity,-Infinity,-Infinity);
         for(var i=0; i<n; i++){
             var v = vertices[i];
             if     (v.x < aabbmin.x){
@@ -744,8 +744,8 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
             maxz = v.z;
         }
     }
-    min.set(minx,miny,minz);
-    max.set(maxx,maxy,maxz);
+    vec3.set(min,minx,miny,minz);
+    vec3.set(max,maxx,maxy,maxz);
 };
 
 // Just approximate volume!

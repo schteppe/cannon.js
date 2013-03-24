@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -35,15 +36,15 @@
 
         demo.addScene("filter",function(){
             var world = demo.getWorld();
-            world.gravity.set(0,0,0); // no gravity
+            vec3.set(world.gravity,0,0,0); // no gravity
             world.broadphase = new CANNON.NaiveBroadphase();
             world.solver.iterations = 5;
       
             // Sphere
             var sphereShape = new CANNON.Sphere(size);
             var sphereBody = new CANNON.RigidBody(mass,sphereShape);
-            sphereBody.position.set(5,0,0);
-            sphereBody.velocity.set(-5,0,0);
+            vec3.set(sphereBody.position,5,0,0);
+            vec3.set(sphereBody.velocity,-5,0,0);
             sphereBody.collisionFilterGroup = GROUP1;             // Put the sphere in group 1
             sphereBody.collisionFilterMask =  GROUP2 | GROUP3;    // It can only collide with group 2 and 3
 
@@ -56,7 +57,7 @@
             // Cylinder
             var cylinderShape = new CANNON.Cylinder(size,size,size*2.2,10);
             var cylinderBody = new CANNON.RigidBody(mass,cylinderShape);
-            cylinderBody.position.set(-5,0,0);
+            vec3.set(cylinderBody.position,-5,0,0);
             cylinderBody.collisionFilterGroup = GROUP3;           // Put the cylinder in group 3
             cylinderBody.collisionFilterMask =  GROUP1;           // It can only collide with group 1 (the sphere)
 
