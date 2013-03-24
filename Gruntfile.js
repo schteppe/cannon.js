@@ -36,6 +36,7 @@ module.exports = function(grunt) {
                         "src/objects/Cylinder.js",
 
                         // Collision
+                        "src/collision/Ray.js",
                         "src/collision/Broadphase.js",
                         "src/collision/NaiveBroadphase.js",
                         "src/collision/GridBroadphase.js",
