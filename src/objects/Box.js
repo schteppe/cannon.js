@@ -33,21 +33,20 @@ CANNON.Box.prototype.constructor = CANNON.Box;
  * @brief Updates the local convex polyhedron representation used for some collisions.
  */
 CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
-    var sx = this.halfExtents.x;
-    var sy = this.halfExtents.y;
-    var sz = this.halfExtents.z;
-    var V = CANNON.Vec3;
+    var sx = this.halfExtents[0];
+    var sy = this.halfExtents[1];
+    var sz = this.halfExtents[2];
 
     function createBoxPolyhedron(size){
         size = size || 1;
-        var vertices = [vec3.create(-size,-size,-size),
-                        vec3.create( size,-size,-size),
-                        vec3.create( size, size,-size),
-                        vec3.create(-size, size,-size),
-                        vec3.create(-size,-size, size),
-                        vec3.create( size,-size, size),
-                        vec3.create( size, size, size),
-                        vec3.create(-size, size, size)];
+        var vertices = [vec3.fromValues(-size,-size,-size),
+                        vec3.fromValues( size,-size,-size),
+                        vec3.fromValues( size, size,-size),
+                        vec3.fromValues(-size, size,-size),
+                        vec3.fromValues(-size,-size, size),
+                        vec3.fromValues( size,-size, size),
+                        vec3.fromValues( size, size, size),
+                        vec3.fromValues(-size, size, size)];
         var faces =[[3,2,1,0], // -z
                     [4,5,6,7], // +z
                     [5,4,1,0], // -y
@@ -55,26 +54,26 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                     [0,4,7,3 /*0,3,4,7*/ ], // -x
                     [1,2,5,6], // +x
                     ];
-        var faceNormals =   [vec3.create( 0, 0,-1),
-                           vec3.create( 0, 0, 1),
-                           vec3.create( 0,-1, 0),
-                           vec3.create( 0, 1, 0),
-                           vec3.create(-1, 0, 0),
-                           vec3.create( 1, 0, 0)];
+        var faceNormals = [vec3.fromValues( 0, 0,-1),
+                           vec3.fromValues( 0, 0, 1),
+                           vec3.fromValues( 0,-1, 0),
+                           vec3.fromValues( 0, 1, 0),
+                           vec3.fromValues(-1, 0, 0),
+                           vec3.fromValues( 1, 0, 0)];
         var boxShape = new CANNON.ConvexPolyhedron(vertices,
                                                  faces,
                                                  faceNormals);
         return boxShape;
     }
 
-    var h = new CANNON.ConvexPolyhedron([new V(-sx,-sy,-sz),
-                                         new V( sx,-sy,-sz),
-                                         new V( sx, sy,-sz),
-                                         new V(-sx, sy,-sz),
-                                         new V(-sx,-sy, sz),
-                                         new V( sx,-sy, sz),
-                                         new V( sx, sy, sz),
-                                         new V(-sx, sy, sz)],
+    var h = new CANNON.ConvexPolyhedron([vec3.fromValues(-sx,-sy,-sz),
+                                         vec3.fromValues( sx,-sy,-sz),
+                                         vec3.fromValues( sx, sy,-sz),
+                                         vec3.fromValues(-sx, sy,-sz),
+                                         vec3.fromValues(-sx,-sy, sz),
+                                         vec3.fromValues( sx,-sy, sz),
+                                         vec3.fromValues( sx, sy, sz),
+                                         vec3.fromValues(-sx, sy, sz)],
                                          [[3,2,1,0], // -z
                                           [4,5,6,7], // +z
                                           [5,4,1,0], // -y
@@ -82,21 +81,21 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                                           [0,4,7,3], // -x
                                           [1,2,5,6], // +x
                                           ],
-                                        [new V( 0, 0,-1),
-                                         new V( 0, 0, 1),
-                                         new V( 0,-1, 0),
-                                         new V( 0, 1, 0),
-                                         new V(-1, 0, 0),
-                                         new V( 1, 0, 0)]);
+                                        [vec3.fromValues( 0, 0,-1),
+                                         vec3.fromValues( 0, 0, 1),
+                                         vec3.fromValues( 0,-1, 0),
+                                         vec3.fromValues( 0, 1, 0),
+                                         vec3.fromValues(-1, 0, 0),
+                                         vec3.fromValues( 1, 0, 0)]);
     this.convexPolyhedronRepresentation = h;
 };
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
     target = target || vec3.create();
     var e = this.halfExtents;
-    target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
-    target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
-    target.z = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.x*2*e.x );
+    vec3.set(target, 1.0 / 12.0 * mass * (   2*e[1]*2*e[1] + 2*e[2]*2*e[2] ),
+                     1.0 / 12.0 * mass * (   2*e[0]*2*e[0] + 2*e[2]*2*e[2] ),
+                     1.0 / 12.0 * mass * (   2*e[1]*2*e[1] + 2*e[0]*2*e[0] ) );
     return target;
 };
 
@@ -108,19 +107,20 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
  * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
  * @return array
  */
-CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,quat){
+CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,q){
     var sides = sixTargetVectors;
     var ex = this.halfExtents;
-    sides[0].set(  ex.x,     0,     0);
-    sides[1].set(     0,  ex.y,     0);
-    sides[2].set(     0,     0,  ex.z);
-    sides[3].set( -ex.x,     0,     0);
-    sides[4].set(     0, -ex.y,     0);
-    sides[5].set(     0,     0, -ex.z);
+    vec3.set(sides[0],  ex.x,     0,     0);
+    vec3.set(sides[1],     0,  ex.y,     0);
+    vec3.set(sides[2],     0,     0,  ex.z);
+    vec3.set(sides[3], -ex.x,     0,     0);
+    vec3.set(sides[4],     0, -ex.y,     0);
+    vec3.set(sides[5],     0,     0, -ex.z);
 
-    if(quat!==undefined){
+    if(q!==undefined){
         for(var i=0; i!==sides.length; i++){
-            quat.vmult(sides[i],sides[i]);
+            //q.vmult(sides[i],sides[i]);
+            vec3.transformQuat(sides[i],sides[i],q);
         }
     }
 

@@ -830,9 +830,9 @@ CANNON.Demo = function(options){
         case CANNON.Shape.types.CONVEXPOLYHEDRON:
             var verts = [];
             for(var i=0; i<shape.vertices.length; i++){
-                verts.push(new THREE.Vector3(shape.vertices[i].x,
-                shape.vertices[i].y,
-                shape.vertices[i].z));
+                verts.push(new THREE.Vector3(shape.vertices[i][0],
+                                             shape.vertices[i][1],
+                                             shape.vertices[i][2]));
             }
             var geo = new THREE.ConvexGeometry( verts );
             mesh = new THREE.Mesh( geo, currentMaterial );

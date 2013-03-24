@@ -366,6 +366,18 @@ CANNON.Vec3.prototype.almostEquals = function(v,precision){
     return true;
 };
 
+vec3.almostEquals = function(a,b,precision){
+    if(precision===undefined){
+        precision = 1e-6;
+    }
+    if( Math.abs(a[0]-b[0])>precision ||
+        Math.abs(a[1]-b[1])>precision ||
+        Math.abs(a[2]-b[2])>precision){
+        return false;
+    }
+    return true;
+};
+
 /**
  * @method almostZero
  * @brief Check if a vector is almost zero

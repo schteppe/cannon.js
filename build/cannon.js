@@ -768,6 +768,18 @@ CANNON.Vec3.prototype.almostEquals = function(v,precision){
     return true;
 };
 
+vec3.almostEquals = function(a,b,precision){
+    if(precision===undefined){
+        precision = 1e-6;
+    }
+    if( Math.abs(a[0]-b[0])>precision ||
+        Math.abs(a[1]-b[1])>precision ||
+        Math.abs(a[2]-b[2])>precision){
+        return false;
+    }
+    return true;
+};
+
 /**
  * @method almostZero
  * @brief Check if a vector is almost zero
@@ -1164,12 +1176,12 @@ CANNON.ObjectPool.prototype.constructObject = function(){
  */
 CANNON.Vec3Pool = function(){
     CANNON.ObjectPool.call(this);
-    this.type = CANNON.Vec3;
+    this.type = vec3;
 };
 CANNON.Vec3Pool.prototype = new CANNON.ObjectPool();
 
 CANNON.Vec3Pool.prototype.constructObject = function(){
-    return new CANNON.Vec3();
+    return vec3.create();
 };
 
 /**
@@ -1961,21 +1973,20 @@ CANNON.Box.prototype.constructor = CANNON.Box;
  * @brief Updates the local convex polyhedron representation used for some collisions.
  */
 CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
-    var sx = this.halfExtents.x;
-    var sy = this.halfExtents.y;
-    var sz = this.halfExtents.z;
-    var V = CANNON.Vec3;
+    var sx = this.halfExtents[0];
+    var sy = this.halfExtents[1];
+    var sz = this.halfExtents[2];
 
     function createBoxPolyhedron(size){
         size = size || 1;
-        var vertices = [vec3.create(-size,-size,-size),
-                        vec3.create( size,-size,-size),
-                        vec3.create( size, size,-size),
-                        vec3.create(-size, size,-size),
-                        vec3.create(-size,-size, size),
-                        vec3.create( size,-size, size),
-                        vec3.create( size, size, size),
-                        vec3.create(-size, size, size)];
+        var vertices = [vec3.fromValues(-size,-size,-size),
+                        vec3.fromValues( size,-size,-size),
+                        vec3.fromValues( size, size,-size),
+                        vec3.fromValues(-size, size,-size),
+                        vec3.fromValues(-size,-size, size),
+                        vec3.fromValues( size,-size, size),
+                        vec3.fromValues( size, size, size),
+                        vec3.fromValues(-size, size, size)];
         var faces =[[3,2,1,0], // -z
                     [4,5,6,7], // +z
                     [5,4,1,0], // -y
@@ -1983,26 +1994,26 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                     [0,4,7,3 /*0,3,4,7*/ ], // -x
                     [1,2,5,6], // +x
                     ];
-        var faceNormals =   [vec3.create( 0, 0,-1),
-                           vec3.create( 0, 0, 1),
-                           vec3.create( 0,-1, 0),
-                           vec3.create( 0, 1, 0),
-                           vec3.create(-1, 0, 0),
-                           vec3.create( 1, 0, 0)];
+        var faceNormals = [vec3.fromValues( 0, 0,-1),
+                           vec3.fromValues( 0, 0, 1),
+                           vec3.fromValues( 0,-1, 0),
+                           vec3.fromValues( 0, 1, 0),
+                           vec3.fromValues(-1, 0, 0),
+                           vec3.fromValues( 1, 0, 0)];
         var boxShape = new CANNON.ConvexPolyhedron(vertices,
                                                  faces,
                                                  faceNormals);
         return boxShape;
     }
 
-    var h = new CANNON.ConvexPolyhedron([new V(-sx,-sy,-sz),
-                                         new V( sx,-sy,-sz),
-                                         new V( sx, sy,-sz),
-                                         new V(-sx, sy,-sz),
-                                         new V(-sx,-sy, sz),
-                                         new V( sx,-sy, sz),
-                                         new V( sx, sy, sz),
-                                         new V(-sx, sy, sz)],
+    var h = new CANNON.ConvexPolyhedron([vec3.fromValues(-sx,-sy,-sz),
+                                         vec3.fromValues( sx,-sy,-sz),
+                                         vec3.fromValues( sx, sy,-sz),
+                                         vec3.fromValues(-sx, sy,-sz),
+                                         vec3.fromValues(-sx,-sy, sz),
+                                         vec3.fromValues( sx,-sy, sz),
+                                         vec3.fromValues( sx, sy, sz),
+                                         vec3.fromValues(-sx, sy, sz)],
                                          [[3,2,1,0], // -z
                                           [4,5,6,7], // +z
                                           [5,4,1,0], // -y
@@ -2010,21 +2021,21 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                                           [0,4,7,3], // -x
                                           [1,2,5,6], // +x
                                           ],
-                                        [new V( 0, 0,-1),
-                                         new V( 0, 0, 1),
-                                         new V( 0,-1, 0),
-                                         new V( 0, 1, 0),
-                                         new V(-1, 0, 0),
-                                         new V( 1, 0, 0)]);
+                                        [vec3.fromValues( 0, 0,-1),
+                                         vec3.fromValues( 0, 0, 1),
+                                         vec3.fromValues( 0,-1, 0),
+                                         vec3.fromValues( 0, 1, 0),
+                                         vec3.fromValues(-1, 0, 0),
+                                         vec3.fromValues( 1, 0, 0)]);
     this.convexPolyhedronRepresentation = h;
 };
 
 CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
     target = target || vec3.create();
     var e = this.halfExtents;
-    target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
-    target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
-    target.z = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.x*2*e.x );
+    vec3.set(target, 1.0 / 12.0 * mass * (   2*e[1]*2*e[1] + 2*e[2]*2*e[2] ),
+                     1.0 / 12.0 * mass * (   2*e[0]*2*e[0] + 2*e[2]*2*e[2] ),
+                     1.0 / 12.0 * mass * (   2*e[1]*2*e[1] + 2*e[0]*2*e[0] ) );
     return target;
 };
 
@@ -2036,19 +2047,20 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
  * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
  * @return array
  */
-CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,quat){
+CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,q){
     var sides = sixTargetVectors;
     var ex = this.halfExtents;
-    sides[0].set(  ex.x,     0,     0);
-    sides[1].set(     0,  ex.y,     0);
-    sides[2].set(     0,     0,  ex.z);
-    sides[3].set( -ex.x,     0,     0);
-    sides[4].set(     0, -ex.y,     0);
-    sides[5].set(     0,     0, -ex.z);
+    vec3.set(sides[0],  ex.x,     0,     0);
+    vec3.set(sides[1],     0,  ex.y,     0);
+    vec3.set(sides[2],     0,     0,  ex.z);
+    vec3.set(sides[3], -ex.x,     0,     0);
+    vec3.set(sides[4],     0, -ex.y,     0);
+    vec3.set(sides[5],     0,     0, -ex.z);
 
-    if(quat!==undefined){
+    if(q!==undefined){
         for(var i=0; i!==sides.length; i++){
-            quat.vmult(sides[i],sides[i]);
+            //q.vmult(sides[i],sides[i]);
+            vec3.transformQuat(sides[i],sides[i],q);
         }
     }
 
@@ -2335,12 +2347,12 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var cb = vec3.create();
     var ab = vec3.create();
     function normal( va, vb, vc, target ) {
-        vb.vsub(va,ab);
-        vc.vsub(vb,cb);
-        cb.cross(ab,target);
-        if ( !target.isZero() ) {
-            target.normalize();
-        }
+        vec3.subtract(ab,vb,va);
+        vec3.subtract(cb,vc,vb);
+        vec3.cross(target,cb,ab);
+        //if ( !target.isZero() ) {
+        vec3.normalize(target,target);
+        //}
     }
 
     /**
@@ -2385,11 +2397,11 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 
         var n = vec3.create();
         normalOfFace(i,n);
-        n.negate(n);
+        vec3.negate(n,n);
         this.faceNormals.push(n);
         //console.log(n.toString());
         var vertex = this.vertices[this.faces[i][0]];
-        if(n.dot(vertex)<0){
+        if(vec3.dot(n,vertex)<0){
             console.warn("Face normal "+i+" ("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
             for(var j=0; j<this.faces[i].length; j++){
                 console.warn("Vertex "+this.faces[i][j]+": ("+this.vertices[faces[i][j]].toString()+")");
@@ -2409,9 +2421,6 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var nv = this.vertices.length;
     for(var pi=0; pi<nv; pi++){
         var p = this.vertices[pi];
-        if(!(p instanceof CANNON.Vec3)){
-            throw "Argument 1 must be instance of CANNON.Vec3";
-        }
         this.uniqueEdges.push(p);
     }
 
@@ -2421,11 +2430,13 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         for(var j=0; j<NbTris; j++){
             var k = ( j+1 ) % numVertices;
             var edge = vec3.create();
-            this.vertices[this.faces[i][j]].vsub(this.vertices[this.faces[i][k]],edge);
-            edge.normalize();
+            //this.vertices[this.faces[i][j]].vsub(this.vertices[this.faces[i][k]],edge);
+            vec3.subtract(edge,this.vertices[this.faces[i][j]],this.vertices[this.faces[i][k]]);
+            vec3.normalize(edge,edge);//.normalize();
             var found = false;
             for(var p=0;p<this.uniqueEdges.length;p++){
-                if (this.uniqueEdges[p].almostEquals(edge) || this.uniqueEdges[p].almostEquals(edge)){
+                //if (this.uniqueEdges[p].almostEquals(edge) || this.uniqueEdges[p].almostEquals(edge)){
+                if(vec3.almostEquals(this.uniqueEdges[p],edge) || vec3.almostEquals(this.uniqueEdges[p],edge)){
                     found = true;
                     break;
                 }
@@ -2465,7 +2476,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             vs[i].copy(worldVertex);
             quat.vmult(worldVertex,worldVertex);
             worldVertex.vadd(pos,worldVertex);
-            var val = worldVertex.dot(axis);
+            var val = vec3.dot(worldVertex,axis);
             if(max===null || val>max){
                 max = val;
             }
@@ -2593,10 +2604,10 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
                 quatB.vmult(worldEdge1,worldEdge1);
                 //posB.vadd(worldEdge1,worldEdge1); // needed?
                 //console.log("edge1:",worldEdge1.toString());
-                worldEdge0.cross(worldEdge1,Cross);
+                vec3.cross(Cross,worldEdge0,worldEdge1);
                 curEdgeEdge++;
                 if(!Cross.almostZero()){
-                    Cross.normalize();
+                    vec3.normalize(Cross,Cross);//.normalize();
                     var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
                     if(dist===false){
                         return false;
@@ -2609,9 +2620,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             }
         }
 
-        posB.vsub(posA,deltaC);
-        if((deltaC.dot(target))>0.0){
-            target.negate(target);
+        vec3.subtract(deltaC,posB,posA);
+        if((vec3.dot(deltaC,target))>0.0){
+            vec3.negate(target,target);
         }
         return true;
     };
@@ -2647,7 +2658,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             hullB.faceNormals[face].copy(WorldNormal);
             quatB.vmult(WorldNormal,WorldNormal);
             //posB.vadd(WorldNormal,WorldNormal);
-            var d = WorldNormal.dot(separatingNormal);
+            var d = vec3.dot(WorldNormal,separatingNormal);
             if (d > dmax){
                 dmax = d;
                 closestFaceB = face;
@@ -2716,7 +2727,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             hullA.faceNormals[face].copy(faceANormalWS);
             quatA.vmult(faceANormalWS,faceANormalWS);
             //posA.vadd(faceANormalWS,faceANormalWS);
-            var d = faceANormalWS.dot(separatingNormal);
+            var d = vec3.dot(faceANormalWS,separatingNormal);
             if (d < dmin){
                 dmin = d;
                 closestFaceA = face;
@@ -2744,19 +2755,19 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         for(var e0=0; e0<numVerticesA; e0++){
             var a = hullA.vertices[polyA[e0]];
             var b = hullA.vertices[polyA[(e0+1)%numVerticesA]];
-            a.vsub(b,edge0);
+            vec3.subtract(edge0,a,b);
             edge0.copy(WorldEdge0);
             quatA.vmult(WorldEdge0,WorldEdge0);
             posA.vadd(WorldEdge0,WorldEdge0);
             this.faceNormals[closestFaceA].copy(worldPlaneAnormal1);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
             quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
             posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
-            WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
-            planeNormalWS1.negate(planeNormalWS1);
+            vec3.cross(planeNormalWS1,WorldEdge0,worldPlaneAnormal1);
+            vec3.negate(planeNormalWS1,planeNormalWS1);
             a.copy(worldA1);
             quatA.vmult(worldA1,worldA1);
             posA.vadd(worldA1,worldA1);
-            var planeEqWS1 = -worldA1.dot(planeNormalWS1);
+            var planeEqWS1 = -vec3.dot(worldA1,planeNormalWS1);
             var planeEqWS;
             if(true){
                 var otherFace = polyA.connectedFaces[e0];
@@ -2766,7 +2777,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
                 localPlaneNormal.copy(planeNormalWS);
                 quatA.vmult(planeNormalWS,planeNormalWS);
                 //posA.vadd(planeNormalWS,planeNormalWS);
-                var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
+                var planeEqWS = localPlaneEq - vec3.dot(planeNormalWS,posA);
             } else  {
                 planeNormalWS1.copy(planeNormalWS);
                 planeEqWS = planeEqWS1;
@@ -2795,7 +2806,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         localPlaneNormal.copy(planeNormalWS);
         quatA.vmult(planeNormalWS,planeNormalWS);
 
-        var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
+        var planeEqWS = localPlaneEq - vec3.dot(planeNormalWS,posA);
         for (var i=0; i<pVtxIn.length; i++){
             var depth = planeNormalWS.dot(pVtxIn[i]) + planeEqWS; //???
             /*console.log("depth calc from normal=",planeNormalWS.toString()," and constant "+planeEqWS+" and vertex ",pVtxIn[i].toString()," gives "+depth);*/
@@ -2852,11 +2863,11 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         var firstVertex = inVertices[inVertices.length-1];
         var lastVertex =   inVertices[0];
 
-        n_dot_first = planeNormal.dot(firstVertex) + planeConstant;
+        n_dot_first = vec3.dot(planeNormal,firstVertex) + planeConstant;
 
         for(var vi = 0; vi < numVerts; vi++){
             lastVertex = inVertices[vi];
-            n_dot_last = planeNormal.dot(lastVertex) + planeConstant;
+            n_dot_last = vec3.dot(planeNormal,lastVertex) + planeConstant;
             if(n_dot_first < 0){
                 if(n_dot_last < 0){
                     // Start < 0, end < 0, so output lastVertex
@@ -2901,7 +2912,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         var f = that.faces[face_i];
         var n = that.faceNormals[face_i];
         var v = that.vertices[f[0]];
-        var c = -n.dot(v);
+        var c = -vec3.dot(n,v);
         return c;
     }
 
@@ -2950,8 +2961,8 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         aabbmin = this.aabbmin,
         aabbmax = this.aabbmax,
         vertices = this.vertices;
-        aabbmin.set(Infinity,Infinity,Infinity);
-        aabbmax.set(-Infinity,-Infinity,-Infinity);
+        vec3.set(aabbmin,Infinity,Infinity,Infinity);
+        vec3.set(aabbmax,-Infinity,-Infinity,-Infinity);
         for(var i=0; i<n; i++){
             var v = vertices[i];
             if     (v.x < aabbmin.x){
@@ -3016,7 +3027,7 @@ CANNON.ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
     var max2 = 0;
     var verts = this.vertices;
     for(var i=0, N=verts.length; i!==N; i++) {
-        var norm2 = verts[i].norm2();
+        var norm2 = vec3.squaredLength(verts[i]);
         if(norm2 > max2){
             max2 = norm2;
         }
@@ -3052,8 +3063,8 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
             maxz = v.z;
         }
     }
-    min.set(minx,miny,minz);
-    max.set(maxx,maxy,maxz);
+    vec3.set(min,minx,miny,minz);
+    vec3.set(max,maxx,maxy,maxz);
 };
 
 // Just approximate volume!
@@ -3133,12 +3144,12 @@ CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
 
         // This dot product determines which side of the edge the point is
         var vToP = ConvexPolyhedron_vToP;
-        p.vsub(v,vToP);
-        var r1 = n.dot(vToP);
+        vec3.subtract(vToP,p,v);
+        var r1 = vec3.dot(n,vToP);
 
         var vToPointInside = ConvexPolyhedron_vToPointInside;
-        pointInside.vsub(v,vToPointInside);
-        var r2 = n.dot(vToPointInside);
+        vec3.subtract(vToPointInside,pointInside,v);
+        var r2 = vec3.dot(n,vToPointInside);
 
         if((r1<0 && r2>0) || (r1>0 && r2<0)){
             return false; // Encountered some other sign. Exit.
@@ -3174,13 +3185,13 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
         sin = Math.sin;
 
     // First bottom point
-    verts.push(vec3.create(radiusBottom*cos(0),
+    verts.push(vec3.fromValues(radiusBottom*cos(0),
                                radiusBottom*sin(0),
                                -height*0.5));
     bottomface.push(0);
 
     // First top point
-    verts.push(vec3.create(radiusTop*cos(0),
+    verts.push(vec3.fromValues(radiusTop*cos(0),
                                radiusTop*sin(0),
                                height*0.5));
     topface.push(1);
@@ -3190,17 +3201,17 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
         var thetaN = 2*Math.PI/N * (i+0.5);
         if(i<N-1){
             // Bottom
-            verts.push(vec3.create(radiusBottom*cos(theta),
+            verts.push(vec3.fromValues(radiusBottom*cos(theta),
                                        radiusBottom*sin(theta),
                                        -height*0.5));
             bottomface.push(2*i+2);
             // Top
-            verts.push(vec3.create(radiusTop*cos(theta),
+            verts.push(vec3.fromValues(radiusTop*cos(theta),
                                        radiusTop*sin(theta),
                                        height*0.5));
             topface.push(2*i+3);
             // Normal
-            normals.push(vec3.create(cos(thetaN),
+            normals.push(vec3.fromValues(cos(thetaN),
                                          sin(thetaN),
                                          0));
             // Face
@@ -3208,11 +3219,11 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
         } else {
             faces.push([0,1, 2*i+1, 2*i]); // Connect
             // Normal
-            normals.push(vec3.create(cos(thetaN),sin(thetaN),0));
+            normals.push(vec3.fromValues(cos(thetaN),sin(thetaN),0));
         }
     }
     faces.push(topface);
-    normals.push(vec3.create(0,0,1));
+    normals.push(vec3.fromValues(0,0,1));
 
     // Reorder bottom face
     var temp = [];
@@ -3220,7 +3231,7 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
         temp.push(bottomface[bottomface.length - i - 1]);
     }
     faces.push(temp);
-    normals.push(vec3.create(0,0,-1));
+    normals.push(vec3.fromValues(0,0,-1));
 
     this.type = CANNON.Shape.types.CONVEXPOLYHEDRON;
     CANNON.ConvexPolyhedron.call( this, verts, faces, normals );
@@ -5114,7 +5125,7 @@ CANNON.ContactGenerator = function(){
         temp = r.ri;
         r.ri = r.rj;
         r.rj = temp;
-        vec3.negate(r.ni,r.ni); //.negate(r.ni);
+        vec3.negate(r.ni,r.ni);
         temp = r.bi;
         r.bi = r.bj;
         r.bj = temp;
@@ -5144,12 +5155,12 @@ CANNON.ContactGenerator = function(){
 
         // Contact normal
         vec3.set(r.ni,0,0,1);
-        vec3.transformQuat(r.ni,r.ni,qj); //qj.vmult(r.ni,r.ni);
-        vec3.scale(r.ni,r.ni,-1) //r.ni.negate(r.ni); // body i is the sphere, flip normal
-        vec3.normalize(r.ni,r.ni); //r.ni.normalize();
+        vec3.transformQuat(r.ni,r.ni,qj); //vec3.transformQuat(r.ni,r.ni,qj);
+        vec3.scale(r.ni,r.ni,-1) //vec3.negate(r.ni,r.ni); // body i is the sphere, flip normal
+        vec3.normalize(r.ni,r.ni); //vec3.normalize(r.ni,r.ni);
 
         // Vector from sphere center to contact point
-        vec3.scale(r.ri, r.ni, si.radius); //r.r.ni.mult(si.radius,r.ri);
+        vec3.scale(r.ri, r.ni, si.radius); //vec3.scale(r.ri,r.r.ni,si.radius);
 
         // Project down sphere on plane
         vec3.subtract(point_on_plane_to_sphere,xi,xj);
@@ -5172,12 +5183,12 @@ CANNON.ContactGenerator = function(){
 
             // Get edge to the next vertex
             var edge = pointInPolygon_edge;
-            verts[(i+1) % (N)].vsub(v,edge);
+            vec3.subtract(edge,verts[(i+1)%N],v);
 
             // Get cross product between polygon normal and the edge
             var edge_x_normal = pointInPolygon_edge_x_normal;
             //var edge_x_normal = vec3.create();
-            edge.cross(normal,edge_x_normal);
+            vec3.cross(edge_x_normal,edge,normal);
 
             // Get vector between point and current vertex
             var vertex_to_p = pointInPolygon_vtp;
@@ -5235,8 +5246,8 @@ CANNON.ContactGenerator = function(){
             var ns = sphereBox_ns;
             vec3.copy(ns,sides[idx]);
 
-            var h = ns.norm();
-            ns.normalize();
+            var h = vec3.length(ns);
+            vec3.normalize(ns,ns);
 
             // The normal/distance dot product tells which side of the plane we are
             var dot = vec3.dot(box_to_sphere,ns);
@@ -5249,10 +5260,10 @@ CANNON.ContactGenerator = function(){
                 sides[(idx+2)%3].copy(ns2);*/
                 vec3.copy(ns1,sides[(idx+1)%3]);
                 vec3.copy(ns2,sides[(idx+2)%3]);
-                var h1 = ns1.norm();
-                var h2 = ns2.norm();
-                ns1.normalize();
-                ns2.normalize();
+                var h1 = vec3.length(ns1);
+                var h2 = vec3.length(ns2);
+                vec3.normalize(ns1,ns1);
+                vec3.normalize(ns2,ns2);
                 var dot1 = vec3.dot(box_to_sphere,ns1);
                 var dot2 = vec3.dot(box_to_sphere,ns2);
                 if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
@@ -5273,14 +5284,14 @@ CANNON.ContactGenerator = function(){
         if(side_penetrations){
             found = true;
             var r = makeResult(bi,bj);
-            side_ns.mult(-R,r.ri); // Sphere r
+            vec3.scale(r.ri,side_ns,-R); // Sphere r
             vec3.copy(r.ni,side_ns);
-            r.ni.negate(r.ni); // Normal should be out of sphere
-            side_ns.mult(side_h,side_ns);
-            side_ns1.mult(side_dot1,side_ns1);
-            side_ns.vadd(side_ns1,side_ns);
-            side_ns2.mult(side_dot2,side_ns2);
-            side_ns.vadd(side_ns2,r.rj);
+            vec3.negate(r.ni,r.ni); // Normal should be out of sphere
+            vec3.scale(side_ns,side_ns,side_h);
+            vec3.scale(side_ns1,side_ns1,side_dot1);
+            vec3.add(side_ns,side_ns,side_ns1);
+            vec3.scale(side_ns2,side_ns2,side_dot2);
+            vec3.add(r.rj,side_ns,side_ns2);
             result.push(r);
         }
 
@@ -5290,34 +5301,34 @@ CANNON.ContactGenerator = function(){
         for(var j=0; j!==2 && !found; j++){
             for(var k=0; k!==2 && !found; k++){
                 for(var l=0; l!==2 && !found; l++){
-                    rj.set(0,0,0);
+                    vec3.set(rj,0,0,0);
                     if(j){
-                        rj.vadd(sides[0],rj);
+                        vec3.add(rj,rj,sides[0]);
                     } else {
-                        rj.vsub(sides[0],rj);
+                        vec3.subtract(rj,rj,sides[0]);
                     }
                     if(k){
-                        rj.vadd(sides[1],rj);
+                        vec3.add(rj,rj,sides[1]);
                     } else {
-                        rj.vsub(sides[1],rj);
+                        vec3.subtract(rj,rj,sides[1]);
                     }
                     if(l){
-                        rj.vadd(sides[2],rj);
+                        vec3.add(rj,rj,sides[2]);
                     } else {
-                        rj.vsub(sides[2],rj);
+                        vec3.subtract(rj,rj,sides[2]);
                     }
 
                     // World position of corner
-                    xj.vadd(rj,sphere_to_corner);
+                    vec3.add(sphere_to_corner,xj,rj);
                     vec3.subtract(sphere_to_corner,sphere_to_corner,xi);
 
-                    if(sphere_to_corner.norm2() < R*R){
+                    if(vec3.squaredLength(sphere_to_corner) < R*R){
                         found = true;
                         var r = makeResult(bi,bj);
                         vec3.copy(r.ri,sphere_to_corner);
-                        r.ri.normalize();
+                        vec3.normalize(r.ri,r.ri);
                         vec3.copy(r.ni,r.ri);
-                        r.ri.mult(R,r.ri);
+                        vec3.scale(r.ri,r.ri,R);
                         vec3.copy(r.rj,rj);
                         result.push(r);
                     }
@@ -5338,14 +5349,14 @@ CANNON.ContactGenerator = function(){
             for(var k=0; k!==Nsides && !found; k++){
                 if(j%3 !== k%3){
                     // Get edge tangent
-                    sides[k].cross(sides[j],edgeTangent);
-                    edgeTangent.normalize();
-                    sides[j].vadd(sides[k], edgeCenter);
+                    vec3.cross(edgeTangent,sides[k],sides[j]);
+                    vec3.normalize(edgeTangent,edgeTangent);
+                    vec3.add( edgeCenter,sides[j],sides[k]);
                     vec3.copy(r,xi);
                     vec3.subtract(r,r,edgeCenter);
                     vec3.subtract(r,r,xj);
                     var orthonorm = vec3.dot(r,edgeTangent); // distance from edge center to sphere center in the tangent direction
-                    edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
+                    vec3.scale(orthogonal,edgeTangent,orthonorm); // Vector from edge center to sphere center in the tangent direction
 
                     // Find the third side orthogonal to this one
                     var l = 0;
@@ -5361,21 +5372,21 @@ CANNON.ContactGenerator = function(){
 
                     // Distances in tangent direction and distance in the plane orthogonal to it
                     var tdist = Math.abs(orthonorm);
-                    var ndist = dist.norm();
+                    var ndist = vec3.length(dist);
 
-                    if(tdist < sides[l].norm() && ndist<R){
+                    if(tdist < vec3.length(sides[l]) && ndist<R){
                         found = true;
                         var res = makeResult(bi,bj);
-                        edgeCenter.vadd(orthogonal,res.rj); // box rj
+                        vec3.add(res.rj,edgeCenter,orthogonal); // box rj
                         vec3.copy(res.rj,res.rj);
-                        dist.negate(res.ni);
-                        res.ni.normalize();
+                        vec3.negate(res.ni,dist);
+                        vec3.normalize(res.ni,res.ni);
 
                         vec3.copy(res.ri,res.rj);
-                        res.ri.vadd(xj,res.ri);
+                        vec3.add(res.ri,res.ri,xj);
                         vec3.subtract(res.ri,res.ri,xi);
-                        res.ri.normalize();
-                        res.ri.mult(R,res.ri);
+                        vec3.normalize(res.ri,res.ri);
+                        vec3.scale(res.ri,res.ri,R);
 
                         result.push(res);
                     }
@@ -5409,17 +5420,17 @@ CANNON.ContactGenerator = function(){
 
             // World position of corner
             var worldCorner = sphereConvex_worldCorner;
-            qj.vmult(v,worldCorner);
-            xj.vadd(worldCorner,worldCorner);
+            vec3.transformQuat(worldCorner,v,qj);
+            vec3.add(worldCorner,xj,worldCorner);
             var sphere_to_corner = sphereConvex_sphereToCorner;
             vec3.subtract( sphere_to_corner,worldCorner,xi);
-            if(sphere_to_corner.norm2()<R*R){
+            if(vec3.squaredLength(sphere_to_corner)<R*R){
                 found = true;
                 var r = makeResult(bi,bj);
                 vec3.copy(r.ri,sphere_to_corner);
-                r.ri.normalize();
+                vec3.normalize(r.ri,r.ri);
                 vec3.copy(r.ni,r.ri);
-                r.ri.mult(R,r.ri);
+                vec3.scale(r.ri,r.ri,R);
                 vec3.subtract(r.rj,worldCorner,xj);
                 result.push(r);
                 return;
@@ -5433,15 +5444,15 @@ CANNON.ContactGenerator = function(){
             var face = faces[i];
 
             var worldNormal = sphereConvex_worldNormal;
-            qj.vmult(normal,worldNormal);
+            vec3.transformQuat(worldNormal,normal,qj);
 
             var worldPoint = sphereConvex_worldPoint;
-            qj.vmult(verts[face[0]],worldPoint);
-            worldPoint.vadd(xj,worldPoint); // Arbitrary point in the face
+            vec3.transformQuat(worldPoint,verts[face[0]],qj);
+            vec3.add(worldPoint,worldPoint,xj); // Arbitrary point in the face
 
             var worldSpherePointClosestToPlane = sphereConvex_worldSpherePointClosestToPlane;
-            worldNormal.mult(-R,worldSpherePointClosestToPlane);
-            xi.vadd(worldSpherePointClosestToPlane,worldSpherePointClosestToPlane);
+            vec3.scale(worldSpherePointClosestToPlane,worldNormal,-R);
+            vec3.add(worldSpherePointClosestToPlane,xi,worldSpherePointClosestToPlane);
 
             var penetrationVec = sphereConvex_penetrationVec;
             vec3.subtract(penetrationVec,worldSpherePointClosestToPlane,worldPoint);
@@ -5455,26 +5466,26 @@ CANNON.ContactGenerator = function(){
                 var faceVerts = []; // Face vertices, in world coords
                 for(var j=0, Nverts=face.length; j!==Nverts; j++){
                     var worldVertex = v3pool.get();
-                    qj.vmult(verts[face[j]], worldVertex);
-                    xj.vadd(worldVertex,worldVertex);
+                    vec3.transformQuat( worldVertex,verts[face[j]],qj);
+                    vec3.add(worldVertex,xj,worldVertex);
                     faceVerts.push(worldVertex);
                 }
 
                 if(pointInPolygon(faceVerts,worldNormal,xi)){ // Is the sphere center in the face polygon?
                     found = true;
                     var r = makeResult(bi,bj);
-                    worldNormal.mult(-R,r.ri); // Sphere r
-                    worldNormal.negate(r.ni); // Normal should be out of sphere
+                    vec3.scale(r.ri,worldNormal,-R); // Sphere r
+                    vec3.negate(r.ni,worldNormal); // Normal should be out of sphere
 
                     var penetrationVec2 = v3pool.get();
-                    worldNormal.mult(-penetration,penetrationVec2);
+                    vec3.scale(penetrationVec2,worldNormal,-penetration);
                     var penetrationSpherePoint = v3pool.get();
-                    worldNormal.mult(-R,penetrationSpherePoint);
+                    vec3.scale(penetrationSpherePoint,worldNormal,-R);
 
                     //xi.vsub(xj).vadd(penetrationSpherePoint).vadd(penetrationVec2 , r.rj);
                     vec3.subtract(r.rj,xi,xj);
-                    r.rj.vadd(penetrationSpherePoint,r.rj);
-                    r.rj.vadd(penetrationVec2 , r.rj);
+                    vec3.add(r.rj,r.rj,penetrationSpherePoint);
+                    vec3.add( r.rj,r.rj,penetrationVec2 );
 
                     v3pool.release(penetrationVec2);
                     v3pool.release(penetrationSpherePoint);
@@ -5494,10 +5505,10 @@ CANNON.ContactGenerator = function(){
                         // Get two world transformed vertices
                         var v1 = v3pool.get();
                         var v2 = v3pool.get();
-                        qj.vmult(verts[face[(j+1)%face.length]], v1);
-                        qj.vmult(verts[face[(j+2)%face.length]], v2);
-                        xj.vadd(v1, v1);
-                        xj.vadd(v2, v2);
+                        vec3.transformQuat( v1,verts[face[(j+1)%face.length]],qj);
+                        vec3.transformQuat( v2,verts[face[(j+2)%face.length]],qj);
+                        vec3.add( v1,xj,v1);
+                        vec3.add( v2,xj,v2);
 
                         // Construct edge vector
                         var edge = sphereConvex_edge;
@@ -5505,15 +5516,15 @@ CANNON.ContactGenerator = function(){
 
                         // Construct the same vector, but normalized
                         var edgeUnit = sphereConvex_edgeUnit;
-                        edge.unit(edgeUnit);
+                        vec3.normalize(edgeUnit,edge);
 
                         // p is xi projected onto the edge
                         var p = v3pool.get();
                         var v1_to_xi = v3pool.get();
                         vec3.subtract( v1_to_xi,xi,v1);
                         var dot = vec3.dot(v1_to_xi,edgeUnit);
-                        edgeUnit.mult(dot, p);
-                        p.vadd(v1, p);
+                        vec3.scale( p,edgeUnit,dot);
+                        vec3.add( p,p,v1);
 
                         // Compute a vector from p to the center of the sphere
                         var xi_to_p = v3pool.get();
@@ -5521,15 +5532,15 @@ CANNON.ContactGenerator = function(){
 
                         // Collision if the edge-sphere distance is less than the radius
                         // AND if p is in between v1 and v2
-                        if(dot > 0 && dot*dot<edge.norm2() && xi_to_p.norm2() < R*R){ // Collision if the edge-sphere distance is less than the radius
+                        if(dot > 0 && dot*dot<vec3.squaredLength(edge) && vec3.squaredLength(xi_to_p) < R*R){ // Collision if the edge-sphere distance is less than the radius
                             // Edge contact!
                             var r = makeResult(bi,bj);
                             vec3.subtract(r.rj,p,xj);
 
                             vec3.subtract(r.ni,p,xi);
-                            r.ni.normalize();
+                            vec3.normalize(r.ni,r.ni);
 
-                            r.ni.mult(R,r.ri);
+                            vec3.scale(r.ri,r.ni,R);
                             result.push(r);
 
                             // Release world vertices
@@ -5584,10 +5595,10 @@ CANNON.ContactGenerator = function(){
             var newQuat = quatPool.pop() || new CANNON.Quaternion();
             var newPos = v3pool.pop() || vec3.create();
             qj.mult(sj.childOrientations[i],newQuat); // Can't reuse these since nearPhase() may recurse
-            newQuat.normalize();
+            vec3.normalize(newQuat,newQuat);
             //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
-            qj.vmult(sj.childOffsets[i],newPos);
-            xj.vadd(newPos,newPos);
+            vec3.transformQuat(newPos,sj.childOffsets[i],qj);
+            vec3.add(newPos,xj,newPos);
             nearPhase(r,
                       si,
                       sj.childShapes[i],
@@ -5607,9 +5618,9 @@ CANNON.ContactGenerator = function(){
             }
             for(var j=0; j!==r.length; j++){
                 // The "rj" vector is in world coords, though we must add the world child offset vector.
-                //r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
-                qj.vmult(sj.childOffsets[i],tempVec);
-                r[j].rj.vadd(tempVec,r[j].rj);
+                //r[j].rj.vadd(vec3.transformQuat(r[j].rj,sj.childOffsets[i]),qj);
+                vec3.transformQuat(tempVec,sj.childOffsets[i],qj);
+                vec3.add(r[j].rj,r[j].rj,tempVec);
                 result.push(r[j]);
             }
 
@@ -5625,14 +5636,14 @@ CANNON.ContactGenerator = function(){
         // Simply return the points behind the plane.
         var v = planeConvex_v;
         var normal = planeConvex_normal;
-        normal.set(0,0,1);
-        qi.vmult(normal,normal); // Turn normal according to plane orientation
+        vec3.set(normal,0,0,1);
+        vec3.transformQuat(normal,normal,qi); // Turn normal according to plane orientation
         var relpos = planeConvex_relpos;
         for(var i=0; i!==sj.vertices.length; i++){
             vec3.copy(v,sj.vertices[i]);
             // Transform to world coords
-            qj.vmult(v,v);
-            xj.vadd(v,v);
+            vec3.transformQuat(v,v,qj);
+            vec3.add(v,xj,v);
             vec3.subtract(relpos,v,xi);
 
             var dot = vec3.dot(normal,relpos);
@@ -5666,10 +5677,10 @@ CANNON.ContactGenerator = function(){
             //console.log(res.length);
             for(var j=0; j!==res.length; j++){
                 var r = makeResult(bi,bj);
-                sepAxis.negate(r.ni);
-                res[j].normal.negate(q);
+                vec3.negate(r.ni,sepAxis);
+                vec3.negate(q,res[j].normal);
                 q.mult(res[j].depth,q);
-                res[j].point.vadd(q,r.ri);
+                vec3.add(r.ri,res[j].point,q);
                 vec3.copy(r.rj,res[j].point);
                 // Contact points are in world coordinates. Transform back to relative
                 vec3.subtract(r.rj,r.rj,xj);
@@ -5684,7 +5695,7 @@ CANNON.ContactGenerator = function(){
     var particlePlane_projected = vec3.create();
     function particlePlane(result,si,sj,xi,xj,qi,qj,bi,bj){
         var normal = particlePlane_normal;
-        normal.set(0,0,1);
+        vec3.set(normal,0,0,1);
         bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
         var relpos = particlePlane_relpos;
         vec3.subtract(relpos,xi,bj.position);
@@ -5692,14 +5703,14 @@ CANNON.ContactGenerator = function(){
         if(dot<=0.0){
             var r = makeResult(bi,bj);
             vec3.copy( r.ni ,normal); // Contact normal is the plane normal
-            r.ni.negate(r.ni);
-            r.ri.set(0,0,0); // Center of particle
+            vec3.negate(r.ni,r.ni);
+            vec3.set(r.ri,0,0,0); // Center of particle
 
             // Get particle position projected on plane
             var projected = particlePlane_projected;
             normal.mult(vec3.dot(normal,xi),projected);
             vec3.subtract(projected,xi,projected);
-            //projected.vadd(bj.position,projected);
+            //vec3.add(projected,projected,bj.position);
 
             // rj is now the projected world position minus plane position
             vec3.copy(r.rj,projected);
@@ -5711,18 +5722,18 @@ CANNON.ContactGenerator = function(){
     function particleSphere(result,si,sj,xi,xj,qi,qj,bi,bj){
         // The normal is the unit vector from sphere center to particle center
         var normal = particleSphere_normal;
-        normal.set(0,0,1);
+        vec3.set(normal,0,0,1);
         vec3.subtract(normal,xi,xj);
-        var lengthSquared = normal.norm2();
+        var lengthSquared = vec3.squaredLength(normal);
 
         if(lengthSquared <= sj.radius * sj.radius){
             var r = makeResult(bi,bj);
-            normal.normalize();
+            vec3.normalize(normal,normal);
             vec3.copy(r.rj,normal);
-            r.rj.mult(sj.radius,r.rj);
+            vec3.scale(r.rj,r.rj,sj.radius);
             vec3.copy( r.ni ,normal); // Contact normal
-            r.ni.negate(r.ni);
-            r.ri.set(0,0,0); // Center of particle
+            vec3.negate(r.ni,r.ni);
+            vec3.set(r.ri,0,0,0); // Center of particle
             result.push(r);
         }
     }
@@ -5746,7 +5757,7 @@ CANNON.ContactGenerator = function(){
         vec3.copy(local,xi);
         vec3.subtract(local,local,xj); // Convert position to relative the convex origin
         qj.conjugate(cqj);
-        cqj.vmult(local,local);
+        vec3.transformQuat(local,local,cqj);
 
         if(sj.pointIsInside(local)){
 
@@ -5765,7 +5776,7 @@ CANNON.ContactGenerator = function(){
                 var normal = sj.worldFaceNormals[i];
 
                 // Check how much the particle penetrates the polygon plane.
-                xi.vsub(verts[0],particleConvex_vertexToParticle);
+                vec3.subtract(particleConvex_vertexToParticle,xi,verts[0]);
                 var penetration = -vec3.dot(normal,particleConvex_vertexToParticle);
                 if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
                     minPenetration = penetration;
@@ -5778,18 +5789,18 @@ CANNON.ContactGenerator = function(){
             if(penetratedFaceIndex!==-1){
                 // Setup contact
                 var r = makeResult(bi,bj);
-                penetratedFaceNormal.mult(minPenetration, worldPenetrationVec);
+                vec3.scale( worldPenetrationVec,penetratedFaceNormal,minPenetration);
 
                 // rj is the particle position projected to the face
-                worldPenetrationVec.vadd(xi,worldPenetrationVec);
+                vec3.add(worldPenetrationVec,worldPenetrationVec,xi);
                 vec3.subtract(worldPenetrationVec,worldPenetrationVec,xj);
                 vec3.copy(r.rj,worldPenetrationVec);
                 //var projectedToFace = xi.vsub(xj).vadd(worldPenetrationVec);
                 //vec3.copy(r.rj,projectedToFace);
 
-                //qj.vmult(r.rj,r.rj);
-                penetratedFaceNormal.negate( r.ni ); // Contact normal
-                r.ri.set(0,0,0); // Center of particle
+                //vec3.transformQuat(r.rj,r.rj,qj);
+                vec3.negate( r.ni ,penetratedFaceNormal); // Contact normal
+                vec3.set(r.ri,0,0,0); // Center of particle
                 result.push(r);
             } else {
                 console.warn("Point found inside convex, but did not find penetrating face!");
