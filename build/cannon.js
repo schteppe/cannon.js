@@ -2473,15 +2473,15 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
      * @param array maxmin maxmin[0] and maxmin[1] will be set to maximum and minimum, respectively.
      */
     var worldVertex = vec3.create();
-    function project(hull,axis,pos,quat,maxmin){
+    function project(hull,axis,pos,q,maxmin){
         var n = hull.vertices.length;
         var max = null;
         var min = null;
         var vs = hull.vertices;
         for(var i=0; i<n; i++){
-            vs[i].copy(worldVertex);
-            quat.vmult(worldVertex,worldVertex);
-            worldVertex.vadd(pos,worldVertex);
+            vec3.copy(worldVertex,vs[i]);
+            vec3.transformQuat(worldVertex,worldVertex,q); //q.vmult(worldVertex,worldVertex);
+            vec3.add(worldVertex,worldVertex,pos);
             var val = vec3.dot(worldVertex,axis);
             if(max===null || val>max){
                 max = val;
@@ -2559,9 +2559,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         // Test normals from hullA
         for(var i=0; i<numFacesA; i++){
             // Get world face normal
-            hullA.faceNormals[i].copy(faceANormalWS3);
-            quatA.vmult(faceANormalWS3,faceANormalWS3);
-            //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
+            vec3.copy(faceANormalWS3,hullA.faceNormals[i]);
+            vec3.transformQuat(faceANormalWS3,faceANormalWS3,quatA); // quatA.vmult(faceANormalWS3,faceANormalWS3);
+            //vec3.add(faceANormalWS3,posA,faceANormalWS3); // Needed?
             //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
             var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
             if(d===false){
@@ -2570,16 +2570,16 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 
             if(d<dmin){
                 dmin = d;
-                faceANormalWS3.copy(target);
+                vec3.copy(target,faceANormalWS3);
             }
         }
 
         // Test normals from hullB
         var numFacesB = hullB.faces.length;
         for(var i=0;i<numFacesB;i++){
-            hullB.faceNormals[i].copy(Worldnormal1);
+            vec3.copy(Worldnormal1,hullB.faceNormals[i]);
             quatB.vmult(Worldnormal1,Worldnormal1);
-            //posB.vadd(Worldnormal1,Worldnormal1);
+            //vec3.add(Worldnormal1,posB,Worldnormal1);
             //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
             curPlaneTests++;
             var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
@@ -2589,7 +2589,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 
             if(d<dmin){
                 dmin = d;
-                Worldnormal1.copy(target);
+                vec3.copy(target,Worldnormal1);
             }
         }
 
@@ -2599,16 +2599,16 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         // Test edges
         for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
             // Get world edge
-            hullA.uniqueEdges[e0].copy(worldEdge0);
+            vec3.copy(worldEdge0,hullA.uniqueEdges[e0]);
             quatA.vmult(worldEdge0,worldEdge0);
-            //posA.vadd(worldEdge0,worldEdge0); // needed?
+            //vec3.add(worldEdge0,posA,worldEdge0); // needed?
 
             //console.log("edge0:",worldEdge0.toString());
 
             for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-                hullB.uniqueEdges[e1].copy(worldEdge1);
+                vec3.copy(worldEdge1,hullB.uniqueEdges[e1]);
                 quatB.vmult(worldEdge1,worldEdge1);
-                //posB.vadd(worldEdge1,worldEdge1); // needed?
+                //vec3.add(worldEdge1,posB,worldEdge1); // needed?
                 //console.log("edge1:",worldEdge1.toString());
                 vec3.cross(Cross,worldEdge0,worldEdge1);
                 curEdgeEdge++;
@@ -2620,7 +2620,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
                     }
                     if(dist<dmin){
                         dmin = dist;
-                        Cross.copy(target);
+                        vec3.copy(target,Cross);
                     }
                 }
             }
@@ -2661,9 +2661,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         var closestFaceB = -1;
         var dmax = -Infinity;
         for(var face=0; face < hullB.faces.length; face++){
-            hullB.faceNormals[face].copy(WorldNormal);
+            vec3.copy(WorldNormal,hullB.faceNormals[face]);
             quatB.vmult(WorldNormal,WorldNormal);
-            //posB.vadd(WorldNormal,WorldNormal);
+            //vec3.add(WorldNormal,posB,WorldNormal);
             var d = vec3.dot(WorldNormal,separatingNormal);
             if (d > dmax){
                 dmax = d;
@@ -2676,9 +2676,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         for(var e0=0; e0<numVertices; e0++){
             var b = hullB.vertices[polyB[e0]];
             var worldb = vec3.create();
-            b.copy(worldb);
+            vec3.copy(worldb,b);
             quatB.vmult(worldb,worldb);
-            posB.vadd(worldb,worldb);
+            vec3.add(worldb,posB,worldb);
             worldVertsB1.push(worldb);
         }
 
@@ -2730,9 +2730,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         var closestFaceA = -1;
         var dmin = Infinity;
         for(var face=0; face<hullA.faces.length; face++){
-            hullA.faceNormals[face].copy(faceANormalWS);
-            quatA.vmult(faceANormalWS,faceANormalWS);
-            //posA.vadd(faceANormalWS,faceANormalWS);
+            vec3.copy(faceANormalWS,hullA.faceNormals[face]);
+            vec3.transformQuat(faceANormalWS,faceANormalWS,quatA);//quatA.vmult(faceANormalWS,faceANormalWS);
+            //vec3.add(faceANormalWS,posA,faceANormalWS);
             var d = vec3.dot(faceANormalWS,separatingNormal);
             if (d < dmin){
                 dmin = d;
@@ -2762,30 +2762,30 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
             var a = hullA.vertices[polyA[e0]];
             var b = hullA.vertices[polyA[(e0+1)%numVerticesA]];
             vec3.subtract(edge0,a,b);
-            edge0.copy(WorldEdge0);
+            vec3.copy(WorldEdge0,edge0);
             quatA.vmult(WorldEdge0,WorldEdge0);
-            posA.vadd(WorldEdge0,WorldEdge0);
-            this.faceNormals[closestFaceA].copy(worldPlaneAnormal1);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
+            vec3.add(WorldEdge0,posA,WorldEdge0);
+            vec3.copy(worldPlaneAnormal1,this.faceNormals[closestFaceA]);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
             quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
-            posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
+            vec3.add(worldPlaneAnormal1,posA,worldPlaneAnormal1);
             vec3.cross(planeNormalWS1,WorldEdge0,worldPlaneAnormal1);
             vec3.negate(planeNormalWS1,planeNormalWS1);
-            a.copy(worldA1);
+            vec3.copy(worldA1,a);
             quatA.vmult(worldA1,worldA1);
-            posA.vadd(worldA1,worldA1);
+            vec3.add(worldA1,posA,worldA1);
             var planeEqWS1 = -vec3.dot(worldA1,planeNormalWS1);
             var planeEqWS;
             if(true){
                 var otherFace = polyA.connectedFaces[e0];
-                this.faceNormals[otherFace].copy(localPlaneNormal);
+                vec3.copy(localPlaneNormal,this.faceNormals[otherFace]);
                 var localPlaneEq = planeConstant(otherFace);
 
-                localPlaneNormal.copy(planeNormalWS);
+                vec3.copy(planeNormalWS,localPlaneNormal);
                 quatA.vmult(planeNormalWS,planeNormalWS);
-                //posA.vadd(planeNormalWS,planeNormalWS);
+                //vec3.add(planeNormalWS,posA,planeNormalWS);
                 var planeEqWS = localPlaneEq - vec3.dot(planeNormalWS,posA);
             } else  {
-                planeNormalWS1.copy(planeNormalWS);
+                vec3.copy(planeNormalWS,planeNormalWS1);
                 planeEqWS = planeEqWS1;
             }
 
@@ -2806,10 +2806,10 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
         //console.log("Resulting points after clip:",pVtxIn);
 
         // only keep contact points that are behind the witness face
-        this.faceNormals[closestFaceA].copy(localPlaneNormal);
+        vec3.copy(localPlaneNormal,this.faceNormals[closestFaceA]);
 
         var localPlaneEq = planeConstant(closestFaceA);
-        localPlaneNormal.copy(planeNormalWS);
+        vec3.copy(planeNormalWS,localPlaneNormal);
         quatA.vmult(planeNormalWS,planeNormalWS);
 
         var planeEqWS = localPlaneEq - vec3.dot(planeNormalWS,posA);
@@ -2878,7 +2878,7 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
                 if(n_dot_last < 0){
                     // Start < 0, end < 0, so output lastVertex
                     var newv = vec3.create();
-                    lastVertex.copy(newv);
+                    vec3.copy(newv,lastVertex);
                     outVertices.push(newv);
                 } else {
                     // Start < 0, end >= 0, so output intersection
@@ -3006,7 +3006,7 @@ CANNON.ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat)
         worldVerts = this.worldVertices;
     for(var i=0; i!==N; i++){
         quat.vmult( verts[i] , worldVerts[i] );
-        position.vadd( worldVerts[i] , worldVerts[i] );
+        vec3.add( worldVerts[i] ,position, worldVerts[i] );
     }
 
     this.worldVerticesNeedsUpdate = false;
@@ -3047,9 +3047,9 @@ CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max
     var n = this.vertices.length, verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
     for(var i=0; i<n; i++){
-        verts[i].copy(tempWorldVertex);
+        vec3.copy(tempWorldVertex,verts[i]);
         quat.vmult(tempWorldVertex,tempWorldVertex);
-        pos.vadd(tempWorldVertex,tempWorldVertex);
+        vec3.add(tempWorldVertex,pos,tempWorldVertex);
         var v = tempWorldVertex;
         if     (v.x < minx || minx===undefined){
             minx = v.x;
@@ -3087,7 +3087,7 @@ CANNON.ConvexPolyhedron.prototype.getAveragePointLocal = function(target){
     var n = this.vertices.length,
         verts = this.vertices;
     for(var i=0; i<n; i++){
-        target.vadd(verts[i],target);
+        vec3.add(target,target,verts[i]);
     }
     target.mult(1/n,target);
     return target;
@@ -3122,7 +3122,7 @@ CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
     if(offset){
         for(var i=0; i<n; i++){
             var v = verts[i];
-            v.vadd(offset,v);
+            vec3.add(v,v,offset);
         }
     }
 };
@@ -7106,16 +7106,16 @@ CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
 
     // Update 
     this.update = function(){
-        bodyB.position.vsub(bodyA.position,normal.ni);
-        normal.ni.normalize();
-        bodyA.quaternion.vmult(pivotA,normal.ri);
-        bodyB.quaternion.vmult(pivotB,normal.rj);
+        vec3.subtract(normal.ni,bodyB.position,bodyA.position);
+        vec3.normalize(normal.ni,normal.ni);
+        vec3.transformQuat(normal.ri, pivotA, bodyA.quaternion);
+        vec3.transformQuat(normal.rj, pivotB, bodyB.quaternion); //bodyB.quaternion.vmult(pivotB,normal.rj);
 
-        normal.ni.tangents(t1.ni,t2.ni);
-        normal.ri.copy(t1.ri);
-        normal.rj.copy(t1.rj);
-        normal.ri.copy(t2.ri);
-        normal.rj.copy(t2.rj);
+        vec3.tangents(t1.ni,t2.ni,normal.ni);
+        vec3.copy(t1.ri,normal.ri);
+        vec3.copy(t1.rj,normal.rj);
+        vec3.copy(t2.ri,normal.ri);
+        vec3.copy(t2.rj,normal.rj);
     };
 };
 CANNON.PointToPointConstraint.prototype = new CANNON.Constraint();

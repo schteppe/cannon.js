@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -26,9 +27,9 @@
         // We link together boxes in a chain
         demo.addScene("links",function(){
             var world = setupWorld(demo);
-            world.gravity.set(0,-1,-20);
+            vec3.set(world.gravity,0,-1,-20);
             var size = 1;
-            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size*0.1,size));
+            var boxShape = new CANNON.Box(vec3.fromValues(size,size*0.1,size));
             var mass = 0;
             var space = 0.1*size;
             
@@ -36,7 +37,7 @@
             for(var i=0; i<N; i++){
                 // Create a box
                 var boxbody = new CANNON.RigidBody(mass,boxShape);
-                boxbody.position.set(0,0,(N-i)*(size*2+2*space) + size*2+space);
+                vec3.set(boxbody.position,0,0,(N-i)*(size*2+2*space) + size*2+space);
                 boxbody.linearDamping=0.01; // Damping makes the movement slow down with time
                 boxbody.angularDamping=0.01;
                 world.add(boxbody);
@@ -45,8 +46,8 @@
                 if(i!=0){
                     // Connect the current body to the last one
                     // We connect two corner points to each other.
-                    var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(-size,0,size+space),last,new CANNON.Vec3(-size,0,-size-space));
-                    var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
+                    var c1 = new CANNON.PointToPointConstraint(boxbody,vec3.fromValues(-size,0,size+space),last,vec3.fromValues(-size,0,-size-space));
+                    var c2 = new CANNON.PointToPointConstraint(boxbody,vec3.fromValues(size,0,size+space),last,vec3.fromValues(size,0,-size-space));
                     world.addConstraint(c1);
                     world.addConstraint(c2);
                 } else {
@@ -73,7 +74,7 @@
             for(var j=0; j<Nrows; j++){
               // Create a new body
               var body = new CANNON.Particle(mass);
-              body.position.set((i-Ncols*0.5)*dist,(j-Nrows*0.5)*dist,5);
+              vec3.set(body.position,(i-Ncols*0.5)*dist,(j-Nrows*0.5)*dist,5);
               bodies[i+" "+j] = body;
               world.add(body);
               demo.addVisual(body);
@@ -94,7 +95,7 @@
           // Add the static sphere we throw the cloth on top of
           var sphere = new CANNON.Sphere(1.5);
           var body = new CANNON.RigidBody(0,sphere);
-          body.position.set(0,0,3.5);
+          vec3.set(body.position,0,0,3.5);;
           world.add(body);
           demo.addVisual(body);
         });
@@ -107,8 +108,8 @@
             var mass = 1;
             
             var spherebody = new CANNON.RigidBody(mass,sphereShape);
-            spherebody.position.set(0,0,size*3);
-            spherebody.velocity.set(5,0,0);
+            vec3.set(spherebody.position,0,0,size*3);
+            vec3.set(spherebody.velocity,5,0,0);;
             spherebody.linearDamping=0;
             spherebody.angularDamping=0;
             world.add(spherebody);
@@ -120,7 +121,7 @@
             demo.addVisual(spherebody2);
            
             // Connect this body to the last one
-            var c = new CANNON.PointToPointConstraint(spherebody,new CANNON.Vec3(0,0,size*2),spherebody2,new CANNON.Vec3(0,0,-size*2));
+            var c = new CANNON.PointToPointConstraint(spherebody,vec3.fromValues(0,0,size*2),spherebody2,vec3.fromValues(0,0,-size*2));
             world.addConstraint(c);
         });
 
@@ -138,7 +139,7 @@
           for(var i=0; i<N; i++){
             // Create a new body
             var spherebody = new CANNON.RigidBody(i===0 ? 0 :mass,sphereShape);
-            spherebody.position.set(0,0,(N-i)*dist);
+            vec3.set(spherebody.position,0,0,(N-i)*dist);
             spherebody.velocity.x = i;
             world.add(spherebody);
             demo.addVisual(spherebody);
@@ -169,8 +170,8 @@
             for(var j=0; j<Nrows; j++){
               // Create a new body
               var body = new CANNON.Particle(j==Nrows-1 ? 0 : mass);
-              body.position.set(i*dist,0,j*dist+5);
-              body.velocity.set(0, 3*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
+              vec3.set(body.position,i*dist,0,j*dist+5);
+              vec3.set(body.velocity,0, 3*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
               bodies[i+" "+j] = body;
               world.add(body);
               demo.addVisual(body);
@@ -201,8 +202,8 @@
               for(var k=0; k<Nz; k++){
                 // Create a new body
                 var body = new CANNON.Particle(mass);
-                body.position.set(i*dist,j*dist, k*dist + Nz*dist*0.3+1);
-                body.velocity.set(0, 30*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
+                vec3.set(body.position,i*dist,j*dist, k*dist + Nz*dist*0.3+1);
+                vec3.set(body.velocity,0, 30*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
                 bodies[i+" "+j+" "+k] = body;
                 world.add(body);
                 demo.addVisual(body);
@@ -252,14 +253,14 @@
       function setupWorld(demo){
         // Create world
         var world = demo.getWorld();
-        world.gravity.set(0,0,-40);
+        vec3.set(world.gravity,0,0,-40);;
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
       
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape);
-        groundBody.position.set(0,0,1);
+        vec3.set(groundBody.position,0,0,1);;
         world.add(groundBody);
         demo.addVisual(groundBody);
 

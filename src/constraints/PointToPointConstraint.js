@@ -28,16 +28,16 @@ CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
 
     // Update 
     this.update = function(){
-        bodyB.position.vsub(bodyA.position,normal.ni);
-        normal.ni.normalize();
-        bodyA.quaternion.vmult(pivotA,normal.ri);
-        bodyB.quaternion.vmult(pivotB,normal.rj);
+        vec3.subtract(normal.ni,bodyB.position,bodyA.position);
+        vec3.normalize(normal.ni,normal.ni);
+        vec3.transformQuat(normal.ri, pivotA, bodyA.quaternion);
+        vec3.transformQuat(normal.rj, pivotB, bodyB.quaternion); //bodyB.quaternion.vmult(pivotB,normal.rj);
 
-        normal.ni.tangents(t1.ni,t2.ni);
-        normal.ri.copy(t1.ri);
-        normal.rj.copy(t1.rj);
-        normal.ri.copy(t2.ri);
-        normal.rj.copy(t2.rj);
+        vec3.tangents(t1.ni,t2.ni,normal.ni);
+        vec3.copy(t1.ri,normal.ri);
+        vec3.copy(t1.rj,normal.rj);
+        vec3.copy(t2.ri,normal.ri);
+        vec3.copy(t2.rj,normal.rj);
     };
 };
 CANNON.PointToPointConstraint.prototype = new CANNON.Constraint();
