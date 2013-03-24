@@ -1595,6 +1595,11 @@ CANNON.RigidBody = function(mass,shape,material){
      */
     this.aabbmax = new CANNON.Vec3();
 
+    /**
+     * @property bool aabbNeedsUpdate
+     * @memberof CANNON.RigidBody
+     * @brief Indicates if the AABB needs to be updated before use.
+     */
     this.aabbNeedsUpdate = true;
 
     this.wlambda = new CANNON.Vec3();
