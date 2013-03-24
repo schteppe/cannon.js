@@ -55,6 +55,9 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **0.6.0**
+ * Changed API for adding forces and impulses to a body. See ```RigidBody.addImpulse``` and ```RigidBody.addForce```.
+ * Removed ```World.collision_matrix``` and instead added ```World.collisionMatrix``` and ```World.collisionMatrixPrevious```. They both now work with body indices instead of body IDs.
+ * Added ```SPHSystem```.
  * Renamed ```RigidBody.calculateAABB``` to ```.computeAABB```. Added ```RigidBody.aabbNeedsUpdate```.
  * Added ```Broadphase.useBoundingBoxes```, ```.doBoundingBoxBroadphase``` and ```.intersectionTest```.
  * ```ConvexPolyhedron``` constructor now calculates normals instead of taking them as a parameter.
