@@ -18,12 +18,6 @@
 
         var demo = new CANNON.Demo();
 
-        // Parameters for transforming the loaded model
-        var size = 1;
-        var scale = 20;
-        var offset = new CANNON.Vec3(0.04,0.15,0.01); // to apply before scale
-        var compoundOffset = new CANNON.Vec3(0,-0.9,0.1);
-
         demo.addScene("Bunny",function(){
 
             var world = demo.getWorld();
@@ -34,56 +28,35 @@
             world.defaultContactMaterial.contactEquationStiffness = 1e10;
             world.defaultContactMaterial.contactEquationRegularizationTime = 10;
 
-            // Constructs a normal given 3 vertices
-            var ab = new CANNON.Vec3();
-            var cb = new CANNON.Vec3();
-            function normal( va, vb, vc, target ) {
-                vb.vsub(va,ab);
-                vc.vsub(vb,cb);
-                cb.cross(ab,target);
-                if ( !target.isZero() ) {
-                    target.normalize();
-                }
-            }
-
             var compound = new CANNON.Compound();
             for(var i=0; i<bunny.length; i++){
-                //if(i==8 || i==3) continue; // These parts seem to be dead
+
                 var rawVerts = bunny[i].verts;
                 var rawFaces = bunny[i].faces;
+                var rawOffset = bunny[i].offset;
 
-                var verts=[], faces=[], normals=[];
+                var verts=[], faces=[], offset;
 
                 // Get vertices
                 for(var j=0; j<rawVerts.length; j+=3){
-                    verts.push(new CANNON.Vec3( scale*(rawVerts[j]+offset.x),
-                                                scale*(rawVerts[j+1]+offset.y),
-                                                scale*(rawVerts[j+2]+offset.z)));
+                    verts.push(new CANNON.Vec3( rawVerts[j]  ,
+                                                rawVerts[j+1],
+                                                rawVerts[j+2]));
                 }
 
                 // Get faces
                 for(var j=0; j<rawFaces.length; j+=3){
-                    faces.push([rawFaces[j+1],rawFaces[j],rawFaces[j+2]]);
+                    faces.push([rawFaces[j],rawFaces[j+1],rawFaces[j+2]]);
                 }
 
-                // Compute normals
-                for(var j=0; j<faces.length; j++){
-                    var va = verts[faces[j][0]];
-                    var vb = verts[faces[j][1]];
-                    var vc = verts[faces[j][2]];
-                    var n = new CANNON.Vec3();
-                    normal(va,vb,vc,n);
-                    normals.push(n);
-                }
+                // Get offset
+                offset = new CANNON.Vec3(rawOffset[0],rawOffset[1],rawOffset[2]);
 
                 // Construct polyhedron
-                var bunnyPart = new CANNON.ConvexPolyhedron(verts,faces,normals);
-
-                var centerPoint = bunnyPart.getAveragePointLocal();
-                bunnyPart.transformAllPoints(centerPoint.negate());
+                var bunnyPart = new CANNON.ConvexPolyhedron(verts,faces);
 
                 // Add to compound
-                compound.addChild(bunnyPart,centerPoint.vadd(compoundOffset));
+                compound.addChild(bunnyPart,offset);
             }
 
             // Create body
