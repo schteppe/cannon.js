@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -30,26 +31,25 @@
           var planetShape = new CANNON.Sphere(3.5);
           var moon = new CANNON.RigidBody(mass,moonShape);
           var planet = new CANNON.RigidBody(0,planetShape);
-          moon.position.set(5,0,0);
-          moon.velocity.set(0,0,8);
+          vec3.set(moon.position,5,0,0);
+          vec3.set(moon.velocity,0,0,8);
           moon.linearDamping = 0.0;
       
           // Use the preStep callback to apply the gravity force on the moon.
           // This callback is evoked each timestep.
+          var moon_to_planet = vec3.create();
           moon.preStep = function(){
 
             // Get the vector pointing from the moon to the planet center
-            var moon_to_planet = new CANNON.Vec3();
-            this.position.negate(moon_to_planet);
+            vec3.negate(moon_to_planet, this.position);
       
             // Get distance from planet to moon
-            var distance = moon_to_planet.norm();
+            var distance = vec3.length(moon_to_planet);
       
             // Now apply force on moon
             // Fore is pointing in the moon-planet direction
-            moon_to_planet.normalize();
-            moon_to_planet.mult(1500/Math.pow(distance,2),this.force);
-
+            vec3.normalize(moon_to_planet,moon_to_planet);
+            vec3.scale(this.force, moon_to_planet, 1500 / Math.pow(distance,2));
           }
       
           // We add the objects to the world to simulate them
