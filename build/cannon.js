@@ -1611,14 +1611,61 @@ CANNON.RigidBody.prototype.computeAABB = function(){
     this.aabbNeedsUpdate = false;
 };
 
-CANNON.RigidBody.prototype.applyImpulse = function(worldPoint,force,dt){
-    dt = dt || 1/60;
-    var r=new CANNON.Vec3(), rotForce=new CANNON.Vec3();
+/**
+ * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.tau.
+ * @param  CANNON.Vec3 force The amount of force to add.
+ * @param  CANNON.Vec3 worldPoint A world point to apply the force on.
+ */
+var RigidBody_applyForce_r = new CANNON.Vec3();
+var RigidBody_applyForce_rotForce = new CANNON.Vec3();
+CANNON.RigidBody.prototype.applyForce = function(force,worldPoint){
+    // Compute point position relative to the body center
+    var r = RigidBody_applyForce_r;
     worldPoint.vsub(this.position,r);
+
+    // Compute produced rotational force
+    var rotForce = RigidBody_applyForce_rotForce;
     r.cross(force,rotForce);
-    this.velocity.vadd(force.mult(dt),this.velocity);
-    this.angularVelocity.vadd(rotForce.mult(dt),this.angularVelocity);
+
+    // Add linear force
+    this.force.vadd(force,this.force);
+
+    // Add rotational force
+    this.tau.vadd(rotForce,this.tau);
 };
+
+/**
+ * Apply impulse to a world point. This could for example be a point on the RigidBody surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
+ * @param  CANNON.Vec3 impulse The amount of impulse to add.
+ * @param  CANNON.Vec3 worldPoint A world point to apply the force on.
+ */
+var RigidBody_applyImpulse_r = new CANNON.Vec3();
+var RigidBody_applyImpulse_velo = new CANNON.Vec3();
+var RigidBody_applyImpulse_rotVelo = new CANNON.Vec3();
+CANNON.RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
+    // Compute point position relative to the body center
+    var r = RigidBody_applyImpulse_r;
+    worldPoint.vsub(this.position,r);
+
+    // Compute produced central impulse velocity
+    var velo = RigidBody_applyImpulse_velo;
+    impulse.copy(velo);
+    velo.mult(this.invMass,velo);
+
+    // Add linear impulse
+    this.velocity.vadd(velo, this.velocity);
+
+    // Compute produced rotational impulse velocity
+    var rotVelo = RigidBody_applyImpulse_rotVelo;
+    r.cross(impulse,rotVelo);
+    rotVelo.x *= this.invInertia.x;
+    rotVelo.y *= this.invInertia.y;
+    rotVelo.z *= this.invInertia.z;
+
+    // Add rotational Impulse
+    this.angularVelocity.vadd(rotVelo, this.angularVelocity);
+};
+
 
 /**
  * @brief Spherical rigid body

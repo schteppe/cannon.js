@@ -16,18 +16,18 @@
     <script>
 
     /**
-     * Demonstrates how to add an impulse to a body in an easy way.
-     * Think of this impulse as a force added in a short period of time on a point on the body.
-     * You can add the impulse to any point on the body.
+     * Demonstrates how to add impulses and forces to a body. You can add the impulses and forces to any point on the body.
+     * Adding a force to the body will add to Body.force and Body.tau.
+     * An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
      */
 
         var demo = new CANNON.Demo();
 
-        var radius=1, mass=1, f=500;
+        var radius=1, mass=2, f=500;
         var dt=1/60, damping=0.5;
       
         // Add impulse to the body center
-        demo.addScene("center",function(){
+        demo.addScene("center impulse",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
             var body = new CANNON.RigidBody(mass,shape);
@@ -37,12 +37,12 @@
 
             // Add an impulse to the center
             var worldPoint = new CANNON.Vec3(0,0,0);
-            var force = new CANNON.Vec3(f,0,0);
-            body.applyImpulse(worldPoint,force,dt);
+            var impulse = new CANNON.Vec3(f*dt,0,0);
+            body.applyImpulse(impulse,worldPoint);
         });
 
         // Add impulse to the top of the sphere
-        demo.addScene("top",function(){
+        demo.addScene("top impulse",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
             var body = new CANNON.RigidBody(mass,shape);
@@ -52,8 +52,39 @@
 
             // Add an impulse to the center
             var worldPoint = new CANNON.Vec3(0,0,radius);
+            var impulse = new CANNON.Vec3(f*dt,0,0);
+            body.applyImpulse(impulse,worldPoint);
+        });
+
+
+        // Add force to the body center
+        demo.addScene("center force",function(){
+            var world = setupWorld(demo);
+            var shape = new CANNON.Sphere(radius);
+            var body = new CANNON.RigidBody(mass,shape);
+            body.linearDamping = body.angularDamping = damping;
+            world.add(body);
+            demo.addVisual(body);
+
+            // Add an force to the center
+            var worldPoint = new CANNON.Vec3(0,0,0);
             var force = new CANNON.Vec3(f,0,0);
-            body.applyImpulse(worldPoint,force,dt);
+            body.applyForce(force,worldPoint);
+        });
+
+        // Add force to the top of the sphere
+        demo.addScene("top force",function(){
+            var world = setupWorld(demo);
+            var shape = new CANNON.Sphere(radius);
+            var body = new CANNON.RigidBody(mass,shape);
+            body.linearDamping = body.angularDamping = damping;
+            world.add(body);
+            demo.addVisual(body);
+
+            // Add an force to the center
+            var worldPoint = new CANNON.Vec3(0,0,radius);
+            var force = new CANNON.Vec3(f,0,0);
+            body.applyForce(force,worldPoint);
         });
       
         function setupWorld(demo){
