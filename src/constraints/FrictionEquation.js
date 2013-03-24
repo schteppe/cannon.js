@@ -13,7 +13,6 @@ CANNON.FrictionEquation = function(bi,bj,slipForce){
     this.rj = vec3.create();
     this.t = vec3.create(); // tangent
 
-
     // The following is just cache
     this.rixt = vec3.create();
     this.rjxt = vec3.create();
@@ -121,6 +120,13 @@ CANNON.FrictionEquation.prototype.computeC = function(){
         invIj.setTrace(bj.invInertia);
     }
      */
+    
+    if(bi.invInertia){
+        mat3.setTrace(invIi,bi.invInertia);
+    }
+    if(bj.invInertia){
+        mat3.setTrace(invIj,bj.invInertia);
+    }
 
     // Compute rxt * I * rxt for each body
     /*
@@ -147,7 +153,7 @@ CANNON.FrictionEquation.prototype.computeGWlambda = function(){
 
     var GWlambda = 0.0;
     var ulambda = FrictionEquation_computeGWlambda_ulambda;
-    vec3.subtract(ulambda,bj.vlambda,bi.vlambda);
+    vec3.subtract(ulambda, bj.vlambda, bi.vlambda);
     GWlambda += vec3.dot(ulambda,this.t);
 
     // Angular
@@ -175,11 +181,11 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
         wj = bj.wlambda;
 
     // Add to linear velocity
-    vec3.scale(tmp,t,invMassi * deltalambda);
-    vec3.subtract(bi.vlambda,bi.vlambda,tmp);
+    vec3.scale(tmp, t, invMassi * deltalambda);
+    vec3.subtract(bi.vlambda, bi.vlambda, tmp);
 
     vec3.scale(tmp, t, invMassj * deltalambda);
-    vec3.add(bj.vlambda,bj.vlambda,tmp);
+    vec3.add(bj.vlambda, bj.vlambda, tmp);
 
     // Add to angular velocity
     if(wi){

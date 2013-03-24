@@ -529,11 +529,11 @@ CANNON.World.prototype.step = function(dt){
             if(mu > 0){
 
                 // Create 2 tangent equations
-                var mug = mu*gnorm;
                 var reducedMass = (bi.invMass + bj.invMass);
                 if(reducedMass > 0){
                     reducedMass = 1/reducedMass;
                 }
+                var mug = mu*gnorm;
                 var pool = frictionEquationPool;
                 var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
                 var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
@@ -552,7 +552,8 @@ CANNON.World.prototype.step = function(dt){
                 vec3.copy(c2.rj,c.rj);
 
                 // Construct tangents
-                vec3.tangents(c1.t,c2.t,c.ni); //c.ni.tangents(c1.t,c2.t);
+                vec3.tangents(c1.t, c2.t, c.ni); //c.ni.tangents(c1.t,c2.t);
+                //console.log(vec3.str(c.ni), vec3.str(c1.t), vec3.str(c2.t));
 
                 // Add equations to solver
                 solver.addEquation(c1);
@@ -670,9 +671,14 @@ CANNON.World.prototype.step = function(dt){
              */
 
             if(b.angularVelocity){
+                angularVelo[0] += tau[0] * invInertia[0] * dt; // glMatrix extension?
+                angularVelo[1] += tau[1] * invInertia[1] * dt;
+                angularVelo[2] += tau[2] * invInertia[2] * dt;
+                /*
                 angularVelo.x += tau.x * invInertia.x * dt;
                 angularVelo.y += tau.y * invInertia.y * dt;
                 angularVelo.z += tau.z * invInertia.z * dt;
+                 */
             }
 
             // Use new velocity  - leap frog
@@ -685,6 +691,7 @@ CANNON.World.prototype.step = function(dt){
                  */
 
                 if(b.angularVelocity){
+                    //console.log(vec3.str(angularVelo))
                     quat.set(w, angularVelo[0], angularVelo[1], angularVelo[2], 0.0); // glMatrix extension?
                     quat.mul(wq,w,quaternion);
                     quat.scale(wq,wq,half_dt);

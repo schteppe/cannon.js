@@ -21,9 +21,7 @@ CANNON.Sphere.prototype.constructor = CANNON.Sphere;
 CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
     target = target || vec3.create();
     var I = 2.0*mass*this.radius*this.radius/5.0;
-    target.x = I;
-    target.y = I;
-    target.z = I;
+    vec3.set(target,I,I,I);
     return target;
 };
 

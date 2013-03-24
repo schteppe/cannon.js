@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>cannon.js - container demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="style.css" type="text/css"/>
-  </head>
-  <body>
+</head>
+<body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -33,7 +34,7 @@
       demo.start();
       
       function createContainer(demo,nx,ny,nz){
-      
+
         // Create world
         var world = demo.getWorld();
         //world.broadphase = new CANNON.GridBroadphase(new CANNON.Vec3(-10,-10,0),new CANNON.Vec3(10,10,20),5,5,10);
@@ -45,7 +46,7 @@
         // Max solver iterations: Use more for better force propagation, but keep in mind that it's not very computationally cheap!
         world.solver.iterations = 10;
 
-        world.gravity.set(0,0,-30);
+        vec3.set(world.gravity,0,0,-30);
 
         // Since we have many bodies and they don't move very much, we can use the less accurate quaternion normalization
         world.quatNormalizeFast = true;
@@ -54,64 +55,67 @@
         // Materials
         var stone = new CANNON.Material('stone');
         var stone_stone = new CANNON.ContactMaterial(stone,
-      					       stone,
+          stone,
       					       0.3, // friction
       					       0.2  // Restitution
       					       );
         world.addContactMaterial(stone_stone);
-      
+
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape,stone);
         world.add(groundBody);
         demo.addVisual(groundBody);
-      
+
+        var Xaxis = vec3.fromValues(1,0,0);
+        var Yaxis = vec3.fromValues(0,1,0);
+
         // plane -x
         var planeShapeXmin = new CANNON.Plane();
         var planeXmin = new CANNON.RigidBody(0, planeShapeXmin,stone);
-        planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
-        planeXmin.position.set(-5,0,0);
+        quat.setAxisAngle(planeXmin.quaternion,Yaxis,Math.PI/2);
+        vec3.set(planeXmin.position,-5,0,0);
         world.add(planeXmin);
-      
+
         // Plane +x
         var planeShapeXmax = new CANNON.Plane();
         var planeXmax = new CANNON.RigidBody(0, planeShapeXmax,stone);
-        planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
-        planeXmax.position.set(5,0,0);
+        quat.setAxisAngle(planeXmax.quaternion,Yaxis,-Math.PI/2);
+        vec3.set(planeXmax.position,5,0,0);
         world.add(planeXmax);
-      
+
         // Plane -y
         var planeShapeYmin = new CANNON.Plane();
         var planeYmin = new CANNON.RigidBody(0, planeShapeYmin,stone);
-        planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-        planeYmin.position.set(0,-5,0);
+        quat.setAxisAngle(planeYmin.quaternion,Xaxis,-Math.PI/2);
+        vec3.set(planeYmin.position,0,-5,0);
         world.add(planeYmin);
 
         // Plane +y
         var planeShapeYmax = new CANNON.Plane();
         var planeYmax = new CANNON.RigidBody(0, planeShapeYmax, stone);
-        planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
-        planeYmax.position.set(0,5,0);
+        quat.setAxisAngle(planeYmax.quaternion,Xaxis,Math.PI/2);
+        vec3.set(planeYmax.position,0,5,0);
         world.add(planeYmax);
-      
+
         // Create spheres
-        var rand = 0.1;
+        var rand = 0.3;
         var h = 0;
         var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
         for(var i=0; i<nx; i++){
           for(var j=0; j<ny; j++){
             for(var k=0; k<nz; k++){
               var sphereBody = new CANNON.RigidBody(5,sphereShape,stone);
-      	      sphereBody.position.set(i*2-nx*0.5 + (Math.random()-0.5)*rand,
-      				      j*2-ny*0.5 + (Math.random()-0.5)*rand,
-      				      1+k*2.1+h+(i+j)*0.0);
+              vec3.set(sphereBody.position, i*2-nx*0.5 + (Math.random()-0.5)*rand,
+                                            j*2-ny*0.5 + (Math.random()-0.5)*rand,
+                                            1+k*2.1+h+(i+j)*0.0);
               world.add(sphereBody);
-      	      demo.addVisual(sphereBody);
-            }
+              demo.addVisual(sphereBody);
           }
-        }
       }
-      
-    </script>
-  </body>
+  }
+}
+
+</script>
+</body>
 </html>

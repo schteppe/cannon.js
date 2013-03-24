@@ -72,9 +72,9 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property CANNON.Vec3 intInertia
      * @memberof CANNON.RigidBody
      */
-    this.invInertia = vec3.create(  this.inertia[0]>0 ? 1.0/this.inertia[0] : 0,
-                                    this.inertia[1]>0 ? 1.0/this.inertia[1] : 0,
-                                    this.inertia[2]>0 ? 1.0/this.inertia[2] : 0 );
+    this.invInertia = vec3.fromValues(  this.inertia[0]>0 ? 1.0/this.inertia[0] : 0,
+                                        this.inertia[1]>0 ? 1.0/this.inertia[1] : 0,
+                                        this.inertia[2]>0 ? 1.0/this.inertia[2] : 0 );
     this.invInertiaWorld = vec3.create();
     vec3.copy(this.invInertiaWorld, this.invInertia);
     this.invInertiaWorldAutoUpdate = false;

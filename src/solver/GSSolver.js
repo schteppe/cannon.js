@@ -116,9 +116,9 @@ CANNON.GSSolver.prototype.solve = function(dt,world){
             var b=bodies[i],
                 v=b.velocity,
                 w=b.angularVelocity;
-            vec3.add( v,v,b.vlambda);
+            vec3.add(v, v, b.vlambda);
             if(w){
-                vec3.add( w,w,b.wlambda);
+                vec3.add(w, w, b.wlambda);
             }
         }
     }

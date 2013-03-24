@@ -168,7 +168,7 @@ CANNON.Particle.prototype.sleep = function(){
 CANNON.Particle.prototype.sleepTick = function(time){
     if(this.allowSleep){
         var sleepState = this.sleepState;
-        var speedSquared = this.velocity.norm2();
+        var speedSquared = vec3.squaredLength(this.velocity);
         var speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
         if(sleepState===0 && speedSquared < speedLimitSquared){
             this.sleepState = 1; // Sleepy

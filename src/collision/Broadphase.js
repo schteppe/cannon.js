@@ -130,7 +130,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
             }
 
             var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
-            if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
+            if(vec3.squaredLength(r) < boundingRadiusSum*boundingRadiusSum){
                 pairs1.push(bi);
                 pairs2.push(bj);
             }

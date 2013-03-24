@@ -43,7 +43,7 @@ CANNON.ContactGenerator = function(){
         temp = r.ri;
         r.ri = r.rj;
         r.rj = temp;
-        r.ni.negate(r.ni);
+        vec3.negate(r.ni,r.ni); //.negate(r.ni);
         temp = r.bi;
         r.bi = r.bj;
         r.bj = temp;
@@ -54,14 +54,14 @@ CANNON.ContactGenerator = function(){
         var r = makeResult(bi,bj);
 
         // Contact normal
-        bj.position.vsub(xi, r.ni);
-        r.ni.normalize();
+        vec3.subtract( r.ni,bj.position,xi);
+        vec3.normalize(r.ni,r.ni);//.normalize();
 
         // Contact point locations
         vec3.copy(r.ri,r.ni);
         vec3.copy(r.rj,r.ni);
-        r.ri.mult(si.radius, r.ri);
-        r.rj.mult(-sj.radius, r.rj);
+        vec3.scale( r.ri,r.ri,si.radius);
+        vec3.scale( r.rj,r.rj,-sj.radius);
         result.push(r);
     }
 
@@ -110,7 +110,7 @@ CANNON.ContactGenerator = function(){
 
             // Get vector between point and current vertex
             var vertex_to_p = pointInPolygon_vtp;
-            p.vsub(v,vertex_to_p);
+            vec3.subtract(vertex_to_p,p,v);
 
             // This dot product determines which side of the edge the point is
             var r = vec3.dot(edge_x_normal,vertex_to_p);
@@ -142,7 +142,7 @@ CANNON.ContactGenerator = function(){
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // we refer to the box as body j
         var sides = sphereBox_sides;
-        xi.vsub(xj,box_to_sphere);
+        vec3.subtract(box_to_sphere,xi,xj);
         sj.getSideNormals(sides,qj);
         var R =     si.radius;
         var penetrating_sides = [];
@@ -238,7 +238,7 @@ CANNON.ContactGenerator = function(){
 
                     // World position of corner
                     xj.vadd(rj,sphere_to_corner);
-                    sphere_to_corner.vsub(xi,sphere_to_corner);
+                    vec3.subtract(sphere_to_corner,sphere_to_corner,xi);
 
                     if(sphere_to_corner.norm2() < R*R){
                         found = true;
@@ -271,8 +271,8 @@ CANNON.ContactGenerator = function(){
                     edgeTangent.normalize();
                     sides[j].vadd(sides[k], edgeCenter);
                     vec3.copy(r,xi);
-                    r.vsub(edgeCenter,r);
-                    r.vsub(xj,r);
+                    vec3.subtract(r,r,edgeCenter);
+                    vec3.subtract(r,r,xj);
                     var orthonorm = vec3.dot(r,edgeTangent); // distance from edge center to sphere center in the tangent direction
                     edgeTangent.mult(orthonorm,orthogonal); // Vector from edge center to sphere center in the tangent direction
 
@@ -284,9 +284,9 @@ CANNON.ContactGenerator = function(){
 
                     // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
                     vec3.copy(dist,xi);
-                    dist.vsub(orthogonal,dist);
-                    dist.vsub(edgeCenter,dist);
-                    dist.vsub(xj,dist);
+                    vec3.subtract(dist,dist,orthogonal);
+                    vec3.subtract(dist,dist,edgeCenter);
+                    vec3.subtract(dist,dist,xj);
 
                     // Distances in tangent direction and distance in the plane orthogonal to it
                     var tdist = Math.abs(orthonorm);
@@ -302,7 +302,7 @@ CANNON.ContactGenerator = function(){
 
                         vec3.copy(res.ri,res.rj);
                         res.ri.vadd(xj,res.ri);
-                        res.ri.vsub(xi,res.ri);
+                        vec3.subtract(res.ri,res.ri,xi);
                         res.ri.normalize();
                         res.ri.mult(R,res.ri);
 
@@ -325,7 +325,7 @@ CANNON.ContactGenerator = function(){
     var sphereConvex_penetrationVec = vec3.create();
     var sphereConvex_sphereToWorldPoint = vec3.create();
     function sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
-        xi.vsub(xj,convex_to_sphere);
+        vec3.subtract(convex_to_sphere,xi,xj);
         var normals = sj.faceNormals;
         var faces = sj.faces;
         var verts = sj.vertices;
@@ -341,7 +341,7 @@ CANNON.ContactGenerator = function(){
             qj.vmult(v,worldCorner);
             xj.vadd(worldCorner,worldCorner);
             var sphere_to_corner = sphereConvex_sphereToCorner;
-            worldCorner.vsub(xi, sphere_to_corner);
+            vec3.subtract( sphere_to_corner,worldCorner,xi);
             if(sphere_to_corner.norm2()<R*R){
                 found = true;
                 var r = makeResult(bi,bj);
@@ -349,7 +349,7 @@ CANNON.ContactGenerator = function(){
                 r.ri.normalize();
                 vec3.copy(r.ni,r.ri);
                 r.ri.mult(R,r.ri);
-                worldCorner.vsub(xj,r.rj);
+                vec3.subtract(r.rj,worldCorner,xj);
                 result.push(r);
                 return;
             }
@@ -373,11 +373,11 @@ CANNON.ContactGenerator = function(){
             xi.vadd(worldSpherePointClosestToPlane,worldSpherePointClosestToPlane);
 
             var penetrationVec = sphereConvex_penetrationVec;
-            worldSpherePointClosestToPlane.vsub(worldPoint,penetrationVec);
+            vec3.subtract(penetrationVec,worldSpherePointClosestToPlane,worldPoint);
             var penetration = vec3.dot(penetrationVec,worldNormal);
 
             var sphereToWorldPoint = sphereConvex_sphereToWorldPoint;
-            xi.vsub(worldPoint,sphereToWorldPoint);
+            vec3.subtract(sphereToWorldPoint,xi,worldPoint);
 
             if(penetration<0 && vec3.dot(sphereToWorldPoint,worldNormal)>0){
                 // Intersects plane. Now check if the sphere is inside the face polygon
@@ -401,7 +401,7 @@ CANNON.ContactGenerator = function(){
                     worldNormal.mult(-R,penetrationSpherePoint);
 
                     //xi.vsub(xj).vadd(penetrationSpherePoint).vadd(penetrationVec2 , r.rj);
-                    xi.vsub(xj,r.rj);
+                    vec3.subtract(r.rj,xi,xj);
                     r.rj.vadd(penetrationSpherePoint,r.rj);
                     r.rj.vadd(penetrationVec2 , r.rj);
 
@@ -430,7 +430,7 @@ CANNON.ContactGenerator = function(){
 
                         // Construct edge vector
                         var edge = sphereConvex_edge;
-                        v2.vsub(v1,edge);
+                        vec3.subtract(edge,v2,v1);
 
                         // Construct the same vector, but normalized
                         var edgeUnit = sphereConvex_edgeUnit;
@@ -439,23 +439,23 @@ CANNON.ContactGenerator = function(){
                         // p is xi projected onto the edge
                         var p = v3pool.get();
                         var v1_to_xi = v3pool.get();
-                        xi.vsub(v1, v1_to_xi);
+                        vec3.subtract( v1_to_xi,xi,v1);
                         var dot = vec3.dot(v1_to_xi,edgeUnit);
                         edgeUnit.mult(dot, p);
                         p.vadd(v1, p);
 
                         // Compute a vector from p to the center of the sphere
                         var xi_to_p = v3pool.get();
-                        p.vsub(xi, xi_to_p);
+                        vec3.subtract( xi_to_p,p,xi);
 
                         // Collision if the edge-sphere distance is less than the radius
                         // AND if p is in between v1 and v2
                         if(dot > 0 && dot*dot<edge.norm2() && xi_to_p.norm2() < R*R){ // Collision if the edge-sphere distance is less than the radius
                             // Edge contact!
                             var r = makeResult(bi,bj);
-                            p.vsub(xj,r.rj);
+                            vec3.subtract(r.rj,p,xj);
 
-                            p.vsub(xi,r.ni);
+                            vec3.subtract(r.ni,p,xi);
                             r.ni.normalize();
 
                             r.ni.mult(R,r.ri);
@@ -562,14 +562,14 @@ CANNON.ContactGenerator = function(){
             // Transform to world coords
             qj.vmult(v,v);
             xj.vadd(v,v);
-            v.vsub(xi,relpos);
+            vec3.subtract(relpos,v,xi);
 
             var dot = vec3.dot(normal,relpos);
             if(dot<=0.0){
                 // Get vertex position projected on plane
                 var projected = planeConvex_projected;
                 normal.mult(vec3.dot(normal,v),projected);
-                v.vsub(projected,projected);
+                vec3.subtract(projected,v,projected);
 
                 var r = makeResult(bi,bj);
                 vec3.copy( r.ni ,normal); // Contact normal is the plane normal out from plane
@@ -577,7 +577,7 @@ CANNON.ContactGenerator = function(){
                 vec3.copy(r.ri,projected); // From plane to vertex projected on plane
 
                 // rj is now just the vertex position
-                v.vsub(xj,r.rj);
+                vec3.subtract(r.rj,v,xj);
 
                 result.push(r);
             }
@@ -601,8 +601,8 @@ CANNON.ContactGenerator = function(){
                 res[j].point.vadd(q,r.ri);
                 vec3.copy(r.rj,res[j].point);
                 // Contact points are in world coordinates. Transform back to relative
-                r.rj.vsub(xj,r.rj);
-                r.ri.vsub(xi,r.ri);
+                vec3.subtract(r.rj,r.rj,xj);
+                vec3.subtract(r.ri,r.ri,xi);
                 result.push(r);
             }
         }
@@ -616,7 +616,7 @@ CANNON.ContactGenerator = function(){
         normal.set(0,0,1);
         bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
         var relpos = particlePlane_relpos;
-        xi.vsub(bj.position,relpos);
+        vec3.subtract(relpos,xi,bj.position);
         var dot = vec3.dot(normal,relpos);
         if(dot<=0.0){
             var r = makeResult(bi,bj);
@@ -627,7 +627,7 @@ CANNON.ContactGenerator = function(){
             // Get particle position projected on plane
             var projected = particlePlane_projected;
             normal.mult(vec3.dot(normal,xi),projected);
-            xi.vsub(projected,projected);
+            vec3.subtract(projected,xi,projected);
             //projected.vadd(bj.position,projected);
 
             // rj is now the projected world position minus plane position
@@ -641,7 +641,7 @@ CANNON.ContactGenerator = function(){
         // The normal is the unit vector from sphere center to particle center
         var normal = particleSphere_normal;
         normal.set(0,0,1);
-        xi.vsub(xj,normal);
+        vec3.subtract(normal,xi,xj);
         var lengthSquared = normal.norm2();
 
         if(lengthSquared <= sj.radius * sj.radius){
@@ -673,7 +673,7 @@ CANNON.ContactGenerator = function(){
         // Convert particle position xi to local coords in the convex
         var local = particleConvex_local;
         vec3.copy(local,xi);
-        local.vsub(xj,local); // Convert position to relative the convex origin
+        vec3.subtract(local,local,xj); // Convert position to relative the convex origin
         qj.conjugate(cqj);
         cqj.vmult(local,local);
 
@@ -711,7 +711,7 @@ CANNON.ContactGenerator = function(){
 
                 // rj is the particle position projected to the face
                 worldPenetrationVec.vadd(xi,worldPenetrationVec);
-                worldPenetrationVec.vsub(xj,worldPenetrationVec);
+                vec3.subtract(worldPenetrationVec,worldPenetrationVec,xj);
                 vec3.copy(r.rj,worldPenetrationVec);
                 //var projectedToFace = xi.vsub(xj).vadd(worldPenetrationVec);
                 //vec3.copy(r.rj,projectedToFace);
