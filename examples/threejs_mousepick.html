@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>cannon.js + three.js physics shooter</title>
+        <title>cannon.js mouse pick demo</title>
         <style>
             html, body {
                 width: 100%;
@@ -20,7 +20,7 @@
 
         <script>
 
-        var sphereShape, sphereBody, world, physicsMaterial, walls=[], balls=[], ballMeshes=[], boxes=[], boxMeshes=[];
+        var world;
 
         var camera, scene, renderer, gplane=false, clickMarker=false;
         var geometry, material, mesh;
@@ -301,23 +301,24 @@
         }
 
         function addMouseConstraint(x,y,z,body) {
-          // THis is the cannon body constrained by the mouse joint
+          // The cannon body constrained by the mouse joint
           constrainedBody = body;
 
-          // This is the first constraint point relative to the body
+          // Vector to the clicked point, relative to the body
           var v1 = new CANNON.Vec3(x,y,z).vsub(constrainedBody.position);
 
-          // Apply anti-transformation to vector to get it in the local coordinate system
+          // Apply anti-quaternion to vector to tranform it into the local body coordinate system
           var antiRot = constrainedBody.quaternion.inverse();
-          pivot = antiRot.vmult(v1);
+          pivot = antiRot.vmult(v1); // pivot is not in local body coordinates
 
-          // This is the second constraint point, which is where the mouse is. Set it to jointbod
+          // Move the cannon click marker particle to the click position
           jointBody.position.set(x,y,z);
 
-          // Create a new distance-constraint in the world
+          // Create a new constraint
+          // The pivot for the jointBody is zero
           mouseConstraint = new CANNON.PointToPointConstraint(constrainedBody, pivot, jointBody, new CANNON.Vec3(0,0,0));
 
-          // Add constriant to world
+          // Add the constriant to world
           world.addConstraint(mouseConstraint);
         }
 
