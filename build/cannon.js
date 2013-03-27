@@ -3402,9 +3402,10 @@ CANNON.Ray = function(origin, direction){
         return distance;
     }
 
+	// As per "Barycentric Technique" as named here
     // http://www.blackpawn.com/texts/pointinpoly/default.html
+	// But without the division
 
-    var dot00, dot01, dot02, dot11, dot12, invDenom, u, v;
     var v1 = new CANNON.Vec3(), v2 = new CANNON.Vec3();
 
     function pointInTriangle( p, a, b, c ) {
@@ -3412,17 +3413,17 @@ CANNON.Ray = function(origin, direction){
         b.vsub(a,v1);
         p.vsub(a,v2);
 
-        dot00 = v0.dot( v0 );
-        dot01 = v0.dot( v1 );
-        dot02 = v0.dot( v2 );
-        dot11 = v1.dot( v1 );
-        dot12 = v1.dot( v2 );
-
-        invDenom = 1 / ( dot00 * dot11 - dot01 * dot01 );
-        u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
-        v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
-
-        return ( u >= 0 ) && ( v >= 0 ) && ( u + v < 1 );
+        var dot00 = v0.dot( v0 );
+        var dot01 = v0.dot( v1 );
+        var dot02 = v0.dot( v2 );
+        var dot11 = v1.dot( v1 );
+        var dot12 = v1.dot( v2 );
+		
+		var u,v;
+		
+        return  ( (u = dot11 * dot02 - dot01 * dot12) >= 0 ) &&
+				( (v = dot00 * dot12 - dot01 * dot02) >= 0 ) &&
+				( u + v < ( dot00 * dot11 - dot01 * dot01 ) );
     }
 };
 CANNON.Ray.prototype.constructor = CANNON.Ray;
