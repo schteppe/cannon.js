@@ -25,7 +25,7 @@
         });
       
       demo.addScene("Box",function(){
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+          var boxShape = new CANNON.Box(vec3.fromValues(size,size,size));
           createBodyOnPlane(demo,boxShape);
         });
       
