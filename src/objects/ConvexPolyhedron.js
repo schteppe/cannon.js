@@ -748,32 +748,32 @@ CANNON.ConvexPolyhedron.prototype.getAveragePointLocal = function(target){
     for(var i=0; i<n; i++){
         vec3.add(target,target,verts[i]);
     }
-    target.mult(1/n,target);
+    vec3.scale(target,target,1/n);
     return target;
 };
 
 // Transforms all points
-CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
+CANNON.ConvexPolyhedron.prototype.transformAllPoints = function(offset,q){
     var n = this.vertices.length,
         verts = this.vertices;
 
     // Apply rotation
-    if(quat){
+    if(q){
         // Rotate vertices
         for(var i=0; i<n; i++){
             var v = verts[i];
-            quat.vmult(v,v);
+            vec3.transformQuat(v,v,q);//    q.vmult(v,v);
         }
         // Rotate face normals
         for(var i=0; i<this.faceNormals.length; i++){
             var v = this.faceNormals[i];
-            quat.vmult(v,v);
+            vec3.transformQuat(v,v,q);//q.vmult(v,v);
         }
         /*
         // Rotate edges
         for(var i=0; i<this.uniqueEdges.length; i++){
             var v = this.uniqueEdges[i];
-            quat.vmult(v,v);
+            q.vmult(v,v);
         }*/
     }
 
