@@ -300,9 +300,9 @@ CANNON.Demo = function(options){
                     c = world.contacts[ci],
                     b = ij===0 ? c.bi : c.bj,
                     r = ij===0 ? c.ri : c.rj;
-                    line.scale.set( r.x, r.y, r.z);
+                    line.scale.set( r[0], r[1], r[2]);
                     makeSureNotZero(line.scale);
-                    b.position.copy(line.position);
+                    line.position.set(b.position[0],b.position[1],b.position[2]);//b.position.copy(line.position);
                 }
             }
         }

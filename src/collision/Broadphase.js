@@ -194,8 +194,8 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
             } else if(type === types.PLANE){
                 // particle/plane
                 var plane = other;
-                normal.set(0,0,1);
-                plane.quaternion.vmult(normal,normal);
+                vec3.set(normal,0,0,1);
+                vec3.transformQuat(normal,normal,plane.quaternion);
                 vec3.subtract(relpos,particle.position,plane.position);
                 if(vec3.dot(normal,relpos)<=0.0){
                     pairs1.push(particle);

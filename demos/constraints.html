@@ -116,7 +116,7 @@
             demo.addVisual(spherebody);
             
             var spherebody2 = new CANNON.RigidBody(0,sphereShape);
-            spherebody2.position.set(0,0,size*7);
+            vec3.set(spherebody2.position,0,0,size*7);
             world.add(spherebody2);
             demo.addVisual(spherebody2);
            
@@ -140,7 +140,7 @@
             // Create a new body
             var spherebody = new CANNON.RigidBody(i===0 ? 0 :mass,sphereShape);
             vec3.set(spherebody.position,0,0,(N-i)*dist);
-            spherebody.velocity.x = i;
+            vec3.set(spherebody.velocity,i,0,0);
             world.add(spherebody);
             demo.addVisual(spherebody);
            

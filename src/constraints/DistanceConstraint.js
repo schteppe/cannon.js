@@ -26,12 +26,12 @@ CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
 
     // Update 
     this.update = function(){
-        bodyB.position.vsub(bodyA.position,normal.ni);
-        normal.ni.normalize();
+        vec3.subtract(normal.ni, bodyB.position, bodyA.position);
+        vec3.normalize(normal.ni,normal.ni);
         /*bodyA.quaternion.vmult(pivotA,normal.ri);
         bodyB.quaternion.vmult(pivotB,normal.rj);*/
-        normal.ni.mult( distance*0.5,normal.ri);
-        normal.ni.mult( -distance*0.5,normal.rj);
+        vec3.scale(normal.ri, normal.ni, distance*0.5);
+        vec3.scale(normal.rj, normal.ni, -distance*0.5);
     };
 };
 CANNON.DistanceConstraint.prototype = new CANNON.Constraint();

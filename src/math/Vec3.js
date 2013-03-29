@@ -395,6 +395,15 @@ CANNON.Vec3.prototype.almostZero = function(precision){
     }
     return true;
 };
+vec3.almostZero = function(a,precision){
+    precision = precision || 1e-6;
+    if( Math.abs(a[0])>precision ||
+        Math.abs(a[1])>precision ||
+        Math.abs(a[2])>precision){
+        return false;
+    }
+    return true;
+};
 
 // Clamps a vector a to be within the aabb spanned from min to max
 vec3.clamp = function(out,a,min,max){

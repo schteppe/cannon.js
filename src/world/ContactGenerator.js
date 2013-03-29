@@ -597,7 +597,7 @@ CANNON.ContactGenerator = function(){
                 var r = makeResult(bi,bj);
                 vec3.negate(r.ni,sepAxis);
                 vec3.negate(q,res[j].normal);
-                q.mult(res[j].depth,q);
+                vec3.scale(q,q,res[j].depth);//q.mult(res[j].depth,q);
                 vec3.add(r.ri,res[j].point,q);
                 vec3.copy(r.rj,res[j].point);
                 // Contact points are in world coordinates. Transform back to relative
@@ -614,7 +614,7 @@ CANNON.ContactGenerator = function(){
     function particlePlane(result,si,sj,xi,xj,qi,qj,bi,bj){
         var normal = particlePlane_normal;
         vec3.set(normal,0,0,1);
-        bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
+        vec3.transformQuat(normal,normal,bj.quaternion);//bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
         var relpos = particlePlane_relpos;
         vec3.subtract(relpos,xi,bj.position);
         var dot = vec3.dot(normal,relpos);
@@ -626,7 +626,7 @@ CANNON.ContactGenerator = function(){
 
             // Get particle position projected on plane
             var projected = particlePlane_projected;
-            normal.mult(vec3.dot(normal,xi),projected);
+            vec3.scale(projected, normal, vec3.dot(normal,xi)); //normal.mult(vec3.dot(normal,xi),projected);
             vec3.subtract(projected,xi,projected);
             //vec3.add(projected,projected,bj.position);
 
