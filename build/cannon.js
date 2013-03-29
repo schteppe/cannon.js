@@ -1695,17 +1695,17 @@ var RigidBody_applyForce_rotForce = vec3.create();
 CANNON.RigidBody.prototype.applyForce = function(force,worldPoint){
     // Compute point position relative to the body center
     var r = RigidBody_applyForce_r;
-    worldPoint.vsub(this.position,r);
+    vec3.subtract(r, worldPoint, this.position);
 
     // Compute produced rotational force
     var rotForce = RigidBody_applyForce_rotForce;
-    r.cross(force,rotForce);
+    vec3.cross(rotForce, r, force); //r.cross(force,rotForce);
 
     // Add linear force
-    this.force.vadd(force,this.force);
+    vec3.add(this.force, this.force, force); //this.force.vadd(force,this.force);
 
     // Add rotational force
-    this.tau.vadd(rotForce,this.tau);
+    vec3.add(this.tau, rotForce, this.tau);//this.tau.vadd(rotForce,this.tau);
 };
 
 /**
@@ -1719,25 +1719,25 @@ var RigidBody_applyImpulse_rotVelo = vec3.create();
 CANNON.RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
     // Compute point position relative to the body center
     var r = RigidBody_applyImpulse_r;
-    worldPoint.vsub(this.position,r);
+    vec3.subtract(r, worldPoint, this.position);//worldPoint.vsub(this.position,r);
 
     // Compute produced central impulse velocity
     var velo = RigidBody_applyImpulse_velo;
-    impulse.copy(velo);
-    velo.mult(this.invMass,velo);
+    vec3.copy(velo,impulse);//impulse.copy(velo);
+    vec3.scale(velo, velo, this.invMass);//velo.mult(this.invMass,velo);
 
     // Add linear impulse
-    this.velocity.vadd(velo, this.velocity);
+    vec3.add(this.velocity, this.velocity, velo); //this.velocity.vadd(velo, this.velocity);
 
     // Compute produced rotational impulse velocity
     var rotVelo = RigidBody_applyImpulse_rotVelo;
-    r.cross(impulse,rotVelo);
-    rotVelo.x *= this.invInertia.x;
-    rotVelo.y *= this.invInertia.y;
-    rotVelo.z *= this.invInertia.z;
+    vec3.cross(rotVelo, r, impulse);//r.cross(impulse,rotVelo);
+    rotVelo[0] *= this.invInertia[0];
+    rotVelo[1] *= this.invInertia[1];
+    rotVelo[2] *= this.invInertia[2];
 
     // Add rotational Impulse
-    this.angularVelocity.vadd(rotVelo, this.angularVelocity);
+    vec3.add(this.angularVelocity, this.angularVelocity, rotVelo);// this.angularVelocity.vadd(rotVelo, this.angularVelocity);
 };
 
 

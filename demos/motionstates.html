@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -24,7 +25,7 @@
       demo.addScene("Moving box",function(){
           var world = setupWorld(demo);
       
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+          var boxShape = new CANNON.Box(vec3.fromValues(size,size,size));
           var sphereShape = new CANNON.Sphere(size);
       
           var mass = 5, boxMass = 0;
@@ -34,23 +35,23 @@
           // Its movement can be controlled by setting its velocity.
           var b1 = new CANNON.RigidBody(boxMass,boxShape);
           b1.motionstate = CANNON.Body.KINEMATIC;
-          b1.position.set(0,0,0.5*size);
+          vec3.set(b1.position,0,0,0.5*size);
           world.add(b1);
           demo.addVisual(b1);
       
           // To control the box movement we must set its velocity
-          b1.velocity.set(0,0,5);
+          vec3.set(b1.velocity,0,0,5);
           setInterval(function(){
-              if(b1.velocity.z<0)
-                  b1.velocity.set(0,0,5);
+              if(b1.velocity[2]<0)
+                  vec3.set(b1.velocity,0,0,5);
               else
-                  b1.velocity.set(0,0,-5);
+                  vec3.set(b1.velocity,0,0,-5);
             },1000);
       
           // Dynamic Sphere
           // Dynamic bodies can collide with bodies of all other motionstates.
           var b2 = new CANNON.RigidBody(mass,sphereShape);
-          b2.position.set(0,0,3*size);
+          vec3.set(b2.position,0,0,3*size);
           world.add(b2);
           demo.addVisual(b2);
         });
@@ -59,7 +60,7 @@
       
       function setupWorld(demo){
         var world = demo.getWorld();
-        world.gravity.set(0,0,-40);
+        vec3.set(world.gravity,0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
 
