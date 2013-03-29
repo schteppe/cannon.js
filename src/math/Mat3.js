@@ -73,7 +73,7 @@ mat3.setTrace = function(out,a){
     out[0] = a[0];
     out[4] = a[1];
     out[8] = a[2];
-}
+};
 
 /**
  * @method vmult

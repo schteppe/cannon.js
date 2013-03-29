@@ -10,17 +10,17 @@
  */
 CANNON.RotationalEquation = function(bodyA, bodyB){
     CANNON.Equation.call(this,bodyA,bodyB,-1e6,1e6);
-    this.ni = new CANNON.Vec3(); // World oriented localVectorInBodyA 
-    this.nj = new CANNON.Vec3(); // ...and B
+    this.ni = vec3.create(); // World oriented localVectorInBodyA 
+    this.nj = vec3.create(); // ...and B
 
-    this.nixnj = new CANNON.Vec3();
-    this.njxni = new CANNON.Vec3();
+    this.nixnj = vec3.create();
+    this.njxni = vec3.create();
 
-    this.invIi = new CANNON.Mat3();
-    this.invIj = new CANNON.Mat3();
+    this.invIi = mat3.create();
+    this.invIj = mat3.create();
 
-    this.relVel = new CANNON.Vec3();
-    this.relForce = new CANNON.Vec3();
+    this.relVel = vec3.create();
+    this.relForce = vec3.create();
 };
 
 CANNON.RotationalEquation.prototype = new CANNON.Equation();
@@ -39,14 +39,14 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     var njxni = this.njxni;
 
     var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
+    var wi = bi.angularVelocity ? bi.angularVelocity : vec3.create();
     var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new CANNON.Vec3();
+    var taui = bi.tau ? bi.tau : vec3.create();
 
     var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new CANNON.Vec3();
+    var wj = bj.angularVelocity ? bj.angularVelocity : vec3.create();
     var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new CANNON.Vec3();
+    var tauj = bj.tau ? bj.tau : vec3.create();
 
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
@@ -55,26 +55,26 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     var invIj = this.invIj;
 
     if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+        mat3.setTrace(invIi,bi.invInertia);//invIi.setTrace(bi.invInertia);
     } else {
-        invIi.identity(); // ok?
+        mat3.identity(invIi);//invIi.identity(); // ok?
     }
     if(bj.invInertia) {
-        invIj.setTrace(bj.invInertia);
+        mat3.setTrace(invIj, bj.invInertia);//invIj.setTrace(bj.invInertia);
     } else {
-        invIj.identity(); // ok?
+        mat3.identity(invIj);//invIj.identity(); // ok?
     }
 
     // Caluclate cross products
-    ni.cross(nj,nixnj);
-    nj.cross(ni,njxni);
+    vec3.cross(nixnj, ni, nj);// ni.cross(nj,nixnj);
+    vec3.cross(njxni, nj, ni);// nj.cross(ni,njxni);
 
     // g = ni * nj
     // gdot = (nj x ni) * wi + (ni x nj) * wj
     // G = [0 njxni 0 nixnj]
     // W = [vi wi vj wj]
-    var Gq = -ni.dot(nj);
-    var GW = njxni.dot(wi) + nixnj.dot(wj);
+    var Gq = -vec3.dot(ni,nj);//-ni.dot(nj);
+    var GW = vec3.dot(njxni,wi) + vec3.dot(nixnj,wj);// njxni.dot(wi) + nixnj.dot(wj);
     var GiMf = 0;//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
 
     var B = - Gq * a - GW * b - h*GiMf;
@@ -83,6 +83,7 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
 };
 
 // Compute C = GMG+eps
+RotationalEquation_computeC_temp = vec3.create();
 CANNON.RotationalEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -90,6 +91,7 @@ CANNON.RotationalEquation.prototype.computeC = function(){
     var njxni = this.njxni;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
+    var temp = RotationalEquation_computeC_temp;
 
     var C = /*invMassi + invMassj +*/ this.eps;
 
@@ -97,23 +99,27 @@ CANNON.RotationalEquation.prototype.computeC = function(){
     var invIj = this.invIj;
 
     if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+        mat3.setTrace(invIi,bi.invInertia);//invIi.setTrace(bi.invInertia);
     } else {
-        invIi.identity(); // ok?
+        mat3.identity(invIi);//invIi.identity(); // ok?
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertia) {
+        mat3.setTrace(invIj, bj.invInertia);//invIj.setTrace(bj.invInertia);
     } else {
-        invIj.identity(); // ok?
+        mat3.identity(invIj);//invIj.identity(); // ok?
     }
 
-    C += invIi.vmult(njxni).dot(njxni);
-    C += invIj.vmult(nixnj).dot(nixnj);
+    // Add up to C
+    vec3.transformMat3(temp, njxni, invIi);
+    C += vec3.dot(temp,njxni);//invIi.vmult(njxni).dot(njxni);
+
+    vec3.transformMat3(temp, nixnj, invIj);
+    C += vec3.dot(temp,nixnj);//invIj.vmult(nixnj).dot(nixnj);
 
     return C;
 };
 
-var computeGWlambda_ulambda = new CANNON.Vec3();
+var computeGWlambda_ulambda = vec3.create();
 CANNON.RotationalEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -125,10 +131,10 @@ CANNON.RotationalEquation.prototype.computeGWlambda = function(){
 
     // Angular
     if(bi.wlambda){
-        GWlambda += bi.wlambda.dot(this.njxni);
+        GWlambda += vec3.dot(bi.wlambda,this.njxni);
     }
     if(bj.wlambda){
-        GWlambda += bj.wlambda.dot(this.nixnj);
+        GWlambda += vec3.dot(bj.wlambda,this.nixnj);
     }
 
     //console.log("GWlambda:",GWlambda);
@@ -136,6 +142,7 @@ CANNON.RotationalEquation.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
+var RotationalEquation_addToWlambda_temp = vec3.create();
 CANNON.RotationalEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
@@ -149,12 +156,21 @@ CANNON.RotationalEquation.prototype.addToWlambda = function(deltalambda){
     //bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
 
     // Add to angular velocity
+    var temp = RotationalEquation_addToWlambda_temp;
     if(bi.wlambda){
         var I = this.invIi;
-        bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
+        vec3.transformMat3(temp, nixnj, I);
+        vec3.scale(temp, temp, deltalambda);
+        vec3.subtract(bi.wlambda, bi.wlambda, temp);//bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
     }
     if(bj.wlambda){
         var I = this.invIj;
+        vec3.transformMat3(temp, nixnj, I);
+        vec3.scale(temp, temp, deltalambda);
+        vec3.add(bj.wlambda, bj.wlambda, temp);//bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
+        /*
+        var I = this.invIj;
         bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
+         */
     }
 };

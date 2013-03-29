@@ -119,7 +119,7 @@ mat3.setTrace = function(out,a){
     out[0] = a[0];
     out[4] = a[1];
     out[8] = a[2];
-}
+};
 
 /**
  * @method vmult
@@ -6583,17 +6583,17 @@ CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
  */
 CANNON.RotationalEquation = function(bodyA, bodyB){
     CANNON.Equation.call(this,bodyA,bodyB,-1e6,1e6);
-    this.ni = new CANNON.Vec3(); // World oriented localVectorInBodyA 
-    this.nj = new CANNON.Vec3(); // ...and B
+    this.ni = vec3.create(); // World oriented localVectorInBodyA 
+    this.nj = vec3.create(); // ...and B
 
-    this.nixnj = new CANNON.Vec3();
-    this.njxni = new CANNON.Vec3();
+    this.nixnj = vec3.create();
+    this.njxni = vec3.create();
 
-    this.invIi = new CANNON.Mat3();
-    this.invIj = new CANNON.Mat3();
+    this.invIi = mat3.create();
+    this.invIj = mat3.create();
 
-    this.relVel = new CANNON.Vec3();
-    this.relForce = new CANNON.Vec3();
+    this.relVel = vec3.create();
+    this.relForce = vec3.create();
 };
 
 CANNON.RotationalEquation.prototype = new CANNON.Equation();
@@ -6612,14 +6612,14 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     var njxni = this.njxni;
 
     var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
+    var wi = bi.angularVelocity ? bi.angularVelocity : vec3.create();
     var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new CANNON.Vec3();
+    var taui = bi.tau ? bi.tau : vec3.create();
 
     var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new CANNON.Vec3();
+    var wj = bj.angularVelocity ? bj.angularVelocity : vec3.create();
     var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new CANNON.Vec3();
+    var tauj = bj.tau ? bj.tau : vec3.create();
 
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
@@ -6628,26 +6628,26 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     var invIj = this.invIj;
 
     if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+        mat3.setTrace(invIi,bi.invInertia);//invIi.setTrace(bi.invInertia);
     } else {
-        invIi.identity(); // ok?
+        mat3.identity(invIi);//invIi.identity(); // ok?
     }
     if(bj.invInertia) {
-        invIj.setTrace(bj.invInertia);
+        mat3.setTrace(invIj, bj.invInertia);//invIj.setTrace(bj.invInertia);
     } else {
-        invIj.identity(); // ok?
+        mat3.identity(invIj);//invIj.identity(); // ok?
     }
 
     // Caluclate cross products
-    ni.cross(nj,nixnj);
-    nj.cross(ni,njxni);
+    vec3.cross(nixnj, ni, nj);// ni.cross(nj,nixnj);
+    vec3.cross(njxni, nj, ni);// nj.cross(ni,njxni);
 
     // g = ni * nj
     // gdot = (nj x ni) * wi + (ni x nj) * wj
     // G = [0 njxni 0 nixnj]
     // W = [vi wi vj wj]
-    var Gq = -ni.dot(nj);
-    var GW = njxni.dot(wi) + nixnj.dot(wj);
+    var Gq = -vec3.dot(ni,nj);//-ni.dot(nj);
+    var GW = vec3.dot(njxni,wi) + vec3.dot(nixnj,wj);// njxni.dot(wi) + nixnj.dot(wj);
     var GiMf = 0;//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
 
     var B = - Gq * a - GW * b - h*GiMf;
@@ -6656,6 +6656,7 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
 };
 
 // Compute C = GMG+eps
+RotationalEquation_computeC_temp = vec3.create();
 CANNON.RotationalEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -6663,6 +6664,7 @@ CANNON.RotationalEquation.prototype.computeC = function(){
     var njxni = this.njxni;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
+    var temp = RotationalEquation_computeC_temp;
 
     var C = /*invMassi + invMassj +*/ this.eps;
 
@@ -6670,23 +6672,27 @@ CANNON.RotationalEquation.prototype.computeC = function(){
     var invIj = this.invIj;
 
     if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+        mat3.setTrace(invIi,bi.invInertia);//invIi.setTrace(bi.invInertia);
     } else {
-        invIi.identity(); // ok?
+        mat3.identity(invIi);//invIi.identity(); // ok?
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertia) {
+        mat3.setTrace(invIj, bj.invInertia);//invIj.setTrace(bj.invInertia);
     } else {
-        invIj.identity(); // ok?
+        mat3.identity(invIj);//invIj.identity(); // ok?
     }
 
-    C += invIi.vmult(njxni).dot(njxni);
-    C += invIj.vmult(nixnj).dot(nixnj);
+    // Add up to C
+    vec3.transformMat3(temp, njxni, invIi);
+    C += vec3.dot(temp,njxni);//invIi.vmult(njxni).dot(njxni);
+
+    vec3.transformMat3(temp, nixnj, invIj);
+    C += vec3.dot(temp,nixnj);//invIj.vmult(nixnj).dot(nixnj);
 
     return C;
 };
 
-var computeGWlambda_ulambda = new CANNON.Vec3();
+var computeGWlambda_ulambda = vec3.create();
 CANNON.RotationalEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -6698,10 +6704,10 @@ CANNON.RotationalEquation.prototype.computeGWlambda = function(){
 
     // Angular
     if(bi.wlambda){
-        GWlambda += bi.wlambda.dot(this.njxni);
+        GWlambda += vec3.dot(bi.wlambda,this.njxni);
     }
     if(bj.wlambda){
-        GWlambda += bj.wlambda.dot(this.nixnj);
+        GWlambda += vec3.dot(bj.wlambda,this.nixnj);
     }
 
     //console.log("GWlambda:",GWlambda);
@@ -6709,6 +6715,7 @@ CANNON.RotationalEquation.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
+var RotationalEquation_addToWlambda_temp = vec3.create();
 CANNON.RotationalEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
@@ -6722,13 +6729,22 @@ CANNON.RotationalEquation.prototype.addToWlambda = function(deltalambda){
     //bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
 
     // Add to angular velocity
+    var temp = RotationalEquation_addToWlambda_temp;
     if(bi.wlambda){
         var I = this.invIi;
-        bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
+        vec3.transformMat3(temp, nixnj, I);
+        vec3.scale(temp, temp, deltalambda);
+        vec3.subtract(bi.wlambda, bi.wlambda, temp);//bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
     }
     if(bj.wlambda){
         var I = this.invIj;
+        vec3.transformMat3(temp, nixnj, I);
+        vec3.scale(temp, temp, deltalambda);
+        vec3.add(bj.wlambda, bj.wlambda, temp);//bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
+        /*
+        var I = this.invIj;
         bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
+         */
     }
 };
 
@@ -6820,11 +6836,11 @@ CANNON.DistanceConstraint.prototype = new CANNON.Constraint();
 CANNON.RotationalMotorEquation = function(bodyA, bodyB, maxForce){
     maxForce = maxForce || 1e6;
     CANNON.Equation.call(this,bodyA,bodyB,-maxForce,maxForce);
-    this.axisA = new CANNON.Vec3(); // World oriented rotational axis
-    this.axisB = new CANNON.Vec3(); // World oriented rotational axis
+    this.axisA = vec3.create(); // World oriented rotational axis
+    this.axisB = vec3.create(); // World oriented rotational axis
 
-    this.invIi = new CANNON.Mat3();
-    this.invIj = new CANNON.Mat3();
+    this.invIi = mat3.create();
+    this.invIj = mat3.create();
     this.targetVelocity = 0;
 };
 
@@ -6841,14 +6857,14 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(h){
     var axisB = this.axisB;
 
     var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
+    var wi = bi.angularVelocity ? bi.angularVelocity : vec3.create();
     var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new CANNON.Vec3();
+    var taui = bi.tau ? bi.tau : vec3.create();
 
     var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new CANNON.Vec3();
+    var wj = bj.angularVelocity ? bj.angularVelocity : vec3.create();
     var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new CANNON.Vec3();
+    var tauj = bj.tau ? bj.tau : vec3.create();
 
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
@@ -6857,14 +6873,14 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(h){
     var invIj = this.invIj;
 
     if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+        mat3.setTrace(invIi,bi.invInertia);//invIi.setTrace(bi.invInertia);
     } else {
-        invIi.identity(); // ok?
+        mat3.identity(invIi);//invIi.identity(); // ok?
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertia) {
+        mat3.setTrace(invIj, bj.invInertia);//invIj.setTrace(bj.invInertia);
     } else {
-        invIj.identity(); // ok?
+        mat3.identity(invIj);//invIj.identity(); // ok?
     }
 
     // g = 0
@@ -6872,7 +6888,7 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(h){
     // G = [0 axisA 0 -axisB]
     // W = [vi wi vj wj]
     var Gq = 0;
-    var GW = axisA.dot(wi) + axisB.dot(wj) + this.targetVelocity;
+    var GW = vec3.dot(axisA,wi) + vec3.dot(axisB,wj) + this.targetVelocity;
     var GiMf = 0;//axis.dot(invIi.vmult(taui)) + axis.dot(invIj.vmult(tauj));
 
     var B = - Gq * a - GW * b - h*GiMf;
@@ -6881,6 +6897,7 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(h){
 };
 
 // Compute C = GMG+eps
+var RotationalMotorEquation_computeC_temp = vec3.create();
 CANNON.RotationalMotorEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -6888,6 +6905,7 @@ CANNON.RotationalMotorEquation.prototype.computeC = function(){
     var axisB = this.axisB;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
+    var temp = RotationalMotorEquation_computeC_temp;
 
     var C = this.eps;
 
@@ -6895,23 +6913,30 @@ CANNON.RotationalMotorEquation.prototype.computeC = function(){
     var invIj = this.invIj;
 
     if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+        mat3.setTrace(invIi,bi.invInertia);//invIi.setTrace(bi.invInertia);
     } else {
-        invIi.identity(); // ok?
+        mat3.identity(invIi);//invIi.identity(); // ok?
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertia) {
+        mat3.setTrace(invIj, bj.invInertia);//invIj.setTrace(bj.invInertia);
     } else {
-        invIj.identity(); // ok?
+        mat3.identity(invIj);//invIj.identity(); // ok?
     }
 
-    C += invIi.vmult(axisA).dot(axisB);
-    C += invIj.vmult(axisB).dot(axisB);
+    // Add up to C
+    vec3.transformMat3(temp, axisA, invIi);
+    C += vec3.dot(temp,axisB); // Correct?
+
+    vec3.transformMat3(temp, axisB, invIj);
+    C += vec3.dot(temp,axisB);
+
+    //C += invIi.vmult(axisA).dot(axisB);
+    //C += invIj.vmult(axisB).dot(axisB);
 
     return C;
 };
 
-var computeGWlambda_ulambda = new CANNON.Vec3();
+var computeGWlambda_ulambda = vec3.create();
 CANNON.RotationalMotorEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
@@ -6925,10 +6950,10 @@ CANNON.RotationalMotorEquation.prototype.computeGWlambda = function(){
 
     // Angular
     if(bi.wlambda){
-        GWlambda += bi.wlambda.dot(axisA);
+        GWlambda += vec3.dot(bi.wlambda,axisA);
     }
     if(bj.wlambda){
-        GWlambda += bj.wlambda.dot(axisB);
+        GWlambda += vec3.dot(bj.wlambda,axisB);
     }
 
     //console.log("GWlambda:",GWlambda);
@@ -6936,6 +6961,7 @@ CANNON.RotationalMotorEquation.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
+var RotationalMotorEquation_addToWlambda_temp = vec3.create();
 CANNON.RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
@@ -6943,6 +6969,7 @@ CANNON.RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
     var axisB = this.axisB;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
+    var temp = RotationalMotorEquation_addToWlambda_temp;
 
     // Add to linear velocity
     //bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
@@ -6951,11 +6978,24 @@ CANNON.RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
     // Add to angular velocity
     if(bi.wlambda){
         var I = this.invIi;
+        vec3.transformMat3(temp, axisA, I);
+        vec3.scale(temp, temp, deltalambda);
+        vec3.subtract(bi.wlambda, bi.wlambda, temp);
+        /*
+        var I = this.invIi;
         bi.wlambda.vsub(I.vmult(axisA).mult(deltalambda),bi.wlambda);
+         */
     }
     if(bj.wlambda){
+        /*
         var I = this.invIj;
         bj.wlambda.vadd(I.vmult(axisB).mult(deltalambda),bj.wlambda);
+        */
+
+        var I = this.invIj;
+        vec3.transformMat3(temp, axisB, I);
+        vec3.scale(temp, temp, deltalambda);
+        vec3.add(bj.wlambda, bj.wlambda, temp);
     }
 };
 
@@ -7002,18 +7042,19 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     t1.minForce = t2.minForce = normal.minForce = -maxForce;
     t1.maxForce = t2.maxForce = normal.maxForce =  maxForce;
 
-    var unitPivotA = pivotA.unit();
-    var unitPivotB = pivotB.unit();
+    var unitPivotA = vec3.create(); vec3.normalize(unitPivotA,pivotA); //pivotA.unit();
+    var unitPivotB = vec3.create(); vec3.normalize(unitPivotB,pivotB); //pivotB.unit();
 
-    var axisA_x_pivotA = new CANNON.Vec3();
-    var axisA_x_axisA_x_pivotA = new CANNON.Vec3();
-    var axisB_x_pivotB = new CANNON.Vec3();
-    axisA.cross(unitPivotA,axisA_x_pivotA);
-    axisA.cross(axisA_x_pivotA,axisA_x_axisA_x_pivotA);
-    axisB.cross(unitPivotB,axisB_x_pivotB);
+    var axisA_x_pivotA = vec3.create();
+    var axisA_x_axisA_x_pivotA = vec3.create();
+    var axisB_x_pivotB = vec3.create();
 
-    axisA_x_pivotA.normalize();
-    axisB_x_pivotB.normalize();
+    vec3.cross(axisA_x_pivotA, axisA, unitPivotA);// axisA.cross(unitPivotA,axisA_x_pivotA);
+    vec3.cross(axisA_x_axisA_x_pivotA, axisA, axisA_x_pivotA);// axisA.cross(axisA_x_pivotA,axisA_x_axisA_x_pivotA);
+    vec3.cross(axisB_x_pivotB, axisB, unitPivotB); //axisB.cross(unitPivotB,axisB_x_pivotB);
+
+    vec3.normalize(axisA_x_pivotA,axisA_x_pivotA);// axisA_x_pivotA.normalize();
+    vec3.normalize(axisB_x_pivotB,axisB_x_pivotB);//axisB_x_pivotB.normalize();
 
     // Motor stuff
     var motorEnabled = false;
@@ -7042,27 +7083,27 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         bodyB.position.vsub(bodyA.position,normal.ni);
         normal.ni.normalize();
         */
-        normal.ni.set(1,0,0);
-        t1.ni.set(0,1,0);
-        t2.ni.set(0,0,1);
-        bodyA.quaternion.vmult(pivotA,normal.ri);
-        bodyB.quaternion.vmult(pivotB,normal.rj);
+        vec3.set(normal.ni,1,0,0);//normal.ni.set(1,0,0);
+        vec3.set(t1.ni,0,1,0);
+        vec3.set(t2.ni,0,0,1);
+        vec3.transformQuat(normal.ri, pivotA, bodyA.quaternion); //bodyA.quaternion.vmult(pivotA,normal.ri);
+        vec3.transformQuat(normal.rj, pivotB, bodyB.quaternion); //bodyB.quaternion.vmult(pivotB,normal.rj);
 
         //normal.ni.tangents(t1.ni,t2.ni);
-        normal.ri.copy(t1.ri);
-        normal.rj.copy(t1.rj);
-        normal.ri.copy(t2.ri);
-        normal.rj.copy(t2.rj);
+        vec3.copy(t1.ri, normal.ri); //normal.ri.copy(t1.ri);
+        vec3.copy(t1.rj, normal.rj); //normal.rj.copy(t1.rj);
+        vec3.copy(t2.ri, normal.ri); //normal.ri.copy(t2.ri);
+        vec3.copy(t2.rj, normal.rj); //normal.rj.copy(t2.rj);
 
         // update rotational constraints
-        bodyA.quaternion.vmult(axisA_x_pivotA, r1.ni);
-        bodyB.quaternion.vmult(axisB,          r1.nj);
-        bodyA.quaternion.vmult(axisA_x_axisA_x_pivotA,  r2.ni);
-        bodyB.quaternion.vmult(axisB,           r2.nj);
+        vec3.transformQuat( r1.ni,axisA_x_pivotA,bodyA.quaternion);
+        vec3.transformQuat(          r1.nj,axisB,bodyB.quaternion);
+        vec3.transformQuat(  r2.ni,axisA_x_axisA_x_pivotA,bodyA.quaternion);
+        vec3.transformQuat(           r2.nj,axisB,bodyB.quaternion);
 
         if(motorEnabled){
-            bodyA.quaternion.vmult(axisA,motor.axisA);
-            bodyB.quaternion.vmult(axisB,motor.axisB);
+            vec3.transformQuat(motor.axisA,axisA,bodyA.quaternion);
+            vec3.transformQuat(motor.axisB,axisB,bodyB.quaternion);
             motor.targetVelocity = that.motorTargetVelocity;
             motor.maxForce = that.motorMaxForce;
             motor.minForce = that.motorMinForce;

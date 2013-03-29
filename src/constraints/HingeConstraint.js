@@ -40,18 +40,19 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     t1.minForce = t2.minForce = normal.minForce = -maxForce;
     t1.maxForce = t2.maxForce = normal.maxForce =  maxForce;
 
-    var unitPivotA = pivotA.unit();
-    var unitPivotB = pivotB.unit();
+    var unitPivotA = vec3.create(); vec3.normalize(unitPivotA,pivotA); //pivotA.unit();
+    var unitPivotB = vec3.create(); vec3.normalize(unitPivotB,pivotB); //pivotB.unit();
 
-    var axisA_x_pivotA = new CANNON.Vec3();
-    var axisA_x_axisA_x_pivotA = new CANNON.Vec3();
-    var axisB_x_pivotB = new CANNON.Vec3();
-    axisA.cross(unitPivotA,axisA_x_pivotA);
-    axisA.cross(axisA_x_pivotA,axisA_x_axisA_x_pivotA);
-    axisB.cross(unitPivotB,axisB_x_pivotB);
+    var axisA_x_pivotA = vec3.create();
+    var axisA_x_axisA_x_pivotA = vec3.create();
+    var axisB_x_pivotB = vec3.create();
 
-    axisA_x_pivotA.normalize();
-    axisB_x_pivotB.normalize();
+    vec3.cross(axisA_x_pivotA, axisA, unitPivotA);// axisA.cross(unitPivotA,axisA_x_pivotA);
+    vec3.cross(axisA_x_axisA_x_pivotA, axisA, axisA_x_pivotA);// axisA.cross(axisA_x_pivotA,axisA_x_axisA_x_pivotA);
+    vec3.cross(axisB_x_pivotB, axisB, unitPivotB); //axisB.cross(unitPivotB,axisB_x_pivotB);
+
+    vec3.normalize(axisA_x_pivotA,axisA_x_pivotA);// axisA_x_pivotA.normalize();
+    vec3.normalize(axisB_x_pivotB,axisB_x_pivotB);//axisB_x_pivotB.normalize();
 
     // Motor stuff
     var motorEnabled = false;
@@ -80,27 +81,27 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         bodyB.position.vsub(bodyA.position,normal.ni);
         normal.ni.normalize();
         */
-        normal.ni.set(1,0,0);
-        t1.ni.set(0,1,0);
-        t2.ni.set(0,0,1);
-        bodyA.quaternion.vmult(pivotA,normal.ri);
-        bodyB.quaternion.vmult(pivotB,normal.rj);
+        vec3.set(normal.ni,1,0,0);//normal.ni.set(1,0,0);
+        vec3.set(t1.ni,0,1,0);
+        vec3.set(t2.ni,0,0,1);
+        vec3.transformQuat(normal.ri, pivotA, bodyA.quaternion); //bodyA.quaternion.vmult(pivotA,normal.ri);
+        vec3.transformQuat(normal.rj, pivotB, bodyB.quaternion); //bodyB.quaternion.vmult(pivotB,normal.rj);
 
         //normal.ni.tangents(t1.ni,t2.ni);
-        normal.ri.copy(t1.ri);
-        normal.rj.copy(t1.rj);
-        normal.ri.copy(t2.ri);
-        normal.rj.copy(t2.rj);
+        vec3.copy(t1.ri, normal.ri); //normal.ri.copy(t1.ri);
+        vec3.copy(t1.rj, normal.rj); //normal.rj.copy(t1.rj);
+        vec3.copy(t2.ri, normal.ri); //normal.ri.copy(t2.ri);
+        vec3.copy(t2.rj, normal.rj); //normal.rj.copy(t2.rj);
 
         // update rotational constraints
-        bodyA.quaternion.vmult(axisA_x_pivotA, r1.ni);
-        bodyB.quaternion.vmult(axisB,          r1.nj);
-        bodyA.quaternion.vmult(axisA_x_axisA_x_pivotA,  r2.ni);
-        bodyB.quaternion.vmult(axisB,           r2.nj);
+        vec3.transformQuat( r1.ni,axisA_x_pivotA,bodyA.quaternion);
+        vec3.transformQuat(          r1.nj,axisB,bodyB.quaternion);
+        vec3.transformQuat(  r2.ni,axisA_x_axisA_x_pivotA,bodyA.quaternion);
+        vec3.transformQuat(           r2.nj,axisB,bodyB.quaternion);
 
         if(motorEnabled){
-            bodyA.quaternion.vmult(axisA,motor.axisA);
-            bodyB.quaternion.vmult(axisB,motor.axisB);
+            vec3.transformQuat(motor.axisA,axisA,bodyA.quaternion);
+            vec3.transformQuat(motor.axisB,axisB,bodyB.quaternion);
             motor.targetVelocity = that.motorTargetVelocity;
             motor.maxForce = that.motorMaxForce;
             motor.minForce = that.motorMinForce;

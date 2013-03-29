@@ -759,15 +759,15 @@ CANNON.Demo = function(options){
         var maxg = 100;
         wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){
             if(!isNaN(gx))
-                world.gravity.set(gx,settings.gy,settings.gz);
+                vec3.set(world.gravity,gx, settings.gy, settings.gz);
         });
         wf.add(settings, 'gy',-maxg,maxg).onChange(function(gy){
             if(!isNaN(gy))
-                world.gravity.set(settings.gx,gy,settings.gz);
+                vec3.set(world.gravity, settings.gx, gy, settings.gz);
         });
         wf.add(settings, 'gz',-maxg,maxg).onChange(function(gz){
             if(!isNaN(gz))
-                world.gravity.set(settings.gx,settings.gy,gz);
+                vec3.set(world.gravity,settings.gx,settings.gy,gz);
         });
         wf.add(settings, 'quatNormalizeSkip',0,50).step(1).onChange(function(skip){
             if(!isNaN(skip)){
