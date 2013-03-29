@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" type="text/css"/>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../build/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -36,8 +37,8 @@
             demo.addVisual(body);
 
             // Add an impulse to the center
-            var worldPoint = new CANNON.Vec3(0,0,0);
-            var impulse = new CANNON.Vec3(f*dt,0,0);
+            var worldPoint = vec3.fromValues(0,0,0);
+            var impulse = vec3.fromValues(f*dt,0,0);
             body.applyImpulse(impulse,worldPoint);
         });
 
@@ -51,8 +52,8 @@
             demo.addVisual(body);
 
             // Add an impulse to the center
-            var worldPoint = new CANNON.Vec3(0,0,radius);
-            var impulse = new CANNON.Vec3(f*dt,0,0);
+            var worldPoint = vec3.fromValues(0,0,radius);
+            var impulse = vec3.fromValues(f*dt,0,0);
             body.applyImpulse(impulse,worldPoint);
         });
 
@@ -67,8 +68,8 @@
             demo.addVisual(body);
 
             // Add an force to the center
-            var worldPoint = new CANNON.Vec3(0,0,0);
-            var force = new CANNON.Vec3(f,0,0);
+            var worldPoint = vec3.fromValues(0,0,0);
+            var force = vec3.fromValues(f,0,0);
             body.applyForce(force,worldPoint);
         });
 
@@ -82,8 +83,8 @@
             demo.addVisual(body);
 
             // Add an force to the center
-            var worldPoint = new CANNON.Vec3(0,0,radius);
-            var force = new CANNON.Vec3(f,0,0);
+            var worldPoint = vec3.fromValues(0,0,radius);
+            var force = vec3.fromValues(f,0,0);
             body.applyForce(force,worldPoint);
         });
       
