@@ -21,6 +21,10 @@
 
       var demo = new CANNON.Demo();
       var size = 1;
+
+      var options = { destroyOnCollision: true};
+      var f = demo.gui.addFolder('Collision Responce');
+      f.add(options,'destroyOnCollision');
       
       demo.addScene("'collide' event",function(){
       
@@ -51,6 +55,10 @@
               alert("The sphere just collided with the ground!");
               console.log("Collided with body:",e.with);
               console.log("Contact between bodies:",e.contact);
+              if(options.destroyOnCollision){
+                  demo.removeVisual(sphereBody);
+                  world.remove(sphereBody);
+              }
           });
           
         });
