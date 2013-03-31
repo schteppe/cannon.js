@@ -4339,6 +4339,20 @@ CANNON.World = function(){
      * @memberof CANNON.World
      */
     this.bodies = [];
+    
+    /**
+     * @property Array dirtyBodies
+     * @brief Container for bodies to be removed from simulation
+     * @memberof CANNON.World
+     */
+    this.dirtyBodies = [];
+
+    /**
+     * @property bool bodiesIsDirty
+     * @brief When true, dirtyBodies will be removed at the end of this step
+     * @memberof CANNON.World
+     */
+    this.bodiesIsDirty = false;
 
     var th = this;
 
@@ -4552,12 +4566,12 @@ CANNON.World.prototype.id = function(){
 };
 
 /**
- * @method remove
+ * @method removeImmediate
  * @memberof CANNON.World
  * @brief Remove a rigid body from the simulation.
  * @param CANNON.Body body
  */
-CANNON.World.prototype.remove = function(body){
+CANNON.World.prototype.removeImmediate = function(body){
     body.world = null;
     var n = this.numObjects()-1;
     var bodies = this.bodies;
@@ -4568,6 +4582,32 @@ CANNON.World.prototype.remove = function(body){
 	//TODO: Maybe splice out the correct elements?
 	this.collisionMatrixPrevious.length = 
 	this.collisionMatrix.length = n*(n-1)>>1;
+};
+
+/**
+ * @method remove
+ * @memberof CANNON.World
+ * @brief Remove a rigid body from the simulation.
+ * @param CANNON.Body body
+ */
+CANNON.World.prototype.remove = function(body){
+    this.dirtyBodies.push(body);
+    this.bodiesIsDirty = true;
+};
+
+/**
+ * @method cleanup
+ * @memberof CANNON.World
+ * @brief Removes flagged rigid bodies from the simulation.
+ * @param CANNON.Body body
+ */
+CANNON.World.prototype.cleanup = function(body){
+    var body = this.dirtyBodies.pop();
+    while(body != undefined){
+        this.removeImmediate(body);
+        body = this.dirtyBodies.pop();
+    }
+    this.bodiesIsDirty = false;
 };
 
 /**
@@ -4676,7 +4716,6 @@ CANNON.World.prototype.step = function(dt){
         gy = gravity.y,
         gz = gravity.z,
         i=0;
-
 
     if(doProfiling){
         profilingStart = now();
@@ -4827,6 +4866,9 @@ CANNON.World.prototype.step = function(dt){
             }
         }
     }
+
+    
+
     if(doProfiling){
         profile.makeContactConstraints = now() - profilingStart;
     }
@@ -5003,6 +5045,12 @@ CANNON.World.prototype.step = function(dt){
             bodies[i].sleepTick(this.time);
         }
     }
+
+    //Remove bodies flagged for deletion
+    if(this.bodiesIsDirty){
+        this.cleanup();
+    }
+    
 };
 
 

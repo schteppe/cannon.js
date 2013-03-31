@@ -15,6 +15,9 @@ CANNON.Demo = function(options){
     this.getWorld = getWorld;
     this.start = start;
 
+    //GUI
+    this.gui = null;
+
     // Global settings
     var settings = {
         stepFrequency:60,
@@ -56,7 +59,6 @@ CANNON.Demo = function(options){
     var bodies = [];
     var visuals = [];
     var scenes = [];
-    var gui = null;
     var smoothie = null;
     var smoothieCanvas = null;
     var scenePicker = {};
@@ -151,16 +153,16 @@ CANNON.Demo = function(options){
     var renderModes = ["solid","wireframe"];
 
     function updategui(){
-        if(gui){
+        if(this.gui){
             // First level
-            for (var i in gui.__controllers){
-                gui.__controllers[i].updateDisplay();
+            for (var i in this.gui.__controllers){
+                this.gui.__controllers[i].updateDisplay();
             }
 
             // Second level
-            for (var f in gui.__folders){
-                for (var i in gui.__folders[f].__controllers){
-                    gui.__folders[f].__controllers[i].updateDisplay();
+            for (var f in this.gui.__folders){
+                for (var i in this.gui.__folders[f].__controllers){
+                    this.gui.__folders[f].__controllers[i].updateDisplay();
                 }
             }
         }
@@ -608,8 +610,7 @@ CANNON.Demo = function(options){
         SCREEN_WIDTH = window.innerWidth;
         SCREEN_HEIGHT = window.innerHeight;
 
-        renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-
+        renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT )
         camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
         camera.updateProjectionMatrix();
 
@@ -691,10 +692,10 @@ CANNON.Demo = function(options){
     });
 
     if(window.dat!=undefined){
-        gui = new dat.GUI();
+        this.gui = new dat.GUI();
 
         // Render mode
-        var rf = gui.addFolder('Rendering');
+        var rf = this.gui.addFolder('Rendering');
         rf.add(settings,'rendermode',{Solid:"solid",Wireframe:"wireframe"}).onChange(function(mode){
             setRenderMode(mode);
         });
@@ -732,7 +733,7 @@ CANNON.Demo = function(options){
         });
 
         // World folder
-        var wf = gui.addFolder('World');
+        var wf = this.gui.addFolder('World');
         // Pause
         wf.add(settings, 'paused').onChange(function(p){
             /*if(p){
@@ -765,7 +766,7 @@ CANNON.Demo = function(options){
         });
 
         // Solver folder
-        var sf = gui.addFolder('Solver');
+        var sf = this.gui.addFolder('Solver');
         sf.add(settings, 'iterations',1,50).step(1).onChange(function(it){
             world.solver.iterations = it;
         });
@@ -780,7 +781,7 @@ CANNON.Demo = function(options){
         });
 
         // Scene picker
-        var sceneFolder = gui.addFolder('Scenes');
+        var sceneFolder = this.gui.addFolder('Scenes');
         sceneFolder.open();
     }
 
