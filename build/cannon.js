@@ -1293,6 +1293,8 @@ CANNON.Body = function(type){
 
     this.collisionFilterGroup = 1;
     this.collisionFilterMask = 1;
+	
+	this.collisionResponse = true;
 };
 
 /*
@@ -1323,7 +1325,7 @@ CANNON.Particle = function(mass,material){
         throw new Error("Argument 1 (mass) must be a number.");
     }
     if(typeof(material)!=="undefined" && !(material instanceof(CANNON.Material))){
-        throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+        throw new Error("Argument 2 (material) must be an instance of CANNON.Material.");
     }
 
     CANNON.Body.call(this,"particle");
@@ -4254,7 +4256,7 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 
     /// Restitution
     this.restitution =      restitution !== undefined ?      Number(restitution) :      0.3;
-
+	
     // Parameters to pass to the constraint when it is created
     this.contactEquationStiffness = 1e7;
     this.contactEquationRegularizationTime = 3;
@@ -4582,7 +4584,7 @@ CANNON.World.prototype.addMaterial = function(m){
         this.materials.push(m);
         m.id = this.materials.length-1;
 
-        // Increase size of collision matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
+        // Increase size of materials matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
         for(var i=0; i!==2*n+1; i++){
             this.mats2cmat.push(-1);
         }
@@ -4751,13 +4753,12 @@ CANNON.World.prototype.step = function(dt){
         // Get current collision indeces
         var bi=c.bi, bj=c.bj;
 
-        // Resolve indeces
+        // Resolve indices
         var i = bodies.indexOf(bi), j = bodies.indexOf(bj);
 
         // Get collision properties
         var cm = this.getContactMaterial(bi.material,bj.material) || this.defaultContactMaterial;
         var mu = cm.friction;
-        var e = cm.restitution;
 
         // g = ( xj + rj - xi - ri ) .dot ( ni )
         var gvec = World_step_gvec;
@@ -4768,46 +4769,48 @@ CANNON.World.prototype.step = function(dt){
 
         // Action if penetration
         if(g<0.0){
-            c.restitution = cm.restitution;
-            c.penetration = g;
-            c.stiffness = cm.contactEquationStiffness;
-            c.regularizationTime = cm.contactEquationRegularizationTime;
+			if (bi.collisionResponse && bj.collisionResponse) {
+				c.restitution = cm.restitution;
+				c.penetration = g;
+				c.stiffness = cm.contactEquationStiffness;
+				c.regularizationTime = cm.contactEquationRegularizationTime;
 
-            solver.addEquation(c);
+				solver.addEquation(c);
 
-            // Add friction constraint equation
-            if(mu > 0){
+				// Add friction constraint equation
+				if(mu > 0){
 
-                // Create 2 tangent equations
-                var mug = mu*gnorm;
-                var reducedMass = (bi.invMass + bj.invMass);
-                if(reducedMass > 0){
-                    reducedMass = 1/reducedMass;
-                }
-                var pool = frictionEquationPool;
-                var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-                var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-                this.frictionEquations.push(c1);
-                this.frictionEquations.push(c2);
+					// Create 2 tangent equations
+					var mug = mu*gnorm;
+					var reducedMass = (bi.invMass + bj.invMass);
+					if(reducedMass > 0){
+						reducedMass = 1/reducedMass;
+					}
+					var pool = frictionEquationPool;
+					var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+					var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+					this.frictionEquations.push(c1);
+					this.frictionEquations.push(c2);
 
-                c1.bi = c2.bi = bi;
-                c1.bj = c2.bj = bj;
-                c1.minForce = c2.minForce = -mug*reducedMass;
-                c1.maxForce = c2.maxForce = mug*reducedMass;
+					c1.bi = c2.bi = bi;
+					c1.bj = c2.bj = bj;
+					c1.minForce = c2.minForce = -mug*reducedMass;
+					c1.maxForce = c2.maxForce = mug*reducedMass;
 
-                // Copy over the relative vectors
-                c.ri.copy(c1.ri);
-                c.rj.copy(c1.rj);
-                c.ri.copy(c2.ri);
-                c.rj.copy(c2.rj);
+					// Copy over the relative vectors
+					c.ri.copy(c1.ri);
+					c.rj.copy(c1.rj);
+					c.ri.copy(c2.ri);
+					c.rj.copy(c2.rj);
 
-                // Construct tangents
-                c.ni.tangents(c1.t,c2.t);
+					// Construct tangents
+					c.ni.tangents(c1.t,c2.t);
 
-                // Add equations to solver
-                solver.addEquation(c1);
-                solver.addEquation(c2);
-            }
+					// Add equations to solver
+					solver.addEquation(c1);
+					solver.addEquation(c2);
+				}
+			}
 
             // Now we know that i and j are in contact. Set collision matrix state
             this.collisionMatrixSet(i,j,1,true);
