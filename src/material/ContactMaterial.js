@@ -20,7 +20,7 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 
     /// Restitution
     this.restitution =      restitution !== undefined ?      Number(restitution) :      0.3;
-
+	
     // Parameters to pass to the constraint when it is created
     this.contactEquationStiffness = 1e7;
     this.contactEquationRegularizationTime = 3;
