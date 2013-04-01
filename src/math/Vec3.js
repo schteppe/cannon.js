@@ -330,6 +330,12 @@ CANNON.Vec3.prototype.copy = function(target){
     return target;
 };
 
+vec3.copyToXYZObject = function(out,a){
+    out.x = a[0];
+    out.y = a[1];
+    out.z = a[2];
+};
+
 
 /**
  * @method lerp

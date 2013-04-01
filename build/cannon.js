@@ -732,6 +732,12 @@ CANNON.Vec3.prototype.copy = function(target){
     return target;
 };
 
+vec3.copyToXYZObject = function(out,a){
+    out.x = a[0];
+    out.y = a[1];
+    out.z = a[2];
+};
+
 
 /**
  * @method lerp
@@ -1095,6 +1101,13 @@ CANNON.Quaternion.prototype.copy = function(target){
     target.y = this.y;
     target.z = this.z;
     target.w = this.w;
+};
+
+quat.copyToXYZWObject = function(out,a){
+    out.x = a[0];
+    out.y = a[1];
+    out.z = a[2];
+    out.w = a[3];
 };
 
 /**
