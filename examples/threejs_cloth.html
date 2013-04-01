@@ -27,6 +27,7 @@
     </head>
 
     <body>
+        <script src="../libs/gl-matrix.js"></script>
         <script src="../libs/Three.js"></script>
         <script src="../libs/Detector.js"></script>
         <script src="../build/cannon.js"></script>
@@ -73,7 +74,7 @@
             function initCannon(){
                 world = new CANNON.World();
                 world.broadphase = new CANNON.NaiveBroadphase();
-                world.gravity.set(0,-9.82,0);
+                vec3.set(world.gravity,0,-9.82,0);
                 world.solver.iterations = 20;
 
                 // Materials
@@ -94,7 +95,7 @@
                 // Create sphere
                 var sphereShape = new CANNON.Sphere(ballSize*1.3);
                 sphereBody = new CANNON.RigidBody(0,sphereShape);
-                sphereBody.position.set(0,0,0);
+                vec3.set(sphereBody.position,0,0,0);
                 world.add(sphereBody);
 
                 // Create cannon particles
@@ -105,14 +106,14 @@
                         var p = clothFunction(i/(Nx+1), j/(Ny+1));
                         var particle = new CANNON.Particle(j==Ny ? 0 : mass);
                         particle.linearDamping = 0.5;
-                        particle.position.set(
-                            p.x,
-                            p.y-Ny*0.9*restDistance,
-                            p.z
+                        vec3.set(particle.position,
+                                 p.x,
+                                 p.y-Ny*0.9*restDistance,
+                                 p.z
                         );
                         particles[i].push(particle);
                         world.add(particle);
-                        particle.velocity.set(0,0,-0.1*(Ny-j));
+                        vec3.set(particle.velocity,0,0,-0.1*(Ny-j));
                     }
                 }
                 function connect(i1,j1,i2,j2){
@@ -271,7 +272,7 @@
                 controls.update();
                 world.step(dt);
                 var t = world.time;
-                sphereBody.position.set(R*Math.sin(2*t),0,R*Math.cos(2*t));
+                vec3.set( sphereBody.position , R*Math.sin(2*t),0,R*Math.cos(2*t));
                 render();
             }
 
@@ -280,7 +281,7 @@
                 for ( var i = 0, il = Nx+1; i !== il; i++ ) {
                     for ( var j = 0, jl = Ny+1; j !== jl; j++ ) {
                         var idx = j*(Nx+1) + i;
-                        particles[i][j].position.copy( clothGeometry.vertices[ idx ] );
+                        vec3.copyToXYZObject( clothGeometry.vertices[ idx ] , particles[i][j].position );
                     }
                 }
 
@@ -290,7 +291,7 @@
                 clothGeometry.normalsNeedUpdate = true;
                 clothGeometry.verticesNeedUpdate = true;
 
-                sphereBody.position.copy(sphereMesh.position);
+                vec3.copyToXYZObject( sphereMesh.position , sphereBody.position );
 
                 renderer.render( scene, camera );
 
