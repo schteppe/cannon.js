@@ -14,6 +14,7 @@
         </style>
     </head>
     <body>
+        <script src="../libs/gl-matrix.js"></script>
         <script src="../libs/Three.js"></script>
         <script src="../libs/Detector.js"></script>
         <script src="../build/cannon.js"></script>
@@ -258,8 +259,8 @@
         function updatePhysics(){
             world.step(dt);
             for(var i=0; i!==meshes.length; i++){
-                bodies[i].position.copy(meshes[i].position);
-                bodies[i].quaternion.copy(meshes[i].quaternion);
+                vec3.copyToXYZObject( meshes[i].position , bodies[i].position );
+                quat.copyToXYZWObject( meshes[i].quaternion , bodies[i].quaternion );
             }
         }
 
@@ -273,15 +274,15 @@
             world.quatNormalizeSkip = 0;
             world.quatNormalizeFast = false;
 
-            world.gravity.set(0,-10,0);
+            vec3.set(world.gravity,0,-10,0);
             world.broadphase = new CANNON.NaiveBroadphase();
 
             // Create boxes
             var mass = 5, radius = 1.3;
-            boxShape = new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5));
+            boxShape = new CANNON.Box(vec3.fromValues(0.5,0.5,0.5));
             for(var i=0; i<N; i++){
                 boxBody = new CANNON.RigidBody(mass,boxShape);
-                boxBody.position.set(0,5,0);
+                vec3.set(boxBody.position,0,5,0);
                 world.add(boxBody);
                 bodies.push(boxBody);
             }
@@ -289,7 +290,7 @@
             // Create a plane
             var groundShape = new CANNON.Plane();
             var groundBody = new CANNON.RigidBody(0,groundShape);
-            groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+            quat.setAxisAngle(groundBody.quaternion,vec3.fromValues(1,0,0),-Math.PI/2);
             world.add(groundBody);
 
             // Joint body
@@ -300,23 +301,31 @@
             world.add(jointBody)
         }
 
+        var worldPointPosition = vec3.create();
+        var relPointPosition = vec3.create();
+        var antiRotation = quat.create();
+        var pivot = vec3.create();
+        var zeroVector = vec3.create();
         function addMouseConstraint(x,y,z,body) {
           // The cannon body constrained by the mouse joint
           constrainedBody = body;
 
-          // Vector to the clicked point, relative to the body
-          var v1 = new CANNON.Vec3(x,y,z).vsub(constrainedBody.position);
+          // Get world position of the clicked point
+          vec3.set(worldPointPosition,x,y,z);
+
+          // Compute the vector to the clicked point, relative to the body
+          vec3.subtract( relPointPosition , worldPointPosition , constrainedBody.position );
 
           // Apply anti-quaternion to vector to tranform it into the local body coordinate system
-          var antiRot = constrainedBody.quaternion.inverse();
-          pivot = antiRot.vmult(v1); // pivot is not in local body coordinates
+          quat.conjugate( antiRotation , constrainedBody.quaternion );
+          vec3.transformQuat( pivot , relPointPosition , antiRotation ); // pivot is now in local body coordinates
 
           // Move the cannon click marker particle to the click position
-          jointBody.position.set(x,y,z);
+          vec3.set(jointBody.position,x,y,z);
 
           // Create a new constraint
           // The pivot for the jointBody is zero
-          mouseConstraint = new CANNON.PointToPointConstraint(constrainedBody, pivot, jointBody, new CANNON.Vec3(0,0,0));
+          mouseConstraint = new CANNON.PointToPointConstraint(constrainedBody, pivot, jointBody, zeroVector );
 
           // Add the constriant to world
           world.addConstraint(mouseConstraint);
@@ -325,7 +334,7 @@
         // This functions moves the transparent joint body to a new postion in space
         function moveJointToPoint(x,y,z) {
             // Move the joint body to a new position
-            jointBody.position.set(x,y,z);
+            vec3.set(jointBody.position,x,y,z);
             mouseConstraint.update();
         }
 
