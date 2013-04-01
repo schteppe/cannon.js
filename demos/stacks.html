@@ -137,11 +137,11 @@
           // Sphere
           var sphereShape = new CANNON.Sphere(size*0.5);
           var b = new CANNON.RigidBody(5,sphereShape);
-          vec3.set(b.position,0,0,6*size);
+          vec3.set(b.position,0.1*size,0.1*size,6*size);
           world.add(b);
           demo.addVisual(b);
       
-          var shape = createTetra();//createBoxPolyhedron(size);
+          var shape = createTetra();
           var b1 = new CANNON.RigidBody(5,shape);
           vec3.set(b1.position,0,0,1*size);
           world.add(b1);
@@ -345,7 +345,7 @@
           var tetraShape = createBoxPolyhedron(size);
           var t = new CANNON.RigidBody(5,tetraShape);
           vec3.set(t.position,0,0,1*size);
-          t.quaternion.setFromAxisAngle(vec3.fromValues(1,0,0),Math.PI/2);
+          quat.setAxisAngle(t.quaternion,vec3.fromValues(1,0,0),Math.PI/2);
       
           // Particle
           var p = new CANNON.Particle(1);

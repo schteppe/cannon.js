@@ -2990,7 +2990,7 @@ CANNON.ConvexPolyhedron.prototype = new CANNON.Shape();
 CANNON.ConvexPolyhedron.prototype.constructor = CANNON.ConvexPolyhedron;
 
 // Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
-CANNON.ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat){
+CANNON.ConvexPolyhedron.prototype.computeWorldVertices = function(position,q){
     var N = this.vertices.length;
     while(this.worldVertices.length < N){
         this.worldVertices.push( vec3.create() );
@@ -2999,15 +2999,15 @@ CANNON.ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat)
     var verts = this.vertices,
         worldVerts = this.worldVertices;
     for(var i=0; i!==N; i++){
-        quat.vmult( verts[i] , worldVerts[i] );
-        vec3.add( worldVerts[i] ,position, worldVerts[i] );
+        vec3.transformQuat(worldVerts[i], verts[i] , q );
+        vec3.add( worldVerts[i] , position , worldVerts[i] );
     }
 
     this.worldVerticesNeedsUpdate = false;
 };
 
 // Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
-CANNON.ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
+CANNON.ConvexPolyhedron.prototype.computeWorldFaceNormals = function(q){
     var N = this.faceNormals.length;
     while(this.worldFaceNormals.length < N){
         this.worldFaceNormals.push( vec3.create() );
@@ -3016,7 +3016,7 @@ CANNON.ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
     var normals = this.faceNormals,
         worldNormals = this.worldFaceNormals;
     for(var i=0; i!==N; i++){
-        quat.vmult( normals[i] , worldNormals[i] );
+        vec3.transformQuat( worldNormals[i] , normals[i] , q );
     }
 
     this.worldFaceNormalsNeedsUpdate = false;
@@ -3037,12 +3037,12 @@ CANNON.ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
 };
 
 var tempWorldVertex = vec3.create();
-CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
+CANNON.ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,q,min,max){
     var n = this.vertices.length, verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
     for(var i=0; i<n; i++){
         vec3.copy(tempWorldVertex,verts[i]);
-        quat.vmult(tempWorldVertex,tempWorldVertex);
+        vec3.transformQuat(tempWorldVertex,tempWorldVertex,q);
         vec3.add(tempWorldVertex,pos,tempWorldVertex);
         var v = tempWorldVertex;
         if     (v.x < minx || minx===undefined){
@@ -5757,7 +5757,7 @@ CANNON.ContactGenerator = function(){
         var local = particleConvex_local;
         vec3.copy(local,xi);
         vec3.subtract(local,local,xj); // Convert position to relative the convex origin
-        qj.conjugate(cqj);
+        quat.conjugate(cqj,qj);
         vec3.transformQuat(local,local,cqj);
 
         if(sj.pointIsInside(local)){

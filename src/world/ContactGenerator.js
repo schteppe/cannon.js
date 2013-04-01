@@ -674,7 +674,7 @@ CANNON.ContactGenerator = function(){
         var local = particleConvex_local;
         vec3.copy(local,xi);
         vec3.subtract(local,local,xj); // Convert position to relative the convex origin
-        qj.conjugate(cqj);
+        quat.conjugate(cqj,qj);
         vec3.transformQuat(local,local,cqj);
 
         if(sj.pointIsInside(local)){
