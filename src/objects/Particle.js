@@ -11,7 +11,7 @@ CANNON.Particle = function(mass,material){
         throw new Error("Argument 1 (mass) must be a number.");
     }
     if(typeof(material)!=="undefined" && !(material instanceof(CANNON.Material))){
-        throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+        throw new Error("Argument 2 (material) must be an instance of CANNON.Material.");
     }
 
     CANNON.Body.call(this,"particle");

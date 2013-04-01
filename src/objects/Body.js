@@ -38,6 +38,8 @@ CANNON.Body = function(type){
 
     this.collisionFilterGroup = 1;
     this.collisionFilterMask = 1;
+	
+	this.collisionResponse = true;
 };
 
 /*
