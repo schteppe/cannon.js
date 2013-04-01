@@ -924,6 +924,25 @@ CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
     return [targetAxis,angle];
 };
 
+// saves axis to targetAxis and returns the angle
+// Assumes the quaternion is normalized 
+quat.toAxisAngle = function(outAxis,q){
+    var w = q[3];
+    var angle = 2 * Math.acos(w);
+    var s = Math.sqrt(1-w*w); // assuming quaternion normalised then w is less than 1, so term always positive.
+    if (s < 0.001) { // test to avoid divide by zero, s is always positive due to sqrt
+        // if s close to zero then direction of axis not important
+        outAxis[0] = q[0]; // if it is important that axis is normalised then replace with x=1; y=z=0;
+        outAxis[1] = q[1];
+        outAxis[2] = q[2];
+    } else {
+        outAxis[0] = q[0] / s; // normalise axis
+        outAxis[1] = q[1] / s;
+        outAxis[2] = q[2] / s;
+    }
+    return angle;
+};
+
 /**
  * @method setFromVectors
  * @memberof CANNON.Quaternion

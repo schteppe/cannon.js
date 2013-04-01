@@ -9,6 +9,7 @@
   </head>
   <body>
 
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../libs/scenejs.js"></script>
     <script src="../build/cannon.js"></script>
 
@@ -26,14 +27,14 @@
       function initCannon() {
 
           world = new CANNON.World();
-          world.gravity.set(0,0,0);
+          vec3.set(world.gravity,0,0,0);
           world.broadphase = new CANNON.NaiveBroadphase();
           world.solver.iterations = 10;
           
-          shape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+          shape = new CANNON.Box(vec3.fromValues(1,1,1));
           mass = 1;
           body = new CANNON.RigidBody(mass,shape);
-          body.angularVelocity.set(0,10,0);
+          vec3.set(body.angularVelocity,0,10,0);
           body.angularDamping = 0.5;
           world.add(body);
 
@@ -120,9 +121,9 @@
                   
                                                                   {
                                                                       type : "cube",
-                                                                      xSize: shape.halfExtents.x,
-                                                                      ySize: shape.halfExtents.y,
-                                                                      zSize: shape.halfExtents.z,
+                                                                      xSize: shape.halfExtents[0],
+                                                                      ySize: shape.halfExtents[1],
+                                                                      zSize: shape.halfExtents[2],
                                                                   }
                                                               ]
                                                           }
@@ -154,23 +155,31 @@
 
       }
 
+      var axis = vec3.create();
       function updatePhysics() {
 
-          var axisAndAngle, axis, angle;
+          var axisAndAngle, angle;
 
           // Step the physics world
           world.step(timeStep);
 
           // Copy position from cannon to SceneJS translation node
-          translationNode.set("xyz",body.position);
+          translationNode.set("xyz",{
+            x : body.position[0],
+            y : body.position[1],
+            z : body.position[2],
+          });
 
           // Get orientation of the body from cannon.js
-          axisAndAngle = body.quaternion.toAxisAngle();
-          axis = axisAndAngle[0];
-          angle = axisAndAngle[1];
+          angle = quat.toAxisAngle( axis, body.quaternion );
 
           // Copy orientation to the SceneJS quaternion node
-          quaternionNode.set("rotation",{ x: axis.x, y: axis.y, z: axis.z, angle: angle*180/Math.PI });
+          quaternionNode.set("rotation",{
+            x: axis[0],
+            y: axis[1],
+            z: axis[2],
+            angle: angle*180/Math.PI
+          });
 
       }
 
