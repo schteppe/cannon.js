@@ -6,6 +6,7 @@
     <style>* {margin:0;padding:0}</style>
   </head>
   <body>
+    <script src="../libs/gl-matrix.js"></script>
     <script src="../libs/Three.js"></script>
     <script src="../build/cannon.js"></script>
     <script>
@@ -20,14 +21,14 @@
       function initCannon() {
           
           world = new CANNON.World();
-          world.gravity.set(0,0,0);
+          vec3.set(world.gravity,0,0,0);
           world.broadphase = new CANNON.NaiveBroadphase();
           world.solver.iterations = 10;
           
-          shape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+          shape = new CANNON.Box(vec3.fromValues(1,1,1));
           mass = 1;
           body = new CANNON.RigidBody(mass,shape);
-          body.angularVelocity.set(0,10,0);
+          vec3.set(body.angularVelocity,0,10,0);
           body.angularDamping = 0.5;
           world.add(body);
           
@@ -69,8 +70,17 @@
           world.step(timeStep);
 
           // Copy coordinates from Cannon.js to Three.js
-          body.position.copy(mesh.position);
-          body.quaternion.copy(mesh.quaternion);
+          mesh.position.x = body.position[0];
+          mesh.position.y = body.position[1];
+          mesh.position.z = body.position[2];
+          mesh.quaternion.x = body.quaternion[0];
+          mesh.quaternion.y = body.quaternion[1];
+          mesh.quaternion.z = body.quaternion[2];
+          mesh.quaternion.w = body.quaternion[3];
+
+          // We could also use the more convenient calls below
+          // vec3.copyToXYZObject( mesh.position , body.position )
+          // quat.copyToXYZWObject( mesh.quaternion , body.quaternion )
   
       }
   
