@@ -215,7 +215,6 @@
             material = new THREE.MeshLambertMaterial( { color: 0x777777 } );
             mesh = new THREE.Mesh( geometry, material );
             mesh.castShadow = true;
-            console.dir(mesh.quaternion);
             mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2);
             mesh.useQuaternion = true;
             mesh.receiveShadow = true;

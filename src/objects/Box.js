@@ -138,21 +138,28 @@ CANNON.Box.prototype.computeBoundingSphereRadius = function(){
 
 var worldCornerTempPos = vec3.create();
 var worldCornerTempNeg = vec3.create();
-CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
-
+var worldCornerTempCorners = [  vec3.create(),
+                                vec3.create(),
+                                vec3.create(),
+                                vec3.create(),
+                                vec3.create(),
+                                vec3.create(),
+                                vec3.create(),
+                                vec3.create() ];
+CANNON.Box.prototype.forEachWorldCorner = function(pos,q,callback){
     var e = this.halfExtents;
-    var corners = [[  e[0],  e[1],  e[2]],
-                   [ -e[0],  e[1],  e[2]],
-                   [ -e[0], -e[1],  e[2]],
-                   [ -e[0], -e[1], -e[2]],
-                   [  e[0], -e[1], -e[2]],
-                   [  e[0],  e[1], -e[2]],
-                   [ -e[0],  e[1], -e[2]],
-                   [  e[0], -e[1],  e[2]]];
-    for(var i=0; i<corners.length; i++){
-        worldCornerTempPos.set(corners[i][0],corners[i][1],corners[i][2]);
-        quat.vmult(worldCornerTempPos,worldCornerTempPos);
-        pos.vadd(worldCornerTempPos,worldCornerTempPos);
+    var corners = worldCornerTempCorners;
+    vec3.set( corners[0],   e[0],  e[1],  e[2]);
+    vec3.set( corners[1],  -e[0],  e[1],  e[2]);
+    vec3.set( corners[2],  -e[0], -e[1],  e[2]);
+    vec3.set( corners[3],  -e[0], -e[1], -e[2]);
+    vec3.set( corners[4],   e[0], -e[1], -e[2]);
+    vec3.set( corners[5],   e[0],  e[1], -e[2]);
+    vec3.set( corners[6],  -e[0],  e[1], -e[2]);
+    vec3.set( corners[7],   e[0], -e[1],  e[2]);
+    for(var i=0; i!==corners.length; i++){
+        vec3.transformQuat( worldCornerTempPos , corners[i] , q );
+        vec3.add( worldCornerTempPos , worldCornerTempPos , pos );
         callback(worldCornerTempPos[0],
                  worldCornerTempPos[1],
                  worldCornerTempPos[2]);
@@ -161,9 +168,9 @@ CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
 
 CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
     // Get each axis max
-    min.set(Infinity,Infinity,Infinity);
-    max.set(-Infinity,-Infinity,-Infinity);
-    this.forEachWorldCorner(pos,quat,function(x,y,z){
+    vec3.set(min,Infinity,Infinity,Infinity);
+    vec3.set(max,-Infinity,-Infinity,-Infinity);
+    this.forEachWorldCorner(pos,quat,function(x,y,z){ // @todo dont use callbacks...
         if(x > max[0]){
             max[0] = x;
         }
