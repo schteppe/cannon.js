@@ -139,13 +139,15 @@ CANNON.ContactGenerator = function(){
     var sphereBox_side_ns = vec3.create();
     var sphereBox_side_ns1 = vec3.create();
     var sphereBox_side_ns2 = vec3.create();
+    var sphereBox_penetratingSides = [];
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // we refer to the box as body j
         var sides = sphereBox_sides;
         vec3.subtract(box_to_sphere,xi,xj);
         sj.getSideNormals(sides,qj);
         var R =     si.radius;
-        var penetrating_sides = [];
+        var penetrating_sides = sphereBox_penetratingSides;
+        penetrating_sides.length = 0;
 
         // Check side (plane) intersections
         var found = false;
@@ -174,17 +176,15 @@ CANNON.ContactGenerator = function(){
                 // Intersects plane. Now check the other two dimensions
                 var ns1 = sphereBox_ns1;
                 var ns2 = sphereBox_ns2;
-                /*sides[(idx+1)%3].copy(ns1);
-                sides[(idx+2)%3].copy(ns2);*/
                 vec3.copy(ns1,sides[(idx+1)%3]);
                 vec3.copy(ns2,sides[(idx+2)%3]);
-                var h1 = vec3.length(ns1);
-                var h2 = vec3.length(ns2);
+                var h1Squared = vec3.squaredLength(ns1);
+                var h2Squared = vec3.squaredLength(ns2);
                 vec3.normalize(ns1,ns1);
                 vec3.normalize(ns2,ns2);
                 var dot1 = vec3.dot(box_to_sphere,ns1);
                 var dot2 = vec3.dot(box_to_sphere,ns2);
-                if(dot1<h1 && dot1>-h1 && dot2<h2 && dot2>-h2){
+                if(dot1*dot1 < h1Squared && dot1*dot1 > -h1Squared && dot2*dot2 < h2Squared && dot2*dot2 > -h2Squared){
                     var dist = Math.abs(dot-h-R);
                     if(side_distance===null || dist < side_distance){
                         side_distance = dist;
