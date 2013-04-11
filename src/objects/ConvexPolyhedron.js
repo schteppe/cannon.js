@@ -1,15 +1,21 @@
 /**
  * @class CANNON.ConvexPolyhedron
  * @extends CANNON.Shape
- * @brief A set of points in space describing a convex shape.
+ * @brief A set of polygons describing a convex shape.
+ * @description The shape MUST be convex for the code to work properly. No polygons may be coplanar (contained
+ * in the same 3D plane), instead these should be merged into one polygon.
+ * 
+ * @param array points An array of CANNON.Vec3's
+ * @param array faces Array of integer arrays, describing which vertices that is included in each face.
+ * @param array normals Deprecated. Normals are now automatically generated from polygons.
+ * 
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
  * @see http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
  * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
- * @todo move the clipping functions to ContactGenerator?
- * @param array points An array of CANNON.Vec3's
- * @param array faces
- * @param array normals
+ * 
+ * @todo Move the clipping functions to ContactGenerator?
+ * @todo Automatically merge coplanar polygons in constructor.
  */
 CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var that = this;
