@@ -2281,15 +2281,21 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
 /**
  * @class CANNON.ConvexPolyhedron
  * @extends CANNON.Shape
- * @brief A set of points in space describing a convex shape.
+ * @brief A set of polygons describing a convex shape.
+ * @description The shape MUST be convex for the code to work properly. No polygons may be coplanar (contained
+ * in the same 3D plane), instead these should be merged into one polygon.
+ * 
+ * @param array points An array of CANNON.Vec3's
+ * @param array faces Array of integer arrays, describing which vertices that is included in each face.
+ * @param array normals Deprecated. Normals are now automatically generated from polygons.
+ * 
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
  * @see http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
  * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
- * @todo move the clipping functions to ContactGenerator?
- * @param array points An array of CANNON.Vec3's
- * @param array faces
- * @param array normals
+ * 
+ * @todo Move the clipping functions to ContactGenerator?
+ * @todo Automatically merge coplanar polygons in constructor.
  */
 CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var that = this;
@@ -3126,6 +3132,7 @@ CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
 function pointInConvex(p){
 }
 
+
 /**
  * @class CANNON.Cylinder
  * @extends CANNON.ConvexPolyhedron
@@ -3950,6 +3957,85 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 };
 
 
+/** @class Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
+  *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
+  */
+CANNON.ArrayCollisionMatrix = function() {
+	this.matrix = [];
+};
+
+CANNON.ArrayCollisionMatrix.prototype.get = function(i, j) {
+	i = i.index;
+	j = j.index;
+    if (j > i) {
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+	return this.matrix[(i*(i + 1)>>1) + j-1];
+};
+
+CANNON.ArrayCollisionMatrix.prototype.set = function(i, j, value) {
+	i = i.index;
+	j = j.index;
+    if (j > i) {
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+	this.matrix[(i*(i + 1)>>1) + j-1] = value ? 1 : 0;
+};
+
+CANNON.ArrayCollisionMatrix.prototype.reset = function() {
+	for (var i=0, l=this.matrix.length; i!==l; i++) {
+		this.matrix[i]=0;
+	}
+};
+
+CANNON.ArrayCollisionMatrix.prototype.setNumObjects = function(n) {
+	this.matrix.length = n*(n-1)>>1;
+};
+
+/** @class ObjectCollisionMatrix Records what objects are colliding with each other 
+  */
+CANNON.ObjectCollisionMatrix = function() {
+	this.matrix = {};
+};
+
+CANNON.ObjectCollisionMatrix.prototype.get = function(i, j) {
+	i = i.id;
+	j = j.id;
+    if (j > i) {
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+	return i+'-'+j in this.matrix;
+};
+
+CANNON.ObjectCollisionMatrix.prototype.set = function(i, j, value) {
+	i = i.id;
+	j = j.id;
+    if (j > i) {
+        var temp = j;
+        j = i;
+        i = temp;
+	}
+	if (value) {
+		this.matrix[i+'-'+j] = true;
+	}
+	else {
+		delete this.matrix[i+'-'+j];
+	}
+};
+
+CANNON.ObjectCollisionMatrix.prototype.reset = function() {
+	this.matrix = {};
+};
+
+CANNON.ObjectCollisionMatrix.prototype.setNumObjects = function(n) {
+};
+
 /**
  * @class CANNON.Solver
  * @brief Constraint equation solver base class.
@@ -4366,12 +4452,12 @@ CANNON.World = function(){
 	 *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
 	 *  @memberof CANNON.World
 	 */
-	this.collisionMatrix = [];
+	this.collisionMatrix = new CANNON.ArrayCollisionMatrix();
     /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
 	 *  @brief collisionMatrix from the previous step
 	 *  @memberof CANNON.World
 	 */
-	this.collisionMatrixPrevious = [];
+	this.collisionMatrixPrevious = new CANNON.ArrayCollisionMatrix();
 
     /**
      * @property Array materials
@@ -4454,44 +4540,12 @@ CANNON.World.prototype.numObjects = function(){
     return this.bodies.length;
 };
 
-// Keep track of contacts for current and previous timestep
-// 0: No contact between i and j
-// 1: Contact
-CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
-    if(j > i){
-        var temp = j;
-        j = i;
-        i = temp;
-    }
-	// Reuse i for the index
-	i = (i*(i + 1)>>1) + j-1;
-    return (typeof(current)==="undefined" || current) ? this.collisionMatrix[i] : this.collisionMatrixPrevious[i];
-};
-
-CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
-    if(j > i){
-        var temp = j;
-        j = i;
-        i = temp;
-    }
-	// Reuse i for the index
-	i = (i*(i + 1)>>1) + j-1;
-	if (typeof(current)==="undefined" || current) {
-		this.collisionMatrix[i] = value;
-	}
-	else {
-		this.collisionMatrixPrevious[i] = value;
-	}
-};
-
 // transfer old contact state data to T-1
 CANNON.World.prototype.collisionMatrixTick = function(){
 	var temp = this.collisionMatrixPrevious;
 	this.collisionMatrixPrevious = this.collisionMatrix;
 	this.collisionMatrix = temp;
-	for (var i=0,l=this.collisionMatrix.length;i!==l;i++) {
-		this.collisionMatrix[i]=0;
-	}
+	this.collisionMatrix.reset();
 };
 
 /**
@@ -4515,8 +4569,7 @@ CANNON.World.prototype.add = function(body){
         body.quaternion.copy(body.initQuaternion);
     }
 
-    var n = this.numObjects();
-	this.collisionMatrix.length = n*(n-1)>>1;
+	this.collisionMatrix.setNumObjects(this.bodies.length);
 };
 
 /**
@@ -4567,9 +4620,7 @@ CANNON.World.prototype.remove = function(body){
 	for(var i=body.index; i<n;i++) {
 		bodies[i].index=i;
 	}
-	//TODO: Maybe splice out the correct elements?
-	this.collisionMatrixPrevious.length = 
-	this.collisionMatrix.length = n*(n-1)>>1;
+	this.collisionMatrix.setNumObjects(n);
 };
 
 /**
@@ -4813,9 +4864,9 @@ CANNON.World.prototype.step = function(dt){
 			}
 
             // Now we know that i and j are in contact. Set collision matrix state
-            this.collisionMatrixSet(i,j,1,true);
+			this.collisionMatrix.set(bi, bj, true);
 
-            if(this.collisionMatrixGet(i,j,true)!==this.collisionMatrixGet(i,j,false)){
+            if (this.collisionMatrix.get(bi, bj) !== this.collisionMatrixPrevious.get(bi, bj)) {
                 // First contact!
                 // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
                 World_step_collideEvent.with = bj;
