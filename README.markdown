@@ -5,41 +5,47 @@ Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https:/
 
 [Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/doc/) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon)
 
-### Usage 
-Download [the library](https://raw.github.com/schteppe/cannon.js/master/build/cannon.js) and include it in your html. Alternatively, build the library yourself (see [Makefile](https://github.com/schteppe/cannon.js/blob/master/Makefile)).
+### Usage
+Optionally, start by building the library using [Grunt](http://gruntjs.com/).
+
+Include [build/cannon.js](build/cannon.js) in your html:
 
 ```html
 <script src="cannon.js"></script>
 ```
 
-The code below creates a sphere on a plane, steps the simulation, and prints the sphere simulation to the console.
+Then you can start experimenting.
+
+The sample code below creates a sphere on a plane, steps the simulation, and prints the sphere simulation to the console. Note that Cannon.js uses [SI units](http://en.wikipedia.org/wiki/International_System_of_Units) (metre, kilogram, second, etc.).
 
 ```javascript
 // Setup our world
 var world = new CANNON.World();
-world.gravity.set(0,0,-9.82);
+world.gravity.set(0,0,-9.82); // m/s²
 world.broadphase = new CANNON.NaiveBroadphase();
     
 // Create a sphere
-var mass = 5, radius = 1;
+var mass = 5,   // kg
+    radius = 1; // m
 var sphereShape = new CANNON.Sphere(radius);
 var sphereBody = new CANNON.RigidBody(mass,sphereShape);
-sphereBody.position.set(0,0,10);
+sphereBody.position.set(0,0,10); // m
 world.add(sphereBody);
     
 // Create a plane
 var groundShape = new CANNON.Plane();
-var groundBody = new CANNON.RigidBody(0,groundShape);
+var groundBody = new CANNON.RigidBody(0,groundShape); // mass == 0 makes the body static
 world.add(groundBody);
     
 // Step the simulation
 setInterval(function(){
-  world.step(1.0/60.0);
+  var timeStep = 1.0/60.0; // seconds
+  world.step(timeStep);
   console.log("Sphere z position: " + sphereBody.position.z);
 }, 1000.0/60.0);
 ```
 
-If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](https://github.com/schteppe/cannon.js/tree/master/examples).
+If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](examples).
 
 ### Supported contact shape pairs
 |           | Sphere | Plane | Box | Compound | Convex¹ | Particle |
