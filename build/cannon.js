@@ -2281,15 +2281,21 @@ CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
 /**
  * @class CANNON.ConvexPolyhedron
  * @extends CANNON.Shape
- * @brief A set of points in space describing a convex shape.
+ * @brief A set of polygons describing a convex shape.
+ * @description The shape MUST be convex for the code to work properly. No polygons may be coplanar (contained
+ * in the same 3D plane), instead these should be merged into one polygon.
+ * 
+ * @param array points An array of CANNON.Vec3's
+ * @param array faces Array of integer arrays, describing which vertices that is included in each face.
+ * @param array normals Deprecated. Normals are now automatically generated from polygons.
+ * 
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
  * @see http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
  * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
- * @todo move the clipping functions to ContactGenerator?
- * @param array points An array of CANNON.Vec3's
- * @param array faces
- * @param array normals
+ * 
+ * @todo Move the clipping functions to ContactGenerator?
+ * @todo Automatically merge coplanar polygons in constructor.
  */
 CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     var that = this;
@@ -3126,6 +3132,7 @@ CANNON.ConvexPolyhedron.prototype.pointIsInside = function(p){
 function pointInConvex(p){
 }
 
+
 /**
  * @class CANNON.Cylinder
  * @extends CANNON.ConvexPolyhedron
@@ -3796,7 +3803,18 @@ CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
     this.nz = nz || 10;
     this.aabbMin = aabbMin || new CANNON.Vec3(100,100,100);
     this.aabbMax = aabbMax || new CANNON.Vec3(-100,-100,-100);
+	var nbins = this.nx * this.ny * this.nz;
+	if (nbins <= 0) {
+		throw "GridBroadphase: Each dimension's n must be >0";
+	}
     this.bins = [];
+	this.binLengths = []; //Rather than continually resizing arrays (thrashing the memory), just record length and allow them to grow
+	this.bins.length = nbins;
+	this.binLengths.length = nbins;
+	for (var i=0;i<nbins;i++) {
+		this.bins[i]=[];
+		this.binLengths[i]=0;
+	}
 };
 CANNON.GridBroadphase.prototype = new CANNON.Broadphase();
 CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
@@ -3820,6 +3838,10 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         nx = this.nx,
         ny = this.ny,
         nz = this.nz;
+		
+	var xstep = ny*nz;
+	var ystep = nz;
+	var zstep = 1;
 
     var xmax = max.x,
         ymax = max.y,
@@ -3836,6 +3858,8 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         binsizeY = (ymax - ymin) / ny,
         binsizeZ = (zmax - zmin) / nz;
 
+	var binRadius = Math.sqrt(binsizeX*binsizeX + binsizeY*binsizeY + binsizeZ*binsizeZ) * 0.5;
+
     var types = CANNON.Shape.types;
     var SPHERE =            types.SPHERE,
         PLANE =             types.PLANE,
@@ -3844,17 +3868,50 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         CONVEXPOLYHEDRON =  types.CONVEXPOLYHEDRON;
 
     var bins=this.bins,
-        Nbins=nx*ny*nz;
+		binLengths=this.binLengths,
+        Nbins=this.bins.length;
 
     // Reset bins
-    for(var i=bins.length-1; i!==Nbins; i++){
-        bins.push([]);
-    }
     for(var i=0; i!==Nbins; i++){
-        bins[i].length = 0;
+        binLengths[i] = 0;
     }
 
-    var floor = Math.floor;
+    var ceil = Math.ceil;
+	var min = Math.min;
+	var max = Math.max;
+	
+	function addBoxToBins(x0,y0,z0,x1,y1,z1,bi) {
+		var xoff0 = ((x0 - xmin) * xmult)|0,
+			yoff0 = ((y0 - ymin) * ymult)|0,
+			zoff0 = ((z0 - zmin) * zmult)|0,
+			xoff1 = ceil((x1 - xmin) * xmult),
+			yoff1 = ceil((y1 - ymin) * ymult),
+			zoff1 = ceil((z1 - zmin) * zmult);
+	
+		if (xoff0 < 0) xoff0 = 0; else if (xoff0 >= nx) xoff0 = nx - 1;
+		if (yoff0 < 0) yoff0 = 0; else if (yoff0 >= ny) yoff0 = ny - 1;
+		if (zoff0 < 0) zoff0 = 0; else if (zoff0 >= nz) zoff0 = nz - 1;
+		if (xoff1 < 0) xoff1 = 0; else if (xoff1 >= nx) xoff1 = nx - 1;
+		if (yoff1 < 0) yoff1 = 0; else if (yoff1 >= ny) yoff1 = ny - 1;
+		if (zoff1 < 0) zoff1 = 0; else if (zoff1 >= nz) zoff1 = nz - 1;
+	
+//		console.log("Adding bi "+(bi.adust_object && bi.adust_object.constructor && bi.adust_object.constructor.name)+" to " + xoff0 + "-" + xoff1 + "," + yoff0 + "-" + yoff1 + "," + zoff0 + "-" + zoff1);
+		xoff0 *= xstep;
+		yoff0 *= ystep;
+		zoff0 *= zstep;
+		xoff1 *= xstep;
+		yoff1 *= ystep;
+		zoff1 *= zstep;
+
+		for (var xoff = xoff0; xoff <= xoff1; xoff += xstep) {
+			for (var yoff = yoff0; yoff <= yoff1; yoff += ystep) {
+				for (var zoff = zoff0; zoff <= zoff1; zoff += zstep) {
+					var idx = xoff+yoff+zoff;
+					bins[idx][binLengths[idx]++] = bi;
+				}
+			}
+		}
+	}
 
     // Put all bodies into the bins
     for(var i=0; i!==N; i++){
@@ -3869,86 +3926,167 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
                 y = bi.position.y,
                 z = bi.position.z;
             var r = si.radius;
-
-            var xi1 = floor(xmult * (x-r - xmin)),
-                yi1 = floor(ymult * (y-r - ymin)),
-                zi1 = floor(zmult * (z-r - zmin)),
-                xi2 = floor(xmult * (x+r - xmin)),
-                yi2 = floor(ymult * (y+r - ymin)),
-                zi2 = floor(zmult * (z+r - zmin));
-
-            for(var j=xi1; j!==xi2+1; j++){
-                for(var k=yi1; k!==yi2+1; k++){
-                    for(var l=zi1; l!==zi2+1; l++){
-                        var xi = j,
-                            yi = k,
-                            zi = l;
-                        var idx = xi * ( ny - 1 ) * ( nz - 1 ) + yi * ( nz - 1 ) + zi;
-                        if(idx >= 0 && idx < Nbins){
-                            bins[ idx ].push( bi );
-                        }
-                    }
-                }
-            }
+			
+			addBoxToBins(x-r, y-r, z-r, x+r, y+r, z+r, bi);
             break;
 
         case PLANE:
-            // Put in all bins for now
-            // @todo put only in bins that are actually intersecting the plane
-            var d = GridBroadphase_collisionPairs_d;
-            var binPos = GridBroadphase_collisionPairs_binPos;
-            var binRadiusSquared = (binsizeX*binsizeX + binsizeY*binsizeY + binsizeZ*binsizeZ) * 0.25;
-
-            var planeNormal = si.worldNormal;
             if(si.worldNormalNeedsUpdate){
                 si.computeWorldNormal(bi.quaternion);
             }
+            var planeNormal = si.worldNormal;
+			
+			//Relative position from origin of plane object to the first bin
+			//Incremented as we iterate through the bins
+			var xreset = xmin + binsizeX*0.5 - bi.position.x,
+				yreset = ymin + binsizeY*0.5 - bi.position.y,
+				zreset = zmin + binsizeZ*0.5 - bi.position.z;
+		
+            var d = GridBroadphase_collisionPairs_d;
+			d.set(xreset, yreset, zreset);
 
-            for(var j=0; j!==nx; j++){
-                for(var k=0; k!==ny; k++){
-                    for(var l=0; l!==nz; l++){
-                        var xi = j,
-                            yi = k,
-                            zi = l;
-
-                        binPos.set(xi*binsizeX+xmin, yi*binsizeY+ymin, zi*binsizeZ+zmin);
-                        binPos.vsub(bi.position, d);
-
-                        if(d.dot(planeNormal) < binRadiusSquared){
-                            var idx = xi * ( ny - 1 ) * ( nz - 1 ) + yi * ( nz - 1 ) + zi;
-                            bins[ idx ].push( bi );
-                        }
-                    }
-                }
-            }
+			for (var xi = 0, xoff = 0; xi !== nx; xi++, xoff += xstep, d.y = yreset, d.x += binsizeX) {
+				for (var yi = 0, yoff = 0; yi !== ny; yi++, yoff += ystep, d.z = zreset, d.y += binsizeY) {
+					for (var zi = 0, zoff = 0; zi !== nz; zi++, zoff += zstep, d.z += binsizeZ) {
+						if (d.dot(planeNormal) < binRadius) {
+							var idx = xoff + yoff + zoff;
+							bins[idx][binLengths[idx]++] = bi;
+						}
+					}
+				}
+			}
             break;
 
         default:
-            console.warn("Shape "+si.type+" not supported in GridBroadphase!");
+			if (bi.aabbNeedsUpdate) {
+				bi.computeAABB();
+			}
+			
+			addBoxToBins(
+				bi.aabbmin.x,
+				bi.aabbmin.y,
+				bi.aabbmin.z,
+				bi.aabbmax.x,
+				bi.aabbmax.y,
+				bi.aabbmax.z,
+				bi);
             break;
         }
     }
 
     // Check each bin
     for(var i=0; i!==Nbins; i++){
-        var bin = bins[i];
+		var binLength = binLengths[i];
+		//Skip bins with no potential collisions
+		if (binLength > 1) {
+			var bin = bins[i];
 
-        // Do N^2 broadphase inside
-        for(var j=0, NbodiesInBin=bin.length; j!==NbodiesInBin; j++){
-            var bi = bin[j];
-
-            for(var k=0; k!==j; k++){
-                var bj = bin[k];
-                if(this.needBroadphaseCollision(bi,bj)){
-                    this.intersectionTest(bi,bj,pairs1,pairs2);
-                }
-            }
-        }
+			// Do N^2 broadphase inside
+			for(var xi=0; xi!==binLength; xi++){
+				var bi = bin[xi];
+				for(var yi=0; yi!==xi; yi++){
+					var bj = bin[yi];
+					if(this.needBroadphaseCollision(bi,bj)){
+						this.intersectionTest(bi,bj,pairs1,pairs2);
+					}
+				}
+			}
+		}
     }
+	
+//	for (var zi = 0, zoff=0; zi < nz; zi++, zoff+= zstep) {
+//		console.log("layer "+zi);
+//		for (var yi = 0, yoff=0; yi < ny; yi++, yoff += ystep) {
+//			var row = '';
+//			for (var xi = 0, xoff=0; xi < nx; xi++, xoff += xstep) {
+//				var idx = xoff + yoff + zoff;
+//				row += ' ' + binLengths[idx];
+//			}
+//			console.log(row);
+//		}
+//	}
 
     this.makePairsUnique(pairs1,pairs2);
 };
 
+/** @class Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
+  *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
+  */
+CANNON.ArrayCollisionMatrix = function() {
+	this.matrix = [];
+};
+
+CANNON.ArrayCollisionMatrix.prototype.get = function(i, j) {
+	i = i.index;
+	j = j.index;
+    if (j > i) {
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+	return this.matrix[(i*(i + 1)>>1) + j-1];
+};
+
+CANNON.ArrayCollisionMatrix.prototype.set = function(i, j, value) {
+	i = i.index;
+	j = j.index;
+    if (j > i) {
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+	this.matrix[(i*(i + 1)>>1) + j-1] = value ? 1 : 0;
+};
+
+CANNON.ArrayCollisionMatrix.prototype.reset = function() {
+	for (var i=0, l=this.matrix.length; i!==l; i++) {
+		this.matrix[i]=0;
+	}
+};
+
+CANNON.ArrayCollisionMatrix.prototype.setNumObjects = function(n) {
+	this.matrix.length = n*(n-1)>>1;
+};
+
+/** @class ObjectCollisionMatrix Records what objects are colliding with each other 
+  */
+CANNON.ObjectCollisionMatrix = function() {
+	this.matrix = {};
+};
+
+CANNON.ObjectCollisionMatrix.prototype.get = function(i, j) {
+	i = i.id;
+	j = j.id;
+    if (j > i) {
+        var temp = j;
+        j = i;
+        i = temp;
+    }
+	return i+'-'+j in this.matrix;
+};
+
+CANNON.ObjectCollisionMatrix.prototype.set = function(i, j, value) {
+	i = i.id;
+	j = j.id;
+    if (j > i) {
+        var temp = j;
+        j = i;
+        i = temp;
+	}
+	if (value) {
+		this.matrix[i+'-'+j] = true;
+	}
+	else {
+		delete this.matrix[i+'-'+j];
+	}
+};
+
+CANNON.ObjectCollisionMatrix.prototype.reset = function() {
+	this.matrix = {};
+};
+
+CANNON.ObjectCollisionMatrix.prototype.setNumObjects = function(n) {
+};
 
 /**
  * @class CANNON.Solver
@@ -4366,12 +4504,12 @@ CANNON.World = function(){
 	 *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
 	 *  @memberof CANNON.World
 	 */
-	this.collisionMatrix = [];
+	this.collisionMatrix = new CANNON.ArrayCollisionMatrix();
     /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
 	 *  @brief collisionMatrix from the previous step
 	 *  @memberof CANNON.World
 	 */
-	this.collisionMatrixPrevious = [];
+	this.collisionMatrixPrevious = new CANNON.ArrayCollisionMatrix();
 
     /**
      * @property Array materials
@@ -4454,44 +4592,12 @@ CANNON.World.prototype.numObjects = function(){
     return this.bodies.length;
 };
 
-// Keep track of contacts for current and previous timestep
-// 0: No contact between i and j
-// 1: Contact
-CANNON.World.prototype.collisionMatrixGet = function(i,j,current){
-    if(j > i){
-        var temp = j;
-        j = i;
-        i = temp;
-    }
-	// Reuse i for the index
-	i = (i*(i + 1)>>1) + j-1;
-    return (typeof(current)==="undefined" || current) ? this.collisionMatrix[i] : this.collisionMatrixPrevious[i];
-};
-
-CANNON.World.prototype.collisionMatrixSet = function(i,j,value,current){
-    if(j > i){
-        var temp = j;
-        j = i;
-        i = temp;
-    }
-	// Reuse i for the index
-	i = (i*(i + 1)>>1) + j-1;
-	if (typeof(current)==="undefined" || current) {
-		this.collisionMatrix[i] = value;
-	}
-	else {
-		this.collisionMatrixPrevious[i] = value;
-	}
-};
-
 // transfer old contact state data to T-1
 CANNON.World.prototype.collisionMatrixTick = function(){
 	var temp = this.collisionMatrixPrevious;
 	this.collisionMatrixPrevious = this.collisionMatrix;
 	this.collisionMatrix = temp;
-	for (var i=0,l=this.collisionMatrix.length;i!==l;i++) {
-		this.collisionMatrix[i]=0;
-	}
+	this.collisionMatrix.reset();
 };
 
 /**
@@ -4515,8 +4621,7 @@ CANNON.World.prototype.add = function(body){
         body.quaternion.copy(body.initQuaternion);
     }
 
-    var n = this.numObjects();
-	this.collisionMatrix.length = n*(n-1)>>1;
+	this.collisionMatrix.setNumObjects(this.bodies.length);
 };
 
 /**
@@ -4567,9 +4672,7 @@ CANNON.World.prototype.remove = function(body){
 	for(var i=body.index; i<n;i++) {
 		bodies[i].index=i;
 	}
-	//TODO: Maybe splice out the correct elements?
-	this.collisionMatrixPrevious.length = 
-	this.collisionMatrix.length = n*(n-1)>>1;
+	this.collisionMatrix.setNumObjects(n);
 };
 
 /**
@@ -4813,9 +4916,9 @@ CANNON.World.prototype.step = function(dt){
 			}
 
             // Now we know that i and j are in contact. Set collision matrix state
-            this.collisionMatrixSet(i,j,1,true);
+			this.collisionMatrix.set(bi, bj, true);
 
-            if(this.collisionMatrixGet(i,j,true)!==this.collisionMatrixGet(i,j,false)){
+            if (this.collisionMatrix.get(bi, bj) !== this.collisionMatrixPrevious.get(bi, bj)) {
                 // First contact!
                 // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
                 World_step_collideEvent.with = bj;

@@ -40,6 +40,8 @@ module.exports = function(grunt) {
                         "src/collision/Broadphase.js",
                         "src/collision/NaiveBroadphase.js",
                         "src/collision/GridBroadphase.js",
+                        "src/collision/ArrayCollisionMatrix.js",
+                        "src/collision/ObjectCollisionMatrix.js",
 
                         // Solver
                         "src/solver/Solver.js",
