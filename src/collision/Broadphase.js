@@ -18,7 +18,6 @@ CANNON.Broadphase = function(){
      */
     this.useBoundingBoxes = false;
 };
-CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 
 /**
  * @method collisionPairs
