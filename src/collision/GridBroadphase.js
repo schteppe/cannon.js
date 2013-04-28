@@ -108,7 +108,6 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 		if (yoff1 < 0) yoff1 = 0; else if (yoff1 >= ny) yoff1 = ny - 1;
 		if (zoff1 < 0) zoff1 = 0; else if (zoff1 >= nz) zoff1 = nz - 1;
 	
-//		console.log("Adding bi "+(bi.adust_object && bi.adust_object.constructor && bi.adust_object.constructor.name)+" to " + xoff0 + "-" + xoff1 + "," + yoff0 + "-" + yoff1 + "," + zoff0 + "-" + zoff1);
 		xoff0 *= xstep;
 		yoff0 *= ystep;
 		zoff0 *= zstep;

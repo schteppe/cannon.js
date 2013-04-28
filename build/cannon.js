@@ -1938,35 +1938,6 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sz = this.halfExtents.z;
     var V = CANNON.Vec3;
 
-    function createBoxPolyhedron(size){
-        size = size || 1;
-        var vertices = [new CANNON.Vec3(-size,-size,-size),
-                        new CANNON.Vec3( size,-size,-size),
-                        new CANNON.Vec3( size, size,-size),
-                        new CANNON.Vec3(-size, size,-size),
-                        new CANNON.Vec3(-size,-size, size),
-                        new CANNON.Vec3( size,-size, size),
-                        new CANNON.Vec3( size, size, size),
-                        new CANNON.Vec3(-size, size, size)];
-        var faces =[[3,2,1,0], // -z
-                    [4,5,6,7], // +z
-                    [5,4,1,0], // -y
-                    [2,3,6,7], // +y
-                    [0,4,7,3 /*0,3,4,7*/ ], // -x
-                    [1,2,5,6], // +x
-                    ];
-        var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
-                           new CANNON.Vec3( 0, 0, 1),
-                           new CANNON.Vec3( 0,-1, 0),
-                           new CANNON.Vec3( 0, 1, 0),
-                           new CANNON.Vec3(-1, 0, 0),
-                           new CANNON.Vec3( 1, 0, 0)];
-        var boxShape = new CANNON.ConvexPolyhedron(vertices,
-                                                 faces,
-                                                 faceNormals);
-        return boxShape;
-    }
-
     var h = new CANNON.ConvexPolyhedron([new V(-sx,-sy,-sz),
                                          new V( sx,-sy,-sz),
                                          new V( sx, sy,-sz),
@@ -1977,10 +1948,10 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
                                          new V(-sx, sy, sz)],
                                          [[3,2,1,0], // -z
                                           [4,5,6,7], // +z
-                                          [5,4,1,0], // -y
-                                          [2,3,6,7], // +y
+                                          [5,4,0,1], // -y
+                                          [2,3,7,6], // +y
                                           [0,4,7,3], // -x
-                                          [1,2,5,6], // +x
+                                          [1,2,6,5], // +x
                                           ],
                                         [new V( 0, 0,-1),
                                          new V( 0, 0, 1),
@@ -3458,7 +3429,6 @@ CANNON.Broadphase = function(){
      */
     this.useBoundingBoxes = false;
 };
-CANNON.Broadphase.prototype.constructor = CANNON.BroadPhase;
 
 /**
  * @method collisionPairs
@@ -3895,7 +3865,6 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 		if (yoff1 < 0) yoff1 = 0; else if (yoff1 >= ny) yoff1 = ny - 1;
 		if (zoff1 < 0) zoff1 = 0; else if (zoff1 >= nz) zoff1 = nz - 1;
 	
-//		console.log("Adding bi "+(bi.adust_object && bi.adust_object.constructor && bi.adust_object.constructor.name)+" to " + xoff0 + "-" + xoff1 + "," + yoff0 + "-" + yoff1 + "," + zoff0 + "-" + zoff1);
 		xoff0 *= xstep;
 		yoff0 *= ystep;
 		zoff0 *= zstep;
