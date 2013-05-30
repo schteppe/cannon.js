@@ -23,6 +23,7 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property CANNON.Vec3 tau
      * @memberof CANNON.RigidBody
      * @brief Rotational force on the body, around center of mass
+     * @todo should be renamed to .angularForce
      */
     this.tau = new CANNON.Vec3();
 
