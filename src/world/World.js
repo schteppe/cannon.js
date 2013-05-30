@@ -94,12 +94,12 @@ CANNON.World = function(){
      */
     this.contactgen = new CANNON.ContactGenerator();
 
-    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
+    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
 	 *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
 	 *  @memberof CANNON.World
 	 */
 	this.collisionMatrix = new CANNON.ArrayCollisionMatrix();
-    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
+    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
 	 *  @brief collisionMatrix from the previous step
 	 *  @memberof CANNON.World
 	 */
@@ -572,7 +572,7 @@ CANNON.World.prototype.step = function(dt){
         }
     }
 
-    this.dispatchEvent(World_step_postStepEvent);
+    this.dispatchEvent(World_step_preStepEvent);
 
     // Invoke pre-step callbacks
     for(i=0; i!==N; i++){
