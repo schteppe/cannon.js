@@ -1,6 +1,11 @@
 /**
+ * The physics world, where all bodies live.
+ * An instance of the CANNON.World dispatches the following events:
+ * - "preStep", before integration.
+ * - "postStep", after integration.
+ * - "collide", when a contact occurs.
  * @class CANNON.World
- * @brief The physics world
+ * @extends CANNON.EventTarget
  */
 CANNON.World = function(){
 
