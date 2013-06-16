@@ -73,7 +73,13 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
     this.w = Math.cos(angle*0.5);
 };
 
-// saves axis to targetAxis and returns 
+/**
+ * @method setFromAxisAngle
+ * @memberof CANNON.Quaternion
+ * @brief Converts the quaternion to axis/angle representation.
+ * @param CANNON.Vec3 targetAxis Optional. A vector object to reuse for storing the axis.
+ * @return Array An array, first elemnt is the axis and the second is the angle in radians.
+ */
 CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
     targetAxis = targetAxis || new CANNON.Vec3();
     this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
