@@ -236,31 +236,25 @@ CANNON.Quaternion.prototype.normalizeFast = function () {
  */
 CANNON.Quaternion.prototype.vmult = function(v,target){
     target = target || new CANNON.Vec3();
-    if(this.w===0.0){
-        target.x = v.x;
-        target.y = v.y;
-        target.z = v.z;
-    } else {
 
-        var x = v.x,
-            y = v.y,
-            z = v.z;
+    var x = v.x,
+        y = v.y,
+        z = v.z;
 
-        var qx = this.x,
-            qy = this.y,
-            qz = this.z,
-            qw = this.w;
+    var qx = this.x,
+        qy = this.y,
+        qz = this.z,
+        qw = this.w;
 
-        // q*v
-        var ix =  qw * x + qy * z - qz * y,
-        iy =  qw * y + qz * x - qx * z,
-        iz =  qw * z + qx * y - qy * x,
-        iw = -qx * x - qy * y - qz * z;
+    // q*v
+    var ix =  qw * x + qy * z - qz * y,
+    iy =  qw * y + qz * x - qx * z,
+    iz =  qw * z + qx * y - qy * x,
+    iw = -qx * x - qy * y - qz * z;
 
-        target.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-        target.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-        target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
-    }
+    target.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+    target.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+    target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
 
     return target;
 };

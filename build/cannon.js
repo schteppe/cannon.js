@@ -830,7 +830,13 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
     this.w = Math.cos(angle*0.5);
 };
 
-// saves axis to targetAxis and returns 
+/**
+ * @method setFromAxisAngle
+ * @memberof CANNON.Quaternion
+ * @brief Converts the quaternion to axis/angle representation.
+ * @param CANNON.Vec3 targetAxis Optional. A vector object to reuse for storing the axis.
+ * @return Array An array, first elemnt is the axis and the second is the angle in radians.
+ */
 CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
     targetAxis = targetAxis || new CANNON.Vec3();
     this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
@@ -987,31 +993,25 @@ CANNON.Quaternion.prototype.normalizeFast = function () {
  */
 CANNON.Quaternion.prototype.vmult = function(v,target){
     target = target || new CANNON.Vec3();
-    if(this.w===0.0){
-        target.x = v.x;
-        target.y = v.y;
-        target.z = v.z;
-    } else {
 
-        var x = v.x,
-            y = v.y,
-            z = v.z;
+    var x = v.x,
+        y = v.y,
+        z = v.z;
 
-        var qx = this.x,
-            qy = this.y,
-            qz = this.z,
-            qw = this.w;
+    var qx = this.x,
+        qy = this.y,
+        qz = this.z,
+        qw = this.w;
 
-        // q*v
-        var ix =  qw * x + qy * z - qz * y,
-        iy =  qw * y + qz * x - qx * z,
-        iz =  qw * z + qx * y - qy * x,
-        iw = -qx * x - qy * y - qz * z;
+    // q*v
+    var ix =  qw * x + qy * z - qz * y,
+    iy =  qw * y + qz * x - qx * z,
+    iz =  qw * z + qx * y - qy * x,
+    iw = -qx * x - qy * y - qz * z;
 
-        target.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-        target.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-        target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
-    }
+    target.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+    target.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+    target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
 
     return target;
 };
@@ -1071,6 +1071,7 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
     target.z = attitude;
     target.x = bank;
 };
+
 
 /**
  * @class CANNON.EventTarget
@@ -1523,6 +1524,7 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property CANNON.Vec3 tau
      * @memberof CANNON.RigidBody
      * @brief Rotational force on the body, around center of mass
+     * @todo should be renamed to .angularForce
      */
     this.tau = new CANNON.Vec3();
 
