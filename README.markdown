@@ -2,6 +2,7 @@
 
 ### Lightweight 3D physics for the web
 Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https://github.com/kripken/ammo.js), and driven by the fact that the web lacks a physics engine, here comes cannon.js.
+The rigid body physics engine includes simple collision detection, various body shapes, contacts, friction and constraints.
 
 [Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/doc/) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon)
 
@@ -48,6 +49,7 @@ setInterval(function(){
 If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](examples).
 
 ### Supported contact shape pairs
+
 |           | Sphere | Plane | Box | Compound | Convex¹ | Particle |
 | :-------: |:------:|:-----:|:---:|:--------:|:-------:|:--------:|
 | Sphere    | Yes    | Yes   | Yes | Yes      | Yes     | Yes      |
