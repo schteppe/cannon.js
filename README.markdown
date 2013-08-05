@@ -48,7 +48,20 @@ setInterval(function(){
 
 If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](examples).
 
-### Supported contact shape pairs
+### Features
+* Rigid body physics
+* Collision detection (no CCD)
+* Contacts with friction and restitution
+* Constraints
+   * PointToPoint (also called balljoint)
+   * Distance
+   * Hinge (with optional motor)
+* Gauss-Seidel constraint solver and an island split algorithm
+* Collision filters
+* Body motion states (dynamic, kinematic, static)
+* Body sleeping
+* Experimental SPH / fluid support
+* Various shapes and collisions (see table below)
 
 |           | Sphere | Plane | Box | Compound | Convex¹ | Particle |
 | :-------: |:------:|:-----:|:---:|:--------:|:-------:|:--------:|
