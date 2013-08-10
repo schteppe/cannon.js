@@ -14,6 +14,8 @@ One of the most convenient ways of using Cannon.js with [Three.js](https://githu
 mesh.useQuaternion = true;
 ```
 
+*Note:* On the latest version of Three.js (r59) useQuaternion is true by default.
+
 Then it gets really simple to copy over position+orientation data to the Three.js mesh:
 ```javascript
 rigidbody.position.copy(mesh.position);
