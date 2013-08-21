@@ -67,7 +67,7 @@ CANNON.Demo = function(options){
     // Material
     var materialColor = 0xdddddd;
     var solidMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
-    THREE.ColorUtils.adjustHSV( solidMaterial.color, 0, 0, 0.9 );
+    solidMaterial.color.offsetHSL( 0, 0, 0.9 );
     var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, wireframe:true } );
     var currentMaterial = solidMaterial;
     var contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );

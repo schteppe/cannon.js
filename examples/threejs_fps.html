@@ -255,7 +255,7 @@
                 geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
                 material = new THREE.MeshLambertMaterial( { color: 0xdddddd } );
-                THREE.ColorUtils.adjustHSV( material.color, 0, 0, 0.9 );
+                material.color.offsetHSL( 0, 0, 0.3 );
 
                 mesh = new THREE.Mesh( geometry, material );
                 mesh.castShadow = true;
@@ -288,7 +288,6 @@
                     boxMesh.position.set(x,y,z);
                     boxMesh.castShadow = true;
                     boxMesh.receiveShadow = true;
-                    boxMesh.useQuaternion = true;
                     boxes.push(boxBody);
                     boxMeshes.push(boxMesh);
                 }
@@ -308,7 +307,6 @@
                     boxbody.position.set(5,(N-i)*(size*2+2*space) + size*2+space,0);
                     boxbody.linearDamping=0.01;
                     boxbody.angularDamping=0.01;
-                    boxMesh.useQuaternion = true;
                     boxMesh.castShadow = true;
                     boxMesh.receiveShadow = true;
                     world.add(boxbody);
@@ -369,7 +367,7 @@
                 var vector = targetVec;
                 targetVec.set(0,0,1);
                 projector.unprojectVector(vector, camera);
-                var ray = new THREE.Ray(sphereBody.position, vector.subSelf(sphereBody.position).normalize() );
+                var ray = new THREE.Ray(sphereBody.position, vector.sub(sphereBody.position).normalize() );
                 targetVec.x = ray.direction.x;
                 targetVec.y = ray.direction.y;
                 targetVec.z = ray.direction.z;
@@ -399,7 +397,6 @@
                     z += shootDirection.z * (sphereShape.radius*1.02 + ballShape.radius);
                     ballBody.position.set(x,y,z);
                     ballMesh.position.set(x,y,z);
-                    ballMesh.useQuaternion = true;
                 }
             });
 
