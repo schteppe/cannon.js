@@ -67,7 +67,7 @@ CANNON.Demo = function(options){
     // Material
     var materialColor = 0xdddddd;
     var solidMaterial = new THREE.MeshLambertMaterial( { color: materialColor } );
-    solidMaterial.color.offsetHSL( 0, 0, 0.9 );
+    solidMaterial.color.offsetHSL( 0, 0, 0.3 );
     var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, wireframe:true } );
     var currentMaterial = solidMaterial;
     var contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
@@ -111,7 +111,6 @@ CANNON.Demo = function(options){
     });
     var axesMeshCache = new GeometryCache(function(){
         var mesh = new THREE.Object3D();
-        mesh.useQuaternion = true;
         var origin = new THREE.Vector3(0,0,0);
         var gX = new THREE.Geometry();
         var gY = new THREE.Geometry();
@@ -847,7 +846,6 @@ CANNON.Demo = function(options){
                 submesh.position.set(o.x,o.y,o.z);
                 submesh.quaternion.set(q.x,q.y,q.z,q.w);
         
-                submesh.useQuaternion = true;
                 o3d.add(submesh);
                 mesh = o3d;
             }
@@ -923,7 +921,6 @@ CANNON.Demo = function(options){
             visuals.push(mesh);
             body.visualref = mesh;
             body.visualref.visualId = bodies.length - 1;
-            mesh.useQuaternion = true;
             scene.add(mesh);
         }
     };
