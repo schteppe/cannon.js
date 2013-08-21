@@ -31,6 +31,7 @@
         <a href="http://github.com/schteppe/cannon.js">Cannon.js</a> web worker example
     </div>
     <script src="../libs/Three.js"></script>
+    <script src="js/TrackballControls.js"></script>
     <script src="../libs/Detector.js"></script>
 
     <!-- Worker script, will be run in separate thread -->
@@ -210,10 +211,9 @@
             geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
             //geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI / 2 ) );
             material = new THREE.MeshLambertMaterial( { color: 0x777777 } );
-            //THREE.ColorUtils.adjustHSV( material.color, 0, 0, 0.9 );
+            //material.color.offsetHSL( 0, 0, 0.9 );
             mesh = new THREE.Mesh( geometry, material );
             mesh.castShadow = true;
-            mesh.useQuaternion = true;
             mesh.receiveShadow = true;
             meshes.push(mesh);
             scene.add( mesh );
@@ -223,7 +223,6 @@
             var cubeMaterial = new THREE.MeshPhongMaterial( { color: 0x888888 } );
             for(var i=0; i<N; i++){
                 cubeMesh = new THREE.Mesh( cubeGeo, cubeMaterial );
-                cubeMesh.useQuaternion = true;
                 cubeMesh.castShadow = true;
                 meshes.push(cubeMesh);
                 scene.add( cubeMesh );
