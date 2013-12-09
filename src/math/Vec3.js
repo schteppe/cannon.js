@@ -291,6 +291,16 @@ CANNON.Vec3.prototype.toString = function(){
 };
 
 /**
+ * @method toArray
+ * @memberof CANNON.Vec3
+ * @brief Converts to an array
+ * @return Array
+ */
+CANNON.Vec3.prototype.toArray = function(){
+    return [this.x, this.y, this.z];
+};
+
+/**
  * @method copy
  * @memberof CANNON.Vec3
  * @brief Copy the vector.

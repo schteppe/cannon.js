@@ -59,6 +59,16 @@ CANNON.Quaternion.prototype.toString = function(){
 };
 
 /**
+ * @method toArray
+ * @memberof CANNON.Quaternion
+ * @brief Convert to an Array
+ * @return Array
+ */
+CANNON.Quaternion.prototype.toArray = function(){
+    return [this.x, this.y, this.z, this.w];
+};
+
+/**
  * @method setFromAxisAngle
  * @memberof CANNON.Quaternion
  * @brief Set the quaternion components given an axis and an angle.
