@@ -1,5 +1,5 @@
 /**
- * @class CANNON.Solver
+ * @class CANNON.GSSolver
  * @brief Constraint equation Gauss-Seidel solver.
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
