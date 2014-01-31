@@ -1072,6 +1072,63 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
     target.x = bank;
 };
 
+// http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
+CANNON.Quaternion.prototype.setFromEuler = function ( x, y, z, order ) {
+    var c1 = Math.cos( x / 2 );
+    var c2 = Math.cos( y / 2 );
+    var c3 = Math.cos( z / 2 );
+    var s1 = Math.sin( x / 2 );
+    var s2 = Math.sin( y / 2 );
+    var s3 = Math.sin( z / 2 );
+
+    if ( order === 'XYZ' ) {
+
+        this.x = s1 * c2 * c3 + c1 * s2 * s3;
+        this.y = c1 * s2 * c3 - s1 * c2 * s3;
+        this.z = c1 * c2 * s3 + s1 * s2 * c3;
+        this.w = c1 * c2 * c3 - s1 * s2 * s3;
+
+    } else if ( order === 'YXZ' ) {
+
+        this.x = s1 * c2 * c3 + c1 * s2 * s3;
+        this.y = c1 * s2 * c3 - s1 * c2 * s3;
+        this.z = c1 * c2 * s3 - s1 * s2 * c3;
+        this.w = c1 * c2 * c3 + s1 * s2 * s3;
+
+    } else if ( order === 'ZXY' ) {
+
+        this.x = s1 * c2 * c3 - c1 * s2 * s3;
+        this.y = c1 * s2 * c3 + s1 * c2 * s3;
+        this.z = c1 * c2 * s3 + s1 * s2 * c3;
+        this.w = c1 * c2 * c3 - s1 * s2 * s3;
+
+    } else if ( order === 'ZYX' ) {
+
+        this.x = s1 * c2 * c3 - c1 * s2 * s3;
+        this.y = c1 * s2 * c3 + s1 * c2 * s3;
+        this.z = c1 * c2 * s3 - s1 * s2 * c3;
+        this.w = c1 * c2 * c3 + s1 * s2 * s3;
+
+    } else if ( order === 'YZX' ) {
+
+        this.x = s1 * c2 * c3 + c1 * s2 * s3;
+        this.y = c1 * s2 * c3 + s1 * c2 * s3;
+        this.z = c1 * c2 * s3 - s1 * s2 * c3;
+        this.w = c1 * c2 * c3 - s1 * s2 * s3;
+
+    } else if ( order === 'XZY' ) {
+
+        this.x = s1 * c2 * c3 - c1 * s2 * s3;
+        this.y = c1 * s2 * c3 - s1 * c2 * s3;
+        this.z = c1 * c2 * s3 + s1 * s2 * c3;
+        this.w = c1 * c2 * c3 + s1 * s2 * s3;
+
+    }
+
+    return this;
+
+};
+
 
 /**
  * @class CANNON.EventTarget
@@ -4981,7 +5038,7 @@ CANNON.World.prototype.step = function(dt){
             s = b.shape,
             force = b.force,
             tau = b.tau;
-        if((b.motionstate & DYNAMIC_OR_KINEMATIC)){ // Only for dynamic
+        if((b.motionstate & DYNAMIC_OR_KINEMATIC) && !b.isSleeping()){ // Only for dynamic
             var velo = b.velocity,
                 angularVelo = b.angularVelocity,
                 pos = b.position,
@@ -4999,30 +5056,28 @@ CANNON.World.prototype.step = function(dt){
             }
 
             // Use new velocity  - leap frog
-            if(!b.isSleeping()){
-                pos.x += velo.x * dt;
-                pos.y += velo.y * dt;
-                pos.z += velo.z * dt;
+            pos.x += velo.x * dt;
+            pos.y += velo.y * dt;
+            pos.z += velo.z * dt;
 
-                if(b.angularVelocity){
-                    w.set(angularVelo.x, angularVelo.y, angularVelo.z, 0);
-                    w.mult(quat,wq);
-                    quat.x += half_dt * wq.x;
-                    quat.y += half_dt * wq.y;
-                    quat.z += half_dt * wq.z;
-                    quat.w += half_dt * wq.w;
-                    if(quatNormalize){
-                        if(quatNormalizeFast){
-                            quat.normalizeFast();
-                        } else {
-                            quat.normalize();
-                        }
+            if(b.angularVelocity){
+                w.set(angularVelo.x, angularVelo.y, angularVelo.z, 0);
+                w.mult(quat,wq);
+                quat.x += half_dt * wq.x;
+                quat.y += half_dt * wq.y;
+                quat.z += half_dt * wq.z;
+                quat.w += half_dt * wq.w;
+                if(quatNormalize){
+                    if(quatNormalizeFast){
+                        quat.normalizeFast();
+                    } else {
+                        quat.normalize();
                     }
                 }
+            }
 
-                if(b.aabbmin){
-                    b.aabbNeedsUpdate = true;
-                }
+            if(b.aabbmin){
+                b.aabbNeedsUpdate = true;
             }
 
             if(s){
