@@ -19,29 +19,6 @@ exports.ConvexPolyhedron = {
 
 function createPolyBox(sx,sy,sz){
     var v = C.Vec3;
-    var h = new C.ConvexPolyhedron([new v(-sx,-sy,-sz),
-				    new v( sx,-sy,-sz),
-				    new v( sx, sy,-sz),
-				    new v(-sx, sy,-sz),
-				    new v(-sx,-sy, sz),
-				    new v( sx,-sy, sz),
-				    new v( sx, sy, sz),
-				    new v(-sx, sy, sz)],
-				   
-				   [
-				       [0,1,2,3], // -z
-				       [4,5,6,7], // +z
-				       [0,1,4,5], // -y
-				       [2,3,6,7], // +y
-				       [0,3,4,7], // -x
-				       [1,2,5,6], // +x
-				   ],
-				   
-				   [new v( 0, 0,-1),
-				    new v( 0, 0, 1),
-				    new v( 0,-1, 0),
-				    new v( 0, 1, 0),
-				    new v(-1, 0, 0),
-				    new v( 1, 0, 0)]);
-    return h;
+    var box = new C.Box(new C.Vec3(sx,sy,sz));
+    return box.convexPolyhedronRepresentation;
 }
