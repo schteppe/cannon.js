@@ -1,13 +1,13 @@
 /**
- * @class CANNON.GridBroadphase
- * @brief Axis aligned uniform grid broadphase.
- * @extends CANNON.Broadphase
+ * Axis aligned uniform grid broadphase.
+ * @class GridBroadphase
+ * @extends {Broadphase}
  * @todo Needs support for more than just planes and spheres.
- * @param CANNON.Vec3 aabbMin
- * @param CANNON.Vec3 aabbMax
- * @param int nx Number of boxes along x
- * @param int ny Number of boxes along y
- * @param int nz Number of boxes along z
+ * @param {Vec3} aabbMin
+ * @param {Vec3} aabbMax
+ * @param {Number} nx Number of boxes along x
+ * @param {Number} ny Number of boxes along y
+ * @param {Number} nz Number of boxes along z
  */
 CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
     CANNON.Broadphase.apply(this);
@@ -33,12 +33,11 @@ CANNON.GridBroadphase.prototype = new CANNON.Broadphase();
 CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
 
 /**
+ * Get all the collision pairs in the physics world
  * @method collisionPairs
- * @memberof CANNON.GridBroadphase
- * @brief Get all the collision pairs in the physics world
- * @param CANNON.World world
- * @param Array pairs1
- * @param Array pairs2
+ * @param {World} world
+ * @param {Array} pairs1
+ * @param {Array} pairs2
  */
 var GridBroadphase_collisionPairs_d = new CANNON.Vec3();
 var GridBroadphase_collisionPairs_binPos = new CANNON.Vec3();
@@ -51,7 +50,7 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
         nx = this.nx,
         ny = this.ny,
         nz = this.nz;
-		
+
 	var xstep = ny*nz;
 	var ystep = nz;
 	var zstep = 1;
@@ -92,7 +91,7 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var ceil = Math.ceil;
 	var min = Math.min;
 	var max = Math.max;
-	
+
 	function addBoxToBins(x0,y0,z0,x1,y1,z1,bi) {
 		var xoff0 = ((x0 - xmin) * xmult)|0,
 			yoff0 = ((y0 - ymin) * ymult)|0,
@@ -100,14 +99,14 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 			xoff1 = ceil((x1 - xmin) * xmult),
 			yoff1 = ceil((y1 - ymin) * ymult),
 			zoff1 = ceil((z1 - zmin) * zmult);
-	
+
 		if (xoff0 < 0) xoff0 = 0; else if (xoff0 >= nx) xoff0 = nx - 1;
 		if (yoff0 < 0) yoff0 = 0; else if (yoff0 >= ny) yoff0 = ny - 1;
 		if (zoff0 < 0) zoff0 = 0; else if (zoff0 >= nz) zoff0 = nz - 1;
 		if (xoff1 < 0) xoff1 = 0; else if (xoff1 >= nx) xoff1 = nx - 1;
 		if (yoff1 < 0) yoff1 = 0; else if (yoff1 >= ny) yoff1 = ny - 1;
 		if (zoff1 < 0) zoff1 = 0; else if (zoff1 >= nz) zoff1 = nz - 1;
-	
+
 		xoff0 *= xstep;
 		yoff0 *= ystep;
 		zoff0 *= zstep;
@@ -138,7 +137,7 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
                 y = bi.position.y,
                 z = bi.position.z;
             var r = si.radius;
-			
+
 			addBoxToBins(x-r, y-r, z-r, x+r, y+r, z+r, bi);
             break;
 
@@ -147,13 +146,13 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
                 si.computeWorldNormal(bi.quaternion);
             }
             var planeNormal = si.worldNormal;
-			
+
 			//Relative position from origin of plane object to the first bin
 			//Incremented as we iterate through the bins
 			var xreset = xmin + binsizeX*0.5 - bi.position.x,
 				yreset = ymin + binsizeY*0.5 - bi.position.y,
 				zreset = zmin + binsizeZ*0.5 - bi.position.z;
-		
+
             var d = GridBroadphase_collisionPairs_d;
 			d.set(xreset, yreset, zreset);
 
@@ -173,7 +172,7 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 			if (bi.aabbNeedsUpdate) {
 				bi.computeAABB();
 			}
-			
+
 			addBoxToBins(
 				bi.aabbmin.x,
 				bi.aabbmin.y,
@@ -205,7 +204,7 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 			}
 		}
     }
-	
+
 //	for (var zi = 0, zoff=0; zi < nz; zi++, zoff+= zstep) {
 //		console.log("layer "+zi);
 //		for (var yi = 0, yoff=0; yi < ny; yi++, yoff += ystep) {

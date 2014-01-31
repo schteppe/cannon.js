@@ -1,6 +1,6 @@
 /**
- * @class CANNON.ObjectPool
- * @brief For pooling objects that can be reused.
+ * For pooling objects that can be reused.
+ * @class ObjectPool
  */
 CANNON.ObjectPool = function(){
     this.objects = [];

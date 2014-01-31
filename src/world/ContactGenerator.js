@@ -1,15 +1,15 @@
 /**
- * @class CANNON.ContactGenerator
- * @brief Helper class for the World. Generates ContactEquations.
+ * Helper class for the World. Generates ContactEquations.
+ * @class ContactGenerator
+ * @constructor
  * @todo Sphere-ConvexPolyhedron contacts
  * @todo Contact reduction
  */
 CANNON.ContactGenerator = function(){
 
     /**
+     * Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
      * @property bool contactReduction
-     * @memberof CANNON.ContactGenerator
-     * @brief Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
      */
     this.contactReduction = false;
 
@@ -916,9 +916,8 @@ CANNON.ContactGenerator = function(){
     }
 
     /**
+     * Removes unnecessary members of an array of CANNON.ContactPoint.
      * @method reduceContacts
-     * @memberof CANNON.ContactGenerator
-     * @brief Removes unnecessary members of an array of CANNON.ContactPoint.
      */
     this.reduceContacts = function(contacts){
 
@@ -926,7 +925,6 @@ CANNON.ContactGenerator = function(){
 
     /**
      * @method getContacts
-     * @memberof CANNON.ContactGenerator
      * @param array p1 Array of body indices
      * @param array p2 Array of body indices
      * @param CANNON.World world

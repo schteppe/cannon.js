@@ -1,20 +1,15 @@
 /**
- * @class CANNON.Mat3
- * @brief A 3x3 matrix.
+ * A 3x3 matrix.
+ * @class Mat3
+ * @constructor
  * @param array elements Array of nine elements. Optional.
  * @author schteppe / http://github.com/schteppe
  */
 CANNON.Mat3 = function(elements){
     /**
-    * @property Array elements
-    * @memberof CANNON.Mat3
-    * @brief A vector of length 9, containing all matrix elements
-    * The values in the array are stored in the following order:
-    * | 0 1 2 |
-    * | 3 4 5 |
-    * | 6 7 8 |
-    * 
-    */
+     * A vector of length 9, containing all matrix elements
+     * @property Array elements
+     */
     if(elements){
         this.elements = elements;
     } else {
@@ -23,9 +18,8 @@ CANNON.Mat3 = function(elements){
 };
 
 /**
+ * Sets the matrix to identity
  * @method identity
- * @memberof CANNON.Mat3
- * @brief Sets the matrix to identity
  * @todo Should perhaps be renamed to setIdentity() to be more clear.
  * @todo Create another function that immediately creates an identity matrix eg. eye()
  */
@@ -57,9 +51,8 @@ CANNON.Mat3.prototype.setZero = function(){
 };
 
 /**
+ * Sets the matrix diagonal elements from a Vec3
  * @method setTrace
- * @memberof CANNON.Mat3
- * @brief Sets the matrix diagonal elements from a Vec3
  */
 CANNON.Mat3.prototype.setTrace = function(vec3){
     var e = this.elements;
@@ -69,11 +62,10 @@ CANNON.Mat3.prototype.setTrace = function(vec3){
 };
 
 /**
+ * Matrix-Vector multiplication
  * @method vmult
- * @memberof CANNON.Mat3
- * @brief Matrix-Vector multiplication
- * @param CANNON.Vec3 v The vector to multiply with
- * @param CANNON.Vec3 target Optional, target to save the result in.
+ * @param {Vec3} v The vector to multiply with
+ * @param {Vec3} target Optional, target to save the result in.
  */
 CANNON.Mat3.prototype.vmult = function(v,target){
     target = target || new CANNON.Vec3();
@@ -90,10 +82,9 @@ CANNON.Mat3.prototype.vmult = function(v,target){
 };
 
 /**
+ * Matrix-scalar multiplication
  * @method smult
- * @memberof CANNON.Mat3
- * @brief Matrix-scalar multiplication
- * @param float s
+ * @param {Number} s
  */
 CANNON.Mat3.prototype.smult = function(s){
     for(var i=0; i<this.elements.length; i++){
@@ -102,11 +93,10 @@ CANNON.Mat3.prototype.smult = function(s){
 };
 
 /**
+ * Matrix multiplication
  * @method mmult
- * @memberof CANNON.Mat3
- * @brief Matrix multiplication
- * @param CANNON.Mat3 m Matrix to multiply with from left side.
- * @return CANNON.Mat3 The result.
+ * @param {Mat3} m Matrix to multiply with from left side.
+ * @return {Mat3} The result.
  */
 CANNON.Mat3.prototype.mmult = function(m){
     var r = new CANNON.Mat3();
@@ -123,12 +113,11 @@ CANNON.Mat3.prototype.mmult = function(m){
 };
 
 /**
+ * Solve Ax=b
  * @method solve
- * @memberof CANNON.Mat3
- * @brief Solve Ax=b
- * @param CANNON.Vec3 b The right hand side
- * @param CANNON.Vec3 target Optional. Target vector to save in.
- * @return CANNON.Vec3 The solution x
+ * @param {Vec3} b The right hand side
+ * @param {Vec3} target Optional. Target vector to save in.
+ * @return {Vec3} The solution x
  * @todo should reuse arrays
  */
 CANNON.Mat3.prototype.solve = function(b,target){
@@ -195,13 +184,12 @@ CANNON.Mat3.prototype.solve = function(b,target){
 };
 
 /**
+ * Get an element in the matrix by index. Index starts at 0, not 1!!!
  * @method e
- * @memberof CANNON.Mat3
- * @brief Get an element in the matrix by index. Index starts at 0, not 1!!!
- * @param int row 
- * @param int column
- * @param float value Optional. If provided, the matrix element will be set to this value.
- * @return float
+ * @param {Number} row
+ * @param {Number} column
+ * @param {Number} value Optional. If provided, the matrix element will be set to this value.
+ * @return {Number}
  */
 CANNON.Mat3.prototype.e = function( row , column ,value){
     if(value===undefined){
@@ -213,11 +201,10 @@ CANNON.Mat3.prototype.e = function( row , column ,value){
 };
 
 /**
+ * Copy the matrix
  * @method copy
- * @memberof CANNON.Mat3
- * @brief Copy the matrix
- * @param CANNON.Mat3 target Optional. Target to save the copy in.
- * @return CANNON.Mat3
+ * @param {Mat3} target Optional. Target to save the copy in.
+ * @return {Mat3}
  */
 CANNON.Mat3.prototype.copy = function(target){
     target = target || new CANNON.Mat3();
@@ -228,9 +215,8 @@ CANNON.Mat3.prototype.copy = function(target){
 };
 
 /**
+ * Returns a string representation of the matrix.
  * @method toString
- * @memberof CANNON.Mat3
- * @brief Returns a string representation of the matrix.
  * @return string
  */
 CANNON.Mat3.prototype.toString = function(){
@@ -243,11 +229,10 @@ CANNON.Mat3.prototype.toString = function(){
 };
 
 /**
+ * reverse the matrix
  * @method reverse
- * @memberof CANNON.Mat3
- * @brief reverse the matrix
- * @param CANNON.Mat3 target Optional. Target matrix to save in.
- * @return CANNON.Mat3 The solution x
+ * @param {Mat3} target Optional. Target matrix to save in.
+ * @return {Mat3} The solution x
  */
 CANNON.Mat3.prototype.reverse = function(target){
 

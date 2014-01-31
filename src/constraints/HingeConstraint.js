@@ -1,14 +1,14 @@
 /**
- * @class CANNON.HingeConstraint
- * @brief Hinge constraint. Tries to keep the local body axes equal.
+ * Hinge constraint. Tries to keep the local body axes equal.
+ * @class HingeConstraint
  * @author schteppe
- * @param CANNON.RigidBody bodyA
- * @param CANNON.Vec3 pivotA A point defined locally in bodyA. This defines the offset of axisA.
- * @param CANNON.Vec3 axisA an axis that bodyA can rotate around.
- * @param CANNON.RigidBody bodyB
- * @param CANNON.Vec3 pivotB
- * @param CANNON.Vec3 axisB
- * @param float maxForce
+ * @param {RigidBody} bodyA
+ * @param {Vec3} pivotA A point defined locally in bodyA. This defines the offset of axisA.
+ * @param {Vec3} axisA an axis that bodyA can rotate around.
+ * @param {RigidBody} bodyB
+ * @param {Vec3} pivotB
+ * @param {Vec3} axisB
+ * @param {Number} maxForce
  */
 CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, maxForce){
     CANNON.Constraint.call(this,bodyA,bodyB);

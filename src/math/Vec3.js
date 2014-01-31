@@ -1,43 +1,38 @@
 /**
- * @class CANNON.Vec3
- * @brief 3-dimensional vector
- * @param float x
- * @param float y
- * @param float z
+ * 3-dimensional vector
+ * @class Vec3
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
  * @author schteppe
  */
 var numVecs = 0;
 CANNON.Vec3 = function(x,y,z){
     /**
-    * @property float x
-    * @memberof CANNON.Vec3
-    */
-    this.x = x||0.0;
-    /**
-    * @property float y
-    * @memberof CANNON.Vec3
-    */
-    this.y = y||0.0;
-    /**
-    * @property float z
-    * @memberof CANNON.Vec3
-    */
-    this.z = z||0.0;
-
-    /*
-    numVecs++;
-    if(numVecs > 180)
-        console.log(numVecs+" created");
+     * @property x
+     * @type {Number}
      */
+    this.x = x||0.0;
+
+    /**
+     * @property y
+     * @type {Number}
+     */
+    this.y = y||0.0;
+
+    /**
+     * @property z
+     * @type {Number}
+     */
+    this.z = z||0.0;
 };
 
 /**
+ * Vector cross product
  * @method cross
- * @memberof CANNON.Vec3
- * @brief Vector cross product
- * @param CANNON.Vec3 v
- * @param CANNON.Vec3 target Optional. Target to save in.
- * @return CANNON.Vec3
+ * @param {Vec3} v
+ * @param {Vec3} target Optional. Target to save in.
+ * @return {Vec3}
  */
 CANNON.Vec3.prototype.cross = function(v,target){
     var vx=v.x, vy=v.y, vz=v.z, x=this.x, y=this.y, z=this.z;
@@ -51,13 +46,12 @@ CANNON.Vec3.prototype.cross = function(v,target){
 };
 
 /**
+ * Set the vectors' 3 elements
  * @method set
- * @memberof CANNON.Vec3
- * @brief Set the vectors' 3 elements
- * @param float x
- * @param float y
- * @param float z
- * @return CANNON.Vec3
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
+ * @return Vec3
  */
 CANNON.Vec3.prototype.set = function(x,y,z){
     this.x = x;
@@ -67,12 +61,11 @@ CANNON.Vec3.prototype.set = function(x,y,z){
 };
 
 /**
+ * Vector addition
  * @method vadd
- * @memberof CANNON.Vec3
- * @brief Vector addition
- * @param CANNON.Vec3 v
- * @param CANNON.Vec3 target Optional.
- * @return CANNON.Vec3
+ * @param {Vec3} v
+ * @param {Vec3} target Optional.
+ * @return {Vec3}
  */
 CANNON.Vec3.prototype.vadd = function(v,target){
     if(target){
@@ -87,12 +80,11 @@ CANNON.Vec3.prototype.vadd = function(v,target){
 };
 
 /**
+ * Vector subtraction
  * @method vsub
- * @memberof CANNON.Vec3
- * @brief Vector subtraction
- * @param CANNON.Vec3 v
- * @param CANNON.Vec3 target Optional. Target to save in.
- * @return CANNON.Vec3
+ * @param {Vec3} v
+ * @param {Vec3} target Optional. Target to save in.
+ * @return {Vec3}
  */
 CANNON.Vec3.prototype.vsub = function(v,target){
     if(target){
@@ -107,11 +99,10 @@ CANNON.Vec3.prototype.vsub = function(v,target){
 };
 
 /**
+ * Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
  * @method crossmat
- * @memberof CANNON.Vec3
- * @brief Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
  * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
- * @return CANNON.Mat3
+ * @return {Mat3}
  */
 CANNON.Vec3.prototype.crossmat = function(){
     return new CANNON.Mat3([     0,  -this.z,   this.y,
@@ -120,10 +111,9 @@ CANNON.Vec3.prototype.crossmat = function(){
 };
 
 /**
+ * Normalize the vector. Note that this changes the values in the vector.
  * @method normalize
- * @memberof CANNON.Vec3
- * @brief Normalize the vector. Note that this changes the values in the vector.
- * @return float Returns the norm of the vector
+ * @return {Number} Returns the norm of the vector
  */
 CANNON.Vec3.prototype.normalize = function(){
     var x=this.x, y=this.y, z=this.z;
@@ -143,11 +133,10 @@ CANNON.Vec3.prototype.normalize = function(){
 };
 
 /**
+ * Get the version of this vector that is of length 1.
  * @method unit
- * @memberof CANNON.Vec3
- * @brief Get the version of this vector that is of length 1.
- * @param CANNON.Vec3 target Optional target to save in
- * @return CANNON.Vec3 Returns the unit vector
+ * @param {Vec3} target Optional target to save in
+ * @return {Vec3} Returns the unit vector
  */
 CANNON.Vec3.prototype.unit = function(target){
     target = target || new CANNON.Vec3();
@@ -167,10 +156,9 @@ CANNON.Vec3.prototype.unit = function(target){
 };
 
 /**
+ * Get the 2-norm (length) of the vector
  * @method norm
- * @memberof CANNON.Vec3
- * @brief Get the 2-norm (length) of the vector
- * @return float
+ * @return {Number}
  */
 CANNON.Vec3.prototype.norm = function(){
     var x=this.x, y=this.y, z=this.z;
@@ -178,10 +166,9 @@ CANNON.Vec3.prototype.norm = function(){
 };
 
 /**
+ * Get the squared length of the vector
  * @method norm2
- * @memberof CANNON.Vec3
- * @brief Get the squared length of the vector
- * @return float
+ * @return {Number}
  */
 CANNON.Vec3.prototype.norm2 = function(){
     return this.dot(this);
@@ -196,12 +183,11 @@ CANNON.Vec3.prototype.distanceTo = function(p){
 };
 
 /**
+ * Multiply the vector with a scalar
  * @method mult
- * @memberof CANNON.Vec3
- * @brief Multiply the vector with a scalar
- * @param float scalar
- * @param CANNON.Vec3 target
- * @return CANNON.Vec3
+ * @param {Number} scalar
+ * @param {Vec3} target
+ * @return {Vec3}
  */
 CANNON.Vec3.prototype.mult = function(scalar,target){
     target = target || new CANNON.Vec3();
@@ -215,11 +201,10 @@ CANNON.Vec3.prototype.mult = function(scalar,target){
 };
 
 /**
+ * Calculate dot product
  * @method dot
- * @memberof CANNON.Vec3
- * @brief Calculate dot product
- * @param CANNON.Vec3 v
- * @return float
+ * @param {Vec3} v
+ * @return {Number}
  */
 CANNON.Vec3.prototype.dot = function(v){
     return this.x * v.x + this.y * v.y + this.z * v.z;
@@ -227,7 +212,6 @@ CANNON.Vec3.prototype.dot = function(v){
 
 /**
  * @method isZero
- * @memberof CANNON.Vec3
  * @return bool
  */
 CANNON.Vec3.prototype.isZero = function(){
@@ -235,11 +219,10 @@ CANNON.Vec3.prototype.isZero = function(){
 };
 
 /**
+ * Make the vector point in the opposite direction.
  * @method negate
- * @memberof CANNON.Vec3
- * @brief Make the vector point in the opposite direction.
- * @param CANNON.Vec3 target Optional target to save in
- * @return CANNON.Vec3
+ * @param {Vec3} target Optional target to save in
+ * @return {Vec3}
  */
 CANNON.Vec3.prototype.negate = function(target){
     target = target || new CANNON.Vec3();
@@ -250,11 +233,10 @@ CANNON.Vec3.prototype.negate = function(target){
 };
 
 /**
+ * Compute two artificial tangents to the vector
  * @method tangents
- * @memberof CANNON.Vec3
- * @brief Compute two artificial tangents to the vector
- * @param CANNON.Vec3 t1 Vector object to save the first tangent in
- * @param CANNON.Vec3 t2 Vector object to save the second tangent in
+ * @param {Vec3} t1 Vector object to save the first tangent in
+ * @param {Vec3} t2 Vector object to save the second tangent in
  */
 var Vec3_tangents_n = new CANNON.Vec3();
 var Vec3_tangents_randVec = new CANNON.Vec3();
@@ -281,9 +263,8 @@ CANNON.Vec3.prototype.tangents = function(t1,t2){
 };
 
 /**
+ * Converts to a more readable format
  * @method toString
- * @memberof CANNON.Vec3
- * @brief Converts to a more readable format
  * @return string
  */
 CANNON.Vec3.prototype.toString = function(){
@@ -291,11 +272,10 @@ CANNON.Vec3.prototype.toString = function(){
 };
 
 /**
+ * Copy the vector.
  * @method copy
- * @memberof CANNON.Vec3
- * @brief Copy the vector.
- * @param CANNON.Vec3 target
- * @return CANNON.Vec3
+ * @param {Vec3} target
+ * @return {Vec3}
  */
 CANNON.Vec3.prototype.copy = function(target){
     target = target || new CANNON.Vec3();
@@ -307,12 +287,11 @@ CANNON.Vec3.prototype.copy = function(target){
 
 
 /**
+ * Do a linear interpolation between two vectors
  * @method lerp
- * @memberof CANNON.Vec3
- * @brief Do a linear interpolation between two vectors
- * @param CANNON.Vec3 v
- * @param float t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
- * @param CANNON.Vec3 target
+ * @param {Vec3} v
+ * @param {Number} t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
+ * @param {Vec3} target
  */
 CANNON.Vec3.prototype.lerp = function(v,t,target){
     var x=this.x, y=this.y, z=this.z;
@@ -322,11 +301,10 @@ CANNON.Vec3.prototype.lerp = function(v,t,target){
 };
 
 /**
+ * Check if a vector equals is almost equal to another one.
  * @method almostEquals
- * @memberof CANNON.Vec3
- * @brief Check if a vector equals is almost equal to another one.
- * @param CANNON.Vec3 v
- * @param float precision
+ * @param {Vec3} v
+ * @param {Number} precision
  * @return bool
  */
 CANNON.Vec3.prototype.almostEquals = function(v,precision){
@@ -342,10 +320,9 @@ CANNON.Vec3.prototype.almostEquals = function(v,precision){
 };
 
 /**
+ * Check if a vector is almost zero
  * @method almostZero
- * @brief Check if a vector is almost zero
- * @param float precision
- * @memberof CANNON.Vec3
+ * @param {Number} precision
  */
 CANNON.Vec3.prototype.almostZero = function(precision){
     if(precision===undefined){

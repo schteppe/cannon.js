@@ -1,25 +1,26 @@
 /**
- * @class CANNON.Box
- * @brief A 3d box shape.
- * @param CANNON.Vec3 halfExtents
+ * A 3d box shape.
+ * @class Box
+ * @constructor
+ * @param {Vec3} halfExtents
  * @author schteppe
- * @extends CANNON.Shape
+ * @extends Shape
  */
 CANNON.Box = function(halfExtents){
     CANNON.Shape.call(this);
 
     /**
-    * @property CANNON.Vec3 halfExtents
-    * @memberof CANNON.Box
-    */
+     * @property halfExtents
+     * @type {Vec3}
+     */
     this.halfExtents = halfExtents;
     this.type = CANNON.Shape.types.BOX;
 
     /**
-    * @property CANNON.ConvexPolyhedron convexPolyhedronRepresentation
-    * @brief Used by the contact generator to make contacts with other convex polyhedra for example
-    * @memberof CANNON.Box
-    */
+     * Used by the contact generator to make contacts with other convex polyhedra for example
+     * @property convexPolyhedronRepresentation
+     * @type {ConvexPolyhedron}
+     */
     this.convexPolyhedronRepresentation = null;
 
     this.updateConvexPolyhedronRepresentation();
@@ -28,9 +29,8 @@ CANNON.Box.prototype = new CANNON.Shape();
 CANNON.Box.prototype.constructor = CANNON.Box;
 
 /**
+ * Updates the local convex polyhedron representation used for some collisions.
  * @method updateConvexPolyhedronRepresentation
- * @memberof CANNON.Box
- * @brief Updates the local convex polyhedron representation used for some collisions.
  */
 CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sx = this.halfExtents.x;
@@ -72,12 +72,11 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
 };
 
 /**
+ * Get the box 6 side normals
  * @method getSideNormals
- * @memberof CANNON.Box
- * @brief Get the box 6 side normals
- * @param bool includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
- * @param CANNON.Quaternion quat Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
- * @return array
+ * @param {Boolean}     includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
+ * @param {Quaternion}  quat            Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
+ * @return {array}
  */
 CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,quat){
     var sides = sixTargetVectors;

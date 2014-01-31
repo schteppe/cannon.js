@@ -1,7 +1,8 @@
 /**
- * @class CANNON.Demo
- * @brief Demo framework class. If you want to learn how to connect Cannon.js with Three.js, please look at the examples/ instead.
- * @param Object options
+ * Demo framework class. If you want to learn how to connect Cannon.js with Three.js, please look at the examples/ instead.
+ * @class Demo
+ * @constructor
+ * @param {Object} options
  */
 CANNON.Demo = function(options){
 
@@ -201,12 +202,11 @@ CANNON.Demo = function(options){
     }
 
     /**
-    * @method addScene
-    * @memberof CANNON.Demo
-    * @brief Add a scene to the demo app
-    * @param title Title of the scene
-    * @param function A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
-    */
+     * Add a scene to the demo app
+     * @method addScene
+     * @param {String} title Title of the scene
+     * @param {Function} A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
+     */
     function addScene(title,initfunc){
         if(typeof(title) !== "string"){
             throw new Error("1st argument of Demo.addScene(title,initfunc) must be a string!");
@@ -223,10 +223,9 @@ CANNON.Demo = function(options){
     }
 
     /**
-    * @method restartCurrentScene
-    * @memberof CANNON.Demo
-    * @brief Restarts the current scene
-    */
+     * Restarts the current scene
+     * @method restartCurrentScene
+     */
     function restartCurrentScene(){
         var N = bodies.length;
         for(var i=0; i<N; i++){
@@ -385,7 +384,7 @@ CANNON.Demo = function(options){
             for(var i=0; i<bodies.length; i++){
                 var b = bodies[i];
                 if(b.computeAABB){
-                    
+
                     if(b.aabbNeedsUpdate){
                         b.computeAABB();
                     }
@@ -396,9 +395,9 @@ CANNON.Demo = function(options){
                         isFinite(b.aabbmax.z) &&
                         isFinite(b.aabbmin.x) &&
                         isFinite(b.aabbmin.y) &&
-                        isFinite(b.aabbmin.z) && 
-                        b.aabbmax.x - b.aabbmin.x != 0 && 
-                        b.aabbmax.y - b.aabbmin.y != 0 && 
+                        isFinite(b.aabbmin.z) &&
+                        b.aabbmax.x - b.aabbmin.x != 0 &&
+                        b.aabbmax.y - b.aabbmin.y != 0 &&
                         b.aabbmax.z - b.aabbmin.z != 0){
                             var mesh = bboxMeshCache.request();
                             mesh.scale.set( b.aabbmax.x - b.aabbmin.x,
@@ -842,11 +841,11 @@ CANNON.Demo = function(options){
                 var subshape = shape.childShapes[i];
                 var o = shape.childOffsets[i];
                 var q = shape.childOrientations[i];
-        
+
                 var submesh = shape2mesh(subshape);
                 submesh.position.set(o.x,o.y,o.z);
                 submesh.quaternion.set(q.x,q.y,q.z,q.w);
-        
+
                 submesh.useQuaternion = true;
                 o3d.add(submesh);
                 mesh = o3d;
@@ -889,7 +888,7 @@ CANNON.Demo = function(options){
         // Remove all constraints
         while(world.constraints.length)
             world.removeConstraint(world.constraints[0]);
-    
+
         // Run the user defined "build scene" function
         scenes[n]();
 

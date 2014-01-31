@@ -1,13 +1,13 @@
 /**
- * @class CANNON.PointToPointConstraint
- * @brief Connects two bodies at given offset points
+ * Connects two bodies at given offset points
+ * @class PointToPointConstraint
  * @author schteppe
- * @param CANNON.Body bodyA
- * @param CANNON.Vec3 pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
- * @param CANNON.Body bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
- * @param CANNON.Vec3 pivotB See pivotA.
- * @param float maxForce The maximum force that should be applied to constrain the bodies.
- * @extends CANNON.Constraint
+ * @param {Body} bodyA
+ * @param {Vec3} pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
+ * @param {Body} bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
+ * @param {Vec3} pivotB See pivotA.
+ * @param {Number} maxForce The maximum force that should be applied to constrain the bodies.
+ * @extends {Constraint}
  */
 CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
     CANNON.Constraint.call(this,bodyA,bodyB);
@@ -26,7 +26,7 @@ CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
     t1.minForce = t2.minForce = normal.minForce = -maxForce;
     t1.maxForce = t2.maxForce = normal.maxForce =  maxForce;
 
-    // Update 
+    // Update
     this.update = function(){
         bodyB.position.vsub(bodyA.position,normal.ni);
         normal.ni.normalize();

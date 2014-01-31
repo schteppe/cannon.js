@@ -1,10 +1,11 @@
 /**
- * @class CANNON.ContactMaterial
- * @brief Defines what happens when two materials meet.
- * @param CANNON.Material m1
- * @param CANNON.Material m2
- * @param float friction
- * @param float restitution
+ * Defines what happens when two materials meet.
+ * @class ContactMaterial
+ * @constructor
+ * @param {Material} m1
+ * @param {Material} m2
+ * @param {Number} friction
+ * @param {Number} restitution
  * @todo Contact solving parameters here too?
  */
 CANNON.ContactMaterial = function(m1, m2, friction, restitution){
@@ -20,7 +21,7 @@ CANNON.ContactMaterial = function(m1, m2, friction, restitution){
 
     /// Restitution
     this.restitution =      restitution !== undefined ?      Number(restitution) :      0.3;
-	
+
     // Parameters to pass to the constraint when it is created
     this.contactEquationStiffness = 1e7;
     this.contactEquationRegularizationTime = 3;

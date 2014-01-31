@@ -1,6 +1,7 @@
 /**
- * @class CANNON.Solver
- * @brief Constraint equation solver base class.
+ * Constraint equation solver base class.
+ * @class Solver
+ * @constructor
  * @author schteppe / https://github.com/schteppe
  */
 CANNON.Solver = function(){

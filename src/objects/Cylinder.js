@@ -1,11 +1,12 @@
 /**
- * @class CANNON.Cylinder
- * @extends CANNON.ConvexPolyhedron
+ * @class Cylinder
+ * @constructor
+ * @extends ConvexPolyhedron
  * @author schteppe / https://github.com/schteppe
- * @param float radiusTop
- * @param float radiusBottom
- * @param float height
- * @param int numSegments The number of segments to build the cylinder out of
+ * @param {Number} radiusTop
+ * @param {Number} radiusBottom
+ * @param {Number} height
+ * @param {Number} numSegments The number of segments to build the cylinder out of
  */
 CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
     var N = numSegments,

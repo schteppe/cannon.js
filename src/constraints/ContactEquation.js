@@ -1,30 +1,28 @@
 /**
- * @class CANNON.ContactEquation
- * @brief Contact/non-penetration constraint equation
+ * Contact/non-penetration constraint equation
+ * @class ContactEquation
  * @author schteppe
- * @param CANNON.Body bj
- * @param CANNON.Body bi
- * @extends CANNON.Equation
+ * @param {Body} bj
+ * @param {Body} bi
+ * @extends {Equation}
  */
 CANNON.ContactEquation = function(bi,bj){
     CANNON.Equation.call(this,bi,bj,0,1e6);
 
     /**
-     * @property float restitution
-     * @memberof CANNON.ContactEquation
+     * @property restitution
+     * @type {Number}
      */
     this.restitution = 0.0; // "bounciness": u1 = -e*u0
 
     /**
-     * @property CANNON.Vec3 ri
-     * @memberof CANNON.ContactEquation
-     * @brief World-oriented vector that goes from the center of bi to the contact point in bi.
+     * World-oriented vector that goes from the center of bi to the contact point in bi.
+     * @property {Vec3} ri
      */
     this.ri = new CANNON.Vec3();
 
     /**
-     * @property CANNON.Vec3 rj
-     * @memberof CANNON.ContactEquation
+     * @property {Vec3} rj
      */
     this.rj = new CANNON.Vec3();
 
@@ -46,9 +44,8 @@ CANNON.ContactEquation.prototype = new CANNON.Equation();
 CANNON.ContactEquation.prototype.constructor = CANNON.ContactEquation;
 
 /**
+ * To be run before object reuse
  * @method reset
- * @memberof CANNON.ContactEquation
- * @brief To be run before object reuse
  */
 CANNON.ContactEquation.prototype.reset = function(){
     this.invInertiaTimesRxnNeedsUpdate = true;
@@ -164,7 +161,7 @@ CANNON.ContactEquation.prototype.computeC = function(){
     /*
     invIi.vmult(rixn,computeC_temp1);
     invIj.vmult(rjxn,computeC_temp2);
-    
+
     C += computeC_temp1.dot(rixn);
     C += computeC_temp2.dot(rjxn);
      */

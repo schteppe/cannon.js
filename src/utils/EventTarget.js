@@ -1,5 +1,6 @@
 /**
- * @class CANNON.EventTarget
+ * @class EventTarget
+ * @constructor
  * @see https://github.com/mrdoob/eventtarget.js/
  */
 CANNON.EventTarget = function () {

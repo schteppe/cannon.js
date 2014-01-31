@@ -1,53 +1,54 @@
 /**
- * @class CANNON.World
- * @brief The physics world
+ * The physics world
+ * @class World
+ * @constructor
+ * @extends {EventTarget}
  */
 CANNON.World = function(){
-
     CANNON.EventTarget.apply(this);
 
     /**
-     * @property bool allowSleep
-     * @brief Makes bodies go to sleep when they've been inactive
-     * @memberof CANNON.World
+     * Makes bodies go to sleep when they've been inactive
+     * @property allowSleep
+     * @type {Boolean}
      */
     this.allowSleep = false;
 
     /**
-     * @property Array contacts
-     * @brief All the current contacts (instances of CANNON.ContactEquation) in the world.
-     * @memberof CANNON.World
+     * All the current contacts (instances of ContactEquation) in the world.
+     * @property contacts
+     * @type {Array}
      */
     this.contacts = [];
     this.frictionEquations = [];
 
     /**
-     * @property int quatNormalizeSkip
-     * @brief How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).
-     * @memberof CANNON.World
+     * How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).
+     * @property quatNormalizeSkip
+     * @type {Number}
      */
     this.quatNormalizeSkip = 0;
 
     /**
-     * @property bool quatNormalizeFast
-     * @brief Set to true to use fast quaternion normalization. It is often enough accurate to use. If bodies tend to explode, set to false.
-     * @memberof CANNON.World
-     * @see CANNON.Quaternion.normalizeFast
-     * @see CANNON.Quaternion.normalize
+     * Set to true to use fast quaternion normalization. It is often enough accurate to use. If bodies tend to explode, set to false.
+     * @property quatNormalizeFast
+     * @type {Boolean}
+     * @see Quaternion.normalizeFast
+     * @see Quaternion.normalize
      */
     this.quatNormalizeFast = false;
 
     /**
-     * @property float time
-     * @brief The wall-clock time since simulation start
-     * @memberof CANNON.World
+     * The wall-clock time since simulation start
+     * @property time
+     * @type {Number}
      */
     this.time = 0.0;
 
     /**
-     * @property int stepnumber
-     * @brief Number of timesteps taken since start
-     * @memberof CANNON.World
+     * Number of timesteps taken since start
+     * @property stepnumber
+     * @type {Number}
      */
     this.stepnumber = 0;
 
@@ -57,86 +58,90 @@ CANNON.World = function(){
 
     this.nextId = 0;
     /**
-     * @property CANNON.Vec3 gravity
-     * @memberof CANNON.World
+     * @property gravity
+     * @type {Vec3}
      */
     this.gravity = new CANNON.Vec3();
 
     /**
-     * @property CANNON.Broadphase broadphase
-     * @memberof CANNON.World
+     * @property broadphase
+     * @type {Broadphase}
      */
     this.broadphase = null;
 
     /**
-     * @property Array bodies
-     * @memberof CANNON.World
+     * @property bodies
+     * @type {Array}
      */
     this.bodies = [];
 
     var th = this;
 
     /**
-     * @property CANNON.Solver solver
-     * @memberof CANNON.World
+     * @property solver
+     * @type {Solver}
      */
     this.solver = new CANNON.GSSolver();
 
     /**
-     * @property Array constraints
-     * @memberof CANNON.World
+     * @property constraints
+     * @type {Array}
      */
     this.constraints = [];
 
     /**
-     * @property CANNON.ContactGenerator contactgen
-     * @memberof CANNON.World
+     * @property contactgen
+     * @type {ContactGenerator}
      */
     this.contactgen = new CANNON.ContactGenerator();
 
-    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
-	 *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
-	 *  @memberof CANNON.World
+    /**
+     * It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
+     * @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
+	 * @type {ArrayCollisionMatrix}
 	 */
 	this.collisionMatrix = new CANNON.ArrayCollisionMatrix();
-    /** @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
-	 *  @brief collisionMatrix from the previous step
-	 *  @memberof CANNON.World
+
+    /**
+     * collisionMatrix from the previous step
+     * @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
+	 * @type {ArrayCollisionMatrix}
 	 */
 	this.collisionMatrixPrevious = new CANNON.ArrayCollisionMatrix();
 
     /**
-     * @property Array materials
-     * @memberof CANNON.World
+     * All added materials
+     * @property materials
+     * @type {Array}
      */
-    this.materials = []; // References to all added materials
+    this.materials = [];
 
     /**
-     * @property Array contactmaterials
-     * @memberof CANNON.World
+     * @property contactmaterials
+     * @type {Array}
      */
-    this.contactmaterials = []; // All added contact materials
+    this.contactmaterials = [];
 
     this.mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
 
     this.defaultMaterial = new CANNON.Material("default");
 
     /**
-     * @property CANNON.ContactMaterial defaultContactMaterial
-     * @brief This contact material is used if no suitable contactmaterial is found for a contact.
-     * @memberof CANNON.World
+     * This contact material is used if no suitable contactmaterial is found for a contact.
+     * @property defaultContactMaterial
+     * @type {ContactMaterial}
      */
     this.defaultContactMaterial = new CANNON.ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.0);
 
     /**
-     * @property bool doProfiling
-     * @memberof CANNON.World
+     * @property doProfiling
+     * @type {Boolean}
      */
     this.doProfiling = false;
 
     /**
-     * @property Object profile
-     * @memberof CANNON.World
+     * @property profile
+     * @type {Object}
      */
     this.profile = {
         solve:0,
@@ -147,19 +152,18 @@ CANNON.World = function(){
     };
 
     /**
-     * @property Array subystems
-     * @memberof CANNON.World
+     * @property subystems
+     * @type {Array}
      */
     this.subsystems = [];
 };
 
 /**
+ * Get the contact material between materials m1 and m2
  * @method getContactMaterial
- * @memberof CANNON.World
- * @brief Get the contact material between materials m1 and m2
- * @param CANNON.Material m1
- * @param CANNON.Material m2
- * @return CANNON.Contactmaterial The contact material if it was found.
+ * @param {Material} m1
+ * @param {Material} m2
+ * @return {Contactmaterial} The contact material if it was found.
  */
 CANNON.World.prototype.getContactMaterial = function(m1,m2){
     if((m1 instanceof CANNON.Material) &&  (m2 instanceof CANNON.Material)){
@@ -177,10 +181,9 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
 };
 
 /**
+ * Get number of objects in the world.
  * @method numObjects
- * @memberof CANNON.World
- * @brief Get number of objects in the world.
- * @return int
+ * @return {Number}
  */
 CANNON.World.prototype.numObjects = function(){
     return this.bodies.length;
@@ -195,10 +198,9 @@ CANNON.World.prototype.collisionMatrixTick = function(){
 };
 
 /**
+ * Add a rigid body to the simulation.
  * @method add
- * @memberof CANNON.World
- * @brief Add a rigid body to the simulation.
- * @param CANNON.Body body
+ * @param {Body} body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
@@ -219,10 +221,9 @@ CANNON.World.prototype.add = function(body){
 };
 
 /**
+ * Add a constraint to the simulation.
  * @method addConstraint
- * @memberof CANNON.World
- * @brief Add a constraint to the simulation.
- * @param CANNON.Constraint c
+ * @param {Constraint} c
  */
 CANNON.World.prototype.addConstraint = function(c){
     this.constraints.push(c);
@@ -230,10 +231,9 @@ CANNON.World.prototype.addConstraint = function(c){
 };
 
 /**
+ * Removes a constraint
  * @method removeConstraint
- * @memberof CANNON.World
- * @brief Removes a constraint
- * @param CANNON.Constraint c
+ * @param {Constraint} c
  */
 CANNON.World.prototype.removeConstraint = function(c){
     var idx = this.constraints.indexOf(c);
@@ -243,20 +243,18 @@ CANNON.World.prototype.removeConstraint = function(c){
 };
 
 /**
+ * Generate a new unique integer identifyer
  * @method id
- * @memberof CANNON.World
- * @brief Generate a new unique integer identifyer
- * @return int
+ * @return {Number}
  */
 CANNON.World.prototype.id = function(){
     return this.nextId++;
 };
 
 /**
+ * Remove a rigid body from the simulation.
  * @method remove
- * @memberof CANNON.World
- * @brief Remove a rigid body from the simulation.
- * @param CANNON.Body body
+ * @param {Body} body
  */
 CANNON.World.prototype.remove = function(body){
     body.world = null;
@@ -270,10 +268,9 @@ CANNON.World.prototype.remove = function(body){
 };
 
 /**
+ * Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
  * @method addMaterial
- * @memberof CANNON.World
- * @brief Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
- * @param CANNON.Material m
+ * @param {Material} m
  */
 CANNON.World.prototype.addMaterial = function(m){
     if(m.id === -1){
@@ -289,10 +286,9 @@ CANNON.World.prototype.addMaterial = function(m){
 };
 
 /**
+ * Adds a contact material to the World
  * @method addContactMaterial
- * @memberof CANNON.World
- * @brief Adds a contact material to the World
- * @param CANNON.ContactMaterial cmat
+ * @param {ContactMaterial} cmat
  */
 CANNON.World.prototype.addContactMaterial = function(cmat) {
 
@@ -328,10 +324,9 @@ CANNON.World.prototype._now = function(){
 };
 
 /**
+ * Step the simulation
  * @method step
- * @memberof CANNON.World
- * @brief Step the simulation
- * @param float dt
+ * @param {Number} dt
  */
 var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
     World_step_preStepEvent = {type:"preStep"},

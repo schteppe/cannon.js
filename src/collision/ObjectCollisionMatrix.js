@@ -1,5 +1,8 @@
-/** @class ObjectCollisionMatrix Records what objects are colliding with each other 
-  */
+/**
+ * Records what objects are colliding with each other
+ * @class ObjectCollisionMatrix
+ * @constructor
+ */
 CANNON.ObjectCollisionMatrix = function() {
 	this.matrix = {};
 };

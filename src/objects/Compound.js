@@ -1,7 +1,7 @@
 /**
- * @class CANNON.Compound
- * @extends CANNON.Shape
- * @brief A shape made of several other shapes.
+ * A shape made of several other shapes.
+ * @class Compound
+ * @extends Shape
  * @author schteppe
  */
 CANNON.Compound = function(){
@@ -15,12 +15,11 @@ CANNON.Compound.prototype = new CANNON.Shape();
 CANNON.Compound.prototype.constructor = CANNON.Compound;
 
 /**
+ * Add a child shape.
  * @method addChild
- * @memberof CANNON.Compound
- * @brief Add a child shape.
- * @param CANNON.Shape shape
- * @param CANNON.Vec3 offset
- * @param CANNON.Quaternion orientation
+ * @param {Shape} shape
+ * @param {Vec3} offset
+ * @param {Quaternion} orientation
  */
 CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
     offset = offset || new CANNON.Vec3();
@@ -60,7 +59,7 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
         //console.log(childInertia,m,b.volume(),V);
 
         // Add its inertia using the parallel axis theorem, i.e.
-        // I += I_child;    
+        // I += I_child;
         // I += m_child * r^2
 
         target.vadd(childInertia,target);

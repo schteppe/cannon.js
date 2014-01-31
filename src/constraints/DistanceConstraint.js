@@ -1,11 +1,11 @@
 /**
- * @class CANNON.DistanceConstraint
- * @brief Constrains two bodies to be at a constant distance from each other.
+ * Constrains two bodies to be at a constant distance from each other.
+ * @class DistanceConstraint
  * @author schteppe
- * @param CANNON.Body bodyA
- * @param CANNON.Body bodyB
- * @param float distance
- * @param float maxForce
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Number} distance
+ * @param {Number} maxForce
  */
 CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
     CANNON.Constraint.call(this,bodyA,bodyB);
@@ -24,7 +24,7 @@ CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
     normal.minForce = -maxForce;
     normal.maxForce =  maxForce;
 
-    // Update 
+    // Update
     this.update = function(){
         bodyB.position.vsub(bodyA.position,normal.ni);
         normal.ni.normalize();

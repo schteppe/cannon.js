@@ -1,16 +1,17 @@
 /**
- * @brief Spherical rigid body
- * @class CANNON.Sphere
- * @extends CANNON.Shape
- * @param float radius
+ * Spherical rigid body
+ * @class Sphere
+ * @constructor
+ * @extends Shape
+ * @param {Number} radius
  * @author schteppe / http://github.com/schteppe
  */
 CANNON.Sphere = function(radius){
     CANNON.Shape.call(this);
 
     /**
-     * @property float radius
-     * @memberof CANNON.Sphere
+     * @property radius
+     * @type {Number}
      */
     this.radius = radius!==undefined ? Number(radius) : 1.0;
     this.type = CANNON.Shape.types.SPHERE;

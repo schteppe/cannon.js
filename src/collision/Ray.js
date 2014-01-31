@@ -1,30 +1,27 @@
 /**
- * @class CANNON.Ray
+ * A line in 3D space that intersects bodies and return points.
+ * @class Ray
  * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.
- * @brief A line in 3D space that intersects bodies and return points.
- * @param CANNON.Vec3 origin
- * @param CANNON.Vec3 direction
+ * @param {Vec3} origin
+ * @param {Vec3} direction
  */
 CANNON.Ray = function(origin, direction){
     /**
-    * @property CANNON.Vec3 origin
-    * @memberof CANNON.Ray
+    * @property {Vec3} origin
     */
     this.origin = origin || new CANNON.Vec3();
 
     /**
-    * @property CANNON.Vec3 direction
-    * @memberof CANNON.Ray
+    * @property {Vec3} direction
     */
     this.direction = direction || new CANNON.Vec3();
 
     var precision = 0.0001;
 
     /**
+     * Sets the precision of the ray. Used when checking parallelity etc.
      * @method setPrecision
-     * @memberof CANNON.Ray
      * @param float value
-     * @brief Sets the precision of the ray. Used when checking parallelity etc.
      */
     this.setPrecision = function ( value ) {
         precision = value;
@@ -42,11 +39,10 @@ CANNON.Ray = function(origin, direction){
     var intersectPoint = new CANNON.Vec3();
 
     /**
+     * Shoot a ray at a body, get back information about the hit.
      * @method intersectBody
-     * @memberof CANNON.Ray
-     * @param CANNON.RigidBody body
-     * @brief Shoot a ray at a body, get back information about the hit.
-     * @return Array An array of results. The result objects has properties: distance (float), point (CANNON.Vec3) and body (CANNON.RigidBody).
+     * @param {RigidBody} body
+     * @return {Array} An array of results. The result objects has properties: distance (float), point (CANNON.Vec3) and body (CANNON.RigidBody).
      */
     this.intersectBody = function ( body ) {
         if(body.shape instanceof CANNON.ConvexPolyhedron){
@@ -66,12 +62,11 @@ CANNON.Ray = function(origin, direction){
 
     /**
      * @method intersectShape
-     * @memberof CANNON.Ray
-     * @param CANNON.Shape shape
-     * @param CANNON.Quaternion quat
-     * @param CANNON.Vec3 position
-     * @param CANNON.RigidBody body
-     * @return Array See intersectBody()
+     * @param {Shape} shape
+     * @param {Quaternion} quat
+     * @param {Vec3} position
+     * @param {RigidBody} body
+     * @return {Array} See intersectBody()
      */
     this.intersectShape = function(shape,quat,position,body){
 
@@ -167,9 +162,8 @@ CANNON.Ray = function(origin, direction){
 
     /**
      * @method intersectBodies
-     * @memberof CANNON.Ray
-     * @param Array bodies An array of CANNON.RigidBody objects.
-     * @return Array See intersectBody
+     * @param {Array} bodies An array of CANNON.RigidBody objects.
+     * @return {Array} See intersectBody
      */
     this.intersectBodies = function ( bodies ) {
 
@@ -218,9 +212,9 @@ CANNON.Ray = function(origin, direction){
         var dot02 = v0.dot( v2 );
         var dot11 = v1.dot( v1 );
         var dot12 = v1.dot( v2 );
-		
+
 		var u,v;
-		
+
         return  ( (u = dot11 * dot02 - dot01 * dot12) >= 0 ) &&
 				( (v = dot00 * dot12 - dot01 * dot02) >= 0 ) &&
 				( u + v < ( dot00 * dot11 - dot01 * dot01 ) );

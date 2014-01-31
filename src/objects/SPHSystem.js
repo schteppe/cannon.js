@@ -1,6 +1,7 @@
 /**
- * @class CANNON.SPHSystem
- * @brief Smoothed-particle hydrodynamics system
+ * Smoothed-particle hydrodynamics system
+ * @class SPHSystem
+ * @constructor
  */
 CANNON.SPHSystem = function(){
     this.particles = [];
@@ -33,8 +34,9 @@ CANNON.SPHSystem.prototype.remove = function(particle){
 
 /**
  * Get neighbors within smoothing volume, save in the array neighbors
- * @param CANNON.Body particle
- * @param Array neighbors
+ * @method getNeighbors
+ * @param {Body} particle
+ * @param {Array} neighbors
  */
 var SPHSystem_getNeighbors_dist = new CANNON.Vec3();
 CANNON.SPHSystem.prototype.getNeighbors = function(particle,neighbors){
@@ -42,7 +44,7 @@ CANNON.SPHSystem.prototype.getNeighbors = function(particle,neighbors){
         id = particle.id,
         R2 = this.smoothingRadius * this.smoothingRadius,
         dist = SPHSystem_getNeighbors_dist;
-    for(var i=0; i!==N; i++){  
+    for(var i=0; i!==N; i++){
         var p = this.particles[i];
         p.position.vsub(particle.position,dist);
         if(id!==p.id && dist.norm2() < R2){
@@ -73,11 +75,11 @@ CANNON.SPHSystem.prototype.update = function(){
         this.getNeighbors(p,neighbors);
         neighbors.push(this.particles[i]); // Add current too
         var numNeighbors = neighbors.length;
-        
+
         // Accumulate density for the particle
         var sum = 0.0;
         for(var j=0; j!==numNeighbors; j++){
-            
+
             //printf("Current particle has position %f %f %f\n",objects[id].pos.x(),objects[id].pos.y(),objects[id].pos.z());
             p.position.vsub(neighbors[j].position, dist);
             var len = dist.norm();
@@ -86,7 +88,7 @@ CANNON.SPHSystem.prototype.update = function(){
             sum += neighbors[j].mass * weight;
         }
 
-        // Save 
+        // Save
         this.densities[i] = sum;
         this.pressures[i] = cs * cs * (this.densities[i] - this.density);
     }
@@ -101,38 +103,38 @@ CANNON.SPHSystem.prototype.update = function(){
     var u =         SPHSystem_update_u;
 
     for(var i=0; i!==N; i++){
-        
+
         var particle = this.particles[i];
 
         a_pressure.set(0,0,0);
         a_visc.set(0,0,0);
-        
+
         // Init vars
         var Pij;
         var nabla;
         var Vij;
-        
+
         // Sum up for all other neighbors
         var neighbors = this.neighbors[i];
         var numNeighbors = neighbors.length;
 
         //printf("Neighbors: ");
         for(var j=0; j!==numNeighbors; j++){
-            
+
             var neighbor = neighbors[j];
             //printf("%d ",nj);
-            
+
             // Get r once for all..
             particle.position.vsub(neighbor.position,r_vec);
             var r = r_vec.norm();
-            
+
             // Pressure contribution
             Pij = -neighbor.mass * (this.pressures[i] / (this.densities[i]*this.densities[i] + eps) + this.pressures[j] / (this.densities[j]*this.densities[j] + eps));
             this.gradw(r_vec, gradW);
             // Add to pressure acceleration
             gradW.mult(Pij , gradW)
             a_pressure.vadd(gradW, a_pressure);
-            
+
             // Viscosity contribution
             neighbor.velocity.vsub(particle.velocity, u);
             u.mult( 1.0 / (0.0001+this.densities[i] * this.densities[j]) * this.viscosity * neighbor.mass , u );
@@ -141,7 +143,7 @@ CANNON.SPHSystem.prototype.update = function(){
             // Add to viscosity acceleration
             a_visc.vadd( u, a_visc );
         }
-        
+
         // Calculate force
         a_visc.mult(particle.mass, a_visc);
         a_pressure.mult(particle.mass, a_pressure);

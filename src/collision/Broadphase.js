@@ -1,29 +1,29 @@
 /**
- * @class CANNON.Broadphase
+ * Base class for broadphase implementations
+ * @class Broadphase
+ * @constructor
  * @author schteppe
- * @brief Base class for broadphase implementations
  */
 CANNON.Broadphase = function(){
     /**
-    * @property CANNON.World world
-    * @brief The world to search for collisions in.
-    * @memberof CANNON.Broadphase
+    * The world to search for collisions in.
+    * @property world
+    * @type {World}
     */
     this.world = null;
 
     /**
      * If set to true, the broadphase uses bounding boxes for intersection test, else it uses bounding spheres.
-     * @property bool useBoundingBoxes
-     * @memberof CANNON.Broadphase
+     * @property useBoundingBoxes
+     * @type {Boolean}
      */
     this.useBoundingBoxes = false;
 };
 
 /**
+ * Get the collision pairs from the world
  * @method collisionPairs
- * @memberof CANNON.Broadphase
- * @brief Get the collision pairs from the world
- * @param CANNON.World world The world to search in
+ * @param {World} world The world to search in
  * @param Array p1 Empty array to be filled with body objects
  * @param Array p2 Empty array to be filled with body objects
  * @return array An array with two subarrays of body indices
@@ -33,12 +33,11 @@ CANNON.Broadphase.prototype.collisionPairs = function(world,p1,p2){
 };
 
 /**
+ * Check if a body pair needs to be intersection tested at all.
  * @method needBroadphaseCollision
- * @memberof CANNON.Broadphase
- * @brief Check if a body pair needs to be intersection tested at all.
- * @param CANNON.Body bodyA
- * @param CANNON.Body bodyB
- * @return bool
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @return {bool}
  */
 var Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
 CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
@@ -69,12 +68,11 @@ CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
 };
 
 /**
+ * Check if a body pair needs to be intersection tested at all.
  * @method intersectionTest
- * @memberof CANNON.Broadphase
- * @brief Check if a body pair needs to be intersection tested at all.
- * @param CANNON.Body bodyA
- * @param CANNON.Body bodyB
- * @return bool
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @return {Boolean}
  */
 CANNON.Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
     if(this.useBoundingBoxes){
@@ -85,13 +83,12 @@ CANNON.Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
 };
 
 /**
+ * Check if the bounding spheres of two bodies are intersecting.
  * @method doBoundingSphereBroadphase
- * @memberof CANNON.Broadphase
- * @brief Check if the bounding spheres of two bodies are intersecting.
- * @param CANNON.Body bi
- * @param CANNON.Body bj
- * @param Array pairs1 bi is appended to this array if intersection
- * @param Array pairs2 bj is appended to this array if intersection
+ * @param {Body} bi
+ * @param {Body} bj
+ * @param {Array} pairs1 bi is appended to this array if intersection
+ * @param {Array} pairs2 bj is appended to this array if intersection
  */
 var Broadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
     Broadphase_collisionPairs_normal =  new CANNON.Vec3(),
@@ -206,13 +203,12 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
 };
 
 /**
+ * Check if the bounding boxes of two bodies are intersecting.
  * @method doBoundingBoxBroadphase
- * @memberof CANNON.Broadphase
- * @brief Check if the bounding boxes of two bodies are intersecting.
- * @param CANNON.Body bi
- * @param CANNON.Body bj
- * @param Array pairs1
- * @param Array pairs2
+ * @param Body bi
+ * @param Body bj
+ * @param {Array} pairs1
+ * @param {Array} pairs2
  */
 CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
     var bishape = bi.shape,
@@ -263,11 +259,10 @@ CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pair
 };
 
 /**
+ * Removes duplicate pairs from the pair arrays.
  * @method makePairsUnique
- * @memberof CANNON.Broadphase
- * @brief Removes duplicate pairs from the pair arrays.
- * @param Array pairs1
- * @param Array pairs2
+ * @param {Array} pairs1
+ * @param {Array} pairs2
  */
 var Broadphase_makePairsUnique_temp = {},
     Broadphase_makePairsUnique_p1 = [],

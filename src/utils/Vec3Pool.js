@@ -1,5 +1,6 @@
 /**
- * @class CANNON.Vec3Pool
+ * @class Vec3Pool
+ * @constructor
  */
 CANNON.Vec3Pool = function(){
     CANNON.ObjectPool.call(this);

@@ -1,16 +1,16 @@
 /**
- * @class CANNON.RotationalEquation
- * @brief Rotational constraint. Works to keep the local vectors orthogonal to each other.
+ * Rotational constraint. Works to keep the local vectors orthogonal to each other.
+ * @class RotationalEquation
  * @author schteppe
- * @param CANNON.RigidBody bj
- * @param CANNON.Vec3 localVectorInBodyA
- * @param CANNON.RigidBody bi
- * @param CANNON.Vec3 localVectorInBodyB
- * @extends CANNON.Equation
+ * @param {RigidBody} bj
+ * @param {Vec3} localVectorInBodyA
+ * @param {RigidBody} bi
+ * @param {Vec3} localVectorInBodyB
+ * @extends {Equation}
  */
 CANNON.RotationalEquation = function(bodyA, bodyB){
     CANNON.Equation.call(this,bodyA,bodyB,-1e6,1e6);
-    this.ni = new CANNON.Vec3(); // World oriented localVectorInBodyA 
+    this.ni = new CANNON.Vec3(); // World oriented localVectorInBodyA
     this.nj = new CANNON.Vec3(); // ...and B
 
     this.nixnj = new CANNON.Vec3();

@@ -1,35 +1,32 @@
 /**
- * @class CANNON.Constraint
- * @brief Constraint base class
+ * Constraint base class
+ * @class Constraint
  * @author schteppe
- * @param CANNON.Body bodyA
- * @param CANNON.Body bodyB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  */
 CANNON.Constraint = function(bodyA,bodyB){
 
     /**
-     * @property Array equations
-     * @memberOf CANNON.Constraint
-     * @brief Equations to be solved in this constraint
+     * Equations to be solved in this constraint
+     * @property equations
+     * @type {Array}
      */
     this.equations = [];
 
     /**
-     * @property CANNON.Body bodyA
-     * @memberOf CANNON.Constraint
+     * @property {Body} bodyA
      */
     this.bodyA = bodyA;
 
     /**
-     * @property CANNON.Body bodyB
-     * @memberOf CANNON.Constraint
+     * @property {Body} bodyB
      */
     this.bodyB = bodyB;
 };
 
 /**
  * @method update
- * @memberOf CANNON.Constraint
  */
 CANNON.Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");

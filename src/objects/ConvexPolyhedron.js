@@ -1,19 +1,20 @@
 /**
- * @class CANNON.ConvexPolyhedron
- * @extends CANNON.Shape
- * @brief A set of polygons describing a convex shape.
+ * A set of polygons describing a convex shape.
+ * @class ConvexPolyhedron
+ * @constructor
+ * @extends Shape
  * @description The shape MUST be convex for the code to work properly. No polygons may be coplanar (contained
  * in the same 3D plane), instead these should be merged into one polygon.
- * 
- * @param array points An array of CANNON.Vec3's
- * @param array faces Array of integer arrays, describing which vertices that is included in each face.
- * @param array normals Deprecated. Normals are now automatically generated from polygons.
- * 
+ *
+ * @param {array} points An array of CANNON.Vec3's
+ * @param {array} faces Array of integer arrays, describing which vertices that is included in each face.
+ * @param {array} normals Deprecated. Normals are now automatically generated from polygons.
+ *
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
  * @see http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
  * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
- * 
+ *
  * @todo Move the clipping functions to ContactGenerator?
  * @todo Automatically merge coplanar polygons in constructor.
  */
@@ -23,11 +24,11 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     this.type = CANNON.Shape.types.CONVEXPOLYHEDRON;
 
     /*
-     * @brief Get face normal given 3 vertices
-     * @param CANNON.Vec3 va
-     * @param CANNON.Vec3 vb
-     * @param CANNON.Vec3 vc
-     * @param CANNON.Vec3 target
+     * Get face normal given 3 vertices
+     * @param {Vec3} va
+     * @param {Vec3} vb
+     * @param {Vec3} vc
+     * @param {Vec3} target
      * @todo unit test?
      */
     var cb = new CANNON.Vec3();
@@ -42,30 +43,28 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     }
 
     /**
-    * @property array vertices
-    * @memberof CANNON.ConvexPolyhedron
-    * @brief Array of CANNON.Vec3
-    */
+     * Array of Vec3
+     * @property vertices
+     * @type {Array}
+     */
     this.vertices = points||[];
 
     this.worldVertices = []; // World transformed version of .vertices
     this.worldVerticesNeedsUpdate = true;
 
     /**
-    * @property array faces
-    * @memberof CANNON.ConvexPolyhedron
-    * @brief Array of integer arrays, indicating which vertices each face consists of
-    * @todo Needed?
-    */
+     * Array of integer arrays, indicating which vertices each face consists of
+     * @property faces
+     * @type {Array}
+     */
     this.faces = faces||[];
 
     /**
-     * @property array faceNormals
-     * @memberof CANNON.ConvexPolyhedron
-     * @brief Array of CANNON.Vec3
-     * @todo Needed?
+     * Array of Vec3
+     * @property faceNormals
+     * @type {Array}
      */
-    this.faceNormals = [];//normals||[];
+    this.faceNormals = [];
     /*
     for(var i=0; i<this.faceNormals.length; i++){
         this.faceNormals[i].normalize();
@@ -99,9 +98,9 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     this.worldFaceNormals = []; // World transformed version of .faceNormals
 
     /**
-     * @property array uniqueEdges
-     * @memberof CANNON.ConvexPolyhedron
-     * @brief Array of CANNON.Vec3
+     * Array of Vec3
+     * @property uniqueEdges
+     * @type {Array}
      */
     this.uniqueEdges = [];
     var nv = this.vertices.length;
@@ -147,11 +146,11 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 
     /*
      * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
-     * @param CANNON.ConvexPolyhedron hull
-     * @param CANNON.Vec3 axis
-     * @param CANNON.Vec3 pos
-     * @param CANNON.Quaternion quat
-     * @param array maxmin maxmin[0] and maxmin[1] will be set to maximum and minimum, respectively.
+     * @param {ConvexPolyhedron} hull
+     * @param {Vec3} axis
+     * @param {Vec3} pos
+     * @param {Quaternion} quat
+     * @param {array} maxmin maxmin[0] and maxmin[1] will be set to maximum and minimum, respectively.
      */
     var worldVertex = new CANNON.Vec3();
     function project(hull,axis,pos,quat,maxmin){
@@ -184,16 +183,15 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     }
 
     /**
+     * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
      * @method testSepAxis
-     * @memberof CANNON.ConvexPolyhedron
-     * @brief Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
-     * @param CANNON.Vec3 axis
-     * @param CANNON.ConvexPolyhedron hullB
-     * @param CANNON.Vec3 posA
-     * @param CANNON.Quaternion quatA
-     * @param CANNON.Vec3 posB
-     * @param CANNON.Quaternion quatB
-     * @return float The overlap depth, or FALSE if no penetration.
+     * @param {Vec3} axis
+     * @param {ConvexPolyhedron} hullB
+     * @param {Vec3} posA
+     * @param {Quaternion} quatA
+     * @param {Vec3} posB
+     * @param {Quaternion} quatB
+     * @return {float} The overlap depth, or FALSE if no penetration.
      */
     this.testSepAxis = function(axis, hullB, posA, quatA, posB, quatB){
         var maxminA=[], maxminB=[], hullA=this;
@@ -214,16 +212,15 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     };
 
     /**
+     * Find the separating axis between this hull and another
      * @method findSeparatingAxis
-     * @memberof CANNON.ConvexPolyhedron
-     * @brief Find the separating axis between this hull and another
-     * @param CANNON.ConvexPolyhedron hullB
-     * @param CANNON.Vec3 posA
-     * @param CANNON.Quaternion quatA
-     * @param CANNON.Vec3 posB
-     * @param CANNON.Quaternion quatB
-     * @param CANNON.Vec3 target The target vector to save the axis in
-     * @return bool Returns false if a separation is found, else true
+     * @param {ConvexPolyhedron} hullB
+     * @param {Vec3} posA
+     * @param {Quaternion} quatA
+     * @param {Vec3} posB
+     * @param {Quaternion} quatB
+     * @param {Vec3} target The target vector to save the axis in
+     * @return {bool} Returns false if a separation is found, else true
      */
     var faceANormalWS3 = new CANNON.Vec3();
     var Worldnormal1 = new CANNON.Vec3();
@@ -316,17 +313,15 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
 
     /**
      * @method clipAgainstHull
-     * @memberof CANNON.ConvexPolyhedron
-     * @brief Clip this hull against another hull
-     * @param CANNON.Vec3 posA
-     * @param CANNON.Quaternion quatA
-     * @param CANNON.ConvexPolyhedron hullB
-     * @param CANNON.Vec3 posB
-     * @param CANNON.Quaternion quatB
-     * @param CANNON.Vec3 separatingNormal
-     * @param float minDist Clamp distance
-     * @param float maxDist
-     * @param array result The an array of contact point objects, see clipFaceAgainstHull
+     * @param {Vec3} posA
+     * @param {Quaternion} quatA
+     * @param {ConvexPolyhedron} hullB
+     * @param {Vec3} posB
+     * @param {Quaternion} quatB
+     * @param {Vec3} separatingNormal
+     * @param {Number} minDist Clamp distance
+     * @param {Number} maxDist
+     * @param {array} result The an array of contact point objects, see clipFaceAgainstHull
      * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
      */
     var WorldNormal = new CANNON.Vec3();
@@ -375,15 +370,14 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     };
 
     /**
+     * Clip a face against a hull.
      * @method clipFaceAgainstHull
-     * @memberof CANNON.ConvexPolyhedron
-     * @brief Clip a face against a hull.
-     * @param CANNON.Vec3 separatingNormal
-     * @param CANNON.Vec3 posA
-     * @param CANNON.Quaternion quatA
-     * @param Array worldVertsB1 An array of CANNON.Vec3 with vertices in the world frame.
-     * @param float minDist Distance clamping
-     * @param float maxDist
+     * @param {Vec3} separatingNormal
+     * @param {Vec3} posA
+     * @param {Quaternion} quatA
+     * @param {Array} worldVertsB1 An array of CANNON.Vec3 with vertices in the world frame.
+     * @param {Number} minDist Distance clamping
+     * @param {Number} maxDist
      * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
      */
     var faceANormalWS = new CANNON.Vec3();
@@ -522,13 +516,12 @@ CANNON.ConvexPolyhedron = function( points , faces , normals ) {
     };
 
     /**
+     * Clip a face in a hull against the back of a plane.
      * @method clipFaceAgainstPlane
-     * @memberof CANNON.ConvexPolyhedron
-     * @brief Clip a face in a hull against the back of a plane.
-     * @param Array inVertices
-     * @param Array outVertices
-     * @param CANNON.Vec3 planeNormal
-     * @param float planeConstant The constant in the mathematical plane equation
+     * @param {Array} inVertices
+     * @param {Array} outVertices
+     * @param {Vec3} planeNormal
+     * @param {Number} planeConstant The constant in the mathematical plane equation
      */
     this.clipFaceAgainstPlane = function(inVertices,outVertices, planeNormal, planeConstant){
         if(!(planeNormal instanceof CANNON.Vec3)){

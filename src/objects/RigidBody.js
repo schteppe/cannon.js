@@ -1,9 +1,10 @@
 /**
- * @class CANNON.RigidBody
- * @brief Rigid body base class
- * @param float mass
- * @param CANNON.Shape shape
- * @param CANNON.Material material
+ * Rigid body base class
+ * @class RigidBody
+ * @constructor
+ * @param {Number} mass
+ * @param {Shape} shape
+ * @param {Material} material
  */
 CANNON.RigidBody = function(mass,shape,material){
 
@@ -20,47 +21,46 @@ CANNON.RigidBody = function(mass,shape,material){
     var that = this;
 
     /**
-     * @property CANNON.Vec3 tau
-     * @memberof CANNON.RigidBody
-     * @brief Rotational force on the body, around center of mass
+     * Rotational force on the body, around center of mass
+     * @property Vec3 tau
      * @todo should be renamed to .angularForce
      */
     this.tau = new CANNON.Vec3();
 
     /**
-     * @property CANNON.Quaternion quaternion
-     * @memberof CANNON.RigidBody
-     * @brief Orientation of the body
+     * Orientation of the body
+     * @property quaternion
+     * @type {Quaternion}
      */
     this.quaternion = new CANNON.Quaternion();
 
     /**
-     * @property CANNON.Quaternion initQuaternion
-     * @memberof CANNON.RigidBody
+     * @property initQuaternion
+     * @type {Quaternion}
      */
     this.initQuaternion = new CANNON.Quaternion();
 
     /**
-     * @property CANNON.Vec3 angularVelocity
-     * @memberof CANNON.RigidBody
+     * @property angularVelocity
+     * @type {Vec3}
      */
     this.angularVelocity = new CANNON.Vec3();
 
     /**
-     * @property CANNON.Vec3 initAngularVelocity
-     * @memberof CANNON.RigidBody
+     * @property initAngularVelocity
+     * @type {Vec3}
      */
     this.initAngularVelocity = new CANNON.Vec3();
 
     /**
-     * @property CANNON.Shape shape
-     * @memberof CANNON.RigidBody
+     * @property shape
+     * @type {Shape}
      */
     this.shape = shape;
 
     /**
-     * @property CANNON.Vec3 inertia
-     * @memberof CANNON.RigidBody
+     * @property inertia
+     * @type {Vec3}
      */
     this.inertia = new CANNON.Vec3();
     shape.calculateLocalInertia(mass,this.inertia);
@@ -70,8 +70,8 @@ CANNON.RigidBody = function(mass,shape,material){
     this.inertiaWorldAutoUpdate = false;
 
     /**
-     * @property CANNON.Vec3 intInertia
-     * @memberof CANNON.RigidBody
+     * @property intInertia
+     * @type {Vec3}
      */
     this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
                                       this.inertia.y>0 ? 1.0/this.inertia.y : 0,
@@ -81,27 +81,27 @@ CANNON.RigidBody = function(mass,shape,material){
     this.invInertiaWorldAutoUpdate = false;
 
     /**
-     * @property float angularDamping
-     * @memberof CANNON.RigidBody
+     * @property angularDamping
+     * @type {Number}
      */
     this.angularDamping = 0.01; // Perhaps default should be zero here?
 
     /**
-     * @property CANNON.Vec3 aabbmin
-     * @memberof CANNON.RigidBody
+     * @property aabbmin
+     * @type {Vec3}
      */
     this.aabbmin = new CANNON.Vec3();
 
     /**
-     * @property CANNON.Vec3 aabbmax
-     * @memberof CANNON.RigidBody
+     * @property aabbmax
+     * @type {Vec3}
      */
     this.aabbmax = new CANNON.Vec3();
 
     /**
-     * @property bool aabbNeedsUpdate
-     * @memberof CANNON.RigidBody
-     * @brief Indicates if the AABB needs to be updated before use.
+     * Indicates if the AABB needs to be updated before use.
+     * @property aabbNeedsUpdate
+     * @type {Boolean}
      */
     this.aabbNeedsUpdate = true;
 
@@ -121,8 +121,9 @@ CANNON.RigidBody.prototype.computeAABB = function(){
 
 /**
  * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.tau.
- * @param  CANNON.Vec3 force The amount of force to add.
- * @param  CANNON.Vec3 worldPoint A world point to apply the force on.
+ * @method applyForce
+ * @param  {Vec3} force The amount of force to add.
+ * @param  {Vec3} worldPoint A world point to apply the force on.
  */
 var RigidBody_applyForce_r = new CANNON.Vec3();
 var RigidBody_applyForce_rotForce = new CANNON.Vec3();
@@ -144,8 +145,9 @@ CANNON.RigidBody.prototype.applyForce = function(force,worldPoint){
 
 /**
  * Apply impulse to a world point. This could for example be a point on the RigidBody surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
- * @param  CANNON.Vec3 impulse The amount of impulse to add.
- * @param  CANNON.Vec3 worldPoint A world point to apply the force on.
+ * @method applyImpulse
+ * @param  {Vec3} impulse The amount of impulse to add.
+ * @param  {Vec3} worldPoint A world point to apply the force on.
  */
 var RigidBody_applyImpulse_r = new CANNON.Vec3();
 var RigidBody_applyImpulse_velo = new CANNON.Vec3();

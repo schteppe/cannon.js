@@ -1,17 +1,17 @@
 /**
- * @class CANNON.MatN
- * @brief Any matrix size class
+ * Any matrix size class
+ * @class MatN
+ * @constructor
  * @author schteppe
- * @param int cols
- * @param int rows
- * @param array elements
+ * @param {Number} cols
+ * @param {Number} rows
+ * @param {Array} elements
  */
 CANNON.MatN = function(cols,rows,elements){
     /**
-    * @property Float32Array elements
-    * @memberof CANNON.MatN
-    * @brief A vector containing all matrix elements
-    */
+     * A vector containing all matrix elements
+     * @property Float32Array elements
+     */
     if(elements){
         this.elements = new Float32Array(elements);
     } else {
@@ -20,9 +20,8 @@ CANNON.MatN = function(cols,rows,elements){
 };
 
 /**
+ * Sets the matrix to identity
  * @method identity
- * @memberof CANNON.MatN
- * @brief Sets the matrix to identity
  * @todo Should perhaps be renamed to setIdentity() to be more clear.
  * @todo Create another function that immediately creates an identity matrix eg. eye()
  */

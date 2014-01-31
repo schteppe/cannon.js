@@ -1,11 +1,11 @@
 /**
- * @class CANNON.FrictionEquation
- * @brief Constrains the slipping in a contact along a tangent
+ * Constrains the slipping in a contact along a tangent
+ * @class FrictionEquation
  * @author schteppe
- * @param CANNON.Body bi
- * @param CANNON.Body bj
- * @param float slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
- * @extends CANNON.Equation
+ * @param {Body} bi
+ * @param {Body} bj
+ * @param {Number} slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
+ * @extends {Equation}
  */
 CANNON.FrictionEquation = function(bi,bj,slipForce){
     CANNON.Equation.call(this,bi,bj,-slipForce,slipForce);

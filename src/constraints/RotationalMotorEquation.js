@@ -1,10 +1,11 @@
 /**
- * @class CANNON.RotationalMotorEquation
- * @brief Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
+ * Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
+ * @class RotationalMotorEquation
  * @author schteppe
- * @param CANNON.RigidBody bodyA
- * @param CANNON.RigidBody bodyB
- * @extends CANNON.Equation
+ * @param {RigidBody} bodyA
+ * @param {RigidBody} bodyB
+ * @param {Number} maxForce
+ * @extends {Equation}
  */
 CANNON.RotationalMotorEquation = function(bodyA, bodyB, maxForce){
     maxForce = maxForce || 1e6;

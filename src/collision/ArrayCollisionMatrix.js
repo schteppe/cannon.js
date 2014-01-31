@@ -1,6 +1,8 @@
-/** @class Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2 
-  *  @brief It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
-  */
+/**
+ * Collision "matrix". It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
+ * @class ArrayCollisionMatrix
+ * @constructor
+ */
 CANNON.ArrayCollisionMatrix = function() {
 	this.matrix = [];
 };
