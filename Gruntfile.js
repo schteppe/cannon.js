@@ -1,4 +1,9 @@
+var fs = require('fs')
+
 module.exports = function(grunt) {
+
+    var bundlePath = "build/cannon.js",
+        minifiedBundlePath = "build/cannon.min.js";
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -16,7 +21,7 @@ module.exports = function(grunt) {
         browserify : {
             cannon : {
                 src : ["src/Cannon.js"],
-                dest : 'build/cannon.js',
+                dest : bundlePath,
                 options : {
                     standalone : "CANNON"
                 }
@@ -25,8 +30,8 @@ module.exports = function(grunt) {
 
         uglify : {
             build : {
-                src : ['build/cannon.js'],
-                dest : 'build/cannon.min.js'
+                src : [bundlePath],
+                dest : minifiedBundlePath
             }
         }
     });
@@ -34,6 +39,15 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.registerTask('default', ['concat', 'browserify', 'uglify']);
+    grunt.registerTask('default', ['concat', 'browserify', 'uglify', 'addLicense']);
 
+    grunt.registerTask('addLicense','Adds the LICENSE to the top of the built files',function(){
+        var text = fs.readFileSync("LICENSE").toString();
+
+        var dev = fs.readFileSync(bundlePath).toString();
+        var min = fs.readFileSync(minifiedBundlePath).toString();
+
+        fs.writeFileSync(bundlePath,text+"\n"+dev);
+        fs.writeFileSync(minifiedBundlePath,text+"\n"+min);
+    });
 };
