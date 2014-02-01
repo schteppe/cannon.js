@@ -1,3 +1,9 @@
+module.exports = FrictionEquation;
+
+var Equation = require('./Equation')
+,   Vec3 = require('../math/Vec3')
+,   Mat3 = require('../math/Mat3')
+
 /**
  * Constrains the slipping in a contact along a tangent
  * @class FrictionEquation
@@ -7,36 +13,36 @@
  * @param {Number} slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
  * @extends {Equation}
  */
-CANNON.FrictionEquation = function(bi,bj,slipForce){
-    CANNON.Equation.call(this,bi,bj,-slipForce,slipForce);
-    this.ri = new CANNON.Vec3();
-    this.rj = new CANNON.Vec3();
-    this.t = new CANNON.Vec3(); // tangent
+function FrictionEquation(bi,bj,slipForce){
+    Equation.call(this,bi,bj,-slipForce,slipForce);
+    this.ri = new Vec3();
+    this.rj = new Vec3();
+    this.t = new Vec3(); // tangent
 
 
     // The following is just cache
-    this.rixt = new CANNON.Vec3();
-    this.rjxt = new CANNON.Vec3();
-    this.wixri = new CANNON.Vec3();
-    this.wjxrj = new CANNON.Vec3();
+    this.rixt = new Vec3();
+    this.rjxt = new Vec3();
+    this.wixri = new Vec3();
+    this.wjxrj = new Vec3();
 
-    this.invIi = new CANNON.Mat3();
-    this.invIj = new CANNON.Mat3();
+    this.invIi = new Mat3();
+    this.invIj = new Mat3();
 
-    this.relVel = new CANNON.Vec3();
-    this.relForce = new CANNON.Vec3();
+    this.relVel = new Vec3();
+    this.relForce = new Vec3();
 
-    this.biInvInertiaTimesRixt =  new CANNON.Vec3();
-    this.bjInvInertiaTimesRjxt =  new CANNON.Vec3();
+    this.biInvInertiaTimesRixt =  new Vec3();
+    this.bjInvInertiaTimesRjxt =  new Vec3();
 };
 
-CANNON.FrictionEquation.prototype = new CANNON.Equation();
-CANNON.FrictionEquation.prototype.constructor = CANNON.FrictionEquation;
+FrictionEquation.prototype = new Equation();
+FrictionEquation.prototype.constructor = FrictionEquation;
 
-var FrictionEquation_computeB_temp1 = new CANNON.Vec3();
-var FrictionEquation_computeB_temp2 = new CANNON.Vec3();
-var FrictionEquation_computeB_zero = new CANNON.Vec3();
-CANNON.FrictionEquation.prototype.computeB = function(h){
+var FrictionEquation_computeB_temp1 = new Vec3();
+var FrictionEquation_computeB_temp2 = new Vec3();
+var FrictionEquation_computeB_zero = new Vec3();
+FrictionEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b,
         bi = this.bi,
@@ -100,9 +106,9 @@ CANNON.FrictionEquation.prototype.computeB = function(h){
 };
 
 // Compute C = G * Minv * G + eps
-//var FEcomputeC_temp1 = new CANNON.Vec3();
-//var FEcomputeC_temp2 = new CANNON.Vec3();
-CANNON.FrictionEquation.prototype.computeC = function(){
+//var FEcomputeC_temp1 = new Vec3();
+//var FEcomputeC_temp2 = new Vec3();
+FrictionEquation.prototype.computeC = function(){
     var bi = this.bi,
         bj = this.bj,
         rixt = this.rixt,
@@ -137,8 +143,8 @@ CANNON.FrictionEquation.prototype.computeC = function(){
     return C;
 };
 
-var FrictionEquation_computeGWlambda_ulambda = new CANNON.Vec3();
-CANNON.FrictionEquation.prototype.computeGWlambda = function(){
+var FrictionEquation_computeGWlambda_ulambda = new Vec3();
+FrictionEquation.prototype.computeGWlambda = function(){
 
     // Correct at all ???
 
@@ -161,8 +167,8 @@ CANNON.FrictionEquation.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
-var FrictionEquation_addToWlambda_tmp = new CANNON.Vec3();
-CANNON.FrictionEquation.prototype.addToWlambda = function(deltalambda){
+var FrictionEquation_addToWlambda_tmp = new Vec3();
+FrictionEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi,
         bj = this.bj,
         rixt = this.rixt,

@@ -1,3 +1,8 @@
+module.exports = PointToPointConstraint;
+
+var Constraint = require('./Constraint')
+,   ContactEquation = require('./ContactEquation')
+
 /**
  * Connects two bodies at given offset points
  * @class PointToPointConstraint
@@ -9,14 +14,14 @@
  * @param {Number} maxForce The maximum force that should be applied to constrain the bodies.
  * @extends {Constraint}
  */
-CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
-    CANNON.Constraint.call(this,bodyA,bodyB);
+function PointToPointConstraint(bodyA,pivotA,bodyB,pivotB,maxForce){
+    Constraint.call(this,bodyA,bodyB);
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
-        new CANNON.ContactEquation(bodyA,bodyB), // Normal
-        new CANNON.ContactEquation(bodyA,bodyB), // Tangent2
-        new CANNON.ContactEquation(bodyA,bodyB), // Tangent2
+        new ContactEquation(bodyA,bodyB), // Normal
+        new ContactEquation(bodyA,bodyB), // Tangent2
+        new ContactEquation(bodyA,bodyB), // Tangent2
     ];
 
     var normal = eqs[0];
@@ -40,4 +45,4 @@ CANNON.PointToPointConstraint = function(bodyA,pivotA,bodyB,pivotB,maxForce){
         normal.rj.copy(t2.rj);
     };
 };
-CANNON.PointToPointConstraint.prototype = new CANNON.Constraint();
+PointToPointConstraint.prototype = new Constraint();

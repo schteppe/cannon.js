@@ -1,3 +1,5 @@
+module.exports = Material;
+
 /**
  * Defines a physics material.
  * @class Material
@@ -5,7 +7,7 @@
  * @param {String} name
  * @author schteppe
  */
-CANNON.Material = function(name){
+function Material(name){
     /**
      * @property name
      * @type {String}

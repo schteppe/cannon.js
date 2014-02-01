@@ -1,3 +1,7 @@
+module.exports = Quaternion;
+
+var Vec3 = require('./Vec3')
+
 /**
  * A Quaternion describes a rotation in 3D space. The Quaternion is mathematically defined as Q = x*i + y*j + z*k + w, where (i,j,k) are imaginary basis vectors. (x,y,z) can be seen as a vector related to the axis of rotation, while the real multiplier, w, is related to the amount of rotation.
  * @class Quaternion
@@ -8,7 +12,7 @@
  * @param {Number} w Multiplier of the real part.
  * @see http://en.wikipedia.org/wiki/Quaternion
  */
-CANNON.Quaternion = function(x,y,z,w){
+function Quaternion(x,y,z,w){
     /**
      * @property {Number} x
      */
@@ -39,7 +43,7 @@ CANNON.Quaternion = function(x,y,z,w){
  * @param {Number} z
  * @param {Number} w
  */
-CANNON.Quaternion.prototype.set = function(x,y,z,w){
+Quaternion.prototype.set = function(x,y,z,w){
     this.x = x;
     this.y = y;
     this.z = z;
@@ -51,7 +55,7 @@ CANNON.Quaternion.prototype.set = function(x,y,z,w){
  * @method toString
  * @return string
  */
-CANNON.Quaternion.prototype.toString = function(){
+Quaternion.prototype.toString = function(){
     return this.x+","+this.y+","+this.z+","+this.w;
 };
 
@@ -61,7 +65,7 @@ CANNON.Quaternion.prototype.toString = function(){
  * @param {Vec3} axis
  * @param {Number} angle in radians
  */
-CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
+Quaternion.prototype.setFromAxisAngle = function(axis,angle){
     var s = Math.sin(angle*0.5);
     this.x = axis.x * s;
     this.y = axis.y * s;
@@ -75,8 +79,8 @@ CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
  * @param {Vec3} targetAxis Optional. A vector object to reuse for storing the axis.
  * @return Array An array, first elemnt is the axis and the second is the angle in radians.
  */
-CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
-    targetAxis = targetAxis || new CANNON.Vec3();
+Quaternion.prototype.toAxisAngle = function(targetAxis){
+    targetAxis = targetAxis || new Vec3();
     this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
     var angle = 2 * Math.acos(this.w);
     var s = Math.sqrt(1-this.w*this.w); // assuming quaternion normalised then w is less than 1, so term always positive.
@@ -99,7 +103,7 @@ CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
  * @param {Vec3} u
  * @param {Vec3} v
  */
-CANNON.Quaternion.prototype.setFromVectors = function(u,v){
+Quaternion.prototype.setFromVectors = function(u,v){
     var a = u.cross(v);
     this.x = a.x;
     this.y = a.y;
@@ -115,11 +119,11 @@ CANNON.Quaternion.prototype.setFromVectors = function(u,v){
  * @param {Quaternion} target Optional.
  * @return {Quaternion}
  */
-var Quaternion_mult_va = new CANNON.Vec3();
-var Quaternion_mult_vb = new CANNON.Vec3();
-var Quaternion_mult_vaxvb = new CANNON.Vec3();
-CANNON.Quaternion.prototype.mult = function(q,target){
-    target = target || new CANNON.Quaternion();
+var Quaternion_mult_va = new Vec3();
+var Quaternion_mult_vb = new Vec3();
+var Quaternion_mult_vaxvb = new Vec3();
+Quaternion.prototype.mult = function(q,target){
+    target = target || new Quaternion();
     var w = this.w,
         va = Quaternion_mult_va,
         vb = Quaternion_mult_vb,
@@ -143,9 +147,9 @@ CANNON.Quaternion.prototype.mult = function(q,target){
  * @param {Quaternion} target
  * @return {Quaternion}
  */
-CANNON.Quaternion.prototype.inverse = function(target){
+Quaternion.prototype.inverse = function(target){
     var x = this.x, y = this.y, z = this.z, w = this.w;
-    target = target || new CANNON.Quaternion();
+    target = target || new Quaternion();
 
     this.conjugate(target);
     var inorm2 = 1/(x*x + y*y + z*z + w*w);
@@ -163,8 +167,8 @@ CANNON.Quaternion.prototype.inverse = function(target){
  * @param {Quaternion} target
  * @return {Quaternion}
  */
-CANNON.Quaternion.prototype.conjugate = function(target){
-    target = target || new CANNON.Quaternion();
+Quaternion.prototype.conjugate = function(target){
+    target = target || new Quaternion();
 
     target.x = -this.x;
     target.y = -this.y;
@@ -178,7 +182,7 @@ CANNON.Quaternion.prototype.conjugate = function(target){
  * Normalize the quaternion. Note that this changes the values of the quaternion.
  * @method normalize
  */
-CANNON.Quaternion.prototype.normalize = function(){
+Quaternion.prototype.normalize = function(){
     var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
     if ( l === 0 ) {
         this.x = 0;
@@ -200,7 +204,7 @@ CANNON.Quaternion.prototype.normalize = function(){
  * @see http://jsperf.com/fast-quaternion-normalization
  * @author unphased, https://github.com/unphased
  */
-CANNON.Quaternion.prototype.normalizeFast = function () {
+Quaternion.prototype.normalizeFast = function () {
     var f = (3.0-(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w))/2.0;
     if ( f === 0 ) {
         this.x = 0;
@@ -222,8 +226,8 @@ CANNON.Quaternion.prototype.normalizeFast = function () {
  * @param {Vec3} target Optional
  * @return {Vec3}
  */
-CANNON.Quaternion.prototype.vmult = function(v,target){
-    target = target || new CANNON.Vec3();
+Quaternion.prototype.vmult = function(v,target){
+    target = target || new Vec3();
 
     var x = v.x,
         y = v.y,
@@ -251,7 +255,7 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
  * @method copy
  * @param {Quaternion} target
  */
-CANNON.Quaternion.prototype.copy = function(target){
+Quaternion.prototype.copy = function(target){
     target.x = this.x;
     target.y = this.y;
     target.z = this.z;
@@ -264,7 +268,7 @@ CANNON.Quaternion.prototype.copy = function(target){
  * @param {Vec3} target
  * @param string order Three-character string e.g. "YZX", which also is default.
  */
-CANNON.Quaternion.prototype.toEuler = function(target,order){
+Quaternion.prototype.toEuler = function(target,order){
     order = order || "YZX";
 
     var heading, attitude, bank;
@@ -302,7 +306,7 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
 };
 
 // http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
-CANNON.Quaternion.prototype.setFromEuler = function ( x, y, z, order ) {
+Quaternion.prototype.setFromEuler = function ( x, y, z, order ) {
     var c1 = Math.cos( x / 2 );
     var c2 = Math.cos( y / 2 );
     var c3 = Math.cos( z / 2 );

@@ -1,10 +1,18 @@
+var Body = require('../objects/Body')
+,   Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+,   Shape = require('../objects/Shape')
+,   Plane = require('../objects/Plane')
+
+module.exports = Broadphase;
+
 /**
  * Base class for broadphase implementations
  * @class Broadphase
  * @constructor
  * @author schteppe
  */
-CANNON.Broadphase = function(){
+function Broadphase(){
     /**
     * The world to search for collisions in.
     * @property world
@@ -28,7 +36,7 @@ CANNON.Broadphase = function(){
  * @param Array p2 Empty array to be filled with body objects
  * @return array An array with two subarrays of body indices
  */
-CANNON.Broadphase.prototype.collisionPairs = function(world,p1,p2){
+Broadphase.prototype.collisionPairs = function(world,p1,p2){
     throw new Error("collisionPairs not implemented for this BroadPhase class!");
 };
 
@@ -39,8 +47,8 @@ CANNON.Broadphase.prototype.collisionPairs = function(world,p1,p2){
  * @param {Body} bodyB
  * @return {bool}
  */
-var Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
-CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
+var Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC = Body.STATIC | Body.KINEMATIC;
+Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
 
     // Check collision filter masks
     if( (bodyA.collisionFilterGroup & bodyB.collisionFilterMask)===0 || (bodyB.collisionFilterGroup & bodyA.collisionFilterMask)===0){
@@ -60,7 +68,7 @@ CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
     }
 
     // Two planes don't collide
-    if(bodyA.shape instanceof CANNON.Plane && bodyB.shape instanceof CANNON.Plane){
+    if(bodyA.shape instanceof Plane && bodyB.shape instanceof Plane){
         return false;
     }
 
@@ -74,7 +82,7 @@ CANNON.Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
  * @param {Body} bodyB
  * @return {Boolean}
  */
-CANNON.Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
+Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
     if(this.useBoundingBoxes){
         this.doBoundingBoxBroadphase(bi,bj,pairs1,pairs2);
     } else {
@@ -90,17 +98,17 @@ CANNON.Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
  * @param {Array} pairs1 bi is appended to this array if intersection
  * @param {Array} pairs2 bj is appended to this array if intersection
  */
-var Broadphase_collisionPairs_r = new CANNON.Vec3(), // Temp objects
-    Broadphase_collisionPairs_normal =  new CANNON.Vec3(),
-    Broadphase_collisionPairs_quat =  new CANNON.Quaternion(),
-    Broadphase_collisionPairs_relpos  =  new CANNON.Vec3();
-CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
+var Broadphase_collisionPairs_r = new Vec3(), // Temp objects
+    Broadphase_collisionPairs_normal =  new Vec3(),
+    Broadphase_collisionPairs_quat =  new Quaternion(),
+    Broadphase_collisionPairs_relpos  =  new Vec3();
+Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
 
     // Local fast access
-    var types = CANNON.Shape.types,
+    var types = Shape.types,
         BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
         PLANE = types.PLANE,
-        STATIC_OR_KINEMATIC = CANNON.Body.STATIC | CANNON.Body.KINEMATIC;
+        STATIC_OR_KINEMATIC = Body.STATIC | Body.KINEMATIC;
 
     // Temp vecs
     var r = Broadphase_collisionPairs_r,
@@ -210,7 +218,7 @@ CANNON.Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,p
  * @param {Array} pairs1
  * @param {Array} pairs2
  */
-CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
+Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
     var bishape = bi.shape,
         bjshape = bj.shape;
 
@@ -241,7 +249,7 @@ CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pair
             var p =      !bishape ? bi : bj;
             var other =  !bishape ? bj : bi;
 
-            if(other.shape instanceof CANNON.Plane){
+            if(other.shape instanceof Plane){
                 //console.log(p.position.z+"<"+other.aabbmin.z+" = ",p.position.z < other.aabbmin.z);
             }
 
@@ -267,7 +275,7 @@ CANNON.Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pair
 var Broadphase_makePairsUnique_temp = {},
     Broadphase_makePairsUnique_p1 = [],
     Broadphase_makePairsUnique_p2 = [];
-CANNON.Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
+Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
     var t = Broadphase_makePairsUnique_temp,
         p1 = Broadphase_makePairsUnique_p1,
         p2 = Broadphase_makePairsUnique_p2,

@@ -1,18 +1,24 @@
+module.exports = Compound;
+
+var Shape = require('./Shape')
+,   Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+
 /**
  * A shape made of several other shapes.
  * @class Compound
  * @extends Shape
  * @author schteppe
  */
-CANNON.Compound = function(){
-    CANNON.Shape.call(this);
-    this.type = CANNON.Shape.types.COMPOUND;
+function Compound(){
+    Shape.call(this);
+    this.type = Shape.types.COMPOUND;
     this.childShapes = [];
     this.childOffsets = [];
     this.childOrientations = [];
 };
-CANNON.Compound.prototype = new CANNON.Shape();
-CANNON.Compound.prototype.constructor = CANNON.Compound;
+Compound.prototype = new Shape();
+Compound.prototype.constructor = Compound;
 
 /**
  * Add a child shape.
@@ -21,15 +27,15 @@ CANNON.Compound.prototype.constructor = CANNON.Compound;
  * @param {Vec3} offset
  * @param {Quaternion} orientation
  */
-CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
-    offset = offset || new CANNON.Vec3();
-    orientation = orientation || new CANNON.Quaternion();
+Compound.prototype.addChild = function(shape,offset,orientation){
+    offset = offset || new Vec3();
+    orientation = orientation || new Quaternion();
     this.childShapes.push(shape);
     this.childOffsets.push(offset);
     this.childOrientations.push(orientation);
 };
 
-CANNON.Compound.prototype.volume = function(){
+Compound.prototype.volume = function(){
     var r = 0.0;
     var Nchildren = this.childShapes.length;
     for(var i=0; i!==Nchildren; i++){
@@ -38,10 +44,10 @@ CANNON.Compound.prototype.volume = function(){
     return r;
 };
 
-var Compound_calculateLocalInertia_mr2 = new CANNON.Vec3();
-var Compound_calculateLocalInertia_childInertia = new CANNON.Vec3();
-CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new CANNON.Vec3();
+var Compound_calculateLocalInertia_mr2 = new Vec3();
+var Compound_calculateLocalInertia_childInertia = new Vec3();
+Compound.prototype.calculateLocalInertia = function(mass,target){
+    target = target || new Vec3();
 
     // Calculate the total volume, we will spread out this objects' mass on the sub shapes
     var V = this.volume();
@@ -73,7 +79,7 @@ CANNON.Compound.prototype.calculateLocalInertia = function(mass,target){
     return target;
 };
 
-CANNON.Compound.prototype.computeBoundingSphereRadius = function(){
+Compound.prototype.computeBoundingSphereRadius = function(){
     var r = 0.0;
     for(var i = 0; i<this.childShapes.length; i++){
         var si = this.childShapes[i];
@@ -89,11 +95,11 @@ CANNON.Compound.prototype.computeBoundingSphereRadius = function(){
     this.boundingSphereRadiusNeedsUpdate = false;
 };
 
-var aabbmaxTemp = new CANNON.Vec3();
-var aabbminTemp = new CANNON.Vec3();
-var childPosTemp = new CANNON.Vec3();
-var childQuatTemp = new CANNON.Quaternion();
-CANNON.Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
+var aabbmaxTemp = new Vec3();
+var aabbminTemp = new Vec3();
+var childPosTemp = new Vec3();
+var childQuatTemp = new Quaternion();
+Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var N=this.childShapes.length;
     min.set(Infinity,Infinity,Infinity);
     max.set(-Infinity,-Infinity,-Infinity);

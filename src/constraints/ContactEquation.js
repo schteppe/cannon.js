@@ -1,3 +1,9 @@
+module.exports = ContactEquation;
+
+var Equation = require('../constraints/Equation')
+,   Vec3 = require('../math/Vec3')
+,   Mat3 = require('../math/Mat3')
+
 /**
  * Contact/non-penetration constraint equation
  * @class ContactEquation
@@ -6,8 +12,8 @@
  * @param {Body} bi
  * @extends {Equation}
  */
-CANNON.ContactEquation = function(bi,bj){
-    CANNON.Equation.call(this,bi,bj,0,1e6);
+function ContactEquation(bi,bj){
+    Equation.call(this,bi,bj,0,1e6);
 
     /**
      * @property restitution
@@ -19,42 +25,42 @@ CANNON.ContactEquation = function(bi,bj){
      * World-oriented vector that goes from the center of bi to the contact point in bi.
      * @property {Vec3} ri
      */
-    this.ri = new CANNON.Vec3();
+    this.ri = new Vec3();
 
     /**
      * @property {Vec3} rj
      */
-    this.rj = new CANNON.Vec3();
+    this.rj = new Vec3();
 
-    this.penetrationVec = new CANNON.Vec3();
+    this.penetrationVec = new Vec3();
 
-    this.ni = new CANNON.Vec3();
-    this.rixn = new CANNON.Vec3();
-    this.rjxn = new CANNON.Vec3();
+    this.ni = new Vec3();
+    this.rixn = new Vec3();
+    this.rjxn = new Vec3();
 
-    this.invIi = new CANNON.Mat3();
-    this.invIj = new CANNON.Mat3();
+    this.invIi = new Mat3();
+    this.invIj = new Mat3();
 
     // Cache
-    this.biInvInertiaTimesRixn =  new CANNON.Vec3();
-    this.bjInvInertiaTimesRjxn =  new CANNON.Vec3();
+    this.biInvInertiaTimesRixn =  new Vec3();
+    this.bjInvInertiaTimesRjxn =  new Vec3();
 };
 
-CANNON.ContactEquation.prototype = new CANNON.Equation();
-CANNON.ContactEquation.prototype.constructor = CANNON.ContactEquation;
+ContactEquation.prototype = new Equation();
+ContactEquation.prototype.constructor = ContactEquation;
 
 /**
  * To be run before object reuse
  * @method reset
  */
-CANNON.ContactEquation.prototype.reset = function(){
+ContactEquation.prototype.reset = function(){
     this.invInertiaTimesRxnNeedsUpdate = true;
 };
 
-var ContactEquation_computeB_temp1 = new CANNON.Vec3(); // Temp vectors
-var ContactEquation_computeB_temp2 = new CANNON.Vec3();
-var ContactEquation_computeB_zero = new CANNON.Vec3();
-CANNON.ContactEquation.prototype.computeB = function(h){
+var ContactEquation_computeB_temp1 = new Vec3(); // Temp vectors
+var ContactEquation_computeB_temp2 = new Vec3();
+var ContactEquation_computeB_zero = new Vec3();
+ContactEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b;
     var bi = this.bi;
@@ -126,9 +132,9 @@ CANNON.ContactEquation.prototype.computeB = function(h){
 };
 
 // Compute C = GMG+eps in the SPOOK equation
-var computeC_temp1 = new CANNON.Vec3();
-var computeC_temp2 = new CANNON.Vec3();
-CANNON.ContactEquation.prototype.computeC = function(){
+var computeC_temp1 = new Vec3();
+var computeC_temp2 = new Vec3();
+ContactEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
     var rixn = this.rixn;
@@ -171,8 +177,8 @@ CANNON.ContactEquation.prototype.computeC = function(){
     return C;
 };
 
-var computeGWlambda_ulambda = new CANNON.Vec3();
-CANNON.ContactEquation.prototype.computeGWlambda = function(){
+var computeGWlambda_ulambda = new Vec3();
+ContactEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
     var ulambda = computeGWlambda_ulambda;
@@ -193,9 +199,9 @@ CANNON.ContactEquation.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
-var ContactEquation_addToWlambda_temp1 = new CANNON.Vec3();
-var ContactEquation_addToWlambda_temp2 = new CANNON.Vec3();
-CANNON.ContactEquation.prototype.addToWlambda = function(deltalambda){
+var ContactEquation_addToWlambda_temp1 = new Vec3();
+var ContactEquation_addToWlambda_temp2 = new Vec3();
+ContactEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi,
         bj = this.bj,
         rixn = this.rixn,

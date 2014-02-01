@@ -1,3 +1,5 @@
+module.exports = Constraint;
+
 /**
  * Constraint base class
  * @class Constraint
@@ -5,7 +7,7 @@
  * @param {Body} bodyA
  * @param {Body} bodyB
  */
-CANNON.Constraint = function(bodyA,bodyB){
+function Constraint(bodyA,bodyB){
 
     /**
      * Equations to be solved in this constraint
@@ -28,6 +30,6 @@ CANNON.Constraint = function(bodyA,bodyB){
 /**
  * @method update
  */
-CANNON.Constraint.prototype.update = function(){
+Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };

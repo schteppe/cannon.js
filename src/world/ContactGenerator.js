@@ -1,3 +1,12 @@
+module.exports = ContactGenerator;
+
+var Shape = require('../objects/Shape')
+,   Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+,   Solver = require('../solver/Solver')
+,   Vec3Pool = require('../utils/Vec3Pool')
+,   ContactEquation = require('../constraints/ContactEquation')
+
 /**
  * Helper class for the World. Generates ContactEquations.
  * @class ContactGenerator
@@ -5,7 +14,7 @@
  * @todo Sphere-ConvexPolyhedron contacts
  * @todo Contact reduction
  */
-CANNON.ContactGenerator = function(){
+function ContactGenerator(){
 
     /**
      * Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
@@ -16,7 +25,7 @@ CANNON.ContactGenerator = function(){
     // Contact point objects that can be reused
     var contactPointPool = [];
 
-    var v3pool = new CANNON.Vec3Pool();
+    var v3pool = new Vec3Pool();
 
     /*
      * Make a contact object.
@@ -30,7 +39,7 @@ CANNON.ContactGenerator = function(){
             c.bj = bj;
             return c;
         } else {
-            return new CANNON.ContactEquation(bi,bj);
+            return new ContactEquation(bi,bj);
         }
     }
 
@@ -65,8 +74,8 @@ CANNON.ContactGenerator = function(){
         result.push(r);
     }
 
-    var point_on_plane_to_sphere = new CANNON.Vec3();
-    var plane_to_sphere_ortho = new CANNON.Vec3();
+    var point_on_plane_to_sphere = new Vec3();
+    var plane_to_sphere_ortho = new Vec3();
     function spherePlane(result,si,sj,xi,xj,qi,qj,bi,bj){
         // We will have one contact in this case
         var r = makeResult(bi,bj);
@@ -90,9 +99,9 @@ CANNON.ContactGenerator = function(){
     }
 
     // See http://bulletphysics.com/Bullet/BulletFull/SphereTriangleDetector_8cpp_source.html
-    var pointInPolygon_edge = new CANNON.Vec3();
-    var pointInPolygon_edge_x_normal = new CANNON.Vec3();
-    var pointInPolygon_vtp = new CANNON.Vec3();
+    var pointInPolygon_edge = new Vec3();
+    var pointInPolygon_edge_x_normal = new Vec3();
+    var pointInPolygon_vtp = new Vec3();
     function pointInPolygon(verts, normal, p){
         var positiveResult = null;
         var N = verts.length;
@@ -105,7 +114,7 @@ CANNON.ContactGenerator = function(){
 
             // Get cross product between polygon normal and the edge
             var edge_x_normal = pointInPolygon_edge_x_normal;
-            //var edge_x_normal = new CANNON.Vec3();
+            //var edge_x_normal = new Vec3();
             edge.cross(normal,edge_x_normal);
 
             // Get vector between point and current vertex
@@ -130,15 +139,15 @@ CANNON.ContactGenerator = function(){
         return true;
     }
 
-    var box_to_sphere = new CANNON.Vec3();
-    var sphereBox_ns = new CANNON.Vec3();
-    var sphereBox_ns1 = new CANNON.Vec3();
-    var sphereBox_ns2 = new CANNON.Vec3();
-    var sphereBox_sides = [new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3(),new CANNON.Vec3()];
-    var sphereBox_sphere_to_corner = new CANNON.Vec3();
-    var sphereBox_side_ns = new CANNON.Vec3();
-    var sphereBox_side_ns1 = new CANNON.Vec3();
-    var sphereBox_side_ns2 = new CANNON.Vec3();
+    var box_to_sphere = new Vec3();
+    var sphereBox_ns = new Vec3();
+    var sphereBox_ns1 = new Vec3();
+    var sphereBox_ns2 = new Vec3();
+    var sphereBox_sides = [new Vec3(),new Vec3(),new Vec3(),new Vec3(),new Vec3(),new Vec3()];
+    var sphereBox_sphere_to_corner = new Vec3();
+    var sphereBox_side_ns = new Vec3();
+    var sphereBox_side_ns1 = new Vec3();
+    var sphereBox_side_ns2 = new Vec3();
     function sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         // we refer to the box as body j
         var sides = sphereBox_sides;
@@ -312,16 +321,16 @@ CANNON.ContactGenerator = function(){
         v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
     }
 
-    var convex_to_sphere = new CANNON.Vec3();
-    var sphereConvex_edge = new CANNON.Vec3();
-    var sphereConvex_edgeUnit = new CANNON.Vec3();
-    var sphereConvex_sphereToCorner = new CANNON.Vec3();
-    var sphereConvex_worldCorner = new CANNON.Vec3();
-    var sphereConvex_worldNormal = new CANNON.Vec3();
-    var sphereConvex_worldPoint = new CANNON.Vec3();
-    var sphereConvex_worldSpherePointClosestToPlane = new CANNON.Vec3();
-    var sphereConvex_penetrationVec = new CANNON.Vec3();
-    var sphereConvex_sphereToWorldPoint = new CANNON.Vec3();
+    var convex_to_sphere = new Vec3();
+    var sphereConvex_edge = new Vec3();
+    var sphereConvex_edgeUnit = new Vec3();
+    var sphereConvex_sphereToCorner = new Vec3();
+    var sphereConvex_worldCorner = new Vec3();
+    var sphereConvex_worldNormal = new Vec3();
+    var sphereConvex_worldPoint = new Vec3();
+    var sphereConvex_worldSpherePointClosestToPlane = new Vec3();
+    var sphereConvex_penetrationVec = new Vec3();
+    var sphereConvex_sphereToWorldPoint = new Vec3();
     function sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
         xi.vsub(xj,convex_to_sphere);
         var normals = sj.faceNormals;
@@ -489,8 +498,8 @@ CANNON.ContactGenerator = function(){
         }
     }
 
-    var planeBox_normal = new CANNON.Vec3();
-    var plane_to_corner = new CANNON.Vec3();
+    var planeBox_normal = new Vec3();
+    var plane_to_corner = new Vec3();
     function planeBox(result,si,sj,xi,xj,qi,qj,bi,bj){
         planeConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
     }
@@ -508,8 +517,8 @@ CANNON.ContactGenerator = function(){
         var nr = 0;
         for(var i=0, Nchildren=sj.childShapes.length; i!==Nchildren; i++){
             var r = [];
-            var newQuat = quatPool.pop() || new CANNON.Quaternion();
-            var newPos = v3pool.pop() || new CANNON.Vec3();
+            var newQuat = quatPool.pop() || new Quaternion();
+            var newPos = v3pool.pop() || new Vec3();
             qj.mult(sj.childOrientations[i],newQuat); // Can't reuse these since nearPhase() may recurse
             newQuat.normalize();
             //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
@@ -544,10 +553,10 @@ CANNON.ContactGenerator = function(){
         }
     }
 
-    var planeConvex_v = new CANNON.Vec3();
-    var planeConvex_normal = new CANNON.Vec3();
-    var planeConvex_relpos = new CANNON.Vec3();
-    var planeConvex_projected = new CANNON.Vec3();
+    var planeConvex_v = new Vec3();
+    var planeConvex_normal = new Vec3();
+    var planeConvex_relpos = new Vec3();
+    var planeConvex_projected = new Vec3();
     function planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
         // Simply return the points behind the plane.
         var v = planeConvex_v;
@@ -582,8 +591,8 @@ CANNON.ContactGenerator = function(){
         }
     }
 
-    var convexConvex_sepAxis = new CANNON.Vec3();
-    var convexConvex_q = new CANNON.Vec3();
+    var convexConvex_sepAxis = new Vec3();
+    var convexConvex_q = new Vec3();
     function convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
         var sepAxis = convexConvex_sepAxis;
         if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
@@ -606,9 +615,9 @@ CANNON.ContactGenerator = function(){
         }
     }
 
-    var particlePlane_normal = new CANNON.Vec3();
-    var particlePlane_relpos = new CANNON.Vec3();
-    var particlePlane_projected = new CANNON.Vec3();
+    var particlePlane_normal = new Vec3();
+    var particlePlane_relpos = new Vec3();
+    var particlePlane_projected = new Vec3();
     function particlePlane(result,si,sj,xi,xj,qi,qj,bi,bj){
         var normal = particlePlane_normal;
         normal.set(0,0,1);
@@ -634,7 +643,7 @@ CANNON.ContactGenerator = function(){
         }
     }
 
-    var particleSphere_normal = new CANNON.Vec3();
+    var particleSphere_normal = new Vec3();
     function particleSphere(result,si,sj,xi,xj,qi,qj,bi,bj){
         // The normal is the unit vector from sphere center to particle center
         var normal = particleSphere_normal;
@@ -655,12 +664,12 @@ CANNON.ContactGenerator = function(){
     }
 
     // WIP
-    var cqj = new CANNON.Quaternion();
-    var particleConvex_local = new CANNON.Vec3();
-    var particleConvex_normal = new CANNON.Vec3();
-    var particleConvex_penetratedFaceNormal = new CANNON.Vec3();
-    var particleConvex_vertexToParticle = new CANNON.Vec3();
-    var particleConvex_worldPenetrationVec = new CANNON.Vec3();
+    var cqj = new Quaternion();
+    var particleConvex_local = new Vec3();
+    var particleConvex_normal = new Vec3();
+    var particleConvex_penetratedFaceNormal = new Vec3();
+    var particleConvex_vertexToParticle = new Vec3();
+    var particleConvex_worldPenetrationVec = new Vec3();
     function particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj){
         var penetratedFaceIndex = -1;
         var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
@@ -737,7 +746,7 @@ CANNON.ContactGenerator = function(){
      */
     function nearPhase(result,si,sj,xi,xj,qi,qj,bi,bj){
         var swapped = false,
-            types = CANNON.Shape.types,
+            types = Shape.types,
             SPHERE = types.SPHERE,
             PLANE = types.PLANE,
             BOX = types.BOX,
@@ -809,7 +818,7 @@ CANNON.ContactGenerator = function(){
                     sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 default:
-                    console.warn("Collision between CANNON.Shape.types.SPHERE and "+sj.type+" not implemented yet.");
+                    console.warn("Collision between Shape.types.SPHERE and "+sj.type+" not implemented yet.");
                     break;
                 }
 
@@ -828,7 +837,7 @@ CANNON.ContactGenerator = function(){
                     planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 default:
-                    console.warn("Collision between CANNON.Shape.types.PLANE and "+sj.type+" not implemented yet.");
+                    console.warn("Collision between Shape.types.PLANE and "+sj.type+" not implemented yet.");
                     break;
                 }
 
@@ -847,7 +856,7 @@ CANNON.ContactGenerator = function(){
                     nearPhase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 default:
-                    console.warn("Collision between CANNON.Shape.types.BOX and "+sj.type+" not implemented yet.");
+                    console.warn("Collision between Shape.types.BOX and "+sj.type+" not implemented yet.");
                     break;
                 }
 
@@ -867,7 +876,7 @@ CANNON.ContactGenerator = function(){
                     }
                     break;
                 default:
-                    console.warn("Collision between CANNON.Shape.types.COMPOUND and "+sj.type+" not implemented yet.");
+                    console.warn("Collision between Shape.types.COMPOUND and "+sj.type+" not implemented yet.");
                     break;
                 }
 
@@ -878,7 +887,7 @@ CANNON.ContactGenerator = function(){
                     convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                     break;
                 default:
-                    console.warn("Collision between CANNON.Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
+                    console.warn("Collision between Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
                     break;
                 }
 
@@ -904,7 +913,7 @@ CANNON.ContactGenerator = function(){
                 recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
-                console.warn("Collision between CANNON.Particle and "+sj.type+" not implemented yet.");
+                console.warn("Collision between Particle and "+sj.type+" not implemented yet.");
                 break;
             }
         }
@@ -916,7 +925,7 @@ CANNON.ContactGenerator = function(){
     }
 
     /**
-     * Removes unnecessary members of an array of CANNON.ContactPoint.
+     * Removes unnecessary members of an array of ContactEquation.
      * @method reduceContacts
      */
     this.reduceContacts = function(contacts){
@@ -925,11 +934,11 @@ CANNON.ContactGenerator = function(){
 
     /**
      * @method getContacts
-     * @param array p1 Array of body indices
-     * @param array p2 Array of body indices
-     * @param CANNON.World world
-     * @param array result Array to store generated contacts
-     * @param array oldcontacts Optional. Array of reusable contact objects
+     * @param {array} p1 Array of body indices
+     * @param {array} p2 Array of body indices
+     * @param {World} world
+     * @param {array} result Array to store generated contacts
+     * @param {array} oldcontacts Optional. Array of reusable contact objects
      */
     this.getContacts = function(p1,p2,world,result,oldcontacts){
         // Save old contact objects

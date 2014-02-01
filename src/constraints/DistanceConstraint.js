@@ -1,3 +1,8 @@
+module.exports = DistanceConstraint;
+
+var Constraint = require('./Constraint')
+,   ContactEquation = require('./ContactEquation')
+
 /**
  * Constrains two bodies to be at a constant distance from each other.
  * @class DistanceConstraint
@@ -7,8 +12,8 @@
  * @param {Number} distance
  * @param {Number} maxForce
  */
-CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
-    CANNON.Constraint.call(this,bodyA,bodyB);
+function DistanceConstraint(bodyA,bodyB,distance,maxForce){
+    Constraint.call(this,bodyA,bodyB);
 
     if(typeof(maxForce)==="undefined" ) {
         maxForce = 1e6;
@@ -16,7 +21,7 @@ CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
 
     // Equations to be fed to the solver
     var eqs = this.equations = [
-        new CANNON.ContactEquation(bodyA,bodyB), // Just in the normal direction
+        new ContactEquation(bodyA,bodyB), // Just in the normal direction
     ];
 
     var normal = eqs[0];
@@ -34,4 +39,4 @@ CANNON.DistanceConstraint = function(bodyA,bodyB,distance,maxForce){
         normal.ni.mult( -distance*0.5,normal.rj);
     };
 };
-CANNON.DistanceConstraint.prototype = new CANNON.Constraint();
+DistanceConstraint.prototype = new Constraint();

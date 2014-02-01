@@ -1,3 +1,9 @@
+module.exports = Box;
+
+var Shape = require('./Shape')
+,   Vec3 = require('../math/Vec3')
+,   ConvexPolyhedron = require('./ConvexPolyhedron')
+
 /**
  * A 3d box shape.
  * @class Box
@@ -6,15 +12,15 @@
  * @author schteppe
  * @extends Shape
  */
-CANNON.Box = function(halfExtents){
-    CANNON.Shape.call(this);
+function Box(halfExtents){
+    Shape.call(this);
 
     /**
      * @property halfExtents
      * @type {Vec3}
      */
     this.halfExtents = halfExtents;
-    this.type = CANNON.Shape.types.BOX;
+    this.type = Shape.types.BOX;
 
     /**
      * Used by the contact generator to make contacts with other convex polyhedra for example
@@ -25,20 +31,20 @@ CANNON.Box = function(halfExtents){
 
     this.updateConvexPolyhedronRepresentation();
 };
-CANNON.Box.prototype = new CANNON.Shape();
-CANNON.Box.prototype.constructor = CANNON.Box;
+Box.prototype = new Shape();
+Box.prototype.constructor = Box;
 
 /**
  * Updates the local convex polyhedron representation used for some collisions.
  * @method updateConvexPolyhedronRepresentation
  */
-CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
+Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sx = this.halfExtents.x;
     var sy = this.halfExtents.y;
     var sz = this.halfExtents.z;
-    var V = CANNON.Vec3;
+    var V = Vec3;
 
-    var h = new CANNON.ConvexPolyhedron([new V(-sx,-sy,-sz),
+    var h = new ConvexPolyhedron([new V(-sx,-sy,-sz),
                                          new V( sx,-sy,-sz),
                                          new V( sx, sy,-sz),
                                          new V(-sx, sy,-sz),
@@ -62,8 +68,8 @@ CANNON.Box.prototype.updateConvexPolyhedronRepresentation = function(){
     this.convexPolyhedronRepresentation = h;
 };
 
-CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new CANNON.Vec3();
+Box.prototype.calculateLocalInertia = function(mass,target){
+    target = target || new Vec3();
     var e = this.halfExtents;
     target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
     target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
@@ -78,7 +84,7 @@ CANNON.Box.prototype.calculateLocalInertia = function(mass,target){
  * @param {Quaternion}  quat            Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
  * @return {array}
  */
-CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,quat){
+Box.prototype.getSideNormals = function(sixTargetVectors,quat){
     var sides = sixTargetVectors;
     var ex = this.halfExtents;
     sides[0].set(  ex.x,     0,     0);
@@ -97,18 +103,18 @@ CANNON.Box.prototype.getSideNormals = function(sixTargetVectors,quat){
     return sides;
 };
 
-CANNON.Box.prototype.volume = function(){
+Box.prototype.volume = function(){
     return 8.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
 };
 
-CANNON.Box.prototype.computeBoundingSphereRadius = function(){
+Box.prototype.computeBoundingSphereRadius = function(){
     this.boundingSphereRadius = this.halfExtents.norm();
     this.boundingSphereRadiusNeedsUpdate = false;
 };
 
-var worldCornerTempPos = new CANNON.Vec3();
-var worldCornerTempNeg = new CANNON.Vec3();
-CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
+var worldCornerTempPos = new Vec3();
+var worldCornerTempNeg = new Vec3();
+Box.prototype.forEachWorldCorner = function(pos,quat,callback){
 
     var e = this.halfExtents;
     var corners = [[  e.x,  e.y,  e.z],
@@ -129,7 +135,7 @@ CANNON.Box.prototype.forEachWorldCorner = function(pos,quat,callback){
     }
 };
 
-CANNON.Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
+Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
     // Get each axis max
     min.set(Infinity,Infinity,Infinity);
     max.set(-Infinity,-Infinity,-Infinity);

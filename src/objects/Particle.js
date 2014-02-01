@@ -1,3 +1,11 @@
+module.exports = Particle;
+
+var Shape = require('./Shape')
+,   Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+,   Body = require('./Body')
+,   Material = require('../material/Material')
+
 /**
  * A body consisting of one point mass. Does not have orientation.
  * @class Particle
@@ -5,49 +13,49 @@
  * @param {Number} mass
  * @param {Material} material
  */
-CANNON.Particle = function(mass,material){
+function Particle(mass,material){
 
     // Check input
     if(typeof(mass)!=="number"){
         throw new Error("Argument 1 (mass) must be a number.");
     }
-    if(typeof(material)!=="undefined" && !(material instanceof(CANNON.Material))){
-        throw new Error("Argument 2 (material) must be an instance of CANNON.Material.");
+    if(typeof(material)!=="undefined" && !(material instanceof(Material))){
+        throw new Error("Argument 2 (material) must be an instance of Material.");
     }
 
-    CANNON.Body.call(this,"particle");
+    Body.call(this,"particle");
 
     /**
      * @property position
      * @type {Vec3}
      */
-    this.position = new CANNON.Vec3();
+    this.position = new Vec3();
 
     /**
      * Initial position of the body
      * @property initPosition
      * @type {Vec3}
      */
-    this.initPosition = new CANNON.Vec3();
+    this.initPosition = new Vec3();
 
     /**
      * @property velocity
      * @type {Vec3}
      */
-    this.velocity = new CANNON.Vec3();
+    this.velocity = new Vec3();
 
     /**
      * @property initVelocity
      * @type {Vec3}
      */
-    this.initVelocity = new CANNON.Vec3();
+    this.initVelocity = new Vec3();
 
     /**
      * Linear force on the body
      * @property force
      * @type {Vec3}
      */
-    this.force = new CANNON.Vec3();
+    this.force = new Vec3();
 
     /**
      * @property mass
@@ -78,7 +86,7 @@ CANNON.Particle = function(mass,material){
      * @property motionstate
      * @type {Number}
      */
-    this.motionstate = (mass <= 0.0 ? CANNON.Body.STATIC : CANNON.Body.DYNAMIC);
+    this.motionstate = (mass <= 0.0 ? Body.STATIC : Body.DYNAMIC);
 
     /**
      * If true, the body will automatically fall to sleep.
@@ -108,14 +116,14 @@ CANNON.Particle = function(mass,material){
 
 };
 
-CANNON.Particle.prototype = new CANNON.Body();
-CANNON.Particle.prototype.constructor = CANNON.Particle;
+Particle.prototype = new Body();
+Particle.prototype.constructor = Particle;
 
 /**
 * @method isAwake
 * @return bool
 */
-CANNON.Particle.prototype.isAwake = function(){
+Particle.prototype.isAwake = function(){
     return this.sleepState === 0;
 };
 
@@ -123,7 +131,7 @@ CANNON.Particle.prototype.isAwake = function(){
 * @method isSleepy
 * @return bool
 */
-CANNON.Particle.prototype.isSleepy = function(){
+Particle.prototype.isSleepy = function(){
     return this.sleepState === 1;
 };
 
@@ -131,7 +139,7 @@ CANNON.Particle.prototype.isSleepy = function(){
  * @method isSleeping
  * @return bool
  */
-CANNON.Particle.prototype.isSleeping = function(){
+Particle.prototype.isSleeping = function(){
     return this.sleepState === 2;
 };
 
@@ -139,7 +147,7 @@ CANNON.Particle.prototype.isSleeping = function(){
  * Wake the body up.
  * @method wakeUp
  */
-CANNON.Particle.prototype.wakeUp = function(){
+Particle.prototype.wakeUp = function(){
     var s = this.sleepState;
     this.sleepState = 0;
     if(s === 2){
@@ -151,7 +159,7 @@ CANNON.Particle.prototype.wakeUp = function(){
  * Force body sleep
  * @method sleep
  */
-CANNON.Particle.prototype.sleep = function(){
+Particle.prototype.sleep = function(){
     this.sleepState = 2;
 };
 
@@ -160,7 +168,7 @@ CANNON.Particle.prototype.sleep = function(){
  * @method sleepTick
  * @param {Number} time The world time in seconds
  */
-CANNON.Particle.prototype.sleepTick = function(time){
+Particle.prototype.sleepTick = function(time){
     if(this.allowSleep){
         var sleepState = this.sleepState;
         var speedSquared = this.velocity.norm2();

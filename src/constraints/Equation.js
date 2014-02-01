@@ -1,3 +1,5 @@
+module.exports = Equation;
+
 /**
  * Equation base class
  * @class Equation
@@ -7,7 +9,7 @@
  * @param {Number} minForce Minimum (read: negative max) force to be applied by the constraint.
  * @param {Number} maxForce Maximum (read: positive max) force to be applied by the constraint.
  */
-CANNON.Equation = function(bi,bj,minForce,maxForce){
+function Equation(bi,bj,minForce,maxForce){
     this.id = -1;
 
     /**
@@ -21,12 +23,14 @@ CANNON.Equation = function(bi,bj,minForce,maxForce){
     this.maxForce = typeof(maxForce)==="undefined" ? 1e6 : maxForce;
 
     /**
-     * @property CANNON.Body bi
+     * @property bi
+     * @type {Body}
      */
     this.bi = bi;
 
     /**
-     * @property CANNON.Body bj
+     * @property bj
+     * @type {Body}
      */
     this.bj = bj;
 
@@ -66,13 +70,13 @@ CANNON.Equation = function(bi,bj,minForce,maxForce){
      */
     this.spookParamsNeedsUpdate = true;
 };
-CANNON.Equation.prototype.constructor = CANNON.Equation;
+Equation.prototype.constructor = Equation;
 
 /**
  * Recalculates a,b,eps.
  * @method updateSpookParams
  */
-CANNON.Equation.prototype.updateSpookParams = function(h){
+Equation.prototype.updateSpookParams = function(h){
     var d = this.regularizationTime,
         k = this.stiffness;
     this.a = 4.0 / (h * (1 + 4 * d));

@@ -1,26 +1,31 @@
+module.exports = Sphere;
+
+var Shape = require('./Shape')
+,   Vec3 = require('../math/Vec3')
+
 /**
- * Spherical rigid body
+ * Spherical shape
  * @class Sphere
  * @constructor
  * @extends Shape
  * @param {Number} radius
  * @author schteppe / http://github.com/schteppe
  */
-CANNON.Sphere = function(radius){
-    CANNON.Shape.call(this);
+function Sphere(radius){
+    Shape.call(this);
 
     /**
      * @property radius
      * @type {Number}
      */
     this.radius = radius!==undefined ? Number(radius) : 1.0;
-    this.type = CANNON.Shape.types.SPHERE;
+    this.type = Shape.types.SPHERE;
 };
-CANNON.Sphere.prototype = new CANNON.Shape();
-CANNON.Sphere.prototype.constructor = CANNON.Sphere;
+Sphere.prototype = new Shape();
+Sphere.prototype.constructor = Sphere;
 
-CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new CANNON.Vec3();
+Sphere.prototype.calculateLocalInertia = function(mass,target){
+    target = target || new Vec3();
     var I = 2.0*mass*this.radius*this.radius/5.0;
     target.x = I;
     target.y = I;
@@ -28,16 +33,16 @@ CANNON.Sphere.prototype.calculateLocalInertia = function(mass,target){
     return target;
 };
 
-CANNON.Sphere.prototype.volume = function(){
+Sphere.prototype.volume = function(){
     return 4.0 * Math.PI * this.radius / 3.0;
 };
 
-CANNON.Sphere.prototype.computeBoundingSphereRadius = function(){
+Sphere.prototype.computeBoundingSphereRadius = function(){
     this.boundingSphereRadiusNeedsUpdate = false;
     this.boundingSphereRadius = this.radius;
 };
 
-CANNON.Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){
+Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var r = this.radius;
     var axes = ['x','y','z'];
     for(var i=0; i<axes.length; i++){

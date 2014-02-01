@@ -1,3 +1,7 @@
+module.exports = NaiveBroadphase;
+
+var Broadphase = require('./Broadphase')
+
 /**
  * Naive broadphase implementation, used in lack of better ones.
  * @class NaiveBroadphase
@@ -5,11 +9,11 @@
  * @description The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
  * @extends {Broadphase}
  */
-CANNON.NaiveBroadphase = function(){
-    CANNON.Broadphase.apply(this);
+function NaiveBroadphase(){
+    Broadphase.apply(this);
 };
-CANNON.NaiveBroadphase.prototype = new CANNON.Broadphase();
-CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
+NaiveBroadphase.prototype = new Broadphase();
+NaiveBroadphase.prototype.constructor = NaiveBroadphase;
 
 /**
  * Get all the collision pairs in the physics world
@@ -18,7 +22,7 @@ CANNON.NaiveBroadphase.prototype.constructor = CANNON.NaiveBroadphase;
  * @param {Array} pairs1
  * @param {Array} pairs2
  */
-CANNON.NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
+NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var bodies = world.bodies,
         n = bodies.length,
         i,j,bi,bj;

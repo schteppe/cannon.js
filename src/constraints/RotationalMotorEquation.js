@@ -1,3 +1,9 @@
+module.exports = RotationalMotorEquation;
+
+var Vec3 = require('../math/Vec3')
+,   Mat3 = require('../math/Mat3')
+,   Equation = require('./Equation')
+
 /**
  * Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
  * @class RotationalMotorEquation
@@ -7,21 +13,21 @@
  * @param {Number} maxForce
  * @extends {Equation}
  */
-CANNON.RotationalMotorEquation = function(bodyA, bodyB, maxForce){
+function RotationalMotorEquation(bodyA, bodyB, maxForce){
     maxForce = maxForce || 1e6;
-    CANNON.Equation.call(this,bodyA,bodyB,-maxForce,maxForce);
-    this.axisA = new CANNON.Vec3(); // World oriented rotational axis
-    this.axisB = new CANNON.Vec3(); // World oriented rotational axis
+    Equation.call(this,bodyA,bodyB,-maxForce,maxForce);
+    this.axisA = new Vec3(); // World oriented rotational axis
+    this.axisB = new Vec3(); // World oriented rotational axis
 
-    this.invIi = new CANNON.Mat3();
-    this.invIj = new CANNON.Mat3();
+    this.invIi = new Mat3();
+    this.invIj = new Mat3();
     this.targetVelocity = 0;
 };
 
-CANNON.RotationalMotorEquation.prototype = new CANNON.Equation();
-CANNON.RotationalMotorEquation.prototype.constructor = CANNON.RotationalMotorEquation;
+RotationalMotorEquation.prototype = new Equation();
+RotationalMotorEquation.prototype.constructor = RotationalMotorEquation;
 
-CANNON.RotationalMotorEquation.prototype.computeB = function(h){
+RotationalMotorEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b;
     var bi = this.bi;
@@ -31,14 +37,14 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(h){
     var axisB = this.axisB;
 
     var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
+    var wi = bi.angularVelocity ? bi.angularVelocity : new Vec3();
     var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new CANNON.Vec3();
+    var taui = bi.tau ? bi.tau : new Vec3();
 
     var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new CANNON.Vec3();
+    var wj = bj.angularVelocity ? bj.angularVelocity : new Vec3();
     var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new CANNON.Vec3();
+    var tauj = bj.tau ? bj.tau : new Vec3();
 
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
@@ -71,7 +77,7 @@ CANNON.RotationalMotorEquation.prototype.computeB = function(h){
 };
 
 // Compute C = GMG+eps
-CANNON.RotationalMotorEquation.prototype.computeC = function(){
+RotationalMotorEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
     var axisA = this.axisA;
@@ -101,8 +107,8 @@ CANNON.RotationalMotorEquation.prototype.computeC = function(){
     return C;
 };
 
-var computeGWlambda_ulambda = new CANNON.Vec3();
-CANNON.RotationalMotorEquation.prototype.computeGWlambda = function(){
+var computeGWlambda_ulambda = new Vec3();
+RotationalMotorEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
     var ulambda = computeGWlambda_ulambda;
@@ -126,7 +132,7 @@ CANNON.RotationalMotorEquation.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
-CANNON.RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
+RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
     var axisA = this.axisA;

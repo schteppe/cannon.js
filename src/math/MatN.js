@@ -1,3 +1,5 @@
+module.exports = MatN;
+
 /**
  * Any matrix size class
  * @class MatN
@@ -7,7 +9,7 @@
  * @param {Number} rows
  * @param {Array} elements
  */
-CANNON.MatN = function(cols,rows,elements){
+function MatN(cols,rows,elements){
     /**
      * A vector containing all matrix elements
      * @property Float32Array elements
@@ -25,7 +27,7 @@ CANNON.MatN = function(cols,rows,elements){
  * @todo Should perhaps be renamed to setIdentity() to be more clear.
  * @todo Create another function that immediately creates an identity matrix eg. eye()
  */
-CANNON.MatN.prototype.identity = function(){
+MatN.prototype.identity = function(){
     for(var i=0; i<this.cols; i++){
         for(var j=0; j<this.rows; j++){
             this.elements[0] = i===j ? 1 : 0;

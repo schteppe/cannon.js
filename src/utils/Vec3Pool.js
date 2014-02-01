@@ -1,13 +1,18 @@
+module.exports = Vec3Pool;
+
+var Vec3 = require('../math/Vec3')
+,   ObjectPool = require('./Pool')
+
 /**
  * @class Vec3Pool
  * @constructor
  */
-CANNON.Vec3Pool = function(){
-    CANNON.ObjectPool.call(this);
-    this.type = CANNON.Vec3;
+function Vec3Pool(){
+    ObjectPool.call(this);
+    this.type = Vec3;
 };
-CANNON.Vec3Pool.prototype = new CANNON.ObjectPool();
+Vec3Pool.prototype = new ObjectPool();
 
-CANNON.Vec3Pool.prototype.constructObject = function(){
-    return new CANNON.Vec3();
+Vec3Pool.prototype.constructObject = function(){
+    return new Vec3();
 };

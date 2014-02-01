@@ -1,3 +1,9 @@
+module.exports = GridBroadphase;
+
+var Broadphase = require('./Broadphase')
+,   Vec3 = require('../math/Vec3')
+,   Shape = require('../objects/Shape')
+
 /**
  * Axis aligned uniform grid broadphase.
  * @class GridBroadphase
@@ -9,13 +15,13 @@
  * @param {Number} ny Number of boxes along y
  * @param {Number} nz Number of boxes along z
  */
-CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
-    CANNON.Broadphase.apply(this);
+function GridBroadphase(aabbMin,aabbMax,nx,ny,nz){
+    Broadphase.apply(this);
     this.nx = nx || 10;
     this.ny = ny || 10;
     this.nz = nz || 10;
-    this.aabbMin = aabbMin || new CANNON.Vec3(100,100,100);
-    this.aabbMax = aabbMax || new CANNON.Vec3(-100,-100,-100);
+    this.aabbMin = aabbMin || new Vec3(100,100,100);
+    this.aabbMax = aabbMax || new Vec3(-100,-100,-100);
 	var nbins = this.nx * this.ny * this.nz;
 	if (nbins <= 0) {
 		throw "GridBroadphase: Each dimension's n must be >0";
@@ -29,8 +35,8 @@ CANNON.GridBroadphase = function(aabbMin,aabbMax,nx,ny,nz){
 		this.binLengths[i]=0;
 	}
 };
-CANNON.GridBroadphase.prototype = new CANNON.Broadphase();
-CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
+GridBroadphase.prototype = new Broadphase();
+GridBroadphase.prototype.constructor = GridBroadphase;
 
 /**
  * Get all the collision pairs in the physics world
@@ -39,9 +45,9 @@ CANNON.GridBroadphase.prototype.constructor = CANNON.GridBroadphase;
  * @param {Array} pairs1
  * @param {Array} pairs2
  */
-var GridBroadphase_collisionPairs_d = new CANNON.Vec3();
-var GridBroadphase_collisionPairs_binPos = new CANNON.Vec3();
-CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
+var GridBroadphase_collisionPairs_d = new Vec3();
+var GridBroadphase_collisionPairs_binPos = new Vec3();
+GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     var N = world.numObjects(),
         bodies = world.bodies;
 
@@ -72,7 +78,7 @@ CANNON.GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 
 	var binRadius = Math.sqrt(binsizeX*binsizeX + binsizeY*binsizeY + binsizeZ*binsizeZ) * 0.5;
 
-    var types = CANNON.Shape.types;
+    var types = Shape.types;
     var SPHERE =            types.SPHERE,
         PLANE =             types.PLANE,
         BOX =               types.BOX,

@@ -1,3 +1,10 @@
+module.exports = GSSolver;
+
+var Shape = require('../objects/Shape')
+,   Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+,   Solver = require('./Solver')
+
 /**
  * Constraint equation Gauss-Seidel solver.
  * @class GSSolver
@@ -5,10 +12,10 @@
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
- * @extends CANNON.Solver
+ * @extends {Solver}
  */
-CANNON.GSSolver = function(){
-    CANNON.Solver.call(this);
+function GSSolver(){
+    Solver.call(this);
 
     /**
      * The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
@@ -25,12 +32,12 @@ CANNON.GSSolver = function(){
      */
     this.tolerance = 0;
 };
-CANNON.GSSolver.prototype = new CANNON.Solver();
+GSSolver.prototype = new Solver();
 
 var GSSolver_solve_lambda = []; // Just temporary number holders that we want to reuse each solve.
 var GSSolver_solve_invCs = [];
 var GSSolver_solve_Bs = [];
-CANNON.GSSolver.prototype.solve = function(dt,world){
+GSSolver.prototype.solve = function(dt,world){
     var d = this.d,
         ks = this.k,
         iter = 0,

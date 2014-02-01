@@ -1,11 +1,28 @@
+module.exports = World;
+
+var Shape = require('../objects/Shape')
+,   Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+,   GSSolver = require('../solver/GSSolver')
+,   Vec3Pool = require('../utils/Vec3Pool')
+,   ContactEquation = require('../constraints/ContactEquation')
+,   FrictionEquation = require('../constraints/FrictionEquation')
+,   ContactGenerator = require('./ContactGenerator')
+,   EventTarget = require('../utils/EventTarget')
+,   ArrayCollisionMatrix = require('../collision/ArrayCollisionMatrix')
+,   Material = require('../material/Material')
+,   ContactMaterial = require('../material/ContactMaterial')
+,   RigidBody = require('../objects/RigidBody')
+,   Body = require('../objects/Body')
+
 /**
  * The physics world
  * @class World
  * @constructor
  * @extends {EventTarget}
  */
-CANNON.World = function(){
-    CANNON.EventTarget.apply(this);
+function World(){
+    EventTarget.apply(this);
 
     /**
      * Makes bodies go to sleep when they've been inactive
@@ -61,7 +78,7 @@ CANNON.World = function(){
      * @property gravity
      * @type {Vec3}
      */
-    this.gravity = new CANNON.Vec3();
+    this.gravity = new Vec3();
 
     /**
      * @property broadphase
@@ -81,7 +98,7 @@ CANNON.World = function(){
      * @property solver
      * @type {Solver}
      */
-    this.solver = new CANNON.GSSolver();
+    this.solver = new GSSolver();
 
     /**
      * @property constraints
@@ -93,21 +110,21 @@ CANNON.World = function(){
      * @property contactgen
      * @type {ContactGenerator}
      */
-    this.contactgen = new CANNON.ContactGenerator();
+    this.contactgen = new ContactGenerator();
 
     /**
      * It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
      * @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
 	 * @type {ArrayCollisionMatrix}
 	 */
-	this.collisionMatrix = new CANNON.ArrayCollisionMatrix();
+	this.collisionMatrix = new ArrayCollisionMatrix();
 
     /**
      * collisionMatrix from the previous step
      * @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
 	 * @type {ArrayCollisionMatrix}
 	 */
-	this.collisionMatrixPrevious = new CANNON.ArrayCollisionMatrix();
+	this.collisionMatrixPrevious = new ArrayCollisionMatrix();
 
     /**
      * All added materials
@@ -124,14 +141,14 @@ CANNON.World = function(){
 
     this.mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
 
-    this.defaultMaterial = new CANNON.Material("default");
+    this.defaultMaterial = new Material("default");
 
     /**
      * This contact material is used if no suitable contactmaterial is found for a contact.
      * @property defaultContactMaterial
      * @type {ContactMaterial}
      */
-    this.defaultContactMaterial = new CANNON.ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.0);
+    this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.0);
 
     /**
      * @property doProfiling
@@ -165,8 +182,8 @@ CANNON.World = function(){
  * @param {Material} m2
  * @return {Contactmaterial} The contact material if it was found.
  */
-CANNON.World.prototype.getContactMaterial = function(m1,m2){
-    if((m1 instanceof CANNON.Material) &&  (m2 instanceof CANNON.Material)){
+World.prototype.getContactMaterial = function(m1,m2){
+    if((m1 instanceof Material) &&  (m2 instanceof Material)){
 
         var i = m1.id;
         var j = m2.id;
@@ -185,12 +202,12 @@ CANNON.World.prototype.getContactMaterial = function(m1,m2){
  * @method numObjects
  * @return {Number}
  */
-CANNON.World.prototype.numObjects = function(){
+World.prototype.numObjects = function(){
     return this.bodies.length;
 };
 
 // transfer old contact state data to T-1
-CANNON.World.prototype.collisionMatrixTick = function(){
+World.prototype.collisionMatrixTick = function(){
 	var temp = this.collisionMatrixPrevious;
 	this.collisionMatrixPrevious = this.collisionMatrix;
 	this.collisionMatrix = temp;
@@ -204,7 +221,7 @@ CANNON.World.prototype.collisionMatrixTick = function(){
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
-CANNON.World.prototype.add = function(body){
+World.prototype.add = function(body){
 	body.id = this.id();
     body.index = this.bodies.length;
     this.bodies.push(body);
@@ -212,7 +229,7 @@ CANNON.World.prototype.add = function(body){
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
     body.timeLastSleepy = this.time;
-    if(body instanceof CANNON.RigidBody){
+    if(body instanceof RigidBody){
         body.angularVelocity.copy(body.initAngularVelocity);
         body.quaternion.copy(body.initQuaternion);
     }
@@ -225,7 +242,7 @@ CANNON.World.prototype.add = function(body){
  * @method addConstraint
  * @param {Constraint} c
  */
-CANNON.World.prototype.addConstraint = function(c){
+World.prototype.addConstraint = function(c){
     this.constraints.push(c);
     c.id = this.id();
 };
@@ -235,7 +252,7 @@ CANNON.World.prototype.addConstraint = function(c){
  * @method removeConstraint
  * @param {Constraint} c
  */
-CANNON.World.prototype.removeConstraint = function(c){
+World.prototype.removeConstraint = function(c){
     var idx = this.constraints.indexOf(c);
     if(idx!==-1){
         this.constraints.splice(idx,1);
@@ -247,7 +264,7 @@ CANNON.World.prototype.removeConstraint = function(c){
  * @method id
  * @return {Number}
  */
-CANNON.World.prototype.id = function(){
+World.prototype.id = function(){
     return this.nextId++;
 };
 
@@ -256,7 +273,7 @@ CANNON.World.prototype.id = function(){
  * @method remove
  * @param {Body} body
  */
-CANNON.World.prototype.remove = function(body){
+World.prototype.remove = function(body){
     body.world = null;
     var n = this.numObjects()-1;
     var bodies = this.bodies;
@@ -272,7 +289,7 @@ CANNON.World.prototype.remove = function(body){
  * @method addMaterial
  * @param {Material} m
  */
-CANNON.World.prototype.addMaterial = function(m){
+World.prototype.addMaterial = function(m){
     if(m.id === -1){
         var n = this.materials.length;
         this.materials.push(m);
@@ -290,7 +307,7 @@ CANNON.World.prototype.addMaterial = function(m){
  * @method addContactMaterial
  * @param {ContactMaterial} cmat
  */
-CANNON.World.prototype.addContactMaterial = function(cmat) {
+World.prototype.addContactMaterial = function(cmat) {
 
     // Add materials if they aren't already added
     this.addMaterial(cmat.materials[0]);
@@ -315,7 +332,7 @@ CANNON.World.prototype.addContactMaterial = function(cmat) {
     this.mats2cmat[i+this.materials.length*j] = cmat.id; // index of the contact material
 };
 
-CANNON.World.prototype._now = function(){
+World.prototype._now = function(){
     if(window.performance.webkitNow){
         return window.performance.webkitNow();
     } else {
@@ -335,19 +352,19 @@ var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to s
     World_step_frictionEquationPool = [],
     World_step_p1 = [], // Reusable arrays for collision pairs
     World_step_p2 = [],
-    World_step_gvec = new CANNON.Vec3(), // Temporary vectors and quats
-    World_step_vi = new CANNON.Vec3(),
-    World_step_vj = new CANNON.Vec3(),
-    World_step_wi = new CANNON.Vec3(),
-    World_step_wj = new CANNON.Vec3(),
-    World_step_t1 = new CANNON.Vec3(),
-    World_step_t2 = new CANNON.Vec3(),
-    World_step_rixn = new CANNON.Vec3(),
-    World_step_rjxn = new CANNON.Vec3(),
-    World_step_step_q = new CANNON.Quaternion(),
-    World_step_step_w = new CANNON.Quaternion(),
-    World_step_step_wq = new CANNON.Quaternion();
-CANNON.World.prototype.step = function(dt){
+    World_step_gvec = new Vec3(), // Temporary vectors and quats
+    World_step_vi = new Vec3(),
+    World_step_vj = new Vec3(),
+    World_step_wi = new Vec3(),
+    World_step_wj = new Vec3(),
+    World_step_t1 = new Vec3(),
+    World_step_t2 = new Vec3(),
+    World_step_rixn = new Vec3(),
+    World_step_rjxn = new Vec3(),
+    World_step_step_q = new Quaternion(),
+    World_step_step_w = new Quaternion(),
+    World_step_step_wq = new Quaternion();
+World.prototype.step = function(dt){
     var world = this,
         that = this,
         contacts = this.contacts,
@@ -359,11 +376,10 @@ CANNON.World.prototype.step = function(dt){
         gravity = this.gravity,
         doProfiling = this.doProfiling,
         profile = this.profile,
-        DYNAMIC = CANNON.Body.DYNAMIC,
+        DYNAMIC = Body.DYNAMIC,
         now = this._now,
         profilingStart,
         constraints = this.constraints,
-        FrictionEquation = CANNON.FrictionEquation,
         frictionEquationPool = World_step_frictionEquationPool,
         gnorm = gravity.norm(),
         gx = gravity.x,
@@ -587,12 +603,12 @@ CANNON.World.prototype.step = function(dt){
     var w = World_step_step_w;
     var wq = World_step_step_wq;
     var stepnumber = this.stepnumber;
-    var DYNAMIC_OR_KINEMATIC = CANNON.Body.DYNAMIC | CANNON.Body.KINEMATIC;
+    var DYNAMIC_OR_KINEMATIC = Body.DYNAMIC | Body.KINEMATIC;
     var quatNormalize = stepnumber % (this.quatNormalizeSkip+1) === 0;
     var quatNormalizeFast = this.quatNormalizeFast;
     var half_dt = dt * 0.5;
-    var PLANE = CANNON.Shape.types.PLANE,
-        CONVEX = CANNON.Shape.types.CONVEXPOLYHEDRON;
+    var PLANE = Shape.types.PLANE,
+        CONVEX = Shape.types.CONVEXPOLYHEDRON;
 
     for(i=0; i!==N; i++){
         var b = bodies[i],

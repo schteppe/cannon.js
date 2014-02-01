@@ -1,13 +1,15 @@
+module.exports = ArrayCollisionMatrix;
+
 /**
  * Collision "matrix". It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
  * @class ArrayCollisionMatrix
  * @constructor
  */
-CANNON.ArrayCollisionMatrix = function() {
+function ArrayCollisionMatrix() {
 	this.matrix = [];
 };
 
-CANNON.ArrayCollisionMatrix.prototype.get = function(i, j) {
+ArrayCollisionMatrix.prototype.get = function(i, j) {
 	i = i.index;
 	j = j.index;
     if (j > i) {
@@ -18,7 +20,7 @@ CANNON.ArrayCollisionMatrix.prototype.get = function(i, j) {
 	return this.matrix[(i*(i + 1)>>1) + j-1];
 };
 
-CANNON.ArrayCollisionMatrix.prototype.set = function(i, j, value) {
+ArrayCollisionMatrix.prototype.set = function(i, j, value) {
 	i = i.index;
 	j = j.index;
     if (j > i) {
@@ -29,12 +31,12 @@ CANNON.ArrayCollisionMatrix.prototype.set = function(i, j, value) {
 	this.matrix[(i*(i + 1)>>1) + j-1] = value ? 1 : 0;
 };
 
-CANNON.ArrayCollisionMatrix.prototype.reset = function() {
+ArrayCollisionMatrix.prototype.reset = function() {
 	for (var i=0, l=this.matrix.length; i!==l; i++) {
 		this.matrix[i]=0;
 	}
 };
 
-CANNON.ArrayCollisionMatrix.prototype.setNumObjects = function(n) {
+ArrayCollisionMatrix.prototype.setNumObjects = function(n) {
 	this.matrix.length = n*(n-1)>>1;
 };

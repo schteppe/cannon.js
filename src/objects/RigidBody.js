@@ -1,3 +1,11 @@
+module.exports = RigidBody;
+
+var Shape = require('./Shape')
+,   Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+,   Particle = require('./Particle')
+,   Material = require('../material/Material')
+
 /**
  * Rigid body base class
  * @class RigidBody
@@ -6,17 +14,17 @@
  * @param {Shape} shape
  * @param {Material} material
  */
-CANNON.RigidBody = function(mass,shape,material){
+function RigidBody(mass,shape,material){
 
     // Check input
     if(typeof(mass)!=="number"){
         throw new Error("Argument 1 (mass) must be a number.");
     }
-    if(typeof(material)!=="undefined" && !(material instanceof(CANNON.Material))){
-        throw new Error("Argument 3 (material) must be an instance of CANNON.Material.");
+    if(typeof(material)!=="undefined" && !(material instanceof(Material))){
+        throw new Error("Argument 3 (material) must be an instance of Material.");
     }
 
-    CANNON.Particle.call(this,mass,material);
+    Particle.call(this,mass,material);
 
     var that = this;
 
@@ -25,32 +33,32 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property Vec3 tau
      * @todo should be renamed to .angularForce
      */
-    this.tau = new CANNON.Vec3();
+    this.tau = new Vec3();
 
     /**
      * Orientation of the body
      * @property quaternion
      * @type {Quaternion}
      */
-    this.quaternion = new CANNON.Quaternion();
+    this.quaternion = new Quaternion();
 
     /**
      * @property initQuaternion
      * @type {Quaternion}
      */
-    this.initQuaternion = new CANNON.Quaternion();
+    this.initQuaternion = new Quaternion();
 
     /**
      * @property angularVelocity
      * @type {Vec3}
      */
-    this.angularVelocity = new CANNON.Vec3();
+    this.angularVelocity = new Vec3();
 
     /**
      * @property initAngularVelocity
      * @type {Vec3}
      */
-    this.initAngularVelocity = new CANNON.Vec3();
+    this.initAngularVelocity = new Vec3();
 
     /**
      * @property shape
@@ -62,10 +70,10 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property inertia
      * @type {Vec3}
      */
-    this.inertia = new CANNON.Vec3();
+    this.inertia = new Vec3();
     shape.calculateLocalInertia(mass,this.inertia);
 
-    this.inertiaWorld = new CANNON.Vec3();
+    this.inertiaWorld = new Vec3();
     this.inertia.copy(this.inertiaWorld);
     this.inertiaWorldAutoUpdate = false;
 
@@ -73,10 +81,10 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property intInertia
      * @type {Vec3}
      */
-    this.invInertia = new CANNON.Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
+    this.invInertia = new Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
                                       this.inertia.y>0 ? 1.0/this.inertia.y : 0,
                                       this.inertia.z>0 ? 1.0/this.inertia.z : 0);
-    this.invInertiaWorld = new CANNON.Vec3();
+    this.invInertiaWorld = new Vec3();
     this.invInertia.copy(this.invInertiaWorld);
     this.invInertiaWorldAutoUpdate = false;
 
@@ -90,13 +98,13 @@ CANNON.RigidBody = function(mass,shape,material){
      * @property aabbmin
      * @type {Vec3}
      */
-    this.aabbmin = new CANNON.Vec3();
+    this.aabbmin = new Vec3();
 
     /**
      * @property aabbmax
      * @type {Vec3}
      */
-    this.aabbmax = new CANNON.Vec3();
+    this.aabbmax = new Vec3();
 
     /**
      * Indicates if the AABB needs to be updated before use.
@@ -105,13 +113,13 @@ CANNON.RigidBody = function(mass,shape,material){
      */
     this.aabbNeedsUpdate = true;
 
-    this.wlambda = new CANNON.Vec3();
+    this.wlambda = new Vec3();
 };
 
-CANNON.RigidBody.prototype = new CANNON.Particle(0);
-CANNON.RigidBody.prototype.constructor = CANNON.RigidBody;
+RigidBody.prototype = new Particle(0);
+RigidBody.prototype.constructor = RigidBody;
 
-CANNON.RigidBody.prototype.computeAABB = function(){
+RigidBody.prototype.computeAABB = function(){
     this.shape.calculateWorldAABB(this.position,
                                   this.quaternion,
                                   this.aabbmin,
@@ -125,9 +133,9 @@ CANNON.RigidBody.prototype.computeAABB = function(){
  * @param  {Vec3} force The amount of force to add.
  * @param  {Vec3} worldPoint A world point to apply the force on.
  */
-var RigidBody_applyForce_r = new CANNON.Vec3();
-var RigidBody_applyForce_rotForce = new CANNON.Vec3();
-CANNON.RigidBody.prototype.applyForce = function(force,worldPoint){
+var RigidBody_applyForce_r = new Vec3();
+var RigidBody_applyForce_rotForce = new Vec3();
+RigidBody.prototype.applyForce = function(force,worldPoint){
     // Compute point position relative to the body center
     var r = RigidBody_applyForce_r;
     worldPoint.vsub(this.position,r);
@@ -149,10 +157,10 @@ CANNON.RigidBody.prototype.applyForce = function(force,worldPoint){
  * @param  {Vec3} impulse The amount of impulse to add.
  * @param  {Vec3} worldPoint A world point to apply the force on.
  */
-var RigidBody_applyImpulse_r = new CANNON.Vec3();
-var RigidBody_applyImpulse_velo = new CANNON.Vec3();
-var RigidBody_applyImpulse_rotVelo = new CANNON.Vec3();
-CANNON.RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
+var RigidBody_applyImpulse_r = new Vec3();
+var RigidBody_applyImpulse_velo = new Vec3();
+var RigidBody_applyImpulse_rotVelo = new Vec3();
+RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
     // Compute point position relative to the body center
     var r = RigidBody_applyImpulse_r;
     worldPoint.vsub(this.position,r);

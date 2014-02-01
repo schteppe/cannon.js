@@ -1,3 +1,11 @@
+module.exports = HingeConstraint;
+
+var Constraint = require('./Constraint')
+,   RotationalEquation = require('./RotationalEquation')
+,   RotationalMotorEquation = require('./RotationalMotorEquation')
+,   ContactEquation = require('./ContactEquation')
+,   Vec3 = require('../math/Vec3')
+
 /**
  * Hinge constraint. Tries to keep the local body axes equal.
  * @class HingeConstraint
@@ -10,18 +18,18 @@
  * @param {Vec3} axisB
  * @param {Number} maxForce
  */
-CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, maxForce){
-    CANNON.Constraint.call(this,bodyA,bodyB);
+function HingeConstraint(bodyA, pivotA, axisA, bodyB, pivotB, axisB, maxForce){
+    Constraint.call(this,bodyA,bodyB);
 
     maxForce = maxForce || 1e6;
     var that = this;
     // Equations to be fed to the solver
     var eqs = this.equations = [
-        new CANNON.RotationalEquation(bodyA,bodyB), // rotational1
-        new CANNON.RotationalEquation(bodyA,bodyB), // rotational2
-        new CANNON.ContactEquation(bodyA,bodyB),    // p2pNormal
-        new CANNON.ContactEquation(bodyA,bodyB),    // p2pTangent1
-        new CANNON.ContactEquation(bodyA,bodyB),    // p2pTangent2
+        new RotationalEquation(bodyA,bodyB), // rotational1
+        new RotationalEquation(bodyA,bodyB), // rotational2
+        new ContactEquation(bodyA,bodyB),    // p2pNormal
+        new ContactEquation(bodyA,bodyB),    // p2pTangent1
+        new ContactEquation(bodyA,bodyB),    // p2pTangent2
     ];
 
     this.getRotationalEquation1 =   function(){ return eqs[0]; };
@@ -43,9 +51,9 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     var unitPivotA = pivotA.unit();
     var unitPivotB = pivotB.unit();
 
-    var axisA_x_pivotA = new CANNON.Vec3();
-    var axisA_x_axisA_x_pivotA = new CANNON.Vec3();
-    var axisB_x_pivotB = new CANNON.Vec3();
+    var axisA_x_pivotA = new Vec3();
+    var axisA_x_axisA_x_pivotA = new Vec3();
+    var axisB_x_pivotB = new Vec3();
     axisA.cross(unitPivotA,axisA_x_pivotA);
     if(axisA_x_pivotA.norm2() < 0.001){ // pivotA is along the same line as axisA
         unitPivotA.tangents(axisA_x_pivotA,axisA_x_pivotA);
@@ -66,7 +74,7 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
     this.motorMaxForce = maxForce;
     this.enableMotor = function(){
         if(!motorEnabled){
-            motor = new CANNON.RotationalMotorEquation(bodyA,bodyB,maxForce);
+            motor = new RotationalMotorEquation(bodyA,bodyB,maxForce);
             eqs.push(motor);
             motorEnabled = true;
         }
@@ -113,4 +121,4 @@ CANNON.HingeConstraint = function(bodyA, pivotA, axisA, bodyB, pivotB, axisB, ma
         }
     };
 };
-CANNON.HingeConstraint.prototype = new CANNON.Constraint();
+HingeConstraint.prototype = new Constraint();

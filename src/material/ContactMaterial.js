@@ -1,3 +1,5 @@
+module.exports = ContactMaterial;
+
 /**
  * Defines what happens when two materials meet.
  * @class ContactMaterial
@@ -8,7 +10,7 @@
  * @param {Number} restitution
  * @todo Contact solving parameters here too?
  */
-CANNON.ContactMaterial = function(m1, m2, friction, restitution){
+function ContactMaterial(m1, m2, friction, restitution){
 
     /// Contact material index in the world, -1 until added to the world
     this.id = -1;

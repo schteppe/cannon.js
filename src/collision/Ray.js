@@ -1,3 +1,9 @@
+module.exports = Ray;
+
+var Vec3 = require('../math/Vec3')
+,   ConvexPolyhedron = require('../objects/ConvexPolyhedron')
+,   Box = require('../objects/Box')
+
 /**
  * A line in 3D space that intersects bodies and return points.
  * @class Ray
@@ -5,16 +11,16 @@
  * @param {Vec3} origin
  * @param {Vec3} direction
  */
-CANNON.Ray = function(origin, direction){
+Ray = function(origin, direction){
     /**
     * @property {Vec3} origin
     */
-    this.origin = origin || new CANNON.Vec3();
+    this.origin = origin || new Vec3();
 
     /**
     * @property {Vec3} direction
     */
-    this.direction = direction || new CANNON.Vec3();
+    this.direction = direction || new Vec3();
 
     var precision = 0.0001;
 
@@ -27,30 +33,30 @@ CANNON.Ray = function(origin, direction){
         precision = value;
     };
 
-    var a = new CANNON.Vec3();
-    var b = new CANNON.Vec3();
-    var c = new CANNON.Vec3();
-    var d = new CANNON.Vec3();
+    var a = new Vec3();
+    var b = new Vec3();
+    var c = new Vec3();
+    var d = new Vec3();
 
-    var directionCopy = new CANNON.Vec3();
+    var directionCopy = new Vec3();
 
-    var vector = new CANNON.Vec3();
-    var normal = new CANNON.Vec3();
-    var intersectPoint = new CANNON.Vec3();
+    var vector = new Vec3();
+    var normal = new Vec3();
+    var intersectPoint = new Vec3();
 
     /**
      * Shoot a ray at a body, get back information about the hit.
      * @method intersectBody
      * @param {RigidBody} body
-     * @return {Array} An array of results. The result objects has properties: distance (float), point (CANNON.Vec3) and body (CANNON.RigidBody).
+     * @return {Array} An array of results. The result objects has properties: distance (float), point (Vec3) and body (RigidBody).
      */
     this.intersectBody = function ( body ) {
-        if(body.shape instanceof CANNON.ConvexPolyhedron){
+        if(body.shape instanceof ConvexPolyhedron){
             return this.intersectShape(body.shape,
                                        body.quaternion,
                                        body.position,
                                        body);
-        } else if(body.shape instanceof CANNON.Box){
+        } else if(body.shape instanceof Box){
             return this.intersectShape(body.shape.convexPolyhedronRepresentation,
                                        body.quaternion,
                                        body.position,
@@ -72,7 +78,7 @@ CANNON.Ray = function(origin, direction){
 
         var intersect, intersects = [];
 
-        if ( shape instanceof CANNON.ConvexPolyhedron ) {
+        if ( shape instanceof ConvexPolyhedron ) {
             // Checking boundingSphere
 
             var distance = distanceFromIntersection( this.origin, this.direction, position );
@@ -162,7 +168,7 @@ CANNON.Ray = function(origin, direction){
 
     /**
      * @method intersectBodies
-     * @param {Array} bodies An array of CANNON.RigidBody objects.
+     * @param {Array} bodies An array of RigidBody objects.
      * @return {Array} See intersectBody
      */
     this.intersectBodies = function ( bodies ) {
@@ -178,7 +184,7 @@ CANNON.Ray = function(origin, direction){
         return intersects;
     };
 
-    var v0 = new CANNON.Vec3(), intersect = new CANNON.Vec3();
+    var v0 = new Vec3(), intersect = new Vec3();
     var dot, distance;
 
     function distanceFromIntersection( origin, direction, position ) {
@@ -200,7 +206,7 @@ CANNON.Ray = function(origin, direction){
     // http://www.blackpawn.com/texts/pointinpoly/default.html
 	// But without the division
 
-    var v1 = new CANNON.Vec3(), v2 = new CANNON.Vec3();
+    var v1 = new Vec3(), v2 = new Vec3();
 
     function pointInTriangle( p, a, b, c ) {
         c.vsub(a,v0);
@@ -220,4 +226,4 @@ CANNON.Ray = function(origin, direction){
 				( u + v < ( dot00 * dot11 - dot01 * dot01 ) );
     }
 };
-CANNON.Ray.prototype.constructor = CANNON.Ray;
+Ray.prototype.constructor = Ray;

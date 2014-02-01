@@ -1,3 +1,9 @@
+module.exports = RotationalEquation;
+
+var Vec3 = require('../math/Vec3')
+,   Mat3 = require('../math/Mat3')
+,   Equation = require('./Equation')
+
 /**
  * Rotational constraint. Works to keep the local vectors orthogonal to each other.
  * @class RotationalEquation
@@ -8,25 +14,25 @@
  * @param {Vec3} localVectorInBodyB
  * @extends {Equation}
  */
-CANNON.RotationalEquation = function(bodyA, bodyB){
-    CANNON.Equation.call(this,bodyA,bodyB,-1e6,1e6);
-    this.ni = new CANNON.Vec3(); // World oriented localVectorInBodyA
-    this.nj = new CANNON.Vec3(); // ...and B
+function RotationalEquation(bodyA, bodyB){
+    Equation.call(this,bodyA,bodyB,-1e6,1e6);
+    this.ni = new Vec3(); // World oriented localVectorInBodyA
+    this.nj = new Vec3(); // ...and B
 
-    this.nixnj = new CANNON.Vec3();
-    this.njxni = new CANNON.Vec3();
+    this.nixnj = new Vec3();
+    this.njxni = new Vec3();
 
-    this.invIi = new CANNON.Mat3();
-    this.invIj = new CANNON.Mat3();
+    this.invIi = new Mat3();
+    this.invIj = new Mat3();
 
-    this.relVel = new CANNON.Vec3();
-    this.relForce = new CANNON.Vec3();
+    this.relVel = new Vec3();
+    this.relForce = new Vec3();
 };
 
-CANNON.RotationalEquation.prototype = new CANNON.Equation();
-CANNON.RotationalEquation.prototype.constructor = CANNON.RotationalEquation;
+RotationalEquation.prototype = new Equation();
+RotationalEquation.prototype.constructor = RotationalEquation;
 
-CANNON.RotationalEquation.prototype.computeB = function(h){
+RotationalEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b;
     var bi = this.bi;
@@ -39,14 +45,14 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
     var njxni = this.njxni;
 
     var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new CANNON.Vec3();
+    var wi = bi.angularVelocity ? bi.angularVelocity : new Vec3();
     var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new CANNON.Vec3();
+    var taui = bi.tau ? bi.tau : new Vec3();
 
     var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new CANNON.Vec3();
+    var wj = bj.angularVelocity ? bj.angularVelocity : new Vec3();
     var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new CANNON.Vec3();
+    var tauj = bj.tau ? bj.tau : new Vec3();
 
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
@@ -83,7 +89,7 @@ CANNON.RotationalEquation.prototype.computeB = function(h){
 };
 
 // Compute C = GMG+eps
-CANNON.RotationalEquation.prototype.computeC = function(){
+RotationalEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
     var nixnj = this.nixnj;
@@ -113,8 +119,8 @@ CANNON.RotationalEquation.prototype.computeC = function(){
     return C;
 };
 
-var computeGWlambda_ulambda = new CANNON.Vec3();
-CANNON.RotationalEquation.prototype.computeGWlambda = function(){
+var computeGWlambda_ulambda = new Vec3();
+RotationalEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
     var ulambda = computeGWlambda_ulambda;
@@ -136,7 +142,7 @@ CANNON.RotationalEquation.prototype.computeGWlambda = function(){
     return GWlambda;
 };
 
-CANNON.RotationalEquation.prototype.addToWlambda = function(deltalambda){
+RotationalEquation.prototype.addToWlambda = function(deltalambda){
     var bi = this.bi;
     var bj = this.bj;
     var nixnj = this.nixnj;

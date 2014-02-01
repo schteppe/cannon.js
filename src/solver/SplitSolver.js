@@ -1,15 +1,22 @@
-CANNON.SplitSolver = function(subsolver){
-    CANNON.Solver.call(this);
+module.exports = SplitSolver;
+
+var Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+,   Solver = require('./Solver')
+,   Body = require('../objects/Body')
+
+function SplitSolver(subsolver){
+    Solver.call(this);
     this.subsolver = subsolver;
 };
-CANNON.SplitSolver.prototype = new CANNON.Solver();
+SplitSolver.prototype = new Solver();
 
 // Returns the number of subsystems
 var SplitSolver_solve_nodes = []; // All allocated node objects
 var SplitSolver_solve_eqs = [];   // Temp array
 var SplitSolver_solve_bds = [];   // Temp array
 var SplitSolver_solve_dummyWorld = {bodies:null}; // Temp object
-CANNON.SplitSolver.prototype.solve = function(dt,world){
+SplitSolver.prototype.solve = function(dt,world){
     var nodes=SplitSolver_solve_nodes,
         bodies=world.bodies,
         equations=this.equations,
@@ -41,7 +48,7 @@ CANNON.SplitSolver.prototype.solve = function(dt,world){
         nj.eqs.push(eq);
     }
 
-    var STATIC = CANNON.Body.STATIC;
+    var STATIC = Body.STATIC;
     function getUnvisitedNode(nodes){
         var Nnodes = nodes.length;
         for(var i=0; i!==Nnodes; i++){

@@ -1,3 +1,7 @@
+module.exports = Mat3;
+
+var Vec3 = require('./Vec3')
+
 /**
  * A 3x3 matrix.
  * @class Mat3
@@ -5,7 +9,7 @@
  * @param array elements Array of nine elements. Optional.
  * @author schteppe / http://github.com/schteppe
  */
-CANNON.Mat3 = function(elements){
+function Mat3(elements){
     /**
      * A vector of length 9, containing all matrix elements
      * @property Array elements
@@ -23,7 +27,7 @@ CANNON.Mat3 = function(elements){
  * @todo Should perhaps be renamed to setIdentity() to be more clear.
  * @todo Create another function that immediately creates an identity matrix eg. eye()
  */
-CANNON.Mat3.prototype.identity = function(){
+Mat3.prototype.identity = function(){
     this.elements[0] = 1;
     this.elements[1] = 0;
     this.elements[2] = 0;
@@ -37,7 +41,7 @@ CANNON.Mat3.prototype.identity = function(){
     this.elements[8] = 1;
 };
 
-CANNON.Mat3.prototype.setZero = function(){
+Mat3.prototype.setZero = function(){
     var e = this.elements;
     e[0] = 0;
     e[1] = 0;
@@ -54,7 +58,7 @@ CANNON.Mat3.prototype.setZero = function(){
  * Sets the matrix diagonal elements from a Vec3
  * @method setTrace
  */
-CANNON.Mat3.prototype.setTrace = function(vec3){
+Mat3.prototype.setTrace = function(vec3){
     var e = this.elements;
     e[0] = vec3.x;
     e[4] = vec3.y;
@@ -67,8 +71,8 @@ CANNON.Mat3.prototype.setTrace = function(vec3){
  * @param {Vec3} v The vector to multiply with
  * @param {Vec3} target Optional, target to save the result in.
  */
-CANNON.Mat3.prototype.vmult = function(v,target){
-    target = target || new CANNON.Vec3();
+Mat3.prototype.vmult = function(v,target){
+    target = target || new Vec3();
 
     var e = this.elements,
         x = v.x,
@@ -86,7 +90,7 @@ CANNON.Mat3.prototype.vmult = function(v,target){
  * @method smult
  * @param {Number} s
  */
-CANNON.Mat3.prototype.smult = function(s){
+Mat3.prototype.smult = function(s){
     for(var i=0; i<this.elements.length; i++){
         this.elements[i] *= s;
     }
@@ -98,8 +102,8 @@ CANNON.Mat3.prototype.smult = function(s){
  * @param {Mat3} m Matrix to multiply with from left side.
  * @return {Mat3} The result.
  */
-CANNON.Mat3.prototype.mmult = function(m){
-    var r = new CANNON.Mat3();
+Mat3.prototype.mmult = function(m){
+    var r = new Mat3();
     for(var i=0; i<3; i++){
         for(var j=0; j<3; j++){
             var sum = 0.0;
@@ -120,8 +124,8 @@ CANNON.Mat3.prototype.mmult = function(m){
  * @return {Vec3} The solution x
  * @todo should reuse arrays
  */
-CANNON.Mat3.prototype.solve = function(b,target){
-    target = target || new CANNON.Vec3();
+Mat3.prototype.solve = function(b,target){
+    target = target || new Vec3();
 
     // Construct equations
     var nr = 3; // num rows
@@ -191,7 +195,7 @@ CANNON.Mat3.prototype.solve = function(b,target){
  * @param {Number} value Optional. If provided, the matrix element will be set to this value.
  * @return {Number}
  */
-CANNON.Mat3.prototype.e = function( row , column ,value){
+Mat3.prototype.e = function( row , column ,value){
     if(value===undefined){
         return this.elements[column+3*row];
     } else {
@@ -206,8 +210,8 @@ CANNON.Mat3.prototype.e = function( row , column ,value){
  * @param {Mat3} target Optional. Target to save the copy in.
  * @return {Mat3}
  */
-CANNON.Mat3.prototype.copy = function(target){
-    target = target || new CANNON.Mat3();
+Mat3.prototype.copy = function(target){
+    target = target || new Mat3();
     for(var i=0; i<this.elements.length; i++){
         target.elements[i] = this.elements[i];
     }
@@ -219,7 +223,7 @@ CANNON.Mat3.prototype.copy = function(target){
  * @method toString
  * @return string
  */
-CANNON.Mat3.prototype.toString = function(){
+Mat3.prototype.toString = function(){
     var r = "";
     var sep = ",";
     for(var i=0; i<9; i++){
@@ -234,9 +238,9 @@ CANNON.Mat3.prototype.toString = function(){
  * @param {Mat3} target Optional. Target matrix to save in.
  * @return {Mat3} The solution x
  */
-CANNON.Mat3.prototype.reverse = function(target){
+Mat3.prototype.reverse = function(target){
 
-    target = target || new CANNON.Mat3();
+    target = target || new Mat3();
 
     // Construct equations
     var nr = 3; // num rows

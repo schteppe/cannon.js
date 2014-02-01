@@ -1,3 +1,10 @@
+module.exports = Cylinder;
+
+var Shape = require('./Shape')
+,   Vec3 = require('../math/Vec3')
+,   Quaternion = require('../math/Quaternion')
+,   ConvexPolyhedron = require('../objects/ConvexPolyhedron')
+
 /**
  * @class Cylinder
  * @constructor
@@ -8,7 +15,7 @@
  * @param {Number} height
  * @param {Number} numSegments The number of segments to build the cylinder out of
  */
-CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
+function Cylinder( radiusTop, radiusBottom, height , numSegments ) {
     var N = numSegments,
         verts = [],
         normals = [],
@@ -19,13 +26,13 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
         sin = Math.sin;
 
     // First bottom point
-    verts.push(new CANNON.Vec3(radiusBottom*cos(0),
+    verts.push(new Vec3(radiusBottom*cos(0),
                                radiusBottom*sin(0),
                                -height*0.5));
     bottomface.push(0);
 
     // First top point
-    verts.push(new CANNON.Vec3(radiusTop*cos(0),
+    verts.push(new Vec3(radiusTop*cos(0),
                                radiusTop*sin(0),
                                height*0.5));
     topface.push(1);
@@ -35,17 +42,17 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
         var thetaN = 2*Math.PI/N * (i+0.5);
         if(i<N-1){
             // Bottom
-            verts.push(new CANNON.Vec3(radiusBottom*cos(theta),
+            verts.push(new Vec3(radiusBottom*cos(theta),
                                        radiusBottom*sin(theta),
                                        -height*0.5));
             bottomface.push(2*i+2);
             // Top
-            verts.push(new CANNON.Vec3(radiusTop*cos(theta),
+            verts.push(new Vec3(radiusTop*cos(theta),
                                        radiusTop*sin(theta),
                                        height*0.5));
             topface.push(2*i+3);
             // Normal
-            normals.push(new CANNON.Vec3(cos(thetaN),
+            normals.push(new Vec3(cos(thetaN),
                                          sin(thetaN),
                                          0));
             // Face
@@ -53,11 +60,11 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
         } else {
             faces.push([0,1, 2*i+1, 2*i]); // Connect
             // Normal
-            normals.push(new CANNON.Vec3(cos(thetaN),sin(thetaN),0));
+            normals.push(new Vec3(cos(thetaN),sin(thetaN),0));
         }
     }
     faces.push(topface);
-    normals.push(new CANNON.Vec3(0,0,1));
+    normals.push(new Vec3(0,0,1));
 
     // Reorder bottom face
     var temp = [];
@@ -65,10 +72,10 @@ CANNON.Cylinder = function( radiusTop, radiusBottom, height , numSegments ) {
         temp.push(bottomface[bottomface.length - i - 1]);
     }
     faces.push(temp);
-    normals.push(new CANNON.Vec3(0,0,-1));
+    normals.push(new Vec3(0,0,-1));
 
-    this.type = CANNON.Shape.types.CONVEXPOLYHEDRON;
-    CANNON.ConvexPolyhedron.call( this, verts, faces, normals );
+    this.type = Shape.types.CONVEXPOLYHEDRON;
+    ConvexPolyhedron.call( this, verts, faces, normals );
 };
 
-CANNON.Cylinder.prototype = new CANNON.ConvexPolyhedron();
+Cylinder.prototype = new ConvexPolyhedron();
