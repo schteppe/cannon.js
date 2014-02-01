@@ -33,11 +33,25 @@ module.exports = function(grunt) {
                 src : [bundlePath],
                 dest : minifiedBundlePath
             }
-        }
+        },
+
+        yuidoc: {
+            compile: {
+                name: '<%= pkg.name %>',
+                description: '<%= pkg.description %>',
+                version: '<%= pkg.version %>',
+                url: '<%= pkg.homepage %>',
+                options: {
+                    outdir : "docs",
+                    paths : ["./src/"],
+                },
+            }
+        },
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.registerTask('default', ['concat', 'browserify', 'uglify', 'addLicense']);
 

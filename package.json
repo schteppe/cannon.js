@@ -37,6 +37,7 @@
         "grunt-contrib-concat": "~0.1.3",
         "grunt-contrib-uglify": "*",
         "grunt-browserify" : "*",
+        "grunt-contrib-yuidoc":"*",
         "browserify":"*"
     },
     "dependencies" : {
