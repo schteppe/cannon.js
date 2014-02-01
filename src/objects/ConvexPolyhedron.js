@@ -150,441 +150,6 @@ function ConvexPolyhedron( points , faces , normals ) {
         }
     }
 
-    /*
-     * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
-     * @param {ConvexPolyhedron} hull
-     * @param {Vec3} axis
-     * @param {Vec3} pos
-     * @param {Quaternion} quat
-     * @param {array} maxmin maxmin[0] and maxmin[1] will be set to maximum and minimum, respectively.
-     */
-    var worldVertex = new Vec3();
-    function project(hull,axis,pos,quat,maxmin){
-        var n = hull.vertices.length;
-        var max = null;
-        var min = null;
-        var vs = hull.vertices;
-        for(var i=0; i<n; i++){
-            vs[i].copy(worldVertex);
-            quat.vmult(worldVertex,worldVertex);
-            worldVertex.vadd(pos,worldVertex);
-            var val = worldVertex.dot(axis);
-            if(max===null || val>max){
-                max = val;
-            }
-            if(min===null || val<min){
-                min = val;
-            }
-        }
-
-        if(min>max){
-            // Inconsistent - swap
-            var temp = min;
-            min = max;
-            max = temp;
-        }
-        // Output
-        maxmin[0] = max;
-        maxmin[1] = min;
-    }
-
-    /**
-     * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
-     * @method testSepAxis
-     * @param {Vec3} axis
-     * @param {ConvexPolyhedron} hullB
-     * @param {Vec3} posA
-     * @param {Quaternion} quatA
-     * @param {Vec3} posB
-     * @param {Quaternion} quatB
-     * @return {float} The overlap depth, or FALSE if no penetration.
-     */
-    this.testSepAxis = function(axis, hullB, posA, quatA, posB, quatB){
-        var maxminA=[], maxminB=[], hullA=this;
-        project(hullA, axis, posA, quatA, maxminA);
-        project(hullB, axis, posB, quatB, maxminB);
-        var maxA = maxminA[0];
-        var minA = maxminA[1];
-        var maxB = maxminB[0];
-        var minB = maxminB[1];
-        if(maxA<minB || maxB<minA){
-            //console.log(minA,maxA,minB,maxB);
-            return false; // Separated
-        }
-        var d0 = maxA - minB;
-        var d1 = maxB - minA;
-        var depth = d0<d1 ? d0:d1;
-        return depth;
-    };
-
-    /**
-     * Find the separating axis between this hull and another
-     * @method findSeparatingAxis
-     * @param {ConvexPolyhedron} hullB
-     * @param {Vec3} posA
-     * @param {Quaternion} quatA
-     * @param {Vec3} posB
-     * @param {Quaternion} quatB
-     * @param {Vec3} target The target vector to save the axis in
-     * @return {bool} Returns false if a separation is found, else true
-     */
-    var faceANormalWS3 = new Vec3();
-    var Worldnormal1 = new Vec3();
-    var deltaC = new Vec3();
-    var worldEdge0 = new Vec3();
-    var worldEdge1 = new Vec3();
-    var Cross = new Vec3();
-    this.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
-        var dmin = Infinity;
-        var hullA = this;
-        var curPlaneTests=0;
-        var numFacesA = hullA.faces.length;
-
-        // Test normals from hullA
-        for(var i=0; i<numFacesA; i++){
-            // Get world face normal
-            hullA.faceNormals[i].copy(faceANormalWS3);
-            quatA.vmult(faceANormalWS3,faceANormalWS3);
-            //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
-            //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
-            var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
-            if(d===false){
-                return false;
-            }
-
-            if(d<dmin){
-                dmin = d;
-                faceANormalWS3.copy(target);
-            }
-        }
-
-        // Test normals from hullB
-        var numFacesB = hullB.faces.length;
-        for(var i=0;i<numFacesB;i++){
-            hullB.faceNormals[i].copy(Worldnormal1);
-            quatB.vmult(Worldnormal1,Worldnormal1);
-            //posB.vadd(Worldnormal1,Worldnormal1);
-            //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
-            curPlaneTests++;
-            var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
-            if(d===false){
-                return false;
-            }
-
-            if(d<dmin){
-                dmin = d;
-                Worldnormal1.copy(target);
-            }
-        }
-
-        var edgeAstart,edgeAend,edgeBstart,edgeBend;
-
-        var curEdgeEdge = 0;
-        // Test edges
-        for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
-            // Get world edge
-            hullA.uniqueEdges[e0].copy(worldEdge0);
-            quatA.vmult(worldEdge0,worldEdge0);
-            //posA.vadd(worldEdge0,worldEdge0); // needed?
-
-            //console.log("edge0:",worldEdge0.toString());
-
-            for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-                hullB.uniqueEdges[e1].copy(worldEdge1);
-                quatB.vmult(worldEdge1,worldEdge1);
-                //posB.vadd(worldEdge1,worldEdge1); // needed?
-                //console.log("edge1:",worldEdge1.toString());
-                worldEdge0.cross(worldEdge1,Cross);
-                curEdgeEdge++;
-                if(!Cross.almostZero()){
-                    Cross.normalize();
-                    var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
-                    if(dist===false){
-                        return false;
-                    }
-                    if(dist<dmin){
-                        dmin = dist;
-                        Cross.copy(target);
-                    }
-                }
-            }
-        }
-
-        posB.vsub(posA,deltaC);
-        if((deltaC.dot(target))>0.0){
-            target.negate(target);
-        }
-        return true;
-    };
-
-    /**
-     * @method clipAgainstHull
-     * @param {Vec3} posA
-     * @param {Quaternion} quatA
-     * @param {ConvexPolyhedron} hullB
-     * @param {Vec3} posB
-     * @param {Quaternion} quatB
-     * @param {Vec3} separatingNormal
-     * @param {Number} minDist Clamp distance
-     * @param {Number} maxDist
-     * @param {array} result The an array of contact point objects, see clipFaceAgainstHull
-     * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
-     */
-    var WorldNormal = new Vec3();
-    this.clipAgainstHull = function(posA,quatA,hullB,posB,quatB,separatingNormal,minDist,maxDist,result){
-        if(!(posA instanceof Vec3)){
-            throw new Error("posA must be Vec3");
-        }
-        if(!(quatA instanceof Quaternion)){
-            throw new Error("quatA must be Quaternion");
-        }
-        var hullA = this;
-        var curMaxDist = maxDist;
-        var closestFaceB = -1;
-        var dmax = -Infinity;
-        for(var face=0; face < hullB.faces.length; face++){
-            hullB.faceNormals[face].copy(WorldNormal);
-            quatB.vmult(WorldNormal,WorldNormal);
-            //posB.vadd(WorldNormal,WorldNormal);
-            var d = WorldNormal.dot(separatingNormal);
-            if (d > dmax){
-                dmax = d;
-                closestFaceB = face;
-            }
-        }
-        var worldVertsB1 = [];
-        var polyB = hullB.faces[closestFaceB];
-        var numVertices = polyB.length;
-        for(var e0=0; e0<numVertices; e0++){
-            var b = hullB.vertices[polyB[e0]];
-            var worldb = new Vec3();
-            b.copy(worldb);
-            quatB.vmult(worldb,worldb);
-            posB.vadd(worldb,worldb);
-            worldVertsB1.push(worldb);
-        }
-
-        if (closestFaceB>=0){
-            this.clipFaceAgainstHull(separatingNormal,
-                                     posA,
-                                     quatA,
-                                     worldVertsB1,
-                                     minDist,
-                                     maxDist,
-                                     result);
-        }
-    };
-
-    /**
-     * Clip a face against a hull.
-     * @method clipFaceAgainstHull
-     * @param {Vec3} separatingNormal
-     * @param {Vec3} posA
-     * @param {Quaternion} quatA
-     * @param {Array} worldVertsB1 An array of Vec3 with vertices in the world frame.
-     * @param {Number} minDist Distance clamping
-     * @param {Number} maxDist
-     * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
-     */
-    var faceANormalWS = new Vec3();
-    var edge0 = new Vec3();
-    var WorldEdge0 = new Vec3();
-    var worldPlaneAnormal1 = new Vec3();
-    var planeNormalWS1 = new Vec3();
-    var worldA1 = new Vec3();
-    var localPlaneNormal = new Vec3();
-    var planeNormalWS = new Vec3();
-    this.clipFaceAgainstHull = function(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist,result){
-        if(!(separatingNormal instanceof Vec3)){
-            throw new Error("sep normal must be vector");
-        }
-        if(!(worldVertsB1 instanceof Array)){
-            throw new Error("world verts must be array");
-        }
-        minDist = Number(minDist);
-        maxDist = Number(maxDist);
-        var hullA = this;
-        var worldVertsB2 = [];
-        var pVtxIn = worldVertsB1;
-        var pVtxOut = worldVertsB2;
-        // Find the face with normal closest to the separating axis
-        var closestFaceA = -1;
-        var dmin = Infinity;
-        for(var face=0; face<hullA.faces.length; face++){
-            hullA.faceNormals[face].copy(faceANormalWS);
-            quatA.vmult(faceANormalWS,faceANormalWS);
-            //posA.vadd(faceANormalWS,faceANormalWS);
-            var d = faceANormalWS.dot(separatingNormal);
-            if (d < dmin){
-                dmin = d;
-                closestFaceA = face;
-            }
-        }
-        if (closestFaceA<0){
-            console.log("--- did not find any closest face... ---");
-            return;
-        }
-        //console.log("closest A: ",closestFaceA);
-        // Get the face and construct connected faces
-        var polyA = hullA.faces[closestFaceA];
-        polyA.connectedFaces = [];
-        for(var i=0; i<hullA.faces.length; i++){
-            for(var j=0; j<hullA.faces[i].length; j++){
-                if(polyA.indexOf(hullA.faces[i][j])!==-1 /* Sharing a vertex*/ && i!==closestFaceA /* Not the one we are looking for connections from */ && polyA.connectedFaces.indexOf(i)===-1 /* Not already added */ ){
-                    polyA.connectedFaces.push(i);
-                }
-            }
-        }
-        // Clip the polygon to the back of the planes of all faces of hull A, that are adjacent to the witness face
-        var numContacts = pVtxIn.length;
-        var numVerticesA = polyA.length;
-        var res = [];
-        for(var e0=0; e0<numVerticesA; e0++){
-            var a = hullA.vertices[polyA[e0]];
-            var b = hullA.vertices[polyA[(e0+1)%numVerticesA]];
-            a.vsub(b,edge0);
-            edge0.copy(WorldEdge0);
-            quatA.vmult(WorldEdge0,WorldEdge0);
-            posA.vadd(WorldEdge0,WorldEdge0);
-            this.faceNormals[closestFaceA].copy(worldPlaneAnormal1);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
-            quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
-            posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
-            WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
-            planeNormalWS1.negate(planeNormalWS1);
-            a.copy(worldA1);
-            quatA.vmult(worldA1,worldA1);
-            posA.vadd(worldA1,worldA1);
-            var planeEqWS1 = -worldA1.dot(planeNormalWS1);
-            var planeEqWS;
-            if(true){
-                var otherFace = polyA.connectedFaces[e0];
-                this.faceNormals[otherFace].copy(localPlaneNormal);
-                var localPlaneEq = planeConstant(otherFace);
-
-                localPlaneNormal.copy(planeNormalWS);
-                quatA.vmult(planeNormalWS,planeNormalWS);
-                //posA.vadd(planeNormalWS,planeNormalWS);
-                var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
-            } else  {
-                planeNormalWS1.copy(planeNormalWS);
-                planeEqWS = planeEqWS1;
-            }
-
-            // Clip face against our constructed plane
-            //console.log("clipping polygon ",printFace(closestFaceA)," against plane ",planeNormalWS, planeEqWS);
-            this.clipFaceAgainstPlane(pVtxIn, pVtxOut, planeNormalWS, planeEqWS);
-            //console.log(" - clip result: ",pVtxOut);
-
-            // Throw away all clipped points, but save the reamining until next clip
-            while(pVtxIn.length){
-                pVtxIn.shift();
-            }
-            while(pVtxOut.length){
-                pVtxIn.push(pVtxOut.shift());
-            }
-        }
-
-        //console.log("Resulting points after clip:",pVtxIn);
-
-        // only keep contact points that are behind the witness face
-        this.faceNormals[closestFaceA].copy(localPlaneNormal);
-
-        var localPlaneEq = planeConstant(closestFaceA);
-        localPlaneNormal.copy(planeNormalWS);
-        quatA.vmult(planeNormalWS,planeNormalWS);
-
-        var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
-        for (var i=0; i<pVtxIn.length; i++){
-            var depth = planeNormalWS.dot(pVtxIn[i]) + planeEqWS; //???
-            /*console.log("depth calc from normal=",planeNormalWS.toString()," and constant "+planeEqWS+" and vertex ",pVtxIn[i].toString()," gives "+depth);*/
-            if (depth <=minDist){
-                console.log("clamped: depth="+depth+" to minDist="+(minDist+""));
-                depth = minDist;
-            }
-
-            if (depth <=maxDist){
-                var point = pVtxIn[i];
-                if(depth<=0){
-                    /*console.log("Got contact point ",point.toString(),
-                      ", depth=",depth,
-                      "contact normal=",separatingNormal.toString(),
-                      "plane",planeNormalWS.toString(),
-                      "planeConstant",planeEqWS);*/
-                    var p = {
-                        point:point,
-                        normal:planeNormalWS,
-                        depth: depth,
-                    };
-                    result.push(p);
-                }
-            }
-        }
-    };
-
-    /**
-     * Clip a face in a hull against the back of a plane.
-     * @method clipFaceAgainstPlane
-     * @param {Array} inVertices
-     * @param {Array} outVertices
-     * @param {Vec3} planeNormal
-     * @param {Number} planeConstant The constant in the mathematical plane equation
-     */
-    this.clipFaceAgainstPlane = function(inVertices,outVertices, planeNormal, planeConstant){
-        if(!(planeNormal instanceof Vec3)){
-            throw new Error("planeNormal must be Vec3, "+planeNormal+" given");
-        }
-        if(!(inVertices instanceof Array)) {
-            throw new Error("invertices must be Array, "+inVertices+" given");
-        }
-        if(!(outVertices instanceof Array)){
-            throw new Error("outvertices must be Array, "+outVertices+" given");
-        }
-        var n_dot_first, n_dot_last;
-        var numVerts = inVertices.length;
-
-        if(numVerts < 2){
-            return outVertices;
-        }
-
-        var firstVertex = inVertices[inVertices.length-1];
-        var lastVertex =   inVertices[0];
-
-        n_dot_first = planeNormal.dot(firstVertex) + planeConstant;
-
-        for(var vi = 0; vi < numVerts; vi++){
-            lastVertex = inVertices[vi];
-            n_dot_last = planeNormal.dot(lastVertex) + planeConstant;
-            if(n_dot_first < 0){
-                if(n_dot_last < 0){
-                    // Start < 0, end < 0, so output lastVertex
-                    var newv = new Vec3();
-                    lastVertex.copy(newv);
-                    outVertices.push(newv);
-                } else {
-                    // Start < 0, end >= 0, so output intersection
-                    var newv = new Vec3();
-                    firstVertex.lerp(lastVertex,
-                                     n_dot_first / (n_dot_first - n_dot_last),
-                                     newv);
-                    outVertices.push(newv);
-                }
-            } else {
-                if(n_dot_last<0){
-                    // Start >= 0, end < 0 so output intersection and end
-                    var newv = new Vec3();
-                    firstVertex.lerp(lastVertex,
-                                     n_dot_first / (n_dot_first - n_dot_last),
-                                     newv);
-                    outVertices.push(newv);
-                    outVertices.push(lastVertex);
-                }
-            }
-            firstVertex = lastVertex;
-            n_dot_first = n_dot_last;
-        }
-        return outVertices;
-    };
-
     var that = this;
     function normalOfFace(i,target){
         var f = that.faces[i];
@@ -593,87 +158,443 @@ function ConvexPolyhedron( points , faces , normals ) {
         var vc = that.vertices[f[2]];
         return normal(va,vb,vc,target);
     }
-
-    function planeConstant(face_i,target){
-        var f = that.faces[face_i];
-        var n = that.faceNormals[face_i];
-        var v = that.vertices[f[0]];
-        var c = -n.dot(v);
-        return c;
-    }
-
-
-    function printFace(i){
-        var f = that.faces[i], s = "";
-        for(var j=0; j<f.length; j++){
-            s += " ("+that.vertices[f[j]]+")";
-        }
-        return s;
-    }
-
-    /*
-     * Detect whether two edges are equal.
-     * Note that when constructing the convex hull, two same edges can only
-     * be of the negative direction.
-     * @return bool
-     */
-    function equalEdge( ea, eb ) {
-        return ea[ 0 ] === eb[ 1 ] && ea[ 1 ] === eb[ 0 ];
-    }
-
-    /*
-     * Create a random offset between -1e-6 and 1e-6.
-     * @return float
-     */
-    function randomOffset() {
-        return ( Math.random() - 0.5 ) * 2 * 1e-6;
-    }
-
-    this.calculateLocalInertia = function(mass,target){
-        // Approximate with box inertia
-        // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
-        that.computeAABB();
-        var x = this.aabbmax.x - this.aabbmin.x,
-            y = this.aabbmax.y - this.aabbmin.y,
-            z = this.aabbmax.z - this.aabbmin.z;
-        target.x = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*z*2*z );
-        target.y = 1.0 / 12.0 * mass * ( 2*x*2*x + 2*z*2*z );
-        target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
-    };
-
-    var worldVert = new Vec3();
-    this.computeAABB = function(){
-        var n = this.vertices.length,
-        aabbmin = this.aabbmin,
-        aabbmax = this.aabbmax,
-        vertices = this.vertices;
-        aabbmin.set(Infinity,Infinity,Infinity);
-        aabbmax.set(-Infinity,-Infinity,-Infinity);
-        for(var i=0; i<n; i++){
-            var v = vertices[i];
-            if     (v.x < aabbmin.x){
-                aabbmin.x = v.x;
-            } else if(v.x > aabbmax.x){
-                aabbmax.x = v.x;
-            }
-            if     (v.y < aabbmin.y){
-                aabbmin.y = v.y;
-            } else if(v.y > aabbmax.y){
-                aabbmax.y = v.y;
-            }
-            if     (v.z < aabbmin.z){
-                aabbmin.z = v.z;
-            } else if(v.z > aabbmax.z){
-                aabbmax.z = v.z;
-            }
-        }
-    };
-
-    //this.computeAABB();
 };
 
 ConvexPolyhedron.prototype = new Shape();
 ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
+
+/**
+ * @method clipAgainstHull
+ * @param {Vec3} posA
+ * @param {Quaternion} quatA
+ * @param {ConvexPolyhedron} hullB
+ * @param {Vec3} posB
+ * @param {Quaternion} quatB
+ * @param {Vec3} separatingNormal
+ * @param {Number} minDist Clamp distance
+ * @param {Number} maxDist
+ * @param {array} result The an array of contact point objects, see clipFaceAgainstHull
+ * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
+ */
+var cah_WorldNormal = new Vec3();
+ConvexPolyhedron.prototype.clipAgainstHull = function(posA,quatA,hullB,posB,quatB,separatingNormal,minDist,maxDist,result){
+    var WorldNormal = cah_WorldNormal;
+    if(!(posA instanceof Vec3)){
+        throw new Error("posA must be Vec3");
+    }
+    if(!(quatA instanceof Quaternion)){
+        throw new Error("quatA must be Quaternion");
+    }
+    var hullA = this;
+    var curMaxDist = maxDist;
+    var closestFaceB = -1;
+    var dmax = -Infinity;
+    for(var face=0; face < hullB.faces.length; face++){
+        hullB.faceNormals[face].copy(WorldNormal);
+        quatB.vmult(WorldNormal,WorldNormal);
+        //posB.vadd(WorldNormal,WorldNormal);
+        var d = WorldNormal.dot(separatingNormal);
+        if (d > dmax){
+            dmax = d;
+            closestFaceB = face;
+        }
+    }
+    var worldVertsB1 = [];
+    var polyB = hullB.faces[closestFaceB];
+    var numVertices = polyB.length;
+    for(var e0=0; e0<numVertices; e0++){
+        var b = hullB.vertices[polyB[e0]];
+        var worldb = new Vec3();
+        b.copy(worldb);
+        quatB.vmult(worldb,worldb);
+        posB.vadd(worldb,worldb);
+        worldVertsB1.push(worldb);
+    }
+
+    if (closestFaceB>=0){
+        this.clipFaceAgainstHull(separatingNormal,
+                                 posA,
+                                 quatA,
+                                 worldVertsB1,
+                                 minDist,
+                                 maxDist,
+                                 result);
+    }
+};
+
+/**
+ * Find the separating axis between this hull and another
+ * @method findSeparatingAxis
+ * @param {ConvexPolyhedron} hullB
+ * @param {Vec3} posA
+ * @param {Quaternion} quatA
+ * @param {Vec3} posB
+ * @param {Quaternion} quatB
+ * @param {Vec3} target The target vector to save the axis in
+ * @return {bool} Returns false if a separation is found, else true
+ */
+var fsa_faceANormalWS3 = new Vec3(),
+    fsa_Worldnormal1 = new Vec3(),
+    fsa_deltaC = new Vec3(),
+    fsa_worldEdge0 = new Vec3(),
+    fsa_worldEdge1 = new Vec3(),
+    fsa_Cross = new Vec3();
+ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
+    var faceANormalWS3 = fsa_faceANormalWS3,
+        Worldnormal1 = fsa_Worldnormal1,
+        deltaC = fsa_deltaC,
+        worldEdge0 = fsa_worldEdge0,
+        worldEdge1 = fsa_worldEdge1,
+        Cross = fsa_Cross;
+
+    var dmin = Infinity;
+    var hullA = this;
+    var curPlaneTests=0;
+    var numFacesA = hullA.faces.length;
+
+    // Test normals from hullA
+    for(var i=0; i<numFacesA; i++){
+        // Get world face normal
+        hullA.faceNormals[i].copy(faceANormalWS3);
+        quatA.vmult(faceANormalWS3,faceANormalWS3);
+        //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
+        //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
+        var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
+        if(d===false){
+            return false;
+        }
+
+        if(d<dmin){
+            dmin = d;
+            faceANormalWS3.copy(target);
+        }
+    }
+
+    // Test normals from hullB
+    var numFacesB = hullB.faces.length;
+    for(var i=0;i<numFacesB;i++){
+        hullB.faceNormals[i].copy(Worldnormal1);
+        quatB.vmult(Worldnormal1,Worldnormal1);
+        //posB.vadd(Worldnormal1,Worldnormal1);
+        //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
+        curPlaneTests++;
+        var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
+        if(d===false){
+            return false;
+        }
+
+        if(d<dmin){
+            dmin = d;
+            Worldnormal1.copy(target);
+        }
+    }
+
+    var edgeAstart,edgeAend,edgeBstart,edgeBend;
+
+    var curEdgeEdge = 0;
+    // Test edges
+    for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
+        // Get world edge
+        hullA.uniqueEdges[e0].copy(worldEdge0);
+        quatA.vmult(worldEdge0,worldEdge0);
+        //posA.vadd(worldEdge0,worldEdge0); // needed?
+
+        //console.log("edge0:",worldEdge0.toString());
+
+        for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
+            hullB.uniqueEdges[e1].copy(worldEdge1);
+            quatB.vmult(worldEdge1,worldEdge1);
+            //posB.vadd(worldEdge1,worldEdge1); // needed?
+            //console.log("edge1:",worldEdge1.toString());
+            worldEdge0.cross(worldEdge1,Cross);
+            curEdgeEdge++;
+            if(!Cross.almostZero()){
+                Cross.normalize();
+                var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
+                if(dist===false){
+                    return false;
+                }
+                if(dist<dmin){
+                    dmin = dist;
+                    Cross.copy(target);
+                }
+            }
+        }
+    }
+
+    posB.vsub(posA,deltaC);
+    if((deltaC.dot(target))>0.0){
+        target.negate(target);
+    }
+    return true;
+};
+
+/**
+ * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
+ * @method testSepAxis
+ * @param {Vec3} axis
+ * @param {ConvexPolyhedron} hullB
+ * @param {Vec3} posA
+ * @param {Quaternion} quatA
+ * @param {Vec3} posB
+ * @param {Quaternion} quatB
+ * @return {float} The overlap depth, or FALSE if no penetration.
+ */
+ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB, quatB){
+    var maxminA=[], maxminB=[], hullA=this;
+    ConvexPolyhedron.project(hullA, axis, posA, quatA, maxminA);
+    ConvexPolyhedron.project(hullB, axis, posB, quatB, maxminB);
+    var maxA = maxminA[0];
+    var minA = maxminA[1];
+    var maxB = maxminB[0];
+    var minB = maxminB[1];
+    if(maxA<minB || maxB<minA){
+        //console.log(minA,maxA,minB,maxB);
+        return false; // Separated
+    }
+    var d0 = maxA - minB;
+    var d1 = maxB - minA;
+    var depth = d0<d1 ? d0:d1;
+    return depth;
+};
+
+ConvexPolyhedron.prototype.calculateLocalInertia = function(mass,target){
+    // Approximate with box inertia
+    // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
+    this.computeAABB();
+    var x = this.aabbmax.x - this.aabbmin.x,
+        y = this.aabbmax.y - this.aabbmin.y,
+        z = this.aabbmax.z - this.aabbmin.z;
+    target.x = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*z*2*z );
+    target.y = 1.0 / 12.0 * mass * ( 2*x*2*x + 2*z*2*z );
+    target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
+};
+
+ConvexPolyhedron.prototype.getPlaneConstantOfFace = function(face_i){
+    var f = this.faces[face_i];
+    var n = this.faceNormals[face_i];
+    var v = this.vertices[f[0]];
+    var c = -n.dot(v);
+    return c;
+};
+
+/**
+ * Clip a face against a hull.
+ * @method clipFaceAgainstHull
+ * @param {Vec3} separatingNormal
+ * @param {Vec3} posA
+ * @param {Quaternion} quatA
+ * @param {Array} worldVertsB1 An array of Vec3 with vertices in the world frame.
+ * @param {Number} minDist Distance clamping
+ * @param {Number} maxDist
+ * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
+ */
+var cfah_faceANormalWS = new Vec3(),
+    cfah_edge0 = new Vec3(),
+    cfah_WorldEdge0 = new Vec3(),
+    cfah_worldPlaneAnormal1 = new Vec3(),
+    cfah_planeNormalWS1 = new Vec3(),
+    cfah_worldA1 = new Vec3(),
+    cfah_localPlaneNormal = new Vec3(),
+    cfah_planeNormalWS = new Vec3();
+ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist,result){
+    if(!(separatingNormal instanceof Vec3)){
+        throw new Error("sep normal must be vector");
+    }
+    if(!(worldVertsB1 instanceof Array)){
+        throw new Error("world verts must be array");
+    }
+
+    var faceANormalWS = cfah_faceANormalWS,
+        edge0 = cfah_edge0,
+        WorldEdge0 = cfah_WorldEdge0,
+        worldPlaneAnormal1 = cfah_worldPlaneAnormal1,
+        planeNormalWS1 = cfah_planeNormalWS1,
+        worldA1 = cfah_worldA1,
+        localPlaneNormal = cfah_localPlaneNormal,
+        planeNormalWS = cfah_planeNormalWS;
+
+    minDist = Number(minDist);
+    maxDist = Number(maxDist);
+    var hullA = this;
+    var worldVertsB2 = [];
+    var pVtxIn = worldVertsB1;
+    var pVtxOut = worldVertsB2;
+    // Find the face with normal closest to the separating axis
+    var closestFaceA = -1;
+    var dmin = Infinity;
+    for(var face=0; face<hullA.faces.length; face++){
+        hullA.faceNormals[face].copy(faceANormalWS);
+        quatA.vmult(faceANormalWS,faceANormalWS);
+        //posA.vadd(faceANormalWS,faceANormalWS);
+        var d = faceANormalWS.dot(separatingNormal);
+        if (d < dmin){
+            dmin = d;
+            closestFaceA = face;
+        }
+    }
+    if (closestFaceA<0){
+        console.log("--- did not find any closest face... ---");
+        return;
+    }
+    //console.log("closest A: ",closestFaceA);
+    // Get the face and construct connected faces
+    var polyA = hullA.faces[closestFaceA];
+    polyA.connectedFaces = [];
+    for(var i=0; i<hullA.faces.length; i++){
+        for(var j=0; j<hullA.faces[i].length; j++){
+            if(polyA.indexOf(hullA.faces[i][j])!==-1 /* Sharing a vertex*/ && i!==closestFaceA /* Not the one we are looking for connections from */ && polyA.connectedFaces.indexOf(i)===-1 /* Not already added */ ){
+                polyA.connectedFaces.push(i);
+            }
+        }
+    }
+    // Clip the polygon to the back of the planes of all faces of hull A, that are adjacent to the witness face
+    var numContacts = pVtxIn.length;
+    var numVerticesA = polyA.length;
+    var res = [];
+    for(var e0=0; e0<numVerticesA; e0++){
+        var a = hullA.vertices[polyA[e0]];
+        var b = hullA.vertices[polyA[(e0+1)%numVerticesA]];
+        a.vsub(b,edge0);
+        edge0.copy(WorldEdge0);
+        quatA.vmult(WorldEdge0,WorldEdge0);
+        posA.vadd(WorldEdge0,WorldEdge0);
+        this.faceNormals[closestFaceA].copy(worldPlaneAnormal1);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
+        quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
+        posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
+        WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
+        planeNormalWS1.negate(planeNormalWS1);
+        a.copy(worldA1);
+        quatA.vmult(worldA1,worldA1);
+        posA.vadd(worldA1,worldA1);
+        var planeEqWS1 = -worldA1.dot(planeNormalWS1);
+        var planeEqWS;
+        if(true){
+            var otherFace = polyA.connectedFaces[e0];
+            this.faceNormals[otherFace].copy(localPlaneNormal);
+            var localPlaneEq = this.getPlaneConstantOfFace(otherFace);
+
+            localPlaneNormal.copy(planeNormalWS);
+            quatA.vmult(planeNormalWS,planeNormalWS);
+            //posA.vadd(planeNormalWS,planeNormalWS);
+            var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
+        } else  {
+            planeNormalWS1.copy(planeNormalWS);
+            planeEqWS = planeEqWS1;
+        }
+
+        // Clip face against our constructed plane
+        this.clipFaceAgainstPlane(pVtxIn, pVtxOut, planeNormalWS, planeEqWS);
+
+        // Throw away all clipped points, but save the reamining until next clip
+        while(pVtxIn.length){
+            pVtxIn.shift();
+        }
+        while(pVtxOut.length){
+            pVtxIn.push(pVtxOut.shift());
+        }
+    }
+
+    //console.log("Resulting points after clip:",pVtxIn);
+
+    // only keep contact points that are behind the witness face
+    this.faceNormals[closestFaceA].copy(localPlaneNormal);
+
+    var localPlaneEq = this.getPlaneConstantOfFace(closestFaceA);
+    localPlaneNormal.copy(planeNormalWS);
+    quatA.vmult(planeNormalWS,planeNormalWS);
+
+    var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
+    for (var i=0; i<pVtxIn.length; i++){
+        var depth = planeNormalWS.dot(pVtxIn[i]) + planeEqWS; //???
+        /*console.log("depth calc from normal=",planeNormalWS.toString()," and constant "+planeEqWS+" and vertex ",pVtxIn[i].toString()," gives "+depth);*/
+        if (depth <=minDist){
+            console.log("clamped: depth="+depth+" to minDist="+(minDist+""));
+            depth = minDist;
+        }
+
+        if (depth <=maxDist){
+            var point = pVtxIn[i];
+            if(depth<=0){
+                /*console.log("Got contact point ",point.toString(),
+                  ", depth=",depth,
+                  "contact normal=",separatingNormal.toString(),
+                  "plane",planeNormalWS.toString(),
+                  "planeConstant",planeEqWS);*/
+                var p = {
+                    point:point,
+                    normal:planeNormalWS,
+                    depth: depth,
+                };
+                result.push(p);
+            }
+        }
+    }
+};
+
+
+/**
+ * Clip a face in a hull against the back of a plane.
+ * @method clipFaceAgainstPlane
+ * @param {Array} inVertices
+ * @param {Array} outVertices
+ * @param {Vec3} planeNormal
+ * @param {Number} planeConstant The constant in the mathematical plane equation
+ */
+ConvexPolyhedron.prototype.clipFaceAgainstPlane = function(inVertices,outVertices, planeNormal, planeConstant){
+    if(!(planeNormal instanceof Vec3)){
+        throw new Error("planeNormal must be Vec3, "+planeNormal+" given");
+    }
+    if(!(inVertices instanceof Array)) {
+        throw new Error("invertices must be Array, "+inVertices+" given");
+    }
+    if(!(outVertices instanceof Array)){
+        throw new Error("outvertices must be Array, "+outVertices+" given");
+    }
+    var n_dot_first, n_dot_last;
+    var numVerts = inVertices.length;
+
+    if(numVerts < 2)
+        return outVertices;
+
+    var firstVertex = inVertices[inVertices.length-1],
+        lastVertex =   inVertices[0];
+
+    n_dot_first = planeNormal.dot(firstVertex) + planeConstant;
+
+    for(var vi = 0; vi < numVerts; vi++){
+        lastVertex = inVertices[vi];
+        n_dot_last = planeNormal.dot(lastVertex) + planeConstant;
+        if(n_dot_first < 0){
+            if(n_dot_last < 0){
+                // Start < 0, end < 0, so output lastVertex
+                var newv = new Vec3();
+                lastVertex.copy(newv);
+                outVertices.push(newv);
+            } else {
+                // Start < 0, end >= 0, so output intersection
+                var newv = new Vec3();
+                firstVertex.lerp(lastVertex,
+                                 n_dot_first / (n_dot_first - n_dot_last),
+                                 newv);
+                outVertices.push(newv);
+            }
+        } else {
+            if(n_dot_last<0){
+                // Start >= 0, end < 0 so output intersection and end
+                var newv = new Vec3();
+                firstVertex.lerp(lastVertex,
+                                 n_dot_first / (n_dot_first - n_dot_last),
+                                 newv);
+                outVertices.push(newv);
+                outVertices.push(lastVertex);
+            }
+        }
+        firstVertex = lastVertex;
+        n_dot_first = n_dot_last;
+    }
+    return outVertices;
+};
 
 // Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
 ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat){
@@ -690,6 +611,37 @@ ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat){
     }
 
     this.worldVerticesNeedsUpdate = false;
+};
+
+var computeAABB_worldVert = new Vec3();
+ConvexPolyhedron.prototype.computeAABB = function(){
+    var n = this.vertices.length,
+        aabbmin = this.aabbmin,
+        aabbmax = this.aabbmax,
+        vertices = this.vertices,
+        worldVert = computeAABB_worldVert;
+
+    aabbmin.set(Infinity,Infinity,Infinity);
+    aabbmax.set(-Infinity,-Infinity,-Infinity);
+
+    for(var i=0; i<n; i++){
+        var v = vertices[i];
+        if     (v.x < aabbmin.x){
+            aabbmin.x = v.x;
+        } else if(v.x > aabbmax.x){
+            aabbmax.x = v.x;
+        }
+        if     (v.y < aabbmin.y){
+            aabbmin.y = v.y;
+        } else if(v.y > aabbmax.y){
+            aabbmax.y = v.y;
+        }
+        if     (v.z < aabbmin.z){
+            aabbmin.z = v.z;
+        } else if(v.z > aabbmax.z){
+            aabbmax.z = v.z;
+        }
+    }
 };
 
 // Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
@@ -847,6 +799,45 @@ ConvexPolyhedron.prototype.pointIsInside = function(p){
     return positiveResult ? 1 : -1;
 };
 
+/**
+ * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
+ * @static
+ * @method project
+ * @param {ConvexPolyhedron} hull
+ * @param {Vec3} axis
+ * @param {Vec3} pos
+ * @param {Quaternion} quat
+ * @param {array} result result[0] and result[1] will be set to maximum and minimum, respectively.
+ */
+var project_worldVertex = new Vec3();
+ConvexPolyhedron.project = function(hull,axis,pos,quat,result){
+    var n = hull.vertices.length,
+        worldVertex = project_worldVertex,
+        max = null,
+        min = null,
+        vs = hull.vertices;
 
-function pointInConvex(p){
+    for(var i=0; i<n; i++){
+        vs[i].copy(worldVertex);
+        quat.vmult(worldVertex,worldVertex);
+        worldVertex.vadd(pos,worldVertex);
+        var val = worldVertex.dot(axis);
+
+        if(max===null || val>max)
+            max = val;
+
+        if(min===null || val<min)
+            min = val;
+
+    }
+
+    if(min>max){
+        // Inconsistent - swap
+        var temp = min;
+        min = max;
+        max = temp;
+    }
+    // Output
+    result[0] = max;
+    result[1] = min;
 }
