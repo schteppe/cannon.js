@@ -11,7 +11,7 @@ var Vec3 = require('../math/Vec3')
  * @param {Vec3} origin
  * @param {Vec3} direction
  */
-Ray = function(origin, direction){
+function Ray(origin, direction){
     /**
     * @property {Vec3} origin
     */

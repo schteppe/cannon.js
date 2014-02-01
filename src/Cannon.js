@@ -5,6 +5,7 @@ module.exports = {
     GridBroadphase :                require('./collision/GridBroadphase'),
     NaiveBroadphase :               require('./collision/NaiveBroadphase'),
     ObjectCollisionMatrix :         require('./collision/ObjectCollisionMatrix'),
+    Ray :                           require('./collision/Ray'),
 
     Constraint :                    require('./constraints/Constraint'),
     ContactEquation :               require('./constraints/ContactEquation'),
