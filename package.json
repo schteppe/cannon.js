@@ -1,7 +1,7 @@
 {
     "name": "cannon",
-    "version": "0.5.0",
-    "description": "A lightweight 3D physics engine written in JavaScript. Perfect to use with three.js, for example.",
+    "version": "0.6.0",
+    "description": "A lightweight 3D physics engine written in JavaScript.",
     "homepage": "https://github.com/schteppe/cannon.js",
     "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
     "keywords": [

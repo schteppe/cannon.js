@@ -1,7 +1,4 @@
 {
-    "name": "cannon.js",
-    "description": "3D javascript physics engine",
-    "version": "0.6.0",
     "options": {
         "outdir" : "docs",
         "paths" : ["./src/"]
