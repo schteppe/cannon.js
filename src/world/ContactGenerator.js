@@ -23,38 +23,48 @@ function ContactGenerator(){
      */
     this.contactReduction = false;
 
-    // Contact point objects that can be reused
+    /**
+     * Internal storage of pooled contact points.
+     * @property {Array} contactPointPool
+     */
     this.contactPointPool = [];
 
-    this.v3pool = new Vec3Pool();
-
-    /*
-     * Swaps the body references in the contact
-     * @param object r
+    /**
+     * Pooled vectors.
+     * @property {Vec3Pool} v3pool
      */
-    this.swapResult = function(r){
-        var temp;
-        temp = r.ri;
-        r.ri = r.rj;
-        r.rj = temp;
-        r.ni.negate(r.ni);
-        temp = r.bi;
-        r.bi = r.bj;
-        r.bj = temp;
-    }
+    this.v3pool = new Vec3Pool();
 };
+
+/**
+ * Swaps the body references in the contact
+ * @method swapResult
+ * @param object r
+ */
+ContactGenerator.prototype.swapResult = function(r){
+    var temp;
+    temp = r.ri;
+    r.ri = r.rj;
+    r.rj = temp;
+    r.ni.negate(r.ni);
+    temp = r.bi;
+    r.bi = r.bj;
+    r.bj = temp;
+}
 
 /**
  * Removes unnecessary members of an array of ContactEquation.
  * @method reduceContacts
+ * @param {Array} contacts
  */
 ContactGenerator.prototype.reduceContacts = function(contacts){
 
 };
 
 /**
- * Make a contact object.
- * @return object
+ * Make a contact object, by using the internal pool or creating a new one.
+ * @method makeResult
+ * @return {ContactEquation}
  */
 ContactGenerator.prototype.makeResult = function(bi,bj){
     if(this.contactPointPool.length){
@@ -68,6 +78,7 @@ ContactGenerator.prototype.makeResult = function(bi,bj){
 };
 
 /**
+ * Generate all contacts between a list of body pairs
  * @method getContacts
  * @param {array} p1 Array of body indices
  * @param {array} p2 Array of body indices
@@ -85,7 +96,7 @@ ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts
             bj = p2[k];
 
         // Get contacts
-        this.nearPhase( result,
+        this.narrowphase( result,
                         bi.shape,
                         bj.shape,
                         bi.position,
@@ -99,18 +110,17 @@ ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts
 };
 
 /**
- * Near phase calculation, get the contact point, normal, etc.
- * @method nearPhase
- * @param array result The result one will get back with all the contact point information
- * @param Shape si Colliding shape. If not given, particle is assumed.
- * @param Shape sj
- * @param Vec3 xi Position of the center of mass
- * @param Vec3 xj
- * @param Quaternion qi Rotation around the center of mass
- * @param Quaternion qj
- * @todo All collision cases
+ * Narrowphase calculation. Get the ContactEquations given two shapes: i and j
+ * @method narrowphase
+ * @param {array} result The result one will get back with all the contact point information
+ * @param {Shape} si Colliding shape. If not given, particle is assumed.
+ * @param {Shape} sj
+ * @param {Vec3} xi Position of the center of mass
+ * @param {Vec3} xj
+ * @param {Quaternion} qi Rotation around the center of mass
+ * @param {Quaternion} qj
  */
-ContactGenerator.prototype.nearPhase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var swapped = false,
         types = Shape.types,
         SPHERE = types.SPHERE,
@@ -212,14 +222,14 @@ ContactGenerator.prototype.nearPhase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
             switch(sj.type){
             case types.BOX: // box-box
                 // Do convex/convex instead
-                this.nearPhase(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
+                this.narrowphase(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
                 break;
             case types.COMPOUND: // box-compound
                 this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             case types.CONVEXPOLYHEDRON: // box-convexpolyhedron
                 // Do convex/convex instead
-                this.nearPhase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+                this.narrowphase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
                 console.warn("Collision between Shape.types.BOX and "+sj.type+" not implemented yet.");
@@ -290,6 +300,9 @@ ContactGenerator.prototype.nearPhase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     }
 };
 
+/**
+ * @method sphereSphere
+ */
 ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have only one contact in this case
     var r = this.makeResult(bi,bj);
@@ -308,6 +321,19 @@ ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,b
 
 var point_on_plane_to_sphere = new Vec3();
 var plane_to_sphere_ortho = new Vec3();
+
+/**
+ * @method spherePlane
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have one contact in this case
     var r = this.makeResult(bi,bj);
@@ -380,6 +406,19 @@ var sphereBox_sphere_to_corner = new Vec3();
 var sphereBox_side_ns = new Vec3();
 var sphereBox_side_ns1 = new Vec3();
 var sphereBox_side_ns2 = new Vec3();
+
+/**
+ * @method sphereBox
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var v3pool = this.v3pool;
 
@@ -565,6 +604,19 @@ var sphereConvex_worldPoint = new Vec3();
 var sphereConvex_worldSpherePointClosestToPlane = new Vec3();
 var sphereConvex_penetrationVec = new Vec3();
 var sphereConvex_sphereToWorldPoint = new Vec3();
+
+/**
+ * @method sphereConvex
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var v3pool = this.v3pool;
     xi.vsub(xj,convex_to_sphere);
@@ -735,6 +787,19 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
 
 var planeBox_normal = new Vec3();
 var plane_to_corner = new Vec3();
+
+/**
+ * @method planeBox
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     this.planeConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
 }
@@ -742,8 +807,15 @@ ContactGenerator.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
 /**
  * Go recursive for compound shapes
  * @method recurseCompound
- * @param Shape si
- * @param CompoundShape sj
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
  */
 var recurseCompound_v3pool = [];
 var recurseCompound_quatpool = [];
@@ -755,12 +827,12 @@ ContactGenerator.prototype.recurseCompound = function(result,si,sj,xi,xj,qi,qj,b
         var r = [];
         var newQuat = quatPool.pop() || new Quaternion();
         var newPos = v3pool.pop() || new Vec3();
-        qj.mult(sj.childOrientations[i],newQuat); // Can't reuse these since nearPhase() may recurse
+        qj.mult(sj.childOrientations[i],newQuat); // Can't reuse these since narrowphase() may recurse
         newQuat.normalize();
         //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
         qj.vmult(sj.childOffsets[i],newPos);
         xj.vadd(newPos,newPos);
-        this.nearPhase(r,
+        this.narrowphase(r,
                       si,
                       sj.childShapes[i],
                       xi,
@@ -793,6 +865,19 @@ var planeConvex_v = new Vec3();
 var planeConvex_normal = new Vec3();
 var planeConvex_relpos = new Vec3();
 var planeConvex_projected = new Vec3();
+
+/**
+ * @method planeConvex
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.planeConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // Simply return the points behind the plane.
     var v = planeConvex_v;
@@ -829,6 +914,19 @@ ContactGenerator.prototype.planeConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj
 
 var convexConvex_sepAxis = new Vec3();
 var convexConvex_q = new Vec3();
+
+/**
+ * @method convexConvex
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var sepAxis = convexConvex_sepAxis;
     if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
@@ -854,6 +952,19 @@ ContactGenerator.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
 var particlePlane_normal = new Vec3();
 var particlePlane_relpos = new Vec3();
 var particlePlane_projected = new Vec3();
+
+/**
+ * @method particlePlane
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var normal = particlePlane_normal;
     normal.set(0,0,1);
@@ -880,6 +991,19 @@ ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,
 }
 
 var particleSphere_normal = new Vec3();
+
+/**
+ * @method particleSphere
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // The normal is the unit vector from sphere center to particle center
     var normal = particleSphere_normal;
@@ -906,6 +1030,19 @@ var particleConvex_normal = new Vec3();
 var particleConvex_penetratedFaceNormal = new Vec3();
 var particleConvex_vertexToParticle = new Vec3();
 var particleConvex_worldPenetrationVec = new Vec3();
+
+/**
+ * @method particleConvex
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
 ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var penetratedFaceIndex = -1;
     var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
