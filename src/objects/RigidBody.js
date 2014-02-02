@@ -78,7 +78,7 @@ function RigidBody(mass,shape,material){
     this.inertiaWorldAutoUpdate = false;
 
     /**
-     * @property intInertia
+     * @property invInertia
      * @type {Vec3}
      */
     this.invInertia = new Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
