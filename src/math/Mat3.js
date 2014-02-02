@@ -70,6 +70,18 @@ Mat3.prototype.setTrace = function(vec3){
 };
 
 /**
+ * Sets the matrix diagonal elements from a Vec3
+ * @method setTrace
+ */
+Mat3.prototype.getTrace = function(target){
+    var target = target || new Vec3();
+    var e = this.elements;
+    target.x = e[0];
+    target.y = e[4];
+    target.z = e[8];
+};
+
+/**
  * Matrix-Vector multiplication
  * @method vmult
  * @param {Vec3} v The vector to multiply with
@@ -106,8 +118,8 @@ Mat3.prototype.smult = function(s){
  * @param {Mat3} m Matrix to multiply with from left side.
  * @return {Mat3} The result.
  */
-Mat3.prototype.mmult = function(m){
-    var r = new Mat3();
+Mat3.prototype.mmult = function(m,target){
+    var r = target || new Mat3();
     for(var i=0; i<3; i++){
         for(var j=0; j<3; j++){
             var sum = 0.0;
@@ -118,6 +130,24 @@ Mat3.prototype.mmult = function(m){
         }
     }
     return r;
+};
+
+/**
+ * Scale each column of the matrix
+ * @method scale
+ * @param {Vec3} v
+ * @return {Mat3} The result.
+ */
+Mat3.prototype.scale = function(v,target){
+    target = target || new Mat3();
+    var e = this.elements,
+        t = target.elements;
+    for(var i=0; i!==3; i++){
+        t[3*i + 0] = v.x * e[3*i + 0];
+        t[3*i + 1] = v.y * e[3*i + 1];
+        t[3*i + 2] = v.z * e[3*i + 2];
+    }
+    return target;
 };
 
 /**
@@ -336,6 +366,49 @@ Mat3.prototype.reverse = function(target){
             target.e( i , j , p );
         } while (j--);
     } while (i--);
+
+    return target;
+};
+
+/**
+ * Set the matrix from a quaterion
+ * @param {Quaternion} q
+ */
+Mat3.prototype.setRotationFromQuaternion = function( q ) {
+    var x = q.x, y = q.y, z = q.z, w = q.w,
+        x2 = x + x, y2 = y + y, z2 = z + z,
+        xx = x * x2, xy = x * y2, xz = x * z2,
+        yy = y * y2, yz = y * z2, zz = z * z2,
+        wx = w * x2, wy = w * y2, wz = w * z2,
+        e = this.elements;
+
+    e[3*0 + 0] = 1 - ( yy + zz );
+    e[3*0 + 1] = xy - wz;
+    e[3*0 + 2] = xz + wy;
+
+    e[3*1 + 0] = xy + wz;
+    e[3*1 + 1] = 1 - ( xx + zz );
+    e[3*1 + 2] = yz - wx;
+
+    e[3*2 + 0] = xz - wy;
+    e[3*2 + 1] = yz + wx;
+    e[3*2 + 2] = 1 - ( xx + yy );
+
+    return this;
+};
+
+
+Mat3.prototype.transpose = function( target ) {
+    target = target || new Mat3();
+
+    var Mt = target.elements,
+        M = this.elements;
+
+    for(var i=0; i!==3; i++){
+        for(var j=0; j!==3; j++){
+            Mt[3*i + j] = M[3*j + i];
+        }
+    }
 
     return target;
 };
