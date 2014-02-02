@@ -97,6 +97,9 @@ Quaternion.prototype.toAxisAngle = function(targetAxis){
     return [targetAxis,angle];
 };
 
+var sfv_t1 = new Vec3(),
+    sfv_t2 = new Vec3();
+
 /**
  * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
  * @method setFromVectors
@@ -104,12 +107,20 @@ Quaternion.prototype.toAxisAngle = function(targetAxis){
  * @param {Vec3} v
  */
 Quaternion.prototype.setFromVectors = function(u,v){
-    var a = u.cross(v);
-    this.x = a.x;
-    this.y = a.y;
-    this.z = a.z;
-    this.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + u.dot(v);
-    this.normalize();
+    if(u.isAntiparallelTo(v)){
+        var t1 = sfv_t1;
+        var t2 = sfv_t2;
+
+        u.tangents(t1,t2);
+        this.setFromAxisAngle(t1,Math.PI);
+    } else {
+        var a = u.cross(v);
+        this.x = a.x;
+        this.y = a.y;
+        this.z = a.z;
+        this.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + u.dot(v);
+        this.normalize();
+    }
 };
 
 /**

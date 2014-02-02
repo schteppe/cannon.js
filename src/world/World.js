@@ -404,7 +404,6 @@ World.prototype.step = function(dt){
         gz = gravity.z,
         i=0;
 
-
     if(doProfiling){
         profilingStart = now();
     }

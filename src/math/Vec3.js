@@ -344,3 +344,17 @@ Vec3.prototype.almostZero = function(precision){
     }
     return true;
 };
+
+var antip_neg = new Vec3();
+
+/**
+ * Check if the vector is anti-parallel to another vector.
+ * @method isAntiparallelTo
+ * @param  {Vec3}  v
+ * @param  {Number}  precision Set to zero for exact comparisons
+ * @return {Boolean}
+ */
+Vec3.prototype.isAntiparallelTo = function(v,precision){
+    this.negate(antip_neg);
+    return antip_neg.almostEquals(v,precision);
+};
