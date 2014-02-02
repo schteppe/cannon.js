@@ -24,7 +24,7 @@ The sample code below creates a sphere on a plane, steps the simulation, and pri
 var world = new CANNON.World();
 world.gravity.set(0,0,-9.82); // m/s²
 world.broadphase = new CANNON.NaiveBroadphase();
-    
+
 // Create a sphere
 var mass = 5,   // kg
     radius = 1; // m
@@ -32,12 +32,12 @@ var sphereShape = new CANNON.Sphere(radius);
 var sphereBody = new CANNON.RigidBody(mass,sphereShape);
 sphereBody.position.set(0,0,10); // m
 world.add(sphereBody);
-    
+
 // Create a plane
 var groundShape = new CANNON.Plane();
 var groundBody = new CANNON.RigidBody(0,groundShape); // mass == 0 makes the body static
 world.add(groundBody);
-    
+
 // Step the simulation
 setInterval(function(){
   var timeStep = 1.0/60.0; // seconds
@@ -75,7 +75,8 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 ¹ including Cylinder
 
 ### Change log
-**0.6.0**
+**Current (to be 0.6.0)**
+ * Added method ```.setFromEuler``` to ```Quaternion```.
  * Changed API for adding forces and impulses to a body. See ```RigidBody.addImpulse``` and ```RigidBody.addForce```.
  * Removed ```World.collision_matrix``` and instead added ```World.collisionMatrix``` and ```World.collisionMatrixPrevious```. They both now work with body indices instead of body IDs.
  * Added ```SPHSystem```.
@@ -102,7 +103,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
  * Added method ```ConvexPolyhedron.getAveragePointLocal```.
  * Added method ```ConvexPolyhedron.transformAllPoints```.
  * Added ```SplitSolver```.
- * Removed use of typed arrays, since they are slower than ordinary ones.   
+ * Removed use of typed arrays, since they are slower than ordinary ones.
  * Corrected applying of linear and angular damping, should now be physically correct and independent of timestep size.
  * Renamed ```Solver``` to ```GSSolver```, made ```Solver``` a base class instead.
  * Added method ```Mat3.setTrace```
