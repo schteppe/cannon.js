@@ -131,7 +131,6 @@ function ConvexPolyhedron( points , faces , normals ) {
         }
     }
 };
-
 ConvexPolyhedron.prototype = new Shape();
 ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
 
@@ -364,6 +363,11 @@ ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB
     return depth;
 };
 
+/**
+ * @method calculateLocalInertia
+ * @param  {Number} mass
+ * @param  {Vec3} target
+ */
 ConvexPolyhedron.prototype.calculateLocalInertia = function(mass,target){
     // Approximate with box inertia
     // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
@@ -376,6 +380,11 @@ ConvexPolyhedron.prototype.calculateLocalInertia = function(mass,target){
     target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
 };
 
+/**
+ * @method getPlaneConstantOfFace
+ * @param  {Number} face_i Index of the face
+ * @return {Number}
+ */
 ConvexPolyhedron.prototype.getPlaneConstantOfFace = function(face_i){
     var f = this.faces[face_i];
     var n = this.faceNormals[face_i];
@@ -538,7 +547,6 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
     }
 };
 
-
 /**
  * Clip a face in a hull against the back of a plane.
  * @method clipFaceAgainstPlane
@@ -650,7 +658,11 @@ ConvexPolyhedron.prototype.computeAABB = function(){
     }
 };
 
-// Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
+/**
+ * Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
+ * @method computeWorldFaceNormals
+ * @param  {Quaternion} quat
+ */
 ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
     var N = this.faceNormals.length;
     while(this.worldFaceNormals.length < N){
@@ -666,6 +678,9 @@ ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
     this.worldFaceNormalsNeedsUpdate = false;
 };
 
+/**
+ * @method computeBoundingSphereRadius
+ */
 ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
     // Assume points are distributed with local (0,0,0) as center
     var max2 = 0;
@@ -681,6 +696,14 @@ ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
 };
 
 var tempWorldVertex = new Vec3();
+
+/**
+ * @method calculateWorldAABB
+ * @param {Vec3}        pos
+ * @param {Quaternion}  quat
+ * @param {Vec3}        min
+ * @param {Vec3}        max
+ */
 ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var n = this.vertices.length, verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
@@ -711,7 +734,11 @@ ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
     max.set(maxx,maxy,maxz);
 };
 
-// Just approximate volume!
+/**
+ * Get approximate convex volume
+ * @method volume
+ * @return {Number}
+ */
 ConvexPolyhedron.prototype.volume = function(){
     if(this.boundingSphereRadiusNeedsUpdate){
         this.computeBoundingSphereRadius();
@@ -719,7 +746,12 @@ ConvexPolyhedron.prototype.volume = function(){
     return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
 };
 
-// Get an average of all the vertices
+/**
+ * Get an average of all the vertices positions
+ * @method getAveragePointLocal
+ * @param  {Vec3} target
+ * @return {Vec3}
+ */
 ConvexPolyhedron.prototype.getAveragePointLocal = function(target){
     target = target || new Vec3();
     var n = this.vertices.length,
@@ -731,7 +763,12 @@ ConvexPolyhedron.prototype.getAveragePointLocal = function(target){
     return target;
 };
 
-// Transforms all points
+/**
+ * Transform all local points. Will change the .vertices
+ * @method transformAllPoints
+ * @param  {Vec3} offset
+ * @param  {Quaternion} quat
+ */
 ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
     var n = this.vertices.length,
         verts = this.vertices;
@@ -765,10 +802,12 @@ ConvexPolyhedron.prototype.transformAllPoints = function(offset,quat){
     }
 };
 
-// Checks whether p is inside the polyhedra. Must be in local coords.
-// The point lies outside of the convex hull of the other points
-// if and only if the direction of all the vectors from it to those
-// other points are on less than one half of a sphere around it.
+/**
+ * Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.
+ * @method pointIsInside
+ * @param  {Vec3} p      A point given in local coordinates
+ * @return {Boolean}
+ */
 var ConvexPolyhedron_pointIsInside = new Vec3();
 var ConvexPolyhedron_vToP = new Vec3();
 var ConvexPolyhedron_vToPointInside = new Vec3();
