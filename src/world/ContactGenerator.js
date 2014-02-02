@@ -302,6 +302,15 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
 
 /**
  * @method sphereSphere
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
  */
 ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have only one contact in this case
