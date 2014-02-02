@@ -2,6 +2,8 @@ module.exports = Compound;
 
 var Shape = require('./Shape')
 ,   Vec3 = require('../math/Vec3')
+,   Box = require('../shapes/Box')
+,   Mat3 = require('../math/Mat3')
 ,   Quaternion = require('../math/Quaternion')
 
 /**
@@ -56,12 +58,33 @@ Compound.prototype.volume = function(){
     return r;
 };
 
+/*
 var Compound_calculateLocalInertia_mr2 = new Vec3();
 var Compound_calculateLocalInertia_childInertia = new Vec3();
+var cli_m1 = new Mat3(),
+    cli_m2 = new Mat3(),
+    cli_m3 = new Mat3();
+*/
+var cli_min = new Vec3(),
+    cli_max = new Vec3(),
+    cli_pos = new Vec3(),
+    cli_quat = new Quaternion();
 Compound.prototype.calculateLocalInertia = function(mass,target){
     target = target || new Vec3();
 
+    var min = cli_min,
+        max = cli_max,
+        pos = cli_pos,
+        quat =cli_quat;
+
+    this.calculateWorldAABB(pos,quat,min,max);
+    Box.calculateInertia(new Vec3((max.x-min.x)/2,(max.y-min.y)/2,(max.z-min.z)/2),mass,target);
+
+    /*
     // Calculate the total volume, we will spread out this objects' mass on the sub shapes
+    var m1 = cli_m1,
+        m2 = cli_m2,
+        m3 = cli_m3;
     var V = this.volume();
     var childInertia = Compound_calculateLocalInertia_childInertia;
     for(var i=0, Nchildren=this.childShapes.length; i!==Nchildren; i++){
@@ -72,13 +95,17 @@ Compound.prototype.calculateLocalInertia = function(mass,target){
         var m = b.volume() / V * mass;
 
         // Get the child inertia, transformed relative to local frame
-        //var inertia = b.calculateTransformedInertia(m,q);
-        b.calculateLocalInertia(m,childInertia); // Todo transform!
-        //console.log(childInertia,m,b.volume(),V);
+        b.calculateLocalInertia(m,childInertia);
+
+        // Transform it to the local compound frame
+        m1.setRotationFromQuaternion(q);
+        m1.transpose(m2);
+        m1.scale(childInertia,m1);
+        m1.mmult(m2,m3);
+        m3.getTrace(childInertia);
 
         // Add its inertia using the parallel axis theorem, i.e.
-        // I += I_child;
-        // I += m_child * r^2
+        // I = Icm + m * r^2
 
         target.vadd(childInertia,target);
         var mr2 = Compound_calculateLocalInertia_mr2;
@@ -87,6 +114,7 @@ Compound.prototype.calculateLocalInertia = function(mass,target){
                 m*o.z*o.z);
         target.vadd(mr2,target);
     }
+    */
 
     return target;
 };

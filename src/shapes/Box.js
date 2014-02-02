@@ -77,11 +77,15 @@ Box.prototype.updateConvexPolyhedronRepresentation = function(){
  */
 Box.prototype.calculateLocalInertia = function(mass,target){
     target = target || new Vec3();
-    var e = this.halfExtents;
+    Box.calculateInertia(this.halfExtents, mass, target);
+    return target;
+};
+
+Box.calculateInertia = function(halfExtents,mass,target){
+    var e = halfExtents;
     target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
     target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
     target.z = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.x*2*e.x );
-    return target;
 };
 
 /**
