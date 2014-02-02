@@ -57,6 +57,7 @@ function Body(type){
      */
 	this.collisionResponse = true;
 };
+Body.prototype = new EventTarget();
 
 /**
  * A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.

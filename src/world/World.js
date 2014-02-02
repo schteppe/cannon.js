@@ -182,6 +182,7 @@ function World(){
         body : null,
     };
 };
+World.prototype = new EventTarget();
 
 /**
  * Get the contact material between materials m1 and m2
