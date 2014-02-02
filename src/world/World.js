@@ -171,6 +171,16 @@ function World(){
      * @type {Array}
      */
     this.subsystems = [];
+
+    this.addBodyEvent = {
+        type:"addBody",
+        body : null,
+    };
+
+    this.removeBodyEvent = {
+        type:"removeBody",
+        body : null,
+    };
 };
 
 /**
@@ -234,8 +244,9 @@ World.prototype.add = function(body){
         body.angularVelocity.copy(body.initAngularVelocity);
         body.quaternion.copy(body.initQuaternion);
     }
-
 	this.collisionMatrix.setNumObjects(this.bodies.length);
+    this.addBodyEvent.body = body;
+    this.dispatchEvent(this.addBodyEvent);
 };
 
 /**
@@ -283,6 +294,8 @@ World.prototype.remove = function(body){
 		bodies[i].index=i;
 	}
 	this.collisionMatrix.setNumObjects(n);
+    this.removeBodyEvent.body = body;
+    this.dispatchEvent(this.removeBodyEvent);
 };
 
 /**
