@@ -1,7 +1,7 @@
 module.exports = DistanceConstraint;
 
 var Constraint = require('./Constraint')
-,   ContactEquation = require('./ContactEquation')
+,   ContactEquation = require('../equations/ContactEquation')
 
 /**
  * Constrains two bodies to be at a constant distance from each other.

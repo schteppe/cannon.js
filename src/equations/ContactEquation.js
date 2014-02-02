@@ -1,6 +1,6 @@
 module.exports = ContactEquation;
 
-var Equation = require('../constraints/Equation')
+var Equation = require('./Equation')
 ,   Vec3 = require('../math/Vec3')
 ,   Mat3 = require('../math/Mat3')
 

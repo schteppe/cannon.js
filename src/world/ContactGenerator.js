@@ -5,7 +5,7 @@ var Shape = require('../shapes/Shape')
 ,   Quaternion = require('../math/Quaternion')
 ,   Solver = require('../solver/Solver')
 ,   Vec3Pool = require('../utils/Vec3Pool')
-,   ContactEquation = require('../constraints/ContactEquation')
+,   ContactEquation = require('../equations/ContactEquation')
 
 /**
  * Helper class for the World. Generates ContactEquations.

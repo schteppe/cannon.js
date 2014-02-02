@@ -1,7 +1,7 @@
 module.exports = PointToPointConstraint;
 
 var Constraint = require('./Constraint')
-,   ContactEquation = require('./ContactEquation')
+,   ContactEquation = require('../equations/ContactEquation')
 
 /**
  * Connects two bodies at given offset points

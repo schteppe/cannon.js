@@ -1,9 +1,9 @@
 module.exports = HingeConstraint;
 
 var Constraint = require('./Constraint')
-,   RotationalEquation = require('./RotationalEquation')
-,   RotationalMotorEquation = require('./RotationalMotorEquation')
-,   ContactEquation = require('./ContactEquation')
+,   RotationalEquation = require('../equations/RotationalEquation')
+,   RotationalMotorEquation = require('../equations/RotationalMotorEquation')
+,   ContactEquation = require('../equations/ContactEquation')
 ,   Vec3 = require('../math/Vec3')
 
 /**
