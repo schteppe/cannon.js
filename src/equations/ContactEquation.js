@@ -60,7 +60,7 @@ ContactEquation.prototype.constructor = ContactEquation;
  * @method reset
  */
 ContactEquation.prototype.reset = function(){
-    this.invInertiaTimesRxnNeedsUpdate = true;
+    this.invInertiaWorldTimesRxnNeedsUpdate = true;
 };
 
 var ContactEquation_computeB_temp1 = new Vec3(); // Temp vectors
@@ -95,13 +95,13 @@ ContactEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+    if(bi.invInertiaWorld){
+        invIi.setTrace(bi.invInertiaWorld);
     } else {
         invIi.identity(); // ok?
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertiaWorld){
+        invIj.setTrace(bj.invInertiaWorld);
     } else {
         invIj.identity(); // ok?
     }
@@ -154,13 +154,13 @@ ContactEquation.prototype.computeC = function(){
     var invIj = this.invIj;
 
     /*
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+    if(bi.invInertiaWorld){
+        invIi.setTrace(bi.invInertiaWorld);
     } else {
         invIi.identity(); // ok?
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertiaWorld){
+        invIj.setTrace(bj.invInertiaWorld);
     } else {
         invIj.identity(); // ok?
     }

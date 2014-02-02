@@ -78,13 +78,12 @@ FrictionEquation.prototype.computeB = function(h){
         invIi_vmult_taui = FrictionEquation_computeB_temp1,
         invIj_vmult_tauj = FrictionEquation_computeB_temp2;
 
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+    if(bi.invInertiaWorld){
+        invIi.setTrace(bi.invInertiaWorld);
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertiaWorld){
+        invIj.setTrace(bj.invInertiaWorld);
     }
-
 
     // Caluclate cross products
     ri.cross(t,rixt);
@@ -120,11 +119,11 @@ FrictionEquation.prototype.computeC = function(){
         invIj = this.invIj;
 
     /*
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+    if(bi.invInertiaWorld){
+        invIi.setTrace(bi.invInertiaWorld);
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertiaWorld){
+        invIj.setTrace(bj.invInertiaWorld);
     }
      */
 

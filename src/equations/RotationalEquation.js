@@ -60,13 +60,13 @@ RotationalEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+    if(bi.invInertiaWorld){
+        invIi.setTrace(bi.invInertiaWorld);
     } else {
         invIi.identity(); // ok?
     }
-    if(bj.invInertia) {
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertiaWorld) {
+        invIj.setTrace(bj.invInertiaWorld);
     } else {
         invIj.identity(); // ok?
     }
@@ -102,13 +102,13 @@ RotationalEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
+    if(bi.invInertiaWorld){
+        invIi.setTrace(bi.invInertiaWorld);
     } else {
         invIi.identity(); // ok?
     }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
+    if(bj.invInertiaWorld){
+        invIj.setTrace(bj.invInertiaWorld);
     } else {
         invIj.identity(); // ok?
     }
