@@ -17,6 +17,8 @@ function Plane(){
     // World oriented normal
     this.worldNormal = new Vec3();
     this.worldNormalNeedsUpdate = true;
+
+    this.boundingSphereRadius = Infinity;
 };
 Plane.prototype = new Shape();
 Plane.prototype.constructor = Plane;

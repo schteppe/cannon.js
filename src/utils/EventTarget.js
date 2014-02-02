@@ -41,6 +41,7 @@ function EventTarget() {
      * @param {Function} listener
      */
     this.removeEventListener = function ( type, listener ) {
+        if(!listeners[ type ]) return;
         var index = listeners[ type ].indexOf( listener );
         if ( index !== - 1 ) {
             listeners[ type ].splice( index, 1 );

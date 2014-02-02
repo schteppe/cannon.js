@@ -303,3 +303,18 @@ Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
         delete t[idx];
     }
 };
+
+/**
+ * To be implemented by subcasses
+ * @method setWorld
+ * @param {World} world
+ */
+Broadphase.prototype.setWorld = function(world){
+};
+
+var bsc_dist = new Vec3();
+Broadphase.boundingSphereCheck = function(bi,bj){
+    var dist = bsc_dist;
+    bi.position.vsub(bj.position,dist);
+    return Math.pow(bi.shape.boundingSphereRadius + bj.shape.boundingSphereRadius,2) > dist.norm2();
+};

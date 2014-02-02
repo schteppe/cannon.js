@@ -33,6 +33,7 @@ module.exports = {
     RigidBody :                     require('./objects/RigidBody'),
     RotationalEquation :            require('./constraints/RotationalEquation'),
     RotationalMotorEquation :       require('./constraints/RotationalMotorEquation'),
+    SAP1DBroadphase :               require('./collision/SAP1DBroadphase'),
     SPHSystem :                     require('./objects/SPHSystem'),
     Shape :                         require('./shapes/Shape'),
     Solver :                        require('./solver/Solver'),
