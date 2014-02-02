@@ -34,7 +34,7 @@
     <script src="../libs/Detector.js"></script>
 
     <!-- Worker script, will be run in separate thread -->
-    <script id="worker1" type="javascript/worker">    
+    <script id="worker1" type="javascript/worker">
         var world;
         self.onmessage = function(e) {
 
@@ -100,7 +100,7 @@
         var quaternions = new Float32Array(N*4);
 
         // Create a blob for the inline worker code
-        var blob = new Blob([document.querySelector('#worker1').textContent]);
+        var blob = new Blob([document.querySelector('#worker1').textContent],{type:'text/javascript'});
 
         // Create worker
         var worker = new Worker(window.URL.createObjectURL(blob));
@@ -217,7 +217,7 @@
             mesh.receiveShadow = true;
             meshes.push(mesh);
             scene.add( mesh );
-               
+
             // cubes
             var cubeGeo = new THREE.CubeGeometry( 1, 1, 1, 10, 10 );
             var cubeMaterial = new THREE.MeshPhongMaterial( { color: 0x888888 } );
