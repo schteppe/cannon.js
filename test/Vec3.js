@@ -3,7 +3,7 @@ var Vec3 =     require("../src/math/Vec3")
 ,   Quaternion = require("../src/math/Quaternion")
 
 module.exports = {
-    "creation" : function(test) {
+    creation : function(test) {
         test.expect(3);
 
         var v = new Vec3(1, 2, 3);
@@ -14,7 +14,7 @@ module.exports = {
         test.done();
     },
 
-    "cross" : function(test) {
+    cross : function(test) {
         test.expect(3);
 
         var v = new Vec3(1, 2, 3);
@@ -28,7 +28,7 @@ module.exports = {
         test.done();
     },
 
-    "dot" : function(test) {
+    dot : function(test) {
         test.expect(2);
 
         var v = new Vec3(1, 2, 3);
@@ -46,7 +46,7 @@ module.exports = {
         test.done();
     },
 
-    "set" : function(test) {
+    set : function(test) {
         test.expect(3);
 
         var v = new Vec3(1, 2, 3);
@@ -59,7 +59,7 @@ module.exports = {
         test.done();
     },
 
-    "vadd" : function(test) {
+    vadd : function(test) {
         test.expect(3);
 
         var v = new Vec3(1, 2, 3);
@@ -71,5 +71,15 @@ module.exports = {
         test.equal(v.z, 9, "Adding a vector (z)");
 
         test.done();
-    }
+    },
+
+    isAntiparallelTo : function(test){
+        test.ok(new Vec3(1,0,0).isAntiparallelTo(new Vec3(-1,0,0)));
+        test.done();
+    },
+
+    almostEquals : function(test){
+        test.ok(new Vec3(1,0,0).almostEquals(new Vec3(1,0,0)));
+        test.done();
+    },
 };

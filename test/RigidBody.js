@@ -23,4 +23,11 @@ module.exports = {
 
         test.done();
     },
+
+    updateInertiaWorld : function(test){
+        var body = new RigidBody(1,new Box(new Vec3(1,1,1)));
+        body.quaternion.setFromEuler(Math.PI/2,0,0);
+        body.updateInertiaWorld();
+        test.done();
+    },
 };

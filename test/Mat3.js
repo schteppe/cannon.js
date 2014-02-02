@@ -236,4 +236,47 @@ module.exports = {
         test.done();
 
     },
+
+    transpose : function(test){
+        var M = new Mat3([  1,2,3,
+                            4,5,6,
+                            7,8,9  ]);
+        var Mt = M.transpose();
+        test.deepEqual(Mt.elements,[1,4,7,
+                                    2,5,8,
+                                    3,6,9]);
+        test.done();
+    },
+
+    scale : function(test){
+        var M = new Mat3([  1,1,1,
+                            1,1,1,
+                            1,1,1  ]);
+        var Mt = M.scale(new Vec3(1,2,3));
+        test.deepEqual(Mt.elements,[1,2,3,
+                                    1,2,3,
+                                    1,2,3]);
+        test.done();
+    },
+
+    setRotationFromQuaternion : function(test){
+        var M = new Mat3(),
+            q = new Quaternion(),
+            original = new Vec3(1,2,3);
+
+        // Test zero rotation
+        M.setRotationFromQuaternion(q);
+        var v = M.vmult(original);
+        test.ok(v.almostEquals(original));
+
+        // Test rotation along x axis
+        q.setFromEuler(Math.PI/2,0,0);
+        M.setRotationFromQuaternion(q);
+        Mv = M.vmult(original);
+        qv = q.vmult(original);
+
+        test.ok(Mv.almostEquals(qv));
+
+        test.done();
+    },
 };
