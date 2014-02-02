@@ -272,7 +272,7 @@ Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
  * @param {Array} pairs1
  * @param {Array} pairs2
  */
-var Broadphase_makePairsUnique_temp = {},
+var Broadphase_makePairsUnique_temp = { keys:[] },
     Broadphase_makePairsUnique_p1 = [],
     Broadphase_makePairsUnique_p2 = [];
 Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
@@ -292,15 +292,17 @@ Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
     for(var i=0; i!==N; i++){
         var id1 = p1[i].id,
             id2 = p2[i].id;
-        var idx = id1 < id2 ? id1+","+id2 :  id2+","+id1;
-        t[idx] = i;
+        var key = id1 < id2 ? id1+","+id2 :  id2+","+id1;
+        t[key] = i;
+        t.keys.push(key);
     }
 
-    for(var idx in t){
-        var i = t[idx];
-        pairs1.push(p1[i]);
-        pairs2.push(p2[i]);
-        delete t[idx];
+    for(var i=0; i!==t.keys.length; i++){
+        var key = t.keys.pop(),
+            pairIndex = t[key];
+        pairs1.push(p1[pairIndex]);
+        pairs2.push(p2[pairIndex]);
+        delete t[key];
     }
 };
 
