@@ -1,11 +1,11 @@
-module.exports = ObjectPool;
+module.exports = Pool;
 
 /**
  * For pooling objects that can be reused.
- * @class ObjectPool
+ * @class Pool
  * @constructor
  */
-function ObjectPool(){
+function Pool(){
     /**
      * The pooled objects
      * @property {Array} objects
@@ -24,7 +24,7 @@ function ObjectPool(){
  * @method release
  * @param {Object} obj
  */
-ObjectPool.prototype.release = function(){
+Pool.prototype.release = function(){
     var Nargs = arguments.length;
     for(var i=0; i!==Nargs; i++){
         this.objects.push(arguments[i]);
@@ -36,7 +36,7 @@ ObjectPool.prototype.release = function(){
  * @method get
  * @return {mixed}
  */
-ObjectPool.prototype.get = function(){
+Pool.prototype.get = function(){
     if(this.objects.length===0){
         return this.constructObject();
     } else {
@@ -49,6 +49,6 @@ ObjectPool.prototype.get = function(){
  * @method constructObject
  * @return {mixed}
  */
-ObjectPool.prototype.constructObject = function(){
-    throw new Error("constructObject() not implemented in this ObjectPool subclass yet!");
+Pool.prototype.constructObject = function(){
+    throw new Error("constructObject() not implemented in this Pool subclass yet!");
 };

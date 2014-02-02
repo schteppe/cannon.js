@@ -24,7 +24,7 @@ module.exports = {
     Material :                      require('./material/Material'),
     NaiveBroadphase :               require('./collision/NaiveBroadphase'),
     ObjectCollisionMatrix :         require('./collision/ObjectCollisionMatrix'),
-    ObjectPool :                    require('./utils/Pool'),
+    Pool :                          require('./utils/Pool'),
     Particle :                      require('./objects/Particle'),
     Plane :                         require('./shapes/Plane'),
     PointToPointConstraint :        require('./constraints/PointToPointConstraint'),
