@@ -92,8 +92,6 @@ function World(){
      */
     this.bodies = [];
 
-    var th = this;
-
     /**
      * @property solver
      * @type {Solver}
@@ -206,7 +204,10 @@ World.prototype.numObjects = function(){
     return this.bodies.length;
 };
 
-// transfer old contact state data to T-1
+/**
+ * Store old collision state info
+ * @method collisionMatrixTick
+ */
 World.prototype.collisionMatrixTick = function(){
 	var temp = this.collisionMatrixPrevious;
 	this.collisionMatrixPrevious = this.collisionMatrix;
