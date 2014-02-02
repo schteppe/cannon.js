@@ -380,6 +380,8 @@ var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to s
     World_step_step_w = new Quaternion(),
     World_step_step_wq = new Quaternion();
 World.prototype.step = function(dt){
+    if(dt <= 0 || isNaN(dt)) return;
+
     var world = this,
         that = this,
         contacts = this.contacts,
