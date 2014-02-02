@@ -2,6 +2,7 @@ module.exports = RigidBody;
 
 var Shape = require('../shapes/Shape')
 ,   Vec3 = require('../math/Vec3')
+,   Mat3 = require('../math/Mat3')
 ,   Quaternion = require('../math/Quaternion')
 ,   Particle = require('./Particle')
 ,   Material = require('../material/Material')
@@ -75,15 +76,14 @@ function RigidBody(mass,shape,material){
 
     this.inertiaWorld = new Vec3();
     this.inertia.copy(this.inertiaWorld);
-    this.inertiaWorldAutoUpdate = false;
 
     /**
      * @property invInertia
      * @type {Vec3}
      */
     this.invInertia = new Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
-                                      this.inertia.y>0 ? 1.0/this.inertia.y : 0,
-                                      this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+                               this.inertia.y>0 ? 1.0/this.inertia.y : 0,
+                               this.inertia.z>0 ? 1.0/this.inertia.z : 0);
     this.invInertiaWorld = new Vec3();
     this.invInertia.copy(this.invInertiaWorld);
     this.invInertiaWorldAutoUpdate = false;
@@ -129,6 +129,30 @@ RigidBody.prototype.computeAABB = function(){
                                   this.aabbmin,
                                   this.aabbmax);
     this.aabbNeedsUpdate = false;
+};
+
+var uiw_m1 = new Mat3(),
+    uiw_m2 = new Mat3(),
+    uiw_m3 = new Mat3();
+
+/**
+ * Update .inertiaWorld and .invInertiaWorld
+ * @method updateInertiaWorld
+ */
+RigidBody.prototype.updateInertiaWorld = function(){
+    var m1 = uiw_m1,
+        m2 = uiw_m2,
+        m3 = uiw_m3;
+    m1.setRotationFromQuaternion(this.quaternion);
+    m1.transpose(m2);
+    m1.scale(this.invInertia,m1);
+    m1.mmult(m2,m3);
+    m3.getTrace(this.invInertiaWorld);
+
+    /*
+    this.quaternion.vmult(this.inertia,this.inertiaWorld);
+    this.quaternion.vmult(this.invInertia,this.invInertiaWorld);
+    */
 };
 
 /**

@@ -637,7 +637,7 @@ World.prototype.step = function(dt){
                 pos = b.position,
                 quat = b.quaternion,
                 invMass = b.invMass,
-                invInertia = b.invInertia;
+                invInertia = b.invInertiaWorld;
             velo.x += force.x * invMass * dt;
             velo.y += force.y * invMass * dt;
             velo.z += force.z * invMass * dt;
@@ -711,15 +711,10 @@ World.prototype.step = function(dt){
     }
 
     // Update world inertias
-    // @todo should swap autoUpdate mechanism for .xxxNeedsUpdate
     for(i=0; i!==N; i++){
         var b = bodies[i];
-        if(b.inertiaWorldAutoUpdate){
-            b.quaternion.vmult(b.inertia,b.inertiaWorld);
-        }
-        if(b.invInertiaWorldAutoUpdate){
-            b.quaternion.vmult(b.invInertia,b.invInertiaWorld);
-        }
+        if(b.updateInertiaWorld)
+            b.updateInertiaWorld();
     }
 
     // Sleeping update
