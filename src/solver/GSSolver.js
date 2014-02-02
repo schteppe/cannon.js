@@ -1,7 +1,6 @@
 module.exports = GSSolver;
 
-var Shape = require('../objects/Shape')
-,   Vec3 = require('../math/Vec3')
+var Vec3 = require('../math/Vec3')
 ,   Quaternion = require('../math/Quaternion')
 ,   Solver = require('./Solver')
 

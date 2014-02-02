@@ -1,8 +1,8 @@
 var Body = require('../objects/Body')
 ,   Vec3 = require('../math/Vec3')
 ,   Quaternion = require('../math/Quaternion')
-,   Shape = require('../objects/Shape')
-,   Plane = require('../objects/Plane')
+,   Shape = require('../shapes/Shape')
+,   Plane = require('../shapes/Plane')
 
 module.exports = Broadphase;
 

@@ -1,7 +1,6 @@
 var Vec3 =     require("../src/math/Vec3")
 ,   Mat3 =     require("../src/math/Mat3")
 ,   Quaternion = require("../src/math/Quaternion")
-,   Box =      require('../src/objects/Box')
 
 module.exports = {
     creation : function(test) {

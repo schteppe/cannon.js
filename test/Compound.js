@@ -1,7 +1,7 @@
 var Vec3 =       require("../src/math/Vec3")
 ,   Quaternion = require("../src/math/Quaternion")
-,   Box =        require('../src/objects/Box')
-,   Compound =   require('../src/objects/Compound')
+,   Box =        require('../src/shapes/Box')
+,   Compound =   require('../src/shapes/Compound')
 
 module.exports = {
     calculateWorldAABB : function(test){

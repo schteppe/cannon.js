@@ -2,7 +2,7 @@ module.exports = GridBroadphase;
 
 var Broadphase = require('./Broadphase')
 ,   Vec3 = require('../math/Vec3')
-,   Shape = require('../objects/Shape')
+,   Shape = require('../shapes/Shape')
 
 /**
  * Axis aligned uniform grid broadphase.

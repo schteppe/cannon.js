@@ -1,7 +1,7 @@
 var Vec3 =     require("../src/math/Vec3")
 ,   Mat3 =     require("../src/math/Mat3")
 ,   Quaternion = require("../src/math/Quaternion")
-,   Box =      require('../src/objects/Box')
+,   Box =      require('../src/shapes/Box')
 ,   Ray =      require('../src/collision/Ray')
 ,   RigidBody =      require('../src/objects/RigidBody')
 

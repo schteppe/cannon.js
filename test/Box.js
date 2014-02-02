@@ -1,6 +1,6 @@
 var Vec3 =       require("../src/math/Vec3")
 ,   Quaternion = require("../src/math/Quaternion")
-,   Box =        require('../src/objects/Box')
+,   Box =        require('../src/shapes/Box')
 
 module.exports = {
     forEachWOrldCorner : function(test){

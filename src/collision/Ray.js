@@ -1,8 +1,8 @@
 module.exports = Ray;
 
 var Vec3 = require('../math/Vec3')
-,   ConvexPolyhedron = require('../objects/ConvexPolyhedron')
-,   Box = require('../objects/Box')
+,   ConvexPolyhedron = require('../shapes/ConvexPolyhedron')
+,   Box = require('../shapes/Box')
 
 /**
  * A line in 3D space that intersects bodies and return points.

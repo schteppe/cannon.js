@@ -1,6 +1,6 @@
 module.exports = World;
 
-var Shape = require('../objects/Shape')
+var Shape = require('../shapes/Shape')
 ,   Vec3 = require('../math/Vec3')
 ,   Quaternion = require('../math/Quaternion')
 ,   GSSolver = require('../solver/GSSolver')

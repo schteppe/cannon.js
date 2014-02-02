@@ -1,6 +1,6 @@
 var Vec3 =     require("../src/math/Vec3")
 ,   Quaternion = require("../src/math/Quaternion")
-,   Box =      require('../src/objects/Box')
+,   Box =      require('../src/shapes/Box')
 
 function createBoxHull(size){
     size = (size===undefined ? 0.5 : size);

@@ -3,7 +3,7 @@ module.exports = Cylinder;
 var Shape = require('./Shape')
 ,   Vec3 = require('../math/Vec3')
 ,   Quaternion = require('../math/Quaternion')
-,   ConvexPolyhedron = require('../objects/ConvexPolyhedron')
+,   ConvexPolyhedron = require('./ConvexPolyhedron')
 
 /**
  * @class Cylinder

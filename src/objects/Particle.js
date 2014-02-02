@@ -1,6 +1,6 @@
 module.exports = Particle;
 
-var Shape = require('./Shape')
+var Shape = require('../shapes/Shape')
 ,   Vec3 = require('../math/Vec3')
 ,   Quaternion = require('../math/Quaternion')
 ,   Body = require('./Body')
