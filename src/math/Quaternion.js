@@ -325,6 +325,8 @@ Quaternion.prototype.toEuler = function(target,order){
  * @param {String} order The order to apply angles: 'XYZ' or 'YXZ' or any other combination
  */
 Quaternion.prototype.setFromEuler = function ( x, y, z, order ) {
+    order = order || "XYZ";
+
     var c1 = Math.cos( x / 2 );
     var c2 = Math.cos( y / 2 );
     var c3 = Math.cos( z / 2 );
