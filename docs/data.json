@@ -1,0 +1,5522 @@
+{
+    "project": {
+        "name": "cannon",
+        "description": "A lightweight 3D physics engine written in JavaScript.",
+        "version": "0.6.0"
+    },
+    "files": {
+        "src/collision/ArrayCollisionMatrix.js": {
+            "name": "src/collision/ArrayCollisionMatrix.js",
+            "modules": {},
+            "classes": {
+                "ArrayCollisionMatrix": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/collision/Broadphase.js": {
+            "name": "src/collision/Broadphase.js",
+            "modules": {},
+            "classes": {
+                "Broadphase": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/collision/GridBroadphase.js": {
+            "name": "src/collision/GridBroadphase.js",
+            "modules": {},
+            "classes": {
+                "GridBroadphase": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/collision/NaiveBroadphase.js": {
+            "name": "src/collision/NaiveBroadphase.js",
+            "modules": {},
+            "classes": {
+                "NaiveBroadphase": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/collision/ObjectCollisionMatrix.js": {
+            "name": "src/collision/ObjectCollisionMatrix.js",
+            "modules": {},
+            "classes": {
+                "ObjectCollisionMatrix": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/collision/Ray.js": {
+            "name": "src/collision/Ray.js",
+            "modules": {},
+            "classes": {
+                "Ray": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/Constraint.js": {
+            "name": "src/constraints/Constraint.js",
+            "modules": {},
+            "classes": {
+                "Constraint": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/ContactEquation.js": {
+            "name": "src/constraints/ContactEquation.js",
+            "modules": {},
+            "classes": {
+                "ContactEquation": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/DistanceConstraint.js": {
+            "name": "src/constraints/DistanceConstraint.js",
+            "modules": {},
+            "classes": {
+                "DistanceConstraint": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/Equation.js": {
+            "name": "src/constraints/Equation.js",
+            "modules": {},
+            "classes": {
+                "Equation": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/FrictionEquation.js": {
+            "name": "src/constraints/FrictionEquation.js",
+            "modules": {},
+            "classes": {
+                "FrictionEquation": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/HingeConstraint.js": {
+            "name": "src/constraints/HingeConstraint.js",
+            "modules": {},
+            "classes": {
+                "HingeConstraint": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/PointToPointConstraint.js": {
+            "name": "src/constraints/PointToPointConstraint.js",
+            "modules": {},
+            "classes": {
+                "PointToPointConstraint": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/RotationalEquation.js": {
+            "name": "src/constraints/RotationalEquation.js",
+            "modules": {},
+            "classes": {
+                "RotationalEquation": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/constraints/RotationalMotorEquation.js": {
+            "name": "src/constraints/RotationalMotorEquation.js",
+            "modules": {},
+            "classes": {
+                "RotationalMotorEquation": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/demo/Demo.js": {
+            "name": "src/demo/Demo.js",
+            "modules": {},
+            "classes": {
+                "Demo": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/material/ContactMaterial.js": {
+            "name": "src/material/ContactMaterial.js",
+            "modules": {},
+            "classes": {
+                "ContactMaterial": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/material/Material.js": {
+            "name": "src/material/Material.js",
+            "modules": {},
+            "classes": {
+                "Material": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/math/Mat3.js": {
+            "name": "src/math/Mat3.js",
+            "modules": {},
+            "classes": {
+                "Mat3": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/math/MatN.js": {
+            "name": "src/math/MatN.js",
+            "modules": {},
+            "classes": {
+                "MatN": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/math/Quaternion.js": {
+            "name": "src/math/Quaternion.js",
+            "modules": {},
+            "classes": {
+                "Quaternion": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/math/Vec3.js": {
+            "name": "src/math/Vec3.js",
+            "modules": {},
+            "classes": {
+                "Vec3": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Body.js": {
+            "name": "src/objects/Body.js",
+            "modules": {},
+            "classes": {
+                "Body": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Box.js": {
+            "name": "src/objects/Box.js",
+            "modules": {},
+            "classes": {
+                "Box": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Compound.js": {
+            "name": "src/objects/Compound.js",
+            "modules": {},
+            "classes": {
+                "Compound": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/ConvexPolyhedron.js": {
+            "name": "src/objects/ConvexPolyhedron.js",
+            "modules": {},
+            "classes": {
+                "ConvexPolyhedron": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Cylinder.js": {
+            "name": "src/objects/Cylinder.js",
+            "modules": {},
+            "classes": {
+                "Cylinder": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Particle.js": {
+            "name": "src/objects/Particle.js",
+            "modules": {},
+            "classes": {
+                "Particle": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Plane.js": {
+            "name": "src/objects/Plane.js",
+            "modules": {},
+            "classes": {
+                "Plane": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/RigidBody.js": {
+            "name": "src/objects/RigidBody.js",
+            "modules": {},
+            "classes": {
+                "RigidBody": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/SPHSystem.js": {
+            "name": "src/objects/SPHSystem.js",
+            "modules": {},
+            "classes": {
+                "SPHSystem": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Shape.js": {
+            "name": "src/objects/Shape.js",
+            "modules": {},
+            "classes": {
+                "Shape": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/objects/Sphere.js": {
+            "name": "src/objects/Sphere.js",
+            "modules": {},
+            "classes": {
+                "Sphere": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/solver/GSSolver.js": {
+            "name": "src/solver/GSSolver.js",
+            "modules": {},
+            "classes": {
+                "GSSolver": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/solver/Solver.js": {
+            "name": "src/solver/Solver.js",
+            "modules": {},
+            "classes": {
+                "Solver": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/solver/SplitSolver.js": {
+            "name": "src/solver/SplitSolver.js",
+            "modules": {},
+            "classes": {
+                "SplitSolver": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/utils/EventTarget.js": {
+            "name": "src/utils/EventTarget.js",
+            "modules": {},
+            "classes": {
+                "EventTarget": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/utils/Pool.js": {
+            "name": "src/utils/Pool.js",
+            "modules": {},
+            "classes": {
+                "ObjectPool": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/utils/Vec3Pool.js": {
+            "name": "src/utils/Vec3Pool.js",
+            "modules": {},
+            "classes": {
+                "Vec3Pool": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/world/ContactGenerator.js": {
+            "name": "src/world/ContactGenerator.js",
+            "modules": {},
+            "classes": {
+                "ContactGenerator": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/world/World.js": {
+            "name": "src/world/World.js",
+            "modules": {},
+            "classes": {
+                "World": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {
+        "ArrayCollisionMatrix": {
+            "name": "ArrayCollisionMatrix",
+            "shortname": "ArrayCollisionMatrix",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/ArrayCollisionMatrix.js",
+            "line": 3,
+            "description": "Collision \"matrix\". It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step",
+            "is_constructor": 1
+        },
+        "Broadphase": {
+            "name": "Broadphase",
+            "shortname": "Broadphase",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/Broadphase.js",
+            "line": 9,
+            "description": "Base class for broadphase implementations",
+            "is_constructor": 1,
+            "author": "schteppe"
+        },
+        "GridBroadphase": {
+            "name": "GridBroadphase",
+            "shortname": "GridBroadphase",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/GridBroadphase.js",
+            "line": 7,
+            "description": "Axis aligned uniform grid broadphase.",
+            "extends": "{Broadphase}",
+            "todo": [
+                "Needs support for more than just planes and spheres."
+            ],
+            "params": [
+                {
+                    "name": "aabbMin",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "aabbMax",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "nx",
+                    "description": "Number of boxes along x",
+                    "type": "Number"
+                },
+                {
+                    "name": "ny",
+                    "description": "Number of boxes along y",
+                    "type": "Number"
+                },
+                {
+                    "name": "nz",
+                    "description": "Number of boxes along z",
+                    "type": "Number"
+                }
+            ]
+        },
+        "NaiveBroadphase": {
+            "name": "NaiveBroadphase",
+            "shortname": "NaiveBroadphase",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/NaiveBroadphase.js",
+            "line": 5,
+            "description": "Naive broadphase implementation, used in lack of better ones.",
+            "is_constructor": 1,
+            "extends": "{Broadphase}"
+        },
+        "ObjectCollisionMatrix": {
+            "name": "ObjectCollisionMatrix",
+            "shortname": "ObjectCollisionMatrix",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/ObjectCollisionMatrix.js",
+            "line": 3,
+            "description": "Records what objects are colliding with each other",
+            "is_constructor": 1
+        },
+        "Ray": {
+            "name": "Ray",
+            "shortname": "Ray",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/Ray.js",
+            "line": 7,
+            "description": "A line in 3D space that intersects bodies and return points.",
+            "author": "Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.",
+            "params": [
+                {
+                    "name": "origin",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "direction",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ]
+        },
+        "Constraint": {
+            "name": "Constraint",
+            "shortname": "Constraint",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/Constraint.js",
+            "line": 3,
+            "description": "Constraint base class",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                }
+            ]
+        },
+        "ContactEquation": {
+            "name": "ContactEquation",
+            "shortname": "ContactEquation",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/ContactEquation.js",
+            "line": 7,
+            "description": "Contact/non-penetration constraint equation",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "extends": "{Equation}"
+        },
+        "DistanceConstraint": {
+            "name": "DistanceConstraint",
+            "shortname": "DistanceConstraint",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/DistanceConstraint.js",
+            "line": 6,
+            "description": "Constrains two bodies to be at a constant distance from each other.",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "distance",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "maxForce",
+                    "description": "",
+                    "type": "Number"
+                }
+            ]
+        },
+        "Equation": {
+            "name": "Equation",
+            "shortname": "Equation",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/Equation.js",
+            "line": 3,
+            "description": "Equation base class",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "minForce",
+                    "description": "Minimum (read: negative max) force to be applied by the constraint.",
+                    "type": "Number"
+                },
+                {
+                    "name": "maxForce",
+                    "description": "Maximum (read: positive max) force to be applied by the constraint.",
+                    "type": "Number"
+                }
+            ]
+        },
+        "FrictionEquation": {
+            "name": "FrictionEquation",
+            "shortname": "FrictionEquation",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/FrictionEquation.js",
+            "line": 7,
+            "description": "Constrains the slipping in a contact along a tangent",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "slipForce",
+                    "description": "should be +-F_friction = +-mu * F_normal = +-mu * m * g",
+                    "type": "Number"
+                }
+            ],
+            "extends": "{Equation}"
+        },
+        "HingeConstraint": {
+            "name": "HingeConstraint",
+            "shortname": "HingeConstraint",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/HingeConstraint.js",
+            "line": 9,
+            "description": "Hinge constraint. Tries to keep the local body axes equal.",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "RigidBody"
+                },
+                {
+                    "name": "pivotA",
+                    "description": "A point defined locally in bodyA. This defines the offset of axisA.",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "axisA",
+                    "description": "an axis that bodyA can rotate around.",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "RigidBody"
+                },
+                {
+                    "name": "pivotB",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "axisB",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "maxForce",
+                    "description": "",
+                    "type": "Number"
+                }
+            ]
+        },
+        "PointToPointConstraint": {
+            "name": "PointToPointConstraint",
+            "shortname": "PointToPointConstraint",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/PointToPointConstraint.js",
+            "line": 6,
+            "description": "Connects two bodies at given offset points",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "pivotA",
+                    "description": "The point relative to the center of mass of bodyA which bodyA is constrained to.",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.",
+                    "type": "Body"
+                },
+                {
+                    "name": "pivotB",
+                    "description": "See pivotA.",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "maxForce",
+                    "description": "The maximum force that should be applied to constrain the bodies.",
+                    "type": "Number"
+                }
+            ],
+            "extends": "{Constraint}"
+        },
+        "RotationalEquation": {
+            "name": "RotationalEquation",
+            "shortname": "RotationalEquation",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/RotationalEquation.js",
+            "line": 7,
+            "description": "Rotational constraint. Works to keep the local vectors orthogonal to each other.",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "RigidBody"
+                },
+                {
+                    "name": "localVectorInBodyA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "RigidBody"
+                },
+                {
+                    "name": "localVectorInBodyB",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "extends": "{Equation}"
+        },
+        "RotationalMotorEquation": {
+            "name": "RotationalMotorEquation",
+            "shortname": "RotationalMotorEquation",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/constraints/RotationalMotorEquation.js",
+            "line": 7,
+            "description": "Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value",
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "RigidBody"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "RigidBody"
+                },
+                {
+                    "name": "maxForce",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "extends": "{Equation}"
+        },
+        "Demo": {
+            "name": "Demo",
+            "shortname": "Demo",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/demo/Demo.js",
+            "line": 3,
+            "description": "Demo framework class. If you want to learn how to connect Cannon.js with Three.js, please look at the examples/ instead.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object"
+                }
+            ]
+        },
+        "ContactMaterial": {
+            "name": "ContactMaterial",
+            "shortname": "ContactMaterial",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/material/ContactMaterial.js",
+            "line": 3,
+            "description": "Defines what happens when two materials meet.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "m1",
+                    "description": "",
+                    "type": "Material"
+                },
+                {
+                    "name": "m2",
+                    "description": "",
+                    "type": "Material"
+                },
+                {
+                    "name": "friction",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "restitution",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "todo": [
+                "Contact solving parameters here too?"
+            ]
+        },
+        "Material": {
+            "name": "Material",
+            "shortname": "Material",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/material/Material.js",
+            "line": 3,
+            "description": "Defines a physics material.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "author": "schteppe"
+        },
+        "Mat3": {
+            "name": "Mat3",
+            "shortname": "Mat3",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/math/Mat3.js",
+            "line": 5,
+            "description": "A 3x3 matrix.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "array",
+                    "description": "elements Array of nine elements. Optional."
+                }
+            ],
+            "author": "schteppe / http://github.com/schteppe"
+        },
+        "MatN": {
+            "name": "MatN",
+            "shortname": "MatN",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/math/MatN.js",
+            "line": 3,
+            "description": "Any matrix size class",
+            "is_constructor": 1,
+            "author": "schteppe",
+            "params": [
+                {
+                    "name": "cols",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "rows",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "elements",
+                    "description": "",
+                    "type": "Array"
+                }
+            ]
+        },
+        "Quaternion": {
+            "name": "Quaternion",
+            "shortname": "Quaternion",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/math/Quaternion.js",
+            "line": 5,
+            "description": "A Quaternion describes a rotation in 3D space. The Quaternion is mathematically defined as Q = x*i + y*j + z*k + w, where (i,j,k) are imaginary basis vectors. (x,y,z) can be seen as a vector related to the axis of rotation, while the real multiplier, w, is related to the amount of rotation.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "x",
+                    "description": "Multiplier of the imaginary basis vector i.",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "Multiplier of the imaginary basis vector j.",
+                    "type": "Number"
+                },
+                {
+                    "name": "z",
+                    "description": "Multiplier of the imaginary basis vector k.",
+                    "type": "Number"
+                },
+                {
+                    "name": "w",
+                    "description": "Multiplier of the real part.",
+                    "type": "Number"
+                }
+            ],
+            "see": [
+                "http://en.wikipedia.org/wiki/Quaternion"
+            ]
+        },
+        "Vec3": {
+            "name": "Vec3",
+            "shortname": "Vec3",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/math/Vec3.js",
+            "line": 5,
+            "description": "3-dimensional vector",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "z",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "author": "schteppe"
+        },
+        "Body": {
+            "name": "Body",
+            "shortname": "Body",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Body.js",
+            "line": 6,
+            "description": "Base class for all body types.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "type",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "extends": "EventTarget",
+            "itemtype": "event"
+        },
+        "Box": {
+            "name": "Box",
+            "shortname": "Box",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Box.js",
+            "line": 7,
+            "description": "A 3d box shape.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "halfExtents",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "author": "schteppe",
+            "extends": "Shape"
+        },
+        "Compound": {
+            "name": "Compound",
+            "shortname": "Compound",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Compound.js",
+            "line": 7,
+            "description": "A shape made of several other shapes.",
+            "extends": "{Shape}",
+            "author": "schteppe"
+        },
+        "ConvexPolyhedron": {
+            "name": "ConvexPolyhedron",
+            "shortname": "ConvexPolyhedron",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 7,
+            "description": "A set of polygons describing a convex shape.",
+            "is_constructor": 1,
+            "extends": "Shape",
+            "params": [
+                {
+                    "name": "points",
+                    "description": "An array of Vec3's",
+                    "type": "Array"
+                },
+                {
+                    "name": "faces",
+                    "description": "Array of integer arrays, describing which vertices that is included in each face.",
+                    "type": "Array"
+                },
+                {
+                    "name": "normals",
+                    "description": "Deprecated. Normals are now automatically generated from polygons.",
+                    "type": "Array"
+                }
+            ],
+            "author": "schteppe / https://github.com/schteppe",
+            "see": [
+                "http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/",
+                "http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp"
+            ],
+            "todo": [
+                "Move the clipping functions to ContactGenerator?",
+                "Automatically merge coplanar polygons in constructor."
+            ]
+        },
+        "Cylinder": {
+            "name": "Cylinder",
+            "shortname": "Cylinder",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Cylinder.js",
+            "line": 8,
+            "is_constructor": 1,
+            "extends": "ConvexPolyhedron",
+            "author": "schteppe / https://github.com/schteppe",
+            "params": [
+                {
+                    "name": "radiusTop",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "radiusBottom",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "numSegments",
+                    "description": "The number of segments to build the cylinder out of",
+                    "type": "Number"
+                }
+            ]
+        },
+        "Particle": {
+            "name": "Particle",
+            "shortname": "Particle",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Particle.js",
+            "line": 9,
+            "description": "A body consisting of one point mass. Does not have orientation.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "mass",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "material",
+                    "description": "",
+                    "type": "Material"
+                }
+            ]
+        },
+        "Plane": {
+            "name": "Plane",
+            "shortname": "Plane",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Plane.js",
+            "line": 6,
+            "description": "A plane, facing in the Z direction. The plane has its surface at z=0 and everything below z=0 is assumed to be solid plane. To make the plane face in some other direction than z, you must put it inside a RigidBody and rotate that body. See the demos.",
+            "is_constructor": 1,
+            "extends": "Shape",
+            "author": "schteppe"
+        },
+        "RigidBody": {
+            "name": "RigidBody",
+            "shortname": "RigidBody",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/RigidBody.js",
+            "line": 9,
+            "description": "Rigid body base class",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "mass",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "material",
+                    "description": "",
+                    "type": "Material"
+                }
+            ]
+        },
+        "SPHSystem": {
+            "name": "SPHSystem",
+            "shortname": "SPHSystem",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/SPHSystem.js",
+            "line": 9,
+            "description": "Smoothed-particle hydrodynamics system",
+            "is_constructor": 1
+        },
+        "Shape": {
+            "name": "Shape",
+            "shortname": "Shape",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Shape.js",
+            "line": 9,
+            "description": "Base class for shapes",
+            "is_constructor": 1,
+            "author": "schteppe",
+            "todo": [
+                "Should have a mechanism for caching bounding sphere radius instead of calculating it each time"
+            ]
+        },
+        "Sphere": {
+            "name": "Sphere",
+            "shortname": "Sphere",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/objects/Sphere.js",
+            "line": 6,
+            "description": "Spherical shape",
+            "is_constructor": 1,
+            "extends": "Shape",
+            "params": [
+                {
+                    "name": "radius",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "author": "schteppe / http://github.com/schteppe"
+        },
+        "GSSolver": {
+            "name": "GSSolver",
+            "shortname": "GSSolver",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/solver/GSSolver.js",
+            "line": 8,
+            "description": "Constraint equation Gauss-Seidel solver.",
+            "is_constructor": 1,
+            "todo": [
+                "The spook parameters should be specified for each constraint",
+                "not globally."
+            ],
+            "author": "schteppe / https://github.com/schteppe",
+            "see": [
+                "https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf"
+            ],
+            "extends": "{Solver}"
+        },
+        "Solver": {
+            "name": "Solver",
+            "shortname": "Solver",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/solver/Solver.js",
+            "line": 3,
+            "description": "Constraint equation solver base class.",
+            "is_constructor": 1,
+            "author": "schteppe / https://github.com/schteppe"
+        },
+        "SplitSolver": {
+            "name": "SplitSolver",
+            "shortname": "SplitSolver",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/solver/SplitSolver.js",
+            "line": 8,
+            "description": "Splits the equations into islands and solves them independently. Can improve performance.",
+            "is_constructor": 1,
+            "extends": "{Solver}",
+            "params": [
+                {
+                    "name": "subsolver",
+                    "description": "",
+                    "type": "Solver"
+                }
+            ]
+        },
+        "EventTarget": {
+            "name": "EventTarget",
+            "shortname": "EventTarget",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/utils/EventTarget.js",
+            "line": 3,
+            "is_constructor": 1,
+            "see": [
+                "https://github.com/mrdoob/eventtarget.js/"
+            ]
+        },
+        "ObjectPool": {
+            "name": "ObjectPool",
+            "shortname": "ObjectPool",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/utils/Pool.js",
+            "line": 3,
+            "description": "For pooling objects that can be reused.",
+            "is_constructor": 1
+        },
+        "Vec3Pool": {
+            "name": "Vec3Pool",
+            "shortname": "Vec3Pool",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/utils/Vec3Pool.js",
+            "line": 6,
+            "is_constructor": 1,
+            "extends": "{ObjectPool}"
+        },
+        "ContactGenerator": {
+            "name": "ContactGenerator",
+            "shortname": "ContactGenerator",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/world/ContactGenerator.js",
+            "line": 10,
+            "description": "Helper class for the World. Generates ContactEquations.",
+            "is_constructor": 1,
+            "todo": [
+                "Sphere-ConvexPolyhedron contacts",
+                "Contact reduction",
+                "should move methods to prototype"
+            ]
+        },
+        "World": {
+            "name": "World",
+            "shortname": "World",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/world/World.js",
+            "line": 18,
+            "description": "The physics world",
+            "is_constructor": 1,
+            "extends": "{EventTarget}"
+        }
+    },
+    "classitems": [
+        {
+            "file": "src/collision/ArrayCollisionMatrix.js",
+            "line": 10,
+            "description": "The matrix storage",
+            "itemtype": "property",
+            "name": "matrix",
+            "type": "{Array}",
+            "class": "ArrayCollisionMatrix"
+        },
+        {
+            "file": "src/collision/ArrayCollisionMatrix.js",
+            "line": 18,
+            "description": "Get an element",
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "i",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "j",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "ArrayCollisionMatrix"
+        },
+        {
+            "file": "src/collision/ArrayCollisionMatrix.js",
+            "line": 36,
+            "description": "Set an element",
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "i",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "j",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "value",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ArrayCollisionMatrix"
+        },
+        {
+            "file": "src/collision/ArrayCollisionMatrix.js",
+            "line": 54,
+            "description": "Sets all elements to zero",
+            "itemtype": "method",
+            "name": "reset",
+            "class": "ArrayCollisionMatrix"
+        },
+        {
+            "file": "src/collision/ArrayCollisionMatrix.js",
+            "line": 64,
+            "description": "Sets the max number of objects",
+            "itemtype": "method",
+            "name": "setNumObjects",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ArrayCollisionMatrix"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 16,
+            "description": "The world to search for collisions in.",
+            "itemtype": "property",
+            "name": "world",
+            "type": "{World}",
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 23,
+            "description": "If set to true, the broadphase uses bounding boxes for intersection test, else it uses bounding spheres.",
+            "itemtype": "property",
+            "name": "useBoundingBoxes",
+            "type": "{Boolean}",
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 31,
+            "description": "Get the collision pairs from the world",
+            "itemtype": "method",
+            "name": "collisionPairs",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "The world to search in",
+                    "type": "World"
+                },
+                {
+                    "name": "Array",
+                    "description": "p1 Empty array to be filled with body objects"
+                },
+                {
+                    "name": "Array",
+                    "description": "p2 Empty array to be filled with body objects"
+                }
+            ],
+            "return": {
+                "description": "array An array with two subarrays of body indices"
+            },
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 43,
+            "description": "Check if a body pair needs to be intersection tested at all.",
+            "itemtype": "method",
+            "name": "needBroadphaseCollision",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Bool"
+            },
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 78,
+            "description": "Check if a body pair needs to be intersection tested at all.",
+            "itemtype": "method",
+            "name": "intersectionTest",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 93,
+            "description": "Check if the bounding spheres of two bodies are intersecting.",
+            "itemtype": "method",
+            "name": "doBoundingSphereBroadphase",
+            "params": [
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "pairs1",
+                    "description": "bi is appended to this array if intersection",
+                    "type": "Array"
+                },
+                {
+                    "name": "pairs2",
+                    "description": "bj is appended to this array if intersection",
+                    "type": "Array"
+                }
+            ],
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 213,
+            "description": "Check if the bounding boxes of two bodies are intersecting.",
+            "itemtype": "method",
+            "name": "doBoundingBoxBroadphase",
+            "params": [
+                {
+                    "name": "Body",
+                    "description": "bi"
+                },
+                {
+                    "name": "Body",
+                    "description": "bj"
+                },
+                {
+                    "name": "pairs1",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "pairs2",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/Broadphase.js",
+            "line": 269,
+            "description": "Removes duplicate pairs from the pair arrays.",
+            "itemtype": "method",
+            "name": "makePairsUnique",
+            "params": [
+                {
+                    "name": "pairs1",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "pairs2",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "class": "Broadphase"
+        },
+        {
+            "file": "src/collision/GridBroadphase.js",
+            "line": 41,
+            "description": "Get all the collision pairs in the physics world",
+            "itemtype": "method",
+            "name": "collisionPairs",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                },
+                {
+                    "name": "pairs1",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "pairs2",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "class": "GridBroadphase"
+        },
+        {
+            "file": "src/collision/NaiveBroadphase.js",
+            "line": 18,
+            "description": "Get all the collision pairs in the physics world",
+            "itemtype": "method",
+            "name": "collisionPairs",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                },
+                {
+                    "name": "pairs1",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "pairs2",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "class": "NaiveBroadphase"
+        },
+        {
+            "file": "src/collision/ObjectCollisionMatrix.js",
+            "line": 10,
+            "description": "The matrix storage",
+            "itemtype": "property",
+            "name": "matrix",
+            "type": "{Object}",
+            "class": "ObjectCollisionMatrix"
+        },
+        {
+            "file": "src/collision/ObjectCollisionMatrix.js",
+            "line": 18,
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "i",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "j",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "ObjectCollisionMatrix"
+        },
+        {
+            "file": "src/collision/ObjectCollisionMatrix.js",
+            "line": 35,
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "i",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "j",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "value",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ObjectCollisionMatrix"
+        },
+        {
+            "file": "src/collision/ObjectCollisionMatrix.js",
+            "line": 57,
+            "description": "Empty the matrix",
+            "itemtype": "method",
+            "name": "reset",
+            "class": "ObjectCollisionMatrix"
+        },
+        {
+            "file": "src/collision/ObjectCollisionMatrix.js",
+            "line": 65,
+            "description": "Set max number of objects",
+            "itemtype": "method",
+            "name": "setNumObjects",
+            "params": [
+                {
+                    "name": "n",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "ObjectCollisionMatrix"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 15,
+            "itemtype": "property",
+            "name": "origin",
+            "type": "Vec3",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 20,
+            "itemtype": "property",
+            "name": "direction",
+            "type": "Vec3",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 25,
+            "description": "The precision of the ray. Used when checking parallelity etc.",
+            "itemtype": "property",
+            "name": "precision",
+            "type": "Number",
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 57,
+            "description": "Shoot a ray at a body, get back information about the hit.",
+            "itemtype": "method",
+            "name": "intersectBody",
+            "params": [
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "RigidBody"
+                }
+            ],
+            "return": {
+                "description": "An array of results. The result objects has properties: distance (float), point (Vec3) and body (RigidBody).",
+                "type": "Array"
+            },
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 83,
+            "itemtype": "method",
+            "name": "intersectBodies",
+            "params": [
+                {
+                    "name": "bodies",
+                    "description": "An array of RigidBody objects.",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "See intersectBody",
+                "type": "Array"
+            },
+            "class": "Ray"
+        },
+        {
+            "file": "src/collision/Ray.js",
+            "line": 112,
+            "itemtype": "method",
+            "name": "intersectShape",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "position",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "RigidBody"
+                }
+            ],
+            "return": {
+                "description": "See intersectBody()",
+                "type": "Array"
+            },
+            "class": "Ray"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 12,
+            "description": "Equations to be solved in this constraint",
+            "itemtype": "property",
+            "name": "equations",
+            "type": "{Array}",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 19,
+            "itemtype": "property",
+            "name": "bodyA",
+            "type": "Body",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 24,
+            "itemtype": "property",
+            "name": "bodyB",
+            "type": "Body",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/Constraint.js",
+            "line": 30,
+            "itemtype": "method",
+            "name": "update",
+            "class": "Constraint"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 18,
+            "itemtype": "property",
+            "name": "restitution",
+            "type": "{Number}",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 24,
+            "description": "World-oriented vector that goes from the center of bi to the contact point.",
+            "itemtype": "property",
+            "name": "ri",
+            "type": "Vec3",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 30,
+            "description": "World-oriented vector that starts in body j position and goes to the contact point.",
+            "itemtype": "property",
+            "name": "rj",
+            "type": "Vec3",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 38,
+            "description": "Contact normal, pointing out of body i.",
+            "itemtype": "property",
+            "name": "ni",
+            "type": "Vec3",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/ContactEquation.js",
+            "line": 58,
+            "description": "To be run before object reuse",
+            "itemtype": "method",
+            "name": "reset",
+            "class": "ContactEquation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 15,
+            "itemtype": "property",
+            "name": "float minForce",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 20,
+            "itemtype": "property",
+            "name": "float maxForce",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 25,
+            "itemtype": "property",
+            "name": "bi",
+            "type": "{Body}",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 31,
+            "itemtype": "property",
+            "name": "bj",
+            "type": "{Body}",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 37,
+            "description": "Corresponds to spring stiffness. Makes constraints stiffer, but harder to solve.",
+            "itemtype": "property",
+            "name": "float stiffness",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 43,
+            "description": "Similar to damping. Represents the number of timesteps needed to stabilize the constraint.",
+            "itemtype": "property",
+            "name": "float regularizationTime",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 49,
+            "description": "SPOOK parameter",
+            "itemtype": "property",
+            "name": "float a",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 55,
+            "description": "SPOOK parameter",
+            "itemtype": "property",
+            "name": "float b",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 61,
+            "description": "SPOOK parameter",
+            "itemtype": "property",
+            "name": "float eps",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 67,
+            "description": "Set to true if you just changed stiffness or regularization. The parameters a,b,eps will be recalculated by the solver before solve.",
+            "itemtype": "property",
+            "name": "bool spookParamsNeedsUpdate",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/Equation.js",
+            "line": 75,
+            "description": "Recalculates a,b,eps.",
+            "itemtype": "method",
+            "name": "updateSpookParams",
+            "class": "Equation"
+        },
+        {
+            "file": "src/constraints/RotationalMotorEquation.js",
+            "line": 25,
+            "description": "Motor velocity",
+            "itemtype": "property",
+            "name": "targetVelocity",
+            "type": "Number",
+            "class": "RotationalMotorEquation"
+        },
+        {
+            "file": "src/demo/Demo.js",
+            "line": 206,
+            "description": "Add a scene to the demo app",
+            "itemtype": "method",
+            "name": "addScene",
+            "params": [
+                {
+                    "name": "title",
+                    "description": "Title of the scene",
+                    "type": "String"
+                },
+                {
+                    "name": "A",
+                    "description": "function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.",
+                    "type": "Function"
+                }
+            ],
+            "class": "Demo"
+        },
+        {
+            "file": "src/demo/Demo.js",
+            "line": 227,
+            "description": "Restarts the current scene",
+            "itemtype": "method",
+            "name": "restartCurrentScene",
+            "class": "Demo"
+        },
+        {
+            "file": "src/material/ContactMaterial.js",
+            "line": 15,
+            "description": "Identifier of this material",
+            "itemtype": "property",
+            "name": "id",
+            "type": "Number",
+            "class": "ContactMaterial"
+        },
+        {
+            "file": "src/material/ContactMaterial.js",
+            "line": 21,
+            "description": "Participating materials",
+            "itemtype": "property",
+            "name": "materials",
+            "type": "Array",
+            "class": "ContactMaterial"
+        },
+        {
+            "file": "src/material/ContactMaterial.js",
+            "line": 27,
+            "description": "Friction coefficient",
+            "itemtype": "property",
+            "name": "friction",
+            "type": "Number",
+            "class": "ContactMaterial"
+        },
+        {
+            "file": "src/material/ContactMaterial.js",
+            "line": 33,
+            "description": "Restitution coefficient",
+            "itemtype": "property",
+            "name": "restitution",
+            "type": "Number",
+            "class": "ContactMaterial"
+        },
+        {
+            "file": "src/material/ContactMaterial.js",
+            "line": 39,
+            "description": "Stiffness of the produced contact equations",
+            "itemtype": "property",
+            "name": "contactEquationStiffness",
+            "type": "Number",
+            "class": "ContactMaterial"
+        },
+        {
+            "file": "src/material/ContactMaterial.js",
+            "line": 45,
+            "description": "Regularization of the produced contact equations",
+            "itemtype": "property",
+            "name": "contactEquationRegularizationTime",
+            "type": "Number",
+            "class": "ContactMaterial"
+        },
+        {
+            "file": "src/material/ContactMaterial.js",
+            "line": 51,
+            "description": "Stiffness of the produced friction equations",
+            "itemtype": "property",
+            "name": "frictionEquationStiffness",
+            "type": "Number",
+            "class": "ContactMaterial"
+        },
+        {
+            "file": "src/material/ContactMaterial.js",
+            "line": 57,
+            "description": "Regularization of the produced friction equations",
+            "itemtype": "property",
+            "name": "frictionEquationRegularizationTime",
+            "type": "Number",
+            "class": "ContactMaterial"
+        },
+        {
+            "file": "src/material/Material.js",
+            "line": 11,
+            "itemtype": "property",
+            "name": "name",
+            "type": "{String}",
+            "class": "Material"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 13,
+            "description": "A vector of length 9, containing all matrix elements",
+            "itemtype": "property",
+            "name": "elements",
+            "type": "Array",
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 24,
+            "description": "Sets the matrix to identity",
+            "itemtype": "method",
+            "name": "identity",
+            "todo": [
+                "Should perhaps be renamed to setIdentity() to be more clear.",
+                "Create another function that immediately creates an identity matrix eg. eye()"
+            ],
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 44,
+            "description": "Set all elements to zero",
+            "itemtype": "method",
+            "name": "setZero",
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 61,
+            "description": "Sets the matrix diagonal elements from a Vec3",
+            "itemtype": "method",
+            "name": "setTrace",
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 72,
+            "description": "Matrix-Vector multiplication",
+            "itemtype": "method",
+            "name": "vmult",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "The vector to multiply with",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "target",
+                    "description": "Optional, target to save the result in.",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 92,
+            "description": "Matrix-scalar multiplication",
+            "itemtype": "method",
+            "name": "smult",
+            "params": [
+                {
+                    "name": "s",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 103,
+            "description": "Matrix multiplication",
+            "itemtype": "method",
+            "name": "mmult",
+            "params": [
+                {
+                    "name": "m",
+                    "description": "Matrix to multiply with from left side.",
+                    "type": "Mat3"
+                }
+            ],
+            "return": {
+                "description": "The result.",
+                "type": "Mat3"
+            },
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 123,
+            "description": "Solve Ax=b",
+            "itemtype": "method",
+            "name": "solve",
+            "params": [
+                {
+                    "name": "b",
+                    "description": "The right hand side",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "target",
+                    "description": "Optional. Target vector to save in.",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "The solution x",
+                "type": "Vec3"
+            },
+            "todo": [
+                "should reuse arrays"
+            ],
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 194,
+            "description": "Get an element in the matrix by index. Index starts at 0, not 1!!!",
+            "itemtype": "method",
+            "name": "e",
+            "params": [
+                {
+                    "name": "row",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "column",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "value",
+                    "description": "Optional. If provided, the matrix element will be set to this value.",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 211,
+            "description": "Copy the matrix",
+            "itemtype": "method",
+            "name": "copy",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "Optional. Target to save the copy in.",
+                    "type": "Mat3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Mat3"
+            },
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 225,
+            "description": "Returns a string representation of the matrix.",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "string"
+            },
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/Mat3.js",
+            "line": 239,
+            "description": "reverse the matrix",
+            "itemtype": "method",
+            "name": "reverse",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "Optional. Target matrix to save in.",
+                    "type": "Mat3"
+                }
+            ],
+            "return": {
+                "description": "The solution x",
+                "type": "Mat3"
+            },
+            "class": "Mat3"
+        },
+        {
+            "file": "src/math/MatN.js",
+            "line": 13,
+            "description": "A vector containing all matrix elements",
+            "itemtype": "property",
+            "name": "Float32Array elements",
+            "class": "MatN"
+        },
+        {
+            "file": "src/math/MatN.js",
+            "line": 24,
+            "description": "Sets the matrix to identity",
+            "itemtype": "method",
+            "name": "identity",
+            "todo": [
+                "Should perhaps be renamed to setIdentity() to be more clear.",
+                "Create another function that immediately creates an identity matrix eg. eye()"
+            ],
+            "class": "MatN"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 16,
+            "itemtype": "property",
+            "name": "x",
+            "type": "Number",
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 21,
+            "itemtype": "property",
+            "name": "y",
+            "type": "Number",
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 26,
+            "itemtype": "property",
+            "name": "z",
+            "type": "Number",
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 31,
+            "description": "The multiplier of the real quaternion basis vector.",
+            "itemtype": "property",
+            "name": "w",
+            "type": "Number",
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 38,
+            "description": "Set the value of the quaternion.",
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "z",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "w",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 53,
+            "description": "Convert to a readable format",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "string"
+            },
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 62,
+            "description": "Set the quaternion components given an axis and an angle.",
+            "itemtype": "method",
+            "name": "setFromAxisAngle",
+            "params": [
+                {
+                    "name": "axis",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "angle",
+                    "description": "in radians",
+                    "type": "Number"
+                }
+            ],
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 76,
+            "description": "Converts the quaternion to axis/angle representation.",
+            "itemtype": "method",
+            "name": "setFromAxisAngle",
+            "params": [
+                {
+                    "name": "targetAxis",
+                    "description": "Optional. A vector object to reuse for storing the axis.",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "Array An array, first elemnt is the axis and the second is the angle in radians."
+            },
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 100,
+            "description": "Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.",
+            "itemtype": "method",
+            "name": "setFromVectors",
+            "params": [
+                {
+                    "name": "u",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 115,
+            "description": "Quaternion multiplication",
+            "itemtype": "method",
+            "name": "mult",
+            "params": [
+                {
+                    "name": "q",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "target",
+                    "description": "Optional.",
+                    "type": "Quaternion"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Quaternion"
+            },
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 144,
+            "description": "Get the inverse quaternion rotation.",
+            "itemtype": "method",
+            "name": "inverse",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Quaternion"
+            },
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 164,
+            "description": "Get the quaternion conjugate",
+            "itemtype": "method",
+            "name": "conjugate",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Quaternion"
+            },
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 181,
+            "description": "Normalize the quaternion. Note that this changes the values of the quaternion.",
+            "itemtype": "method",
+            "name": "normalize",
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 201,
+            "description": "Approximation of quaternion normalization. Works best when quat is already almost-normalized.",
+            "itemtype": "method",
+            "name": "normalizeFast",
+            "see": [
+                "http://jsperf.com/fast-quaternion-normalization"
+            ],
+            "author": "unphased, https://github.com/unphased",
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 222,
+            "description": "Multiply the quaternion by a vector",
+            "itemtype": "method",
+            "name": "vmult",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "target",
+                    "description": "Optional",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 254,
+            "itemtype": "method",
+            "name": "copy",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 265,
+            "description": "Convert the quaternion to euler angle representation. Order: YZX, as this page describes: http://www.euclideanspace.com/maths/standards/index.htm",
+            "itemtype": "method",
+            "name": "toEuler",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "string",
+                    "description": "order Three-character string e.g. \"YZX\", which also is default."
+                }
+            ],
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Quaternion.js",
+            "line": 308,
+            "description": "See http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m",
+            "itemtype": "method",
+            "name": "setFromEuler",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "z",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "order",
+                    "description": "The order to apply angles: 'XYZ' or 'YXZ' or any other combination",
+                    "type": "String"
+                }
+            ],
+            "class": "Quaternion"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 14,
+            "itemtype": "property",
+            "name": "x",
+            "type": "{Number}",
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 20,
+            "itemtype": "property",
+            "name": "y",
+            "type": "{Number}",
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 26,
+            "itemtype": "property",
+            "name": "z",
+            "type": "{Number}",
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 33,
+            "description": "Vector cross product",
+            "itemtype": "method",
+            "name": "cross",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "target",
+                    "description": "Optional. Target to save in.",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 51,
+            "description": "Set the vectors' 3 elements",
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "z",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Vec3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 66,
+            "description": "Vector addition",
+            "itemtype": "method",
+            "name": "vadd",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "target",
+                    "description": "Optional.",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 85,
+            "description": "Vector subtraction",
+            "itemtype": "method",
+            "name": "vsub",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "target",
+                    "description": "Optional. Target to save in.",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 104,
+            "description": "Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c",
+            "itemtype": "method",
+            "name": "crossmat",
+            "see": [
+                "http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf"
+            ],
+            "return": {
+                "description": "",
+                "type": "Mat3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 116,
+            "description": "Normalize the vector. Note that this changes the values in the vector.",
+            "itemtype": "method",
+            "name": "normalize",
+            "return": {
+                "description": "Returns the norm of the vector",
+                "type": "Number"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 138,
+            "description": "Get the version of this vector that is of length 1.",
+            "itemtype": "method",
+            "name": "unit",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "Optional target to save in",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "Returns the unit vector",
+                "type": "Vec3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 161,
+            "description": "Get the 2-norm (length) of the vector",
+            "itemtype": "method",
+            "name": "norm",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 171,
+            "description": "Get the squared length of the vector",
+            "itemtype": "method",
+            "name": "norm2",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 180,
+            "description": "Get distance from this point to another point",
+            "itemtype": "method",
+            "name": "distanceTo",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 194,
+            "description": "Multiply the vector with a scalar",
+            "itemtype": "method",
+            "name": "mult",
+            "params": [
+                {
+                    "name": "scalar",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 212,
+            "description": "Calculate dot product",
+            "itemtype": "method",
+            "name": "dot",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 222,
+            "itemtype": "method",
+            "name": "isZero",
+            "return": {
+                "description": "bool"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 230,
+            "description": "Make the vector point in the opposite direction.",
+            "itemtype": "method",
+            "name": "negate",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "Optional target to save in",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 244,
+            "description": "Compute two artificial tangents to the vector",
+            "itemtype": "method",
+            "name": "tangents",
+            "params": [
+                {
+                    "name": "t1",
+                    "description": "Vector object to save the first tangent in",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "t2",
+                    "description": "Vector object to save the second tangent in",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 274,
+            "description": "Converts to a more readable format",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "string"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 283,
+            "description": "Copy the vector.",
+            "itemtype": "method",
+            "name": "copy",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 298,
+            "description": "Do a linear interpolation between two vectors",
+            "itemtype": "method",
+            "name": "lerp",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "t",
+                    "description": "A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.",
+                    "type": "Number"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 312,
+            "description": "Check if a vector equals is almost equal to another one.",
+            "itemtype": "method",
+            "name": "almostEquals",
+            "params": [
+                {
+                    "name": "v",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "precision",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "bool"
+            },
+            "class": "Vec3"
+        },
+        {
+            "file": "src/math/Vec3.js",
+            "line": 331,
+            "description": "Check if a vector is almost zero",
+            "itemtype": "method",
+            "name": "almostZero",
+            "params": [
+                {
+                    "name": "precision",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Vec3"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 19,
+            "description": "Reference to the world the body is living in",
+            "itemtype": "property",
+            "name": "world",
+            "type": "{World}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 26,
+            "description": "Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, \"this\" will refer to this Body object.",
+            "itemtype": "property",
+            "name": "preStep",
+            "type": "{Function}",
+            "deprecated": true,
+            "deprecationMessage": "Use World events instead",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 34,
+            "description": "Callback function that is used AFTER stepping the system. Inside the function, \"this\" will refer to this Body object.",
+            "itemtype": "property",
+            "name": "postStep",
+            "type": "{Function}",
+            "deprecated": true,
+            "deprecationMessage": "Use World events instead",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 44,
+            "itemtype": "property",
+            "name": "collisionFilterGroup",
+            "type": "Number",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 49,
+            "itemtype": "property",
+            "name": "collisionFilterMask",
+            "type": "Number",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 54,
+            "description": "Whether to produce contact forces",
+            "itemtype": "property",
+            "name": "collisionResponse",
+            "type": "Number",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 61,
+            "description": "A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.",
+            "static": 1,
+            "itemtype": "property",
+            "name": "DYNAMIC",
+            "type": "{Number}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 69,
+            "description": "A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.",
+            "static": 1,
+            "itemtype": "property",
+            "name": "DYNAMIC",
+            "type": "{Number}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Body.js",
+            "line": 77,
+            "description": "A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.",
+            "static": 1,
+            "itemtype": "property",
+            "name": "DYNAMIC",
+            "type": "{Number}",
+            "class": "Body"
+        },
+        {
+            "file": "src/objects/Box.js",
+            "line": 20,
+            "itemtype": "property",
+            "name": "halfExtents",
+            "type": "{Vec3}",
+            "class": "Box"
+        },
+        {
+            "file": "src/objects/Box.js",
+            "line": 26,
+            "description": "Used by the contact generator to make contacts with other convex polyhedra for example",
+            "itemtype": "property",
+            "name": "convexPolyhedronRepresentation",
+            "type": "{ConvexPolyhedron}",
+            "class": "Box"
+        },
+        {
+            "file": "src/objects/Box.js",
+            "line": 38,
+            "description": "Updates the local convex polyhedron representation used for some collisions.",
+            "itemtype": "method",
+            "name": "updateConvexPolyhedronRepresentation",
+            "class": "Box"
+        },
+        {
+            "file": "src/objects/Box.js",
+            "line": 72,
+            "itemtype": "method",
+            "name": "calculateLocalInertia",
+            "params": [
+                {
+                    "name": "mass",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Box"
+        },
+        {
+            "file": "src/objects/Box.js",
+            "line": 87,
+            "description": "Get the box 6 side normals",
+            "itemtype": "method",
+            "name": "getSideNormals",
+            "params": [
+                {
+                    "name": "includeNegative",
+                    "description": "If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)",
+                    "type": "Boolean"
+                },
+                {
+                    "name": "quat",
+                    "description": "Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.",
+                    "type": "Quaternion"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Array"
+            },
+            "class": "Box"
+        },
+        {
+            "file": "src/objects/Compound.js",
+            "line": 17,
+            "itemtype": "property",
+            "name": "childShapes",
+            "type": "Array",
+            "class": "Compound"
+        },
+        {
+            "file": "src/objects/Compound.js",
+            "line": 22,
+            "itemtype": "property",
+            "name": "childOffsets",
+            "type": "Array",
+            "class": "Compound"
+        },
+        {
+            "file": "src/objects/Compound.js",
+            "line": 27,
+            "itemtype": "property",
+            "name": "childOrientations",
+            "type": "Array",
+            "class": "Compound"
+        },
+        {
+            "file": "src/objects/Compound.js",
+            "line": 35,
+            "description": "Add a child shape.",
+            "itemtype": "method",
+            "name": "addChild",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "offset",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "orientation",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "class": "Compound"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 32,
+            "description": "Array of Vec3",
+            "itemtype": "property",
+            "name": "vertices",
+            "type": "{Array}",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 42,
+            "description": "Array of integer arrays, indicating which vertices each face consists of",
+            "itemtype": "property",
+            "name": "faces",
+            "type": "{Array}",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 49,
+            "description": "Array of Vec3",
+            "itemtype": "property",
+            "name": "faceNormals",
+            "type": "{Array}",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 87,
+            "description": "Array of Vec3",
+            "itemtype": "property",
+            "name": "uniqueEdges",
+            "type": "{Array}",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 137,
+            "description": "Get face normal given 3 vertices",
+            "static": 1,
+            "itemtype": "method",
+            "name": "getFaceNormal",
+            "params": [
+                {
+                    "name": "va",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "vb",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "vc",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 157,
+            "description": "Compute the normal of a face from its vertices",
+            "itemtype": "method",
+            "name": "getFaceNormal",
+            "params": [
+                {
+                    "name": "i",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 171,
+            "itemtype": "method",
+            "name": "clipAgainstHull",
+            "params": [
+                {
+                    "name": "posA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatA",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "hullB",
+                    "description": "",
+                    "type": "ConvexPolyhedron"
+                },
+                {
+                    "name": "posB",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatB",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "separatingNormal",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "minDist",
+                    "description": "Clamp distance",
+                    "type": "Number"
+                },
+                {
+                    "name": "maxDist",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "result",
+                    "description": "The an array of contact point objects, see clipFaceAgainstHull",
+                    "type": "Array"
+                }
+            ],
+            "see": [
+                "http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp"
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 230,
+            "description": "Find the separating axis between this hull and another",
+            "itemtype": "method",
+            "name": "findSeparatingAxis",
+            "params": [
+                {
+                    "name": "hullB",
+                    "description": "",
+                    "type": "ConvexPolyhedron"
+                },
+                {
+                    "name": "posA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatA",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "posB",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatB",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "target",
+                    "description": "The target vector to save the axis in",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "Returns false if a separation is found, else true",
+                "type": "Bool"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 337,
+            "description": "Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.",
+            "itemtype": "method",
+            "name": "testSepAxis",
+            "params": [
+                {
+                    "name": "axis",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "hullB",
+                    "description": "",
+                    "type": "ConvexPolyhedron"
+                },
+                {
+                    "name": "posA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatA",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "posB",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatB",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "return": {
+                "description": "The overlap depth, or FALSE if no penetration.",
+                "type": "Float"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 366,
+            "itemtype": "method",
+            "name": "calculateLocalInertia",
+            "params": [
+                {
+                    "name": "mass",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 383,
+            "itemtype": "method",
+            "name": "getPlaneConstantOfFace",
+            "params": [
+                {
+                    "name": "face_i",
+                    "description": "Index of the face",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 396,
+            "description": "Clip a face against a hull.",
+            "itemtype": "method",
+            "name": "clipFaceAgainstHull",
+            "params": [
+                {
+                    "name": "separatingNormal",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "posA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatA",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "worldVertsB1",
+                    "description": "An array of Vec3 with vertices in the world frame.",
+                    "type": "Array"
+                },
+                {
+                    "name": "minDist",
+                    "description": "Distance clamping",
+                    "type": "Number"
+                },
+                {
+                    "name": "maxDist",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "Array",
+                    "description": "result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates."
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 550,
+            "description": "Clip a face in a hull against the back of a plane.",
+            "itemtype": "method",
+            "name": "clipFaceAgainstPlane",
+            "params": [
+                {
+                    "name": "inVertices",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "outVertices",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "planeNormal",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "planeConstant",
+                    "description": "The constant in the mathematical plane equation",
+                    "type": "Number"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 661,
+            "description": "Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.",
+            "itemtype": "method",
+            "name": "computeWorldFaceNormals",
+            "params": [
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 681,
+            "itemtype": "method",
+            "name": "computeBoundingSphereRadius",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 700,
+            "itemtype": "method",
+            "name": "calculateWorldAABB",
+            "params": [
+                {
+                    "name": "pos",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "min",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "max",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 737,
+            "description": "Get approximate convex volume",
+            "itemtype": "method",
+            "name": "volume",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 749,
+            "description": "Get an average of all the vertices positions",
+            "itemtype": "method",
+            "name": "getAveragePointLocal",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 766,
+            "description": "Transform all local points. Will change the .vertices",
+            "itemtype": "method",
+            "name": "transformAllPoints",
+            "params": [
+                {
+                    "name": "offset",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 805,
+            "description": "Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.",
+            "itemtype": "method",
+            "name": "pointIsInside",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "A point given in local coordinates",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/ConvexPolyhedron.js",
+            "line": 847,
+            "description": "Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.",
+            "static": 1,
+            "itemtype": "method",
+            "name": "project",
+            "params": [
+                {
+                    "name": "hull",
+                    "description": "",
+                    "type": "ConvexPolyhedron"
+                },
+                {
+                    "name": "axis",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "pos",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "result",
+                    "description": "result[0] and result[1] will be set to maximum and minimum, respectively.",
+                    "type": "Array"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 28,
+            "itemtype": "property",
+            "name": "position",
+            "type": "{Vec3}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 34,
+            "description": "Initial position of the body",
+            "itemtype": "property",
+            "name": "initPosition",
+            "type": "{Vec3}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 41,
+            "itemtype": "property",
+            "name": "velocity",
+            "type": "{Vec3}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 47,
+            "itemtype": "property",
+            "name": "initVelocity",
+            "type": "{Vec3}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 53,
+            "description": "Linear force on the body",
+            "itemtype": "property",
+            "name": "force",
+            "type": "{Vec3}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 60,
+            "itemtype": "property",
+            "name": "mass",
+            "type": "{Number}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 66,
+            "itemtype": "property",
+            "name": "invMass",
+            "type": "{Number}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 72,
+            "itemtype": "property",
+            "name": "material",
+            "type": "{Material}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 78,
+            "itemtype": "property",
+            "name": "float linearDamping",
+            "type": "{Number}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 84,
+            "description": "One of the states Body.DYNAMIC, Body.STATIC and Body.KINEMATIC",
+            "itemtype": "property",
+            "name": "motionstate",
+            "type": "{Number}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 91,
+            "description": "If true, the body will automatically fall to sleep.",
+            "itemtype": "property",
+            "name": "allowSleep",
+            "type": "{Boolean}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 101,
+            "description": "If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.",
+            "itemtype": "property",
+            "name": "sleepSpeedLimit",
+            "type": "{Number}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 108,
+            "description": "If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.",
+            "itemtype": "property",
+            "name": "sleepTimeLimit",
+            "type": "{Number}",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 122,
+            "itemtype": "method",
+            "name": "isAwake",
+            "return": {
+                "description": "bool"
+            },
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 130,
+            "itemtype": "method",
+            "name": "isSleepy",
+            "return": {
+                "description": "bool"
+            },
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 138,
+            "itemtype": "method",
+            "name": "isSleeping",
+            "return": {
+                "description": "bool"
+            },
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 146,
+            "description": "Wake the body up.",
+            "itemtype": "method",
+            "name": "wakeUp",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 158,
+            "description": "Force body sleep",
+            "itemtype": "method",
+            "name": "sleep",
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/Particle.js",
+            "line": 166,
+            "description": "Called every timestep to update internal sleep timer and change sleep state if needed.",
+            "itemtype": "method",
+            "name": "sleepTick",
+            "params": [
+                {
+                    "name": "time",
+                    "description": "The world time in seconds",
+                    "type": "Number"
+                }
+            ],
+            "class": "Particle"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 31,
+            "description": "Rotational force on the body, around center of mass",
+            "itemtype": "property",
+            "name": "Vec3 tau",
+            "todo": [
+                "should be renamed to .angularForce"
+            ],
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 38,
+            "description": "Orientation of the body",
+            "itemtype": "property",
+            "name": "quaternion",
+            "type": "{Quaternion}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 45,
+            "itemtype": "property",
+            "name": "initQuaternion",
+            "type": "{Quaternion}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 51,
+            "itemtype": "property",
+            "name": "angularVelocity",
+            "type": "{Vec3}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 57,
+            "itemtype": "property",
+            "name": "initAngularVelocity",
+            "type": "{Vec3}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 63,
+            "itemtype": "property",
+            "name": "shape",
+            "type": "{Shape}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 69,
+            "itemtype": "property",
+            "name": "inertia",
+            "type": "{Vec3}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 80,
+            "itemtype": "property",
+            "name": "invInertia",
+            "type": "{Vec3}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 91,
+            "itemtype": "property",
+            "name": "angularDamping",
+            "type": "{Number}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 97,
+            "itemtype": "property",
+            "name": "aabbmin",
+            "type": "{Vec3}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 103,
+            "itemtype": "property",
+            "name": "aabbmax",
+            "type": "{Vec3}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 109,
+            "description": "Indicates if the AABB needs to be updated before use.",
+            "itemtype": "property",
+            "name": "aabbNeedsUpdate",
+            "type": "{Boolean}",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 122,
+            "description": "Updates the .aabbmin and .aabbmax properties",
+            "itemtype": "method",
+            "name": "computeAABB",
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 134,
+            "description": "Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.tau.",
+            "itemtype": "method",
+            "name": "applyForce",
+            "params": [
+                {
+                    "name": "force",
+                    "description": "The amount of force to add.",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "worldPoint",
+                    "description": "A world point to apply the force on.",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/RigidBody.js",
+            "line": 158,
+            "description": "Apply impulse to a world point. This could for example be a point on the RigidBody surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.",
+            "itemtype": "method",
+            "name": "applyImpulse",
+            "params": [
+                {
+                    "name": "impulse",
+                    "description": "The amount of impulse to add.",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "worldPoint",
+                    "description": "A world point to apply the force on.",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "RigidBody"
+        },
+        {
+            "file": "src/objects/SPHSystem.js",
+            "line": 43,
+            "description": "Get neighbors within smoothing volume, save in the array neighbors",
+            "itemtype": "method",
+            "name": "getNeighbors",
+            "params": [
+                {
+                    "name": "particle",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "neighbors",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "class": "SPHSystem"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 18,
+            "description": "The type of this shape. Must be set to an int > 0 by subclasses.",
+            "itemtype": "property",
+            "name": "type",
+            "type": "{Number}",
+            "see": [
+                "Shape.types"
+            ],
+            "class": "Shape"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 34,
+            "description": "Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius",
+            "itemtype": "method",
+            "name": "computeBoundingSphereRadius",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Shape"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 43,
+            "description": "Returns the bounding sphere radius. The result is stored in the property .boundingSphereRadius",
+            "itemtype": "method",
+            "name": "getBoundingSphereRadius",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Shape"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 55,
+            "description": "Get the volume of this shape",
+            "itemtype": "method",
+            "name": "volume",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Shape"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 64,
+            "description": "Calculates the inertia in the local frame for this shape.",
+            "itemtype": "method",
+            "name": "calculateLocalInertia",
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "see": [
+                "http://en.wikipedia.org/wiki/List_of_moments_of_inertia"
+            ],
+            "class": "Shape"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 74,
+            "description": "Calculates inertia in a specified frame for this shape.",
+            "itemtype": "method",
+            "name": "calculateTransformedInertia",
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Shape"
+        },
+        {
+            "file": "src/objects/Shape.js",
+            "line": 103,
+            "description": "The available shape types.",
+            "static": 1,
+            "itemtype": "property",
+            "name": "types",
+            "type": "{Object}",
+            "class": "Shape"
+        },
+        {
+            "file": "src/objects/Sphere.js",
+            "line": 17,
+            "itemtype": "property",
+            "name": "radius",
+            "type": "Number",
+            "class": "Sphere"
+        },
+        {
+            "file": "src/solver/GSSolver.js",
+            "line": 20,
+            "description": "The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.",
+            "itemtype": "property",
+            "name": "iterations",
+            "type": "{Number}",
+            "todo": [
+                "write more about solver and iterations in the wiki"
+            ],
+            "class": "GSSolver"
+        },
+        {
+            "file": "src/solver/GSSolver.js",
+            "line": 28,
+            "description": "When tolerance is reached, the system is assumed to be converged.",
+            "itemtype": "property",
+            "name": "tolerance",
+            "type": "{Number}",
+            "class": "GSSolver"
+        },
+        {
+            "file": "src/solver/Solver.js",
+            "line": 10,
+            "description": "All equations to be solved",
+            "itemtype": "property",
+            "name": "equations",
+            "type": "Array",
+            "class": "Solver"
+        },
+        {
+            "file": "src/solver/Solver.js",
+            "line": 17,
+            "description": "Should be implemented in subclasses!",
+            "itemtype": "method",
+            "name": "solve",
+            "params": [
+                {
+                    "name": "dt",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                }
+            ],
+            "class": "Solver"
+        },
+        {
+            "file": "src/solver/Solver.js",
+            "line": 28,
+            "description": "Add an equation",
+            "itemtype": "method",
+            "name": "addEquation",
+            "params": [
+                {
+                    "name": "eq",
+                    "description": "",
+                    "type": "Equation"
+                }
+            ],
+            "class": "Solver"
+        },
+        {
+            "file": "src/solver/Solver.js",
+            "line": 37,
+            "description": "Remove an equation",
+            "itemtype": "method",
+            "name": "removeEquation",
+            "params": [
+                {
+                    "name": "eq",
+                    "description": "",
+                    "type": "Equation"
+                }
+            ],
+            "class": "Solver"
+        },
+        {
+            "file": "src/solver/Solver.js",
+            "line": 50,
+            "description": "Add all equations",
+            "itemtype": "method",
+            "name": "removeAllEquations",
+            "class": "Solver"
+        },
+        {
+            "file": "src/solver/SplitSolver.js",
+            "line": 27,
+            "description": "Solve the subsystems",
+            "itemtype": "method",
+            "name": "solve",
+            "params": [
+                {
+                    "name": "dt",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                }
+            ],
+            "class": "SplitSolver"
+        },
+        {
+            "file": "src/utils/EventTarget.js",
+            "line": 11,
+            "description": "Add an event listener",
+            "itemtype": "method",
+            "name": "addEventListener",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "listener",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "class": "EventTarget"
+        },
+        {
+            "file": "src/utils/EventTarget.js",
+            "line": 26,
+            "description": "Dispatch an event",
+            "itemtype": "method",
+            "name": "dispatchEvent",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "EventTarget"
+        },
+        {
+            "file": "src/utils/EventTarget.js",
+            "line": 37,
+            "description": "Remove an event listener",
+            "itemtype": "method",
+            "name": "removeEventListener",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "listener",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "class": "EventTarget"
+        },
+        {
+            "file": "src/utils/Pool.js",
+            "line": 9,
+            "description": "The pooled objects",
+            "itemtype": "property",
+            "name": "objects",
+            "type": "Array",
+            "class": "ObjectPool"
+        },
+        {
+            "file": "src/utils/Pool.js",
+            "line": 15,
+            "description": "Constructor of the objects",
+            "itemtype": "property",
+            "name": "type",
+            "type": "Mixed",
+            "class": "ObjectPool"
+        },
+        {
+            "file": "src/utils/Pool.js",
+            "line": 22,
+            "description": "Release an object after use",
+            "itemtype": "method",
+            "name": "release",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "ObjectPool"
+        },
+        {
+            "file": "src/utils/Pool.js",
+            "line": 34,
+            "description": "Get an object",
+            "itemtype": "method",
+            "name": "get",
+            "return": {
+                "description": "",
+                "type": "Mixed"
+            },
+            "class": "ObjectPool"
+        },
+        {
+            "file": "src/utils/Pool.js",
+            "line": 47,
+            "description": "Construct an object. Should be implmented in each subclass.",
+            "itemtype": "method",
+            "name": "constructObject",
+            "return": {
+                "description": "",
+                "type": "Mixed"
+            },
+            "class": "ObjectPool"
+        },
+        {
+            "file": "src/utils/Vec3Pool.js",
+            "line": 17,
+            "description": "Construct a vector",
+            "itemtype": "method",
+            "name": "constructObject",
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Vec3Pool"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 20,
+            "description": "Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.",
+            "itemtype": "property",
+            "name": "bool contactReduction",
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 26,
+            "description": "Internal storage of pooled contact points.",
+            "itemtype": "property",
+            "name": "contactPointPool",
+            "type": "Array",
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 32,
+            "description": "Pooled vectors.",
+            "itemtype": "property",
+            "name": "v3pool",
+            "type": "Vec3Pool",
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 39,
+            "description": "Swaps the body references in the contact",
+            "itemtype": "method",
+            "name": "swapResult",
+            "params": [
+                {
+                    "name": "object",
+                    "description": "r"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 55,
+            "description": "Removes unnecessary members of an array of ContactEquation.",
+            "itemtype": "method",
+            "name": "reduceContacts",
+            "params": [
+                {
+                    "name": "contacts",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 64,
+            "description": "Make a contact object, by using the internal pool or creating a new one.",
+            "itemtype": "method",
+            "name": "makeResult",
+            "return": {
+                "description": "",
+                "type": "ContactEquation"
+            },
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 80,
+            "description": "Generate all contacts between a list of body pairs",
+            "itemtype": "method",
+            "name": "getContacts",
+            "params": [
+                {
+                    "name": "p1",
+                    "description": "Array of body indices",
+                    "type": "Array"
+                },
+                {
+                    "name": "p2",
+                    "description": "Array of body indices",
+                    "type": "Array"
+                },
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                },
+                {
+                    "name": "result",
+                    "description": "Array to store generated contacts",
+                    "type": "Array"
+                },
+                {
+                    "name": "oldcontacts",
+                    "description": "Optional. Array of reusable contact objects",
+                    "type": "Array"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 112,
+            "description": "Narrowphase calculation. Get the ContactEquations given two shapes: i and j",
+            "itemtype": "method",
+            "name": "narrowphase",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "The result one will get back with all the contact point information",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "Colliding shape. If not given, particle is assumed.",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "Position of the center of mass",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "Rotation around the center of mass",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 303,
+            "itemtype": "method",
+            "name": "sphereSphere",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 334,
+            "itemtype": "method",
+            "name": "spherePlane",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 419,
+            "itemtype": "method",
+            "name": "sphereBox",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 617,
+            "itemtype": "method",
+            "name": "sphereConvex",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 800,
+            "itemtype": "method",
+            "name": "planeBox",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 816,
+            "description": "Go recursive for compound shapes",
+            "itemtype": "method",
+            "name": "recurseCompound",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 878,
+            "itemtype": "method",
+            "name": "planeConvex",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 927,
+            "itemtype": "method",
+            "name": "convexConvex",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 965,
+            "itemtype": "method",
+            "name": "particlePlane",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 1004,
+            "itemtype": "method",
+            "name": "particleSphere",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/ContactGenerator.js",
+            "line": 1043,
+            "itemtype": "method",
+            "name": "particleConvex",
+            "params": [
+                {
+                    "name": "result",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "si",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "sj",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "xi",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "xj",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "qi",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "qj",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "ContactGenerator"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 27,
+            "description": "Makes bodies go to sleep when they've been inactive",
+            "itemtype": "property",
+            "name": "allowSleep",
+            "type": "{Boolean}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 34,
+            "description": "All the current contacts (instances of ContactEquation) in the world.",
+            "itemtype": "property",
+            "name": "contacts",
+            "type": "{Array}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 42,
+            "description": "How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).",
+            "itemtype": "property",
+            "name": "quatNormalizeSkip",
+            "type": "{Number}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 49,
+            "description": "Set to true to use fast quaternion normalization. It is often enough accurate to use. If bodies tend to explode, set to false.",
+            "itemtype": "property",
+            "name": "quatNormalizeFast",
+            "type": "{Boolean}",
+            "see": [
+                "Quaternion.normalizeFast",
+                "Quaternion.normalize"
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 58,
+            "description": "The wall-clock time since simulation start",
+            "itemtype": "property",
+            "name": "time",
+            "type": "{Number}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 65,
+            "description": "Number of timesteps taken since start",
+            "itemtype": "property",
+            "name": "stepnumber",
+            "type": "{Number}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 77,
+            "itemtype": "property",
+            "name": "gravity",
+            "type": "{Vec3}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 83,
+            "itemtype": "property",
+            "name": "broadphase",
+            "type": "{Broadphase}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 89,
+            "itemtype": "property",
+            "name": "bodies",
+            "type": "{Array}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 95,
+            "itemtype": "property",
+            "name": "solver",
+            "type": "{Solver}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 101,
+            "itemtype": "property",
+            "name": "constraints",
+            "type": "{Array}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 107,
+            "itemtype": "property",
+            "name": "contactgen",
+            "type": "{ContactGenerator}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 113,
+            "description": "It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step",
+            "itemtype": "property",
+            "name": "Collision \"matrix\", size (Nbodies * (Nbodies.length + 1))/2",
+            "type": "{ArrayCollisionMatrix}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 120,
+            "description": "collisionMatrix from the previous step",
+            "itemtype": "property",
+            "name": "Collision \"matrix\", size (Nbodies * (Nbodies.length + 1))/2",
+            "type": "{ArrayCollisionMatrix}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 127,
+            "description": "All added materials",
+            "itemtype": "property",
+            "name": "materials",
+            "type": "{Array}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 134,
+            "itemtype": "property",
+            "name": "contactmaterials",
+            "type": "{Array}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 144,
+            "description": "This contact material is used if no suitable contactmaterial is found for a contact.",
+            "itemtype": "property",
+            "name": "defaultContactMaterial",
+            "type": "{ContactMaterial}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 151,
+            "itemtype": "property",
+            "name": "doProfiling",
+            "type": "{Boolean}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 157,
+            "itemtype": "property",
+            "name": "profile",
+            "type": "{Object}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 169,
+            "itemtype": "property",
+            "name": "subystems",
+            "type": "{Array}",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 176,
+            "description": "Get the contact material between materials m1 and m2",
+            "itemtype": "method",
+            "name": "getContactMaterial",
+            "params": [
+                {
+                    "name": "m1",
+                    "description": "",
+                    "type": "Material"
+                },
+                {
+                    "name": "m2",
+                    "description": "",
+                    "type": "Material"
+                }
+            ],
+            "return": {
+                "description": "The contact material if it was found.",
+                "type": "Contactmaterial"
+            },
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 198,
+            "description": "Get number of objects in the world.",
+            "itemtype": "method",
+            "name": "numObjects",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 207,
+            "description": "Store old collision state info",
+            "itemtype": "method",
+            "name": "collisionMatrixTick",
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 218,
+            "description": "Add a rigid body to the simulation.",
+            "itemtype": "method",
+            "name": "add",
+            "params": [
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "todo": [
+                "If the simulation has not yet started",
+                "why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.",
+                "Adding an array of bodies should be possible. This would save some loops too"
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 241,
+            "description": "Add a constraint to the simulation.",
+            "itemtype": "method",
+            "name": "addConstraint",
+            "params": [
+                {
+                    "name": "c",
+                    "description": "",
+                    "type": "Constraint"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 251,
+            "description": "Removes a constraint",
+            "itemtype": "method",
+            "name": "removeConstraint",
+            "params": [
+                {
+                    "name": "c",
+                    "description": "",
+                    "type": "Constraint"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 263,
+            "description": "Generate a new unique integer identifyer",
+            "itemtype": "method",
+            "name": "id",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 272,
+            "description": "Remove a rigid body from the simulation.",
+            "itemtype": "method",
+            "name": "remove",
+            "params": [
+                {
+                    "name": "body",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 288,
+            "description": "Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.",
+            "itemtype": "method",
+            "name": "addMaterial",
+            "params": [
+                {
+                    "name": "m",
+                    "description": "",
+                    "type": "Material"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 306,
+            "description": "Adds a contact material to the World",
+            "itemtype": "method",
+            "name": "addContactMaterial",
+            "params": [
+                {
+                    "name": "cmat",
+                    "description": "",
+                    "type": "ContactMaterial"
+                }
+            ],
+            "class": "World"
+        },
+        {
+            "file": "src/world/World.js",
+            "line": 344,
+            "description": "Step the simulation",
+            "itemtype": "method",
+            "name": "step",
+            "params": [
+                {
+                    "name": "dt",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "World"
+        }
+    ],
+    "warnings": []
+}

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/collision/Broadphase.js - cannon</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="cannon"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.6.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
+            
+                <li><a href="../classes/Body.html">Body</a></li>
+            
+                <li><a href="../classes/Box.html">Box</a></li>
+            
+                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
+            
+                <li><a href="../classes/Compound.html">Compound</a></li>
+            
+                <li><a href="../classes/Constraint.html">Constraint</a></li>
+            
+                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
+            
+                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
+            
+                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+            
+                <li><a href="../classes/ConvexPolyhedron.html">ConvexPolyhedron</a></li>
+            
+                <li><a href="../classes/Cylinder.html">Cylinder</a></li>
+            
+                <li><a href="../classes/Demo.html">Demo</a></li>
+            
+                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
+            
+                <li><a href="../classes/Equation.html">Equation</a></li>
+            
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+            
+                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
+            
+                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
+            
+                <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/Mat3.html">Mat3</a></li>
+            
+                <li><a href="../classes/Material.html">Material</a></li>
+            
+                <li><a href="../classes/MatN.html">MatN</a></li>
+            
+                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
+            
+                <li><a href="../classes/ObjectPool.html">ObjectPool</a></li>
+            
+                <li><a href="../classes/Particle.html">Particle</a></li>
+            
+                <li><a href="../classes/Plane.html">Plane</a></li>
+            
+                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+            
+                <li><a href="../classes/Ray.html">Ray</a></li>
+            
+                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+            
+                <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
+            
+                <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
+            
+                <li><a href="../classes/Shape.html">Shape</a></li>
+            
+                <li><a href="../classes/Solver.html">Solver</a></li>
+            
+                <li><a href="../classes/Sphere.html">Sphere</a></li>
+            
+                <li><a href="../classes/SPHSystem.html">SPHSystem</a></li>
+            
+                <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
+            
+                <li><a href="../classes/Vec3.html">Vec3</a></li>
+            
+                <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/World.html">World</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src/collision/Broadphase.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+var Body = require(&#x27;../objects/Body&#x27;)
+,   Vec3 = require(&#x27;../math/Vec3&#x27;)
+,   Quaternion = require(&#x27;../math/Quaternion&#x27;)
+,   Shape = require(&#x27;../objects/Shape&#x27;)
+,   Plane = require(&#x27;../objects/Plane&#x27;)
+
+module.exports = Broadphase;
+
+/**
+ * Base class for broadphase implementations
+ * @class Broadphase
+ * @constructor
+ * @author schteppe
+ */
+function Broadphase(){
+    /**
+    * The world to search for collisions in.
+    * @property world
+    * @type {World}
+    */
+    this.world = null;
+
+    /**
+     * If set to true, the broadphase uses bounding boxes for intersection test, else it uses bounding spheres.
+     * @property useBoundingBoxes
+     * @type {Boolean}
+     */
+    this.useBoundingBoxes = false;
+};
+
+/**
+ * Get the collision pairs from the world
+ * @method collisionPairs
+ * @param {World} world The world to search in
+ * @param Array p1 Empty array to be filled with body objects
+ * @param Array p2 Empty array to be filled with body objects
+ * @return array An array with two subarrays of body indices
+ */
+Broadphase.prototype.collisionPairs = function(world,p1,p2){
+    throw new Error(&quot;collisionPairs not implemented for this BroadPhase class!&quot;);
+};
+
+/**
+ * Check if a body pair needs to be intersection tested at all.
+ * @method needBroadphaseCollision
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @return {bool}
+ */
+var Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC = Body.STATIC | Body.KINEMATIC;
+Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
+
+    // Check collision filter masks
+    if( (bodyA.collisionFilterGroup &amp; bodyB.collisionFilterMask)===0 || (bodyB.collisionFilterGroup &amp; bodyA.collisionFilterMask)===0){
+        return false;
+    }
+
+    // Check motionstate
+    if(((bodyA.motionstate &amp; Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyA.isSleeping()) &amp;&amp;
+       ((bodyB.motionstate &amp; Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyB.isSleeping())) {
+        // Both bodies are static, kinematic or sleeping. Skip.
+        return false;
+    }
+
+    // Two particles don&#x27;t collide
+    if(!bodyA.shape &amp;&amp; !bodyB.shape){
+        return false;
+    }
+
+    // Two planes don&#x27;t collide
+    if(bodyA.shape instanceof Plane &amp;&amp; bodyB.shape instanceof Plane){
+        return false;
+    }
+
+    return true;
+};
+
+/**
+ * Check if a body pair needs to be intersection tested at all.
+ * @method intersectionTest
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @return {Boolean}
+ */
+Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
+    if(this.useBoundingBoxes){
+        this.doBoundingBoxBroadphase(bi,bj,pairs1,pairs2);
+    } else {
+        this.doBoundingSphereBroadphase(bi,bj,pairs1,pairs2);
+    }
+};
+
+/**
+ * Check if the bounding spheres of two bodies are intersecting.
+ * @method doBoundingSphereBroadphase
+ * @param {Body} bi
+ * @param {Body} bj
+ * @param {Array} pairs1 bi is appended to this array if intersection
+ * @param {Array} pairs2 bj is appended to this array if intersection
+ */
+var Broadphase_collisionPairs_r = new Vec3(), // Temp objects
+    Broadphase_collisionPairs_normal =  new Vec3(),
+    Broadphase_collisionPairs_quat =  new Quaternion(),
+    Broadphase_collisionPairs_relpos  =  new Vec3();
+Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
+
+    // Local fast access
+    var types = Shape.types,
+        BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
+        PLANE = types.PLANE,
+        STATIC_OR_KINEMATIC = Body.STATIC | Body.KINEMATIC;
+
+    // Temp vecs
+    var r = Broadphase_collisionPairs_r,
+        normal = Broadphase_collisionPairs_normal,
+        quat = Broadphase_collisionPairs_quat,
+        relpos = Broadphase_collisionPairs_relpos;
+
+    var bishape = bi.shape, bjshape = bj.shape;
+    if(bishape &amp;&amp; bjshape){
+        var ti = bishape.type, tj = bjshape.type;
+
+        // --- Box / sphere / compound / convexpolyhedron collision ---
+        if((ti &amp; BOX_SPHERE_COMPOUND_CONVEX) &amp;&amp; (tj &amp; BOX_SPHERE_COMPOUND_CONVEX)){
+            // Rel. position
+            bj.position.vsub(bi.position,r);
+
+            // Update bounding spheres if needed
+            if(bishape.boundingSphereRadiusNeedsUpdate){
+                bishape.computeBoundingSphereRadius();
+            }
+            if(bjshape.boundingSphereRadiusNeedsUpdate){
+                bjshape.computeBoundingSphereRadius();
+            }
+
+            var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
+            if(r.norm2() &lt; boundingRadiusSum*boundingRadiusSum){
+                pairs1.push(bi);
+                pairs2.push(bj);
+            }
+
+            // --- Sphere/box/compound/convexpoly versus plane ---
+        } else if((ti &amp; BOX_SPHERE_COMPOUND_CONVEX) &amp;&amp; (tj &amp; types.PLANE) || (tj &amp; BOX_SPHERE_COMPOUND_CONVEX) &amp;&amp; (ti &amp; types.PLANE)){
+            var planeBody = (ti===PLANE) ? bi : bj, // Plane
+                otherBody = (ti!==PLANE) ? bi : bj; // Other
+
+            var otherShape = otherBody.shape;
+            var planeShape = planeBody.shape;
+
+            // Rel. position
+            otherBody.position.vsub(planeBody.position,r);
+
+            if(planeShape.worldNormalNeedsUpdate){
+                planeShape.computeWorldNormal(planeBody.quaternion);
+            }
+
+            normal = planeShape.worldNormal;
+
+            if(otherShape.boundingSphereRadiusNeedsUpdate){
+                otherShape.computeBoundingSphereRadius();
+            }
+
+            var q = r.dot(normal) - otherShape.boundingSphereRadius;
+            if(q &lt; 0.0){
+                pairs1.push(bi);
+                pairs2.push(bj);
+            }
+        }
+    } else {
+        // Particle without shape
+        if(!bishape &amp;&amp; !bjshape){
+            // No collisions between 2 particles
+        } else {
+            var particle = bishape ? bj : bi;
+            var other = bishape ? bi : bj;
+            var otherShape = other.shape;
+            var type = otherShape.type;
+
+            if(type &amp; BOX_SPHERE_COMPOUND_CONVEX){
+                if(type === types.SPHERE){ // particle-sphere
+                    particle.position.vsub(other.position,relpos);
+                    if(otherShape.radius*otherShape.radius &gt;= relpos.norm2()){
+                        pairs1.push(particle);
+                        pairs2.push(other);
+                    }
+                } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
+
+                    if(otherShape.boundingSphereRadiusNeedsUpdate){
+                        otherShape.computeBoundingSphereRadius();
+                    }
+                    var R = otherShape.boundingSphereRadius;
+                    particle.position.vsub(other.position,relpos);
+                    if(R*R &gt;= relpos.norm2()){
+                        pairs1.push(particle);
+                        pairs2.push(other);
+                    }
+                }
+            } else if(type === types.PLANE){
+                // particle/plane
+                var plane = other;
+                normal.set(0,0,1);
+                plane.quaternion.vmult(normal,normal);
+                particle.position.vsub(plane.position,relpos);
+                if(normal.dot(relpos)&lt;=0.0){
+                    pairs1.push(particle);
+                    pairs2.push(other);
+                }
+            }
+        }
+    }
+};
+
+/**
+ * Check if the bounding boxes of two bodies are intersecting.
+ * @method doBoundingBoxBroadphase
+ * @param Body bi
+ * @param Body bj
+ * @param {Array} pairs1
+ * @param {Array} pairs2
+ */
+Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
+    var bishape = bi.shape,
+        bjshape = bj.shape;
+
+    if(bi.aabbNeedsUpdate){
+        bi.computeAABB();
+    }
+    if(bj.aabbNeedsUpdate){
+        bj.computeAABB();
+    }
+
+    if(bishape &amp;&amp; bjshape){
+        // Check AABB / AABB
+        if( !(  bi.aabbmax.x &lt; bj.aabbmin.x ||
+                bi.aabbmax.y &lt; bj.aabbmin.y ||
+                bi.aabbmax.z &lt; bj.aabbmin.z ||
+                bi.aabbmin.x &gt; bj.aabbmax.x ||
+                bi.aabbmin.y &gt; bj.aabbmax.y ||
+                bi.aabbmin.z &gt; bj.aabbmax.z   ) ){
+            pairs1.push(bi);
+            pairs2.push(bj);
+        }
+    } else {
+        // Particle without shape
+        if(!bishape &amp;&amp; !bjshape){
+            // No collisions between 2 particles
+        } else {
+            // particle vs AABB
+            var p =      !bishape ? bi : bj;
+            var other =  !bishape ? bj : bi;
+
+            if(other.shape instanceof Plane){
+                //console.log(p.position.z+&quot;&lt;&quot;+other.aabbmin.z+&quot; = &quot;,p.position.z &lt; other.aabbmin.z);
+            }
+
+            if( !(  p.position.x &lt; other.aabbmin.x ||
+                    p.position.y &lt; other.aabbmin.y ||
+                    p.position.z &lt; other.aabbmin.z ||
+                    p.position.x &gt; other.aabbmax.x ||
+                    p.position.y &gt; other.aabbmax.y ||
+                    p.position.z &gt; other.aabbmax.z   ) ){
+                pairs1.push(bi);
+                pairs2.push(bj);
+            }
+        }
+    }
+};
+
+/**
+ * Removes duplicate pairs from the pair arrays.
+ * @method makePairsUnique
+ * @param {Array} pairs1
+ * @param {Array} pairs2
+ */
+var Broadphase_makePairsUnique_temp = {},
+    Broadphase_makePairsUnique_p1 = [],
+    Broadphase_makePairsUnique_p2 = [];
+Broadphase.prototype.makePairsUnique = function(pairs1,pairs2){
+    var t = Broadphase_makePairsUnique_temp,
+        p1 = Broadphase_makePairsUnique_p1,
+        p2 = Broadphase_makePairsUnique_p2,
+        N = pairs1.length;
+
+    for(var i=0; i!==N; i++){
+        p1[i] = pairs1[i];
+        p2[i] = pairs2[i];
+    }
+
+    pairs1.length = 0;
+    pairs2.length = 0;
+
+    for(var i=0; i!==N; i++){
+        var id1 = p1[i].id,
+            id2 = p2[i].id;
+        var idx = id1 &lt; id2 ? id1+&quot;,&quot;+id2 :  id2+&quot;,&quot;+id1;
+        t[idx] = i;
+    }
+
+    for(var idx in t){
+        var i = t[idx];
+        pairs1.push(p1[i]);
+        pairs2.push(p2[i]);
+        delete t[idx];
+    }
+};
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
