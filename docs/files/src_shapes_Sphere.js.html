@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/objects/Shape.js - cannon</title>
+    <title>src/shapes/Sphere.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -83,8 +83,6 @@
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
-                <li><a href="../classes/MatN.html">MatN</a></li>
-            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
@@ -162,126 +160,62 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/objects/Shape.js</h1>
+                        <h1 class="file-heading">File: src/shapes/Sphere.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = Shape;
+module.exports = Sphere;
 
 var Shape = require(&#x27;./Shape&#x27;)
 ,   Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Quaternion = require(&#x27;../math/Quaternion&#x27;)
-,   Particle = require(&#x27;./Particle&#x27;)
-,   Material = require(&#x27;../material/Material&#x27;)
 
 /**
- * Base class for shapes
- * @class Shape
+ * Spherical shape
+ * @class Sphere
  * @constructor
- * @author schteppe
- * @todo Should have a mechanism for caching bounding sphere radius instead of calculating it each time
+ * @extends Shape
+ * @param {Number} radius
+ * @author schteppe / http://github.com/schteppe
  */
-function Shape(){
+function Sphere(radius){
+    Shape.call(this);
 
     /**
-     * The type of this shape. Must be set to an int &gt; 0 by subclasses.
-     * @property type
-     * @type {Number}
-     * @see Shape.types
+     * @property {Number} radius
      */
-    this.type = 0;
-
-    this.aabbmin = new Vec3();
-    this.aabbmax = new Vec3();
-
-    this.boundingSphereRadius = 0;
-    this.boundingSphereRadiusNeedsUpdate = true;
+    this.radius = radius!==undefined ? Number(radius) : 1.0;
+    this.type = Shape.types.SPHERE;
 };
-Shape.prototype.constructor = Shape;
+Sphere.prototype = new Shape();
+Sphere.prototype.constructor = Sphere;
 
-/**
- * Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius
- * @method computeBoundingSphereRadius
- * @return {Number}
- */
-Shape.prototype.computeBoundingSphereRadius = function(){
-    throw &quot;computeBoundingSphereRadius() not implemented for shape type &quot;+this.type;
-};
-
-/**
- * Returns the bounding sphere radius. The result is stored in the property .boundingSphereRadius
- * @method getBoundingSphereRadius
- * @return {Number}
- */
-Shape.prototype.getBoundingSphereRadius = function(){
-	if (this.boundingSphereRadiusNeedsUpdate) {
-		this.computeBoundingSphereRadius();
-	}
-	return this.boundingSphereRadius;
-};
-
-/**
- * Get the volume of this shape
- * @method volume
- * @return {Number}
- */
-Shape.prototype.volume = function(){
-    throw &quot;volume() not implemented for shape type &quot;+this.type;
-};
-
-/**
- * Calculates the inertia in the local frame for this shape.
- * @method calculateLocalInertia
- * @return {Vec3}
- * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
- */
-Shape.prototype.calculateLocalInertia = function(mass,target){
-    throw &quot;calculateLocalInertia() not implemented for shape type &quot;+this.type;
-};
-
-/**
- * Calculates inertia in a specified frame for this shape.
- * @method calculateTransformedInertia
- * @return {Vec3}
- */
-var Shape_calculateTransformedInertia_localInertia = new Vec3();
-var Shape_calculateTransformedInertia_worldInertia = new Vec3();
-Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
+Sphere.prototype.calculateLocalInertia = function(mass,target){
     target = target || new Vec3();
-
-    // Compute inertia in the world frame
-    //quat.normalize();
-    var localInertia = Shape_calculateTransformedInertia_localInertia;
-    var worldInertia = Shape_calculateTransformedInertia_worldInertia;
-    this.calculateLocalInertia(mass,localInertia);
-
-    // @todo Is this rotation OK? Check!
-    quat.vmult(localInertia,worldInertia);
-    target.x = Math.abs(worldInertia.x);
-    target.y = Math.abs(worldInertia.y);
-    target.z = Math.abs(worldInertia.z);
+    var I = 2.0*mass*this.radius*this.radius/5.0;
+    target.x = I;
+    target.y = I;
+    target.z = I;
     return target;
 };
 
-// Calculates the local aabb and sets the result to .aabbmax and .aabbmin
-Shape.calculateLocalAABB = function(){
-    throw new Error(&quot;.calculateLocalAABB is not implemented for this Shape yet!&quot;);
+Sphere.prototype.volume = function(){
+    return 4.0 * Math.PI * this.radius / 3.0;
 };
 
-/**
- * The available shape types.
- * @static
- * @property types
- * @type {Object}
- */
-Shape.types = {
-    SPHERE:1,
-    PLANE:2,
-    BOX:4,
-    COMPOUND:8,
-    CONVEXPOLYHEDRON:16
+Sphere.prototype.computeBoundingSphereRadius = function(){
+    this.boundingSphereRadiusNeedsUpdate = false;
+    this.boundingSphereRadius = this.radius;
 };
 
+Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    var r = this.radius;
+    var axes = [&#x27;x&#x27;,&#x27;y&#x27;,&#x27;z&#x27;];
+    for(var i=0; i&lt;axes.length; i++){
+        var ax = axes[i];
+        min[ax] = pos[ax] - r;
+        max[ax] = pos[ax] + r;
+    }
+};
 
     </pre>
 </div>

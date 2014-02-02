@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/math/MatN.js - cannon</title>
+    <title>src/shapes/Box.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -83,8 +83,6 @@
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
-                <li><a href="../classes/MatN.html">MatN</a></li>
-            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
@@ -162,45 +160,179 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/math/MatN.js</h1>
+                        <h1 class="file-heading">File: src/shapes/Box.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = MatN;
+module.exports = Box;
+
+var Shape = require(&#x27;./Shape&#x27;)
+,   Vec3 = require(&#x27;../math/Vec3&#x27;)
+,   ConvexPolyhedron = require(&#x27;./ConvexPolyhedron&#x27;)
 
 /**
- * Any matrix size class
- * @class MatN
+ * A 3d box shape.
+ * @class Box
  * @constructor
+ * @param {Vec3} halfExtents
  * @author schteppe
- * @param {Number} cols
- * @param {Number} rows
- * @param {Array} elements
+ * @extends Shape
  */
-function MatN(cols,rows,elements){
+function Box(halfExtents){
+    Shape.call(this);
+
+    this.type = Shape.types.BOX;
+
     /**
-     * A vector containing all matrix elements
-     * @property Float32Array elements
+     * @property halfExtents
+     * @type {Vec3}
      */
-    if(elements){
-        this.elements = new Float32Array(elements);
-    } else {
-        this.elements = new Float32Array(cols*rows);
-    }
+    this.halfExtents = halfExtents;
+
+    /**
+     * Used by the contact generator to make contacts with other convex polyhedra for example
+     * @property convexPolyhedronRepresentation
+     * @type {ConvexPolyhedron}
+     */
+    this.convexPolyhedronRepresentation = null;
+
+    this.updateConvexPolyhedronRepresentation();
+};
+Box.prototype = new Shape();
+Box.prototype.constructor = Box;
+
+/**
+ * Updates the local convex polyhedron representation used for some collisions.
+ * @method updateConvexPolyhedronRepresentation
+ */
+Box.prototype.updateConvexPolyhedronRepresentation = function(){
+    var sx = this.halfExtents.x;
+    var sy = this.halfExtents.y;
+    var sz = this.halfExtents.z;
+    var V = Vec3;
+
+    var h = new ConvexPolyhedron([new V(-sx,-sy,-sz),
+                                         new V( sx,-sy,-sz),
+                                         new V( sx, sy,-sz),
+                                         new V(-sx, sy,-sz),
+                                         new V(-sx,-sy, sz),
+                                         new V( sx,-sy, sz),
+                                         new V( sx, sy, sz),
+                                         new V(-sx, sy, sz)],
+                                         [[3,2,1,0], // -z
+                                          [4,5,6,7], // +z
+                                          [5,4,0,1], // -y
+                                          [2,3,7,6], // +y
+                                          [0,4,7,3], // -x
+                                          [1,2,6,5], // +x
+                                          ],
+                                        [new V( 0, 0,-1),
+                                         new V( 0, 0, 1),
+                                         new V( 0,-1, 0),
+                                         new V( 0, 1, 0),
+                                         new V(-1, 0, 0),
+                                         new V( 1, 0, 0)]);
+    this.convexPolyhedronRepresentation = h;
 };
 
 /**
- * Sets the matrix to identity
- * @method identity
- * @todo Should perhaps be renamed to setIdentity() to be more clear.
- * @todo Create another function that immediately creates an identity matrix eg. eye()
+ * @method calculateLocalInertia
+ * @param  {Number} mass
+ * @param  {Vec3} target
+ * @return {Vec3}
  */
-MatN.prototype.identity = function(){
-    for(var i=0; i&lt;this.cols; i++){
-        for(var j=0; j&lt;this.rows; j++){
-            this.elements[0] = i===j ? 1 : 0;
+Box.prototype.calculateLocalInertia = function(mass,target){
+    target = target || new Vec3();
+    var e = this.halfExtents;
+    target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
+    target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
+    target.z = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.x*2*e.x );
+    return target;
+};
+
+/**
+ * Get the box 6 side normals
+ * @method getSideNormals
+ * @param {Boolean}     includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
+ * @param {Quaternion}  quat            Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
+ * @return {array}
+ */
+Box.prototype.getSideNormals = function(sixTargetVectors,quat){
+    var sides = sixTargetVectors;
+    var ex = this.halfExtents;
+    sides[0].set(  ex.x,     0,     0);
+    sides[1].set(     0,  ex.y,     0);
+    sides[2].set(     0,     0,  ex.z);
+    sides[3].set( -ex.x,     0,     0);
+    sides[4].set(     0, -ex.y,     0);
+    sides[5].set(     0,     0, -ex.z);
+
+    if(quat!==undefined){
+        for(var i=0; i!==sides.length; i++){
+            quat.vmult(sides[i],sides[i]);
         }
     }
+
+    return sides;
+};
+
+Box.prototype.volume = function(){
+    return 8.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
+};
+
+Box.prototype.computeBoundingSphereRadius = function(){
+    this.boundingSphereRadius = this.halfExtents.norm();
+    this.boundingSphereRadiusNeedsUpdate = false;
+};
+
+var worldCornerTempPos = new Vec3();
+var worldCornerTempNeg = new Vec3();
+Box.prototype.forEachWorldCorner = function(pos,quat,callback){
+
+    var e = this.halfExtents;
+    var corners = [[  e.x,  e.y,  e.z],
+                   [ -e.x,  e.y,  e.z],
+                   [ -e.x, -e.y,  e.z],
+                   [ -e.x, -e.y, -e.z],
+                   [  e.x, -e.y, -e.z],
+                   [  e.x,  e.y, -e.z],
+                   [ -e.x,  e.y, -e.z],
+                   [  e.x, -e.y,  e.z]];
+    for(var i=0; i&lt;corners.length; i++){
+        worldCornerTempPos.set(corners[i][0],corners[i][1],corners[i][2]);
+        quat.vmult(worldCornerTempPos,worldCornerTempPos);
+        pos.vadd(worldCornerTempPos,worldCornerTempPos);
+        callback(worldCornerTempPos.x,
+                 worldCornerTempPos.y,
+                 worldCornerTempPos.z);
+    }
+};
+
+Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    // Get each axis max
+    min.set(Infinity,Infinity,Infinity);
+    max.set(-Infinity,-Infinity,-Infinity);
+    this.forEachWorldCorner(pos,quat,function(x,y,z){
+        if(x &gt; max.x){
+            max.x = x;
+        }
+        if(y &gt; max.y){
+            max.y = y;
+        }
+        if(z &gt; max.z){
+            max.z = z;
+        }
+
+        if(x &lt; min.x){
+            min.x = x;
+        }
+        if(y &lt; min.y){
+            min.y = y;
+        }
+        if(z &lt; min.z){
+            min.z = z;
+        }
+    });
 };
 
     </pre>

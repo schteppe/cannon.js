@@ -21,7 +21,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "GridBroadphase",
         "HingeConstraint",
         "Mat3",
-        "MatN",
         "Material",
         "NaiveBroadphase",
         "ObjectCollisionMatrix",

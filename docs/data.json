@@ -176,15 +176,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/math/MatN.js": {
-            "name": "src/math/MatN.js",
-            "modules": {},
-            "classes": {
-                "MatN": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/math/Quaternion.js": {
             "name": "src/math/Quaternion.js",
             "modules": {},
@@ -212,56 +203,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/objects/Box.js": {
-            "name": "src/objects/Box.js",
-            "modules": {},
-            "classes": {
-                "Box": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/objects/Compound.js": {
-            "name": "src/objects/Compound.js",
-            "modules": {},
-            "classes": {
-                "Compound": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/objects/ConvexPolyhedron.js": {
-            "name": "src/objects/ConvexPolyhedron.js",
-            "modules": {},
-            "classes": {
-                "ConvexPolyhedron": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/objects/Cylinder.js": {
-            "name": "src/objects/Cylinder.js",
-            "modules": {},
-            "classes": {
-                "Cylinder": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/objects/Particle.js": {
             "name": "src/objects/Particle.js",
             "modules": {},
             "classes": {
                 "Particle": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/objects/Plane.js": {
-            "name": "src/objects/Plane.js",
-            "modules": {},
-            "classes": {
-                "Plane": 1
             },
             "fors": {},
             "namespaces": {}
@@ -284,8 +230,53 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/objects/Shape.js": {
-            "name": "src/objects/Shape.js",
+        "src/shapes/Box.js": {
+            "name": "src/shapes/Box.js",
+            "modules": {},
+            "classes": {
+                "Box": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/shapes/Compound.js": {
+            "name": "src/shapes/Compound.js",
+            "modules": {},
+            "classes": {
+                "Compound": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/shapes/ConvexPolyhedron.js": {
+            "name": "src/shapes/ConvexPolyhedron.js",
+            "modules": {},
+            "classes": {
+                "ConvexPolyhedron": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/shapes/Cylinder.js": {
+            "name": "src/shapes/Cylinder.js",
+            "modules": {},
+            "classes": {
+                "Cylinder": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/shapes/Plane.js": {
+            "name": "src/shapes/Plane.js",
+            "modules": {},
+            "classes": {
+                "Plane": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/shapes/Shape.js": {
+            "name": "src/shapes/Shape.js",
             "modules": {},
             "classes": {
                 "Shape": 1
@@ -293,8 +284,8 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/objects/Sphere.js": {
-            "name": "src/objects/Sphere.js",
+        "src/shapes/Sphere.js": {
+            "name": "src/shapes/Sphere.js",
             "modules": {},
             "classes": {
                 "Sphere": 1
@@ -908,37 +899,6 @@
             ],
             "author": "schteppe / http://github.com/schteppe"
         },
-        "MatN": {
-            "name": "MatN",
-            "shortname": "MatN",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "file": "src/math/MatN.js",
-            "line": 3,
-            "description": "Any matrix size class",
-            "is_constructor": 1,
-            "author": "schteppe",
-            "params": [
-                {
-                    "name": "cols",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "rows",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "elements",
-                    "description": "",
-                    "type": "Array"
-                }
-            ]
-        },
         "Quaternion": {
             "name": "Quaternion",
             "shortname": "Quaternion",
@@ -1029,118 +989,6 @@
             "extends": "EventTarget",
             "itemtype": "event"
         },
-        "Box": {
-            "name": "Box",
-            "shortname": "Box",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "file": "src/objects/Box.js",
-            "line": 7,
-            "description": "A 3d box shape.",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "halfExtents",
-                    "description": "",
-                    "type": "Vec3"
-                }
-            ],
-            "author": "schteppe",
-            "extends": "Shape"
-        },
-        "Compound": {
-            "name": "Compound",
-            "shortname": "Compound",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "file": "src/objects/Compound.js",
-            "line": 7,
-            "description": "A shape made of several other shapes.",
-            "extends": "{Shape}",
-            "author": "schteppe"
-        },
-        "ConvexPolyhedron": {
-            "name": "ConvexPolyhedron",
-            "shortname": "ConvexPolyhedron",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 7,
-            "description": "A set of polygons describing a convex shape.",
-            "is_constructor": 1,
-            "extends": "Shape",
-            "params": [
-                {
-                    "name": "points",
-                    "description": "An array of Vec3's",
-                    "type": "Array"
-                },
-                {
-                    "name": "faces",
-                    "description": "Array of integer arrays, describing which vertices that is included in each face.",
-                    "type": "Array"
-                },
-                {
-                    "name": "normals",
-                    "description": "Deprecated. Normals are now automatically generated from polygons.",
-                    "type": "Array"
-                }
-            ],
-            "author": "schteppe / https://github.com/schteppe",
-            "see": [
-                "http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/",
-                "http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp"
-            ],
-            "todo": [
-                "Move the clipping functions to ContactGenerator?",
-                "Automatically merge coplanar polygons in constructor."
-            ]
-        },
-        "Cylinder": {
-            "name": "Cylinder",
-            "shortname": "Cylinder",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "file": "src/objects/Cylinder.js",
-            "line": 8,
-            "is_constructor": 1,
-            "extends": "ConvexPolyhedron",
-            "author": "schteppe / https://github.com/schteppe",
-            "params": [
-                {
-                    "name": "radiusTop",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "radiusBottom",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "height",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "numSegments",
-                    "description": "The number of segments to build the cylinder out of",
-                    "type": "Number"
-                }
-            ]
-        },
         "Particle": {
             "name": "Particle",
             "shortname": "Particle",
@@ -1165,21 +1013,6 @@
                     "type": "Material"
                 }
             ]
-        },
-        "Plane": {
-            "name": "Plane",
-            "shortname": "Plane",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "file": "src/objects/Plane.js",
-            "line": 6,
-            "description": "A plane, facing in the Z direction. The plane has its surface at z=0 and everything below z=0 is assumed to be solid plane. To make the plane face in some other direction than z, you must put it inside a RigidBody and rotate that body. See the demos.",
-            "is_constructor": 1,
-            "extends": "Shape",
-            "author": "schteppe"
         },
         "RigidBody": {
             "name": "RigidBody",
@@ -1224,6 +1057,133 @@
             "description": "Smoothed-particle hydrodynamics system",
             "is_constructor": 1
         },
+        "Box": {
+            "name": "Box",
+            "shortname": "Box",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/shapes/Box.js",
+            "line": 7,
+            "description": "A 3d box shape.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "halfExtents",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "author": "schteppe",
+            "extends": "Shape"
+        },
+        "Compound": {
+            "name": "Compound",
+            "shortname": "Compound",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/shapes/Compound.js",
+            "line": 7,
+            "description": "A shape made of several other shapes.",
+            "extends": "{Shape}",
+            "author": "schteppe"
+        },
+        "ConvexPolyhedron": {
+            "name": "ConvexPolyhedron",
+            "shortname": "ConvexPolyhedron",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 7,
+            "description": "A set of polygons describing a convex shape.",
+            "is_constructor": 1,
+            "extends": "Shape",
+            "params": [
+                {
+                    "name": "points",
+                    "description": "An array of Vec3's",
+                    "type": "Array"
+                },
+                {
+                    "name": "faces",
+                    "description": "Array of integer arrays, describing which vertices that is included in each face.",
+                    "type": "Array"
+                },
+                {
+                    "name": "normals",
+                    "description": "Deprecated. Normals are now automatically generated from polygons.",
+                    "type": "Array"
+                }
+            ],
+            "author": "schteppe / https://github.com/schteppe",
+            "see": [
+                "http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/",
+                "http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp"
+            ],
+            "todo": [
+                "Move the clipping functions to ContactGenerator?",
+                "Automatically merge coplanar polygons in constructor."
+            ]
+        },
+        "Cylinder": {
+            "name": "Cylinder",
+            "shortname": "Cylinder",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/shapes/Cylinder.js",
+            "line": 8,
+            "is_constructor": 1,
+            "extends": "ConvexPolyhedron",
+            "author": "schteppe / https://github.com/schteppe",
+            "params": [
+                {
+                    "name": "radiusTop",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "radiusBottom",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "numSegments",
+                    "description": "The number of segments to build the cylinder out of",
+                    "type": "Number"
+                }
+            ]
+        },
+        "Plane": {
+            "name": "Plane",
+            "shortname": "Plane",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/shapes/Plane.js",
+            "line": 6,
+            "description": "A plane, facing in the Z direction. The plane has its surface at z=0 and everything below z=0 is assumed to be solid plane. To make the plane face in some other direction than z, you must put it inside a RigidBody and rotate that body. See the demos.",
+            "is_constructor": 1,
+            "extends": "Shape",
+            "author": "schteppe"
+        },
         "Shape": {
             "name": "Shape",
             "shortname": "Shape",
@@ -1232,7 +1192,7 @@
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "file": "src/objects/Shape.js",
+            "file": "src/shapes/Shape.js",
             "line": 9,
             "description": "Base class for shapes",
             "is_constructor": 1,
@@ -1249,7 +1209,7 @@
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "file": "src/objects/Sphere.js",
+            "file": "src/shapes/Sphere.js",
             "line": 6,
             "description": "Spherical shape",
             "is_constructor": 1,
@@ -1272,7 +1232,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/solver/GSSolver.js",
-            "line": 8,
+            "line": 7,
             "description": "Constraint equation Gauss-Seidel solver.",
             "is_constructor": 1,
             "todo": [
@@ -2345,26 +2305,6 @@
             "class": "Mat3"
         },
         {
-            "file": "src/math/MatN.js",
-            "line": 13,
-            "description": "A vector containing all matrix elements",
-            "itemtype": "property",
-            "name": "Float32Array elements",
-            "class": "MatN"
-        },
-        {
-            "file": "src/math/MatN.js",
-            "line": 24,
-            "description": "Sets the matrix to identity",
-            "itemtype": "method",
-            "name": "identity",
-            "todo": [
-                "Should perhaps be renamed to setIdentity() to be more clear.",
-                "Create another function that immediately creates an identity matrix eg. eye()"
-            ],
-            "class": "MatN"
-        },
-        {
             "file": "src/math/Quaternion.js",
             "line": 16,
             "itemtype": "property",
@@ -3150,627 +3090,6 @@
             "class": "Body"
         },
         {
-            "file": "src/objects/Box.js",
-            "line": 20,
-            "itemtype": "property",
-            "name": "halfExtents",
-            "type": "{Vec3}",
-            "class": "Box"
-        },
-        {
-            "file": "src/objects/Box.js",
-            "line": 26,
-            "description": "Used by the contact generator to make contacts with other convex polyhedra for example",
-            "itemtype": "property",
-            "name": "convexPolyhedronRepresentation",
-            "type": "{ConvexPolyhedron}",
-            "class": "Box"
-        },
-        {
-            "file": "src/objects/Box.js",
-            "line": 38,
-            "description": "Updates the local convex polyhedron representation used for some collisions.",
-            "itemtype": "method",
-            "name": "updateConvexPolyhedronRepresentation",
-            "class": "Box"
-        },
-        {
-            "file": "src/objects/Box.js",
-            "line": 72,
-            "itemtype": "method",
-            "name": "calculateLocalInertia",
-            "params": [
-                {
-                    "name": "mass",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "target",
-                    "description": "",
-                    "type": "Vec3"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Vec3"
-            },
-            "class": "Box"
-        },
-        {
-            "file": "src/objects/Box.js",
-            "line": 87,
-            "description": "Get the box 6 side normals",
-            "itemtype": "method",
-            "name": "getSideNormals",
-            "params": [
-                {
-                    "name": "includeNegative",
-                    "description": "If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)",
-                    "type": "Boolean"
-                },
-                {
-                    "name": "quat",
-                    "description": "Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.",
-                    "type": "Quaternion"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Array"
-            },
-            "class": "Box"
-        },
-        {
-            "file": "src/objects/Compound.js",
-            "line": 17,
-            "itemtype": "property",
-            "name": "childShapes",
-            "type": "Array",
-            "class": "Compound"
-        },
-        {
-            "file": "src/objects/Compound.js",
-            "line": 22,
-            "itemtype": "property",
-            "name": "childOffsets",
-            "type": "Array",
-            "class": "Compound"
-        },
-        {
-            "file": "src/objects/Compound.js",
-            "line": 27,
-            "itemtype": "property",
-            "name": "childOrientations",
-            "type": "Array",
-            "class": "Compound"
-        },
-        {
-            "file": "src/objects/Compound.js",
-            "line": 35,
-            "description": "Add a child shape.",
-            "itemtype": "method",
-            "name": "addChild",
-            "params": [
-                {
-                    "name": "shape",
-                    "description": "",
-                    "type": "Shape"
-                },
-                {
-                    "name": "offset",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "orientation",
-                    "description": "",
-                    "type": "Quaternion"
-                }
-            ],
-            "class": "Compound"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 32,
-            "description": "Array of Vec3",
-            "itemtype": "property",
-            "name": "vertices",
-            "type": "{Array}",
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 42,
-            "description": "Array of integer arrays, indicating which vertices each face consists of",
-            "itemtype": "property",
-            "name": "faces",
-            "type": "{Array}",
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 49,
-            "description": "Array of Vec3",
-            "itemtype": "property",
-            "name": "faceNormals",
-            "type": "{Array}",
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 87,
-            "description": "Array of Vec3",
-            "itemtype": "property",
-            "name": "uniqueEdges",
-            "type": "{Array}",
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 137,
-            "description": "Get face normal given 3 vertices",
-            "static": 1,
-            "itemtype": "method",
-            "name": "getFaceNormal",
-            "params": [
-                {
-                    "name": "va",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "vb",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "vc",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "target",
-                    "description": "",
-                    "type": "Vec3"
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 157,
-            "description": "Compute the normal of a face from its vertices",
-            "itemtype": "method",
-            "name": "getFaceNormal",
-            "params": [
-                {
-                    "name": "i",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "target",
-                    "description": "",
-                    "type": "Vec3"
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 171,
-            "itemtype": "method",
-            "name": "clipAgainstHull",
-            "params": [
-                {
-                    "name": "posA",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quatA",
-                    "description": "",
-                    "type": "Quaternion"
-                },
-                {
-                    "name": "hullB",
-                    "description": "",
-                    "type": "ConvexPolyhedron"
-                },
-                {
-                    "name": "posB",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quatB",
-                    "description": "",
-                    "type": "Quaternion"
-                },
-                {
-                    "name": "separatingNormal",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "minDist",
-                    "description": "Clamp distance",
-                    "type": "Number"
-                },
-                {
-                    "name": "maxDist",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "result",
-                    "description": "The an array of contact point objects, see clipFaceAgainstHull",
-                    "type": "Array"
-                }
-            ],
-            "see": [
-                "http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp"
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 230,
-            "description": "Find the separating axis between this hull and another",
-            "itemtype": "method",
-            "name": "findSeparatingAxis",
-            "params": [
-                {
-                    "name": "hullB",
-                    "description": "",
-                    "type": "ConvexPolyhedron"
-                },
-                {
-                    "name": "posA",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quatA",
-                    "description": "",
-                    "type": "Quaternion"
-                },
-                {
-                    "name": "posB",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quatB",
-                    "description": "",
-                    "type": "Quaternion"
-                },
-                {
-                    "name": "target",
-                    "description": "The target vector to save the axis in",
-                    "type": "Vec3"
-                }
-            ],
-            "return": {
-                "description": "Returns false if a separation is found, else true",
-                "type": "Bool"
-            },
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 337,
-            "description": "Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.",
-            "itemtype": "method",
-            "name": "testSepAxis",
-            "params": [
-                {
-                    "name": "axis",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "hullB",
-                    "description": "",
-                    "type": "ConvexPolyhedron"
-                },
-                {
-                    "name": "posA",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quatA",
-                    "description": "",
-                    "type": "Quaternion"
-                },
-                {
-                    "name": "posB",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quatB",
-                    "description": "",
-                    "type": "Quaternion"
-                }
-            ],
-            "return": {
-                "description": "The overlap depth, or FALSE if no penetration.",
-                "type": "Float"
-            },
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 366,
-            "itemtype": "method",
-            "name": "calculateLocalInertia",
-            "params": [
-                {
-                    "name": "mass",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "target",
-                    "description": "",
-                    "type": "Vec3"
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 383,
-            "itemtype": "method",
-            "name": "getPlaneConstantOfFace",
-            "params": [
-                {
-                    "name": "face_i",
-                    "description": "Index of the face",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Number"
-            },
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 396,
-            "description": "Clip a face against a hull.",
-            "itemtype": "method",
-            "name": "clipFaceAgainstHull",
-            "params": [
-                {
-                    "name": "separatingNormal",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "posA",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quatA",
-                    "description": "",
-                    "type": "Quaternion"
-                },
-                {
-                    "name": "worldVertsB1",
-                    "description": "An array of Vec3 with vertices in the world frame.",
-                    "type": "Array"
-                },
-                {
-                    "name": "minDist",
-                    "description": "Distance clamping",
-                    "type": "Number"
-                },
-                {
-                    "name": "maxDist",
-                    "description": "",
-                    "type": "Number"
-                },
-                {
-                    "name": "Array",
-                    "description": "result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates."
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 550,
-            "description": "Clip a face in a hull against the back of a plane.",
-            "itemtype": "method",
-            "name": "clipFaceAgainstPlane",
-            "params": [
-                {
-                    "name": "inVertices",
-                    "description": "",
-                    "type": "Array"
-                },
-                {
-                    "name": "outVertices",
-                    "description": "",
-                    "type": "Array"
-                },
-                {
-                    "name": "planeNormal",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "planeConstant",
-                    "description": "The constant in the mathematical plane equation",
-                    "type": "Number"
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 661,
-            "description": "Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.",
-            "itemtype": "method",
-            "name": "computeWorldFaceNormals",
-            "params": [
-                {
-                    "name": "quat",
-                    "description": "",
-                    "type": "Quaternion"
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 681,
-            "itemtype": "method",
-            "name": "computeBoundingSphereRadius",
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 700,
-            "itemtype": "method",
-            "name": "calculateWorldAABB",
-            "params": [
-                {
-                    "name": "pos",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quat",
-                    "description": "",
-                    "type": "Quaternion"
-                },
-                {
-                    "name": "min",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "max",
-                    "description": "",
-                    "type": "Vec3"
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 737,
-            "description": "Get approximate convex volume",
-            "itemtype": "method",
-            "name": "volume",
-            "return": {
-                "description": "",
-                "type": "Number"
-            },
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 749,
-            "description": "Get an average of all the vertices positions",
-            "itemtype": "method",
-            "name": "getAveragePointLocal",
-            "params": [
-                {
-                    "name": "target",
-                    "description": "",
-                    "type": "Vec3"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Vec3"
-            },
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 766,
-            "description": "Transform all local points. Will change the .vertices",
-            "itemtype": "method",
-            "name": "transformAllPoints",
-            "params": [
-                {
-                    "name": "offset",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quat",
-                    "description": "",
-                    "type": "Quaternion"
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 805,
-            "description": "Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.",
-            "itemtype": "method",
-            "name": "pointIsInside",
-            "params": [
-                {
-                    "name": "p",
-                    "description": "A point given in local coordinates",
-                    "type": "Vec3"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "ConvexPolyhedron"
-        },
-        {
-            "file": "src/objects/ConvexPolyhedron.js",
-            "line": 847,
-            "description": "Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.",
-            "static": 1,
-            "itemtype": "method",
-            "name": "project",
-            "params": [
-                {
-                    "name": "hull",
-                    "description": "",
-                    "type": "ConvexPolyhedron"
-                },
-                {
-                    "name": "axis",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "pos",
-                    "description": "",
-                    "type": "Vec3"
-                },
-                {
-                    "name": "quat",
-                    "description": "",
-                    "type": "Quaternion"
-                },
-                {
-                    "name": "result",
-                    "description": "result[0] and result[1] will be set to maximum and minimum, respectively.",
-                    "type": "Array"
-                }
-            ],
-            "class": "ConvexPolyhedron"
-        },
-        {
             "file": "src/objects/Particle.js",
             "line": 28,
             "itemtype": "property",
@@ -4111,7 +3430,628 @@
             "class": "SPHSystem"
         },
         {
-            "file": "src/objects/Shape.js",
+            "file": "src/shapes/Box.js",
+            "line": 20,
+            "itemtype": "property",
+            "name": "halfExtents",
+            "type": "{Vec3}",
+            "class": "Box"
+        },
+        {
+            "file": "src/shapes/Box.js",
+            "line": 26,
+            "description": "Used by the contact generator to make contacts with other convex polyhedra for example",
+            "itemtype": "property",
+            "name": "convexPolyhedronRepresentation",
+            "type": "{ConvexPolyhedron}",
+            "class": "Box"
+        },
+        {
+            "file": "src/shapes/Box.js",
+            "line": 38,
+            "description": "Updates the local convex polyhedron representation used for some collisions.",
+            "itemtype": "method",
+            "name": "updateConvexPolyhedronRepresentation",
+            "class": "Box"
+        },
+        {
+            "file": "src/shapes/Box.js",
+            "line": 72,
+            "itemtype": "method",
+            "name": "calculateLocalInertia",
+            "params": [
+                {
+                    "name": "mass",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "Box"
+        },
+        {
+            "file": "src/shapes/Box.js",
+            "line": 87,
+            "description": "Get the box 6 side normals",
+            "itemtype": "method",
+            "name": "getSideNormals",
+            "params": [
+                {
+                    "name": "includeNegative",
+                    "description": "If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)",
+                    "type": "Boolean"
+                },
+                {
+                    "name": "quat",
+                    "description": "Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.",
+                    "type": "Quaternion"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Array"
+            },
+            "class": "Box"
+        },
+        {
+            "file": "src/shapes/Compound.js",
+            "line": 17,
+            "itemtype": "property",
+            "name": "childShapes",
+            "type": "Array",
+            "class": "Compound"
+        },
+        {
+            "file": "src/shapes/Compound.js",
+            "line": 22,
+            "itemtype": "property",
+            "name": "childOffsets",
+            "type": "Array",
+            "class": "Compound"
+        },
+        {
+            "file": "src/shapes/Compound.js",
+            "line": 27,
+            "itemtype": "property",
+            "name": "childOrientations",
+            "type": "Array",
+            "class": "Compound"
+        },
+        {
+            "file": "src/shapes/Compound.js",
+            "line": 35,
+            "description": "Add a child shape.",
+            "itemtype": "method",
+            "name": "addChild",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "",
+                    "type": "Shape"
+                },
+                {
+                    "name": "offset",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "orientation",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "class": "Compound"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 32,
+            "description": "Array of Vec3",
+            "itemtype": "property",
+            "name": "vertices",
+            "type": "{Array}",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 42,
+            "description": "Array of integer arrays, indicating which vertices each face consists of",
+            "itemtype": "property",
+            "name": "faces",
+            "type": "{Array}",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 49,
+            "description": "Array of Vec3",
+            "itemtype": "property",
+            "name": "faceNormals",
+            "type": "{Array}",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 87,
+            "description": "Array of Vec3",
+            "itemtype": "property",
+            "name": "uniqueEdges",
+            "type": "{Array}",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 137,
+            "description": "Get face normal given 3 vertices",
+            "static": 1,
+            "itemtype": "method",
+            "name": "getFaceNormal",
+            "params": [
+                {
+                    "name": "va",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "vb",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "vc",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 157,
+            "description": "Compute the normal of a face from its vertices",
+            "itemtype": "method",
+            "name": "getFaceNormal",
+            "params": [
+                {
+                    "name": "i",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 171,
+            "itemtype": "method",
+            "name": "clipAgainstHull",
+            "params": [
+                {
+                    "name": "posA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatA",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "hullB",
+                    "description": "",
+                    "type": "ConvexPolyhedron"
+                },
+                {
+                    "name": "posB",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatB",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "separatingNormal",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "minDist",
+                    "description": "Clamp distance",
+                    "type": "Number"
+                },
+                {
+                    "name": "maxDist",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "result",
+                    "description": "The an array of contact point objects, see clipFaceAgainstHull",
+                    "type": "Array"
+                }
+            ],
+            "see": [
+                "http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp"
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 230,
+            "description": "Find the separating axis between this hull and another",
+            "itemtype": "method",
+            "name": "findSeparatingAxis",
+            "params": [
+                {
+                    "name": "hullB",
+                    "description": "",
+                    "type": "ConvexPolyhedron"
+                },
+                {
+                    "name": "posA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatA",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "posB",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatB",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "target",
+                    "description": "The target vector to save the axis in",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "Returns false if a separation is found, else true",
+                "type": "Bool"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 337,
+            "description": "Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.",
+            "itemtype": "method",
+            "name": "testSepAxis",
+            "params": [
+                {
+                    "name": "axis",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "hullB",
+                    "description": "",
+                    "type": "ConvexPolyhedron"
+                },
+                {
+                    "name": "posA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatA",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "posB",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatB",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "return": {
+                "description": "The overlap depth, or FALSE if no penetration.",
+                "type": "Float"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 366,
+            "itemtype": "method",
+            "name": "calculateLocalInertia",
+            "params": [
+                {
+                    "name": "mass",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 383,
+            "itemtype": "method",
+            "name": "getPlaneConstantOfFace",
+            "params": [
+                {
+                    "name": "face_i",
+                    "description": "Index of the face",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 396,
+            "description": "Clip a face against a hull.",
+            "itemtype": "method",
+            "name": "clipFaceAgainstHull",
+            "params": [
+                {
+                    "name": "separatingNormal",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "posA",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quatA",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "worldVertsB1",
+                    "description": "An array of Vec3 with vertices in the world frame.",
+                    "type": "Array"
+                },
+                {
+                    "name": "minDist",
+                    "description": "Distance clamping",
+                    "type": "Number"
+                },
+                {
+                    "name": "maxDist",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "Array",
+                    "description": "result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates."
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 550,
+            "description": "Clip a face in a hull against the back of a plane.",
+            "itemtype": "method",
+            "name": "clipFaceAgainstPlane",
+            "params": [
+                {
+                    "name": "inVertices",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "outVertices",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "planeNormal",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "planeConstant",
+                    "description": "The constant in the mathematical plane equation",
+                    "type": "Number"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 661,
+            "description": "Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.",
+            "itemtype": "method",
+            "name": "computeWorldFaceNormals",
+            "params": [
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 681,
+            "itemtype": "method",
+            "name": "computeBoundingSphereRadius",
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 700,
+            "itemtype": "method",
+            "name": "calculateWorldAABB",
+            "params": [
+                {
+                    "name": "pos",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "min",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "max",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 737,
+            "description": "Get approximate convex volume",
+            "itemtype": "method",
+            "name": "volume",
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 749,
+            "description": "Get an average of all the vertices positions",
+            "itemtype": "method",
+            "name": "getAveragePointLocal",
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Vec3"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 766,
+            "description": "Transform all local points. Will change the .vertices",
+            "itemtype": "method",
+            "name": "transformAllPoints",
+            "params": [
+                {
+                    "name": "offset",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 805,
+            "description": "Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.",
+            "itemtype": "method",
+            "name": "pointIsInside",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "A point given in local coordinates",
+                    "type": "Vec3"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/ConvexPolyhedron.js",
+            "line": 847,
+            "description": "Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.",
+            "static": 1,
+            "itemtype": "method",
+            "name": "project",
+            "params": [
+                {
+                    "name": "hull",
+                    "description": "",
+                    "type": "ConvexPolyhedron"
+                },
+                {
+                    "name": "axis",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "pos",
+                    "description": "",
+                    "type": "Vec3"
+                },
+                {
+                    "name": "quat",
+                    "description": "",
+                    "type": "Quaternion"
+                },
+                {
+                    "name": "result",
+                    "description": "result[0] and result[1] will be set to maximum and minimum, respectively.",
+                    "type": "Array"
+                }
+            ],
+            "class": "ConvexPolyhedron"
+        },
+        {
+            "file": "src/shapes/Shape.js",
             "line": 18,
             "description": "The type of this shape. Must be set to an int > 0 by subclasses.",
             "itemtype": "property",
@@ -4123,7 +4063,7 @@
             "class": "Shape"
         },
         {
-            "file": "src/objects/Shape.js",
+            "file": "src/shapes/Shape.js",
             "line": 34,
             "description": "Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius",
             "itemtype": "method",
@@ -4135,7 +4075,7 @@
             "class": "Shape"
         },
         {
-            "file": "src/objects/Shape.js",
+            "file": "src/shapes/Shape.js",
             "line": 43,
             "description": "Returns the bounding sphere radius. The result is stored in the property .boundingSphereRadius",
             "itemtype": "method",
@@ -4147,7 +4087,7 @@
             "class": "Shape"
         },
         {
-            "file": "src/objects/Shape.js",
+            "file": "src/shapes/Shape.js",
             "line": 55,
             "description": "Get the volume of this shape",
             "itemtype": "method",
@@ -4159,7 +4099,7 @@
             "class": "Shape"
         },
         {
-            "file": "src/objects/Shape.js",
+            "file": "src/shapes/Shape.js",
             "line": 64,
             "description": "Calculates the inertia in the local frame for this shape.",
             "itemtype": "method",
@@ -4174,7 +4114,7 @@
             "class": "Shape"
         },
         {
-            "file": "src/objects/Shape.js",
+            "file": "src/shapes/Shape.js",
             "line": 74,
             "description": "Calculates inertia in a specified frame for this shape.",
             "itemtype": "method",
@@ -4186,7 +4126,7 @@
             "class": "Shape"
         },
         {
-            "file": "src/objects/Shape.js",
+            "file": "src/shapes/Shape.js",
             "line": 103,
             "description": "The available shape types.",
             "static": 1,
@@ -4196,7 +4136,7 @@
             "class": "Shape"
         },
         {
-            "file": "src/objects/Sphere.js",
+            "file": "src/shapes/Sphere.js",
             "line": 17,
             "itemtype": "property",
             "name": "radius",
@@ -4205,7 +4145,7 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 20,
+            "line": 19,
             "description": "The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.",
             "itemtype": "property",
             "name": "iterations",
@@ -4217,7 +4157,7 @@
         },
         {
             "file": "src/solver/GSSolver.js",
-            "line": 28,
+            "line": 27,
             "description": "When tolerance is reached, the system is assumed to be converged.",
             "itemtype": "property",
             "name": "tolerance",

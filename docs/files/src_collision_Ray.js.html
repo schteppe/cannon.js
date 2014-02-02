@@ -83,8 +83,6 @@
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
-                <li><a href="../classes/MatN.html">MatN</a></li>
-            
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
@@ -169,8 +167,8 @@
 module.exports = Ray;
 
 var Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   ConvexPolyhedron = require(&#x27;../objects/ConvexPolyhedron&#x27;)
-,   Box = require(&#x27;../objects/Box&#x27;)
+,   ConvexPolyhedron = require(&#x27;../shapes/ConvexPolyhedron&#x27;)
+,   Box = require(&#x27;../shapes/Box&#x27;)
 
 /**
  * A line in 3D space that intersects bodies and return points.
