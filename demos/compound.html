@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -26,11 +28,11 @@
      */
 
       var demo = new CANNON.Demo();
-      
+
       // A compound shape consisting of a number of boxes.
       demo.addScene("Boxes",function(){
           var world = setupWorld(demo);
-      
+
           // Create the compound shape
           var compoundShape = new CANNON.Compound();
           var s = 1.5;
@@ -47,7 +49,7 @@
           compoundShape.addChild(shape,new CANNON.Vec3(-s, 0, 0));
           compoundShape.addChild(shape,new CANNON.Vec3( 0, 0,-s));
           compoundShape.addChild(shape,new CANNON.Vec3( 0, 0, s));
-      
+
           // Now create a RigidBody for our Compound
           var mass = 10;
           var body = new CANNON.RigidBody(mass,compoundShape);
@@ -57,11 +59,11 @@
           demo.addVisual(body);
 
         });
-      
+
       // Here we create a compound made out of spheres
       demo.addScene("Spheres",function(){
           var world = setupWorld(demo);
-      
+
           // Compound shape
           var compoundShape = new CANNON.Compound();
           var sphereShape = new CANNON.Sphere(1);
@@ -69,33 +71,33 @@
           compoundShape.addChild(sphereShape,new CANNON.Vec3( 1, 0, 1));
           compoundShape.addChild(sphereShape,new CANNON.Vec3(-1, 0,-1));
           compoundShape.addChild(sphereShape,new CANNON.Vec3(-1, 0, 1));
-      
+
           var mass = 10;
           var body = new CANNON.RigidBody(mass,compoundShape);
           body.position.set(0,0,6);
           body.quaternion.set(0,1,0,0.1);
           world.add(body);
           demo.addVisual(body);
-      
+
         });
-      
+
       function setupWorld(demo){
         var world = demo.getWorld();
         world.gravity.set(0,0,-30);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
-      
+
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
-      
+
         return world;
       };
-      
+
       demo.start();
-      
+
     </script>
   </body>
 </html>

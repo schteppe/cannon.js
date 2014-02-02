@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -137,8 +139,8 @@
 
         });
 
-      
-            
+
+
       function setupWorld(demo){
         var world = demo.getWorld();
         world.gravity.set(0,0,-30);
@@ -147,7 +149,7 @@
 
         world.defaultContactMaterial.contactEquationStiffness = 1e6;
         world.defaultContactMaterial.contactEquationRegularizationTime = 3;
-      
+
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape);
@@ -156,9 +158,9 @@
         demo.addVisual(groundBody);
         return world;
       };
-      
+
       demo.start();
-      
+
     </script>
   </body>
 </html>

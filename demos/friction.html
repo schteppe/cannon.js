@@ -10,17 +10,19 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
     <script>
-    
+
     /**
      * Demonstrates how to make several materials with different friction properties.
      */
 
       var demo = new CANNON.Demo(), size = 1.0;
-      
+
       demo.addScene("Friction",function(){
         var shape = new CANNON.Box(new CANNON.Vec3(size,size,size));
 
@@ -28,10 +30,10 @@
         var world = demo.getWorld();
         world.broadphase = new CANNON.NaiveBroadphase();
         world.iterations = 10;
-      
+
         // Materials
         var groundMaterial = new CANNON.Material("groundMaterial");
-      
+
 
         var ground_ground_cm = new CANNON.ContactMaterial(groundMaterial,
                                                           groundMaterial,
@@ -52,7 +54,7 @@
         var groundBody = new CANNON.RigidBody(0,groundShape,groundMaterial);
         world.add(groundBody);
         demo.addVisual(groundBody);
-      
+
         // Create a slippery material (friction coefficient = 0.0)
         var slipperyMaterial = new CANNON.Material("slipperyMaterial");
 
@@ -69,7 +71,7 @@
 
         // We must add the contact materials to the world
         world.addContactMaterial(slippery_ground_cm);
-      
+
         // Create slippery box
         var boxBody = new CANNON.RigidBody(1,shape,slipperyMaterial);
         boxBody.position.set(0,0,5);
@@ -81,13 +83,13 @@
         boxBody2.position.set(size*4,0,5);
         world.add(boxBody2);
         demo.addVisual(boxBody2);
-      
+
         // Change gravity so the boxes will slide along x axis
         world.gravity.set(-3,0,-60);
       });
-      
+
       demo.start();
-            
+
     </script>
   </body>
 </html>

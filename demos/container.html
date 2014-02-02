@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -29,11 +31,11 @@
       demo.addScene((nx*ny*20)+" spheres", function(){   createContainer(demo,nx,ny,20);   });
       demo.addScene((nx*ny*25)+" spheres", function(){   createContainer(demo,nx,ny,25);   });
       demo.addScene((nx*ny*30)+" spheres", function(){   createContainer(demo,nx,ny,30);   });
-      
+
       demo.start();
-      
+
       function createContainer(demo,nx,ny,nz){
-      
+
         // Create world
         var world = demo.getWorld();
         //world.broadphase = new CANNON.GridBroadphase(new CANNON.Vec3(-10,-10,0),new CANNON.Vec3(10,10,20),5,5,10);
@@ -41,7 +43,7 @@
         // Tweak contact properties.
         world.defaultContactMaterial.contactEquationStiffness = 1e11; // Contact stiffness - use to make softer/harder contacts
         world.defaultContactMaterial.contactEquationRegularizationTime = 2; // Stabilization time in number of timesteps
-        
+
         // Max solver iterations: Use more for better force propagation, but keep in mind that it's not very computationally cheap!
         world.solver.iterations = 10;
 
@@ -59,27 +61,27 @@
       					       0.2  // Restitution
       					       );
         world.addContactMaterial(stone_stone);
-      
+
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape,stone);
         world.add(groundBody);
         demo.addVisual(groundBody);
-      
+
         // plane -x
         var planeShapeXmin = new CANNON.Plane();
         var planeXmin = new CANNON.RigidBody(0, planeShapeXmin,stone);
         planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
         planeXmin.position.set(-5,0,0);
         world.add(planeXmin);
-      
+
         // Plane +x
         var planeShapeXmax = new CANNON.Plane();
         var planeXmax = new CANNON.RigidBody(0, planeShapeXmax,stone);
         planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
         planeXmax.position.set(5,0,0);
         world.add(planeXmax);
-      
+
         // Plane -y
         var planeShapeYmin = new CANNON.Plane();
         var planeYmin = new CANNON.RigidBody(0, planeShapeYmin,stone);
@@ -93,7 +95,7 @@
         planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
         planeYmax.position.set(0,5,0);
         world.add(planeYmax);
-      
+
         // Create spheres
         var rand = 0.1;
         var h = 0;
@@ -111,7 +113,7 @@
           }
         }
       }
-      
+
     </script>
   </body>
 </html>

@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -31,7 +33,7 @@
             var boxShape = new CANNON.Box(new CANNON.Vec3(size,size*0.1,size));
             var mass = 0;
             var space = 0.1*size;
-            
+
             var N=10, last;
             for(var i=0; i<N; i++){
                 // Create a box
@@ -105,7 +107,7 @@
             var size = 1;
             var sphereShape = new CANNON.Sphere(size);
             var mass = 1;
-            
+
             var spherebody = new CANNON.RigidBody(mass,sphereShape);
             spherebody.position.set(0,0,size*3);
             spherebody.velocity.set(5,0,0);
@@ -113,12 +115,12 @@
             spherebody.angularDamping=0;
             world.add(spherebody);
             demo.addVisual(spherebody);
-            
+
             var spherebody2 = new CANNON.RigidBody(0,sphereShape);
             spherebody2.position.set(0,0,size*7);
             world.add(spherebody2);
             demo.addVisual(spherebody2);
-           
+
             // Connect this body to the last one
             var c = new CANNON.PointToPointConstraint(spherebody,new CANNON.Vec3(0,0,size*2),spherebody2,new CANNON.Vec3(0,0,-size*2));
             world.addConstraint(c);
@@ -142,7 +144,7 @@
             spherebody.velocity.x = i;
             world.add(spherebody);
             demo.addVisual(spherebody);
-           
+
             // Connect this body to the last one added
             var c;
             if(lastBody!==null){
@@ -227,7 +229,7 @@
                   connect(i+1,j,k,  i,j+1,k+1, Math.sqrt(3)*dist);
                   connect(i,j+1,k,  i+1,j,k+1, Math.sqrt(3)*dist);
                   connect(i,j,k+1,  i+1,j+1,k, Math.sqrt(3)*dist);
-                  
+
                 }
 
                 // 2d diagonals
@@ -248,14 +250,14 @@
           }
         });
 
-      
+
       function setupWorld(demo){
         // Create world
         var world = demo.getWorld();
         world.gravity.set(0,0,-40);
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 10;
-      
+
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape);
@@ -268,9 +270,9 @@
 
         return world;
       };
-      
+
       demo.start();
-      
+
     </script>
   </body>
 </html>

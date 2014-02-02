@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -25,7 +27,7 @@
 
         var radius=1, mass=2, f=500;
         var dt=1/60, damping=0.5;
-      
+
         // Add impulse to the body center
         demo.addScene("center impulse",function(){
             var world = setupWorld(demo);
@@ -86,15 +88,15 @@
             var force = new CANNON.Vec3(f,0,0);
             body.applyForce(force,worldPoint);
         });
-      
+
         function setupWorld(demo){
             var world = demo.getWorld();
             world.broadphase = new CANNON.NaiveBroadphase();
             return world;
         };
-      
+
       demo.start();
-      
+
     </script>
   </body>
 </html>

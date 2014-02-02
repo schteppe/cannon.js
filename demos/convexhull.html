@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -19,7 +21,7 @@
        * Experiment for testing ConvexPolyhedrons.
        */
       var demo = new CANNON.Demo();
-      
+
       function createTetra(){
             var verts = [new CANNON.Vec3(0,0,0),
                          new CANNON.Vec3(2,0,0),
@@ -88,8 +90,8 @@
           world.add(boxbody1);
           demo.addVisual(boxbody1);
         });
-      
-      
+
+
 
       // Various shapes
       demo.addScene("various",function(){
@@ -102,14 +104,14 @@
           boxbody.position.set(1,0,size+1);
           world.add(boxbody);
           demo.addVisual(boxbody);
-      
+
           // ConvexPolyhedron tetra shape
           var tetraShape = createTetra();
           var tetraBody = new CANNON.RigidBody(mass,tetraShape);
           tetraBody.position.set(5,-3,size+1);
           world.add(tetraBody);
           demo.addVisual(tetraBody);
-      
+
           // ConvexPolyhedron cylinder shape
           // Yes, the Cylinder is actually a ConvexPolyhedron.
           var num = 20;
@@ -125,7 +127,7 @@
           cylinderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/3);
           world.add(cylinderBody);
           demo.addVisual(cylinderBody);
-      
+
         });
 
 
@@ -145,7 +147,7 @@
           demo.addVisual(boxbody1);
           demo.addVisual(boxbody2);
         });
-      
+
       // Pile of boxes
       demo.addScene("Hull wall",function(){
           var world = setupWorld(demo);
@@ -162,7 +164,7 @@
           }
           }
         });
-            
+
       function setupWorld(demo){
         var world = demo.getWorld();
         world.gravity.set(0,0,-30);
@@ -180,12 +182,12 @@
         groundBody.position.set(-10,0,0);
         world.add(groundBody);
         demo.addVisual(groundBody);
-      
+
         return world;
       };
-      
+
       demo.start();
-      
+
     </script>
   </body>
 </html>

@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -43,7 +45,7 @@
         var sphereBody = new CANNON.RigidBody(1,sphere);
         var pos = new CANNON.Vec3(0,0,size);
         sphereBody.position.set(0,0,size*6);
-      
+
         // Allow sleeping
         world.allowSleep = true;
         sphereBody.allowSleep = true;
@@ -59,7 +61,7 @@
         sphereBody.addEventListener("sleep",function(event){
           console.log("The sphere fell asleep!");
         });
-      
+
         // Add bodies to the world
         world.add(sphereBody);
         world.add(groundBody);
@@ -95,7 +97,7 @@
         sphereBody2.velocity.set(-10,0,0);
         sphereBody2.angularDamping = 0.0;
         sphereBody2.linearDamping = 0.0;
-      
+
         world.allowSleep = true;
         sphereBody.allowSleep = true;
 
@@ -106,7 +108,7 @@
         sphereBody.addEventListener("wakeup",function(event){
           console.log("The sphere woke up!");
         });
-      
+
         // Add bodies to the world
         world.add(sphereBody);
         world.add(sphereBody2);

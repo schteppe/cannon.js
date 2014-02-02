@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -43,14 +45,14 @@
 
             // Position constrain wheels
             var zero = new CANNON.Vec3();
-            leftFrontWheel .position.set(  5,  5, 0); 
+            leftFrontWheel .position.set(  5,  5, 0);
             rightFrontWheel.position.set(  5, -5, 0);
             leftRearWheel  .position.set( -5,  5, 0);
             rightRearWheel .position.set( -5, -5, 0);
 
             // Constrain wheels
             var constraints = [];
-            
+
             // Hinge the wheels
             var leftAxis =       new CANNON.Vec3(0,1,0);
             var rightAxis =      new CANNON.Vec3(0,-1,0);
@@ -77,7 +79,7 @@
                 demo.addVisual(bodies[i]);
             }
 
-            // Ground 
+            // Ground
             var groundShape = new CANNON.Plane();
             var ground = new CANNON.RigidBody(0,groundShape,groundMaterial);
             ground.position.z = -3;
@@ -112,8 +114,8 @@
             var axisB = axisA;
             var pivotB = new CANNON.Vec3(0,0,s*0.5+d);
             var c = new CANNON.HingeConstraint( staticBody, pivotA, axisA,
-                                                body,       pivotB, axisB);            
-            world.addConstraint(c); 
+                                                body,       pivotB, axisB);
+            world.addConstraint(c);
 
             world.add(body);
             world.add(staticBody);
@@ -122,7 +124,7 @@
         });
 
         demo.start();
-      
+
     </script>
   </body>
 </html>

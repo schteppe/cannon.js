@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -17,21 +19,21 @@
 
       var demo = new CANNON.Demo();
       var size = 2;
-      
+
       demo.addScene("Sphere",function(){
           var sphereShape = new CANNON.Sphere(size);
           createBodyOnPlane(demo,sphereShape);
         });
-      
+
       demo.addScene("Box",function(){
           var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
           createBodyOnPlane(demo,boxShape);
         });
-      
+
       demo.start();
-      
+
       function createBodyOnPlane(demo,shape){
-      
+
         // Create world
         var world = demo.getWorld();
         world.gravity.set(0,0,-10);
@@ -40,13 +42,13 @@
 
         world.defaultContactMaterial.contactEquationStiffness = 1e7;
         world.defaultContactMaterial.contactEquationRegularizationTime = 4;
-      
+
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
-      
+
         // Shape on plane
         var shapeBody = new CANNON.RigidBody(30,shape);
         var pos = new CANNON.Vec3(0,0,size);
@@ -56,7 +58,7 @@
         world.add(shapeBody);
         demo.addVisual(shapeBody);
       }
-            
+
     </script>
   </body>
 </html>

@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -19,7 +21,7 @@
          * Demonstrates how to filter collisions using Body.collisionFilterGroup and Body.collisionFilterMask.
          * The filters are applied inside the broadphase. It can be used to allow or disallow collisions between bodies.
          *
-         * A collision is allowed if 
+         * A collision is allowed if
          *   (bodyA.collisionFilterGroup & bodyB.collisionFilterMask) && (bodyB.collisionFilterGroup & bodyA.collisionFilterMask)
          *
          * These are indeed bitwise operations. Learn more about that here: http://en.wikipedia.org/wiki/Bitwise_operation
@@ -38,7 +40,7 @@
             world.gravity.set(0,0,0); // no gravity
             world.broadphase = new CANNON.NaiveBroadphase();
             world.solver.iterations = 5;
-      
+
             // Sphere
             var sphereShape = new CANNON.Sphere(size);
             var sphereBody = new CANNON.RigidBody(mass,sphereShape);
@@ -68,9 +70,9 @@
             demo.addVisual(boxBody);
             demo.addVisual(cylinderBody);
         });
-      
+
         demo.start();
-      
+
     </script>
   </body>
 </html>

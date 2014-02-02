@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -25,7 +27,7 @@
             var world = demo.getWorld();
             world.gravity.set(0,0,-10);
             world.broadphase = new CANNON.NaiveBroadphase();
-          
+
             // ground plane
             var groundMaterial = new CANNON.Material();
             var groundShape = new CANNON.Plane();
@@ -57,7 +59,7 @@
             shapeBody3.linearDamping = damping;
             world.add(shapeBody3);
             demo.addVisual(shapeBody3);
-          
+
             // Create contact material behaviour
             var mat1_ground = new CANNON.ContactMaterial(groundMaterial,mat1,0.0,0.0);
             var mat2_ground = new CANNON.ContactMaterial(groundMaterial,mat2,0.0,0.7);
@@ -67,9 +69,9 @@
             world.addContactMaterial(mat2_ground);
             world.addContactMaterial(mat3_ground);
         });
-      
+
       demo.start();
-            
+
     </script>
   </body>
 </html>

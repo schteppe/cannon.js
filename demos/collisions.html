@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -19,10 +21,10 @@
        * For debugging different kinds of pair collisions
        */
       var demo = new CANNON.Demo();
-      
+
       demo.addScene("Sphere / sphere",function(){
           var world = setupWorld(demo);
-      
+
           // Sphere 1
           var sphereShape = new CANNON.Sphere(1);
           var b1 = new CANNON.RigidBody(5,sphereShape);
@@ -31,7 +33,7 @@
           b1.linearDamping = 0;
           world.add(b1);
           demo.addVisual(b1);
-      
+
           // Sphere 2
           var b2 = new CANNON.RigidBody(5,sphereShape);
           b2.linearDamping = 0;
@@ -40,14 +42,14 @@
           world.add(b2);
           demo.addVisual(b2);
         });
-      
+
       // Sphere / box side
       demo.addScene("Sphere / box side",function(){
           var world = setupWorld(demo);
-      
+
           var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
           var sphereShape = new CANNON.Sphere(1);
-      
+
           // Box
           var b1 = new CANNON.RigidBody(5,boxShape);
           b1.position.set(5,0,0);
@@ -55,7 +57,7 @@
           b1.linearDamping = 0;
           world.add(b1);
           demo.addVisual(b1);
-      
+
           // Sphere
           var b2 = new CANNON.RigidBody(5,sphereShape);
           b2.position.set(-5,0,0);
@@ -64,13 +66,13 @@
           world.add(b2);
           demo.addVisual(b2);
         });
-      
+
       demo.addScene("Sphere / box edge",function(){
           var world = setupWorld(demo);
-      
+
           var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
           var sphereShape = new CANNON.Sphere(1);
-      
+
           // Box
           var b1 = new CANNON.RigidBody(5,boxShape);
           b1.position.set(5,0,0);
@@ -81,7 +83,7 @@
           b1.quaternion.set(q.x,q.y,q.z,q.w);
           world.add(b1);
           demo.addVisual(b1);
-      
+
           // Sphere
           var b2 = new CANNON.RigidBody(5,sphereShape);
           b2.position.set(-5,0,0);
@@ -90,13 +92,13 @@
           world.add(b2);
           demo.addVisual(b2);
         });
-      
+
       demo.addScene("Sphere / box corner",function(){
           var world = setupWorld(demo);
-      
+
           var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
           var sphereShape = new CANNON.Sphere(1);
-      
+
           // Box
           var b1 = new CANNON.RigidBody(5,boxShape);
           b1.position.set(5,0,0);
@@ -110,7 +112,7 @@
           b1.quaternion.set(q.x,q.y,q.z,q.w);
           world.add(b1);
           demo.addVisual(b1);
-      
+
           // Sphere
           var b2 = new CANNON.RigidBody(5,sphereShape);
           b2.position.set(-5,0,0);
@@ -119,9 +121,9 @@
           world.add(b2);
           demo.addVisual(b2);
         });
-      
+
       demo.start();
-      
+
       function setupWorld(demo){
         // Create world
         var world = demo.getWorld();
@@ -132,7 +134,7 @@
         world.defaultContactMaterial.contactEquationRegularizationTime = 10;
         return world;
       }
-      
+
     </script>
   </body>
 </html>

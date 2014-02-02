@@ -10,6 +10,8 @@
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -21,7 +23,7 @@
      * the total error is small, in other words: when the system is solved "good enough".
      * When simulating larger systems with more equations, the error will add up,
      * and the solver will need more iterations/work to reach the "good enough" level.
-     * 
+     *
      * The SplitSolver splits the system into independent parts, and runs a subsolver
      * on each part. The total error in a subsystem will many times be smaller than in
      * the large system, so we can many times cut down on the total number of iterations we do.
@@ -35,7 +37,7 @@
 
       var demo = new CANNON.Demo();
       var size = 0.5;
-      
+
       var shape = new CANNON.Sphere(size);
       var shape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
       demo.addScene("with split",function(){
@@ -44,11 +46,11 @@
       demo.addScene("without split",function(){
           createScene(demo,shape,false);
         });
-      
+
       demo.start();
-      
+
       function createScene(demo,shape,split){
-      
+
         // Create world
         var world = demo.getWorld();
         world.gravity.set(0,0,-10);
@@ -63,13 +65,13 @@
             world.solver = new CANNON.SplitSolver(solver);
         else
             world.solver = solver;
-      
+
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.RigidBody(0,groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
-      
+
         // Shape on plane
         var N = 5;
         for(var i=0; i<N; i++){
@@ -90,7 +92,7 @@
         world.add(shapeBody);
         demo.addVisual(shapeBody);
       }
-            
+
     </script>
   </body>
 </html>
