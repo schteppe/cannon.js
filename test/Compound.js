@@ -19,5 +19,23 @@ module.exports = {
         test.equal(min.y,-1);
         test.equal(max.y, 1);
         test.done();
-    }
+    },
+
+    calculateLocalInertia : function(test){
+        // Box 2x2x4
+        var boxShape = new Box(new Vec3(1, 1, 2));
+        var boxInertia = boxShape.calculateLocalInertia(1);
+
+        // Compound of two cubes, 2x2x4
+        var compoundShape = new Compound();
+        var part1Shape = new Box(new Vec3(1, 1, 1));
+        var part2Shape = new Box(new Vec3(1, 1, 1));
+        compoundShape.addChild(part1Shape, new Vec3(0, 0, 1));
+        compoundShape.addChild(part2Shape, new Vec3(0, 0, -1));
+        var compoundInertia = compoundShape.calculateLocalInertia(1);
+
+        test.ok(boxInertia.almostEquals(compoundInertia));
+
+        test.done();
+    },
 };
