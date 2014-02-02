@@ -87,13 +87,13 @@
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
-                <li><a href="../classes/ObjectPool.html">ObjectPool</a></li>
-            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Pool.html">Pool</a></li>
             
                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
             
@@ -104,6 +104,8 @@
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -164,54 +166,89 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = EventTarget;
-
 /**
+ * Base class for objects that dispatches events.
  * @class EventTarget
  * @constructor
- * @see https://github.com/mrdoob/eventtarget.js/
  */
-function EventTarget() {
-    var listeners = {};
+var EventTarget = function () {}
+
+module.exports = EventTarget;
+
+EventTarget.prototype = {
+    constructor: EventTarget,
 
     /**
      * Add an event listener
      * @method addEventListener
-     * @param {String} type
-     * @param {Function} listener
+     * @param  {String} type
+     * @param  {Function} listener
+     * @return {EventTarget} The self object, for chainability.
      */
-    this.addEventListener = function ( type, listener ) {
+    addEventListener: function ( type, listener ) {
+        if ( this._listeners === undefined ) this._listeners = {};
+        var listeners = this._listeners;
         if ( listeners[ type ] === undefined ) {
             listeners[ type ] = [];
         }
         if ( listeners[ type ].indexOf( listener ) === - 1 ) {
             listeners[ type ].push( listener );
         }
-    };
+        return this;
+    },
 
     /**
-     * Dispatch an event
-     * @method dispatchEvent
-     * @param {Object} event
+     * Check if an event listener is added
+     * @method hasEventListener
+     * @param  {String} type
+     * @param  {Function} listener
+     * @return {Boolean}
      */
-    this.dispatchEvent = function ( event ) {
-        for ( var listener in listeners[ event.type ] ) {
-            listeners[ event.type ][ listener ]( event );
+    hasEventListener: function ( type, listener ) {
+        if ( this._listeners === undefined ) return false;
+        var listeners = this._listeners;
+        if ( listeners[ type ] !== undefined &amp;&amp; listeners[ type ].indexOf( listener ) !== - 1 ) {
+            return true;
         }
-    };
+        return false;
+    },
 
     /**
      * Remove an event listener
      * @method removeEventListener
-     * @param {String} type
-     * @param {Function} listener
+     * @param  {String} type
+     * @param  {Function} listener
+     * @return {EventTarget} The self object, for chainability.
      */
-    this.removeEventListener = function ( type, listener ) {
+    removeEventListener: function ( type, listener ) {
+        if ( this._listeners === undefined ) return this;
+        var listeners = this._listeners;
         var index = listeners[ type ].indexOf( listener );
         if ( index !== - 1 ) {
             listeners[ type ].splice( index, 1 );
         }
-    };
+        return this;
+    },
+
+    /**
+     * Emit an event.
+     * @method dispatchEvent
+     * @param  {Object} event
+     * @param  {String} event.type
+     * @return {EventTarget} The self object, for chainability.
+     */
+    dispatchEvent: function ( event ) {
+        if ( this._listeners === undefined ) return this;
+        var listeners = this._listeners;
+        var listenerArray = listeners[ event.type ];
+        if ( listenerArray !== undefined ) {
+            event.target = this;
+            for ( var i = 0, l = listenerArray.length; i &lt; l; i ++ ) {
+                listenerArray[ i ].call( this, event );
+            }
+        }
+        return this;
+    }
 };
 
     </pre>

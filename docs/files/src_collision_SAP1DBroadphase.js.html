@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/objects/RigidBody.js - cannon</title>
+    <title>src/collision/SAP1DBroadphase.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -162,198 +162,174 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/objects/RigidBody.js</h1>
+                        <h1 class="file-heading">File: src/collision/SAP1DBroadphase.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = RigidBody;
-
 var Shape = require(&#x27;../shapes/Shape&#x27;)
-,   Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Quaternion = require(&#x27;../math/Quaternion&#x27;)
-,   Particle = require(&#x27;./Particle&#x27;)
-,   Material = require(&#x27;../material/Material&#x27;)
+,   Broadphase = require(&#x27;../collision/Broadphase&#x27;)
+
+module.exports = SAP1DBroadphase;
 
 /**
- * Rigid body base class
- * @class RigidBody
+ * Sweep and prune broadphase along one axis.
+ *
+ * @class SAP1DBroadphase
  * @constructor
- * @param {Number} mass
- * @param {Shape} shape
- * @param {Material} material
+ * @extends Broadphase
  */
-function RigidBody(mass,shape,material){
-
-    // Check input
-    if(typeof(mass)!==&quot;number&quot;){
-        throw new Error(&quot;Argument 1 (mass) must be a number.&quot;);
-    }
-    if(typeof(material)!==&quot;undefined&quot; &amp;&amp; !(material instanceof(Material))){
-        throw new Error(&quot;Argument 3 (material) must be an instance of Material.&quot;);
-    }
-
-    Particle.call(this,mass,material);
-
-    var that = this;
+function SAP1DBroadphase(world){
+    Broadphase.apply(this);
 
     /**
-     * Rotational force on the body, around center of mass
-     * @property Vec3 tau
-     * @todo should be renamed to .angularForce
+     * List of bodies currently in the broadphase.
+     * @property axisList
+     * @type {Array}
      */
-    this.tau = new Vec3();
+    this.axisList = [];
 
     /**
-     * Orientation of the body
-     * @property quaternion
-     * @type {Quaternion}
+     * The world to search in.
+     * @property world
+     * @type {World}
      */
-    this.quaternion = new Quaternion();
+    this.world = null;
 
     /**
-     * @property initQuaternion
-     * @type {Quaternion}
-     */
-    this.initQuaternion = new Quaternion();
-
-    /**
-     * @property angularVelocity
-     * @type {Vec3}
-     */
-    this.angularVelocity = new Vec3();
-
-    /**
-     * @property initAngularVelocity
-     * @type {Vec3}
-     */
-    this.initAngularVelocity = new Vec3();
-
-    /**
-     * @property shape
-     * @type {Shape}
-     */
-    this.shape = shape;
-
-    /**
-     * @property inertia
-     * @type {Vec3}
-     */
-    this.inertia = new Vec3();
-    shape.calculateLocalInertia(mass,this.inertia);
-
-    this.inertiaWorld = new Vec3();
-    this.inertia.copy(this.inertiaWorld);
-    this.inertiaWorldAutoUpdate = false;
-
-    /**
-     * @property invInertia
-     * @type {Vec3}
-     */
-    this.invInertia = new Vec3(this.inertia.x&gt;0 ? 1.0/this.inertia.x : 0,
-                                      this.inertia.y&gt;0 ? 1.0/this.inertia.y : 0,
-                                      this.inertia.z&gt;0 ? 1.0/this.inertia.z : 0);
-    this.invInertiaWorld = new Vec3();
-    this.invInertia.copy(this.invInertiaWorld);
-    this.invInertiaWorldAutoUpdate = false;
-
-    /**
-     * @property angularDamping
+     * Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.
+     * @property axisIndex
      * @type {Number}
      */
-    this.angularDamping = 0.01; // Perhaps default should be zero here?
+    this.axisIndex = 0;
 
-    /**
-     * @property aabbmin
-     * @type {Vec3}
-     */
-    this.aabbmin = new Vec3();
+    var axisList = this.axisList;
 
-    /**
-     * @property aabbmax
-     * @type {Vec3}
-     */
-    this.aabbmax = new Vec3();
+    this._addBodyHandler = function(e){
+        axisList.push(e.body);
+    };
 
-    /**
-     * Indicates if the AABB needs to be updated before use.
-     * @property aabbNeedsUpdate
-     * @type {Boolean}
-     */
-    this.aabbNeedsUpdate = true;
+    this._removeBodyHandler = function(e){
+        var idx = axisList.indexOf(e.body);
+        if(idx !== -1)
+            axisList.splice(idx,1);
+    }
 
-    this.wlambda = new Vec3();
+    if(world) this.setWorld(world);
 };
-
-RigidBody.prototype = new Particle(0);
-RigidBody.prototype.constructor = RigidBody;
+SAP1DBroadphase.prototype = new Broadphase();
 
 /**
- * Updates the .aabbmin and .aabbmax properties
- * @method computeAABB
+ * Change the world
+ * @method setWorld
+ * @param  {World} world
  */
-RigidBody.prototype.computeAABB = function(){
-    this.shape.calculateWorldAABB(this.position,
-                                  this.quaternion,
-                                  this.aabbmin,
-                                  this.aabbmax);
-    this.aabbNeedsUpdate = false;
-};
+SAP1DBroadphase.prototype.setWorld = function(world){
+    // Clear the old axis array
+    this.axisList.length = 0;
 
-/**
- * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.tau.
- * @method applyForce
- * @param  {Vec3} force The amount of force to add.
- * @param  {Vec3} worldPoint A world point to apply the force on.
- */
-var RigidBody_applyForce_r = new Vec3();
-var RigidBody_applyForce_rotForce = new Vec3();
-RigidBody.prototype.applyForce = function(force,worldPoint){
-    // Compute point position relative to the body center
-    var r = RigidBody_applyForce_r;
-    worldPoint.vsub(this.position,r);
+    // Add all bodies from the new world
+    for(var i=0; i&lt;world.bodies.length; i++)
+        this.axisList.push(world.bodies[i]);
 
-    // Compute produced rotational force
-    var rotForce = RigidBody_applyForce_rotForce;
-    r.cross(force,rotForce);
+    // Remove old handlers, if any
+    world.removeEventListener(&quot;addBody&quot;,this._addBodyHandler);
+    world.removeEventListener(&quot;removeBody&quot;,this._removeBodyHandler);
 
-    // Add linear force
-    this.force.vadd(force,this.force);
+    // Add handlers to update the list of bodies.
+    world.addEventListener(&quot;addBody&quot;,this._addBodyHandler);
+    world.addEventListener(&quot;removeBody&quot;,this._removeBodyHandler);
 
-    // Add rotational force
-    this.tau.vadd(rotForce,this.tau);
+    this.world = world;
 };
 
 /**
- * Apply impulse to a world point. This could for example be a point on the RigidBody surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
- * @method applyImpulse
- * @param  {Vec3} impulse The amount of impulse to add.
- * @param  {Vec3} worldPoint A world point to apply the force on.
+ * Function for sorting bodies along the X axis. To be passed to array.sort()
+ * @method sortAxisListX
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Number}
  */
-var RigidBody_applyImpulse_r = new Vec3();
-var RigidBody_applyImpulse_velo = new Vec3();
-var RigidBody_applyImpulse_rotVelo = new Vec3();
-RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
-    // Compute point position relative to the body center
-    var r = RigidBody_applyImpulse_r;
-    worldPoint.vsub(this.position,r);
+SAP1DBroadphase.sortAxisListX = function(bodyA,bodyB){
+    return (bodyA.position.x-bodyA.shape.boundingSphereRadius) - (bodyB.position.x-bodyB.shape.boundingSphereRadius);
+};
 
-    // Compute produced central impulse velocity
-    var velo = RigidBody_applyImpulse_velo;
-    impulse.copy(velo);
-    velo.mult(this.invMass,velo);
+/**
+ * Function for sorting bodies along the Y axis. To be passed to array.sort()
+ * @method sortAxisListY
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Number}
+ */
+SAP1DBroadphase.sortAxisListY = function(bodyA,bodyB){
+    return (bodyA.position.y-bodyA.shape.boundingSphereRadius) - (bodyB.position.y-bodyB.shape.boundingSphereRadius);
+};
 
-    // Add linear impulse
-    this.velocity.vadd(velo, this.velocity);
+/**
+ * Function for sorting bodies along the Y axis. To be passed to array.sort()
+ * @method sortAxisListY
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
+ * @return {Number}
+ */
+SAP1DBroadphase.sortAxisListZ = function(bodyA,bodyB){
+    return (bodyA.position.z-bodyA.shape.boundingSphereRadius) - (bodyB.position.z-bodyB.shape.boundingSphereRadius);
+};
 
-    // Compute produced rotational impulse velocity
-    var rotVelo = RigidBody_applyImpulse_rotVelo;
-    r.cross(impulse,rotVelo);
-    rotVelo.x *= this.invInertia.x;
-    rotVelo.y *= this.invInertia.y;
-    rotVelo.z *= this.invInertia.z;
+SAP1DBroadphase.prototype.collisionPairs = function(world,p1,p2){
+    var bodies = this.axisList,
+        axisIndex = this.axisIndex,
+        i,j;
 
-    // Add rotational Impulse
-    this.angularVelocity.vadd(rotVelo, this.angularVelocity);
+    // Sort the list
+    var sortFunc;
+    if(axisIndex === 0)
+        sortFunc = SAP1DBroadphase.sortAxisListX;
+    else if(axisIndex === 1)
+        sortFunc = SAP1DBroadphase.sortAxisListY;
+    else if(axisIndex === 2)
+        sortFunc = SAP1DBroadphase.sortAxisListZ;
+    bodies.sort(sortFunc);
+
+    // Look through the list
+    for(i=0, N=bodies.length; i!==N; i++){
+        var bi = bodies[i];
+
+        for(j=i+1; j&lt;N; j++){
+            var bj = bodies[j];
+
+            if(!SAP1DBroadphase.checkBounds(bi,bj,axisIndex))
+                break;
+
+            this.doBoundingSphereBroadphase(bi,bj,p1,p2);
+        }
+    }
+};
+
+/**
+ * Check if the bounds of two bodies overlap, along the given SAP axis.
+ * @static
+ * @method checkBounds
+ * @param  {Body} bi
+ * @param  {Body} bj
+ * @param  {Number} axisIndex
+ * @return {Boolean}
+ */
+SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
+    var axis;
+    if(axisIndex==0) axis = &#x27;x&#x27;;
+    if(axisIndex==1) axis = &#x27;y&#x27;;
+    if(axisIndex==2) axis = &#x27;z&#x27;;
+
+    var biPos = bi.position[axis],
+        ri = bi.shape.boundingSphereRadius,
+        bjPos = bj.position[axis],
+        rj = bj.shape.boundingSphereRadius,
+        boundA1 = biPos-ri,
+        boundA2 = biPos+ri,
+        boundB1 = bjPos-rj,
+        boundB2 = bjPos+rj;
+
+    return boundB1 &lt; boundA2;
 };
 
     </pre>

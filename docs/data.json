@@ -59,6 +59,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/collision/SAP1DBroadphase.js": {
+            "name": "src/collision/SAP1DBroadphase.js",
+            "modules": {},
+            "classes": {
+                "SAP1DBroadphase": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/constraints/Constraint.js": {
             "name": "src/constraints/Constraint.js",
             "modules": {},
@@ -333,7 +342,7 @@
             "name": "src/utils/Pool.js",
             "modules": {},
             "classes": {
-                "ObjectPool": 1
+                "Pool": 1
             },
             "fors": {},
             "namespaces": {}
@@ -489,6 +498,20 @@
                     "type": "Vec3"
                 }
             ]
+        },
+        "SAP1DBroadphase": {
+            "name": "SAP1DBroadphase",
+            "shortname": "SAP1DBroadphase",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 6,
+            "description": "Sweep and prune broadphase along one axis.",
+            "is_constructor": 1,
+            "extends": "Broadphase"
         },
         "Constraint": {
             "name": "Constraint",
@@ -1289,15 +1312,13 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/utils/EventTarget.js",
-            "line": 3,
-            "is_constructor": 1,
-            "see": [
-                "https://github.com/mrdoob/eventtarget.js/"
-            ]
+            "line": 1,
+            "description": "Base class for objects that dispatches events.",
+            "is_constructor": 1
         },
-        "ObjectPool": {
-            "name": "ObjectPool",
-            "shortname": "ObjectPool",
+        "Pool": {
+            "name": "Pool",
+            "shortname": "Pool",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -1319,7 +1340,7 @@
             "file": "src/utils/Vec3Pool.js",
             "line": 6,
             "is_constructor": 1,
-            "extends": "{ObjectPool}"
+            "extends": "{Pool}"
         },
         "ContactGenerator": {
             "name": "ContactGenerator",
@@ -1607,6 +1628,21 @@
             "class": "Broadphase"
         },
         {
+            "file": "src/collision/Broadphase.js",
+            "line": 309,
+            "description": "To be implemented by subcasses",
+            "itemtype": "method",
+            "name": "setWorld",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                }
+            ],
+            "class": "Broadphase"
+        },
+        {
             "file": "src/collision/GridBroadphase.js",
             "line": 41,
             "description": "Get all the collision pairs in the physics world",
@@ -1829,6 +1865,150 @@
                 "type": "Array"
             },
             "class": "Ray"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 16,
+            "description": "List of bodies currently in the broadphase.",
+            "itemtype": "property",
+            "name": "axisList",
+            "type": "{Array}",
+            "class": "SAP1DBroadphase"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 23,
+            "description": "The world to search in.",
+            "itemtype": "property",
+            "name": "world",
+            "type": "{World}",
+            "class": "SAP1DBroadphase"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 30,
+            "description": "Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.",
+            "itemtype": "property",
+            "name": "axisIndex",
+            "type": "{Number}",
+            "class": "SAP1DBroadphase"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 53,
+            "description": "Change the world",
+            "itemtype": "method",
+            "name": "setWorld",
+            "params": [
+                {
+                    "name": "world",
+                    "description": "",
+                    "type": "World"
+                }
+            ],
+            "class": "SAP1DBroadphase"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 77,
+            "description": "Function for sorting bodies along the X axis. To be passed to array.sort()",
+            "itemtype": "method",
+            "name": "sortAxisListX",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "SAP1DBroadphase"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 88,
+            "description": "Function for sorting bodies along the Y axis. To be passed to array.sort()",
+            "itemtype": "method",
+            "name": "sortAxisListY",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "SAP1DBroadphase"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 99,
+            "description": "Function for sorting bodies along the Y axis. To be passed to array.sort()",
+            "itemtype": "method",
+            "name": "sortAxisListY",
+            "params": [
+                {
+                    "name": "bodyA",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bodyB",
+                    "description": "",
+                    "type": "Body"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "SAP1DBroadphase"
+        },
+        {
+            "file": "src/collision/SAP1DBroadphase.js",
+            "line": 140,
+            "description": "Check if the bounds of two bodies overlap, along the given SAP axis.",
+            "static": 1,
+            "itemtype": "method",
+            "name": "checkBounds",
+            "params": [
+                {
+                    "name": "bi",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "bj",
+                    "description": "",
+                    "type": "Body"
+                },
+                {
+                    "name": "axisIndex",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "SAP1DBroadphase"
         },
         {
             "file": "src/constraints/Constraint.js",
@@ -3061,7 +3241,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 61,
+            "line": 62,
             "description": "A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.",
             "static": 1,
             "itemtype": "property",
@@ -3071,7 +3251,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 69,
+            "line": 70,
             "description": "A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.",
             "static": 1,
             "itemtype": "property",
@@ -3081,7 +3261,7 @@
         },
         {
             "file": "src/objects/Body.js",
-            "line": 77,
+            "line": 78,
             "description": "A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.",
             "static": 1,
             "itemtype": "property",
@@ -4253,7 +4433,7 @@
         },
         {
             "file": "src/utils/EventTarget.js",
-            "line": 11,
+            "line": 13,
             "description": "Add an event listener",
             "itemtype": "method",
             "name": "addEventListener",
@@ -4269,26 +4449,39 @@
                     "type": "Function"
                 }
             ],
+            "return": {
+                "description": "The self object, for chainability.",
+                "type": "EventTarget"
+            },
             "class": "EventTarget"
         },
         {
             "file": "src/utils/EventTarget.js",
-            "line": 26,
-            "description": "Dispatch an event",
+            "line": 32,
+            "description": "Check if an event listener is added",
             "itemtype": "method",
-            "name": "dispatchEvent",
+            "name": "hasEventListener",
             "params": [
                 {
-                    "name": "event",
+                    "name": "type",
                     "description": "",
-                    "type": "Object"
+                    "type": "String"
+                },
+                {
+                    "name": "listener",
+                    "description": "",
+                    "type": "Function"
                 }
             ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
             "class": "EventTarget"
         },
         {
             "file": "src/utils/EventTarget.js",
-            "line": 37,
+            "line": 48,
             "description": "Remove an event listener",
             "itemtype": "method",
             "name": "removeEventListener",
@@ -4304,6 +4497,36 @@
                     "type": "Function"
                 }
             ],
+            "return": {
+                "description": "The self object, for chainability.",
+                "type": "EventTarget"
+            },
+            "class": "EventTarget"
+        },
+        {
+            "file": "src/utils/EventTarget.js",
+            "line": 65,
+            "description": "Emit an event.",
+            "itemtype": "method",
+            "name": "dispatchEvent",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "type",
+                            "description": "",
+                            "type": "String"
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "The self object, for chainability.",
+                "type": "EventTarget"
+            },
             "class": "EventTarget"
         },
         {
@@ -4313,7 +4536,7 @@
             "itemtype": "property",
             "name": "objects",
             "type": "Array",
-            "class": "ObjectPool"
+            "class": "Pool"
         },
         {
             "file": "src/utils/Pool.js",
@@ -4322,7 +4545,7 @@
             "itemtype": "property",
             "name": "type",
             "type": "Mixed",
-            "class": "ObjectPool"
+            "class": "Pool"
         },
         {
             "file": "src/utils/Pool.js",
@@ -4337,7 +4560,7 @@
                     "type": "Object"
                 }
             ],
-            "class": "ObjectPool"
+            "class": "Pool"
         },
         {
             "file": "src/utils/Pool.js",
@@ -4349,7 +4572,7 @@
                 "description": "",
                 "type": "Mixed"
             },
-            "class": "ObjectPool"
+            "class": "Pool"
         },
         {
             "file": "src/utils/Pool.js",
@@ -4361,7 +4584,7 @@
                 "description": "",
                 "type": "Mixed"
             },
-            "class": "ObjectPool"
+            "class": "Pool"
         },
         {
             "file": "src/utils/Vec3Pool.js",
@@ -5293,7 +5516,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 176,
+            "line": 187,
             "description": "Get the contact material between materials m1 and m2",
             "itemtype": "method",
             "name": "getContactMaterial",
@@ -5317,7 +5540,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 198,
+            "line": 209,
             "description": "Get number of objects in the world.",
             "itemtype": "method",
             "name": "numObjects",
@@ -5329,7 +5552,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 207,
+            "line": 218,
             "description": "Store old collision state info",
             "itemtype": "method",
             "name": "collisionMatrixTick",
@@ -5337,7 +5560,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 218,
+            "line": 229,
             "description": "Add a rigid body to the simulation.",
             "itemtype": "method",
             "name": "add",
@@ -5357,7 +5580,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 241,
+            "line": 253,
             "description": "Add a constraint to the simulation.",
             "itemtype": "method",
             "name": "addConstraint",
@@ -5372,7 +5595,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 251,
+            "line": 263,
             "description": "Removes a constraint",
             "itemtype": "method",
             "name": "removeConstraint",
@@ -5387,7 +5610,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 263,
+            "line": 275,
             "description": "Generate a new unique integer identifyer",
             "itemtype": "method",
             "name": "id",
@@ -5399,7 +5622,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 272,
+            "line": 284,
             "description": "Remove a rigid body from the simulation.",
             "itemtype": "method",
             "name": "remove",
@@ -5414,7 +5637,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 288,
+            "line": 302,
             "description": "Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.",
             "itemtype": "method",
             "name": "addMaterial",
@@ -5429,7 +5652,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 306,
+            "line": 320,
             "description": "Adds a contact material to the World",
             "itemtype": "method",
             "name": "addContactMaterial",
@@ -5444,7 +5667,7 @@
         },
         {
             "file": "src/world/World.js",
-            "line": 344,
+            "line": 358,
             "description": "Step the simulation",
             "itemtype": "method",
             "name": "step",

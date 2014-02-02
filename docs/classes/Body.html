@@ -87,13 +87,13 @@
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
-                <li><a href="../classes/ObjectPool.html">ObjectPool</a></li>
-            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Pool.html">Pool</a></li>
             
                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
             
@@ -104,6 +104,8 @@
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -319,6 +321,13 @@
                             </li>
                         
                             <li class="index-item method inherited">
+                                <a href="#method_hasEventListener">hasEventListener</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
                                 <a href="#method_removeEventListener">removeEventListener</a>
 
                                 
@@ -446,6 +455,10 @@
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>
+        </span>
+    
 
     
 
@@ -467,7 +480,7 @@
             
         
         
-        <a href="../files/src_utils_EventTarget.js.html#l11"><code>src&#x2F;utils&#x2F;EventTarget.js:11</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l13"><code>src&#x2F;utils&#x2F;EventTarget.js:13</code></a>
         
         </p>
 
@@ -523,6 +536,20 @@
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -546,6 +573,10 @@
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>
+        </span>
+    
 
     
 
@@ -567,7 +598,7 @@
             
         
         
-        <a href="../files/src_utils_EventTarget.js.html#l26"><code>src&#x2F;utils&#x2F;EventTarget.js:26</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l65"><code>src&#x2F;utils&#x2F;EventTarget.js:65</code></a>
         
         </p>
 
@@ -578,7 +609,7 @@
     </div>
 
     <div class="description">
-        <p>Dispatch an event</p>
+        <p>Emit an event.</p>
 
     </div>
 
@@ -601,12 +632,165 @@
                     </div>
 
                     
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">type</code>
+                                    <span class="type">String</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
                 </li>
             
             </ul>
         </div>
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_hasEventListener" class="method item inherited">
+    <h3 class="name"><code>hasEventListener</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_hasEventListener">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_utils_EventTarget.js.html#l32"><code>src&#x2F;utils&#x2F;EventTarget.js:32</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if an event listener is added</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
     
 
     
@@ -637,6 +821,10 @@
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>
+        </span>
+    
 
     
 
@@ -658,7 +846,7 @@
             
         
         
-        <a href="../files/src_utils_EventTarget.js.html#l37"><code>src&#x2F;utils&#x2F;EventTarget.js:37</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l48"><code>src&#x2F;utils&#x2F;EventTarget.js:48</code></a>
         
         </p>
 
@@ -713,6 +901,20 @@
         </div>
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -885,7 +1087,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l61"><code>src&#x2F;objects&#x2F;Body.js:61</code></a>
+        <a href="../files/src_objects_Body.js.html#l62"><code>src&#x2F;objects&#x2F;Body.js:62</code></a>
         
         </p>
 
@@ -932,7 +1134,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l69"><code>src&#x2F;objects&#x2F;Body.js:69</code></a>
+        <a href="../files/src_objects_Body.js.html#l70"><code>src&#x2F;objects&#x2F;Body.js:70</code></a>
         
         </p>
 
@@ -979,7 +1181,7 @@
             
         
         
-        <a href="../files/src_objects_Body.js.html#l77"><code>src&#x2F;objects&#x2F;Body.js:77</code></a>
+        <a href="../files/src_objects_Body.js.html#l78"><code>src&#x2F;objects&#x2F;Body.js:78</code></a>
         
         </p>
 

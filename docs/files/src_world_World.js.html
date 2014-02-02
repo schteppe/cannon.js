@@ -87,13 +87,13 @@
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
-                <li><a href="../classes/ObjectPool.html">ObjectPool</a></li>
-            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Pool.html">Pool</a></li>
             
                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
             
@@ -104,6 +104,8 @@
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -337,7 +339,18 @@ function World(){
      * @type {Array}
      */
     this.subsystems = [];
+
+    this.addBodyEvent = {
+        type:&quot;addBody&quot;,
+        body : null,
+    };
+
+    this.removeBodyEvent = {
+        type:&quot;removeBody&quot;,
+        body : null,
+    };
 };
+World.prototype = new EventTarget();
 
 /**
  * Get the contact material between materials m1 and m2
@@ -400,8 +413,9 @@ World.prototype.add = function(body){
         body.angularVelocity.copy(body.initAngularVelocity);
         body.quaternion.copy(body.initQuaternion);
     }
-
 	this.collisionMatrix.setNumObjects(this.bodies.length);
+    this.addBodyEvent.body = body;
+    this.dispatchEvent(this.addBodyEvent);
 };
 
 /**
@@ -449,6 +463,8 @@ World.prototype.remove = function(body){
 		bodies[i].index=i;
 	}
 	this.collisionMatrix.setNumObjects(n);
+    this.removeBodyEvent.body = body;
+    this.dispatchEvent(this.removeBodyEvent);
 };
 
 /**

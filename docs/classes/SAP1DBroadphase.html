@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Broadphase - cannon</title>
+    <title>SAP1DBroadphase - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -162,15 +162,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Broadphase Class</h1>
+                        <h1>SAP1DBroadphase Class</h1>
 <div class="box meta">
     
 
     
+        <div class="extends">
+            Extends <a href="../classes/Broadphase.html" class="crosslink">Broadphase</a>
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_Broadphase.js.html#l9"><code>src&#x2F;collision&#x2F;Broadphase.js:9</code></a>
+            Defined in: <a href="../files/src_collision_SAP1DBroadphase.js.html#l6"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:6</code></a>
         </div>
     
 
@@ -182,15 +186,15 @@
 
 
 <div class="box intro">
-    <p>Base class for broadphase implementations</p>
+    <p>Sweep and prune broadphase along one axis.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Broadphase" class="method item">
-    <h3 class="name"><code>Broadphase</code></h3>
+        <div id="method_SAP1DBroadphase" class="method item">
+    <h3 class="name"><code>SAP1DBroadphase</code></h3>
 
     
         <span class="paren">()</span>
@@ -221,7 +225,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l9"><code>src&#x2F;collision&#x2F;Broadphase.js:9</code></a>
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l6"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:6</code></a>
         
         </p>
 
@@ -267,52 +271,82 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
                         
                             <li class="index-item method">
+                                <a href="#method_checkBounds">checkBounds</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
                                 <a href="#method_collisionPairs">collisionPairs</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_doBoundingBoxBroadphase">doBoundingBoxBroadphase</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_doBoundingSphereBroadphase">doBoundingSphereBroadphase</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_intersectionTest">intersectionTest</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_makePairsUnique">makePairsUnique</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_needBroadphaseCollision">needBroadphaseCollision</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_setWorld">setWorld</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sortAxisListX">sortAxisListX</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sortAxisListY">sortAxisListY</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sortAxisListY">sortAxisListY</a>
 
                                 
                                 
@@ -326,16 +360,30 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
                         
                             <li class="index-item property">
-                                <a href="#property_useBoundingBoxes">useBoundingBoxes</a>
+                                <a href="#property_axisIndex">axisIndex</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_axisList">axisList</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_useBoundingBoxes">useBoundingBoxes</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
                                 <a href="#property_world">world</a>
 
                                 
@@ -356,7 +404,155 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_collisionPairs" class="method item">
+                    <div id="method_checkBounds" class="method item">
+    <h3 class="name"><code>checkBounds</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>axisIndex</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l140"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:140</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if the bounds of two bodies overlap, along the given SAP axis.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">axisIndex</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_collisionPairs" class="method item inherited">
     <h3 class="name"><code>collisionPairs</code></h3>
 
     
@@ -406,11 +602,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Broadphase.html#method_collisionPairs">Broadphase</a>:
             
         
         
@@ -505,7 +698,7 @@
 </div>
 
                 
-                    <div id="method_doBoundingBoxBroadphase" class="method item">
+                    <div id="method_doBoundingBoxBroadphase" class="method item inherited">
     <h3 class="name"><code>doBoundingBoxBroadphase</code></h3>
 
     
@@ -557,11 +750,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Broadphase.html#method_doBoundingBoxBroadphase">Broadphase</a>:
             
         
         
@@ -627,7 +817,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -642,7 +832,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -658,7 +848,7 @@
 </div>
 
                 
-                    <div id="method_doBoundingSphereBroadphase" class="method item">
+                    <div id="method_doBoundingSphereBroadphase" class="method item inherited">
     <h3 class="name"><code>doBoundingSphereBroadphase</code></h3>
 
     
@@ -710,11 +900,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Broadphase.html#method_doBoundingSphereBroadphase">Broadphase</a>:
             
         
         
@@ -748,7 +935,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -763,7 +950,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -811,7 +998,7 @@
 </div>
 
                 
-                    <div id="method_intersectionTest" class="method item">
+                    <div id="method_intersectionTest" class="method item inherited">
     <h3 class="name"><code>intersectionTest</code></h3>
 
     
@@ -855,11 +1042,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Broadphase.html#method_intersectionTest">Broadphase</a>:
             
         
         
@@ -893,7 +1077,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -908,7 +1092,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -936,7 +1120,7 @@
 </div>
 
                 
-                    <div id="method_makePairsUnique" class="method item">
+                    <div id="method_makePairsUnique" class="method item inherited">
     <h3 class="name"><code>makePairsUnique</code></h3>
 
     
@@ -976,11 +1160,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Broadphase.html#method_makePairsUnique">Broadphase</a>:
             
         
         
@@ -1014,7 +1195,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1029,7 +1210,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1045,7 +1226,7 @@
 </div>
 
                 
-                    <div id="method_needBroadphaseCollision" class="method item">
+                    <div id="method_needBroadphaseCollision" class="method item inherited">
     <h3 class="name"><code>needBroadphaseCollision</code></h3>
 
     
@@ -1089,11 +1270,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Broadphase.html#method_needBroadphaseCollision">Broadphase</a>:
             
         
         
@@ -1127,7 +1305,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1142,7 +1320,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1203,16 +1381,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Broadphase.html#method_setWorld">
+                Broadphase
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l309"><code>src&#x2F;collision&#x2F;Broadphase.js:309</code></a>
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l53"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:53</code></a>
         
         </p>
 
@@ -1223,7 +1401,7 @@
     </div>
 
     <div class="description">
-        <p>To be implemented by subcasses</p>
+        <p>Change the world</p>
 
     </div>
 
@@ -1258,17 +1436,38 @@
 </div>
 
                 
-            </div>
-        
+                    <div id="method_sortAxisListX" class="method item">
+    <h3 class="name"><code>sortAxisListX</code></h3>
 
-        
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
 
-                
-                    <div id="property_useBoundingBoxes" class="property item">
-    <h3 class="name"><code>useBoundingBoxes</code></h3>
-    <span class="type">Boolean</span>
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
 
     
 
@@ -1286,6 +1485,447 @@
                 
                 Defined in
                 
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l77"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:77</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Function for sorting bodies along the X axis. To be passed to array.sort()</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_sortAxisListY" class="method item">
+    <h3 class="name"><code>sortAxisListY</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l99"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:99</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Function for sorting bodies along the Y axis. To be passed to array.sort()</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_sortAxisListY" class="method item">
+    <h3 class="name"><code>sortAxisListY</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>bodyA</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bodyB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l88"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:88</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Function for sorting bodies along the Y axis. To be passed to array.sort()</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_axisIndex" class="property item">
+    <h3 class="name"><code>axisIndex</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l30"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:30</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_axisList" class="property item">
+    <h3 class="name"><code>axisList</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l16"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:16</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>List of bodies currently in the broadphase.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_useBoundingBoxes" class="property item inherited">
+    <h3 class="name"><code>useBoundingBoxes</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Broadphase.html#property_useBoundingBoxes">Broadphase</a>:
             
         
         
@@ -1325,16 +1965,16 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Broadphase.html#property_world">
+                Broadphase
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l16"><code>src&#x2F;collision&#x2F;Broadphase.js:16</code></a>
+        <a href="../files/src_collision_SAP1DBroadphase.js.html#l23"><code>src&#x2F;collision&#x2F;SAP1DBroadphase.js:23</code></a>
         
         </p>
 
@@ -1344,7 +1984,7 @@
     </div>
 
     <div class="description">
-        <p>The world to search for collisions in.</p>
+        <p>The world to search in.</p>
 
     </div>
 

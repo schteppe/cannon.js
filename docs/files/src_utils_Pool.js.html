@@ -87,13 +87,13 @@
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
-                <li><a href="../classes/ObjectPool.html">ObjectPool</a></li>
-            
                 <li><a href="../classes/Particle.html">Particle</a></li>
             
                 <li><a href="../classes/Plane.html">Plane</a></li>
             
                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+            
+                <li><a href="../classes/Pool.html">Pool</a></li>
             
                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
             
@@ -104,6 +104,8 @@
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
+            
+                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -164,14 +166,14 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = ObjectPool;
+module.exports = Pool;
 
 /**
  * For pooling objects that can be reused.
- * @class ObjectPool
+ * @class Pool
  * @constructor
  */
-function ObjectPool(){
+function Pool(){
     /**
      * The pooled objects
      * @property {Array} objects
@@ -190,7 +192,7 @@ function ObjectPool(){
  * @method release
  * @param {Object} obj
  */
-ObjectPool.prototype.release = function(){
+Pool.prototype.release = function(){
     var Nargs = arguments.length;
     for(var i=0; i!==Nargs; i++){
         this.objects.push(arguments[i]);
@@ -202,7 +204,7 @@ ObjectPool.prototype.release = function(){
  * @method get
  * @return {mixed}
  */
-ObjectPool.prototype.get = function(){
+Pool.prototype.get = function(){
     if(this.objects.length===0){
         return this.constructObject();
     } else {
@@ -215,8 +217,8 @@ ObjectPool.prototype.get = function(){
  * @method constructObject
  * @return {mixed}
  */
-ObjectPool.prototype.constructObject = function(){
-    throw new Error(&quot;constructObject() not implemented in this ObjectPool subclass yet!&quot;);
+Pool.prototype.constructObject = function(){
+    throw new Error(&quot;constructObject() not implemented in this Pool subclass yet!&quot;);
 };
 
     </pre>
