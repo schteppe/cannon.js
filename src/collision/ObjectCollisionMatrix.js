@@ -6,9 +6,21 @@ module.exports = ObjectCollisionMatrix;
  * @constructor
  */
 function ObjectCollisionMatrix() {
+
+    /**
+     * The matrix storage
+     * @property matrix
+     * @type {Object}
+     */
 	this.matrix = {};
 };
 
+/**
+ * @method get
+ * @param  {Number} i
+ * @param  {Number} j
+ * @return {Number}
+ */
 ObjectCollisionMatrix.prototype.get = function(i, j) {
 	i = i.id;
 	j = j.id;
@@ -20,6 +32,12 @@ ObjectCollisionMatrix.prototype.get = function(i, j) {
 	return i+'-'+j in this.matrix;
 };
 
+/**
+ * @method set
+ * @param  {Number} i
+ * @param  {Number} j
+ * @param {Number} value
+ */
 ObjectCollisionMatrix.prototype.set = function(i, j, value) {
 	i = i.id;
 	j = j.id;
@@ -36,9 +54,17 @@ ObjectCollisionMatrix.prototype.set = function(i, j, value) {
 	}
 };
 
+/**
+ * Empty the matrix
+ * @method reset
+ */
 ObjectCollisionMatrix.prototype.reset = function() {
 	this.matrix = {};
 };
 
+/**
+ * Set max number of objects
+ * @param {Number} n
+ */
 ObjectCollisionMatrix.prototype.setNumObjects = function(n) {
 };
