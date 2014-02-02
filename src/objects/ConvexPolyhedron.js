@@ -29,25 +29,6 @@ function ConvexPolyhedron( points , faces , normals ) {
     Shape.call( this );
     this.type = Shape.types.CONVEXPOLYHEDRON;
 
-    /*
-     * Get face normal given 3 vertices
-     * @param {Vec3} va
-     * @param {Vec3} vb
-     * @param {Vec3} vc
-     * @param {Vec3} target
-     * @todo unit test?
-     */
-    var cb = new Vec3();
-    var ab = new Vec3();
-    function normal( va, vb, vc, target ) {
-        vb.vsub(va,ab);
-        vc.vsub(vb,cb);
-        cb.cross(ab,target);
-        if ( !target.isZero() ) {
-            target.normalize();
-        }
-    }
-
     /**
      * Array of Vec3
      * @property vertices
@@ -87,7 +68,7 @@ function ConvexPolyhedron( points , faces , normals ) {
         }
 
         var n = new Vec3();
-        normalOfFace(i,n);
+        this.getFaceNormal(i,n);
         n.negate(n);
         this.faceNormals.push(n);
         //console.log(n.toString());
@@ -149,19 +130,44 @@ function ConvexPolyhedron( points , faces , normals ) {
             }
         }
     }
-
-    var that = this;
-    function normalOfFace(i,target){
-        var f = that.faces[i];
-        var va = that.vertices[f[0]];
-        var vb = that.vertices[f[1]];
-        var vc = that.vertices[f[2]];
-        return normal(va,vb,vc,target);
-    }
 };
 
 ConvexPolyhedron.prototype = new Shape();
 ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
+
+/**
+ * Get face normal given 3 vertices
+ * @static
+ * @method getFaceNormal
+ * @param {Vec3} va
+ * @param {Vec3} vb
+ * @param {Vec3} vc
+ * @param {Vec3} target
+ */
+var cb = new Vec3();
+var ab = new Vec3();
+ConvexPolyhedron.computeNormal = function ( va, vb, vc, target ) {
+    vb.vsub(va,ab);
+    vc.vsub(vb,cb);
+    cb.cross(ab,target);
+    if ( !target.isZero() ) {
+        target.normalize();
+    }
+}
+
+/**
+ * Compute the normal of a face from its vertices
+ * @method getFaceNormal
+ * @param  {Number} i
+ * @param  {Vec3} target
+ */
+ConvexPolyhedron.prototype.getFaceNormal = function(i,target){
+    var f = this.faces[i];
+    var va = this.vertices[f[0]];
+    var vb = this.vertices[f[1]];
+    var vc = this.vertices[f[2]];
+    return ConvexPolyhedron.computeNormal(va,vb,vc,target);
+}
 
 /**
  * @method clipAgainstHull
