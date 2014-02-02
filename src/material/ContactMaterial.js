@@ -12,22 +12,52 @@ module.exports = ContactMaterial;
  */
 function ContactMaterial(m1, m2, friction, restitution){
 
-    /// Contact material index in the world, -1 until added to the world
+    /**
+     * Identifier of this material
+     * @property {Number} id
+     */
     this.id = -1;
 
-    /// The two materials participating in the contact
+    /**
+     * Participating materials
+     * @property {Array} materials
+     */
     this.materials = [m1,m2];
 
-    /// Kinetic friction
+    /**
+     * Friction coefficient
+     * @property {Number} friction
+     */
     this.friction = friction!==undefined ? Number(friction) : 0.3;
 
-    /// Restitution
+    /**
+     * Restitution coefficient
+     * @property {Number} restitution
+     */
     this.restitution =      restitution !== undefined ?      Number(restitution) :      0.3;
 
-    // Parameters to pass to the constraint when it is created
+    /**
+     * Stiffness of the produced contact equations
+     * @property {Number} contactEquationStiffness
+     */
     this.contactEquationStiffness = 1e7;
+
+    /**
+     * Regularization of the produced contact equations
+     * @property {Number} contactEquationRegularizationTime
+     */
     this.contactEquationRegularizationTime = 3;
+
+    /**
+     * Stiffness of the produced friction equations
+     * @property {Number} frictionEquationStiffness
+     */
     this.frictionEquationStiffness = 1e7;
+
+    /**
+     * Regularization of the produced friction equations
+     * @property {Number} frictionEquationRegularizationTime
+     */
     this.frictionEquationRegularizationTime = 3;
 };
 

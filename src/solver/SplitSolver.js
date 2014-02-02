@@ -5,6 +5,13 @@ var Vec3 = require('../math/Vec3')
 ,   Solver = require('./Solver')
 ,   Body = require('../objects/Body')
 
+/**
+ * Splits the equations into islands and solves them independently. Can improve performance.
+ * @class SplitSolver
+ * @constructor
+ * @extends {Solver}
+ * @param {Solver} subsolver
+ */
 function SplitSolver(subsolver){
     Solver.call(this);
     this.subsolver = subsolver;
@@ -16,6 +23,13 @@ var SplitSolver_solve_nodes = []; // All allocated node objects
 var SplitSolver_solve_eqs = [];   // Temp array
 var SplitSolver_solve_bds = [];   // Temp array
 var SplitSolver_solve_dummyWorld = {bodies:null}; // Temp object
+
+/**
+ * Solve the subsystems
+ * @method solve
+ * @param  {Number} dt
+ * @param  {World} world
+ */
 SplitSolver.prototype.solve = function(dt,world){
     var nodes=SplitSolver_solve_nodes,
         bodies=world.bodies,

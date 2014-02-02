@@ -15,8 +15,7 @@ function Sphere(radius){
     Shape.call(this);
 
     /**
-     * @property radius
-     * @type {Number}
+     * @property {Number} radius
      */
     this.radius = radius!==undefined ? Number(radius) : 1.0;
     this.type = Shape.types.SPHERE;

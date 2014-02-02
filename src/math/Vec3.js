@@ -10,7 +10,6 @@ var Mat3 = require('./Mat3')
  * @param {Number} z
  * @author schteppe
  */
-var numVecs = 0;
 function Vec3(x,y,z){
     /**
      * @property x
@@ -178,6 +177,12 @@ Vec3.prototype.norm2 = function(){
     return this.dot(this);
 };
 
+/**
+ * Get distance from this point to another point
+ * @method distanceTo
+ * @param  {Vec3} p
+ * @return {Number}
+ */
 Vec3.prototype.distanceTo = function(p){
     var x=this.x, y=this.y, z=this.z;
     var px=p.x, py=p.y, pz=p.z;

@@ -13,6 +13,7 @@ var Shape = require('../objects/Shape')
  * @constructor
  * @todo Sphere-ConvexPolyhedron contacts
  * @todo Contact reduction
+ * @todo  should move methods to prototype
  */
 function ContactGenerator(){
 

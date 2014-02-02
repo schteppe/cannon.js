@@ -12,7 +12,7 @@ var Vec3 = require('./Vec3')
 function Mat3(elements){
     /**
      * A vector of length 9, containing all matrix elements
-     * @property Array elements
+     * @property {Array} elements
      */
     if(elements){
         this.elements = elements;
@@ -41,6 +41,10 @@ Mat3.prototype.identity = function(){
     this.elements[8] = 1;
 };
 
+/**
+ * Set all elements to zero
+ * @method setZero
+ */
 Mat3.prototype.setZero = function(){
     var e = this.elements;
     e[0] = 0;

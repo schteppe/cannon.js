@@ -7,14 +7,26 @@ var Shape = require('./Shape')
 /**
  * A shape made of several other shapes.
  * @class Compound
- * @extends Shape
+ * @extends {Shape}
  * @author schteppe
  */
 function Compound(){
     Shape.call(this);
     this.type = Shape.types.COMPOUND;
+
+    /**
+     * @property {Array} childShapes
+     */
     this.childShapes = [];
+
+    /**
+     * @property {Array} childOffsets
+     */
     this.childOffsets = [];
+
+    /**
+     * @property {Array} childOrientations
+     */
     this.childOrientations = [];
 };
 Compound.prototype = new Shape();

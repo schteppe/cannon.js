@@ -33,7 +33,7 @@ Ray.prototype.constructor = Ray;
 var v1 = new Vec3(),
     v2 = new Vec3();
 
-/**
+/*
  * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
  */
 function pointInTriangle( p, a, b, c ) {

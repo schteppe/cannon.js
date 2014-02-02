@@ -41,9 +41,20 @@ function Body(type){
 
     this.vlambda = new Vec3();
 
+    /**
+     * @property {Number} collisionFilterGroup
+     */
     this.collisionFilterGroup = 1;
+
+    /**
+     * @property {Number} collisionFilterMask
+     */
     this.collisionFilterMask = 1;
 
+    /**
+     * Whether to produce contact forces
+     * @property {Number} collisionResponse
+     */
 	this.collisionResponse = true;
 };
 

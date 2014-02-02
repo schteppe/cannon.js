@@ -21,6 +21,11 @@ function RotationalMotorEquation(bodyA, bodyB, maxForce){
 
     this.invIi = new Mat3();
     this.invIj = new Mat3();
+
+    /**
+     * Motor velocity
+     * @property {Number} targetVelocity
+     */
     this.targetVelocity = 0;
 };
 

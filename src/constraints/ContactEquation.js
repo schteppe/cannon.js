@@ -22,19 +22,25 @@ function ContactEquation(bi,bj){
     this.restitution = 0.0; // "bounciness": u1 = -e*u0
 
     /**
-     * World-oriented vector that goes from the center of bi to the contact point in bi.
+     * World-oriented vector that goes from the center of bi to the contact point.
      * @property {Vec3} ri
      */
     this.ri = new Vec3();
 
     /**
+     * World-oriented vector that starts in body j position and goes to the contact point.
      * @property {Vec3} rj
      */
     this.rj = new Vec3();
 
     this.penetrationVec = new Vec3();
 
+    /**
+     * Contact normal, pointing out of body i.
+     * @property {Vec3} ni
+     */
     this.ni = new Vec3();
+
     this.rixn = new Vec3();
     this.rjxn = new Vec3();
 

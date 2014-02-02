@@ -15,12 +15,13 @@ var Shape = require('./Shape')
 function Box(halfExtents){
     Shape.call(this);
 
+    this.type = Shape.types.BOX;
+
     /**
      * @property halfExtents
      * @type {Vec3}
      */
     this.halfExtents = halfExtents;
-    this.type = Shape.types.BOX;
 
     /**
      * Used by the contact generator to make contacts with other convex polyhedra for example
@@ -68,6 +69,12 @@ Box.prototype.updateConvexPolyhedronRepresentation = function(){
     this.convexPolyhedronRepresentation = h;
 };
 
+/**
+ * @method calculateLocalInertia
+ * @param  {Number} mass
+ * @param  {Vec3} target
+ * @return {Vec3}
+ */
 Box.prototype.calculateLocalInertia = function(mass,target){
     target = target || new Vec3();
     var e = this.halfExtents;

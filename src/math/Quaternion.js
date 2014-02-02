@@ -305,7 +305,14 @@ Quaternion.prototype.toEuler = function(target,order){
     target.x = bank;
 };
 
-// http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
+/**
+ * See http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
+ * @method setFromEuler
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
+ * @param {String} order The order to apply angles: 'XYZ' or 'YXZ' or any other combination
+ */
 Quaternion.prototype.setFromEuler = function ( x, y, z, order ) {
     var c1 = Math.cos( x / 2 );
     var c2 = Math.cos( y / 2 );

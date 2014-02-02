@@ -6,6 +6,7 @@ var Vec3 = require('../math/Vec3')
 /**
  * @class Vec3Pool
  * @constructor
+ * @extends {ObjectPool}
  */
 function Vec3Pool(){
     ObjectPool.call(this);
@@ -13,6 +14,11 @@ function Vec3Pool(){
 };
 Vec3Pool.prototype = new ObjectPool();
 
+/**
+ * Construct a vector
+ * @method constructObject
+ * @return {Vec3}
+ */
 Vec3Pool.prototype.constructObject = function(){
     return new Vec3();
 };

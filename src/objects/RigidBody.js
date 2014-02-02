@@ -119,6 +119,10 @@ function RigidBody(mass,shape,material){
 RigidBody.prototype = new Particle(0);
 RigidBody.prototype.constructor = RigidBody;
 
+/**
+ * Updates the .aabbmin and .aabbmax properties
+ * @method computeAABB
+ */
 RigidBody.prototype.computeAABB = function(){
     this.shape.calculateWorldAABB(this.position,
                                   this.quaternion,

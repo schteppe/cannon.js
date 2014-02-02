@@ -7,20 +7,38 @@ module.exports = Solver;
  * @author schteppe / https://github.com/schteppe
  */
 function Solver(){
-    // All equations to be solved
+    /**
+     * All equations to be solved
+     * @property {Array} equations
+     */
     this.equations = [];
 };
 
-// Should be implemented in subclasses!
+/**
+ * Should be implemented in subclasses!
+ * @method solve
+ * @param  {Number} dt
+ * @param  {World} world
+ */
 Solver.prototype.solve = function(dt,world){
     // Should return the number of iterations done!
     return 0;
 };
 
+/**
+ * Add an equation
+ * @method addEquation
+ * @param {Equation} eq
+ */
 Solver.prototype.addEquation = function(eq){
     this.equations.push(eq);
 };
 
+/**
+ * Remove an equation
+ * @method removeEquation
+ * @param {Equation} eq
+ */
 Solver.prototype.removeEquation = function(eq){
     var eqs = this.equations;
     var i = eqs.indexOf(eq);
@@ -29,6 +47,10 @@ Solver.prototype.removeEquation = function(eq){
     }
 };
 
+/**
+ * Add all equations
+ * @method removeAllEquations
+ */
 Solver.prototype.removeAllEquations = function(){
     this.equations.length = 0;
 };

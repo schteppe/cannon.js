@@ -64,6 +64,7 @@ ObjectCollisionMatrix.prototype.reset = function() {
 
 /**
  * Set max number of objects
+ * @method setNumObjects
  * @param {Number} n
  */
 ObjectCollisionMatrix.prototype.setNumObjects = function(n) {
