@@ -22,7 +22,6 @@ module.exports = {
 
     Mat3 :                          require('./math/Mat3'),
     Quaternion :                    require('./math/Quaternion'),
-    MatN :                          require('./math/MatN'),
     Vec3 :                          require('./math/Vec3'),
 
     Body :                          require('./objects/Body'),
