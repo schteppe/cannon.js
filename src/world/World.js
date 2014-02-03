@@ -347,13 +347,18 @@ World.prototype.addContactMaterial = function(cmat) {
     this.mats2cmat[i+this.materials.length*j] = cmat.id; // index of the contact material
 };
 
-World.prototype._now = function(){
-    if(window.performance.webkitNow){
-        return window.performance.webkitNow();
-    } else {
-        return Date.now();
+// performance.now()
+if(typeof performance === 'undefined')
+    performance = {};
+if(!performance.now){
+    var nowOffset = Date.now();
+    if (performance.timing && performance.timing.navigationStart){
+      nowOffset = performance.timing.navigationStart
     }
-};
+    performance.now = function(){
+      return Date.now() - nowOffset;
+    }
+}
 
 /**
  * Step the simulation
@@ -394,7 +399,6 @@ World.prototype.step = function(dt){
         doProfiling = this.doProfiling,
         profile = this.profile,
         DYNAMIC = Body.DYNAMIC,
-        now = this._now,
         profilingStart,
         constraints = this.constraints,
         frictionEquationPool = World_step_frictionEquationPool,
@@ -405,7 +409,7 @@ World.prototype.step = function(dt){
         i=0;
 
     if(doProfiling){
-        profilingStart = now();
+        profilingStart = performance.now();
     }
 
     if(dt===undefined){
@@ -429,16 +433,16 @@ World.prototype.step = function(dt){
     }
 
     // 1. Collision detection
-    if(doProfiling){ profilingStart = now(); }
+    if(doProfiling){ profilingStart = performance.now(); }
     p1.length = 0; // Clean up pair arrays from last step
     p2.length = 0;
     this.broadphase.collisionPairs(this,p1,p2);
-    if(doProfiling){ profile.broadphase = now() - profilingStart; }
+    if(doProfiling){ profile.broadphase = performance.now() - profilingStart; }
 
     this.collisionMatrixTick();
 
     // Generate contacts
-    if(doProfiling){ profilingStart = now(); }
+    if(doProfiling){ profilingStart = performance.now(); }
     var oldcontacts = World_step_oldContacts;
     var NoldContacts = contacts.length;
 
@@ -453,12 +457,12 @@ World.prototype.step = function(dt){
                                 oldcontacts // To be reused
                                 );
     if(doProfiling){
-        profile.nearphase = now() - profilingStart;
+        profile.nearphase = performance.now() - profilingStart;
     }
 
     // Loop over all collisions
     if(doProfiling){
-        profilingStart = now();
+        profilingStart = performance.now();
     }
     var ncontacts = contacts.length;
 
@@ -555,11 +559,11 @@ World.prototype.step = function(dt){
         }
     }
     if(doProfiling){
-        profile.makeContactConstraints = now() - profilingStart;
+        profile.makeContactConstraints = performance.now() - profilingStart;
     }
 
     if(doProfiling){
-        profilingStart = now();
+        profilingStart = performance.now();
     }
 
     // Add user-added constraints
@@ -577,7 +581,7 @@ World.prototype.step = function(dt){
     solver.solve(dt,this);
 
     if(doProfiling){
-        profile.solve = now() - profilingStart;
+        profile.solve = performance.now() - profilingStart;
     }
 
     // Remove all contacts from solver
@@ -613,7 +617,7 @@ World.prototype.step = function(dt){
     // vnew = v + h*f/m
     // xnew = x + h*vnew
     if(doProfiling){
-        profilingStart = now();
+        profilingStart = performance.now();
     }
     var q = World_step_step_q;
     var w = World_step_step_w;
@@ -692,7 +696,7 @@ World.prototype.step = function(dt){
     }
 
     if(doProfiling){
-        profile.integrate = now() - profilingStart;
+        profile.integrate = performance.now() - profilingStart;
     }
 
     // Update world time
