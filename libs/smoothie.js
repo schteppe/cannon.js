@@ -96,8 +96,8 @@ function SmoothieChart(options) {
   options.labels = options.labels || { fillStyle:'#ffffff' };
   options.interpolation = options.interpolation || "bezier";
   options.scaleSmoothing = options.scaleSmoothing || 0.125;
-  options.maxDataSetLength = options.maxDataSetLength || 2; 
-  options.timestampFormatter = options.timestampFormatter || null;  
+  options.maxDataSetLength = options.maxDataSetLength || 2;
+  options.timestampFormatter = options.timestampFormatter || null;
   this.options = options;
   this.seriesSet = [];
   this.currentValueRange = 1;
@@ -136,7 +136,7 @@ SmoothieChart.prototype.stop = function() {
   }
 };
 
-// Sample timestamp formatting function 
+// Sample timestamp formatting function
 SmoothieChart.timeFormatter = function(dateObject) {
   function pad2(number){return (number < 10 ? '0' : '') + number};
   return pad2(dateObject.getHours())+':'+pad2(dateObject.getMinutes())+':'+pad2(dateObject.getSeconds());
@@ -146,7 +146,7 @@ SmoothieChart.prototype.render = function(canvas, time) {
   var canvasContext = canvas.getContext("2d");
   var options = this.options;
   var dimensions = {top: 0, left: 0, width: canvas.clientWidth, height: canvas.clientHeight};
-  
+
   // Save the state of the canvas context, any transformations applied in this method
   // will get removed from the stack at the end of this method when .restore() is called.
   canvasContext.save();
@@ -156,7 +156,7 @@ SmoothieChart.prototype.render = function(canvas, time) {
 
   // Move the origin.
   canvasContext.translate(dimensions.left, dimensions.top);
-  
+
   // Create a clipped rectangle - anything we draw will be constrained to this rectangle.
   // This prevents the occasional pixels from curves near the edges overrunning and creating
   // screen cheese (that phrase should neeed no explanation).
@@ -186,17 +186,17 @@ SmoothieChart.prototype.render = function(canvas, time) {
       // To display timestamps along the bottom
       // May have to adjust millisPerLine to display non-overlapping timestamps, depending on the canvas size
       if (options.timestampFormatter){
-        var tx=new Date(t); 
+        var tx=new Date(t);
         // Formats the timestamp based on user specified formatting function
         // SmoothieChart.timeFormatter function above is one such formatting option
         var ts = options.timestampFormatter(tx);
-        var txtwidth=(canvasContext.measureText(ts).width/2)+canvasContext.measureText(minValueString).width + 4;   
+        var txtwidth=(canvasContext.measureText(ts).width/2)+canvasContext.measureText(minValueString).width + 4;
         if (gx<dimensions.width - txtwidth){
           canvasContext.fillStyle = options.labels.fillStyle;
           // Insert the time string so it doesn't overlap on the minimum value
-          canvasContext.fillText(ts, gx-(canvasContext.measureText(ts).width / 2), dimensions.height-2);    
+          canvasContext.fillText(ts, gx-(canvasContext.measureText(ts).width / 2), dimensions.height-2);
         }
-      }    
+      }
       canvasContext.closePath();
     }
   }
@@ -330,6 +330,10 @@ SmoothieChart.prototype.render = function(canvas, time) {
 
     // Draw the axis values on the chart.
     if (!options.labels.disabled) {
+
+        if(!options.labelOffsetY)
+            options.labelOffsetY = 0;
+
         canvasContext.fillStyle = options.labels.fillStyle;
         var maxValueString = parseFloat(maxValue).toFixed(2);
         var minValueString = parseFloat(minValue).toFixed(2);
@@ -340,7 +344,7 @@ SmoothieChart.prototype.render = function(canvas, time) {
             var timeSeries = this.seriesSet[i].timeSeries;
             var label = timeSeries.label;
             canvasContext.fillStyle = timeSeries.options.fillStyle||"rgb(255,255,255)";
-            if(label) canvasContext.fillText(label, 2, 10*(i+1));
+            if(label) canvasContext.fillText(label, 2, 10*(i+1) + options.labelOffsetY);
         }
     }
 
