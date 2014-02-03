@@ -114,6 +114,8 @@ function RigidBody(mass,shape,material){
     this.aabbNeedsUpdate = true;
 
     this.wlambda = new Vec3();
+
+    this.updateInertiaWorld();
 };
 
 RigidBody.prototype = new Particle(0);
@@ -140,14 +142,23 @@ var uiw_m1 = new Mat3(),
  * @method updateInertiaWorld
  */
 RigidBody.prototype.updateInertiaWorld = function(){
-    var m1 = uiw_m1,
-        m2 = uiw_m2,
-        m3 = uiw_m3;
-    m1.setRotationFromQuaternion(this.quaternion);
-    m1.transpose(m2);
-    m1.scale(this.invInertia,m1);
-    m1.mmult(m2,m3);
-    m3.getTrace(this.invInertiaWorld);
+    var I = this.invInertia;
+    if(I.x == I.y && I.y == I.z){
+        // If inertia M = s*I, where I is identity and s a scalar, then
+        //    R*M*R' = R*(s*I)*R' = s*R*I*R' = s*R*R' = s*I = M
+        // where R is the rotation matrix.
+        // In other words, we don't have to transform the inertia if all
+        // inertia diagonal entries are equal.
+    } else {
+        var m1 = uiw_m1,
+            m2 = uiw_m2,
+            m3 = uiw_m3;
+        m1.setRotationFromQuaternion(this.quaternion);
+        m1.transpose(m2);
+        m1.scale(I,m1);
+        m1.mmult(m2,m3);
+        m3.getTrace(this.invInertiaWorld);
+    }
 
     /*
     this.quaternion.vmult(this.inertia,this.inertiaWorld);

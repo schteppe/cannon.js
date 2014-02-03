@@ -688,11 +688,16 @@ World.prototype.step = function(dt){
                     break;
                 }
             }
+
+            // Update world inertia
+            if(b.updateInertiaWorld)
+                b.updateInertiaWorld();
         }
         b.force.set(0,0,0);
         if(b.tau){
             b.tau.set(0,0,0);
         }
+
     }
 
     if(doProfiling){
@@ -712,13 +717,6 @@ World.prototype.step = function(dt){
         if(postStep){
             postStep.call(bi);
         }
-    }
-
-    // Update world inertias
-    for(i=0; i!==N; i++){
-        var b = bodies[i];
-        if(b.updateInertiaWorld)
-            b.updateInertiaWorld();
     }
 
     // Sleeping update
