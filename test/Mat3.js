@@ -270,7 +270,7 @@ module.exports = {
         test.ok(v.almostEquals(original));
 
         // Test rotation along x axis
-        q.setFromEuler(Math.PI/2,0,0);
+        q.setFromEuler(0.222,0.123,1.234);
         M.setRotationFromQuaternion(q);
         Mv = M.vmult(original);
         qv = q.vmult(original);
