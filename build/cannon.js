@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2014 cannon.js Authors
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.CANNON=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 module.exports={
     "name": "cannon",
@@ -1588,6 +1611,7 @@ ContactEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertiaWorld){
         invIi.setTrace(bi.invInertiaWorld);
     } else {
@@ -1598,6 +1622,7 @@ ContactEquation.prototype.computeB = function(h){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
     var n = this.ni;
 
@@ -1617,8 +1642,8 @@ ContactEquation.prototype.computeB = function(h){
 
     var invIi_vmult_taui = ContactEquation_computeB_temp1;
     var invIj_vmult_tauj = ContactEquation_computeB_temp2;
-    invIi.vmult(taui,invIi_vmult_taui);
-    invIj.vmult(tauj,invIj_vmult_tauj);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
 
     // Compute iteration
     var ePlusOne = this.restitution+1;
@@ -1660,8 +1685,8 @@ ContactEquation.prototype.computeC = function(){
      */
 
     // Compute rxn * I * rxn for each body
-    invIi.vmult(rixn, this.biInvInertiaTimesRixn);
-    invIj.vmult(rjxn, this.bjInvInertiaTimesRjxn);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(rixn, this.biInvInertiaTimesRixn);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(rjxn, this.bjInvInertiaTimesRjxn);
 
     /*
     invIi.vmult(rixn,computeC_temp1);
@@ -1898,12 +1923,14 @@ FrictionEquation.prototype.computeB = function(h){
         invIi_vmult_taui = FrictionEquation_computeB_temp1,
         invIj_vmult_tauj = FrictionEquation_computeB_temp2;
 
+    /*
     if(bi.invInertiaWorld){
         invIi.setTrace(bi.invInertiaWorld);
     }
     if(bj.invInertiaWorld){
         invIj.setTrace(bj.invInertiaWorld);
     }
+    */
 
     // Caluclate cross products
     ri.cross(t,rixt);
@@ -1912,8 +1939,8 @@ FrictionEquation.prototype.computeB = function(h){
     wi.cross(ri,wixri);
     wj.cross(rj,wjxrj);
 
-    invIi.vmult(taui,invIi_vmult_taui);
-    invIj.vmult(tauj,invIj_vmult_tauj);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
 
     var Gq = 0; // we do only want to constrain motion
     var GW = vj.dot(t) - vi.dot(t) + wjxrj.dot(t) - wixri.dot(t); // eq. 40
@@ -1954,8 +1981,8 @@ FrictionEquation.prototype.computeC = function(){
     C += FEcomputeC_temp1.dot(rixt);
     C += FEcomputeC_temp2.dot(rjxt);
       */
-    invIi.vmult(rixt,this.biInvInertiaTimesRixt);
-    invIj.vmult(rjxt,this.bjInvInertiaTimesRjxt);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(rixt,this.biInvInertiaTimesRixt);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(rjxt,this.bjInvInertiaTimesRjxt);
     C += this.biInvInertiaTimesRixt.dot(rixt);
     C += this.bjInvInertiaTimesRjxt.dot(rjxt);
 
@@ -1964,9 +1991,6 @@ FrictionEquation.prototype.computeC = function(){
 
 var FrictionEquation_computeGWlambda_ulambda = new Vec3();
 FrictionEquation.prototype.computeGWlambda = function(){
-
-    // Correct at all ???
-
     var bi = this.bi;
     var bj = this.bj;
 
@@ -2090,6 +2114,7 @@ RotationalEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertiaWorld){
         invIi.setTrace(bi.invInertiaWorld);
     } else {
@@ -2100,6 +2125,7 @@ RotationalEquation.prototype.computeB = function(h){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
     // Caluclate cross products
     ni.cross(nj,nixnj);
@@ -2129,6 +2155,7 @@ RotationalEquation.prototype.computeC = function(){
 
     var C = /*invMassi + invMassj +*/ this.eps;
 
+    /*
     var invIi = this.invIi;
     var invIj = this.invIj;
 
@@ -2142,9 +2169,10 @@ RotationalEquation.prototype.computeC = function(){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
-    C += invIi.vmult(njxni).dot(njxni);
-    C += invIj.vmult(nixnj).dot(nixnj);
+    C += bi.invInertiaWorld.vmult(njxni).dot(njxni);
+    C += bj.invInertiaWorld.vmult(nixnj).dot(nixnj);
 
     return C;
 };
@@ -2186,11 +2214,11 @@ RotationalEquation.prototype.addToWlambda = function(deltalambda){
 
     // Add to angular velocity
     if(bi.wlambda){
-        var I = this.invIi;
+        var I = bi.invInertiaWorld;
         bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
     }
     if(bj.wlambda){
-        var I = this.invIj;
+        var I = bj.invInertiaWorld;
         bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
     }
 };
@@ -2252,6 +2280,7 @@ RotationalMotorEquation.prototype.computeB = function(h){
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
+    /*
     var invIi = this.invIi;
     var invIj = this.invIj;
 
@@ -2265,6 +2294,7 @@ RotationalMotorEquation.prototype.computeB = function(h){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
     // g = 0
     // gdot = axisA * wi - axisB * wj
@@ -2290,6 +2320,7 @@ RotationalMotorEquation.prototype.computeC = function(){
 
     var C = this.eps;
 
+    /*
     var invIi = this.invIi;
     var invIj = this.invIj;
 
@@ -2303,9 +2334,10 @@ RotationalMotorEquation.prototype.computeC = function(){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
-    C += invIi.vmult(axisA).dot(axisB);
-    C += invIj.vmult(axisB).dot(axisB);
+    C += bi.invInertiaWorld.vmult(axisA).dot(axisB);
+    C += bj.invInertiaWorld.vmult(axisB).dot(axisB);
 
     return C;
 };
@@ -2349,11 +2381,11 @@ RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
 
     // Add to angular velocity
     if(bi.wlambda){
-        var I = this.invIi;
+        var I = bi.invInertiaWorld;
         bi.wlambda.vsub(I.vmult(axisA).mult(deltalambda),bi.wlambda);
     }
     if(bj.wlambda){
-        var I = this.invIj;
+        var I = bj.invInertiaWorld;
         bj.wlambda.vadd(I.vmult(axisB).mult(deltalambda),bj.wlambda);
     }
 };
@@ -3968,9 +4000,7 @@ function RigidBody(mass,shape,material){
     this.invInertia = new Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
                                this.inertia.y>0 ? 1.0/this.inertia.y : 0,
                                this.inertia.z>0 ? 1.0/this.inertia.z : 0);
-    this.invInertiaWorld = new Vec3();
-    this.invInertia.copy(this.invInertiaWorld);
-    this.invInertiaWorldAutoUpdate = false;
+    this.invInertiaWorld = new Mat3();
 
     /**
      * @property angularDamping
@@ -3998,6 +4028,8 @@ function RigidBody(mass,shape,material){
     this.aabbNeedsUpdate = true;
 
     this.wlambda = new Vec3();
+
+    this.updateInertiaWorld(true);
 };
 
 RigidBody.prototype = new Particle(0);
@@ -4023,15 +4055,24 @@ var uiw_m1 = new Mat3(),
  * Update .inertiaWorld and .invInertiaWorld
  * @method updateInertiaWorld
  */
-RigidBody.prototype.updateInertiaWorld = function(){
-    var m1 = uiw_m1,
-        m2 = uiw_m2,
-        m3 = uiw_m3;
-    m1.setRotationFromQuaternion(this.quaternion);
-    m1.transpose(m2);
-    m1.scale(this.invInertia,m1);
-    m1.mmult(m2,m3);
-    m3.getTrace(this.invInertiaWorld);
+RigidBody.prototype.updateInertiaWorld = function(force){
+    var I = this.invInertia;
+    if(I.x == I.y && I.y == I.z && !force){
+        // If inertia M = s*I, where I is identity and s a scalar, then
+        //    R*M*R' = R*(s*I)*R' = s*R*I*R' = s*R*R' = s*I = M
+        // where R is the rotation matrix.
+        // In other words, we don't have to transform the inertia if all
+        // inertia diagonal entries are equal.
+    } else {
+        var m1 = uiw_m1,
+            m2 = uiw_m2,
+            m3 = uiw_m3;
+        m1.setRotationFromQuaternion(this.quaternion);
+        m1.transpose(m2);
+        m1.scale(I,m1);
+        m1.mmult(m2,this.invInertiaWorld);
+        //m3.getTrace(this.invInertiaWorld);
+    }
 
     /*
     this.quaternion.vmult(this.inertia,this.inertiaWorld);
@@ -4088,9 +4129,13 @@ RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
     // Compute produced rotational impulse velocity
     var rotVelo = RigidBody_applyImpulse_rotVelo;
     r.cross(impulse,rotVelo);
+
+    /*
     rotVelo.x *= this.invInertia.x;
     rotVelo.y *= this.invInertia.y;
     rotVelo.z *= this.invInertia.z;
+    */
+    this.invInertiaWorld.vmult(rotVelo,rotVelo);
 
     // Add rotational Impulse
     this.angularVelocity.vadd(rotVelo, this.angularVelocity);
@@ -4362,11 +4407,15 @@ Box.prototype.updateConvexPolyhedronRepresentation = function(){
  */
 Box.prototype.calculateLocalInertia = function(mass,target){
     target = target || new Vec3();
-    var e = this.halfExtents;
+    Box.calculateInertia(this.halfExtents, mass, target);
+    return target;
+};
+
+Box.calculateInertia = function(halfExtents,mass,target){
+    var e = halfExtents;
     target.x = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.z*2*e.z );
     target.y = 1.0 / 12.0 * mass * (   2*e.x*2*e.x + 2*e.z*2*e.z );
     target.z = 1.0 / 12.0 * mass * (   2*e.y*2*e.y + 2*e.x*2*e.x );
-    return target;
 };
 
 /**
@@ -4459,6 +4508,8 @@ module.exports = Compound;
 
 var Shape = _dereq_('./Shape')
 ,   Vec3 = _dereq_('../math/Vec3')
+,   Box = _dereq_('../shapes/Box')
+,   Mat3 = _dereq_('../math/Mat3')
 ,   Quaternion = _dereq_('../math/Quaternion')
 
 /**
@@ -4513,12 +4564,33 @@ Compound.prototype.volume = function(){
     return r;
 };
 
+/*
 var Compound_calculateLocalInertia_mr2 = new Vec3();
 var Compound_calculateLocalInertia_childInertia = new Vec3();
+var cli_m1 = new Mat3(),
+    cli_m2 = new Mat3(),
+    cli_m3 = new Mat3();
+*/
+var cli_min = new Vec3(),
+    cli_max = new Vec3(),
+    cli_pos = new Vec3(),
+    cli_quat = new Quaternion();
 Compound.prototype.calculateLocalInertia = function(mass,target){
     target = target || new Vec3();
 
+    var min = cli_min,
+        max = cli_max,
+        pos = cli_pos,
+        quat =cli_quat;
+
+    this.calculateWorldAABB(pos,quat,min,max);
+    Box.calculateInertia(new Vec3((max.x-min.x)/2,(max.y-min.y)/2,(max.z-min.z)/2),mass,target);
+
+    /*
     // Calculate the total volume, we will spread out this objects' mass on the sub shapes
+    var m1 = cli_m1,
+        m2 = cli_m2,
+        m3 = cli_m3;
     var V = this.volume();
     var childInertia = Compound_calculateLocalInertia_childInertia;
     for(var i=0, Nchildren=this.childShapes.length; i!==Nchildren; i++){
@@ -4529,13 +4601,17 @@ Compound.prototype.calculateLocalInertia = function(mass,target){
         var m = b.volume() / V * mass;
 
         // Get the child inertia, transformed relative to local frame
-        //var inertia = b.calculateTransformedInertia(m,q);
-        b.calculateLocalInertia(m,childInertia); // Todo transform!
-        //console.log(childInertia,m,b.volume(),V);
+        b.calculateLocalInertia(m,childInertia);
+
+        // Transform it to the local compound frame
+        m1.setRotationFromQuaternion(q);
+        m1.transpose(m2);
+        m1.scale(childInertia,m1);
+        m1.mmult(m2,m3);
+        m3.getTrace(childInertia);
 
         // Add its inertia using the parallel axis theorem, i.e.
-        // I += I_child;
-        // I += m_child * r^2
+        // I = Icm + m * r^2
 
         target.vadd(childInertia,target);
         var mr2 = Compound_calculateLocalInertia_mr2;
@@ -4544,6 +4620,7 @@ Compound.prototype.calculateLocalInertia = function(mass,target){
                 m*o.z*o.z);
         target.vadd(mr2,target);
     }
+    */
 
     return target;
 };
@@ -4610,7 +4687,7 @@ Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
     }
 };
 
-},{"../math/Quaternion":22,"../math/Vec3":23,"./Shape":33}],30:[function(_dereq_,module,exports){
+},{"../math/Mat3":21,"../math/Quaternion":22,"../math/Vec3":23,"../shapes/Box":28,"./Shape":33}],30:[function(_dereq_,module,exports){
 module.exports = ConvexPolyhedron;
 
 var Shape = _dereq_('./Shape')
@@ -7773,13 +7850,18 @@ World.prototype.addContactMaterial = function(cmat) {
     this.mats2cmat[i+this.materials.length*j] = cmat.id; // index of the contact material
 };
 
-World.prototype._now = function(){
-    if(window.performance.webkitNow){
-        return window.performance.webkitNow();
-    } else {
-        return Date.now();
+// performance.now()
+if(typeof performance === 'undefined')
+    performance = {};
+if(!performance.now){
+    var nowOffset = Date.now();
+    if (performance.timing && performance.timing.navigationStart){
+      nowOffset = performance.timing.navigationStart
     }
-};
+    performance.now = function(){
+      return Date.now() - nowOffset;
+    }
+}
 
 /**
  * Step the simulation
@@ -7804,7 +7886,8 @@ var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to s
     World_step_rjxn = new Vec3(),
     World_step_step_q = new Quaternion(),
     World_step_step_w = new Quaternion(),
-    World_step_step_wq = new Quaternion();
+    World_step_step_wq = new Quaternion(),
+    invI_tau_dt = new Vec3();
 World.prototype.step = function(dt){
     if(dt <= 0 || isNaN(dt)) return;
 
@@ -7820,7 +7903,6 @@ World.prototype.step = function(dt){
         doProfiling = this.doProfiling,
         profile = this.profile,
         DYNAMIC = Body.DYNAMIC,
-        now = this._now,
         profilingStart,
         constraints = this.constraints,
         frictionEquationPool = World_step_frictionEquationPool,
@@ -7831,7 +7913,7 @@ World.prototype.step = function(dt){
         i=0;
 
     if(doProfiling){
-        profilingStart = now();
+        profilingStart = performance.now();
     }
 
     if(dt===undefined){
@@ -7855,16 +7937,16 @@ World.prototype.step = function(dt){
     }
 
     // 1. Collision detection
-    if(doProfiling){ profilingStart = now(); }
+    if(doProfiling){ profilingStart = performance.now(); }
     p1.length = 0; // Clean up pair arrays from last step
     p2.length = 0;
     this.broadphase.collisionPairs(this,p1,p2);
-    if(doProfiling){ profile.broadphase = now() - profilingStart; }
+    if(doProfiling){ profile.broadphase = performance.now() - profilingStart; }
 
     this.collisionMatrixTick();
 
     // Generate contacts
-    if(doProfiling){ profilingStart = now(); }
+    if(doProfiling){ profilingStart = performance.now(); }
     var oldcontacts = World_step_oldContacts;
     var NoldContacts = contacts.length;
 
@@ -7879,12 +7961,12 @@ World.prototype.step = function(dt){
                                 oldcontacts // To be reused
                                 );
     if(doProfiling){
-        profile.nearphase = now() - profilingStart;
+        profile.nearphase = performance.now() - profilingStart;
     }
 
     // Loop over all collisions
     if(doProfiling){
-        profilingStart = now();
+        profilingStart = performance.now();
     }
     var ncontacts = contacts.length;
 
@@ -7981,11 +8063,11 @@ World.prototype.step = function(dt){
         }
     }
     if(doProfiling){
-        profile.makeContactConstraints = now() - profilingStart;
+        profile.makeContactConstraints = performance.now() - profilingStart;
     }
 
     if(doProfiling){
-        profilingStart = now();
+        profilingStart = performance.now();
     }
 
     // Add user-added constraints
@@ -8003,7 +8085,7 @@ World.prototype.step = function(dt){
     solver.solve(dt,this);
 
     if(doProfiling){
-        profile.solve = now() - profilingStart;
+        profile.solve = performance.now() - profilingStart;
     }
 
     // Remove all contacts from solver
@@ -8039,7 +8121,7 @@ World.prototype.step = function(dt){
     // vnew = v + h*f/m
     // xnew = x + h*vnew
     if(doProfiling){
-        profilingStart = now();
+        profilingStart = performance.now();
     }
     var q = World_step_step_q;
     var w = World_step_step_w;
@@ -8064,14 +8146,21 @@ World.prototype.step = function(dt){
                 quat = b.quaternion,
                 invMass = b.invMass,
                 invInertia = b.invInertiaWorld;
+
             velo.x += force.x * invMass * dt;
             velo.y += force.y * invMass * dt;
             velo.z += force.z * invMass * dt;
 
             if(b.angularVelocity){
+                invInertia.vmult(tau,invI_tau_dt);
+                invI_tau_dt.mult(dt,invI_tau_dt);
+                invI_tau_dt.vadd(angularVelo,angularVelo);
+                //console.log(invI_tau_dt);
+                /*
                 angularVelo.x += tau.x * invInertia.x * dt;
                 angularVelo.y += tau.y * invInertia.y * dt;
                 angularVelo.z += tau.z * invInertia.z * dt;
+                */
             }
 
             // Use new velocity  - leap frog
@@ -8110,15 +8199,20 @@ World.prototype.step = function(dt){
                     break;
                 }
             }
+
+            // Update world inertia
+            if(b.updateInertiaWorld)
+                b.updateInertiaWorld();
         }
         b.force.set(0,0,0);
         if(b.tau){
             b.tau.set(0,0,0);
         }
+
     }
 
     if(doProfiling){
-        profile.integrate = now() - profilingStart;
+        profile.integrate = performance.now() - profilingStart;
     }
 
     // Update world time
@@ -8134,13 +8228,6 @@ World.prototype.step = function(dt){
         if(postStep){
             postStep.call(bi);
         }
-    }
-
-    // Update world inertias
-    for(i=0; i!==N; i++){
-        var b = bodies[i];
-        if(b.updateInertiaWorld)
-            b.updateInertiaWorld();
     }
 
     // Sleeping update

@@ -18,6 +18,8 @@ CANNON.Demo = function(options){
     this.getWorld = getWorld;
     this.start = start;
 
+    var sceneFolder;
+
     // Global settings
     var settings = {
         stepFrequency:60,
@@ -500,25 +502,22 @@ CANNON.Demo = function(options){
         renderer.shadowMapEnabled = true;
         renderer.shadowMapSoft = true;
 
-        // STATS
-        stats = new Stats();
-        stats.domElement.style.position = 'absolute';
-        stats.domElement.style.top = '0px';
-        stats.domElement.style.zIndex = 100;
-        container.appendChild( stats.domElement );
-
-        // Smoothie (test)
+        // Smoothie
         smoothieCanvas = document.createElement("canvas");
+        smoothieCanvas.width = SCREEN_WIDTH;
+        smoothieCanvas.height = SCREEN_HEIGHT;
+        smoothieCanvas.style.opacity = 0.5;
         smoothieCanvas.style.position = 'absolute';
         smoothieCanvas.style.top = '0px';
-        smoothieCanvas.style.zIndex = 100;
+        smoothieCanvas.style.zIndex = 90;
         container.appendChild( smoothieCanvas );
         smoothie = new SmoothieChart({
+            labelOffsetY:50,
             maxDataSetLength:100,
-            millisPerPixel:10,
+            millisPerPixel:2,
             grid: {
-                strokeStyle:'rgb(125, 125, 125)',
-                fillStyle:'rgb(0, 0, 0)',
+                strokeStyle:'none',
+                fillStyle:'none',
                 lineWidth: 1,
                 millisPerLine: 250,
                 verticalSections: 6
@@ -554,8 +553,8 @@ CANNON.Demo = function(options){
             var c = colors[i%colors.length];
             smoothie.addTimeSeries(lines[label],{
                 strokeStyle : "rgb("+c[0]+","+c[1]+","+c[2]+")",
-                fillStyle:"rgba("+c[0]+","+c[1]+","+c[2]+",0.3)",
-                lineWidth:1
+                //fillStyle:"rgba("+c[0]+","+c[1]+","+c[2]+",0.3)",
+                lineWidth:2
             });
             i++;
         }
@@ -563,6 +562,108 @@ CANNON.Demo = function(options){
         smoothie.stop();
         smoothieCanvas.style.display = "none";
 
+        // STATS
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        stats.domElement.style.zIndex = 100;
+        container.appendChild( stats.domElement );
+
+        if(window.dat!=undefined){
+            gui = new dat.GUI();
+
+            gui.domElement.parentNode.style.zIndex=120;
+
+            // Render mode
+            var rf = gui.addFolder('Rendering');
+            rf.add(settings,'rendermode',{Solid:"solid",Wireframe:"wireframe"}).onChange(function(mode){
+                setRenderMode(mode);
+            });
+            rf.add(settings,'contacts');
+            rf.add(settings,'cm2contact');
+            rf.add(settings,'normals');
+            rf.add(settings,'constraints');
+            rf.add(settings,'axes');
+            rf.add(settings,'particleSize').min(0).max(1).onChange(function(size){
+                for(var i=0; i<visuals.length; i++){
+                    if(bodies[i] instanceof CANNON.Particle)
+                        visuals[i].scale.set(size,size,size);
+                }
+            });
+            rf.add(settings,'shadows').onChange(function(shadows){
+                if(shadows){
+                    renderer.shadowMapAutoUpdate = true;
+                } else {
+                    renderer.shadowMapAutoUpdate = false;
+                    renderer.clearTarget( light.shadowMap );
+                }
+            });
+            rf.add(settings,'aabbs');
+            rf.add(settings,'profiling').onChange(function(profiling){
+                if(profiling){
+                    world.doProfiling = true;
+                    smoothie.start();
+                    smoothieCanvas.style.display = "block";
+                } else {
+                    world.doProfiling = false;
+                    smoothie.stop();
+                    smoothieCanvas.style.display = "none";
+                }
+
+            });
+
+            // World folder
+            var wf = gui.addFolder('World');
+            // Pause
+            wf.add(settings, 'paused').onChange(function(p){
+                /*if(p){
+                    smoothie.stop();
+                } else {
+                    smoothie.start();
+                }*/
+            });
+            wf.add(settings, 'stepFrequency',60,60*10).step(60);
+            var maxg = 100;
+            wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){
+                if(!isNaN(gx))
+                    world.gravity.set(gx,settings.gy,settings.gz);
+            });
+            wf.add(settings, 'gy',-maxg,maxg).onChange(function(gy){
+                if(!isNaN(gy))
+                    world.gravity.set(settings.gx,gy,settings.gz);
+            });
+            wf.add(settings, 'gz',-maxg,maxg).onChange(function(gz){
+                if(!isNaN(gz))
+                    world.gravity.set(settings.gx,settings.gy,gz);
+            });
+            wf.add(settings, 'quatNormalizeSkip',0,50).step(1).onChange(function(skip){
+                if(!isNaN(skip)){
+                    world.quatNormalizeSkip = skip;
+                }
+            });
+            wf.add(settings, 'quatNormalizeFast').onChange(function(fast){
+                world.quatNormalizeFast = !!fast;
+            });
+
+            // Solver folder
+            var sf = gui.addFolder('Solver');
+            sf.add(settings, 'iterations',1,50).step(1).onChange(function(it){
+                world.solver.iterations = it;
+            });
+            sf.add(settings, 'k',10,10000).onChange(function(k){
+                world.solver.setSpookParams(k,world.solver.d);
+            });
+            sf.add(settings, 'd',0,20).step(0.1).onChange(function(d){
+                world.solver.setSpookParams(world.solver.k,d);
+            });
+            sf.add(settings, 'tolerance',0.0,10.0).step(0.01).onChange(function(t){
+                world.solver.tolerance = t;
+            });
+
+            // Scene picker
+            sceneFolder = gui.addFolder('Scenes');
+            sceneFolder.open();
+        }
 
         // Trackball controls
         controls = new THREE.TrackballControls( camera, renderer.domElement );
@@ -691,99 +792,6 @@ CANNON.Demo = function(options){
         }
     });
 
-    if(window.dat!=undefined){
-        gui = new dat.GUI();
-
-        // Render mode
-        var rf = gui.addFolder('Rendering');
-        rf.add(settings,'rendermode',{Solid:"solid",Wireframe:"wireframe"}).onChange(function(mode){
-            setRenderMode(mode);
-        });
-        rf.add(settings,'contacts');
-        rf.add(settings,'cm2contact');
-        rf.add(settings,'normals');
-        rf.add(settings,'constraints');
-        rf.add(settings,'axes');
-        rf.add(settings,'particleSize').min(0).max(1).onChange(function(size){
-            for(var i=0; i<visuals.length; i++){
-                if(bodies[i] instanceof CANNON.Particle)
-                    visuals[i].scale.set(size,size,size);
-            }
-        });
-        rf.add(settings,'shadows').onChange(function(shadows){
-            if(shadows){
-                renderer.shadowMapAutoUpdate = true;
-            } else {
-                renderer.shadowMapAutoUpdate = false;
-                renderer.clearTarget( light.shadowMap );
-            }
-        });
-        rf.add(settings,'aabbs');
-        rf.add(settings,'profiling').onChange(function(profiling){
-            if(profiling){
-                world.doProfiling = true;
-                smoothie.start();
-                smoothieCanvas.style.display = "block";
-            } else {
-                world.doProfiling = false;
-                smoothie.stop();
-                smoothieCanvas.style.display = "none";
-            }
-
-        });
-
-        // World folder
-        var wf = gui.addFolder('World');
-        // Pause
-        wf.add(settings, 'paused').onChange(function(p){
-            /*if(p){
-                smoothie.stop();
-            } else {
-                smoothie.start();
-            }*/
-        });
-        wf.add(settings, 'stepFrequency',60,60*10).step(60);
-        var maxg = 100;
-        wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){
-            if(!isNaN(gx))
-                world.gravity.set(gx,settings.gy,settings.gz);
-        });
-        wf.add(settings, 'gy',-maxg,maxg).onChange(function(gy){
-            if(!isNaN(gy))
-                world.gravity.set(settings.gx,gy,settings.gz);
-        });
-        wf.add(settings, 'gz',-maxg,maxg).onChange(function(gz){
-            if(!isNaN(gz))
-                world.gravity.set(settings.gx,settings.gy,gz);
-        });
-        wf.add(settings, 'quatNormalizeSkip',0,50).step(1).onChange(function(skip){
-            if(!isNaN(skip)){
-                world.quatNormalizeSkip = skip;
-            }
-        });
-        wf.add(settings, 'quatNormalizeFast').onChange(function(fast){
-            world.quatNormalizeFast = !!fast;
-        });
-
-        // Solver folder
-        var sf = gui.addFolder('Solver');
-        sf.add(settings, 'iterations',1,50).step(1).onChange(function(it){
-            world.solver.iterations = it;
-        });
-        sf.add(settings, 'k',10,10000).onChange(function(k){
-            world.solver.setSpookParams(k,world.solver.d);
-        });
-        sf.add(settings, 'd',0,20).step(0.1).onChange(function(d){
-            world.solver.setSpookParams(world.solver.k,d);
-        });
-        sf.add(settings, 'tolerance',0.0,10.0).step(0.01).onChange(function(t){
-            world.solver.tolerance = t;
-        });
-
-        // Scene picker
-        var sceneFolder = gui.addFolder('Scenes');
-        sceneFolder.open();
-    }
 
     function changeScene(n){
         settings.paused = false;
