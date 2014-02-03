@@ -78,12 +78,14 @@ FrictionEquation.prototype.computeB = function(h){
         invIi_vmult_taui = FrictionEquation_computeB_temp1,
         invIj_vmult_tauj = FrictionEquation_computeB_temp2;
 
+    /*
     if(bi.invInertiaWorld){
         invIi.setTrace(bi.invInertiaWorld);
     }
     if(bj.invInertiaWorld){
         invIj.setTrace(bj.invInertiaWorld);
     }
+    */
 
     // Caluclate cross products
     ri.cross(t,rixt);
@@ -92,8 +94,8 @@ FrictionEquation.prototype.computeB = function(h){
     wi.cross(ri,wixri);
     wj.cross(rj,wjxrj);
 
-    invIi.vmult(taui,invIi_vmult_taui);
-    invIj.vmult(tauj,invIj_vmult_tauj);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
 
     var Gq = 0; // we do only want to constrain motion
     var GW = vj.dot(t) - vi.dot(t) + wjxrj.dot(t) - wixri.dot(t); // eq. 40
@@ -134,8 +136,8 @@ FrictionEquation.prototype.computeC = function(){
     C += FEcomputeC_temp1.dot(rixt);
     C += FEcomputeC_temp2.dot(rjxt);
       */
-    invIi.vmult(rixt,this.biInvInertiaTimesRixt);
-    invIj.vmult(rjxt,this.bjInvInertiaTimesRjxt);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(rixt,this.biInvInertiaTimesRixt);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(rjxt,this.bjInvInertiaTimesRjxt);
     C += this.biInvInertiaTimesRixt.dot(rixt);
     C += this.bjInvInertiaTimesRjxt.dot(rjxt);
 
@@ -144,9 +146,6 @@ FrictionEquation.prototype.computeC = function(){
 
 var FrictionEquation_computeGWlambda_ulambda = new Vec3();
 FrictionEquation.prototype.computeGWlambda = function(){
-
-    // Correct at all ???
-
     var bi = this.bi;
     var bj = this.bj;
 

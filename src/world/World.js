@@ -383,7 +383,8 @@ var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to s
     World_step_rjxn = new Vec3(),
     World_step_step_q = new Quaternion(),
     World_step_step_w = new Quaternion(),
-    World_step_step_wq = new Quaternion();
+    World_step_step_wq = new Quaternion(),
+    invI_tau_dt = new Vec3();
 World.prototype.step = function(dt){
     if(dt <= 0 || isNaN(dt)) return;
 
@@ -642,14 +643,21 @@ World.prototype.step = function(dt){
                 quat = b.quaternion,
                 invMass = b.invMass,
                 invInertia = b.invInertiaWorld;
+
             velo.x += force.x * invMass * dt;
             velo.y += force.y * invMass * dt;
             velo.z += force.z * invMass * dt;
 
             if(b.angularVelocity){
+                invInertia.vmult(tau,invI_tau_dt);
+                invI_tau_dt.mult(dt,invI_tau_dt);
+                invI_tau_dt.vadd(angularVelo,angularVelo);
+                //console.log(invI_tau_dt);
+                /*
                 angularVelo.x += tau.x * invInertia.x * dt;
                 angularVelo.y += tau.y * invInertia.y * dt;
                 angularVelo.z += tau.z * invInertia.z * dt;
+                */
             }
 
             // Use new velocity  - leap frog

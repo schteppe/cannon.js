@@ -54,6 +54,7 @@ RotationalMotorEquation.prototype.computeB = function(h){
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
+    /*
     var invIi = this.invIi;
     var invIj = this.invIj;
 
@@ -67,6 +68,7 @@ RotationalMotorEquation.prototype.computeB = function(h){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
     // g = 0
     // gdot = axisA * wi - axisB * wj
@@ -92,6 +94,7 @@ RotationalMotorEquation.prototype.computeC = function(){
 
     var C = this.eps;
 
+    /*
     var invIi = this.invIi;
     var invIj = this.invIj;
 
@@ -105,9 +108,10 @@ RotationalMotorEquation.prototype.computeC = function(){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
-    C += invIi.vmult(axisA).dot(axisB);
-    C += invIj.vmult(axisB).dot(axisB);
+    C += bi.invInertiaWorld.vmult(axisA).dot(axisB);
+    C += bj.invInertiaWorld.vmult(axisB).dot(axisB);
 
     return C;
 };
@@ -151,11 +155,11 @@ RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
 
     // Add to angular velocity
     if(bi.wlambda){
-        var I = this.invIi;
+        var I = bi.invInertiaWorld;
         bi.wlambda.vsub(I.vmult(axisA).mult(deltalambda),bi.wlambda);
     }
     if(bj.wlambda){
-        var I = this.invIj;
+        var I = bj.invInertiaWorld;
         bj.wlambda.vadd(I.vmult(axisB).mult(deltalambda),bj.wlambda);
     }
 };

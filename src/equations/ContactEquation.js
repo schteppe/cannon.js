@@ -95,6 +95,7 @@ ContactEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertiaWorld){
         invIi.setTrace(bi.invInertiaWorld);
     } else {
@@ -105,6 +106,7 @@ ContactEquation.prototype.computeB = function(h){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
     var n = this.ni;
 
@@ -124,8 +126,8 @@ ContactEquation.prototype.computeB = function(h){
 
     var invIi_vmult_taui = ContactEquation_computeB_temp1;
     var invIj_vmult_tauj = ContactEquation_computeB_temp2;
-    invIi.vmult(taui,invIi_vmult_taui);
-    invIj.vmult(tauj,invIj_vmult_tauj);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
 
     // Compute iteration
     var ePlusOne = this.restitution+1;
@@ -167,8 +169,8 @@ ContactEquation.prototype.computeC = function(){
      */
 
     // Compute rxn * I * rxn for each body
-    invIi.vmult(rixn, this.biInvInertiaTimesRixn);
-    invIj.vmult(rjxn, this.bjInvInertiaTimesRjxn);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(rixn, this.biInvInertiaTimesRixn);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(rjxn, this.bjInvInertiaTimesRjxn);
 
     /*
     invIi.vmult(rixn,computeC_temp1);

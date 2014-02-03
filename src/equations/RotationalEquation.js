@@ -60,6 +60,7 @@ RotationalEquation.prototype.computeB = function(h){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
+    /*
     if(bi.invInertiaWorld){
         invIi.setTrace(bi.invInertiaWorld);
     } else {
@@ -70,6 +71,7 @@ RotationalEquation.prototype.computeB = function(h){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
     // Caluclate cross products
     ni.cross(nj,nixnj);
@@ -99,6 +101,7 @@ RotationalEquation.prototype.computeC = function(){
 
     var C = /*invMassi + invMassj +*/ this.eps;
 
+    /*
     var invIi = this.invIi;
     var invIj = this.invIj;
 
@@ -112,9 +115,10 @@ RotationalEquation.prototype.computeC = function(){
     } else {
         invIj.identity(); // ok?
     }
+    */
 
-    C += invIi.vmult(njxni).dot(njxni);
-    C += invIj.vmult(nixnj).dot(nixnj);
+    C += bi.invInertiaWorld.vmult(njxni).dot(njxni);
+    C += bj.invInertiaWorld.vmult(nixnj).dot(nixnj);
 
     return C;
 };
@@ -156,11 +160,11 @@ RotationalEquation.prototype.addToWlambda = function(deltalambda){
 
     // Add to angular velocity
     if(bi.wlambda){
-        var I = this.invIi;
+        var I = bi.invInertiaWorld;
         bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
     }
     if(bj.wlambda){
-        var I = this.invIj;
+        var I = bj.invInertiaWorld;
         bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
     }
 };

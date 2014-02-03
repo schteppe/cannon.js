@@ -84,9 +84,7 @@ function RigidBody(mass,shape,material){
     this.invInertia = new Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
                                this.inertia.y>0 ? 1.0/this.inertia.y : 0,
                                this.inertia.z>0 ? 1.0/this.inertia.z : 0);
-    this.invInertiaWorld = new Vec3();
-    this.invInertia.copy(this.invInertiaWorld);
-    this.invInertiaWorldAutoUpdate = false;
+    this.invInertiaWorld = new Mat3();
 
     /**
      * @property angularDamping
@@ -115,7 +113,7 @@ function RigidBody(mass,shape,material){
 
     this.wlambda = new Vec3();
 
-    this.updateInertiaWorld();
+    this.updateInertiaWorld(true);
 };
 
 RigidBody.prototype = new Particle(0);
@@ -141,9 +139,9 @@ var uiw_m1 = new Mat3(),
  * Update .inertiaWorld and .invInertiaWorld
  * @method updateInertiaWorld
  */
-RigidBody.prototype.updateInertiaWorld = function(){
+RigidBody.prototype.updateInertiaWorld = function(force){
     var I = this.invInertia;
-    if(I.x == I.y && I.y == I.z){
+    if(I.x == I.y && I.y == I.z && !force){
         // If inertia M = s*I, where I is identity and s a scalar, then
         //    R*M*R' = R*(s*I)*R' = s*R*I*R' = s*R*R' = s*I = M
         // where R is the rotation matrix.
@@ -156,8 +154,8 @@ RigidBody.prototype.updateInertiaWorld = function(){
         m1.setRotationFromQuaternion(this.quaternion);
         m1.transpose(m2);
         m1.scale(I,m1);
-        m1.mmult(m2,m3);
-        m3.getTrace(this.invInertiaWorld);
+        m1.mmult(m2,this.invInertiaWorld);
+        //m3.getTrace(this.invInertiaWorld);
     }
 
     /*
@@ -215,9 +213,13 @@ RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
     // Compute produced rotational impulse velocity
     var rotVelo = RigidBody_applyImpulse_rotVelo;
     r.cross(impulse,rotVelo);
+
+    /*
     rotVelo.x *= this.invInertia.x;
     rotVelo.y *= this.invInertia.y;
     rotVelo.z *= this.invInertia.z;
+    */
+    this.invInertiaWorld.vmult(rotVelo,rotVelo);
 
     // Add rotational Impulse
     this.angularVelocity.vadd(rotVelo, this.angularVelocity);
