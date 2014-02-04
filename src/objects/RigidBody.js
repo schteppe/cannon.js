@@ -120,6 +120,34 @@ RigidBody.prototype = new Particle(0);
 RigidBody.prototype.constructor = RigidBody;
 
 /**
+ * Convert a world point to local body frame.
+ * @method pointToLocalFrame
+ * @param  {Vec3} worldPoint
+ * @param  {Vec3} result
+ * @return {Vec3}
+ */
+RigidBody.prototype.pointToLocalFrame = function(worldPoint,result){
+    var result = result || new Vec3;
+    worldPoint.vsub(this.position,result);
+    this.quaternion.conjugate().vmult(result,result);
+    return result;
+};
+
+/**
+ * Convert a local body point to world frame.
+ * @method pointToWorldFrame
+ * @param  {Vec3} worldPoint
+ * @param  {Vec3} result
+ * @return {Vec3}
+ */
+RigidBody.prototype.pointToWorldFrame = function(localPoint,result){
+    var result = result || new Vec3;
+    this.quaternion.vmult(localPoint,result);
+    result.vadd(this.position,result);
+    return result;
+};
+
+/**
  * Updates the .aabbmin and .aabbmax properties
  * @method computeAABB
  */
