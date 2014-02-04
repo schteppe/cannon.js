@@ -372,6 +372,7 @@ Mat3.prototype.reverse = function(target){
 
 /**
  * Set the matrix from a quaterion
+ * @method setRotationFromQuaternion
  * @param {Quaternion} q
  */
 Mat3.prototype.setRotationFromQuaternion = function( q ) {
