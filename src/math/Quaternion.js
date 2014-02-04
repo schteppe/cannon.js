@@ -60,6 +60,15 @@ Quaternion.prototype.toString = function(){
 };
 
 /**
+ * Convert to an Array
+ * @method toArray
+ * @return Array
+ */
+Quaternion.prototype.toArray = function(){
+    return [this.x, this.y, this.z, this.w];
+};
+
+/**
  * Set the quaternion components given an axis and an angle.
  * @method setFromAxisAngle
  * @param {Vec3} axis

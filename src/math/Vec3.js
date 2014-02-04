@@ -281,6 +281,15 @@ Vec3.prototype.toString = function(){
 };
 
 /**
+ * Converts to an array
+ * @method toArray
+ * @return Array
+ */
+Vec3.prototype.toArray = function(){
+    return [this.x, this.y, this.z];
+};
+
+/**
  * Copy the vector.
  * @method copy
  * @param {Vec3} target
