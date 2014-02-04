@@ -49,6 +49,12 @@ Compound.prototype.addChild = function(shape,offset,orientation){
     this.childOrientations.push(orientation);
 };
 
+Compound.prototype.clearAllChildren = function(){
+    this.childOffsets = [];
+    this.childOrientations = [];
+    this.childShapes = [];
+};
+
 Compound.prototype.volume = function(){
     var r = 0.0;
     var Nchildren = this.childShapes.length;
