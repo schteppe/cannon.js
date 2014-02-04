@@ -4814,8 +4814,11 @@ CANNON.World.prototype.step = function(dt){
             if(this.collisionMatrixGet(i,j,true)!==this.collisionMatrixGet(i,j,false)){
                 // First contact!
                 // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
-                World_step_collideEvent.with = bj;
                 World_step_collideEvent.contact = c;
+                World_step_collideEvent.with = null;
+                this.dispatchEvent(World_step_collideEvent);
+
+                World_step_collideEvent.with = bj;
                 bi.dispatchEvent(World_step_collideEvent);
 
                 World_step_collideEvent.with = bi;
