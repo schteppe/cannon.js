@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - spring demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+    var demo = new CANNON.Demo();
+    var size = 1;
+
+    demo.addScene("Box",function(){
+
+        // Create world
+        var world = demo.getWorld();
+        world.gravity.set(0,0,-10);
+        world.broadphase = new CANNON.NaiveBroadphase();
+
+        // Create a box body
+        var halfExtents = new CANNON.Vec3(size,size*0.3,size);
+        var boxShape = new CANNON.Box(halfExtents);
+        var body = new CANNON.RigidBody(5,boxShape);
+        body.position.set(0,size,size*2);
+        world.add(body);
+        demo.addVisual(body);
+
+        var localPoint = halfExtents,
+            worldPoint = new CANNON.Vec3(),
+            force = new CANNON.Vec3(),
+            r = new CANNON.Vec3(),
+            k = 50, // spring stiffness
+            restLength = 0,
+            attachmentPoint = body.position.vadd(halfExtents);
+
+        // Compute the force after each step
+        world.addEventListener("postStep",function(event){
+
+            // Compute world point of the box corner
+            body.quaternion.vmult(localPoint,worldPoint);
+            worldPoint.vadd(body.position,worldPoint);
+
+            // Compute vector between the corner and the attachment point
+            attachmentPoint.vsub(worldPoint,r);
+
+            // f = k*(x0-x)
+            var d = r.norm() - restLength;
+            r.normalize();
+            r.mult(d*k,force);
+
+            // Add force to the body
+            body.applyForce(force,worldPoint);
+
+        });
+    });
+
+    demo.start();
+
+    </script>
+  </body>
+</html>
