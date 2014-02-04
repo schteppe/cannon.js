@@ -30,6 +30,12 @@ CANNON.Compound.prototype.addChild = function(shape,offset,orientation){
     this.childOrientations.push(orientation);
 };
 
+CANNON.Compound.prototype.clearAllChildren = function(){
+    this.childOffsets = [];
+    this.childOrientations = [];
+    this.childShapes = [];
+};
+
 CANNON.Compound.prototype.volume = function(){
     var r = 0.0;
     var Nchildren = this.childShapes.length;
