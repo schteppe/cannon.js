@@ -50,8 +50,8 @@
 
           // When a body collides with another body, they both dispatch the "collide" event.
           sphereBody.addEventListener("collide",function(e){
-              alert("The sphere just collided with the ground!");
-              console.log("Collided with body:",e.with);
+              console.log("The sphere just collided with the ground!");
+              console.log("Collided with body:",e.body);
               console.log("Contact between bodies:",e.contact);
           });
 

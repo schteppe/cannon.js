@@ -367,7 +367,7 @@ if(!performance.now){
  */
 var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
     World_step_preStepEvent = {type:"preStep"},
-    World_step_collideEvent = {type:"collide", "with":null, contact:null },
+    World_step_collideEvent = {type:"collide", body:null, contact:null },
     World_step_oldContacts = [], // Pools for unused objects
     World_step_frictionEquationPool = [],
     World_step_p1 = [], // Reusable arrays for collision pairs
@@ -547,11 +547,11 @@ World.prototype.step = function(dt){
             if (this.collisionMatrix.get(bi, bj) !== this.collisionMatrixPrevious.get(bi, bj)) {
                 // First contact!
                 // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
-                World_step_collideEvent.with = bj;
+                World_step_collideEvent.body = bj;
                 World_step_collideEvent.contact = c;
                 bi.dispatchEvent(World_step_collideEvent);
 
-                World_step_collideEvent.with = bi;
+                World_step_collideEvent.body = bi;
                 bj.dispatchEvent(World_step_collideEvent);
 
                 bi.wakeUp();
