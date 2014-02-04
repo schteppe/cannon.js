@@ -397,7 +397,12 @@ Mat3.prototype.setRotationFromQuaternion = function( q ) {
     return this;
 };
 
-
+/**
+ * Transpose the matrix
+ * @method transpose
+ * @param  {Mat3} target Where to store the result.
+ * @return {Mat3} The target Mat3, or a new Mat3 if target was omitted.
+ */
 Mat3.prototype.transpose = function( target ) {
     target = target || new Mat3();
 
