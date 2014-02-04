@@ -56,7 +56,6 @@
             // camera
             camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 0.5, 10000 );
             camera.position.set(10, 2, 0);
-            camera.useQuaternion = true;
             camera.quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2);
             scene.add( camera );
 
@@ -94,17 +93,15 @@
             //THREE.ColorUtils.adjustHSV( material.color, 0, 0, 0.9 );
             mesh = new THREE.Mesh( geometry, material );
             mesh.castShadow = true;
-            mesh.useQuaternion = true;
             mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.PI / 2);
             mesh.receiveShadow = true;
             scene.add( mesh );
-               
+
             // cubes
             var cubeGeo = new THREE.CubeGeometry( 1, 1, 1, 10, 10 );
             var cubeMaterial = new THREE.MeshPhongMaterial( { color: 0x888888 } );
             for(var i=0; i<N; i++){
                 cubeMesh = new THREE.Mesh( cubeGeo, cubeMaterial );
-                cubeMesh.useQuaternion = true;
                 cubeMesh.castShadow = true;
                 meshes.push( cubeMesh );
                 scene.add( cubeMesh );
@@ -155,7 +152,7 @@
         var constraintDown = false;
         function onMouseDown(e){
             // Find mesh from a ray
-            var entity = findNearestIntersectingObject(e.clientX,e.clientY,camera,meshes); 
+            var entity = findNearestIntersectingObject(e.clientX,e.clientY,camera,meshes);
             var pos = entity.point;
             if(pos && entity.object.geometry instanceof THREE.CubeGeometry){
                 constraintDown = true;
@@ -173,27 +170,26 @@
             }
         }
 
-        // This function creates a virtual movement plane for the mouseJoint to move in 
+        // This function creates a virtual movement plane for the mouseJoint to move in
         function setScreenPerpCenter(point, camera) {
             // If it does not exist, create a new one
             if(!gplane) {
               var planeGeo = new THREE.PlaneGeometry(100,100);
               var plane = gplane = new THREE.Mesh(planeGeo,material);
               plane.visible = false; // Hide it..
-              plane.useQuaternion = true;
               scene.add(gplane);
             }
 
             // Center at mouse position
             gplane.position.copy(point);
-            
+
             // Make it face toward the camera
             gplane.quaternion = camera.quaternion;
         }
 
         function onMouseUp(e) {
           constraintDown = false;
-          // remove the marker 
+          // remove the marker
           removeClickMarker();
 
           // Send the remove mouse joint to server
@@ -229,7 +225,7 @@
             return closest;
         }
 
-        // Function that returns a raycaster to use to find intersecting objects 
+        // Function that returns a raycaster to use to find intersecting objects
         // in a scene given screen pos and a camera, and a projector
         function getRayCasterFromScreenCoord (screenX, screenY, camera, projector) {
             var mouse3D = new THREE.Vector3();

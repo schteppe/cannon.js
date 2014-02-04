@@ -137,6 +137,7 @@
 
     // Moves the camera to the Cannon.js object position and adds velocity to the object if the run key is down
     var inputVelocity = new THREE.Vector3();
+    var euler = new THREE.Euler();
     this.update = function ( delta ) {
 
         if ( scope.enabled === false ) return;
@@ -160,8 +161,12 @@
         }
 
         // Convert velocity to world coordinates
-        quat.setFromEuler({x:pitchObject.rotation.x, y:yawObject.rotation.y, z:0},"XYZ");
-        quat.multiplyVector3(inputVelocity);
+        euler.x = pitchObject.rotation.x;
+        euler.y = yawObject.rotation.y;
+        euler.order = "XYZ";
+        quat.setFromEuler(euler);
+        inputVelocity.applyQuaternion(quat);
+        //quat.multiplyVector3(inputVelocity);
 
         // Add to the object
         velocity.x += inputVelocity.x;

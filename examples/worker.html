@@ -32,6 +32,7 @@
     </div>
     <script src="../libs/Three.js"></script>
     <script src="../libs/Detector.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
 
     <!-- Worker script, will be run in separate thread -->
     <script id="worker1" type="javascript/worker">
@@ -213,7 +214,6 @@
             //THREE.ColorUtils.adjustHSV( material.color, 0, 0, 0.9 );
             mesh = new THREE.Mesh( geometry, material );
             mesh.castShadow = true;
-            mesh.useQuaternion = true;
             mesh.receiveShadow = true;
             meshes.push(mesh);
             scene.add( mesh );
@@ -223,7 +223,6 @@
             var cubeMaterial = new THREE.MeshPhongMaterial( { color: 0x888888 } );
             for(var i=0; i<N; i++){
                 cubeMesh = new THREE.Mesh( cubeGeo, cubeMaterial );
-                cubeMesh.useQuaternion = true;
                 cubeMesh.castShadow = true;
                 meshes.push(cubeMesh);
                 scene.add( cubeMesh );

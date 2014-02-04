@@ -28,6 +28,7 @@
 
     <body>
         <script src="../libs/Three.js"></script>
+        <script src="../libs/TrackballControls.js"></script>
         <script src="../libs/Detector.js"></script>
         <script src="../build/cannon.js"></script>
         <script>
@@ -202,7 +203,7 @@
                 var clothTexture = THREE.ImageUtils.loadTexture( 'sunflower.jpg' ); // circuit_pattern.png
                 clothTexture.wrapS = clothTexture.wrapT = THREE.RepeatWrapping;
                 clothTexture.anisotropy = 16;
-                 
+
 
                 var clothMaterial = new THREE.MeshPhongMaterial( {
                     alphaTest: 0.5,

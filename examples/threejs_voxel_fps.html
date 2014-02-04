@@ -296,10 +296,9 @@
                 geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
                 material = new THREE.MeshLambertMaterial( { color: 0xdddddd } );
-                THREE.ColorUtils.adjustHSV( material.color, 0, 0, 0.9 );
 
                 mesh = new THREE.Mesh( geometry, material );
-                
+
                 groundBody.position.copy(mesh.position);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
@@ -368,13 +367,13 @@
                 var vector = targetVec;
                 targetVec.set(0,0,1);
                 projector.unprojectVector(vector, camera);
-                var ray = new THREE.Ray(sphereBody.position, vector.subSelf(sphereBody.position).normalize() );
+                var ray = new THREE.Ray(sphereBody.position, vector.sub(sphereBody.position).normalize() );
                 targetVec.x = ray.direction.x;
                 targetVec.y = ray.direction.y;
                 targetVec.z = ray.direction.z;
             }
 
-            window.addEventListener("click",function(e){ 
+            window.addEventListener("click",function(e){
                 if(controls.enabled==true){
                     var x = sphereBody.position.x;
                     var y = sphereBody.position.y;
@@ -398,7 +397,6 @@
                     z += shootDirection.z * (sphereShape.radius*1.02 + ballShape.radius);
                     ballBody.position.set(x,y,z);
                     ballMesh.position.set(x,y,z);
-                    ballMesh.useQuaternion = true;
                 }
             });
 
