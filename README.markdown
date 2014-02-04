@@ -76,6 +76,8 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 ### Change log
 **Current (to be 0.6.0)**
+ * Renamed ```ObjectPool``` to just ```Pool```.
+ * Added methods ```.transpose```, ```.setRotationFromQuaternion```, ```.scale``` to class ```Mat3```.
  * Added class ```SAP1DBroadphase```.
  * World now dispatches events ```'addBody'``` and ```'removeBody'```.
  * Added method ```.setFromEuler``` to ```Quaternion```.
