@@ -21,6 +21,7 @@ function ContactMaterial(m1, m2, friction, restitution){
     /**
      * Participating materials
      * @property {Array} materials
+     * @todo  Should be .materialA and .materialB instead
      */
     this.materials = [m1,m2];
 

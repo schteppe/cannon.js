@@ -14,6 +14,7 @@ var Shape = require('../shapes/Shape')
 ,   ContactMaterial = require('../material/ContactMaterial')
 ,   RigidBody = require('../objects/RigidBody')
 ,   Body = require('../objects/Body')
+,   TupleDictionary = require('../utils/TupleDictionary')
 
 /**
  * The physics world
@@ -137,7 +138,11 @@ function World(){
      */
     this.contactmaterials = [];
 
-    this.mats2cmat = []; // Hash: (mat1_id, mat2_id) => contactmat_id
+    /**
+     * Used to look up a ContactMaterial given two instances of Material.
+     * @property {TupleDictionary} contactMaterialTable
+     */
+    this.contactMaterialTable = new TupleDictionary();
 
     this.defaultMaterial = new Material("default");
 
@@ -192,18 +197,7 @@ World.prototype = new EventTarget();
  * @return {Contactmaterial} The contact material if it was found.
  */
 World.prototype.getContactMaterial = function(m1,m2){
-    if((m1 instanceof Material) &&  (m2 instanceof Material)){
-
-        var i = m1.id;
-        var j = m2.id;
-
-        if(i<j){
-            var temp = i;
-            i = j;
-            j = temp;
-        }
-        return this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
-    }
+    return this.contactMaterialTable.get(m1.id,m2.id); //this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
 };
 
 /**
@@ -303,17 +297,13 @@ World.prototype.remove = function(body){
  * Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
  * @method addMaterial
  * @param {Material} m
+ * @todo Necessary?
  */
 World.prototype.addMaterial = function(m){
     if(m.id === -1){
         var n = this.materials.length;
         this.materials.push(m);
         m.id = this.materials.length-1;
-
-        // Increase size of materials matrix to (n+1)*(n+1)=n*n+2*n+1 elements, it was n*n last.
-        for(var i=0; i!==2*n+1; i++){
-            this.mats2cmat.push(-1);
-        }
     }
 };
 
@@ -328,23 +318,12 @@ World.prototype.addContactMaterial = function(cmat) {
     this.addMaterial(cmat.materials[0]);
     this.addMaterial(cmat.materials[1]);
 
-    // Save (material1,material2) -> (contact material) reference for easy access later
-    // Make sure i>j, ie upper right matrix
-    var i,j;
-    if(cmat.materials[0].id > cmat.materials[1].id){
-        i = cmat.materials[0].id;
-        j = cmat.materials[1].id;
-    } else {
-        j = cmat.materials[0].id;
-        i = cmat.materials[1].id;
-    }
-
     // Add contact material
     this.contactmaterials.push(cmat);
     cmat.id = this.contactmaterials.length-1;
 
     // Add current contact material to the material table
-    this.mats2cmat[i+this.materials.length*j] = cmat.id; // index of the contact material
+    this.contactMaterialTable.set(cmat.materials[0].id,cmat.materials[1].id,cmat);
 };
 
 // performance.now()
@@ -486,7 +465,11 @@ World.prototype.step = function(dt){
         var i = bodies.indexOf(bi), j = bodies.indexOf(bj);
 
         // Get collision properties
-        var cm = this.getContactMaterial(bi.material,bj.material) || this.defaultContactMaterial;
+        var cm;
+        if(bi.material && bj.material)
+            cm = this.getContactMaterial(bi.material,bj.material) || this.defaultContactMaterial;
+        else
+            cm = this.defaultContactMaterial;
         var mu = cm.friction;
 
         // g = ( xj + rj - xi - ri ) .dot ( ni )
