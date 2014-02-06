@@ -39,6 +39,7 @@ module.exports = {
     Solver :                        require('./solver/Solver'),
     Sphere :                        require('./shapes/Sphere'),
     SplitSolver :                   require('./solver/SplitSolver'),
+    Spring :                        require('./objects/Spring'),
     Vec3 :                          require('./math/Vec3'),
     Vec3Pool :                      require('./utils/Vec3Pool'),
     World :                         require('./world/World'),

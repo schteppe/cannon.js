@@ -86,7 +86,7 @@ function Spring(bodyA,bodyB,options){
  * @param {Vec3} worldAnchorA
  */
 Spring.prototype.setWorldAnchorA = function(worldAnchorA){
-    this.bodyA.toLocalFrame(this.localAnchorA, worldAnchorA);
+    this.bodyA.pointToLocalFrame(worldAnchorA,this.localAnchorA);
 };
 
 /**
@@ -95,7 +95,7 @@ Spring.prototype.setWorldAnchorA = function(worldAnchorA){
  * @param {Vec3} worldAnchorB
  */
 Spring.prototype.setWorldAnchorB = function(worldAnchorB){
-    this.bodyB.toLocalFrame(this.localAnchorB, worldAnchorB);
+    this.bodyB.pointToLocalFrame(worldAnchorB,this.localAnchorB);
 };
 
 /**
@@ -104,7 +104,7 @@ Spring.prototype.setWorldAnchorB = function(worldAnchorB){
  * @param {Vec3} result The vector to store the result in.
  */
 Spring.prototype.getWorldAnchorA = function(result){
-    this.bodyA.toWorldFrame(result, this.localAnchorA);
+    this.bodyA.pointToWorldFrame(this.localAnchorA,result);
 };
 
 /**
@@ -113,7 +113,7 @@ Spring.prototype.getWorldAnchorA = function(result){
  * @param {Vec3} result The vector to store the result in.
  */
 Spring.prototype.getWorldAnchorB = function(result){
-    this.bodyB.toWorldFrame(result, this.localAnchorB);
+    this.bodyB.pointToWorldFrame(this.localAnchorB,result);
 };
 
 var applyForce_r =              new Vec3(),
@@ -124,6 +124,8 @@ var applyForce_r =              new Vec3(),
     applyForce_worldAnchorB =   new Vec3(),
     applyForce_ri =             new Vec3(),
     applyForce_rj =             new Vec3(),
+    applyForce_ri_x_f =         new Vec3(),
+    applyForce_rj_x_f =         new Vec3(),
     applyForce_tmp =            new Vec3();
 
 /**
@@ -145,7 +147,9 @@ Spring.prototype.applyForce = function(){
     var worldAnchorA = applyForce_worldAnchorA,
         worldAnchorB = applyForce_worldAnchorB,
         ri = applyForce_ri,
-        rj = applyForce_rj;
+        rj = applyForce_rj,
+        ri_x_f = applyForce_ri_x_f,
+        rj_x_f = applyForce_rj_x_f;
 
     // Get world anchors
     this.getWorldAnchorA(worldAnchorA);
@@ -164,30 +168,22 @@ Spring.prototype.applyForce = function(){
     // Compute relative velocity of the anchor points, u
     bodyB.velocity.vsub(bodyA.velocity,u);
     // Add rotational velocity
-    /*
-    //todo
-    vec2.crossZV(tmp, bodyB.angularVelocity, rj);
-    vec2.add(u, u, tmp);
-    vec2.crossZV(tmp, bodyA.angularVelocity, ri);
-    vec2.sub(u, u, tmp);
-    */
+
+    bodyB.angularVelocity.cross(rj,tmp);
+    u.vadd(tmp,u);
+    bodyA.angularVelocity.cross(ri,tmp);
+    u.vsub(tmp,u);
 
     // F = - k * ( x - L ) - D * ( u )
     r_unit.mult(-k*(rlen-l) - d*u.dot(r_unit), f);
-    //vec2.scale(f, r_unit, -k*(rlen-l) - d*vec2.dot(u,r_unit));
 
     // Add forces to bodies
-    //vec2.sub( bodyA.force, bodyA.force, f);
-    bodyA.force.vadd(f,bodyA.force)
-    //vec2.add( bodyB.force, bodyB.force, f);
+    bodyA.force.vsub(f,bodyA.force)
     bodyB.force.vadd(f,bodyB.force)
 
     // Angular force
-    /*
-    //todo
-    var ri_x_f = vec2.crossLength(ri, f);
-    var rj_x_f = vec2.crossLength(rj, f);
-    bodyA.angularForce -= ri_x_f;
-    bodyB.angularForce += rj_x_f;
-    */
+    ri.cross(f,ri_x_f);
+    rj.cross(f,rj_x_f);
+    bodyA.tau.vsub(ri_x_f,bodyA.tau);
+    bodyB.tau.vadd(rj_x_f,bodyB.tau);
 };
