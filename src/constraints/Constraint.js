@@ -25,6 +25,11 @@ function Constraint(bodyA,bodyB){
      * @property {Body} bodyB
      */
     this.bodyB = bodyB;
+
+    /**
+     * @property {Number} id
+     */
+    this.id = Constraint.idCounter++;
 };
 
 /**
@@ -33,3 +38,5 @@ function Constraint(bodyA,bodyB){
 Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };
+
+Constraint.idCounter = 0;

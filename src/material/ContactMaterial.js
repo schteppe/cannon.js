@@ -16,7 +16,7 @@ function ContactMaterial(m1, m2, friction, restitution){
      * Identifier of this material
      * @property {Number} id
      */
-    this.id = -1;
+    this.id = ContactMaterial.idCounter++;
 
     /**
      * Participating materials
@@ -62,3 +62,4 @@ function ContactMaterial(m1, m2, friction, restitution){
     this.frictionEquationRegularizationTime = 3;
 };
 
+ContactMaterial.idCounter = 0;
