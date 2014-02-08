@@ -74,76 +74,70 @@ SAPBroadphase.prototype.setWorld = function(world){
     this.world = world;
 };
 
-function insertionSortX(ary) {
-    for(var i=1,l=ary.length;i<l;i++) {
-        var v = ary[i];
+/**
+ * @static
+ * @method insertionSortX
+ * @param  {Array} a
+ * @return {Array}
+ */
+SAPBroadphase.insertionSortX = function(a) {
+    for(var i=1,l=a.length;i<l;i++) {
+        var v = a[i];
         for(var j=i - 1;j>=0;j--) {
-            if(ary[j].position.x-ary[j].shape.boundingSphereRadius <= v.position.x-v.shape.boundingSphereRadius)
+            if(a[j].position.x-a[j].shape.boundingSphereRadius <= v.position.x-v.shape.boundingSphereRadius)
                 break;
-            ary[j+1] = ary[j];
+            a[j+1] = a[j];
         }
-        ary[j+1] = v;
+        a[j+1] = v;
     }
-    return ary;
-}
-function insertionSortY(ary) {
-    for(var i=1,l=ary.length;i<l;i++) {
-        var v = ary[i];
-        for(var j=i - 1;j>=0;j--) {
-            if(ary[j].position.y-ary[j].shape.boundingSphereRadius <= v.position.y-v.shape.boundingSphereRadius)
-                break;
-            ary[j+1] = ary[j];
-        }
-        ary[j+1] = v;
-    }
-    return ary;
-}
-function insertionSortZ(ary) {
-    for(var i=1,l=ary.length;i<l;i++) {
-        var v = ary[i];
-        for(var j=i - 1;j>=0;j--) {
-            if(ary[j].position.z-ary[j].shape.boundingSphereRadius <= v.position.z-v.shape.boundingSphereRadius)
-                break;
-            ary[j+1] = ary[j];
-        }
-        ary[j+1] = v;
-    }
-    return ary;
+    return a;
 }
 
 /**
- * Function for sorting bodies along the X axis. To be passed to array.sort()
- * @method sortAxisListX
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Number}
+ * @static
+ * @method insertionSortY
+ * @param  {Array} a
+ * @return {Array}
  */
-SAPBroadphase.sortAxisListX = function(bodyA,bodyB){
-    return (bodyA.position.x-bodyA.shape.boundingSphereRadius) - (bodyB.position.x-bodyB.shape.boundingSphereRadius);
-};
+SAPBroadphase.insertionSortY = function(a) {
+    for(var i=1,l=a.length;i<l;i++) {
+        var v = a[i];
+        for(var j=i - 1;j>=0;j--) {
+            if(a[j].position.y-a[j].shape.boundingSphereRadius <= v.position.y-v.shape.boundingSphereRadius)
+                break;
+            a[j+1] = a[j];
+        }
+        a[j+1] = v;
+    }
+    return a;
+}
 
 /**
- * Function for sorting bodies along the Y axis. To be passed to array.sort()
- * @method sortAxisListY
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Number}
+ * @static
+ * @method insertionSortZ
+ * @param  {Array} a
+ * @return {Array}
  */
-SAPBroadphase.sortAxisListY = function(bodyA,bodyB){
-    return (bodyA.position.y-bodyA.shape.boundingSphereRadius) - (bodyB.position.y-bodyB.shape.boundingSphereRadius);
-};
+SAPBroadphase.insertionSortZ = function(a) {
+    for(var i=1,l=a.length;i<l;i++) {
+        var v = a[i];
+        for(var j=i - 1;j>=0;j--) {
+            if(a[j].position.z-a[j].shape.boundingSphereRadius <= v.position.z-v.shape.boundingSphereRadius)
+                break;
+            a[j+1] = a[j];
+        }
+        a[j+1] = v;
+    }
+    return a;
+}
 
 /**
- * Function for sorting bodies along the Y axis. To be passed to array.sort()
- * @method sortAxisListY
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Number}
+ * Collect all collision pairs
+ * @method collisionPairs
+ * @param  {World} world
+ * @param  {Array} p1
+ * @param  {Array} p2
  */
-SAPBroadphase.sortAxisListZ = function(bodyA,bodyB){
-    return (bodyA.position.z-bodyA.shape.boundingSphereRadius) - (bodyB.position.z-bodyB.shape.boundingSphereRadius);
-};
-
 SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
     var bodies = this.axisList,
         axisIndex = this.axisIndex,
@@ -152,15 +146,11 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
     // Sort the list
     var sortFunc;
     if(axisIndex === 0)
-        insertionSortX(bodies);
-        //sortFunc = SAPBroadphase.sortAxisListX;
+        SAPBroadphase.insertionSortX(bodies);
     else if(axisIndex === 1)
-        insertionSortY(bodies);
-        //sortFunc = SAPBroadphase.sortAxisListY;
+        SAPBroadphase.insertionSortY(bodies);
     else if(axisIndex === 2)
-        insertionSortZ(bodies);
-        //sortFunc = SAPBroadphase.sortAxisListZ;
-    //bodies.sort(sortFunc);
+        SAPBroadphase.insertionSortZ(bodies);
 
     // Look through the list
     for(i=0, N=bodies.length; i!==N; i++){
@@ -202,4 +192,53 @@ SAPBroadphase.checkBounds = function(bi,bj,axisIndex){
         boundB2 = bjPos+rj;
 
     return boundB1 < boundA2;
+};
+
+/**
+ * Computes the variance of the body positions and estimates the best
+ * axis to use. Will automatically set property .axisIndex.
+ * @method autoDetectAxis
+ */
+SAPBroadphase.prototype.autoDetectAxis = function(){
+    var sumX=0,
+        sumX2=0,
+        sumY=0,
+        sumY2=0,
+        sumZ=0,
+        sumZ2=0,
+        bodies = this.axisList,
+        N = bodies.length,
+        invN=1/N;
+
+    for(var i=0; i!==N; i++){
+        var b = bodies[i];
+
+        var centerX = b.position.x;
+        sumX += centerX;
+        sumX2 += centerX*centerX;
+
+        var centerY = b.position.y;
+        sumY += centerY;
+        sumY2 += centerY*centerY;
+
+        var centerZ = b.position.z;
+        sumZ += centerZ;
+        sumZ2 += centerZ*centerZ;
+    }
+
+    var varianceX = sumX2 - sumX*sumX*invN,
+        varianceY = sumY2 - sumY*sumY*invN,
+        varianceZ = sumZ2 - sumZ*sumZ*invN;
+
+    if(varianceX > varianceY){
+        if(varianceX > varianceZ){
+            this.axisIndex = 0;
+        } else{
+            this.axisIndex = 2;
+        }
+    } else if(varianceY > varianceZ){
+        this.axisIndex = 1;
+    } else{
+        this.axisIndex = 2;
+    }
 };
