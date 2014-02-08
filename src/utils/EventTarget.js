@@ -55,6 +55,7 @@ EventTarget.prototype = {
     removeEventListener: function ( type, listener ) {
         if ( this._listeners === undefined ) return this;
         var listeners = this._listeners;
+        if ( listeners[type] === undefined ) return this;
         var index = listeners[ type ].indexOf( listener );
         if ( index !== - 1 ) {
             listeners[ type ].splice( index, 1 );
