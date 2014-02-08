@@ -74,6 +74,43 @@ SAP1DBroadphase.prototype.setWorld = function(world){
     this.world = world;
 };
 
+function insertionSortX(ary) {
+    for(var i=1,l=ary.length;i<l;i++) {
+        var v = ary[i];
+        for(var j=i - 1;j>=0;j--) {
+            if(ary[j].position.x-ary[j].shape.boundingSphereRadius <= v.position.x-v.shape.boundingSphereRadius)
+                break;
+            ary[j+1] = ary[j];
+        }
+        ary[j+1] = v;
+    }
+    return ary;
+}
+function insertionSortY(ary) {
+    for(var i=1,l=ary.length;i<l;i++) {
+        var v = ary[i];
+        for(var j=i - 1;j>=0;j--) {
+            if(ary[j].position.y-ary[j].shape.boundingSphereRadius <= v.position.y-v.shape.boundingSphereRadius)
+                break;
+            ary[j+1] = ary[j];
+        }
+        ary[j+1] = v;
+    }
+    return ary;
+}
+function insertionSortZ(ary) {
+    for(var i=1,l=ary.length;i<l;i++) {
+        var v = ary[i];
+        for(var j=i - 1;j>=0;j--) {
+            if(ary[j].position.z-ary[j].shape.boundingSphereRadius <= v.position.z-v.shape.boundingSphereRadius)
+                break;
+            ary[j+1] = ary[j];
+        }
+        ary[j+1] = v;
+    }
+    return ary;
+}
+
 /**
  * Function for sorting bodies along the X axis. To be passed to array.sort()
  * @method sortAxisListX
@@ -115,12 +152,15 @@ SAP1DBroadphase.prototype.collisionPairs = function(world,p1,p2){
     // Sort the list
     var sortFunc;
     if(axisIndex === 0)
-        sortFunc = SAP1DBroadphase.sortAxisListX;
+        insertionSortX(bodies);
+        //sortFunc = SAP1DBroadphase.sortAxisListX;
     else if(axisIndex === 1)
-        sortFunc = SAP1DBroadphase.sortAxisListY;
+        insertionSortY(bodies);
+        //sortFunc = SAP1DBroadphase.sortAxisListY;
     else if(axisIndex === 2)
-        sortFunc = SAP1DBroadphase.sortAxisListZ;
-    bodies.sort(sortFunc);
+        insertionSortZ(bodies);
+        //sortFunc = SAP1DBroadphase.sortAxisListZ;
+    //bodies.sort(sortFunc);
 
     // Look through the list
     for(i=0, N=bodies.length; i!==N; i++){
