@@ -1,16 +1,16 @@
 var Shape = require('../shapes/Shape')
 ,   Broadphase = require('../collision/Broadphase')
 
-module.exports = SAP1DBroadphase;
+module.exports = SAPBroadphase;
 
 /**
  * Sweep and prune broadphase along one axis.
  *
- * @class SAP1DBroadphase
+ * @class SAPBroadphase
  * @constructor
  * @extends Broadphase
  */
-function SAP1DBroadphase(world){
+function SAPBroadphase(world){
     Broadphase.apply(this);
 
     /**
@@ -48,14 +48,14 @@ function SAP1DBroadphase(world){
 
     if(world) this.setWorld(world);
 };
-SAP1DBroadphase.prototype = new Broadphase();
+SAPBroadphase.prototype = new Broadphase();
 
 /**
  * Change the world
  * @method setWorld
  * @param  {World} world
  */
-SAP1DBroadphase.prototype.setWorld = function(world){
+SAPBroadphase.prototype.setWorld = function(world){
     // Clear the old axis array
     this.axisList.length = 0;
 
@@ -118,7 +118,7 @@ function insertionSortZ(ary) {
  * @param  {Body} bodyB
  * @return {Number}
  */
-SAP1DBroadphase.sortAxisListX = function(bodyA,bodyB){
+SAPBroadphase.sortAxisListX = function(bodyA,bodyB){
     return (bodyA.position.x-bodyA.shape.boundingSphereRadius) - (bodyB.position.x-bodyB.shape.boundingSphereRadius);
 };
 
@@ -129,7 +129,7 @@ SAP1DBroadphase.sortAxisListX = function(bodyA,bodyB){
  * @param  {Body} bodyB
  * @return {Number}
  */
-SAP1DBroadphase.sortAxisListY = function(bodyA,bodyB){
+SAPBroadphase.sortAxisListY = function(bodyA,bodyB){
     return (bodyA.position.y-bodyA.shape.boundingSphereRadius) - (bodyB.position.y-bodyB.shape.boundingSphereRadius);
 };
 
@@ -140,11 +140,11 @@ SAP1DBroadphase.sortAxisListY = function(bodyA,bodyB){
  * @param  {Body} bodyB
  * @return {Number}
  */
-SAP1DBroadphase.sortAxisListZ = function(bodyA,bodyB){
+SAPBroadphase.sortAxisListZ = function(bodyA,bodyB){
     return (bodyA.position.z-bodyA.shape.boundingSphereRadius) - (bodyB.position.z-bodyB.shape.boundingSphereRadius);
 };
 
-SAP1DBroadphase.prototype.collisionPairs = function(world,p1,p2){
+SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
     var bodies = this.axisList,
         axisIndex = this.axisIndex,
         i,j;
@@ -153,13 +153,13 @@ SAP1DBroadphase.prototype.collisionPairs = function(world,p1,p2){
     var sortFunc;
     if(axisIndex === 0)
         insertionSortX(bodies);
-        //sortFunc = SAP1DBroadphase.sortAxisListX;
+        //sortFunc = SAPBroadphase.sortAxisListX;
     else if(axisIndex === 1)
         insertionSortY(bodies);
-        //sortFunc = SAP1DBroadphase.sortAxisListY;
+        //sortFunc = SAPBroadphase.sortAxisListY;
     else if(axisIndex === 2)
         insertionSortZ(bodies);
-        //sortFunc = SAP1DBroadphase.sortAxisListZ;
+        //sortFunc = SAPBroadphase.sortAxisListZ;
     //bodies.sort(sortFunc);
 
     // Look through the list
@@ -169,7 +169,7 @@ SAP1DBroadphase.prototype.collisionPairs = function(world,p1,p2){
         for(j=i+1; j<N; j++){
             var bj = bodies[j];
 
-            if(!SAP1DBroadphase.checkBounds(bi,bj,axisIndex))
+            if(!SAPBroadphase.checkBounds(bi,bj,axisIndex))
                 break;
 
             this.doBoundingSphereBroadphase(bi,bj,p1,p2);
@@ -186,7 +186,7 @@ SAP1DBroadphase.prototype.collisionPairs = function(world,p1,p2){
  * @param  {Number} axisIndex
  * @return {Boolean}
  */
-SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
+SAPBroadphase.checkBounds = function(bi,bj,axisIndex){
     var axis;
     if(axisIndex==0) axis = 'x';
     if(axisIndex==1) axis = 'y';
