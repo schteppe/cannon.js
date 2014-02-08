@@ -16,6 +16,8 @@ function Body(type){
 
     this.type = type;
 
+    this.id = Body.idCounter++;
+
     /**
      * Reference to the world the body is living in
      * @property world
@@ -82,3 +84,5 @@ Body.STATIC = 2;
  * @type {Number}
  */
 Body.KINEMATIC = 4;
+
+Body.idCounter = 0;

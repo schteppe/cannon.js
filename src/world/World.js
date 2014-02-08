@@ -228,7 +228,6 @@ World.prototype.collisionMatrixTick = function(){
  * @todo Adding an array of bodies should be possible. This would save some loops too
  */
 World.prototype.add = function(body){
-	body.id = this.id();
     body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
@@ -251,7 +250,6 @@ World.prototype.add = function(body){
  */
 World.prototype.addConstraint = function(c){
     this.constraints.push(c);
-    c.id = this.id();
 };
 
 /**
@@ -264,15 +262,6 @@ World.prototype.removeConstraint = function(c){
     if(idx!==-1){
         this.constraints.splice(idx,1);
     }
-};
-
-/**
- * Generate a new unique integer identifyer
- * @method id
- * @return {Number}
- */
-World.prototype.id = function(){
-    return this.nextId++;
 };
 
 /**
@@ -294,17 +283,13 @@ World.prototype.remove = function(body){
 };
 
 /**
- * Adds a material to the World. A material can only be added once, it's added more times then nothing will happen.
+ * Adds a material to the World.
  * @method addMaterial
  * @param {Material} m
  * @todo Necessary?
  */
 World.prototype.addMaterial = function(m){
-    if(m.id === -1){
-        var n = this.materials.length;
-        this.materials.push(m);
-        m.id = this.materials.length-1;
-    }
+    this.materials.push(m);
 };
 
 /**
@@ -314,13 +299,8 @@ World.prototype.addMaterial = function(m){
  */
 World.prototype.addContactMaterial = function(cmat) {
 
-    // Add materials if they aren't already added
-    this.addMaterial(cmat.materials[0]);
-    this.addMaterial(cmat.materials[1]);
-
     // Add contact material
     this.contactmaterials.push(cmat);
-    cmat.id = this.contactmaterials.length-1;
 
     // Add current contact material to the material table
     this.contactMaterialTable.set(cmat.materials[0].id,cmat.materials[1].id,cmat);

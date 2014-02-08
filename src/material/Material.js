@@ -13,6 +13,7 @@ function Material(name){
      * @type {String}
      */
     this.name = name;
-    this.id = -1;
+    this.id = Material.idCounter++;
 };
 
+Material.idCounter = 0;

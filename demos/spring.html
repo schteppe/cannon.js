@@ -26,40 +26,31 @@
         world.gravity.set(0,0,-10);
         world.broadphase = new CANNON.NaiveBroadphase();
 
-        // Create a box body
-        var halfExtents = new CANNON.Vec3(size,size*0.3,size);
-        var boxShape = new CANNON.Box(halfExtents);
-        var body = new CANNON.RigidBody(5,boxShape);
-        body.position.set(0,size,size*2);
-        world.add(body);
-        demo.addVisual(body);
+        // Create a static sphere
+        var sphereShape = new CANNON.Sphere(0.1),
+            sphereBody = new CANNON.RigidBody(0,sphereShape);
+        world.add(sphereBody);
+        demo.addVisual(sphereBody);
 
-        var localPoint = halfExtents,
-            worldPoint = new CANNON.Vec3(),
-            force = new CANNON.Vec3(),
-            r = new CANNON.Vec3(),
-            k = 50, // spring stiffness
-            restLength = 0,
-            attachmentPoint = body.position.vadd(halfExtents);
+        // Create a box body
+        var halfExtents = new CANNON.Vec3(size,size*0.3,size),
+            boxShape = new CANNON.Box(halfExtents);
+            boxBody = new CANNON.RigidBody(5,boxShape);
+        boxBody.position.set(-size,0,-size);
+        world.add(boxBody);
+        demo.addVisual(boxBody);
+
+        var spring = new CANNON.Spring(boxBody,sphereBody,{
+            localAnchorA: new CANNON.Vec3(size,0,size),
+            localAnchorB: new CANNON.Vec3(0,0,0),
+            restLength : 0,
+            stiffness : 50,
+            damping : 1,
+        });
 
         // Compute the force after each step
         world.addEventListener("postStep",function(event){
-
-            // Compute world point of the box corner
-            body.quaternion.vmult(localPoint,worldPoint);
-            worldPoint.vadd(body.position,worldPoint);
-
-            // Compute vector between the corner and the attachment point
-            attachmentPoint.vsub(worldPoint,r);
-
-            // f = k*(x0-x)
-            var d = r.norm() - restLength;
-            r.normalize();
-            r.mult(d*k,force);
-
-            // Add force to the body
-            body.applyForce(force,worldPoint);
-
+            spring.applyForce();
         });
     });
 
