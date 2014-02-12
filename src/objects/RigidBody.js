@@ -72,23 +72,19 @@ function RigidBody(mass,shape,material){
      * @type {Vec3}
      */
     this.inertia = new Vec3();
-    shape.calculateLocalInertia(mass,this.inertia);
-
-    this.inertiaWorld = new Vec3();
-    this.inertia.copy(this.inertiaWorld);
 
     /**
-     * @property invInertia
-     * @type {Vec3}
+     * @property {Vec3} invInertia
      */
-    this.invInertia = new Vec3(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
-                               this.inertia.y>0 ? 1.0/this.inertia.y : 0,
-                               this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+    this.invInertia = new Vec3();
+
+    /**
+     * @property {Mat3} invInertiaWorld
+     */
     this.invInertiaWorld = new Mat3();
 
     /**
-     * @property angularDamping
-     * @type {Number}
+     * @property {Number} angularDamping
      */
     this.angularDamping = 0.01; // Perhaps default should be zero here?
 
@@ -113,7 +109,7 @@ function RigidBody(mass,shape,material){
 
     this.wlambda = new Vec3();
 
-    this.updateInertiaWorld(true);
+    this.updateMassProperties();
 };
 
 RigidBody.prototype = new Particle(0);
@@ -251,4 +247,17 @@ RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
 
     // Add rotational Impulse
     this.angularVelocity.vadd(rotVelo, this.angularVelocity);
+};
+
+/**
+ * Should be called whenever you change the body mass.
+ * @method updateMassProperties
+ */
+RigidBody.prototype.updateMassProperties = function(){
+    this.invMass = this.mass>0 ? 1.0/this.mass : 0;
+    this.shape.calculateLocalInertia(this.mass, this.inertia);
+    this.invInertia.set(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
+                        this.inertia.y>0 ? 1.0/this.inertia.y : 0,
+                        this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+    this.updateInertiaWorld(true);
 };
