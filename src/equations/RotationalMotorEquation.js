@@ -32,57 +32,50 @@ function RotationalMotorEquation(bodyA, bodyB, maxForce){
 RotationalMotorEquation.prototype = new Equation();
 RotationalMotorEquation.prototype.constructor = RotationalMotorEquation;
 
+var zero = new Vec3();
+
 RotationalMotorEquation.prototype.computeB = function(h){
     var a = this.a,
-        b = this.b;
-    var bi = this.bi;
-    var bj = this.bj;
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
 
-    var axisA = this.axisA;
-    var axisB = this.axisB;
+        axisA = this.axisA,
+        axisB = this.axisB,
 
-    var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new Vec3();
-    var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new Vec3();
+        vi = bi.velocity,
+        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        fi = bi.force,
+        taui = bi.tau ? bi.tau : zero,
 
-    var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new Vec3();
-    var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new Vec3();
+        vj = bj.velocity,
+        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        fj = bj.force,
+        tauj = bj.tau ? bj.tau : zero,
 
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+        GA = this.jacobianElementA,
+        GB = this.jacobianElementB,
 
-    /*
-    var invIi = this.invIi;
-    var invIj = this.invIj;
-
-    if(bi.invInertiaWorld){
-        invIi.setTrace(bi.invInertiaWorld);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertiaWorld){
-        invIj.setTrace(bj.invInertiaWorld);
-    } else {
-        invIj.identity(); // ok?
-    }
-    */
+        invMassi = bi.invMass,
+        invMassj = bj.invMass;
 
     // g = 0
     // gdot = axisA * wi - axisB * wj
     // G = [0 axisA 0 -axisB]
     // W = [vi wi vj wj]
-    var Gq = 0;
-    var GW = axisA.dot(wi) + axisB.dot(wj) + this.targetVelocity;
-    var GiMf = 0;//axis.dot(invIi.vmult(taui)) + axis.dot(invIj.vmult(tauj));
 
-    var B = - Gq * a - GW * b - h*GiMf;
+    axisA.copy(GA.rotational);
+    axisB.negate(GB.rotational);
+
+    var GW = this.computeGW() - this.targetVelocity,
+        GiMf = this.computeGiMf();//axis.dot(invIi.vmult(taui)) + axis.dot(invIj.vmult(tauj));
+
+    var B = - GW * b - h*GiMf;
 
     return B;
 };
 
+/*
 // Compute C = GMG+eps
 RotationalMotorEquation.prototype.computeC = function(){
     var bi = this.bi;
@@ -93,22 +86,6 @@ RotationalMotorEquation.prototype.computeC = function(){
     var invMassj = bj.invMass;
 
     var C = this.eps;
-
-    /*
-    var invIi = this.invIi;
-    var invIj = this.invIj;
-
-    if(bi.invInertiaWorld){
-        invIi.setTrace(bi.invInertiaWorld);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertiaWorld){
-        invIj.setTrace(bj.invInertiaWorld);
-    } else {
-        invIj.identity(); // ok?
-    }
-    */
 
     C += bi.invInertiaWorld.vmult(axisA).dot(axisB);
     C += bj.invInertiaWorld.vmult(axisB).dot(axisB);
@@ -163,3 +140,4 @@ RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
         bj.wlambda.vadd(I.vmult(axisB).mult(deltalambda),bj.wlambda);
     }
 };
+*/

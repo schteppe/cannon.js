@@ -32,46 +32,38 @@ function RotationalEquation(bodyA, bodyB){
 RotationalEquation.prototype = new Equation();
 RotationalEquation.prototype.constructor = RotationalEquation;
 
+var zero = new Vec3();
+
 RotationalEquation.prototype.computeB = function(h){
     var a = this.a,
-        b = this.b;
-    var bi = this.bi;
-    var bj = this.bj;
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
 
-    var ni = this.ni;
-    var nj = this.nj;
+        ni = this.ni,
+        nj = this.nj,
 
-    var nixnj = this.nixnj;
-    var njxni = this.njxni;
+        nixnj = this.nixnj,
+        njxni = this.njxni,
 
-    var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new Vec3();
-    var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new Vec3();
+        vi = bi.velocity,
+        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        fi = bi.force,
+        taui = bi.tau ? bi.tau : zero,
 
-    var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new Vec3();
-    var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new Vec3();
+        vj = bj.velocity,
+        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        fj = bj.force,
+        tauj = bj.tau ? bj.tau : zero,
 
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
 
-    var invIi = this.invIi;
-    var invIj = this.invIj;
+        GA = this.jacobianElementA,
+        GB = this.jacobianElementB,
 
-    /*
-    if(bi.invInertiaWorld){
-        invIi.setTrace(bi.invInertiaWorld);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertiaWorld) {
-        invIj.setTrace(bj.invInertiaWorld);
-    } else {
-        invIj.identity(); // ok?
-    }
-    */
+        invIi = this.invIi,
+        invIj = this.invIj;
 
     // Caluclate cross products
     ni.cross(nj,nixnj);
@@ -81,15 +73,19 @@ RotationalEquation.prototype.computeB = function(h){
     // gdot = (nj x ni) * wi + (ni x nj) * wj
     // G = [0 njxni 0 nixnj]
     // W = [vi wi vj wj]
-    var Gq = -ni.dot(nj);
-    var GW = njxni.dot(wi) + nixnj.dot(wj);
-    var GiMf = 0;//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
+    njxni.copy(GA.rotational);
+    nixnj.copy(GB.rotational);
 
-    var B = - Gq * a - GW * b - h*GiMf;
+    var g = -ni.dot(nj),
+        GW = this.computeGW(),//njxni.dot(wi) + nixnj.dot(wj),
+        GiMf = this.computeGiMf();//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
+
+    var B = - g * a - GW * b - h*GiMf;
 
     return B;
 };
 
+/*
 // Compute C = GMG+eps
 RotationalEquation.prototype.computeC = function(){
     var bi = this.bi;
@@ -99,23 +95,8 @@ RotationalEquation.prototype.computeC = function(){
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
-    var C = /*invMassi + invMassj +*/ this.eps;
+    var C = this.eps;
 
-    /*
-    var invIi = this.invIi;
-    var invIj = this.invIj;
-
-    if(bi.invInertiaWorld){
-        invIi.setTrace(bi.invInertiaWorld);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertiaWorld){
-        invIj.setTrace(bj.invInertiaWorld);
-    } else {
-        invIj.identity(); // ok?
-    }
-    */
 
     C += bi.invInertiaWorld.vmult(njxni).dot(njxni);
     C += bj.invInertiaWorld.vmult(nixnj).dot(nixnj);
@@ -168,3 +149,4 @@ RotationalEquation.prototype.addToWlambda = function(deltalambda){
         bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
     }
 };
+*/

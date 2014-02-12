@@ -95,17 +95,20 @@ FrictionEquation.prototype.computeB = function(h){
     rjxt.copy(GB.rotational);
 
     if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    else invIi_vmult_taui.set(0,0,0);
     if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
+    else invIj_vmult_tauj.set(0,0,0);
 
-    var Gq = 0; // we do only want to constrain motion
-    var GW = vj.dot(t) - vi.dot(t) + wjxrj.dot(t) - wixri.dot(t); // eq. 40
-    var GiMf = fj.dot(t)*invMassj - fi.dot(t)*invMassi + rjxt.dot(invIj_vmult_tauj) - rixt.dot(invIi_vmult_taui);
+    var GW = this.computeGW();//vj.dot(t) - vi.dot(t) + wjxrj.dot(t) - wixri.dot(t), // eq. 40
+        GiMf = this.computeGiMf();//fj.dot(t)*invMassj - fi.dot(t)*invMassi + rjxt.dot(invIj_vmult_tauj) - rixt.dot(invIi_vmult_taui);
 
-    var B = - Gq * a - GW * b - h*GiMf;
+    // we do only want to constrain velocity, so g=0
+    var B = - GW * b - h*GiMf;
 
     return B;
 };
 
+/*
 // Compute C = G * Minv * G + eps
 //var FEcomputeC_temp1 = new Vec3();
 //var FEcomputeC_temp2 = new Vec3();
@@ -172,21 +175,12 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
 
     // Add to angular velocity
     if(wi){
-        /*
-        var I = this.invIi;
-        I.vmult(rixt,tmp);
-        tmp.mult(deltalambda,tmp);
-         */
         this.biInvInertiaTimesRixt.mult(deltalambda,tmp);
         wi.vsub(tmp,wi);
     }
     if(wj){
-        /*
-        var I = this.invIj;
-        I.vmult(rjxt,tmp);
-        tmp.mult(deltalambda,tmp);
-         */
         this.bjInvInertiaTimesRjxt.mult(deltalambda,tmp);
         wj.vadd(tmp,wj);
     }
 };
+*/

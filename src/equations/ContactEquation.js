@@ -55,66 +55,55 @@ function ContactEquation(bi,bj){
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;
 
-/**
- * To be run before object reuse
- * @method reset
- */
-ContactEquation.prototype.reset = function(){
-    this.invInertiaWorldTimesRxnNeedsUpdate = true;
-};
-
 var ContactEquation_computeB_temp1 = new Vec3(); // Temp vectors
 var ContactEquation_computeB_temp2 = new Vec3();
 var ContactEquation_computeB_zero = new Vec3();
 ContactEquation.prototype.computeB = function(h){
     var a = this.a,
-        b = this.b;
-    var bi = this.bi;
-    var bj = this.bj;
-    var ri = this.ri;
-    var rj = this.rj;
-    var rixn = this.rixn;
-    var rjxn = this.rjxn;
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
+        ri = this.ri,
+        rj = this.rj,
+        rixn = this.rixn,
+        rjxn = this.rjxn,
 
-    var zero = ContactEquation_computeB_zero;
+        zero = ContactEquation_computeB_zero,
 
-    var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : zero;
-    var fi = bi.force;
-    var taui = bi.tau ? bi.tau : zero;
+        vi = bi.velocity,
+        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        fi = bi.force,
+        taui = bi.tau ? bi.tau : zero,
 
-    var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : zero;
-    var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : zero;
+        vj = bj.velocity,
+        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        fj = bj.force,
+        tauj = bj.tau ? bj.tau : zero,
 
-    var penetrationVec = this.penetrationVec;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+        penetrationVec = this.penetrationVec,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
 
-    var invIi = this.invIi;
-    var invIj = this.invIj;
+        invIi = this.invIi,
+        invIj = this.invIj,
 
-    /*
-    if(bi.invInertiaWorld){
-        invIi.setTrace(bi.invInertiaWorld);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertiaWorld){
-        invIj.setTrace(bj.invInertiaWorld);
-    } else {
-        invIj.identity(); // ok?
-    }
-    */
+        GA = this.jacobianElementA,
+        GB = this.jacobianElementB,
 
-    var n = this.ni;
+        n = this.ni;
 
     // Caluclate cross products
     ri.cross(n,rixn);
     rj.cross(n,rjxn);
 
-    // Calculate q = xj+rj -(xi+ri) i.e. the penetration vector
+    // g = xj+rj -(xi+ri)
+    // G = [ -ni  -rixn  ni  rjxn ]
+    n.negate(GA.spatial);
+    rixn.negate(GA.rotational);
+    n.copy(GB.spatial);
+    rjxn.copy(GB.rotational);
+
+    // Calculate the penetration vector
     var penetrationVec = this.penetrationVec;
     penetrationVec.set(0,0,0);
     penetrationVec.vadd(bj.position,penetrationVec);
@@ -122,24 +111,27 @@ ContactEquation.prototype.computeB = function(h){
     penetrationVec.vsub(bi.position,penetrationVec);
     penetrationVec.vsub(ri,penetrationVec);
 
-    var Gq = n.dot(penetrationVec);//-Math.abs(this.penetration);
+    var g = n.dot(penetrationVec);
 
     var invIi_vmult_taui = ContactEquation_computeB_temp1;
     var invIj_vmult_tauj = ContactEquation_computeB_temp2;
     if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    else invIi_vmult_taui.set(0,0,0);
     if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
+    else invIj_vmult_tauj.set(0,0,0);
 
     // Compute iteration
     var ePlusOne = this.restitution+1;
     var GW = ePlusOne*vj.dot(n) - ePlusOne*vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-    var GiMf = fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui);
+    var GiMf = this.computeGiMf();//fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui);
 
-    var B = - Gq * a - GW * b - h*GiMf;
+    var B = - g * a - GW * b - h*GiMf;
 
     return B;
 };
 
 // Compute C = GMG+eps in the SPOOK equation
+/*
 var computeC_temp1 = new Vec3();
 var computeC_temp2 = new Vec3();
 ContactEquation.prototype.computeC = function(){
@@ -155,30 +147,10 @@ ContactEquation.prototype.computeC = function(){
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    /*
-    if(bi.invInertiaWorld){
-        invIi.setTrace(bi.invInertiaWorld);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertiaWorld){
-        invIj.setTrace(bj.invInertiaWorld);
-    } else {
-        invIj.identity(); // ok?
-    }
-     */
-
     // Compute rxn * I * rxn for each body
     if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(rixn, this.biInvInertiaTimesRixn);
     if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(rjxn, this.bjInvInertiaTimesRjxn);
 
-    /*
-    invIi.vmult(rixn,computeC_temp1);
-    invIj.vmult(rjxn,computeC_temp2);
-
-    C += computeC_temp1.dot(rixn);
-    C += computeC_temp2.dot(rjxn);
-     */
     C += this.biInvInertiaTimesRixn.dot(rixn);
     C += this.bjInvInertiaTimesRjxn.dot(rjxn);
 
@@ -238,3 +210,4 @@ ContactEquation.prototype.addToWlambda = function(deltalambda){
         bj.wlambda.vadd(temp1,bj.wlambda);
     }
 };
+*/

@@ -110,6 +110,8 @@ Equation.prototype.computeGq = function(){
     return GA.spatial.dot(xi) + GB.spatial.dot(xj);
 };
 
+var zero = new Vec3();
+
 /**
  * Computes G*W, where W are the body velocities
  * @method computeGW
@@ -122,10 +124,11 @@ Equation.prototype.computeGW = function(){
         bj = this.bj,
         vi = bi.velocity,
         vj = bj.velocity,
-        wi = bi.angularVelocity,
-        wj = bj.angularVelocity;
+        wi = bi.angularVelocity || zero,
+        wj = bj.angularVelocity || zero;
     return GA.multiplyVectors(vi,wi) + GB.multiplyVectors(vj,wj);
 };
+
 
 /**
  * Computes G*Wlambda, where W are the body velocities
@@ -139,8 +142,8 @@ Equation.prototype.computeGWlambda = function(){
         bj = this.bj,
         vi = bi.vlambda,
         vj = bj.vlambda,
-        wi = bi.wlambda,
-        wj = bj.wlambda;
+        wi = bi.wlambda || zero,
+        wj = bj.wlambda || zero;
     return GA.multiplyVectors(vi,wi) + GB.multiplyVectors(vj,wj);
 };
 
@@ -165,8 +168,10 @@ Equation.prototype.computeGiMf = function(){
         invMassi = bi.invMass,
         invMassj = bj.invMass;
 
-    bi.invInertiaWorld.vmult(ti,invIi_vmult_taui);
-    bj.invInertiaWorld.vmult(tj,invIj_vmult_tauj);
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(ti,invIi_vmult_taui);
+    else invIi_vmult_taui.set(0,0,0);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tj,invIj_vmult_tauj);
+    else invIj_vmult_tauj.set(0,0,0);
 
     fi.mult(invMassi,iMfi);
     fj.mult(invMassj,iMfj);
@@ -191,11 +196,15 @@ Equation.prototype.computeGiMGt = function(){
         invIj = bj.invInertiaWorld
         result = invMassi + invMassj;
 
-    invIi.vmult(GA.rotational,tmp);
-    result += tmp.dot(GA.rotational);
+    if(invIi){
+        invIi.vmult(GA.rotational,tmp);
+        result += tmp.dot(GA.rotational);
+    }
 
-    invIj.vmult(GB.rotational,tmp);
-    result += tmp.dot(GB.rotational);
+    if(invIj){
+        invIj.vmult(GB.rotational,tmp);
+        result += tmp.dot(GB.rotational);
+    }
 
     return  result;
 };
@@ -217,28 +226,28 @@ Equation.prototype.addToWlambda = function(deltalambda){
         GB = this.jacobianElementB,
         bi = this.bi,
         bj = this.bj,
-        temp = addToWlambda_temp,
-        Gi = addToWlambda_Gi,
-        Gj = addToWlambda_Gj,
-        ri = addToWlambda_ri,
-        rj = addToWlambda_rj,
-        Mdiag = addToWlambda_Mdiag;
+        temp = addToWlambda_temp;
 
     // Add to linear velocity
     // v_lambda += inv(M) * delta_lamba * G
-    GA.mult(bi.invMass*deltalambda,temp);
+    GA.spatial.mult(bi.invMass*deltalambda,temp);
     bi.vlambda.vadd(temp, bi.vlambda);
 
-    GB.mult(bj.invMass*deltalambda,temp);
+    GB.spatial.mult(bj.invMass*deltalambda,temp);
     bj.vlambda.vadd(temp, bj.vlambda);
 
     // Add to angular velocity
-    // Todo: less garbage
-    var iMGAdli = bi.invInertiaWorld.vmult(GA.rotational).mult(deltalambda);
-    bi.wlambda.vadd(iMGAdli,bi.wlambda);
+    if(bi.invInertiaWorld){
+        bi.invInertiaWorld.vmult(GA.rotational,temp);
+        temp.mult(deltalambda,temp);
+        bi.wlambda.vadd(temp,bi.wlambda);
+    }
 
-    var iMGAdlj = bi.invInertiaWorld.vmult(GA.rotational).mult(deltalambda);
-    bi.wlambda.vadd(iMGAdlj,bi.wlambda);
+    if(bj.invInertiaWorld){
+        bj.invInertiaWorld.vmult(GB.rotational,temp);
+        temp.mult(deltalambda,temp);
+        bj.wlambda.vadd(temp,bj.wlambda);
+    }
 };
 
 /**
