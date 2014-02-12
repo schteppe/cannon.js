@@ -23,10 +23,6 @@ function Shape(){
      */
     this.type = 0;
 
-    // Only used in ConvexPolyhedron?
-    this.aabbmin = new Vec3();
-    this.aabbmax = new Vec3();
-
     /**
      * The local bounding sphere radius of this shape.
      * @property {Number} boundingSphereRadius
