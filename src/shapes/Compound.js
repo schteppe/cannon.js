@@ -47,6 +47,7 @@ Compound.prototype.addChild = function(shape,offset,orientation){
     this.childShapes.push(shape);
     this.childOffsets.push(offset);
     this.childOrientations.push(orientation);
+    this.updateBoundingSphereRadius();
 };
 
 Compound.prototype.clearAllChildren = function(){
@@ -125,20 +126,18 @@ Compound.prototype.calculateLocalInertia = function(mass,target){
     return target;
 };
 
-Compound.prototype.computeBoundingSphereRadius = function(){
+Compound.prototype.updateBoundingSphereRadius = function(){
     var r = 0.0;
     for(var i = 0; i<this.childShapes.length; i++){
         var si = this.childShapes[i];
-        if(si.boundingSphereRadiusNeedsUpdate){
-            si.computeBoundingSphereRadius();
-        }
+        si.updateBoundingSphereRadius();
+
         var candidate = this.childOffsets[i].norm() + si.boundingSphereRadius;
         if(r < candidate){
             r = candidate;
         }
     }
     this.boundingSphereRadius = r;
-    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var aabbmaxTemp = new Vec3();

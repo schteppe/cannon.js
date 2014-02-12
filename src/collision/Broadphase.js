@@ -125,14 +125,6 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
             // Rel. position
             bj.position.vsub(bi.position,r);
 
-            // Update bounding spheres if needed
-            if(bishape.boundingSphereRadiusNeedsUpdate){
-                bishape.computeBoundingSphereRadius();
-            }
-            if(bjshape.boundingSphereRadiusNeedsUpdate){
-                bjshape.computeBoundingSphereRadius();
-            }
-
             var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
             if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
                 pairs1.push(bi);
@@ -155,10 +147,6 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
             }
 
             normal = planeShape.worldNormal;
-
-            if(otherShape.boundingSphereRadiusNeedsUpdate){
-                otherShape.computeBoundingSphereRadius();
-            }
 
             var q = r.dot(normal) - otherShape.boundingSphereRadius;
             if(q < 0.0){
@@ -185,9 +173,6 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
                     }
                 } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
 
-                    if(otherShape.boundingSphereRadiusNeedsUpdate){
-                        otherShape.computeBoundingSphereRadius();
-                    }
                     var R = otherShape.boundingSphereRadius;
                     particle.position.vsub(other.position,relpos);
                     if(R*R >= relpos.norm2()){

@@ -31,6 +31,7 @@ function Box(halfExtents){
     this.convexPolyhedronRepresentation = null;
 
     this.updateConvexPolyhedronRepresentation();
+    this.updateBoundingSphereRadius();
 };
 Box.prototype = new Shape();
 Box.prototype.constructor = Box;
@@ -118,9 +119,8 @@ Box.prototype.volume = function(){
     return 8.0 * this.halfExtents.x * this.halfExtents.y * this.halfExtents.z;
 };
 
-Box.prototype.computeBoundingSphereRadius = function(){
+Box.prototype.updateBoundingSphereRadius = function(){
     this.boundingSphereRadius = this.halfExtents.norm();
-    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var worldCornerTempPos = new Vec3();

@@ -130,6 +130,8 @@ function ConvexPolyhedron( points , faces , normals ) {
             }
         }
     }
+
+    this.updateBoundingSphereRadius();
 };
 ConvexPolyhedron.prototype = new Shape();
 ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
@@ -679,9 +681,9 @@ ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
 };
 
 /**
- * @method computeBoundingSphereRadius
+ * @method updateBoundingSphereRadius
  */
-ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
+ConvexPolyhedron.prototype.updateBoundingSphereRadius = function(){
     // Assume points are distributed with local (0,0,0) as center
     var max2 = 0;
     var verts = this.vertices;
@@ -692,7 +694,6 @@ ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
         }
     }
     this.boundingSphereRadius = Math.sqrt(max2);
-    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var tempWorldVertex = new Vec3();
@@ -740,9 +741,6 @@ ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
  * @return {Number}
  */
 ConvexPolyhedron.prototype.volume = function(){
-    if(this.boundingSphereRadiusNeedsUpdate){
-        this.computeBoundingSphereRadius();
-    }
     return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
 };
 
