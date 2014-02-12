@@ -46,10 +46,10 @@ Shape.prototype.computeBoundingSphereRadius = function(){
  * @return {Number}
  */
 Shape.prototype.getBoundingSphereRadius = function(){
-	if (this.boundingSphereRadiusNeedsUpdate) {
-		this.computeBoundingSphereRadius();
-	}
-	return this.boundingSphereRadius;
+    if (this.boundingSphereRadiusNeedsUpdate) {
+        this.computeBoundingSphereRadius();
+    }
+    return this.boundingSphereRadius;
 };
 
 /**
