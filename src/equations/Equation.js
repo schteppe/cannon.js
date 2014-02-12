@@ -35,18 +35,6 @@ function Equation(bi,bj,minForce,maxForce){
     this.bj = bj;
 
     /**
-     * Corresponds to spring stiffness. Makes constraints stiffer, but harder to solve.
-     * @property float stiffness
-     */
-    this.stiffness = 1e7;
-
-    /**
-     * Similar to damping. Represents the number of timesteps needed to stabilize the constraint.
-     * @property float regularizationTime
-     */
-    this.regularizationTime = 5;
-
-    /**
      * SPOOK parameter
      * @property float a
      */
@@ -64,21 +52,19 @@ function Equation(bi,bj,minForce,maxForce){
      */
     this.eps = 0.0;
 
-    /**
-     * Set to true if you just changed stiffness or regularization. The parameters a,b,eps will be recalculated by the solver before solve.
-     * @property bool spookParamsNeedsUpdate
-     */
-    this.spookParamsNeedsUpdate = true;
+    // Set typical spook params
+    this.setSpookParams(1e7,4,1/60);
 };
 Equation.prototype.constructor = Equation;
 
 /**
  * Recalculates a,b,eps.
- * @method updateSpookParams
+ * @method setSpookParams
  */
-Equation.prototype.updateSpookParams = function(h){
-    var d = this.regularizationTime,
-        k = this.stiffness;
+Equation.prototype.setSpookParams = function(stiffness,relaxation,timeStep){
+    var d = relaxation,
+        k = stiffness,
+        h = timeStep;
     this.a = 4.0 / (h * (1 + 4 * d));
     this.b = (4.0 * d) / (1 + 4 * d);
     this.eps = 4.0 / (h * h * k * (1 + 4 * d));

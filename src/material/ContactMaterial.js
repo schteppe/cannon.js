@@ -44,10 +44,10 @@ function ContactMaterial(m1, m2, friction, restitution){
     this.contactEquationStiffness = 1e7;
 
     /**
-     * Regularization of the produced contact equations
-     * @property {Number} contactEquationRegularizationTime
+     * Relaxation time of the produced contact equations
+     * @property {Number} contactEquationRelaxation
      */
-    this.contactEquationRegularizationTime = 3;
+    this.contactEquationRelaxation = 3;
 
     /**
      * Stiffness of the produced friction equations
@@ -56,10 +56,10 @@ function ContactMaterial(m1, m2, friction, restitution){
     this.frictionEquationStiffness = 1e7;
 
     /**
-     * Regularization of the produced friction equations
-     * @property {Number} frictionEquationRegularizationTime
+     * Relaxation time of the produced friction equations
+     * @property {Number} frictionEquationRelaxation
      */
-    this.frictionEquationRegularizationTime = 3;
+    this.frictionEquationRelaxation = 3;
 };
 
 ContactMaterial.idCounter = 0;
