@@ -124,7 +124,7 @@ Ray.prototype.intersectShape = function(shape,quat,position,body){
         // Checking boundingSphere
 
         var distance = distanceFromIntersection( this.origin, this.direction, position );
-        if ( distance > shape.getBoundingSphereRadius() ) {
+        if ( distance > shape.boundingSphereRadius ) {
             return intersects;
         }
 

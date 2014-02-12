@@ -78,21 +78,21 @@ FrictionEquation.prototype.computeB = function(h){
         invIi_vmult_taui = FrictionEquation_computeB_temp1,
         invIj_vmult_tauj = FrictionEquation_computeB_temp2;
 
-    /*
-    if(bi.invInertiaWorld){
-        invIi.setTrace(bi.invInertiaWorld);
-    }
-    if(bj.invInertiaWorld){
-        invIj.setTrace(bj.invInertiaWorld);
-    }
-    */
-
     // Caluclate cross products
     ri.cross(t,rixt);
     rj.cross(t,rjxt);
 
     wi.cross(ri,wixri);
     wj.cross(rj,wjxrj);
+
+    // G = [-t -rixt t rjxt]
+    // And remember, this is a pure velocity constraint, g is always zero!
+    var GA = this.jacobianElementA,
+        GB = this.jacobianElementB;
+    t.negate(GA.spatial)
+    rixt.negate(GA.rotational);
+    t.copy(GB.spatial)
+    rjxt.copy(GB.rotational);
 
     if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
     if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
@@ -120,22 +120,7 @@ FrictionEquation.prototype.computeC = function(){
         invIi = this.invIi,
         invIj = this.invIj;
 
-    /*
-    if(bi.invInertiaWorld){
-        invIi.setTrace(bi.invInertiaWorld);
-    }
-    if(bj.invInertiaWorld){
-        invIj.setTrace(bj.invInertiaWorld);
-    }
-     */
-
     // Compute rxt * I * rxt for each body
-    /*
-    invIi.vmult(rixt,FEcomputeC_temp1);
-    invIj.vmult(rjxt,FEcomputeC_temp2);
-    C += FEcomputeC_temp1.dot(rixt);
-    C += FEcomputeC_temp2.dot(rjxt);
-      */
     if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(rixt,this.biInvInertiaTimesRixt);
     if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(rjxt,this.bjInvInertiaTimesRjxt);
     C += this.biInvInertiaTimesRixt.dot(rixt);

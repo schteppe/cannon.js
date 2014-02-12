@@ -19,6 +19,8 @@ function Sphere(radius){
      */
     this.radius = radius!==undefined ? Number(radius) : 1.0;
     this.type = Shape.types.SPHERE;
+
+    this.updateBoundingSphereRadius();
 };
 Sphere.prototype = new Shape();
 Sphere.prototype.constructor = Sphere;
@@ -36,8 +38,7 @@ Sphere.prototype.volume = function(){
     return 4.0 * Math.PI * this.radius / 3.0;
 };
 
-Sphere.prototype.computeBoundingSphereRadius = function(){
-    this.boundingSphereRadiusNeedsUpdate = false;
+Sphere.prototype.updateBoundingSphereRadius = function(){
     this.boundingSphereRadius = this.radius;
 };
 

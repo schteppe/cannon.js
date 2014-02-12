@@ -130,6 +130,8 @@ function ConvexPolyhedron( points , faces , normals ) {
             }
         }
     }
+
+    this.updateBoundingSphereRadius();
 };
 ConvexPolyhedron.prototype = new Shape();
 ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
@@ -363,6 +365,9 @@ ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB
     return depth;
 };
 
+var cli_aabbmin = new Vec3(),
+    cli_aabbmax = new Vec3();
+
 /**
  * @method calculateLocalInertia
  * @param  {Number} mass
@@ -371,10 +376,10 @@ ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB
 ConvexPolyhedron.prototype.calculateLocalInertia = function(mass,target){
     // Approximate with box inertia
     // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
-    this.computeAABB();
-    var x = this.aabbmax.x - this.aabbmin.x,
-        y = this.aabbmax.y - this.aabbmin.y,
-        z = this.aabbmax.z - this.aabbmin.z;
+    this.computeLocalAABB(cli_aabbmin,cli_aabbmax);
+    var x = cli_aabbmax.x - cli_aabbmin.x,
+        y = cli_aabbmax.y - cli_aabbmin.y,
+        z = cli_aabbmax.z - cli_aabbmin.z;
     target.x = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*z*2*z );
     target.y = 1.0 / 12.0 * mass * ( 2*x*2*x + 2*z*2*z );
     target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
@@ -627,13 +632,11 @@ ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat){
     this.worldVerticesNeedsUpdate = false;
 };
 
-var computeAABB_worldVert = new Vec3();
-ConvexPolyhedron.prototype.computeAABB = function(){
+var computeLocalAABB_worldVert = new Vec3();
+ConvexPolyhedron.prototype.computeLocalAABB = function(aabbmin,aabbmax){
     var n = this.vertices.length,
-        aabbmin = this.aabbmin,
-        aabbmax = this.aabbmax,
         vertices = this.vertices,
-        worldVert = computeAABB_worldVert;
+        worldVert = computeLocalAABB_worldVert;
 
     aabbmin.set(Infinity,Infinity,Infinity);
     aabbmax.set(-Infinity,-Infinity,-Infinity);
@@ -679,9 +682,9 @@ ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
 };
 
 /**
- * @method computeBoundingSphereRadius
+ * @method updateBoundingSphereRadius
  */
-ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
+ConvexPolyhedron.prototype.updateBoundingSphereRadius = function(){
     // Assume points are distributed with local (0,0,0) as center
     var max2 = 0;
     var verts = this.vertices;
@@ -692,7 +695,6 @@ ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
         }
     }
     this.boundingSphereRadius = Math.sqrt(max2);
-    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var tempWorldVertex = new Vec3();
@@ -740,9 +742,6 @@ ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
  * @return {Number}
  */
 ConvexPolyhedron.prototype.volume = function(){
-    if(this.boundingSphereRadiusNeedsUpdate){
-        this.computeBoundingSphereRadius();
-    }
     return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
 };
 

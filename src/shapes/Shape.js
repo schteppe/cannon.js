@@ -23,33 +23,21 @@ function Shape(){
      */
     this.type = 0;
 
-    this.aabbmin = new Vec3();
-    this.aabbmax = new Vec3();
-
+    /**
+     * The local bounding sphere radius of this shape.
+     * @property {Number} boundingSphereRadius
+     */
     this.boundingSphereRadius = 0;
-    this.boundingSphereRadiusNeedsUpdate = true;
 };
 Shape.prototype.constructor = Shape;
 
 /**
  * Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius
- * @method computeBoundingSphereRadius
+ * @method updateBoundingSphereRadius
  * @return {Number}
  */
-Shape.prototype.computeBoundingSphereRadius = function(){
+Shape.prototype.updateBoundingSphereRadius = function(){
     throw "computeBoundingSphereRadius() not implemented for shape type "+this.type;
-};
-
-/**
- * Returns the bounding sphere radius. The result is stored in the property .boundingSphereRadius
- * @method getBoundingSphereRadius
- * @return {Number}
- */
-Shape.prototype.getBoundingSphereRadius = function(){
-	if (this.boundingSphereRadiusNeedsUpdate) {
-		this.computeBoundingSphereRadius();
-	}
-	return this.boundingSphereRadius;
 };
 
 /**
@@ -69,35 +57,6 @@ Shape.prototype.volume = function(){
  */
 Shape.prototype.calculateLocalInertia = function(mass,target){
     throw "calculateLocalInertia() not implemented for shape type "+this.type;
-};
-
-/**
- * Calculates inertia in a specified frame for this shape.
- * @method calculateTransformedInertia
- * @return {Vec3}
- */
-var Shape_calculateTransformedInertia_localInertia = new Vec3();
-var Shape_calculateTransformedInertia_worldInertia = new Vec3();
-Shape.prototype.calculateTransformedInertia = function(mass,quat,target){
-    target = target || new Vec3();
-
-    // Compute inertia in the world frame
-    //quat.normalize();
-    var localInertia = Shape_calculateTransformedInertia_localInertia;
-    var worldInertia = Shape_calculateTransformedInertia_worldInertia;
-    this.calculateLocalInertia(mass,localInertia);
-
-    // @todo Is this rotation OK? Check!
-    quat.vmult(localInertia,worldInertia);
-    target.x = Math.abs(worldInertia.x);
-    target.y = Math.abs(worldInertia.y);
-    target.z = Math.abs(worldInertia.z);
-    return target;
-};
-
-// Calculates the local aabb and sets the result to .aabbmax and .aabbmin
-Shape.calculateLocalAABB = function(){
-    throw new Error(".calculateLocalAABB is not implemented for this Shape yet!");
 };
 
 /**
