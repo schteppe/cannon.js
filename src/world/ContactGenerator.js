@@ -887,34 +887,41 @@ var planeConvex_projected = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.planeConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+ContactGenerator.prototype.planeConvex = function(  result,
+                                                    planeShape,convexShape,
+                                                    planePosition,convexPosition,
+                                                    planeQuat,convexQuat,
+                                                    planeBody,convexBody){
     // Simply return the points behind the plane.
-    var v = planeConvex_v;
-    var normal = planeConvex_normal;
-    normal.set(0,0,1);
-    qi.vmult(normal,normal); // Turn normal according to plane orientation
-    var relpos = planeConvex_relpos;
-    for(var i=0; i!==sj.vertices.length; i++){
-        sj.vertices[i].copy(v);
-        // Transform to world coords
-        qj.vmult(v,v);
-        xj.vadd(v,v);
-        v.vsub(xi,relpos);
+    var worldVertex = planeConvex_v,
+        worldNormal = planeConvex_normal;
+    worldNormal.set(0,0,1);
+    planeQuat.vmult(worldNormal,worldNormal); // Turn normal according to plane orientation
 
-        var dot = normal.dot(relpos);
+    var relpos = planeConvex_relpos;
+    for(var i=0; i!==convexShape.vertices.length; i++){
+
+        // Get world convex vertex
+        convexShape.vertices[i].copy(worldVertex);
+        convexQuat.vmult(worldVertex,worldVertex);
+        convexPosition.vadd(worldVertex,worldVertex);
+        worldVertex.vsub(planePosition,relpos);
+
+        var dot = worldNormal.dot(relpos);
         if(dot<=0.0){
             // Get vertex position projected on plane
             var projected = planeConvex_projected;
-            normal.mult(normal.dot(v),projected);
-            v.vsub(projected,projected);
+            worldNormal.mult(worldNormal.dot(worldVertex),projected);
+            worldVertex.vsub(projected,projected);
+            projected.vsub(planePosition,projected);
 
-            var r = this.makeResult(bi,bj);
-            normal.copy( r.ni ); // Contact normal is the plane normal out from plane
+            var r = this.makeResult(planeBody,convexBody);
+            worldNormal.copy( r.ni ); // Contact normal is the plane normal out from plane
 
             projected.copy(r.ri); // From plane to vertex projected on plane
 
             // rj is now just the vertex position
-            v.vsub(xj,r.rj);
+            worldVertex.vsub(convexPosition,r.rj);
 
             result.push(r);
         }
