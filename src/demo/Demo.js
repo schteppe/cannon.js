@@ -28,7 +28,7 @@ CANNON.Demo = function(options){
         gz:0.0,
         iterations:3,
         tolerance:0.0001,
-        k:1000,
+        k:1e6,
         d:3,
         scene:0,
         paused:false,
@@ -65,7 +65,7 @@ CANNON.Demo = function(options){
     var scenePicker = {};
 
     var three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
-    var particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
+    var particleGeo = this.particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
 
     // Material
     var materialColor = 0xdddddd;
@@ -74,7 +74,7 @@ CANNON.Demo = function(options){
     var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, wireframe:true } );
     this.currentMaterial = solidMaterial;
     var contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
-    var particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+    var particleMaterial = this.particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
 
     // Geometry caches
     var contactMeshCache = new GeometryCache(function(){
@@ -286,10 +286,10 @@ CANNON.Demo = function(options){
         if(settings.cm2contact){
             for(var ci=0; ci<world.contacts.length; ci++){
                 for(var ij=0; ij < 2; ij++){
-                    var  line = cm2contactMeshCache.request(),
-                    c = world.contacts[ci],
-                    b = ij===0 ? c.bi : c.bj,
-                    r = ij===0 ? c.ri : c.rj;
+                    var line = cm2contactMeshCache.request(),
+                        c = world.contacts[ci],
+                        b = ij===0 ? c.bi : c.bj,
+                        r = ij===0 ? c.ri : c.rj;
                     line.scale.set( r.x, r.y, r.z);
                     makeSureNotZero(line.scale);
                     b.position.copy(line.position);
