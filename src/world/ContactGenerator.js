@@ -909,16 +909,16 @@ ContactGenerator.prototype.planeConvex = function(  result,
 
         var dot = worldNormal.dot(relpos);
         if(dot<=0.0){
-            // Get vertex position projected on plane
-            var projected = planeConvex_projected;
-            worldNormal.mult(worldNormal.dot(worldVertex),projected);
-            worldVertex.vsub(projected,projected);
-            projected.vsub(planePosition,projected);
 
             var r = this.makeResult(planeBody,convexBody);
-            worldNormal.copy( r.ni ); // Contact normal is the plane normal out from plane
 
-            projected.copy(r.ri); // From plane to vertex projected on plane
+            // Get vertex position projected on plane
+            var projected = planeConvex_projected;
+            worldNormal.mult(worldNormal.dot(relpos),projected);
+            worldVertex.vsub(projected,projected);
+            projected.vsub(planePosition,r.ri); // From plane to vertex projected on plane
+
+            worldNormal.copy( r.ni ); // Contact normal is the plane normal out from plane
 
             // rj is now just the vertex position
             worldVertex.vsub(convexPosition,r.rj);
