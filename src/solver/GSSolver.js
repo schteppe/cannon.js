@@ -37,13 +37,9 @@ var GSSolver_solve_lambda = []; // Just temporary number holders that we want to
 var GSSolver_solve_invCs = [];
 var GSSolver_solve_Bs = [];
 GSSolver.prototype.solve = function(dt,world){
-    var d = this.d,
-        ks = this.k,
-        iter = 0,
+    var iter = 0,
         maxIter = this.iterations,
         tolSquared = this.tolerance*this.tolerance,
-        a = this.a,
-        b = this.b,
         equations = this.equations,
         Neq = equations.length,
         bodies = world.bodies,
@@ -55,20 +51,15 @@ GSSolver.prototype.solve = function(dt,world){
     var invCs = GSSolver_solve_invCs,
         Bs = GSSolver_solve_Bs,
         lambda = GSSolver_solve_lambda;
-    invCs.length = 0;
-    Bs.length = 0;
-    lambda.length = 0;
+    invCs.length = Neq;
+    Bs.length = Neq;
+    lambda.length = Neq;
     for(var i=0; i!==Neq; i++){
         var c = equations[i];
-        if(c.spookParamsNeedsUpdate){
-            c.updateSpookParams(h);
-            c.spookParamsNeedsUpdate = false;
-        }
         lambda[i] = 0.0;
         Bs[i] = c.computeB(h);
         invCs[i] = 1.0 / c.computeC();
     }
-
 
     if(Neq !== 0){
 

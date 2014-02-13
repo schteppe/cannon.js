@@ -397,7 +397,7 @@ World.prototype.step = function(dt){
         this.subsystems[i].update();
     }
 
-    // 1. Collision detection
+    // Collision detection
     if(doProfiling){ profilingStart = performance.now(); }
     p1.length = 0; // Clean up pair arrays from last step
     p2.length = 0;
@@ -469,8 +469,9 @@ World.prototype.step = function(dt){
 			if (bi.collisionResponse && bj.collisionResponse) {
 				c.restitution = cm.restitution;
 				c.penetration = g;
-				c.stiffness = cm.contactEquationStiffness;
-				c.regularizationTime = cm.contactEquationRegularizationTime;
+				c.setSpookParams(cm.contactEquationStiffness,
+                                 cm.contactEquationRelaxation,
+                                 dt);
 
 				solver.addEquation(c);
 
@@ -502,6 +503,11 @@ World.prototype.step = function(dt){
 
 					// Construct tangents
 					c.ni.tangents(c1.t,c2.t);
+
+                    // Set spook params
+                    c.setSpookParams(cm.frictionEquationStiffness,
+                                     cm.frictionEquationRelaxation,
+                                     dt);
 
 					// Add equations to solver
 					solver.addEquation(c1);
