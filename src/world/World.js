@@ -271,15 +271,20 @@ World.prototype.removeConstraint = function(c){
  */
 World.prototype.remove = function(body){
     body.world = null;
-    var n = this.numObjects()-1;
-    var bodies = this.bodies;
-	bodies.splice(body.index, 1);
-	for(var i=body.index; i<n;i++) {
-		bodies[i].index=i;
-	}
-	this.collisionMatrix.setNumObjects(n);
-    this.removeBodyEvent.body = body;
-    this.dispatchEvent(this.removeBodyEvent);
+    var n = this.bodies.length-1,
+        bodies = this.bodies,
+        idx = bodies.indexOf(body);
+    if(idx != -1){
+        bodies.splice(idx, 1); // Todo: should use a garbage free method
+
+        // Recompute index
+        for(var i=0; i!==bodies.length; i++)
+            bodies[i].index = i;
+
+        this.collisionMatrix.setNumObjects(n);
+        this.removeBodyEvent.body = body;
+        this.dispatchEvent(this.removeBodyEvent);
+    }
 };
 
 /**
