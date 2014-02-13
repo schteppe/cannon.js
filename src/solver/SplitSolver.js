@@ -38,8 +38,11 @@ SplitSolver.prototype.solve = function(dt,world){
         Nbodies=bodies.length,
         subsolver=this.subsolver;
     // Create needed nodes, reuse if possible
-    for(var i=nodes.length; i!==Nbodies; i++){
-        nodes.push({ body:bodies[i], children:[], eqs:[], visited:false });
+    if(nodes.length>Nbodies){
+        nodes.length = Nbodies;
+    }
+    while(nodes.length<Nbodies){
+        nodes.push({ body:null, children:[], eqs:[], visited:false });
     }
 
     // Reset node values
