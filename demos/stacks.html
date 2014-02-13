@@ -23,7 +23,6 @@
       var demo = new CANNON.Demo();
       var size = 2, mass=5;
 
-
       function createTetra(){
             var verts = [new CANNON.Vec3(0,0,0),
                          new CANNON.Vec3(2,0,0),
@@ -50,31 +49,8 @@
       }
       function createBoxPolyhedron(size){
           size = size || 1;
-          var vertices = [new CANNON.Vec3(-size,-size,-size),
-                          new CANNON.Vec3( size,-size,-size),
-                          new CANNON.Vec3( size, size,-size),
-                          new CANNON.Vec3(-size, size,-size),
-                          new CANNON.Vec3(-size,-size, size),
-                          new CANNON.Vec3( size,-size, size),
-                          new CANNON.Vec3( size, size, size),
-                          new CANNON.Vec3(-size, size, size)];
-          var faces =[[3,2,1,0], // -z
-                      [4,5,6,7], // +z
-                      [5,4,1,0], // -y
-                      [2,3,6,7], // +y
-                      [0,4,7,3 /*0,3,4,7*/ ], // -x
-                      [1,2,5,6], // +x
-                      ];
-          var faceNormals =   [new CANNON.Vec3( 0, 0,-1),
-                               new CANNON.Vec3( 0, 0, 1),
-                               new CANNON.Vec3( 0,-1, 0),
-                               new CANNON.Vec3( 0, 1, 0),
-                               new CANNON.Vec3(-1, 0, 0),
-                               new CANNON.Vec3( 1, 0, 0)];
-          var boxShape = new CANNON.ConvexPolyhedron(vertices,
-                                                     faces,
-                                                     faceNormals);
-          return boxShape;
+          var box = new CANNON.Box(new CANNON.Vec3(size,size,size));
+          return box.convexPolyhedronRepresentation();
       }
 
         function createCompound(){
