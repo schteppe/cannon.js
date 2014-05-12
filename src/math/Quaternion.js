@@ -13,23 +13,40 @@ CANNON.Quaternion = function(x,y,z,w){
     * @property float x
     * @memberof CANNON.Quaternion
     */
-    this.x = x!==undefined ? x : 0;
+    this._x = x!==undefined ? x : 0;
     /**
     * @property float y
     * @memberof CANNON.Quaternion
     */
-    this.y = y!==undefined ? y : 0;
+    this._y = y!==undefined ? y : 0;
     /**
     * @property float z
     * @memberof CANNON.Quaternion
     */
-    this.z = z!==undefined ? z : 0;
+    this._z = z!==undefined ? z : 0;
     /**
     * @property float w
     * @memberof CANNON.Quaternion
     * @brief The multiplier of the real quaternion basis vector.
     */
-    this.w = w!==undefined ? w : 1;
+    this._w = w!==undefined ? w : 1;
+
+    Object.defineProperty(this, 'x', {
+        get: function() { return this._x; },
+        set: function(value) { this._x = value; }
+    });
+    Object.defineProperty(this, 'y', {
+        get: function() { return this._y; },
+        set: function(value) { this._y = value; }
+    });
+    Object.defineProperty(this, 'z', {
+        get: function() { return this._z; },
+        set: function(value) { this._z = value; }
+    });
+    Object.defineProperty(this, 'w', {
+        get: function() { return this._w; },
+        set: function(value) { this._w = value; }
+    });
 };
 
 /**
@@ -42,10 +59,10 @@ CANNON.Quaternion = function(x,y,z,w){
  * @param float w
  */
 CANNON.Quaternion.prototype.set = function(x,y,z,w){
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.w = w;
+    this._x = x;
+    this._y = y;
+    this._z = z;
+    this._w = w;
 };
 
 /**
@@ -55,7 +72,7 @@ CANNON.Quaternion.prototype.set = function(x,y,z,w){
  * @return string
  */
 CANNON.Quaternion.prototype.toString = function(){
-    return this.x+","+this.y+","+this.z+","+this.w;
+    return this._x+","+this._y+","+this._z+","+this._w;
 };
 
 /**
@@ -67,27 +84,27 @@ CANNON.Quaternion.prototype.toString = function(){
  */
 CANNON.Quaternion.prototype.setFromAxisAngle = function(axis,angle){
     var s = Math.sin(angle*0.5);
-    this.x = axis.x * s;
-    this.y = axis.y * s;
-    this.z = axis.z * s;
-    this.w = Math.cos(angle*0.5);
+    this._x = axis.x * s;
+    this._y = axis.y * s;
+    this._z = axis.z * s;
+    this._w = Math.cos(angle*0.5);
 };
 
 // saves axis to targetAxis and returns 
 CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
     targetAxis = targetAxis || new CANNON.Vec3();
     this.normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
-    var angle = 2 * Math.acos(this.w);
-    var s = Math.sqrt(1-this.w*this.w); // assuming quaternion normalised then w is less than 1, so term always positive.
+    var angle = 2 * Math.acos(this._w);
+    var s = Math.sqrt(1-this._w*this._w); // assuming quaternion normalised then w is less than 1, so term always positive.
     if (s < 0.001) { // test to avoid divide by zero, s is always positive due to sqrt
         // if s close to zero then direction of axis not important
-        targetAxis.x = this.x; // if it is important that axis is normalised then replace with x=1; y=z=0;
-        targetAxis.y = this.y;
-        targetAxis.z = this.z;
+        targetAxis.x = this._x; // if it is important that axis is normalised then replace with x=1; y=z=0;
+        targetAxis.y = this._y;
+        targetAxis.z = this._z;
     } else {
-        targetAxis.x = this.x / s; // normalise axis
-        targetAxis.y = this.y / s;
-        targetAxis.z = this.z / s;
+        targetAxis.x = this._x / s; // normalise axis
+        targetAxis.y = this._y / s;
+        targetAxis.z = this._z / s;
     }
     return [targetAxis,angle];
 };
@@ -101,10 +118,10 @@ CANNON.Quaternion.prototype.toAxisAngle = function(targetAxis){
  */
 CANNON.Quaternion.prototype.setFromVectors = function(u,v){
     var a = u.cross(v);
-    this.x = a.x;
-    this.y = a.y;
-    this.z = a.z;
-    this.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + u.dot(v);
+    this._x = a.x;
+    this._y = a.y;
+    this._z = a.z;
+    this._w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + u.dot(v);
     this.normalize();
 };
 
@@ -121,12 +138,12 @@ var Quaternion_mult_vb = new CANNON.Vec3();
 var Quaternion_mult_vaxvb = new CANNON.Vec3();
 CANNON.Quaternion.prototype.mult = function(q,target){
     target = target || new CANNON.Quaternion();
-    var w = this.w,
+    var w = this._w,
         va = Quaternion_mult_va,
         vb = Quaternion_mult_vb,
         vaxvb = Quaternion_mult_vaxvb;
 
-    va.set(this.x,this.y,this.z);
+    va.set(this._x,this._y,this._z);
     vb.set(q.x,q.y,q.z);
     target.w = w*q.w - va.dot(vb);
     va.cross(vb,vaxvb);
@@ -146,7 +163,7 @@ CANNON.Quaternion.prototype.mult = function(q,target){
  * @return CANNON.Quaternion
  */
 CANNON.Quaternion.prototype.inverse = function(target){
-    var x = this.x, y = this.y, z = this.z, w = this.w;
+    var x = this._x, y = this._y, z = this._z, w = this._w;
     target = target || new CANNON.Quaternion();
 
     this.conjugate(target);
@@ -169,10 +186,10 @@ CANNON.Quaternion.prototype.inverse = function(target){
 CANNON.Quaternion.prototype.conjugate = function(target){
     target = target || new CANNON.Quaternion();
 
-    target.x = -this.x;
-    target.y = -this.y;
-    target.z = -this.z;
-    target.w = this.w;
+    target.x = -this._x;
+    target.y = -this._y;
+    target.z = -this._z;
+    target.w = this._w;
 
     return target;
 };
@@ -183,18 +200,18 @@ CANNON.Quaternion.prototype.conjugate = function(target){
  * @brief Normalize the quaternion. Note that this changes the values of the quaternion.
  */
 CANNON.Quaternion.prototype.normalize = function(){
-    var l = Math.sqrt(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w);
+    var l = Math.sqrt(this._x*this._x+this._y*this._y+this._z*this._z+this._w*this._w);
     if ( l === 0 ) {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
-        this.w = 0;
+        this._x = 0;
+        this._y = 0;
+        this._z = 0;
+        this._w = 0;
     } else {
         l = 1 / l;
-        this.x *= l;
-        this.y *= l;
-        this.z *= l;
-        this.w *= l;
+        this._x *= l;
+        this._y *= l;
+        this._z *= l;
+        this._w *= l;
     }
 };
 
@@ -206,17 +223,17 @@ CANNON.Quaternion.prototype.normalize = function(){
  * @author unphased, https://github.com/unphased
  */
 CANNON.Quaternion.prototype.normalizeFast = function () {
-    var f = (3.0-(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w))/2.0;
+    var f = (3.0-(this._x*this._x+this._y*this._y+this._z*this._z+this._w*this._w))/2.0;
     if ( f === 0 ) {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
-        this.w = 0;
+        this._x = 0;
+        this._y = 0;
+        this._z = 0;
+        this._w = 0;
     } else {
-        this.x *= f;
-        this.y *= f;
-        this.z *= f;
-        this.w *= f;
+        this._x *= f;
+        this._y *= f;
+        this._z *= f;
+        this._w *= f;
     }
 };
 
@@ -230,7 +247,7 @@ CANNON.Quaternion.prototype.normalizeFast = function () {
  */
 CANNON.Quaternion.prototype.vmult = function(v,target){
     target = target || new CANNON.Vec3();
-    if(this.w===0.0){
+    if(this._w===0.0){
         target.x = v.x;
         target.y = v.y;
         target.z = v.z;
@@ -240,10 +257,10 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
             y = v.y,
             z = v.z;
 
-        var qx = this.x,
-            qy = this.y,
-            qz = this.z,
-            qw = this.w;
+        var qx = this._x,
+            qy = this._y,
+            qz = this._z,
+            qw = this._w;
 
         // q*v
         var ix =  qw * x + qy * z - qz * y,
@@ -265,10 +282,10 @@ CANNON.Quaternion.prototype.vmult = function(v,target){
  * @param CANNON.Quaternion target
  */
 CANNON.Quaternion.prototype.copy = function(target){
-    target.x = this.x;
-    target.y = this.y;
-    target.z = this.z;
-    target.w = this.w;
+    target.x = this._x;
+    target.y = this._y;
+    target.z = this._z;
+    target.w = this._w;
 };
 
 /**
@@ -282,7 +299,7 @@ CANNON.Quaternion.prototype.toEuler = function(target,order){
     order = order || "YZX";
 
     var heading, attitude, bank;
-    var x = this.x, y = this.y, z = this.z, w = this.w;
+    var x = this._x, y = this._y, z = this._z, w = this._w;
 
     switch(order){
     case "YZX":
