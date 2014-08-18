@@ -390,3 +390,7 @@ Quaternion.prototype.setFromEuler = function ( x, y, z, order ) {
     return this;
 
 };
+
+Quaternion.prototype.clone = function(){
+    return new Quaternion(this.x, this.y, this.z, this.w);
+};
