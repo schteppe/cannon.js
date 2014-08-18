@@ -1,45 +1,44 @@
 {
-    "name": "cannon",
-    "version": "0.6.0",
-    "description": "A lightweight 3D physics engine written in JavaScript.",
-    "homepage": "https://github.com/schteppe/cannon.js",
-    "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
-    "keywords": [
-	"cannon.js",
-        "cannon",
-        "physics",
-	"engine",
-        "3d"
-    ],
-    "main": "./build/cannon.js",
-    "engines": {
-        "node": "*"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/schteppe/cannon.js.git"
-    },
-    "bugs": {
-        "url": "https://github.com/schteppe/cannon.js/issues"
-    },
-    "licenses" : [
-        {
-            "type" : "MIT"
-        }
-    ],
-    "devDependencies" : {
-        "jshint"    : "latest",
-        "uglify-js" : "latest",
-        "nodeunit"  : "latest",
-        "grunt": "~0.4.0",
-        "grunt-contrib-jshint": "~0.1.1",
-        "grunt-contrib-nodeunit": "~0.1.2",
-        "grunt-contrib-concat": "~0.1.3",
-        "grunt-contrib-uglify": "*",
-        "grunt-browserify" : "*",
-        "grunt-contrib-yuidoc":"*",
-        "browserify":"*"
-    },
-    "dependencies" : {
+  "name": "cannon",
+  "version": "0.6.0",
+  "description": "A lightweight 3D physics engine written in JavaScript.",
+  "homepage": "https://github.com/schteppe/cannon.js",
+  "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
+  "keywords": [
+    "cannon.js",
+    "cannon",
+    "physics",
+    "engine",
+    "3d"
+  ],
+  "main": "./build/cannon.js",
+  "engines": {
+    "node": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/schteppe/cannon.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/schteppe/cannon.js/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
     }
+  ],
+  "devDependencies": {
+    "jshint": "latest",
+    "uglify-js": "latest",
+    "nodeunit": "^0.9.0",
+    "grunt": "~0.4.0",
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "grunt-contrib-concat": "~0.1.3",
+    "grunt-contrib-uglify": "*",
+    "grunt-browserify": "*",
+    "grunt-contrib-yuidoc": "*",
+    "browserify": "*"
+  },
+  "dependencies": {}
 }
