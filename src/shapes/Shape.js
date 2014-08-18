@@ -28,7 +28,7 @@ function Shape(){
      * @property {Number} boundingSphereRadius
      */
     this.boundingSphereRadius = 0;
-};
+}
 Shape.prototype.constructor = Shape;
 
 /**
@@ -70,6 +70,7 @@ Shape.types = {
     PLANE:2,
     BOX:4,
     COMPOUND:8,
-    CONVEXPOLYHEDRON:16
+    CONVEXPOLYHEDRON:16,
+    HEIGHTFIELD:32,
 };
 

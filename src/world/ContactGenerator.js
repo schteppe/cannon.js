@@ -127,7 +127,8 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
         PLANE = types.PLANE,
         BOX = types.BOX,
         COMPOUND = types.COMPOUND,
-        CONVEXPOLYHEDRON = types.CONVEXPOLYHEDRON;
+        CONVEXPOLYHEDRON = types.CONVEXPOLYHEDRON,
+        HEIGHFIELD = types.HEIGHFIELD;
 
     if(si && sj){
         if(si.type > sj.type){
@@ -192,6 +193,9 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 break;
             case CONVEXPOLYHEDRON: // sphere-convexpolyhedron
                 this.sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
+                break;
+            case HEIGHFIELD: // sphere-heightfield
+                this.sphereHeightfield(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
                 console.warn("Collision between Shape.types.SPHERE and "+sj.type+" not implemented yet.");
@@ -267,6 +271,17 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 break;
             }
 
+        } else if(si.type===types.HEIGHTFIELD){
+
+            switch(sj.type){
+            case types.SPHERE: // heightfield/sphere
+                this.sphereHeightfield(result,si,sj,xi,xj,qi,qj,bi,bj);
+                break;
+            default:
+                console.warn("Collision between Shape.types.HEIGHTFIELD and "+sj.type+" not implemented yet.");
+                break;
+            }
+
         }
 
     } else {
@@ -326,7 +341,7 @@ ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,b
     r.ri.mult(si.radius, r.ri);
     r.rj.mult(-sj.radius, r.rj);
     result.push(r);
-}
+};
 
 var point_on_plane_to_sphere = new Vec3();
 var plane_to_sphere_ortho = new Vec3();
@@ -1037,7 +1052,7 @@ ContactGenerator.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi
         r.ri.set(0,0,0); // Center of particle
         result.push(r);
     }
-}
+};
 
 // WIP
 var cqj = new Quaternion();
@@ -1120,5 +1135,70 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
             console.warn("Point found inside convex, but did not find penetrating face!");
         }
     }
-}
+};
 
+/**
+ * @method sphereHeightfield
+ */
+ContactGenerator.prototype.sphereHeightfield = function (
+    result,
+    sphereShape,
+    hfShape,
+    spherePos,
+    hfPos,
+    sphereQuat,
+    hfQuat,
+    sphereBody,
+    hfBody
+){
+    var data = hfShape.data,
+        radius = sphereShape.radius,
+        w = hfShape.elementSize,
+        dist = new Vec3(),
+        candidate = new Vec3(),
+        minCandidate = new Vec3(),
+        minCandidateNormal = new Vec3(),
+        worldNormal = new Vec3(),
+        v0 = new Vec3(),
+        v1 = new Vec3();
+
+    // Get sphere position to heightfield local!
+    var hfQuatInv = hfQuat.clone();
+    hfQuatInv.w *= -1;
+    var localSpherePos = new Vec3();
+    hfQuatInv.vmult(spherePos, localSpherePos);
+
+    // Get the index of the data points to test against
+    var iMinX = Math.floor((spherePos.x - radius - hfPos.x) / w),
+        iMaxX = Math.ceil((spherePos.x + radius - hfPos.x) / w),
+        iMinY = Math.floor((spherePos.y - radius - hfPos.y) / w),
+        iMaxY = Math.ceil((spherePos.y + radius - hfPos.y) / w);
+
+    // Clamp index to edges
+    if(iMinX < 0) iMinX = 0;
+    if(iMaxX >= data.length) iMaxX = data.length - 1;
+    if(iMinY < 0) iMinY = 0;
+    if(iMaxY >= data[0].length) iMaxY = data[0].length - 1;
+
+    var minMax = [];
+    hfShape.getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, minMax);
+    var max = minMax
+
+    if(spherePos[1]-radius > max){
+        return justTest ? false : 0;
+    }
+
+    var found = false;
+    for(var i = iMinX; i < iMaxX; i++){
+        for(var j = iMinY; j < iMaxY; j++){
+            //hfShape.getConvexTrianglePillar(i, j, 0, new ConvexPolyhedron());
+        }
+    }
+
+    if(found){
+        return 1;
+    }
+
+    return 0;
+
+};
