@@ -147,6 +147,8 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
     var verts = result.vertices;
     if (!getUpperTriangle) {
 
+        var h = data[xi][yi] / 2;
+
         // Center of the triangle pillar - all polygons are given relative to this one
         offsetResult.set(
             (xi + 0.25) * elementSize, // sort of center of a triangle
@@ -158,17 +160,17 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         verts[0].set(
             -0.25 * elementSize,
             -0.25 * elementSize,
-            data[xi][yi] / 2
+            data[xi][yi] - h
         );
         verts[1].set(
             0.75 * elementSize,
             -0.25 * elementSize,
-            data[xi+1][yi] - data[xi][yi] / 2
+            data[xi+1][yi] - h
         );
         verts[2].set(
             -0.25 * elementSize,
             0.75 * elementSize,
-            data[xi][yi + 1] - data[xi][yi] / 2
+            data[xi][yi + 1] - h
         );
         faces[0][0] = 0;
         faces[0][1] = 1;
@@ -179,17 +181,17 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         verts[3].set(
             -0.25 * elementSize,
             -0.25 * elementSize,
-             - data[xi][yi] / 2
+            -h
         );
         verts[4].set(
             0.75 * elementSize,
             -0.25 * elementSize,
-            -data[xi][yi] / 2
+            -h
         );
         verts[5].set(
             -0.25 * elementSize,
             0.75  * elementSize,
-            -data[xi][yi] / 2
+            -h
         );
 
         // top triangle
@@ -253,17 +255,17 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         verts[3].set(
             0.25 * elementSize,
             0.25 * elementSize,
-            data[xi + 1][yi + 1] - h
+            - h
         );
         verts[4].set(
             -0.75 * elementSize,
             0.25 * elementSize,
-            data[xi + 1][yi + 1] - h
+            - h
         );
         verts[5].set(
             0.25 * elementSize,
             -0.75 * elementSize,
-            data[xi + 1][yi + 1] - h
+            - h
         );
 
         // Top triangle

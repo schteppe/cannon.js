@@ -32,10 +32,27 @@ module.exports = {
 
         hfShape.getConvexTrianglePillar(0, 0, false, convex, offset);
         test.equal(convex.vertices.length, 6);
+        test.deepEqual(convex.vertices, [
+            new Vec3(-0.25, -0.25, 0.5),
+            new Vec3(0.75, -0.25, 0.5),
+            new Vec3(-0.25, 0.75, 0.5),
+            new Vec3(-0.25, -0.25, -0.5),
+            new Vec3(0.75, -0.25, -0.5),
+            new Vec3(-0.25, 0.75, -0.5),
+        ]);
         test.deepEqual(offset, new Vec3(0.25, 0.25, 0.5));
 
         hfShape.getConvexTrianglePillar(0, 0, true, convex, offset);
         test.equal(convex.vertices.length, 6);
+        test.deepEqual(convex.vertices, [
+            new Vec3(0.25, 0.25, 0.5),
+            new Vec3(-0.75, 0.25, 0.5),
+            new Vec3(0.25, -0.75, 0.5),
+
+            new Vec3(0.25, 0.25, -0.5),
+            new Vec3(-0.75, 0.25, -0.5),
+            new Vec3(0.25, -0.75, -0.5),
+        ]);
         test.deepEqual(offset, new Vec3(0.75, 0.75, 0.5));
 
         test.done();
