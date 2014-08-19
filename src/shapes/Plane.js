@@ -1,7 +1,7 @@
 module.exports = Plane;
 
-var Shape = require('./Shape')
-,   Vec3 = require('../math/Vec3')
+var Shape = require('./Shape');
+var Vec3 = require('../math/Vec3');
 
 /**
  * A plane, facing in the Z direction. The plane has its surface at z=0 and everything below z=0 is assumed to be solid plane. To make the plane face in some other direction than z, you must put it inside a RigidBody and rotate that body. See the demos.
@@ -18,8 +18,8 @@ function Plane(){
     this.worldNormal = new Vec3();
     this.worldNormalNeedsUpdate = true;
 
-    this.boundingSphereRadius = Infinity;
-};
+    this.boundingSphereRadius = Number.MAX_VALUE;
+}
 Plane.prototype = new Shape();
 Plane.prototype.constructor = Plane;
 
@@ -36,7 +36,7 @@ Plane.prototype.calculateLocalInertia = function(mass,target){
 };
 
 Plane.prototype.volume = function(){
-    return Infinity; // The plane is infinite...
+    return Number.MAX_VALUE; // The plane is infinite...
 };
 
 var tempNormal = new Vec3();
@@ -44,8 +44,8 @@ Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
     // The plane AABB is infinite, except if the normal is pointing along any axis
     tempNormal.set(0,0,1); // Default plane normal is z
     quat.vmult(tempNormal,tempNormal);
-    min.set(-Infinity,-Infinity,-Infinity);
-    max.set(Infinity,Infinity,Infinity);
+    min.set(-Number.MAX_VALUE,-Number.MAX_VALUE,-Number.MAX_VALUE);
+    max.set(Number.MAX_VALUE,Number.MAX_VALUE,Number.MAX_VALUE);
 
     if(tempNormal.x === 1){ max.x = pos.x; }
     if(tempNormal.y === 1){ max.y = pos.y; }
@@ -54,5 +54,4 @@ Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
     if(tempNormal.x === -1){ min.x = pos.x; }
     if(tempNormal.y === -1){ min.y = pos.y; }
     if(tempNormal.z === -1){ min.z = pos.z; }
-
 };

@@ -121,7 +121,7 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
         var ti = bishape.type, tj = bjshape.type;
 
         // --- Box / sphere / compound / convexpolyhedron collision ---
-        if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
+        // if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
             // Rel. position
             bj.position.vsub(bi.position,r);
 
@@ -131,6 +131,7 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
                 pairs2.push(bj);
             }
 
+            /*
             // --- Sphere/box/compound/convexpoly versus plane ---
         } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
             var planeBody = (ti===PLANE) ? bi : bj, // Plane
@@ -154,6 +155,8 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
                 pairs2.push(bj);
             }
         }
+        */
+
     } else {
         // Particle without shape
         if(!bishape && !bjshape){

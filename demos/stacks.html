@@ -50,7 +50,7 @@
       function createBoxPolyhedron(size){
           size = size || 1;
           var box = new CANNON.Box(new CANNON.Vec3(size,size,size));
-          return box.convexPolyhedronRepresentation();
+          return box.convexPolyhedronRepresentation;
       }
 
         function createCompound(){

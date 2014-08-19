@@ -129,7 +129,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
         BOX = types.BOX,
         COMPOUND = types.COMPOUND,
         CONVEXPOLYHEDRON = types.CONVEXPOLYHEDRON,
-        HEIGHFIELD = types.HEIGHFIELD;
+        HEIGHTFIELD = types.HEIGHTFIELD;
 
     if(si && sj){
         if(si.type > sj.type){
@@ -195,7 +195,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
             case CONVEXPOLYHEDRON: // sphere-convexpolyhedron
                 this.sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
-            case HEIGHFIELD: // sphere-heightfield
+            case HEIGHTFIELD: // sphere-heightfield
                 this.sphereHeightfield(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
@@ -207,7 +207,8 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
 
             switch(sj.type){
             case types.PLANE: // plane-plane
-                throw new Error("Plane-plane collision... wait, you did WHAT?");
+                // Should not give collision
+                break;
             case types.BOX: // plane-box
                 this.planeBox(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
@@ -717,18 +718,27 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
             if(pointInPolygon(faceVerts,worldNormal,xi)){ // Is the sphere center in the face polygon?
                 found = true;
                 var r = this.makeResult(bi,bj);
-                worldNormal.mult(-R,r.ri); // Sphere r
-                worldNormal.negate(r.ni); // Normal should be out of sphere
+
+                worldNormal.mult(-R, r.ri); // Contact offset, from sphere center to contact
+                worldNormal.negate(r.ni); // Normal pointing out of sphere
 
                 var penetrationVec2 = v3pool.get();
-                worldNormal.mult(-penetration,penetrationVec2);
+                worldNormal.mult(-penetration, penetrationVec2);
                 var penetrationSpherePoint = v3pool.get();
-                worldNormal.mult(-R,penetrationSpherePoint);
+                worldNormal.mult(-R, penetrationSpherePoint);
 
                 //xi.vsub(xj).vadd(penetrationSpherePoint).vadd(penetrationVec2 , r.rj);
                 xi.vsub(xj,r.rj);
                 r.rj.vadd(penetrationSpherePoint,r.rj);
                 r.rj.vadd(penetrationVec2 , r.rj);
+
+                // Should be relative to the body.
+                r.rj.vadd(xj, r.rj);
+                r.rj.vsub(bj.position, r.rj);
+
+                // Should be relative to the body.
+                r.ri.vadd(xi, r.ri);
+                r.ri.vsub(bi.position, r.ri);
 
                 v3pool.release(penetrationVec2);
                 v3pool.release(penetrationSpherePoint);
@@ -1183,35 +1193,46 @@ ContactGenerator.prototype.sphereHeightfield = function (
 
     // Clamp index to edges
     if(iMinX < 0){ iMinX = 0; }
-    if(iMaxX >= data.length){ iMaxX = data.length - 1; }
+    if(iMaxX < 0){ iMaxX = 0; }
     if(iMinY < 0){ iMinY = 0; }
+    if(iMaxY < 0){ iMaxY = 0; }
+    if(iMinX >= data.length){ iMinX = data.length - 1; }
+    if(iMaxX >= data.length){ iMaxX = data.length - 1; }
     if(iMaxY >= data[0].length){ iMaxY = data[0].length - 1; }
+    if(iMinY >= data[0].length){ iMinY = data[0].length - 1; }
 
     var minMax = [];
     hfShape.getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, minMax);
     var min = minMax[0];
     var max = minMax[1];
 
-    /*
-    if(spherePos[1] - radius > max){
-        return justTest ? false : 0;
+    // Bail out if we're cant touch the bounding height box
+    if(localSpherePos.z - radius > max || localSpherePos.z + radius < min){
+        return;
     }
-    */
 
     var found = false;
     var convex = new ConvexPolyhedron();
     var offset = new Vec3();
     for(var i = iMinX; i < iMaxX; i++){
         for(var j = iMinY; j < iMaxY; j++){
+
+            // Lower triangle
             hfShape.getConvexTrianglePillar(i, j, false, convex, offset);
+            this.sphereConvex(result, sphereShape, convex, spherePos, offset, sphereQuat, hfQuat, sphereBody, hfBody);
+
+            // Upper triangle
+            hfShape.getConvexTrianglePillar(i, j, true, convex, offset);
             this.sphereConvex(result, sphereShape, convex, spherePos, offset, sphereQuat, hfQuat, sphereBody, hfBody);
         }
     }
 
+    /*
     if(found){
         return 1;
     }
 
     return 0;
+    */
 
 };

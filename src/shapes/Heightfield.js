@@ -78,7 +78,10 @@ function Heightfield(data, options){
      */
     this.elementSize = options.elementSize;
 
-    Shape.call(this, Shape.HEIGHTFIELD);
+    Shape.call(this);
+
+    this.type = Shape.types.HEIGHTFIELD;
+    this.updateBoundingSphereRadius();
 }
 Heightfield.prototype = new Shape();
 
@@ -101,16 +104,18 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
     for(var i = iMinX; i < iMaxX; i++){
         for(var j = iMinY; j < iMaxY; j++){
             var height = data[i][j];
+            /*
             if(height < min){
                 min = height;
             }
+            */
             if(height > max){
                 max = height;
             }
         }
     }
 
-    result[0] = min;
+    result[0] = this.minValue;
     result[1] = max;
 };
 
@@ -147,13 +152,13 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
     var verts = result.vertices;
     if (!getUpperTriangle) {
 
-        var h = data[xi][yi] / 2;
+        var h = (data[xi][yi] - this.minValue) / 2 + this.minValue;
 
         // Center of the triangle pillar - all polygons are given relative to this one
         offsetResult.set(
             (xi + 0.25) * elementSize, // sort of center of a triangle
             (yi + 0.25) * elementSize,
-            data[xi][yi] / 2 // vertical center
+            h // vertical center
         );
 
         // Top triangle verts
@@ -225,14 +230,15 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
 
     } else {
 
+        var h = (data[xi + 1][yi + 1] - this.minValue) / 2 + this.minValue;
+
         // Center of the triangle pillar - all polygons are given relative to this one
         offsetResult.set(
             (xi + 0.75) * elementSize, // sort of center of a triangle
             (yi + 0.75) * elementSize,
-            data[xi][yi] / 2 // vertical center
+            h // vertical center
         );
 
-        var h = data[xi + 1][yi + 1] / 2;
 
         // Top triangle verts
         verts[0].set(

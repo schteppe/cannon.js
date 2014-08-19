@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - Heightfield demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+        var demo = new CANNON.Demo();
+
+        demo.addScene("Heightfield", function () {
+
+            var world = demo.getWorld();
+            world.gravity.set(0, 0, -10);
+            world.broadphase = new CANNON.NaiveBroadphase();
+
+            var matrix = [];
+            var size = 2;
+            for (var i = 0; i < size; i++) {
+                matrix.push([]);
+                for (var j = 0; j < size; j++) {
+                    matrix[i].push(1);
+                }
+            }
+            var hfShape = new CANNON.Heightfield(matrix, {
+                elementSize: 1,
+                minValue: 0, // Extend it somewhat to not make spheres pass through
+                maxValue: 1
+            });
+            var hfBody = new CANNON.RigidBody(0,hfShape);
+            world.add(hfBody);
+
+            var mass = 1;
+
+            var sphereShape = new CANNON.Sphere(0.1);
+            var sphereBody = new CANNON.RigidBody(mass,sphereShape);
+            sphereBody.position.set(0.25, 0.25, 2);
+            world.add(sphereBody);
+            demo.addVisual(sphereBody);
+
+            /*
+            var sphereShape2 = new CANNON.Sphere(0.1);
+            var sphereBody2 = new CANNON.RigidBody(mass,sphereShape2);
+            sphereBody2.position.set(0.75, 0.75, 2);
+            world.add(sphereBody2);
+            demo.addVisual(sphereBody2);
+            */
+        });
+
+      demo.start();
+
+    </script>
+  </body>
+</html>

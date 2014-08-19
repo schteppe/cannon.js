@@ -19,6 +19,7 @@ module.exports = {
     FrictionEquation :              require('./equations/FrictionEquation'),
     GSSolver :                      require('./solver/GSSolver'),
     GridBroadphase :                require('./collision/GridBroadphase'),
+    Heightfield :                   require('./shapes/Heightfield'),
     HingeConstraint :               require('./constraints/HingeConstraint'),
     Mat3 :                          require('./math/Mat3'),
     Material :                      require('./material/Material'),

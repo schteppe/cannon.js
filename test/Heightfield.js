@@ -7,7 +7,11 @@ var ConvexPolyhedron = require('../src/shapes/ConvexPolyhedron');
 module.exports = {
 
     calculateWorldAABB : function(test){
-        var hfShape = createHeightfield();
+        var hfShape = createHeightfield({
+            elementSize: 1,
+            minValue: 0,
+            maxValue: 1
+        });
         var min = new Vec3();
         var max = new Vec3();
         hfShape.calculateWorldAABB(
@@ -26,7 +30,11 @@ module.exports = {
     },
 
     getConvexTrianglePillar: function(test){
-        var hfShape = createHeightfield();
+        var hfShape = createHeightfield({
+            elementSize: 1,
+            minValue: 0,
+            maxValue: 1
+        });
         var offset = new Vec3();
         var convex = new ConvexPolyhedron();
 
@@ -67,7 +75,7 @@ module.exports = {
 
 };
 
-function createHeightfield(){
+function createHeightfield(options){
     var matrix = [];
     var size = 20;
     for (var i = 0; i < size; i++) {
@@ -76,9 +84,7 @@ function createHeightfield(){
             matrix[i].push(1);
         }
     }
-    var hfShape = new Heightfield(matrix, {
-        elementSize: 1,
-    });
+    var hfShape = new Heightfield(matrix, options);
 
     return hfShape;
 }
