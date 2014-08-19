@@ -144,9 +144,9 @@ ConvexPolyhedron.prototype.computeNormals = function(){
         this.faceNormals[i] = n;
         var vertex = this.vertices[this.faces[i][0]];
         if(n.dot(vertex) < 0){
-            console.warn("Face normal " + i + " ("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
+            console.warn(".faceNormals[" + i + "] = Vec3("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
             for(var j=0; j<this.faces[i].length; j++){
-                console.warn("Vertex "+this.faces[i][j]+": ("+this.vertices[this.faces[i][j]].toString()+")");
+                console.warn(".vertices["+this.faces[i][j]+"] = Vec3("+this.vertices[this.faces[i][j]].toString()+")");
             }
         }
     }

@@ -1,11 +1,12 @@
 module.exports = ContactGenerator;
 
-var Shape = require('../shapes/Shape')
-,   Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   Solver = require('../solver/Solver')
-,   Vec3Pool = require('../utils/Vec3Pool')
-,   ContactEquation = require('../equations/ContactEquation')
+var Shape = require('../shapes/Shape');
+var Vec3 = require('../math/Vec3');
+var ConvexPolyhedron = require('../shapes/ConvexPolyhedron');
+var Quaternion = require('../math/Quaternion');
+var Solver = require('../solver/Solver');
+var Vec3Pool = require('../utils/Vec3Pool');
+var ContactEquation = require('../equations/ContactEquation');
 
 /**
  * Helper class for the World. Generates ContactEquations.
@@ -34,7 +35,7 @@ function ContactGenerator(){
      * @property {Vec3Pool} v3pool
      */
     this.v3pool = new Vec3Pool();
-};
+}
 
 /**
  * Swaps the body references in the contact
@@ -50,7 +51,7 @@ ContactGenerator.prototype.swapResult = function(r){
     temp = r.bi;
     r.bi = r.bj;
     r.bj = temp;
-}
+};
 
 /**
  * Removes unnecessary members of an array of ContactEquation.
@@ -378,7 +379,7 @@ ContactGenerator.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj
     if(plane_to_sphere_ortho.norm2() <= si.radius*si.radius){
         result.push(r);
     }
-}
+};
 
 // See http://bulletphysics.com/Bullet/BulletFull/SphereTriangleDetector_8cpp_source.html
 var pointInPolygon_edge = new Vec3();
@@ -616,7 +617,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
         }
     }
     v3pool.release(edgeTangent,edgeCenter,r,orthogonal,dist);
-}
+};
 
 var convex_to_sphere = new Vec3();
 var sphereConvex_edge = new Vec3();
@@ -660,7 +661,7 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
         xj.vadd(worldCorner,worldCorner);
         var sphere_to_corner = sphereConvex_sphereToCorner;
         worldCorner.vsub(xi, sphere_to_corner);
-        if(sphere_to_corner.norm2()<R*R){
+        if(sphere_to_corner.norm2() < R * R){
             found = true;
             var r = this.makeResult(bi,bj);
             sphere_to_corner.copy(r.ri);
@@ -675,29 +676,35 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
 
     // Check side (plane) intersections
     var found = false;
-    for(var i=0,nfaces=faces.length; i!==nfaces && found===false; i++){
+    for(var i=0, nfaces=faces.length; i!==nfaces && found===false; i++){
         var normal = normals[i];
         var face = faces[i];
 
+        // Get world-transformed normal of the face
         var worldNormal = sphereConvex_worldNormal;
         qj.vmult(normal,worldNormal);
 
+        // Get a world vertex from the face
         var worldPoint = sphereConvex_worldPoint;
         qj.vmult(verts[face[0]],worldPoint);
-        worldPoint.vadd(xj,worldPoint); // Arbitrary point in the face
+        worldPoint.vadd(xj,worldPoint);
 
+        // Get a point on the sphere, closest to the face normal
         var worldSpherePointClosestToPlane = sphereConvex_worldSpherePointClosestToPlane;
-        worldNormal.mult(-R,worldSpherePointClosestToPlane);
-        xi.vadd(worldSpherePointClosestToPlane,worldSpherePointClosestToPlane);
+        worldNormal.mult(-R, worldSpherePointClosestToPlane);
+        xi.vadd(worldSpherePointClosestToPlane, worldSpherePointClosestToPlane);
 
+        // Vector from a face point to the closest point on the sphere
         var penetrationVec = sphereConvex_penetrationVec;
         worldSpherePointClosestToPlane.vsub(worldPoint,penetrationVec);
+
+        // The penetration. Negative value means overlap.
         var penetration = penetrationVec.dot(worldNormal);
 
-        var sphereToWorldPoint = sphereConvex_sphereToWorldPoint;
-        xi.vsub(worldPoint,sphereToWorldPoint);
+        var worldPointToSphere = sphereConvex_sphereToWorldPoint;
+        xi.vsub(worldPoint, worldPointToSphere);
 
-        if(penetration<0 && sphereToWorldPoint.dot(worldNormal)>0){
+        if(penetration < 0 && worldPointToSphere.dot(worldNormal)>0){
             // Intersects plane. Now check if the sphere is inside the face polygon
             var faceVerts = []; // Face vertices, in world coords
             for(var j=0, Nverts=face.length; j!==Nverts; j++){
@@ -807,7 +814,7 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
             }
         }
     }
-}
+};
 
 var planeBox_normal = new Vec3();
 var plane_to_corner = new Vec3();
@@ -826,7 +833,7 @@ var plane_to_corner = new Vec3();
  */
 ContactGenerator.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     this.planeConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
-}
+};
 
 /**
  * Go recursive for compound shapes
@@ -883,7 +890,7 @@ ContactGenerator.prototype.recurseCompound = function(result,si,sj,xi,xj,qi,qj,b
 
         v3pool.push(newPos);
     }
-}
+};
 
 var planeConvex_v = new Vec3();
 var planeConvex_normal = new Vec3();
@@ -941,7 +948,7 @@ ContactGenerator.prototype.planeConvex = function(  result,
             result.push(r);
         }
     }
-}
+};
 
 var convexConvex_sepAxis = new Vec3();
 var convexConvex_q = new Vec3();
@@ -978,7 +985,7 @@ ContactGenerator.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
             result.push(r);
         }
     }
-}
+};
 
 var particlePlane_normal = new Vec3();
 var particlePlane_relpos = new Vec3();
@@ -1175,23 +1182,29 @@ ContactGenerator.prototype.sphereHeightfield = function (
         iMaxY = Math.ceil((spherePos.y + radius - hfPos.y) / w);
 
     // Clamp index to edges
-    if(iMinX < 0) iMinX = 0;
-    if(iMaxX >= data.length) iMaxX = data.length - 1;
-    if(iMinY < 0) iMinY = 0;
-    if(iMaxY >= data[0].length) iMaxY = data[0].length - 1;
+    if(iMinX < 0){ iMinX = 0; }
+    if(iMaxX >= data.length){ iMaxX = data.length - 1; }
+    if(iMinY < 0){ iMinY = 0; }
+    if(iMaxY >= data[0].length){ iMaxY = data[0].length - 1; }
 
     var minMax = [];
     hfShape.getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, minMax);
-    var max = minMax
+    var min = minMax[0];
+    var max = minMax[1];
 
-    if(spherePos[1]-radius > max){
+    /*
+    if(spherePos[1] - radius > max){
         return justTest ? false : 0;
     }
+    */
 
     var found = false;
+    var convex = new ConvexPolyhedron();
+    var offset = new Vec3();
     for(var i = iMinX; i < iMaxX; i++){
         for(var j = iMinY; j < iMaxY; j++){
-            //hfShape.getConvexTrianglePillar(i, j, 0, new ConvexPolyhedron());
+            hfShape.getConvexTrianglePillar(i, j, false, convex, offset);
+            this.sphereConvex(result, sphereShape, convex, spherePos, offset, sphereQuat, hfQuat, sphereBody, hfBody);
         }
     }
 

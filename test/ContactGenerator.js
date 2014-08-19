@@ -33,21 +33,20 @@ module.exports = {
         var cg = new ContactGenerator();
         var result = [];
         var hfShape = createHeightfield();
-        var sphereShape = new Sphere(1);
+        var sphereShape = new Sphere(0.1);
         cg.sphereHeightfield(
             result,
             sphereShape,
             hfShape,
-            new Vec3(0.5, 0, 0),
-            new Vec3(-0.5, 0, 0),
+            new Vec3(0.25, 0.25, 0.05), // hit the first triangle in the field
+            new Vec3(0, 0, 0),
             new Quaternion(),
             new Quaternion(),
             new RigidBody(1, sphereShape),
             new RigidBody(1, hfShape)
         );
 
-        console.warn('sphereHeightfield is todo');
-        // test.equal(result.length, 1);
+        test.equal(result.length, 1);
 
         test.done();
     },

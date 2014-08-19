@@ -48,13 +48,20 @@ module.exports = {
             new Vec3(0.25, 0.25, 0.5),
             new Vec3(-0.75, 0.25, 0.5),
             new Vec3(0.25, -0.75, 0.5),
-
             new Vec3(0.25, 0.25, -0.5),
             new Vec3(-0.75, 0.25, -0.5),
             new Vec3(0.25, -0.75, -0.5),
         ]);
         test.deepEqual(offset, new Vec3(0.75, 0.75, 0.5));
 
+        test.done();
+    },
+
+    getRectMinMax: function(test){
+        var hfShape = createHeightfield();
+        var minMax = [];
+        hfShape.getRectMinMax(0,0,1,1,minMax);
+        test.deepEqual(minMax, [1,1]);
         test.done();
     },
 

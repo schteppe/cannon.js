@@ -200,9 +200,9 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         faces[0][2] = 2;
 
         // bottom triangle
-        faces[1][0] = 3;
+        faces[1][0] = 5;
         faces[1][1] = 4;
-        faces[1][2] = 5;
+        faces[1][2] = 3;
 
         // -x facing quad
         faces[2][0] = 0;
@@ -217,10 +217,10 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         faces[3][3] = 4;
 
         // +xy facing quad
-        faces[4][0] = 1;
-        faces[4][1] = 2;
-        faces[4][2] = 5;
-        faces[4][3] = 4;
+        faces[4][0] = 4;
+        faces[4][1] = 5;
+        faces[4][2] = 2;
+        faces[4][3] = 1;
 
 
     } else {
@@ -274,21 +274,21 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         faces[0][2] = 2;
 
         // bottom triangle
-        faces[1][0] = 3;
+        faces[1][0] = 5;
         faces[1][1] = 4;
-        faces[1][2] = 5;
+        faces[1][2] = 3;
 
         // +x facing quad
-        faces[2][0] = 0;
-        faces[2][1] = 3;
-        faces[2][2] = 5;
-        faces[2][3] = 2;
+        faces[2][0] = 2;
+        faces[2][1] = 5;
+        faces[2][2] = 3;
+        faces[2][3] = 0;
 
         // +y facing quad
-        faces[3][0] = 0;
-        faces[3][1] = 1;
-        faces[3][2] = 4;
-        faces[3][3] = 3;
+        faces[3][0] = 3;
+        faces[3][1] = 4;
+        faces[3][2] = 1;
+        faces[3][3] = 0;
 
         // -xy facing quad
         faces[4][0] = 1;
@@ -296,11 +296,14 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         faces[4][2] = 5;
         faces[4][3] = 2;
     }
+
+    result.computeNormals();
+    result.computeEdges();
 };
 
 Heightfield.prototype.calculateLocalInertia = function(mass, target){
     target = target || new Vec3();
-    target.set(0,0,0);
+    target.set(0, 0, 0);
     return target;
 };
 
