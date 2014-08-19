@@ -52,34 +52,7 @@ function ConvexPolyhedron( points , faces , normals ) {
      * @type {Array}
      */
     this.faceNormals = [];
-    /*
-    for(var i=0; i<this.faceNormals.length; i++){
-        this.faceNormals[i].normalize();
-    }
-     */
-    // Generate normals
-    for(var i=0; i<this.faces.length; i++){
-
-        // Check so all vertices exists for this face
-        for(var j=0; j<this.faces[i].length; j++){
-            if(!this.vertices[this.faces[i][j]]){
-                throw new Error("Vertex "+this.faces[i][j]+" not found!");
-            }
-        }
-
-        var n = new Vec3();
-        this.getFaceNormal(i,n);
-        n.negate(n);
-        this.faceNormals.push(n);
-        //console.log(n.toString());
-        var vertex = this.vertices[this.faces[i][0]];
-        if(n.dot(vertex)<0){
-            console.warn("Face normal "+i+" ("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
-            for(var j=0; j<this.faces[i].length; j++){
-                console.warn("Vertex "+this.faces[i][j]+": ("+this.vertices[faces[i][j]].toString()+")");
-            }
-        }
-    }
+    this.computeNormals();
 
     this.worldFaceNormalsNeedsUpdate = true;
     this.worldFaceNormals = []; // World transformed version of .faceNormals
@@ -90,33 +63,50 @@ function ConvexPolyhedron( points , faces , normals ) {
      * @type {Array}
      */
     this.uniqueEdges = [];
-    var nv = this.vertices.length;
+
+    this.computeEdges();
+    this.updateBoundingSphereRadius();
+}
+ConvexPolyhedron.prototype = new Shape();
+ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
+
+/**
+ * Computes .uniqueEdges.
+ */
+ConvexPolyhedron.prototype.computeEdges = function(){
+    var faces = this.faces;
+    var vertices = this.vertices;
+    var nv = vertices.length;
+    var edges = this.uniqueEdges;
+
+    edges.length = 0;
+
     for(var pi=0; pi<nv; pi++){
-        var p = this.vertices[pi];
+        var p = vertices[pi];
         if(!(p instanceof Vec3)){
             throw "Argument 1 must be instance of Vec3";
         }
         this.uniqueEdges.push(p);
     }
 
-    for(var i=0; i<this.faces.length; i++){
-        var numVertices = this.faces[i].length;
-        var NbTris = numVertices;
-        for(var j=0; j<NbTris; j++){
+    for(var i=0; i<faces.length; i++){
+        var face = faces[i];
+        var numVertices = face.length;
+        for(var j = 0; j < numVertices; j++){
             var k = ( j+1 ) % numVertices;
             var edge = new Vec3();
-            this.vertices[this.faces[i][j]].vsub(this.vertices[this.faces[i][k]],edge);
+            vertices[face[j]].vsub(vertices[face[k]], edge);
             edge.normalize();
             var found = false;
-            for(var p=0;p<this.uniqueEdges.length;p++){
-                if (this.uniqueEdges[p].almostEquals(edge) || this.uniqueEdges[p].almostEquals(edge)){
+            for(var p=0; p < edges.length; p++){
+                if (edges[p].almostEquals(edge) || edges[p].almostEquals(edge)){
                     found = true;
                     break;
                 }
             }
 
             if (!found){
-                this.uniqueEdges.push(edge);
+                edges.push(edge);
             }
 
             if (edge) {
@@ -130,11 +120,37 @@ function ConvexPolyhedron( points , faces , normals ) {
             }
         }
     }
-
-    this.updateBoundingSphereRadius();
 };
-ConvexPolyhedron.prototype = new Shape();
-ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
+
+/**
+ * Compute the normals of the faces. Will reuse existing Vec3 objects in the .faceNormals array if they exist.
+ */
+ConvexPolyhedron.prototype.computeNormals = function(){
+    this.faceNormals.length = this.faces.length;
+
+    // Generate normals
+    for(var i=0; i<this.faces.length; i++){
+
+        // Check so all vertices exists for this face
+        for(var j=0; j<this.faces[i].length; j++){
+            if(!this.vertices[this.faces[i][j]]){
+                throw new Error("Vertex "+this.faces[i][j]+" not found!");
+            }
+        }
+
+        var n = this.faceNormals[i] || new Vec3();
+        this.getFaceNormal(i,n);
+        n.negate(n);
+        this.faceNormals[i] = n;
+        var vertex = this.vertices[this.faces[i][0]];
+        if(n.dot(vertex) < 0){
+            console.warn("Face normal " + i + " ("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
+            for(var j=0; j<this.faces[i].length; j++){
+                console.warn("Vertex "+this.faces[i][j]+": ("+this.vertices[this.faces[i][j]].toString()+")");
+            }
+        }
+    }
+};
 
 /**
  * Get face normal given 3 vertices
@@ -154,7 +170,7 @@ ConvexPolyhedron.computeNormal = function ( va, vb, vc, target ) {
     if ( !target.isZero() ) {
         target.normalize();
     }
-}
+};
 
 /**
  * Compute the normal of a face from its vertices
@@ -168,7 +184,7 @@ ConvexPolyhedron.prototype.getFaceNormal = function(i,target){
     var vb = this.vertices[f[1]];
     var vc = this.vertices[f[2]];
     return ConvexPolyhedron.computeNormal(va,vb,vc,target);
-}
+};
 
 /**
  * @method clipAgainstHull

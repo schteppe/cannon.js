@@ -1,34 +1,47 @@
 var Vec3 = require("../src/math/Vec3");
 var Quaternion = require("../src/math/Quaternion");
 var Box = require('../src/shapes/Box');
-var Heightfield = require('../src/shapes/heightfield');
+var Heightfield = require('../src/shapes/Heightfield');
+var ConvexPolyhedron = require('../src/shapes/ConvexPolyhedron');
 
 module.exports = {
+
     calculateWorldAABB : function(test){
         var hfShape = createHeightfield();
         var min = new Vec3();
         var max = new Vec3();
         hfShape.calculateWorldAABB(
-            new Vec3(1, 0, 0), // Translate 2 x in world
+            new Vec3(),
             new Quaternion(),
             min,
             max
         );
-        /*
-        test.equal(min.x,0);
-        test.equal(max.x,2);
-        test.equal(min.y,-1);
-        test.equal(max.y, 1);
-        */
+
+        test.equal(min.x, -Number.MAX_VALUE);
+        test.equal(max.x, Number.MAX_VALUE);
+        test.equal(min.y, -Number.MAX_VALUE);
+        test.equal(max.y, Number.MAX_VALUE);
+
         test.done();
     },
-};
 
-function createPolyBox(sx,sy,sz){
-    var v = Vec3;
-    var box = new Box(new Vec3(sx,sy,sz));
-    return box.convexPolyhedronRepresentation;
-}
+    getConvexTrianglePillar: function(test){
+        var hfShape = createHeightfield();
+        var offset = new Vec3();
+        var convex = new ConvexPolyhedron();
+
+        hfShape.getConvexTrianglePillar(0, 0, false, convex, offset);
+        test.equal(convex.vertices.length, 6);
+        test.deepEqual(offset, new Vec3(0.25, 0.25, 0.5));
+
+        hfShape.getConvexTrianglePillar(0, 0, true, convex, offset);
+        test.equal(convex.vertices.length, 6);
+        test.deepEqual(offset, new Vec3(0.75, 0.75, 0.5));
+
+        test.done();
+    },
+
+};
 
 function createHeightfield(){
     var matrix = [];
@@ -36,7 +49,7 @@ function createHeightfield(){
     for (var i = 0; i < size; i++) {
         matrix.push([]);
         for (var j = 0; j < size; j++) {
-            matrix[i].push(Math.sin(i / size * Math.PI * 2));
+            matrix[i].push(1);
         }
     }
     var hfShape = new Heightfield(matrix, {

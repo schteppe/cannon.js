@@ -120,15 +120,179 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
  * @param  {integer} j
  * @param  {boolean} getUpperTriangle
  * @param  {ConvexPolyhedron} result
+ * @param  {Vec3} offsetResult
  */
-Heightfield.prototype.getConvexTrianglePillar = function(i, j, getUpperTriangle, result, offsetResult){
+Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangle, result, offsetResult){
     result = result || new ConvexPolyhedron();
     var data = this.data;
+    var elementSize = this.elementSize;
+    var faces = result.faces;
 
-    if (getUpperTriangle) {
-        data[i][j];
+    // Reuse verts if possible
+    result.vertices.length = 6;
+    for (var i = 0; i < 6; i++) {
+        if(!result.vertices[i]){
+            result.vertices[i] = new Vec3();
+        }
+    }
+
+    // Reuse faces if possible
+    faces.length = 5;
+    for (var i = 0; i < 5; i++) {
+        if(!faces[i]){
+            faces[i] = [];
+        }
+    }
+
+    var verts = result.vertices;
+    if (!getUpperTriangle) {
+
+        // Center of the triangle pillar - all polygons are given relative to this one
+        offsetResult.set(
+            (xi + 0.25) * elementSize, // sort of center of a triangle
+            (yi + 0.25) * elementSize,
+            data[xi][yi] / 2 // vertical center
+        );
+
+        // Top triangle verts
+        verts[0].set(
+            -0.25 * elementSize,
+            -0.25 * elementSize,
+            data[xi][yi] / 2
+        );
+        verts[1].set(
+            0.75 * elementSize,
+            -0.25 * elementSize,
+            data[xi+1][yi] - data[xi][yi] / 2
+        );
+        verts[2].set(
+            -0.25 * elementSize,
+            0.75 * elementSize,
+            data[xi][yi + 1] - data[xi][yi] / 2
+        );
+        faces[0][0] = 0;
+        faces[0][1] = 1;
+        faces[0][2] = 2;
+
+
+        // bottom triangle verts
+        verts[3].set(
+            -0.25 * elementSize,
+            -0.25 * elementSize,
+             - data[xi][yi] / 2
+        );
+        verts[4].set(
+            0.75 * elementSize,
+            -0.25 * elementSize,
+            -data[xi][yi] / 2
+        );
+        verts[5].set(
+            -0.25 * elementSize,
+            0.75  * elementSize,
+            -data[xi][yi] / 2
+        );
+
+        // top triangle
+        faces[0][0] = 0;
+        faces[0][1] = 1;
+        faces[0][2] = 2;
+
+        // bottom triangle
+        faces[1][0] = 3;
+        faces[1][1] = 4;
+        faces[1][2] = 5;
+
+        // -x facing quad
+        faces[2][0] = 0;
+        faces[2][1] = 2;
+        faces[2][2] = 5;
+        faces[2][3] = 3;
+
+        // -y facing quad
+        faces[3][0] = 1;
+        faces[3][1] = 0;
+        faces[3][2] = 3;
+        faces[3][3] = 4;
+
+        // +xy facing quad
+        faces[4][0] = 1;
+        faces[4][1] = 2;
+        faces[4][2] = 5;
+        faces[4][3] = 4;
+
+
     } else {
 
+        // Center of the triangle pillar - all polygons are given relative to this one
+        offsetResult.set(
+            (xi + 0.75) * elementSize, // sort of center of a triangle
+            (yi + 0.75) * elementSize,
+            data[xi][yi] / 2 // vertical center
+        );
+
+        var h = data[xi + 1][yi + 1] / 2;
+
+        // Top triangle verts
+        verts[0].set(
+            0.25 * elementSize,
+            0.25 * elementSize,
+            data[xi + 1][yi + 1] - h
+        );
+        verts[1].set(
+            -0.75 * elementSize,
+            0.25 * elementSize,
+            data[xi][yi + 1] - h
+        );
+        verts[2].set(
+            0.25 * elementSize,
+            -0.75 * elementSize,
+            data[xi][yi + 1] - h
+        );
+
+        // bottom triangle verts
+        verts[3].set(
+            0.25 * elementSize,
+            0.25 * elementSize,
+            data[xi + 1][yi + 1] - h
+        );
+        verts[4].set(
+            -0.75 * elementSize,
+            0.25 * elementSize,
+            data[xi + 1][yi + 1] - h
+        );
+        verts[5].set(
+            0.25 * elementSize,
+            -0.75 * elementSize,
+            data[xi + 1][yi + 1] - h
+        );
+
+        // Top triangle
+        faces[0][0] = 0;
+        faces[0][1] = 1;
+        faces[0][2] = 2;
+
+        // bottom triangle
+        faces[1][0] = 3;
+        faces[1][1] = 4;
+        faces[1][2] = 5;
+
+        // +x facing quad
+        faces[2][0] = 0;
+        faces[2][1] = 3;
+        faces[2][2] = 5;
+        faces[2][3] = 2;
+
+        // +y facing quad
+        faces[3][0] = 0;
+        faces[3][1] = 1;
+        faces[3][2] = 4;
+        faces[3][3] = 3;
+
+        // -xy facing quad
+        faces[4][0] = 1;
+        faces[4][1] = 4;
+        faces[4][2] = 5;
+        faces[4][3] = 2;
     }
 };
 
