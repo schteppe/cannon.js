@@ -670,6 +670,15 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
             r.ri.copy(r.ni);
             r.ri.mult(R,r.ri);
             worldCorner.vsub(xj,r.rj);
+
+            // Should be relative to the body.
+            r.ri.vadd(xi, r.ri);
+            r.ri.vsub(bi.position, r.ri);
+
+            // Should be relative to the body.
+            r.rj.vadd(xj, r.rj);
+            r.rj.vsub(bj.position, r.rj);
+
             result.push(r);
             return;
         }
@@ -794,6 +803,15 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
                         r.ni.normalize();
 
                         r.ni.mult(R,r.ri);
+
+                        // Should be relative to the body.
+                        r.rj.vadd(xj, r.rj);
+                        r.rj.vsub(bj.position, r.rj);
+
+                        // Should be relative to the body.
+                        r.ri.vadd(xi, r.ri);
+                        r.ri.vsub(bi.position, r.ri);
+
                         result.push(r);
 
                         // Release world vertices

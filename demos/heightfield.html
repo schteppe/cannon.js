@@ -26,11 +26,11 @@
             world.broadphase = new CANNON.NaiveBroadphase();
 
             var matrix = [];
-            var size = 2;
+            var size = 20;
             for (var i = 0; i < size; i++) {
                 matrix.push([]);
                 for (var j = 0; j < size; j++) {
-                    matrix[i].push(1);
+                    matrix[i].push(Math.cos(i / size * Math.PI * 2) * 0.5 + 1);
                 }
             }
             var hfShape = new CANNON.Heightfield(matrix, {
@@ -43,19 +43,15 @@
 
             var mass = 1;
 
-            var sphereShape = new CANNON.Sphere(0.1);
-            var sphereBody = new CANNON.RigidBody(mass,sphereShape);
-            sphereBody.position.set(0.25, 0.25, 2);
-            world.add(sphereBody);
-            demo.addVisual(sphereBody);
-
-            /*
-            var sphereShape2 = new CANNON.Sphere(0.1);
-            var sphereBody2 = new CANNON.RigidBody(mass,sphereShape2);
-            sphereBody2.position.set(0.75, 0.75, 2);
-            world.add(sphereBody2);
-            demo.addVisual(sphereBody2);
-            */
+            for(var i=0; i<size - 1; i++){
+                for (var j = 0; j < size - 1; j++) {
+                    var sphereShape = new CANNON.Sphere(0.1);
+                    var sphereBody = new CANNON.RigidBody(mass,sphereShape);
+                    sphereBody.position.set(0.5 + i, 0.5 + j, 3);
+                    world.add(sphereBody);
+                    demo.addVisual(sphereBody);
+                }
+            }
         });
 
       demo.start();

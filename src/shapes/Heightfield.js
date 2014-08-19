@@ -99,16 +99,10 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
 
     // Get max and min of the data
     var data = this.data,
-        max = data[iMinX][iMinY], // Set first value
-        min = max;
+        max = data[iMinX][iMinY]; // Set first value
     for(var i = iMinX; i < iMaxX; i++){
         for(var j = iMinY; j < iMaxY; j++){
             var height = data[i][j];
-            /*
-            if(height < min){
-                min = height;
-            }
-            */
             if(height > max){
                 max = height;
             }
