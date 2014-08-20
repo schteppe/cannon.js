@@ -226,6 +226,7 @@ World.prototype.collisionMatrixTick = function(){
  * @param {Body} body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
+ * @todo Rename to .addBody
  */
 World.prototype.add = function(body){
     body.index = this.bodies.length;
@@ -268,6 +269,7 @@ World.prototype.removeConstraint = function(c){
  * Remove a rigid body from the simulation.
  * @method remove
  * @param {Body} body
+ * @todo Rename to .removeBody
  */
 World.prototype.remove = function(body){
     body.world = null;
@@ -542,7 +544,7 @@ World.prototype.internalStep = function(dt){
         var g = gvec.dot(c.ni); // Gap, negative if penetration
 
         // Action if penetration
-        if(g<0.0){
+        if(g < 0.0){
 			if (bi.collisionResponse && bj.collisionResponse) {
 				c.restitution = cm.restitution;
 				c.penetration = g;
@@ -592,6 +594,32 @@ World.prototype.internalStep = function(dt){
 				}
 			}
 
+            if( bi.allowSleep &&
+                bi.type === Body.DYNAMIC &&
+                bi.sleepState  === Body.SLEEPING &&
+                bj.sleepState  === Body.AWAKE &&
+                bj.type !== Body.STATIC
+            ){
+                var speedSquaredB = bj.velocity.norm2() + bj.angularVelocity.norm2();
+                var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit,2);
+                if(speedSquaredB >= speedLimitSquaredB*2){
+                    bi._wakeUpAfterNarrowphase = true;
+                }
+            }
+
+            if( bj.allowSleep &&
+                bj.type === Body.DYNAMIC &&
+                bj.sleepState  === Body.SLEEPING &&
+                bi.sleepState  === Body.AWAKE &&
+                bi.type !== Body.STATIC
+            ){
+                var speedSquaredA = bi.velocity.norm2() + bi.angularVelocity.norm2();
+                var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit,2);
+                if(speedSquaredA >= speedLimitSquaredA*2){
+                    bj._wakeUpAfterNarrowphase = true;
+                }
+            }
+
             // Now we know that i and j are in contact. Set collision matrix state
 			this.collisionMatrix.set(bi, bj, true);
 
@@ -605,17 +633,25 @@ World.prototype.internalStep = function(dt){
                 World_step_collideEvent.body = bi;
                 bj.dispatchEvent(World_step_collideEvent);
 
+                /*
                 bi.wakeUp();
                 bj.wakeUp();
+                */
             }
         }
     }
     if(doProfiling){
         profile.makeContactConstraints = performance.now() - profilingStart;
+        profilingStart = performance.now();
     }
 
-    if(doProfiling){
-        profilingStart = performance.now();
+    // Wake up bodies
+    for(i=0; i!==N; i++){
+        var bi = bodies[i];
+        if(bi._wakeUpAfterNarrowphase){
+            bi.wakeUp();
+            bi._wakeUpAfterNarrowphase = false;
+        }
     }
 
     // Add user-added constraints

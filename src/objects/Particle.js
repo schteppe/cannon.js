@@ -100,7 +100,11 @@ function Particle(mass,material){
      */
     this.allowSleep = true;
 
-    // 0:awake, 1:sleepy, 2:sleeping
+    /**
+     * Current sleep state.
+     * @property sleepState
+     * @type {Number}
+     */
     this.sleepState = 0;
 
     /**
@@ -119,6 +123,7 @@ function Particle(mass,material){
 
     this.timeLastSleepy = 0;
 
+    this._wakeUpAfterNarrowphase = false;
 }
 
 Particle.prototype = new Body();
@@ -129,7 +134,7 @@ Particle.prototype.constructor = Particle;
 * @return bool
 */
 Particle.prototype.isAwake = function(){
-    return this.sleepState === 0;
+    return this.sleepState === Body.AWAKE;
 };
 
 /**
@@ -137,7 +142,7 @@ Particle.prototype.isAwake = function(){
 * @return bool
 */
 Particle.prototype.isSleepy = function(){
-    return this.sleepState === 1;
+    return this.sleepState === Body.SLEEPY;
 };
 
 /**
@@ -145,7 +150,7 @@ Particle.prototype.isSleepy = function(){
  * @return bool
  */
 Particle.prototype.isSleeping = function(){
-    return this.sleepState === 2;
+    return this.sleepState === Body.SLEEPING;
 };
 
 /**
@@ -155,7 +160,7 @@ Particle.prototype.isSleeping = function(){
 Particle.prototype.wakeUp = function(){
     var s = this.sleepState;
     this.sleepState = 0;
-    if(s === 2){
+    if(s === Body.SLEEPING){
         this.dispatchEvent({type:"wakeup"});
     }
 };
@@ -165,7 +170,17 @@ Particle.prototype.wakeUp = function(){
  * @method sleep
  */
 Particle.prototype.sleep = function(){
-    this.sleepState = 2;
+    this.sleepState = Body.SLEEPING;
+    this.velocity.set(0,0,0);
+    this.angularVelocity.set(0,0,0);
+};
+
+Particle.sleepyEvent = {
+    type: "sleepy"
+};
+
+Particle.sleepEvent = {
+    type: "sleep"
 };
 
 /**
@@ -178,15 +193,15 @@ Particle.prototype.sleepTick = function(time){
         var sleepState = this.sleepState;
         var speedSquared = this.velocity.norm2();
         var speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
-        if(sleepState===0 && speedSquared < speedLimitSquared){
-            this.sleepState = 1; // Sleepy
+        if(sleepState===Body.AWAKE && speedSquared < speedLimitSquared){
+            this.sleepState = Body.SLEEPY; // Sleepy
             this.timeLastSleepy = time;
-            this.dispatchEvent({type:"sleepy"});
-        } else if(sleepState===1 && speedSquared > speedLimitSquared){
+            this.dispatchEvent(Particle.sleepyEvent);
+        } else if(sleepState===Body.SLEEPY && speedSquared > speedLimitSquared){
             this.wakeUp(); // Wake up
-        } else if(sleepState===1 && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
-            this.sleepState = 2; // Sleeping
-            this.dispatchEvent({type:"sleep"});
+        } else if(sleepState===Body.SLEEPY && (time - this.timeLastSleepy ) > this.sleepTimeLimit){
+            this.sleep(); // Sleeping
+            this.dispatchEvent(Particle.sleepEvent);
         }
     }
 };

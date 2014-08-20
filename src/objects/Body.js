@@ -83,4 +83,29 @@ Body.STATIC = 2;
  */
 Body.KINEMATIC = 4;
 
+
+
+/**
+ * @static
+ * @property AWAKE
+ * @type {number}
+ */
+Body.AWAKE = 0;
+
+/**
+ * @static
+ * @property SLEEPY
+ * @type {number}
+ */
+Body.SLEEPY = 1;
+
+/**
+ * @static
+ * @property SLEEPING
+ * @type {number}
+ */
+Body.SLEEPING = 2;
+
+
+
 Body.idCounter = 0;
