@@ -42,8 +42,7 @@
             }
 
             var hfShape = new CANNON.Heightfield(matrix, {
-                elementSize: 1,
-                minValue: -10
+                elementSize: 1
             });
             var hfBody = new CANNON.RigidBody(0, hfShape);
             hfBody.position.set(-sizeX * hfShape.elementSize / 2, -20, -10);

@@ -9,8 +9,7 @@ module.exports = {
     calculateWorldAABB : function(test){
         var hfShape = createHeightfield({
             elementSize: 1,
-            minValue: 0,
-            maxValue: 1
+            minValue: 0
         });
         var min = new Vec3();
         var max = new Vec3();
@@ -32,15 +31,12 @@ module.exports = {
     getConvexTrianglePillar: function(test){
         var hfShape = createHeightfield({
             elementSize: 1,
-            minValue: 0,
-            maxValue: 1
+            minValue: 0
         });
-        var offset = new Vec3();
-        var convex = new ConvexPolyhedron();
 
-        hfShape.getConvexTrianglePillar(0, 0, false, convex, offset);
-        test.equal(convex.vertices.length, 6);
-        test.deepEqual(convex.vertices, [
+        hfShape.getConvexTrianglePillar(0, 0, false);
+        test.equal(hfShape.pillarConvex.vertices.length, 6);
+        test.deepEqual(hfShape.pillarConvex.vertices, [
             new Vec3(-0.25, -0.25, 0.5),
             new Vec3(0.75, -0.25, 0.5),
             new Vec3(-0.25, 0.75, 0.5),
@@ -48,11 +44,11 @@ module.exports = {
             new Vec3(0.75, -0.25, -0.5),
             new Vec3(-0.25, 0.75, -0.5),
         ]);
-        test.deepEqual(offset, new Vec3(0.25, 0.25, 0.5));
+        test.deepEqual(hfShape.pillarOffset, new Vec3(0.25, 0.25, 0.5));
 
-        hfShape.getConvexTrianglePillar(0, 0, true, convex, offset);
-        test.equal(convex.vertices.length, 6);
-        test.deepEqual(convex.vertices, [
+        hfShape.getConvexTrianglePillar(0, 0, true);
+        test.equal(hfShape.pillarConvex.vertices.length, 6);
+        test.deepEqual(hfShape.pillarConvex.vertices, [
             new Vec3(0.25, 0.25, 0.5),
             new Vec3(-0.75, 0.25, 0.5),
             new Vec3(0.25, -0.75, 0.5),
@@ -60,7 +56,7 @@ module.exports = {
             new Vec3(-0.75, 0.25, -0.5),
             new Vec3(0.25, -0.75, -0.5),
         ]);
-        test.deepEqual(offset, new Vec3(0.75, 0.75, 0.5));
+        test.deepEqual(hfShape.pillarOffset, new Vec3(0.75, 0.75, 0.5));
 
         test.done();
     },

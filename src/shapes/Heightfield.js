@@ -40,17 +40,24 @@ function Heightfield(data, options){
         elementSize : 1
     });
 
-    if(options.minValue === null || options.maxValue === null){
-        options.maxValue = data[0][0];
+    if(options.minValue === null){
         options.minValue = data[0][0];
         for(var i=0; i !== data.length; i++){
-            for(var j=0; j !== data.length; j++){
+            for(var j=0; j !== data[i].length; j++){
+                var v = data[i][j];
+                if(v < options.minValue){
+                    options.minValue = v;
+                }
+            }
+        }
+    }
+    if(options.maxValue === null){
+        options.maxValue = data[0][0];
+        for(var i=0; i !== data.length; i++){
+            for(var j=0; j !== data[i].length; j++){
                 var v = data[i][j];
                 if(v > options.maxValue){
                     options.maxValue = v;
-                }
-                if(v < options.minValue){
-                    options.minValue = v;
                 }
             }
         }
@@ -164,6 +171,9 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
 
         result = new ConvexPolyhedron();
         offsetResult = new Vec3();
+
+        this.pillarConvex = result;
+        this.pillarOffset = offsetResult;
     }
 
     var data = this.data;
