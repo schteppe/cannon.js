@@ -17,6 +17,8 @@
     <script src="../libs/smoothie.js"></script>
     <script>
 
+        var mock = false;
+
         var demo = new CANNON.Demo();
 
         demo.addScene("Heightfield", function () {
@@ -26,30 +28,55 @@
             world.broadphase = new CANNON.NaiveBroadphase();
 
             var matrix = [];
-            var size = 20;
-            for (var i = 0; i < size; i++) {
+            var sizeX = 20,
+                sizeY = 20;
+
+            for (var i = 0; i < sizeX; i++) {
                 matrix.push([]);
-                for (var j = 0; j < size; j++) {
-                    matrix[i].push(Math.cos(i / size * Math.PI * 2) * 0.5 + 1);
+                for (var j = 0; j < sizeY; j++) {
+                    matrix[i].push(Math.sin(i*0.5)*Math.sin(j*0.5) + 2);
                 }
             }
+
             var hfShape = new CANNON.Heightfield(matrix, {
                 elementSize: 1,
-                minValue: 0, // Extend it somewhat to not make spheres pass through
-                maxValue: 1
+                // minValue: 0,
+                // maxValue: 1
             });
-            var hfBody = new CANNON.RigidBody(0,hfShape);
-            world.add(hfBody);
+            var hfBody = new CANNON.RigidBody(0, hfShape);
+            if(!mock){
+                world.add(hfBody);
+            }
 
             var mass = 1;
 
-            for(var i=0; i<size - 1; i++){
-                for (var j = 0; j < size - 1; j++) {
+            for(var i=0; i<sizeX - 1; i++){
+                for (var j = 0; j < sizeY - 1; j++) {
+                    if(i !== 1 || j !== 1){
+                        //continue;
+                    }
+
                     var sphereShape = new CANNON.Sphere(0.1);
                     var sphereBody = new CANNON.RigidBody(mass,sphereShape);
-                    sphereBody.position.set(0.5 + i, 0.5 + j, 3);
+                    sphereBody.position.set(0.25 + i, 0.25 + j, 3);
                     world.add(sphereBody);
                     demo.addVisual(sphereBody);
+                }
+            }
+
+            if(mock){
+                for(var i=0; i<sizeX - 1; i++){
+                    for (var j = 0; j < sizeY - 1; j++) {
+                        for (var k = 0; k < 2; k++) {
+                            var convexShape = new CANNON.ConvexPolyhedron();
+                            var offset = new CANNON.Vec3();
+                            hfShape.getConvexTrianglePillar(i, j, !!k, convexShape, offset);
+                            var convexBody = new CANNON.RigidBody(0, convexShape);
+                            convexBody.position.set(offset.x, offset.y, offset.z);
+                            world.add(convexBody);
+                            demo.addVisual(convexBody);
+                        }
+                    }
                 }
             }
         });

@@ -1204,10 +1204,15 @@ ContactGenerator.prototype.sphereHeightfield = function (
     hfQuatInv.vmult(spherePos, localSpherePos);
 
     // Get the index of the data points to test against
-    var iMinX = Math.floor((spherePos.x - radius - hfPos.x) / w),
-        iMaxX = Math.ceil((spherePos.x + radius - hfPos.x) / w),
-        iMinY = Math.floor((spherePos.y - radius - hfPos.y) / w),
-        iMaxY = Math.ceil((spherePos.y + radius - hfPos.y) / w);
+    var iMinX = Math.floor((localSpherePos.x - radius) / w) - 1,
+        iMaxX = Math.ceil((localSpherePos.x + radius) / w) + 1,
+        iMinY = Math.floor((localSpherePos.y - radius) / w) - 1,
+        iMaxY = Math.ceil((localSpherePos.y + radius) / w) + 1;
+
+    // Bail out if we are out of the terrain
+    if(iMaxX < 0 || iMaxY < 0 || iMinX > data.length || iMaxY > data[0].length){
+        return;
+    }
 
     // Clamp index to edges
     if(iMinX < 0){ iMinX = 0; }
@@ -1230,18 +1235,16 @@ ContactGenerator.prototype.sphereHeightfield = function (
     }
 
     var found = false;
-    var convex = new ConvexPolyhedron();
-    var offset = new Vec3();
     for(var i = iMinX; i < iMaxX; i++){
         for(var j = iMinY; j < iMaxY; j++){
 
             // Lower triangle
-            hfShape.getConvexTrianglePillar(i, j, false, convex, offset);
-            this.sphereConvex(result, sphereShape, convex, spherePos, offset, sphereQuat, hfQuat, sphereBody, hfBody);
+            hfShape.getConvexTrianglePillar(i, j, false);
+            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, hfShape.pillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
 
             // Upper triangle
-            hfShape.getConvexTrianglePillar(i, j, true, convex, offset);
-            this.sphereConvex(result, sphereShape, convex, spherePos, offset, sphereQuat, hfQuat, sphereBody, hfBody);
+            hfShape.getConvexTrianglePillar(i, j, true);
+            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, hfShape.pillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
         }
     }
 

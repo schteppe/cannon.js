@@ -44,12 +44,14 @@ function Heightfield(data, options){
         options.maxValue = data[0][0];
         options.minValue = data[0][0];
         for(var i=0; i !== data.length; i++){
-            var v = data[i];
-            if(v > options.maxValue){
-                options.maxValue = v;
-            }
-            if(v < options.minValue){
-                options.minValue = v;
+            for(var j=0; j !== data.length; j++){
+                var v = data[i][j];
+                if(v > options.maxValue){
+                    options.maxValue = v;
+                }
+                if(v < options.minValue){
+                    options.minValue = v;
+                }
             }
         }
     }
@@ -75,15 +77,33 @@ function Heightfield(data, options){
     /**
      * The width of each element
      * @property {number} elementSize
+     * @todo elementSizeX and Y
      */
     this.elementSize = options.elementSize;
 
+    this.cacheEnabled = true;
+
     Shape.call(this);
+
+    this.pillarConvex = new ConvexPolyhedron();
+    this.pillarOffset = new Vec3();
 
     this.type = Shape.types.HEIGHTFIELD;
     this.updateBoundingSphereRadius();
+
+    // "i_j_isUpper" => { convex: ..., offset: ... }
+    // for example:
+    // _cachedPillars["0_2_1"]
+    this._cachedPillars = {};
 }
 Heightfield.prototype = new Shape();
+
+/**
+ * Call whenever you change the data array.
+ */
+Heightfield.prototype.update = function(){
+    this._cachedPillars = {};
+};
 
 /**
  * Get max/min in a rectangle in the matrix data
@@ -99,7 +119,7 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
 
     // Get max and min of the data
     var data = this.data,
-        max = data[iMinX][iMinY]; // Set first value
+        max = this.minValue; // Set first value
     for(var i = iMinX; i < iMaxX; i++){
         for(var j = iMinY; j < iMaxY; j++){
             var height = data[i][j];
@@ -113,16 +133,39 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
     result[1] = max;
 };
 
+Heightfield.prototype.getCachedConvexTrianglePillar = function(xi, yi, getUpperTriangle){
+    return this._cachedPillars[xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0)];
+};
+
+Heightfield.prototype.setCachedConvexTrianglePillar = function(xi, yi, getUpperTriangle, convex, offset){
+    this._cachedPillars[xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0)] = {
+        convex: convex,
+        offset: offset
+    };
+};
+
 /**
  * Get a triangle in the terrain in the form of a triangular convex shape.
  * @param  {integer} i
  * @param  {integer} j
  * @param  {boolean} getUpperTriangle
- * @param  {ConvexPolyhedron} result
- * @param  {Vec3} offsetResult
  */
-Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangle, result, offsetResult){
-    result = result || new ConvexPolyhedron();
+Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangle){
+    var result = this.pillarConvex;
+    var offsetResult = this.pillarOffset;
+
+    if(this.cacheEnabled){
+        var data = this.getCachedConvexTrianglePillar(xi, yi, getUpperTriangle);
+        if(data){
+            this.pillarConvex = data.convex;
+            this.pillarOffset = data.offset;
+            return;
+        }
+
+        result = new ConvexPolyhedron();
+        offsetResult = new Vec3();
+    }
+
     var data = this.data;
     var elementSize = this.elementSize;
     var faces = result.faces;
@@ -144,9 +187,15 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
     }
 
     var verts = result.vertices;
-    if (!getUpperTriangle) {
 
-        var h = (data[xi][yi] - this.minValue) / 2 + this.minValue;
+    var h = (Math.min(
+        data[xi][yi],
+        data[xi+1][yi],
+        data[xi][yi+1],
+        data[xi+1][yi+1]
+    ) - this.minValue ) / 2 + this.minValue;
+
+    if (!getUpperTriangle) {
 
         // Center of the triangle pillar - all polygons are given relative to this one
         offsetResult.set(
@@ -164,17 +213,13 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         verts[1].set(
             0.75 * elementSize,
             -0.25 * elementSize,
-            data[xi+1][yi] - h
+            data[xi + 1][yi] - h
         );
         verts[2].set(
             -0.25 * elementSize,
             0.75 * elementSize,
             data[xi][yi + 1] - h
         );
-        faces[0][0] = 0;
-        faces[0][1] = 1;
-        faces[0][2] = 2;
-
 
         // bottom triangle verts
         verts[3].set(
@@ -224,15 +269,12 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
 
     } else {
 
-        var h = (data[xi + 1][yi + 1] - this.minValue) / 2 + this.minValue;
-
         // Center of the triangle pillar - all polygons are given relative to this one
         offsetResult.set(
             (xi + 0.75) * elementSize, // sort of center of a triangle
             (yi + 0.75) * elementSize,
             h // vertical center
         );
-
 
         // Top triangle verts
         verts[0].set(
@@ -248,7 +290,7 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         verts[2].set(
             0.25 * elementSize,
             -0.75 * elementSize,
-            data[xi][yi + 1] - h
+            data[xi + 1][yi] - h
         );
 
         // bottom triangle verts
@@ -299,6 +341,9 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
 
     result.computeNormals();
     result.computeEdges();
+    result.updateBoundingSphereRadius();
+
+    this.setCachedConvexTrianglePillar(xi, yi, getUpperTriangle, result, offsetResult);
 };
 
 Heightfield.prototype.calculateLocalInertia = function(mass, target){
@@ -318,5 +363,8 @@ Heightfield.prototype.calculateWorldAABB = function(pos, quat, min, max){
 };
 
 Heightfield.prototype.updateBoundingSphereRadius = function(){
-    this.boundingSphereRadius = Number.MAX_VALUE;
+    // Use the bounding box of the min/max values
+    var data = this.data,
+        s = this.elementSize;
+    this.boundingSphereRadius = new Vec3(data.length * s, data[0].length * s, Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))).norm();
 };
