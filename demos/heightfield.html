@@ -28,22 +28,25 @@
             world.broadphase = new CANNON.NaiveBroadphase();
 
             var matrix = [];
-            var sizeX = 20,
-                sizeY = 20;
+            var sizeX = 15,
+                sizeY = 15;
 
             for (var i = 0; i < sizeX; i++) {
                 matrix.push([]);
                 for (var j = 0; j < sizeY; j++) {
-                    matrix[i].push(Math.sin(i*0.5)*Math.sin(j*0.5) + 2);
+                    var height = Math.cos(i/sizeX * Math.PI * 2)*Math.cos(j/sizeY * Math.PI * 2) + 2;
+                    if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
+                        height = 3;
+                    matrix[i].push(height);
                 }
             }
 
             var hfShape = new CANNON.Heightfield(matrix, {
                 elementSize: 1,
-                // minValue: 0,
-                // maxValue: 1
+                minValue: -1
             });
             var hfBody = new CANNON.RigidBody(0, hfShape);
+            hfBody.position.set(-sizeX * hfShape.elementSize / 2, -20, -10);
             if(!mock){
                 world.add(hfBody);
             }
@@ -52,13 +55,12 @@
 
             for(var i=0; i<sizeX - 1; i++){
                 for (var j = 0; j < sizeY - 1; j++) {
-                    if(i !== 1 || j !== 1){
-                        //continue;
-                    }
-
+                    if(i===0 || i >= sizeX-2 || j===0 || j >= sizeY-2)
+                        continue;
                     var sphereShape = new CANNON.Sphere(0.1);
                     var sphereBody = new CANNON.RigidBody(mass,sphereShape);
                     sphereBody.position.set(0.25 + i, 0.25 + j, 3);
+                    sphereBody.position.vadd(hfBody.position, sphereBody.position);
                     world.add(sphereBody);
                     demo.addVisual(sphereBody);
                 }

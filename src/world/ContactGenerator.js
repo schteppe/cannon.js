@@ -1172,6 +1172,9 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
     }
 };
 
+var sphereHeightfield_tmp1 = new Vec3();
+var sphereHeightfield_tmp2 = new Vec3();
+
 /**
  * @method sphereHeightfield
  */
@@ -1189,19 +1192,11 @@ ContactGenerator.prototype.sphereHeightfield = function (
     var data = hfShape.data,
         radius = sphereShape.radius,
         w = hfShape.elementSize,
-        dist = new Vec3(),
-        candidate = new Vec3(),
-        minCandidate = new Vec3(),
-        minCandidateNormal = new Vec3(),
-        worldNormal = new Vec3(),
-        v0 = new Vec3(),
-        v1 = new Vec3();
+        worldPillarOffset = sphereHeightfield_tmp2;
 
     // Get sphere position to heightfield local!
-    var hfQuatInv = hfQuat.clone();
-    hfQuatInv.w *= -1;
-    var localSpherePos = new Vec3();
-    hfQuatInv.vmult(spherePos, localSpherePos);
+    var localSpherePos = sphereHeightfield_tmp1;
+    hfBody.pointToLocalFrame(spherePos, localSpherePos);
 
     // Get the index of the data points to test against
     var iMinX = Math.floor((localSpherePos.x - radius) / w) - 1,
@@ -1234,26 +1229,18 @@ ContactGenerator.prototype.sphereHeightfield = function (
         return;
     }
 
-    var found = false;
     for(var i = iMinX; i < iMaxX; i++){
         for(var j = iMinY; j < iMaxY; j++){
 
             // Lower triangle
             hfShape.getConvexTrianglePillar(i, j, false);
-            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, hfShape.pillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            hfBody.pointToWorldFrame(hfShape.pillarOffset, worldPillarOffset);
+            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
 
             // Upper triangle
             hfShape.getConvexTrianglePillar(i, j, true);
-            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, hfShape.pillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            hfBody.pointToWorldFrame(hfShape.pillarOffset, worldPillarOffset);
+            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
         }
     }
-
-    /*
-    if(found){
-        return 1;
-    }
-
-    return 0;
-    */
-
 };
