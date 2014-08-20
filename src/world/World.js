@@ -168,7 +168,7 @@ function World(){
         makeContactConstraints:0,
         broadphase:0,
         integrate:0,
-        nearphase:0,
+        narrowphase:0,
     };
 
     /**
@@ -499,7 +499,7 @@ World.prototype.internalStep = function(dt){
                                 oldcontacts // To be reused
                                 );
     if(doProfiling){
-        profile.nearphase = performance.now() - profilingStart;
+        profile.narrowphase = performance.now() - profilingStart;
     }
 
     // Loop over all collisions
