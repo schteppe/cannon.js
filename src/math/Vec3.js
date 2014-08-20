@@ -193,6 +193,7 @@ Vec3.prototype.distanceTo = function(p){
 
 /**
  * Multiply the vector with a scalar
+ * @deprecated in favor of .scale
  * @method mult
  * @param {Number} scalar
  * @param {Vec3} target
@@ -208,6 +209,15 @@ Vec3.prototype.mult = function(scalar,target){
     target.z = scalar * z;
     return target;
 };
+
+/**
+ * Multiply the vector with a scalar.
+ * @method scale
+ * @param {Number} scalar
+ * @param {Vec3} target
+ * @return {Vec3}
+ */
+Vec3.prototype.scale = Vec3.prototype.mult;
 
 /**
  * Calculate dot product
@@ -294,6 +304,7 @@ Vec3.prototype.toArray = function(){
  * @method copy
  * @param {Vec3} target
  * @return {Vec3}
+ * @todo Should copy the parameter to this, not the other way around.
  */
 Vec3.prototype.copy = function(target){
     target = target || new Vec3();
