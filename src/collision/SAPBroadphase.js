@@ -159,6 +159,10 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
         for(j=i+1; j<N; j++){
             var bj = bodies[j];
 
+            if(!this.needBroadphaseCollision(bi,bj)){
+                continue;
+            }
+
             if(!SAPBroadphase.checkBounds(bi,bj,axisIndex))
                 break;
 
