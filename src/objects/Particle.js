@@ -1,10 +1,10 @@
 module.exports = Particle;
 
-var Shape = require('../shapes/Shape')
-,   Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   Body = require('./Body')
-,   Material = require('../material/Material')
+var Shape = require('../shapes/Shape');
+var Vec3 = require('../math/Vec3');
+var Quaternion = require('../math/Quaternion');
+var Body = require('./Body');
+var Material = require('../material/Material');
 
 /**
  * A body consisting of one point mass. Does not have orientation.
@@ -119,7 +119,7 @@ function Particle(mass,material){
 
     this.timeLastSleepy = 0;
 
-};
+}
 
 Particle.prototype = new Body();
 Particle.prototype.constructor = Particle;
