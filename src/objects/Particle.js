@@ -32,6 +32,11 @@ function Particle(mass,material){
     this.position = new Vec3();
 
     /**
+     * @property {Vec3} previousPosition
+     */
+    this.previousPosition = new Vec3();
+
+    /**
      * Initial position of the body
      * @property initPosition
      * @type {Vec3}

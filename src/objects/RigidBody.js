@@ -61,6 +61,9 @@ function RigidBody(mass,shape,material){
      */
     this.initAngularVelocity = new Vec3();
 
+    this.interpolatedPosition = new Vec3();
+    this.interpolatedQuaternion = new Quaternion();
+
     /**
      * @property shape
      * @type {Shape}
