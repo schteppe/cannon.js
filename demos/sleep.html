@@ -100,9 +100,10 @@
 
         world.allowSleep = true;
         sphereBody.allowSleep = true;
+        sphereBody2.allowSleep = true;
 
         sphereBody.sleepSpeedLimit = 0.5;
-        sphereBody.sleepTimeLimit = 1000;
+        sphereBody.sleepTimeLimit = 1;
 
         // The body wakes up when it gets a new contact
         sphereBody.addEventListener("wakeup",function(event){

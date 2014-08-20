@@ -101,7 +101,7 @@
         var rand = 0.1;
         var h = 0;
         var sphereShape = new CANNON.Sphere(1); // Sharing shape saves memory
-        //world.allowSleep = true;
+        world.allowSleep = true;
         for(var i=0; i<nx; i++){
           for(var j=0; j<ny; j++){
             for(var k=0; k<nz; k++){
@@ -109,9 +109,10 @@
       	      sphereBody.position.set(i*2-nx*0.5 + (Math.random()-0.5)*rand,
       				      j*2-ny*0.5 + (Math.random()-0.5)*rand,
       				      1+k*2.1+h+(i+j)*0.0);
-              /*
               sphereBody.allowSleep = true;
-              */
+              sphereBody.sleepSpeedLimit = 1;
+              sphereBody.sleepTimeLimit = 5;
+
               world.add(sphereBody);
       	      demo.addVisual(sphereBody);
             }
