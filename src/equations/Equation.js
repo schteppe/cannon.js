@@ -67,7 +67,7 @@ function Equation(bi,bj,minForce,maxForce){
 
     // Set typical spook params
     this.setSpookParams(1e7,4,1/60);
-};
+}
 Equation.prototype.constructor = Equation;
 
 /**
@@ -165,13 +165,13 @@ Equation.prototype.computeGiMf = function(){
         ti = bi.tau,
         fj = bj.force,
         tj = bj.tau,
-        invMassi = bi.invMass,
-        invMassj = bj.invMass;
+        invMassi = bi.invMassSolve,
+        invMassj = bj.invMassSolve;
 
-    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(ti,invIi_vmult_taui);
-    else invIi_vmult_taui.set(0,0,0);
-    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tj,invIj_vmult_tauj);
-    else invIj_vmult_tauj.set(0,0,0);
+    if(bi.invInertiaWorldSolve){ bi.invInertiaWorldSolve.vmult(ti,invIi_vmult_taui); }
+    else { invIi_vmult_taui.set(0,0,0); }
+    if(bj.invInertiaWorldSolve){ bj.invInertiaWorldSolve.vmult(tj,invIj_vmult_tauj); }
+    else { invIj_vmult_tauj.set(0,0,0); }
 
     fi.mult(invMassi,iMfi);
     fj.mult(invMassj,iMfj);
@@ -190,10 +190,10 @@ Equation.prototype.computeGiMGt = function(){
         GB = this.jacobianElementB,
         bi = this.bi,
         bj = this.bj,
-        invMassi = bi.invMass,
-        invMassj = bj.invMass,
-        invIi = bi.invInertiaWorld,
-        invIj = bj.invInertiaWorld
+        invMassi = bi.invMassSolve,
+        invMassj = bj.invMassSolve,
+        invIi = bi.invInertiaWorldSolve,
+        invIj = bj.invInertiaWorldSolve,
         result = invMassi + invMassj;
 
     if(invIi){
@@ -230,21 +230,21 @@ Equation.prototype.addToWlambda = function(deltalambda){
 
     // Add to linear velocity
     // v_lambda += inv(M) * delta_lamba * G
-    GA.spatial.mult(bi.invMass*deltalambda,temp);
+    GA.spatial.mult(bi.invMassSolve * deltalambda,temp);
     bi.vlambda.vadd(temp, bi.vlambda);
 
-    GB.spatial.mult(bj.invMass*deltalambda,temp);
+    GB.spatial.mult(bj.invMassSolve * deltalambda,temp);
     bj.vlambda.vadd(temp, bj.vlambda);
 
     // Add to angular velocity
-    if(bi.invInertiaWorld){
-        bi.invInertiaWorld.vmult(GA.rotational,temp);
+    if(bi.invInertiaWorldSolve){
+        bi.invInertiaWorldSolve.vmult(GA.rotational,temp);
         temp.mult(deltalambda,temp);
         bi.wlambda.vadd(temp,bi.wlambda);
     }
 
-    if(bj.invInertiaWorld){
-        bj.invInertiaWorld.vmult(GB.rotational,temp);
+    if(bj.invInertiaWorldSolve){
+        bj.invInertiaWorldSolve.vmult(GB.rotational,temp);
         temp.mult(deltalambda,temp);
         bj.wlambda.vadd(temp,bj.wlambda);
     }

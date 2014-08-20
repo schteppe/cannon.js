@@ -30,7 +30,7 @@ function GSSolver(){
      * @type {Number}
      */
     this.tolerance = 0;
-};
+}
 GSSolver.prototype = new Solver();
 
 var GSSolver_solve_lambda = []; // Just temporary number holders that we want to reuse each solve.
@@ -46,6 +46,13 @@ GSSolver.prototype.solve = function(dt,world){
         Nbodies = bodies.length,
         h = dt,
         q, B, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
+
+    // Update solve mass
+    if(Neq !== 0){
+        for(var i=0; i!==Nbodies; i++){
+            bodies[i].updateSolveMassProperties();
+        }
+    }
 
     // Things that does not change during iteration can be computed once
     var invCs = GSSolver_solve_invCs,

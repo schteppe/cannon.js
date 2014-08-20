@@ -5,6 +5,7 @@ var Vec3 = require('../math/Vec3');
 var Mat3 = require('../math/Mat3');
 var Quaternion = require('../math/Quaternion');
 var Particle = require('./Particle');
+var Body = require('./Body');
 var Material = require('../material/Material');
 
 /**
@@ -86,6 +87,18 @@ function RigidBody(mass,shape,material){
      */
     this.invInertiaWorld = new Mat3();
 
+    this.invMassSolve = 0;
+
+    /**
+     * @property {Vec3} invInertiaSolve
+     */
+    this.invInertiaSolve = new Vec3();
+
+    /**
+     * @property {Mat3} invInertiaWorldSolve
+     */
+    this.invInertiaWorldSolve = new Mat3();
+
     /**
      * Set to true if you don't want the body to rotate. Make sure to run .updateMassProperties() after changing this.
      * @property {Boolean} fixedRotation
@@ -123,6 +136,22 @@ function RigidBody(mass,shape,material){
 
 RigidBody.prototype = new Particle(0);
 RigidBody.prototype.constructor = RigidBody;
+
+/**
+ * If the body is sleeping, it should be immovable / have infinite mass during solve. We solve it by having a separate "solve mass".
+ * @method updateSolveMassProperties
+ */
+RigidBody.prototype.updateSolveMassProperties = function(){
+    if(this.sleepState === Body.SLEEPING || this.type === Body.KINEMATIC){
+        this.invMassSolve = 0;
+        this.invInertiaSolve.setZero();
+        this.invInertiaWorldSolve.setZero();
+    } else {
+        this.invMassSolve = this.invMass;
+        this.invInertia.copy(this.invInertiaSolve);
+        this.invInertiaWorld.copy(this.invInertiaWorldSolve);
+    }
+};
 
 /**
  * Convert a world point to local body frame.
