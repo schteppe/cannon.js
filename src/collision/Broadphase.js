@@ -1,8 +1,8 @@
-var Body = require('../objects/Body')
-,   Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   Shape = require('../shapes/Shape')
-,   Plane = require('../shapes/Plane')
+var Body = require('../objects/Body');
+var Vec3 = require('../math/Vec3');
+var Quaternion = require('../math/Quaternion');
+var Shape = require('../shapes/Shape');
+var Plane = require('../shapes/Plane');
 
 module.exports = Broadphase;
 
@@ -26,7 +26,7 @@ function Broadphase(){
      * @type {Boolean}
      */
     this.useBoundingBoxes = false;
-};
+}
 
 /**
  * Get the collision pairs from the world
@@ -55,9 +55,9 @@ Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
         return false;
     }
 
-    // Check motionstate
-    if(((bodyA.motionstate & Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyA.isSleeping()) &&
-       ((bodyB.motionstate & Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyB.isSleeping())) {
+    // Check types
+    if(((bodyA.type & Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyA.isSleeping()) &&
+       ((bodyB.type & Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyB.isSleeping())) {
         // Both bodies are static, kinematic or sleeping. Skip.
         return false;
     }
@@ -120,42 +120,13 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
     if(bishape && bjshape){
         var ti = bishape.type, tj = bjshape.type;
 
-        // --- Box / sphere / compound / convexpolyhedron collision ---
-        // if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & BOX_SPHERE_COMPOUND_CONVEX)){
-            // Rel. position
-            bj.position.vsub(bi.position,r);
+        bj.position.vsub(bi.position,r);
 
-            var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
-            if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
-                pairs1.push(bi);
-                pairs2.push(bj);
-            }
-
-            /*
-            // --- Sphere/box/compound/convexpoly versus plane ---
-        } else if((ti & BOX_SPHERE_COMPOUND_CONVEX) && (tj & types.PLANE) || (tj & BOX_SPHERE_COMPOUND_CONVEX) && (ti & types.PLANE)){
-            var planeBody = (ti===PLANE) ? bi : bj, // Plane
-                otherBody = (ti!==PLANE) ? bi : bj; // Other
-
-            var otherShape = otherBody.shape;
-            var planeShape = planeBody.shape;
-
-            // Rel. position
-            otherBody.position.vsub(planeBody.position,r);
-
-            if(planeShape.worldNormalNeedsUpdate){
-                planeShape.computeWorldNormal(planeBody.quaternion);
-            }
-
-            normal = planeShape.worldNormal;
-
-            var q = r.dot(normal) - otherShape.boundingSphereRadius;
-            if(q < 0.0){
-                pairs1.push(bi);
-                pairs2.push(bj);
-            }
+        var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
+        if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
+            pairs1.push(bi);
+            pairs2.push(bj);
         }
-        */
 
     } else {
         // Particle without shape

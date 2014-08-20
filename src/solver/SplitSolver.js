@@ -70,7 +70,7 @@ SplitSolver.prototype.solve = function(dt,world){
         var Nnodes = nodes.length;
         for(var i=0; i!==Nnodes; i++){
             var node = nodes[i];
-            if(!node.visited && !(node.body.motionstate & STATIC)){
+            if(!node.visited && !(node.body.type & STATIC)){
                 return node;
             }
         }

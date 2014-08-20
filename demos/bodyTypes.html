@@ -18,7 +18,7 @@
     <script>
 
       /**
-       * Demos of the Body.motionstate types.
+       * Demos of the Body.type types.
        */
       var demo = new CANNON.Demo();
       var size = 2;
@@ -35,7 +35,7 @@
           // Does only collide with dynamic bodies, but does not respond to any force.
           // Its movement can be controlled by setting its velocity.
           var b1 = new CANNON.RigidBody(boxMass,boxShape);
-          b1.motionstate = CANNON.Body.KINEMATIC;
+          b1.type = CANNON.Body.KINEMATIC;
           b1.position.set(0,0,0.5*size);
           world.add(b1);
           demo.addVisual(b1);
@@ -50,7 +50,7 @@
             },1000);
 
           // Dynamic Sphere
-          // Dynamic bodies can collide with bodies of all other motionstates.
+          // Dynamic bodies can collide with bodies of all other types.
           var b2 = new CANNON.RigidBody(mass,sphereShape);
           b2.position.set(0,0,3*size);
           world.add(b2);

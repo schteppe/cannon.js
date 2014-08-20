@@ -461,7 +461,7 @@ World.prototype.internalStep = function(dt){
     // Add gravity to all objects
     for(i=0; i!==N; i++){
         var bi = bodies[i];
-        if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
+        if(bi.type & DYNAMIC){ // Only for dynamic bodies
             var f = bi.force, m = bi.mass;
             f.x += m*gx;
             f.y += m*gy;
@@ -643,7 +643,7 @@ World.prototype.internalStep = function(dt){
     var pow = Math.pow;
     for(i=0; i!==N; i++){
         var bi = bodies[i];
-        if(bi.motionstate & DYNAMIC){ // Only for dynamic bodies
+        if(bi.type & DYNAMIC){ // Only for dynamic bodies
             var ld = pow(1.0 - bi.linearDamping,dt);
             var v = bi.velocity;
             v.mult(ld,v);
@@ -687,7 +687,7 @@ World.prototype.internalStep = function(dt){
             s = b.shape,
             force = b.force,
             tau = b.tau;
-        if((b.motionstate & DYNAMIC_OR_KINEMATIC) && !b.isSleeping()){ // Only for dynamic
+        if((b.type & DYNAMIC_OR_KINEMATIC) && !b.isSleeping()){ // Only for dynamic
             var velo = b.velocity,
                 angularVelo = b.angularVelocity,
                 pos = b.position,

@@ -88,10 +88,10 @@ function Particle(mass,material){
 
     /**
      * One of the states Body.DYNAMIC, Body.STATIC and Body.KINEMATIC
-     * @property motionstate
+     * @property type
      * @type {Number}
      */
-    this.motionstate = (mass <= 0.0 ? Body.STATIC : Body.DYNAMIC);
+    this.type = (mass <= 0.0 ? Body.STATIC : Body.DYNAMIC);
 
     /**
      * If true, the body will automatically fall to sleep.

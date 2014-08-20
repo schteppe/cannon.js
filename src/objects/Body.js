@@ -1,7 +1,7 @@
 module.exports = Body;
 
-var EventTarget = require('../utils/EventTarget')
-,   Vec3 = require('../math/Vec3')
+var EventTarget = require('../utils/EventTarget');
+var Vec3 = require('../math/Vec3');
 
 /**
  * Base class for all body types.
@@ -11,10 +11,8 @@ var EventTarget = require('../utils/EventTarget')
  * @extends EventTarget
  * @event collide The body object dispatches a "collide" event whenever it collides with another body. Event parameters are "with" (the body it collides with) and "contact" (the contact equation that is generated).
  */
-function Body(type){
+function Body(){
     EventTarget.apply(this);
-
-    this.type = type;
 
     this.id = Body.idCounter++;
 
@@ -58,7 +56,7 @@ function Body(type){
      * @property {Number} collisionResponse
      */
 	this.collisionResponse = true;
-};
+}
 Body.prototype = new EventTarget();
 
 /**
