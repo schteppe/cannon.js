@@ -1,11 +1,11 @@
 module.exports = RigidBody;
 
-var Shape = require('../shapes/Shape')
-,   Vec3 = require('../math/Vec3')
-,   Mat3 = require('../math/Mat3')
-,   Quaternion = require('../math/Quaternion')
-,   Particle = require('./Particle')
-,   Material = require('../material/Material')
+var Shape = require('../shapes/Shape');
+var Vec3 = require('../math/Vec3');
+var Mat3 = require('../math/Mat3');
+var Quaternion = require('../math/Quaternion');
+var Particle = require('./Particle');
+var Material = require('../material/Material');
 
 /**
  * Rigid body base class
@@ -84,6 +84,12 @@ function RigidBody(mass,shape,material){
     this.invInertiaWorld = new Mat3();
 
     /**
+     * Set to true if you don't want the body to rotate. Make sure to run .updateMassProperties() after changing this.
+     * @property {Boolean} fixedRotation
+     */
+    this.fixedRotation = false;
+
+    /**
      * @property {Number} angularDamping
      */
     this.angularDamping = 0.01; // Perhaps default should be zero here?
@@ -110,7 +116,7 @@ function RigidBody(mass,shape,material){
     this.wlambda = new Vec3();
 
     this.updateMassProperties();
-};
+}
 
 RigidBody.prototype = new Particle(0);
 RigidBody.prototype.constructor = RigidBody;
@@ -123,7 +129,7 @@ RigidBody.prototype.constructor = RigidBody;
  * @return {Vec3}
  */
 RigidBody.prototype.pointToLocalFrame = function(worldPoint,result){
-    var result = result || new Vec3;
+    var result = result || new Vec3();
     worldPoint.vsub(this.position,result);
     this.quaternion.conjugate().vmult(result,result);
     return result;
@@ -137,7 +143,7 @@ RigidBody.prototype.pointToLocalFrame = function(worldPoint,result){
  * @return {Vec3}
  */
 RigidBody.prototype.pointToWorldFrame = function(localPoint,result){
-    var result = result || new Vec3;
+    var result = result || new Vec3();
     this.quaternion.vmult(localPoint,result);
     result.vadd(this.position,result);
     return result;
@@ -165,7 +171,7 @@ var uiw_m1 = new Mat3(),
  */
 RigidBody.prototype.updateInertiaWorld = function(force){
     var I = this.invInertia;
-    if(I.x == I.y && I.y == I.z && !force){
+    if (I.x == I.y && I.y == I.z && !force) {
         // If inertia M = s*I, where I is identity and s a scalar, then
         //    R*M*R' = R*(s*I)*R' = s*R*I*R' = s*R*R' = s*I = M
         // where R is the rotation matrix.
@@ -256,8 +262,12 @@ RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
 RigidBody.prototype.updateMassProperties = function(){
     this.invMass = this.mass>0 ? 1.0/this.mass : 0;
     this.shape.calculateLocalInertia(this.mass, this.inertia);
-    this.invInertia.set(this.inertia.x>0 ? 1.0/this.inertia.x : 0,
-                        this.inertia.y>0 ? 1.0/this.inertia.y : 0,
-                        this.inertia.z>0 ? 1.0/this.inertia.z : 0);
+    var I = this.inertia;
+    var fixed = this.fixedRotation;
+    this.invInertia.set(
+        I.x > 0 && !fixed ? 1.0 / I.x : 0,
+        I.y > 0 && !fixed ? 1.0 / I.y : 0,
+        I.z > 0 && !fixed ? 1.0 / I.z : 0
+    );
     this.updateInertiaWorld(true);
 };

@@ -43,7 +43,7 @@
 
             var hfShape = new CANNON.Heightfield(matrix, {
                 elementSize: 1,
-                minValue: -1
+                minValue: -10
             });
             var hfBody = new CANNON.RigidBody(0, hfShape);
             hfBody.position.set(-sizeX * hfShape.elementSize / 2, -20, -10);
@@ -70,11 +70,9 @@
                 for(var i=0; i<sizeX - 1; i++){
                     for (var j = 0; j < sizeY - 1; j++) {
                         for (var k = 0; k < 2; k++) {
-                            var convexShape = new CANNON.ConvexPolyhedron();
-                            var offset = new CANNON.Vec3();
-                            hfShape.getConvexTrianglePillar(i, j, !!k, convexShape, offset);
-                            var convexBody = new CANNON.RigidBody(0, convexShape);
-                            convexBody.position.set(offset.x, offset.y, offset.z);
+                            hfShape.getConvexTrianglePillar(i, j, !!k);
+                            var convexBody = new CANNON.RigidBody(0, hfShape.pillarConvex);
+                            convexBody.position.set(hfShape.pillarOffset.x, hfShape.pillarOffset.y, hfShape.pillarOffset.z);
                             world.add(convexBody);
                             demo.addVisual(convexBody);
                         }

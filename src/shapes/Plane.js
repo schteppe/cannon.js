@@ -44,8 +44,9 @@ Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
     // The plane AABB is infinite, except if the normal is pointing along any axis
     tempNormal.set(0,0,1); // Default plane normal is z
     quat.vmult(tempNormal,tempNormal);
-    min.set(-Number.MAX_VALUE,-Number.MAX_VALUE,-Number.MAX_VALUE);
-    max.set(Number.MAX_VALUE,Number.MAX_VALUE,Number.MAX_VALUE);
+    var max = Number.MAX_VALUE;
+    min.set(-max, -max, -max);
+    max.set(max, max, max);
 
     if(tempNormal.x === 1){ max.x = pos.x; }
     if(tempNormal.y === 1){ max.y = pos.y; }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - friction demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+        var demo = new CANNON.Demo(),
+            size = 1.0;
+
+        demo.addScene("Fixed rotation", function(){
+
+            // Create world
+            var world = demo.getWorld();
+            world.broadphase = new CANNON.NaiveBroadphase();
+
+            // ground plane
+            var groundShape = new CANNON.Plane();
+            var groundBody = new CANNON.RigidBody(0,groundShape);
+            world.add(groundBody);
+            demo.addVisual(groundBody);
+
+            // Create a box with fixed rotation
+            var shape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+            var boxBody = new CANNON.RigidBody(1,shape);
+            boxBody.position.set(0,0,size);
+            boxBody.fixedRotation = true;
+            boxBody.updateMassProperties();
+            world.add(boxBody);
+            demo.addVisual(boxBody);
+
+            // Another one
+            var shape2 = new CANNON.Box(new CANNON.Vec3(size, size, size));
+            var boxBody2 = new CANNON.RigidBody(1, shape2);
+            boxBody2.position.set(size*3/2, 0, size*4);
+            boxBody2.fixedRotation = true;
+            boxBody2.updateMassProperties();
+            world.add(boxBody2);
+            demo.addVisual(boxBody2);
+
+            // Change gravity so the boxes will slide along x axis
+            world.gravity.set(0, 0, -10);
+        });
+
+        demo.start();
+
+    </script>
+  </body>
+</html>
