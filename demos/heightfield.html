@@ -17,6 +17,7 @@
     <script src="../libs/smoothie.js"></script>
     <script>
 
+        // Set to true to create convexes instead. Will prove that performance is much better with a real heightfield.
         var mock = false;
 
         var demo = new CANNON.Demo();
@@ -71,7 +72,7 @@
                         for (var k = 0; k < 2; k++) {
                             hfShape.getConvexTrianglePillar(i, j, !!k);
                             var convexBody = new CANNON.RigidBody(0, hfShape.pillarConvex);
-                            convexBody.position.set(hfShape.pillarOffset.x, hfShape.pillarOffset.y, hfShape.pillarOffset.z);
+                            hfBody.pointToWorldFrame(hfShape.pillarOffset, convexBody.position);
                             world.add(convexBody);
                             demo.addVisual(convexBody);
                         }
