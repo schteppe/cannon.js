@@ -186,7 +186,7 @@ function World(){
         type:"removeBody",
         body : null,
     };
-};
+}
 World.prototype = new EventTarget();
 
 /**
@@ -274,12 +274,13 @@ World.prototype.remove = function(body){
     var n = this.bodies.length-1,
         bodies = this.bodies,
         idx = bodies.indexOf(body);
-    if(idx != -1){
+    if(idx !== -1){
         bodies.splice(idx, 1); // Todo: should use a garbage free method
 
         // Recompute index
-        for(var i=0; i!==bodies.length; i++)
+        for(var i=0; i!==bodies.length; i++){
             bodies[i].index = i;
+        }
 
         this.collisionMatrix.setNumObjects(n);
         this.removeBodyEvent.body = body;
@@ -321,8 +322,84 @@ if(!performance.now){
     }
     performance.now = function(){
       return Date.now() - nowOffset;
-    }
+    };
 }
+
+var step_tmp1 = new Vec3();
+
+/**
+ * Step the physics world forward in time.
+ *
+ * There are two modes. The simple mode is fixed timestepping without interpolation. In this case you only use the first argument. The second case uses interpolation. In that you also provide the time since the function was last used, as well as the maximum fixed timesteps to take.
+ *
+ * @method step
+ * @param {Number} dt                       The fixed time step size to use.
+ * @param {Number} [timeSinceLastCalled]    The time elapsed since the function was last called.
+ * @param {Number} [maxSubSteps=10]         Maximum number of fixed steps to take per function call.
+ *
+ * @example
+ *     // fixed timestepping without interpolation
+ *     world.step(1/60);
+ *
+ * @see http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
+ */
+World.prototype.step = function(dt, timeSinceLastCalled, maxSubSteps){
+    maxSubSteps = maxSubSteps || 10;
+    timeSinceLastCalled = timeSinceLastCalled || 0;
+
+    if(timeSinceLastCalled === 0){ // Fixed, simple stepping
+
+        this.internalStep(dt);
+
+        // Increment time
+        this.time += dt;
+
+    } else {
+
+        // Compute the number of fixed steps we should have taken since the last step
+        var internalSteps = Math.floor((this.time + timeSinceLastCalled) / dt) - Math.floor(this.time / dt);
+        internalSteps = Math.min(internalSteps,maxSubSteps);
+
+        // Do some fixed steps to catch up
+        var t0 = performance.now();
+        for(var i=0; i!==internalSteps; i++){
+            this.internalStep(dt);
+            if(performance.now() - t0 > dt * 1000){
+                // We are slower than real-time. Better bail out.
+                break;
+            }
+        }
+
+        // Increment internal clock
+        this.time += timeSinceLastCalled;
+
+        // Compute "Left over" time step
+        var h = this.time % dt;
+        var h_div_dt = h / dt;
+        var interpvelo = step_tmp1;
+        var bodies = this.bodies;
+
+        for(var j=0; j !== bodies.length; j++){
+            var b = bodies[j];
+            if(b.type !== Body.STATIC && b.sleepState !== Body.SLEEPING){
+
+                // Interpolate
+                b.position.vsub(b.previousPosition, interpvelo);
+                interpvelo.scale(h_div_dt, interpvelo);
+                b.position.vadd(interpvelo, b.interpolatedPosition);
+
+                // TODO: interpolate quaternion
+                // b.interpolatedAngle = b.angle + (b.angle - b.previousAngle) * h_div_dt;
+
+            } else {
+
+                // For static bodies, just copy. Who else will do it?
+                b.position.copy(b.interpolatedPosition);
+                b.quaternion.copy(b.interpolatedQuaternion);
+            }
+        }
+    }
+};
 
 /**
  * Step the simulation
@@ -349,7 +426,7 @@ var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to s
     World_step_step_w = new Quaternion(),
     World_step_step_wq = new Quaternion(),
     invI_tau_dt = new Vec3();
-World.prototype.step = function(dt){
+World.prototype.internalStep = function(dt){
     if(dt <= 0 || isNaN(dt)) return;
 
     var world = this,

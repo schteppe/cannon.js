@@ -42,6 +42,7 @@ CANNON.Demo = function(options){
         shadows:true,
         aabbs:false,
         profiling:false,
+        maxSubSteps:3
     };
 
     // Extend settings with options
@@ -693,11 +694,25 @@ CANNON.Demo = function(options){
         stats.update();
     }
 
+    var lastCallTime = 0;
     function updatePhysics(){
         // Step world
-        for(var i=0; i<Math.ceil(settings.stepFrequency/60); i++){
-            world.step(1/settings.stepFrequency);
+        var timeStep = 1 / settings.stepFrequency;
+
+        var now = Date.now() / 1000;
+
+        if(!lastCallTime){
+            // last call time not saved, cant guess elapsed time. Take a simple step.
+            world.step(timeStep);
+            lastCallTime = now;
+            return;
         }
+
+        var timeSinceLastCall = now - lastCallTime;
+
+        world.step(timeStep, timeSinceLastCall, settings.maxSubSteps);
+
+        lastCallTime = now;
     }
 
     function onDocumentMouseMove( event ) {
