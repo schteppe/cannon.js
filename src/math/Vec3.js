@@ -28,7 +28,7 @@ function Vec3(x,y,z){
      * @type {Number}
      */
     this.z = z||0.0;
-};
+}
 
 /**
  * Vector cross product
@@ -61,6 +61,14 @@ Vec3.prototype.set = function(x,y,z){
     this.y = y;
     this.z = z;
     return this;
+};
+
+/**
+ * Set all components of the vector to zero.
+ * @method setZero
+ */
+Vec3.prototype.setZero = function(){
+    this.x = this.y = this.z = 0;
 };
 
 /**
