@@ -76,13 +76,14 @@ Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
 };
 
 /**
- * Check if a body pair needs to be intersection tested at all.
+ * Check if the bounding volumes of two bodies intersect.
  * @method intersectionTest
  * @param {Body} bodyA
  * @param {Body} bodyB
- * @return {Boolean}
- */
-Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
+ * @param {array} pairs1
+ * @param {array} pairs2
+  */
+Broadphase.prototype.intersectionTest = function(bi, bj, pairs1, pairs2){
     if(this.useBoundingBoxes){
         this.doBoundingBoxBroadphase(bi,bj,pairs1,pairs2);
     } else {
