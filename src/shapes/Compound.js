@@ -30,7 +30,7 @@ function Compound(){
      * @property {Array} childOrientations
      */
     this.childOrientations = [];
-};
+}
 Compound.prototype = new Shape();
 Compound.prototype.constructor = Compound;
 

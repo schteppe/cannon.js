@@ -151,7 +151,7 @@ function World(){
      * @property defaultContactMaterial
      * @type {ContactMaterial}
      */
-    this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial,this.defaultMaterial,0.3,0.0);
+    this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial, this.defaultMaterial, { friction: 0.3, restitution: 0.0 });
 
     /**
      * @property doProfiling
@@ -483,6 +483,21 @@ World.prototype.internalStep = function(dt){
     this.broadphase.collisionPairs(this,p1,p2);
     if(doProfiling){ profile.broadphase = performance.now() - profilingStart; }
 
+    // Remove constrained pairs with collideConnected == false
+    var Nconstraints = constraints.length;
+    for(i=0; i!==Nconstraints; i++){
+        var c = constraints[i];
+        if(!c.collideConnected){
+            for(var j = p1.length-1; j>=0; j-=1){
+                if( (c.bodyA === p1[j] && c.bodyB === p2[j]) ||
+                    (c.bodyB === p1[j] && c.bodyA === p2[j])){
+                    p1.splice(j, 1);
+                    p2.splice(j, 1);
+                }
+            }
+        }
+    }
+
     this.collisionMatrixTick();
 
     // Generate contacts
@@ -581,12 +596,11 @@ World.prototype.internalStep = function(dt){
 					c.rj.copy(c2.rj);
 
 					// Construct tangents
-					c.ni.tangents(c1.t,c2.t);
+					c.ni.tangents(c1.t, c2.t);
 
                     // Set spook params
-                    c.setSpookParams(cm.frictionEquationStiffness,
-                                     cm.frictionEquationRelaxation,
-                                     dt);
+                    c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
+                    c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
 
 					// Add equations to solver
 					solver.addEquation(c1);

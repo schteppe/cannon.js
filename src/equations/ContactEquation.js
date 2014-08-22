@@ -50,7 +50,7 @@ function ContactEquation(bi,bj){
     // Cache
     this.biInvInertiaTimesRixn =  new Vec3();
     this.bjInvInertiaTimesRjxn =  new Vec3();
-};
+}
 
 ContactEquation.prototype = new Equation();
 ContactEquation.prototype.constructor = ContactEquation;

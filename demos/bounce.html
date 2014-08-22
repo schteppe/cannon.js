@@ -61,9 +61,9 @@
             demo.addVisual(shapeBody3);
 
             // Create contact material behaviour
-            var mat1_ground = new CANNON.ContactMaterial(groundMaterial,mat1,0.0,0.0);
-            var mat2_ground = new CANNON.ContactMaterial(groundMaterial,mat2,0.0,0.7);
-            var mat3_ground = new CANNON.ContactMaterial(groundMaterial,mat3,0.0,0.9);
+            var mat1_ground = new CANNON.ContactMaterial(groundMaterial, mat1, { friction: 0.0, restitution: 0.0 });
+            var mat2_ground = new CANNON.ContactMaterial(groundMaterial, mat2, { friction: 0.0, restitution: 0.7 });
+            var mat3_ground = new CANNON.ContactMaterial(groundMaterial, mat3, { friction: 0.0, restitution: 0.9 });
 
             world.addContactMaterial(mat1_ground);
             world.addContactMaterial(mat2_ground);

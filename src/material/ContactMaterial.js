@@ -1,3 +1,5 @@
+var Utils = require('../utils/Utils');
+
 module.exports = ContactMaterial;
 
 /**
@@ -8,9 +10,16 @@ module.exports = ContactMaterial;
  * @param {Material} m2
  * @param {Number} friction
  * @param {Number} restitution
- * @todo Contact solving parameters here too?
  */
-function ContactMaterial(m1, m2, friction, restitution){
+function ContactMaterial(m1, m2, options){
+    options = Utils.defaults(options, {
+        friction: 0.3,
+        restitution: 0.3,
+        contactEquationStiffness: 1e7,
+        contactEquationRelaxation: 3,
+        frictionEquationStiffness: 1e7,
+        frictionEquationRelaxation: 3
+    });
 
     /**
      * Identifier of this material
@@ -23,43 +32,43 @@ function ContactMaterial(m1, m2, friction, restitution){
      * @property {Array} materials
      * @todo  Should be .materialA and .materialB instead
      */
-    this.materials = [m1,m2];
+    this.materials = [m1, m2];
 
     /**
      * Friction coefficient
      * @property {Number} friction
      */
-    this.friction = friction!==undefined ? Number(friction) : 0.3;
+    this.friction = options.friction;
 
     /**
      * Restitution coefficient
      * @property {Number} restitution
      */
-    this.restitution =      restitution !== undefined ?      Number(restitution) :      0.3;
+    this.restitution = options.restitution;
 
     /**
      * Stiffness of the produced contact equations
      * @property {Number} contactEquationStiffness
      */
-    this.contactEquationStiffness = 1e7;
+    this.contactEquationStiffness = options.contactEquationStiffness;
 
     /**
      * Relaxation time of the produced contact equations
      * @property {Number} contactEquationRelaxation
      */
-    this.contactEquationRelaxation = 3;
+    this.contactEquationRelaxation = options.contactEquationRelaxation;
 
     /**
      * Stiffness of the produced friction equations
      * @property {Number} frictionEquationStiffness
      */
-    this.frictionEquationStiffness = 1e7;
+    this.frictionEquationStiffness = options.frictionEquationStiffness;
 
     /**
      * Relaxation time of the produced friction equations
      * @property {Number} frictionEquationRelaxation
      */
-    this.frictionEquationRelaxation = 3;
-};
+    this.frictionEquationRelaxation = options.frictionEquationRelaxation;
+}
 
 ContactMaterial.idCounter = 0;

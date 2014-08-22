@@ -182,6 +182,19 @@ RigidBody.prototype.pointToWorldFrame = function(localPoint,result){
 };
 
 /**
+ * Convert a local body point to world frame.
+ * @method pointToWorldFrame
+ * @param  {Vec3} worldPoint
+ * @param  {Vec3} result
+ * @return {Vec3}
+ */
+RigidBody.prototype.vectorToWorldFrame = function(localVector, result){
+    var result = result || new Vec3();
+    this.quaternion.vmult(localVector, result);
+    return result;
+};
+
+/**
  * Updates the .aabbmin and .aabbmax properties
  * @method computeAABB
  */

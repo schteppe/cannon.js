@@ -1,6 +1,6 @@
 module.exports = Vec3;
 
-var Mat3 = require('./Mat3')
+var Mat3 = require('./Mat3');
 
 /**
  * 3-dimensional vector
@@ -29,6 +29,8 @@ function Vec3(x,y,z){
      */
     this.z = z||0.0;
 }
+
+Vec3.ZERO = new Vec3(0, 0, 0);
 
 /**
  * Vector cross product
@@ -201,7 +203,7 @@ Vec3.prototype.distanceTo = function(p){
 
 /**
  * Multiply the vector with a scalar
- * @deprecated in favor of .scale
+ * @deprecated Use .scale instead
  * @method mult
  * @param {Number} scalar
  * @param {Vec3} target
@@ -385,4 +387,13 @@ var antip_neg = new Vec3();
 Vec3.prototype.isAntiparallelTo = function(v,precision){
     this.negate(antip_neg);
     return antip_neg.almostEquals(v,precision);
+};
+
+/**
+ * Clone the vector
+ * @method clone
+ * @return {Vec3}
+ */
+Vec3.prototype.clone = function(){
+    return new Vec3(this.x, this.y, this.z);
 };

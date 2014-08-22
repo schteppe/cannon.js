@@ -1,5 +1,7 @@
 module.exports = Constraint;
 
+var Utils = require('../utils/Utils');
+
 /**
  * Constraint base class
  * @class Constraint
@@ -7,7 +9,11 @@ module.exports = Constraint;
  * @param {Body} bodyA
  * @param {Body} bodyB
  */
-function Constraint(bodyA,bodyB){
+function Constraint(bodyA, bodyB, options){
+    options = Utils.defaults(options,{
+        collideConnected : true,
+        wakeUpBodies : true,
+    });
 
     /**
      * Equations to be solved in this constraint
@@ -30,7 +36,23 @@ function Constraint(bodyA,bodyB){
      * @property {Number} id
      */
     this.id = Constraint.idCounter++;
-};
+
+    /**
+     * Set to true if you want the bodies to collide when they are connected.
+     * @property collideConnected
+     * @type {boolean}
+     */
+    this.collideConnected = options.collideConnected;
+
+    if(options.wakeUpBodies){
+        if(bodyA){
+            bodyA.wakeUp();
+        }
+        if(bodyB){
+            bodyB.wakeUp();
+        }
+    }
+}
 
 /**
  * @method update

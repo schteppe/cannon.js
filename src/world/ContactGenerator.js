@@ -110,6 +110,19 @@ ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts
     }
 };
 
+var numWarnings = 0;
+var maxWarnings = 10;
+
+function warn(msg){
+    if(numWarnings > maxWarnings){
+        return;
+    }
+
+    numWarnings++;
+
+    console.warn(msg);
+}
+
 /**
  * Narrowphase calculation. Get the ContactEquations given two shapes: i and j
  * @method narrowphase
@@ -199,7 +212,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 this.sphereHeightfield(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
-                console.warn("Collision between Shape.types.SPHERE and "+sj.type+" not implemented yet.");
+                warn("Collision between Shape.types.SPHERE and "+sj.type+" not implemented yet.");
                 break;
             }
 
@@ -219,7 +232,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 this.planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
-                console.warn("Collision between Shape.types.PLANE and "+sj.type+" not implemented yet.");
+                warn("Collision between Shape.types.PLANE and "+sj.type+" not implemented yet.");
                 break;
             }
 
@@ -238,7 +251,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 this.narrowphase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
-                console.warn("Collision between Shape.types.BOX and "+sj.type+" not implemented yet.");
+                warn("Collision between Shape.types.BOX and "+sj.type+" not implemented yet.");
                 break;
             }
 
@@ -258,7 +271,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 }
                 break;
             default:
-                console.warn("Collision between Shape.types.COMPOUND and "+sj.type+" not implemented yet.");
+                warn("Collision between Shape.types.COMPOUND and "+sj.type+" not implemented yet.");
                 break;
             }
 
@@ -269,7 +282,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 this.convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
-                console.warn("Collision between Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
+                warn("Collision between Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
                 break;
             }
 
@@ -280,7 +293,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 this.sphereHeightfield(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
-                console.warn("Collision between Shape.types.HEIGHTFIELD and "+sj.type+" not implemented yet.");
+                warn("Collision between Shape.types.HEIGHTFIELD and "+sj.type+" not implemented yet.");
                 break;
             }
 
@@ -1232,6 +1245,8 @@ ContactGenerator.prototype.sphereHeightfield = function (
     for(var i = iMinX; i < iMaxX; i++){
         for(var j = iMinY; j < iMaxY; j++){
 
+            var numContactsBefore = result.length;
+
             // Lower triangle
             hfShape.getConvexTrianglePillar(i, j, false);
             hfBody.pointToWorldFrame(hfShape.pillarOffset, worldPillarOffset);
@@ -1241,6 +1256,16 @@ ContactGenerator.prototype.sphereHeightfield = function (
             hfShape.getConvexTrianglePillar(i, j, true);
             hfBody.pointToWorldFrame(hfShape.pillarOffset, worldPillarOffset);
             this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+
+            var numContacts = result.length - numContactsBefore;
+
+            if(numContacts > 2) return;
+            /*
+            // Skip all but 1
+            for (var k = 0; k < numContacts - 1; k++) {
+                result.pop();
+            }
+            */
         }
     }
 };

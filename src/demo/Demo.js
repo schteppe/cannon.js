@@ -20,28 +20,28 @@ CANNON.Demo = function(options){
 
     // Global settings
     var settings = this.settings = {
-        stepFrequency:60,
-        quatNormalizeSkip:2,
-        quatNormalizeFast:true,
-        gx:0.0,
-        gy:0.0,
-        gz:0.0,
-        iterations:3,
-        tolerance:0.0001,
-        k:1e6,
-        d:3,
-        scene:0,
-        paused:false,
-        rendermode:"solid",
-        constraints:false,
-        contacts:false,  // Contact points
-        cm2contact:false, // center of mass to contact points
-        normals:false, // contact normals
-        axes:false, // "local" frame axes
-        particleSize:0.1,
-        shadows:true,
-        aabbs:false,
-        profiling:false,
+        stepFrequency: 60,
+        quatNormalizeSkip: 2,
+        quatNormalizeFast: true,
+        gx: 0,
+        gy: 0,
+        gz: 0,
+        iterations: 3,
+        tolerance: 0.0001,
+        k: 1e6,
+        d: 3,
+        scene: 0,
+        paused: false,
+        rendermode: "solid",
+        constraints: false,
+        contacts: false,  // Contact points
+        cm2contact: false, // center of mass to contact points
+        normals: false, // contact normals
+        axes: false, // "local" frame axes
+        particleSize: 0.1,
+        shadows: true,
+        aabbs: false,
+        profiling: false,
         maxSubSteps:3
     };
 
@@ -262,8 +262,9 @@ CANNON.Demo = function(options){
         for(var i=0; i<N; i++){
             var b = bodies[i], visual = visuals[i];
             b.position.copy(visual.position);
-            if(b.quaternion)
+            if(b.quaternion){
                 b.quaternion.copy(visual.quaternion);
+            }
         }
 
         // Render contacts
@@ -992,7 +993,37 @@ CANNON.Demo.prototype.shape2mesh = function(shape){
         }
         var geo = new THREE.ConvexGeometry( verts );
         mesh = new THREE.Mesh( geo, this.currentMaterial );
+        break;
 
+    case CANNON.Shape.types.HEIGHTFIELD:
+        var geometry = new THREE.Geometry();
+
+        var v0 = new CANNON.Vec3();
+        var v1 = new CANNON.Vec3();
+        var v2 = new CANNON.Vec3();
+        for (var xi = 0; xi < shape.data.length - 1; xi++) {
+            for (var yi = 0; yi < shape.data[xi].length - 1; yi++) {
+                for (var k = 0; k < 2; k++) {
+                    shape.getConvexTrianglePillar(xi, yi, k===0);
+                    shape.pillarConvex.vertices[0].copy(v0);
+                    shape.pillarConvex.vertices[1].copy(v1);
+                    shape.pillarConvex.vertices[2].copy(v2);
+                    v0.vadd(shape.pillarOffset, v0);
+                    v1.vadd(shape.pillarOffset, v1);
+                    v2.vadd(shape.pillarOffset, v2);
+                    geometry.vertices.push(
+                        new THREE.Vector3(v0.x, v0.y, v0.z),
+                        new THREE.Vector3(v1.x, v1.y, v1.z),
+                        new THREE.Vector3(v2.x, v2.y, v2.z)
+                    );
+                    var i = geometry.vertices.length - 3;
+                    geometry.faces.push(new THREE.Face3(i, i+1, i+2));
+                }
+            }
+        }
+        geometry.computeBoundingSphere();
+        geometry.computeFaceNormals();
+        mesh = new THREE.Mesh(geometry, this.currentMaterial);
         break;
 
     case CANNON.Shape.types.COMPOUND:
