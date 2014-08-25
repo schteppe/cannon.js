@@ -197,6 +197,7 @@ RigidBody.prototype.vectorToWorldFrame = function(localVector, result){
 /**
  * Updates the .aabbmin and .aabbmax properties
  * @method computeAABB
+ * @todo rename to updateAABB()
  */
 RigidBody.prototype.computeAABB = function(){
     this.shape.calculateWorldAABB(this.position,

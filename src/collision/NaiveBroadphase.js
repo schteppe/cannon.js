@@ -1,6 +1,7 @@
 module.exports = NaiveBroadphase;
 
-var Broadphase = require('./Broadphase')
+var Broadphase = require('./Broadphase');
+var AABB = require('./AABB');
 
 /**
  * Naive broadphase implementation, used in lack of better ones.
@@ -11,7 +12,7 @@ var Broadphase = require('./Broadphase')
  */
 function NaiveBroadphase(){
     Broadphase.apply(this);
-};
+}
 NaiveBroadphase.prototype = new Broadphase();
 NaiveBroadphase.prototype.constructor = NaiveBroadphase;
 
@@ -41,4 +42,31 @@ NaiveBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
             this.intersectionTest(bi,bj,pairs1,pairs2);
         }
     }
+};
+
+var tmpAABB = new AABB();
+
+/**
+ * Returns all the bodies within an AABB.
+ * @method aabbQuery
+ * @param  {World} world
+ * @param  {AABB} aabb
+ * @return {array} A list of bodies
+ */
+NaiveBroadphase.prototype.aabbQuery = function(world, aabb){
+    var result = [];
+
+    // Naive loop
+    for(var i = 0; i < world.bodies.length; i++){
+        var b = world.bodies[i];
+
+        // Ugly hack until RigidBody gets aabb
+        tmpAABB.lowerBound = b.aabbmin;
+        tmpAABB.upperBound = b.aabbmax;
+        if(b.aabb.overlaps(aabb)){
+            result.push(b);
+        }
+    }
+
+    return result;
 };
