@@ -280,3 +280,13 @@ Broadphase.boundingSphereCheck = function(bi,bj){
     bi.position.vsub(bj.position,dist);
     return Math.pow(bi.shape.boundingSphereRadius + bj.shape.boundingSphereRadius,2) > dist.norm2();
 };
+
+/**
+ * Returns all the bodies within the AABB.
+ * @method aabbQuery
+ * @param  {AABB} aabb
+ * @return {array}
+ */
+Broadphase.prototype.aabbQuery = function(aabb){
+
+};
