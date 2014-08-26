@@ -56,21 +56,25 @@ Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
     }
 
     // Check types
-    if(((bodyA.type & Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyA.isSleeping()) &&
-       ((bodyB.type & Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyB.isSleeping())) {
+    if(((bodyA.type & Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyA.sleepState === Body.SLEEPING) &&
+       ((bodyB.type & Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyB.sleepState === Body.SLEEPING)) {
         // Both bodies are static, kinematic or sleeping. Skip.
         return false;
     }
 
     // Two particles don't collide
+    /*
     if(!bodyA.shape && !bodyB.shape){
         return false;
     }
+    */
 
     // Two planes don't collide
+    /*
     if(bodyA.shape instanceof Plane && bodyB.shape instanceof Plane){
         return false;
     }
+    */
 
     return true;
 };
@@ -105,65 +109,22 @@ var Broadphase_collisionPairs_r = new Vec3(), // Temp objects
     Broadphase_collisionPairs_relpos  =  new Vec3();
 Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
 
-    // Local fast access
-    var types = Shape.types,
-        BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
-        PLANE = types.PLANE,
-        STATIC_OR_KINEMATIC = Body.STATIC | Body.KINEMATIC;
-
     // Temp vecs
-    var r = Broadphase_collisionPairs_r,
-        normal = Broadphase_collisionPairs_normal,
-        quat = Broadphase_collisionPairs_quat,
-        relpos = Broadphase_collisionPairs_relpos;
+    var r = Broadphase_collisionPairs_r;
 
-    var bishape = bi.shape, bjshape = bj.shape;
-    if(bishape && bjshape){
-        var ti = bishape.type, tj = bjshape.type;
+    for (var i = 0; i < bi.shapes.length; i++) {
+        for (var j = 0; j < bj.shapes.length; j++) {
+            var bishape = bi.shapes[i],
+                bjshape = bj.shapes[j];
+            if(bishape && bjshape){
+                var ti = bishape.type, tj = bjshape.type;
 
-        bj.position.vsub(bi.position,r);
+                bj.position.vsub(bi.position,r);
 
-        var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
-        if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
-            pairs1.push(bi);
-            pairs2.push(bj);
-        }
-
-    } else {
-        // Particle without shape
-        if(!bishape && !bjshape){
-            // No collisions between 2 particles
-        } else {
-            var particle = bishape ? bj : bi;
-            var other = bishape ? bi : bj;
-            var otherShape = other.shape;
-            var type = otherShape.type;
-
-            if(type & BOX_SPHERE_COMPOUND_CONVEX){
-                if(type === types.SPHERE){ // particle-sphere
-                    particle.position.vsub(other.position,relpos);
-                    if(otherShape.radius*otherShape.radius >= relpos.norm2()){
-                        pairs1.push(particle);
-                        pairs2.push(other);
-                    }
-                } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
-
-                    var R = otherShape.boundingSphereRadius;
-                    particle.position.vsub(other.position,relpos);
-                    if(R*R >= relpos.norm2()){
-                        pairs1.push(particle);
-                        pairs2.push(other);
-                    }
-                }
-            } else if(type === types.PLANE){
-                // particle/plane
-                var plane = other;
-                normal.set(0,0,1);
-                plane.quaternion.vmult(normal,normal);
-                particle.position.vsub(plane.position,relpos);
-                if(normal.dot(relpos)<=0.0){
-                    pairs1.push(particle);
-                    pairs2.push(other);
+                var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
+                if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
+                    pairs1.push(bi);
+                    pairs2.push(bj);
                 }
             }
         }

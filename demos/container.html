@@ -38,7 +38,7 @@
 
         // Create world
         var world = demo.getWorld();
-        world.broadphase = new CANNON.SAPBroadphase(world);
+        world.broadphase = new CANNON.SAPBroadphase(world); // Buggy?
 
         // Tweak contact properties.
         world.defaultContactMaterial.contactEquationStiffness = 1e11; // Contact stiffness - use to make softer/harder contacts
@@ -63,34 +63,39 @@
 
         // ground plane
         var groundShape = new CANNON.Plane();
-        var groundBody = new CANNON.RigidBody(0,groundShape,stone);
+        var groundBody = new CANNON.Body({ mass: 0, material: stone });
+        groundBody.addShape(groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
 
         // plane -x
         var planeShapeXmin = new CANNON.Plane();
-        var planeXmin = new CANNON.RigidBody(0, planeShapeXmin,stone);
+        var planeXmin = new CANNON.Body({ mass: 0, material: stone });
+        planeXmin.addShape(planeShapeXmin);
         planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
         planeXmin.position.set(-5,0,0);
         world.add(planeXmin);
 
         // Plane +x
         var planeShapeXmax = new CANNON.Plane();
-        var planeXmax = new CANNON.RigidBody(0, planeShapeXmax,stone);
+        var planeXmax = new CANNON.Body({ mass: 0, material: stone });
+        planeXmax.addShape(planeShapeXmax);
         planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
         planeXmax.position.set(5,0,0);
         world.add(planeXmax);
 
         // Plane -y
         var planeShapeYmin = new CANNON.Plane();
-        var planeYmin = new CANNON.RigidBody(0, planeShapeYmin,stone);
+        var planeYmin = new CANNON.Body({ mass: 0, material: stone });
+        planeYmin.addShape(planeShapeYmin);
         planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
         planeYmin.position.set(0,-5,0);
         world.add(planeYmin);
 
         // Plane +y
         var planeShapeYmax = new CANNON.Plane();
-        var planeYmax = new CANNON.RigidBody(0, planeShapeYmax, stone);
+        var planeYmax = new CANNON.Body({ mass: 0,  material: stone });
+        planeYmax.addShape(planeShapeYmax);
         planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
         planeYmax.position.set(0,5,0);
         world.add(planeYmax);
@@ -103,7 +108,8 @@
         for(var i=0; i<nx; i++){
           for(var j=0; j<ny; j++){
             for(var k=0; k<nz; k++){
-              var sphereBody = new CANNON.RigidBody(5,sphereShape,stone);
+              var sphereBody = new CANNON.Body({ mass: 5, material: stone });
+              sphereBody.addShape(sphereShape);
               sphereBody.position.set(
                 i*2-nx*0.5 + (Math.random()-0.5)*rand,
                 j*2-ny*0.5 + (Math.random()-0.5)*rand,

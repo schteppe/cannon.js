@@ -1,4 +1,4 @@
-var RigidBody = require('./RigidBody');
+var Body = require('./Body');
 var Sphere = require('../shapes/Sphere');
 var Box = require('../shapes/Box');
 var Vec3 = require('../math/Vec3');
@@ -20,14 +20,14 @@ function RigidVehicle(options){
     this.coordinateSystem = typeof(options.coordinateSystem)==='undefined' ? new Vec3(1, 2, 3) : options.coordinateSystem.clone();
 
     /**
-     * @property {RigidBody} chassisBody
+     * @property {Body} chassisBody
      */
     this.chassisBody = options.chassisBody;
 
     if(!this.chassisBody){
         // No chassis body given. Create it!
         var chassisShape = new Box(new Vec3(5, 2, 0.5));
-        this.chassisBody = new RigidBody(1, chassisShape);
+        this.chassisBody = new Body(1, chassisShape);
     }
 
     /**
@@ -53,7 +53,7 @@ RigidVehicle.prototype.addWheel = function(options){
     options = options || {};
     var wheelBody = options.body;
     if(!wheelBody){
-        wheelBody =  new RigidBody(1, new Sphere(1.2));
+        wheelBody =  new Body(1, new Sphere(1.2));
     }
     this.wheelBodies.push(wheelBody);
     this.wheelForces.push(0);

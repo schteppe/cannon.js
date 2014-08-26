@@ -35,13 +35,18 @@
             world.addContactMaterial(wheelGroundContactMaterial);
 
             var wheelShape =      new CANNON.Sphere(1.2);
-            var leftFrontWheel =  new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
-            var rightFrontWheel = new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
-            var leftRearWheel =   new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
-            var rightRearWheel =  new CANNON.RigidBody(mass,wheelShape,wheelMaterial);
+            var leftFrontWheel =  new CANNON.Body({ mass: mass, material: wheelMaterial });
+            leftFrontWheel.addShape(wheelShape);
+            var rightFrontWheel = new CANNON.Body({ mass: mass, material: wheelMaterial });
+            rightFrontWheel.addShape(wheelShape);
+            var leftRearWheel =   new CANNON.Body({ mass: mass, material: wheelMaterial });
+            leftRearWheel.addShape(wheelShape);
+            var rightRearWheel =  new CANNON.Body({ mass: mass, material: wheelMaterial });
+            rightRearWheel.addShape(wheelShape);
 
             var chassisShape = new CANNON.Box(new CANNON.Vec3(5,2,0.5));
-            var chassis = new CANNON.RigidBody(mass,chassisShape);
+            var chassis = new CANNON.Body({ mass: mass });
+            chassis.addShape(chassisShape);
 
             // Position constrain wheels
             var zero = new CANNON.Vec3();
@@ -81,7 +86,8 @@
 
             // Ground
             var groundShape = new CANNON.Plane();
-            var ground = new CANNON.RigidBody(0,groundShape,groundMaterial);
+            var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
+            ground.addShape(groundShape);
             ground.position.z = -3;
             world.add(ground);
             demo.addVisual(ground);
@@ -104,8 +110,10 @@
 
             var s = 5, d = 0.1*s;
             var shape = new CANNON.Box(new CANNON.Vec3(s*0.5,s*0.1,s*0.5));
-            var body = new CANNON.RigidBody(mass,shape);
-            var staticBody = new CANNON.RigidBody(0,shape);
+            var body = new CANNON.Body({ mass: mass });
+            body.addShape(shape);
+            var staticBody = new CANNON.Body({ mass: 0 });
+            staticBody.addShape(shape);
             staticBody.position.z = s + d*2;
 
             // Hinge it

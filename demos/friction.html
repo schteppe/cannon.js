@@ -49,7 +49,8 @@
 
         // ground plane
         var groundShape = new CANNON.Plane();
-        var groundBody = new CANNON.RigidBody(0,groundShape,groundMaterial);
+        var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial });
+        groundBody.addShape(groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
 
@@ -69,13 +70,15 @@
         world.addContactMaterial(slippery_ground_cm);
 
         // Create slippery box
-        var boxBody = new CANNON.RigidBody(1,shape,slipperyMaterial);
+        var boxBody = new CANNON.Body({ mass: 1, material: slipperyMaterial });
+        boxBody.addShape(shape);
         boxBody.position.set(0,0,5);
         world.add(boxBody);
         demo.addVisual(boxBody);
 
         // Create box made of groundMaterial
-        var boxBody2 = new CANNON.RigidBody(10,shape,groundMaterial);
+        var boxBody2 = new CANNON.Body({ mass: 10, material: groundMaterial });
+        boxBody2.addShape(shape);
         boxBody2.position.set(size*4,0,5);
         world.add(boxBody2);
         demo.addVisual(boxBody2);

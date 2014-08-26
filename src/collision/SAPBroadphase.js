@@ -42,12 +42,15 @@ function SAPBroadphase(world){
 
     this._removeBodyHandler = function(e){
         var idx = axisList.indexOf(e.body);
-        if(idx !== -1)
+        if(idx !== -1){
             axisList.splice(idx,1);
-    }
+        }
+    };
 
-    if(world) this.setWorld(world);
-};
+    if(world){
+        this.setWorld(world);
+    }
+}
 SAPBroadphase.prototype = new Broadphase();
 
 /**
@@ -60,16 +63,17 @@ SAPBroadphase.prototype.setWorld = function(world){
     this.axisList.length = 0;
 
     // Add all bodies from the new world
-    for(var i=0; i<world.bodies.length; i++)
+    for(var i=0; i<world.bodies.length; i++){
         this.axisList.push(world.bodies[i]);
+    }
 
     // Remove old handlers, if any
-    world.removeEventListener("addBody",this._addBodyHandler);
-    world.removeEventListener("removeBody",this._removeBodyHandler);
+    world.removeEventListener("addBody", this._addBodyHandler);
+    world.removeEventListener("removeBody", this._removeBodyHandler);
 
     // Add handlers to update the list of bodies.
-    world.addEventListener("addBody",this._addBodyHandler);
-    world.addEventListener("removeBody",this._removeBodyHandler);
+    world.addEventListener("addBody", this._addBodyHandler);
+    world.addEventListener("removeBody", this._removeBodyHandler);
 
     this.world = world;
 };
@@ -84,14 +88,15 @@ SAPBroadphase.insertionSortX = function(a) {
     for(var i=1,l=a.length;i<l;i++) {
         var v = a[i];
         for(var j=i - 1;j>=0;j--) {
-            if(a[j].position.x-a[j].shape.boundingSphereRadius <= v.position.x-v.shape.boundingSphereRadius)
+            if(a[j].aabbmin.x <= v.aabbmin.x){
                 break;
+            }
             a[j+1] = a[j];
         }
         a[j+1] = v;
     }
     return a;
-}
+};
 
 /**
  * @static
@@ -103,14 +108,15 @@ SAPBroadphase.insertionSortY = function(a) {
     for(var i=1,l=a.length;i<l;i++) {
         var v = a[i];
         for(var j=i - 1;j>=0;j--) {
-            if(a[j].position.y-a[j].shape.boundingSphereRadius <= v.position.y-v.shape.boundingSphereRadius)
+            if(a[j].aabbmin.y <= v.aabbmin.y){
                 break;
+            }
             a[j+1] = a[j];
         }
         a[j+1] = v;
     }
     return a;
-}
+};
 
 /**
  * @static
@@ -122,14 +128,15 @@ SAPBroadphase.insertionSortZ = function(a) {
     for(var i=1,l=a.length;i<l;i++) {
         var v = a[i];
         for(var j=i - 1;j>=0;j--) {
-            if(a[j].position.z-a[j].shape.boundingSphereRadius <= v.position.z-v.shape.boundingSphereRadius)
+            if(a[j].aabbmin.z <= v.aabbmin.z){
                 break;
+            }
             a[j+1] = a[j];
         }
         a[j+1] = v;
     }
     return a;
-}
+};
 
 /**
  * Collect all collision pairs
@@ -141,19 +148,30 @@ SAPBroadphase.insertionSortZ = function(a) {
 SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
     var bodies = this.axisList,
         axisIndex = this.axisIndex,
-        i,j;
+        i, j;
+
+    var N = bodies.length;
+
+    // Update AABBs
+    for(i=0; i!==N; i++){
+        var bi = bodies[i];
+        if(bi.aabbNeedsUpdate){
+            bi.computeAABB();
+        }
+    }
 
     // Sort the list
     var sortFunc;
-    if(axisIndex === 0)
+    if(axisIndex === 0){
         SAPBroadphase.insertionSortX(bodies);
-    else if(axisIndex === 1)
+    } else if(axisIndex === 1){
         SAPBroadphase.insertionSortY(bodies);
-    else if(axisIndex === 2)
+    } else if(axisIndex === 2){
         SAPBroadphase.insertionSortZ(bodies);
+    }
 
     // Look through the list
-    for(i=0, N=bodies.length; i!==N; i++){
+    for(i=0; i!==N; i++){
         var bi = bodies[i];
 
         for(j=i+1; j<N; j++){
@@ -163,8 +181,9 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
                 continue;
             }
 
-            if(!SAPBroadphase.checkBounds(bi,bj,axisIndex))
+            if(!SAPBroadphase.checkBounds(bi,bj,axisIndex)){
                 break;
+            }
 
             this.doBoundingSphereBroadphase(bi,bj,p1,p2);
         }
@@ -180,20 +199,20 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
  * @param  {Number} axisIndex
  * @return {Boolean}
  */
-SAPBroadphase.checkBounds = function(bi,bj,axisIndex){
+SAPBroadphase.checkBounds = function(bi, bj, axisIndex){
     var axis;
-    if(axisIndex==0) axis = 'x';
-    if(axisIndex==1) axis = 'y';
-    if(axisIndex==2) axis = 'z';
+    if(axisIndex === 0){ axis = 'x'; }
+    if(axisIndex === 1){ axis = 'y'; }
+    if(axisIndex === 2){ axis = 'z'; }
 
     var biPos = bi.position[axis],
-        ri = bi.shape.boundingSphereRadius,
+        ri = bi.boundingRadius,
         bjPos = bj.position[axis],
-        rj = bj.shape.boundingSphereRadius,
-        boundA1 = biPos-ri,
-        boundA2 = biPos+ri,
-        boundB1 = bjPos-rj,
-        boundB2 = bjPos+rj;
+        rj = bj.boundingRadius,
+        boundA1 = biPos - ri,
+        boundA2 = biPos + ri,
+        boundB1 = bjPos - rj,
+        boundB2 = bjPos + rj;
 
     return boundB1 < boundA2;
 };

@@ -36,13 +36,15 @@
 
           // ground plane
           var groundShape = new CANNON.Plane();
-          var groundBody = new CANNON.RigidBody(0,groundShape);
+          var groundBody = new CANNON.Body({ mass: 0 });
+          groundBody.addShape(groundShape);
           world.add(groundBody);
           demo.addVisual(groundBody);
 
           // Sphere
           var sphere = new CANNON.Sphere(size);
-          var sphereBody = new CANNON.RigidBody(30,sphere);
+          var sphereBody = new CANNON.Body({ mass: 30 });
+          sphereBody.addShape(sphere);
           var pos = new CANNON.Vec3(0,0,size);
           sphereBody.position.set(0,0,size*6);
           world.add(sphereBody);

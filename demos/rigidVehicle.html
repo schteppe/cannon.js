@@ -32,27 +32,17 @@
             var wheelGroundContactMaterial = window.wheelGroundContactMaterial = new CANNON.ContactMaterial(wheelMaterial, groundMaterial, {
                 friction: 0.3,
                 restitution: 0,
-                contactEquationStiffness: 300
+                contactEquationStiffness: 1000
             });
 
             // We must add the contact materials to the world
             world.addContactMaterial(wheelGroundContactMaterial);
 
             var chassisShape;
-            var centerOfMassAdjust = new CANNON.Vec3(0, 0, -5);
-            if(true){
-                chassisShape = new CANNON.Compound();
-                var offset = new CANNON.Vec3();
-                centerOfMassAdjust.scale(-1, offset);
-                chassisShape.addChild(
-                    new CANNON.Box(new CANNON.Vec3(5, 2, 0.5)),
-                    offset,
-                    new CANNON.Quaternion()
-                );
-            } else {
-                chassisShape = new CANNON.Box(new CANNON.Vec3(5, 2, 0.5));
-            }
-            var chassisBody = new CANNON.RigidBody(1, chassisShape);
+            var centerOfMassAdjust = new CANNON.Vec3(0, 0, -1);
+            chassisShape = new CANNON.Box(new CANNON.Vec3(5, 2, 0.5));
+            var chassisBody = new CANNON.Body({ mass: 1 });
+            chassisBody.addShape(chassisShape, centerOfMassAdjust);
             chassisBody.position.set(0, 0, 0);
 
             // Create the vehicle
@@ -64,30 +54,38 @@
             var wheelShape = new CANNON.Sphere(1.5);
             var down = new CANNON.Vec3(0, 0, -1);
 
+            var wheelBody = new CANNON.Body({ mass: mass, material: wheelMaterial });
+            wheelBody.addShape(wheelShape);
             vehicle.addWheel({
-                body: new CANNON.RigidBody(mass, wheelShape, wheelMaterial),
-                position: new CANNON.Vec3(5, axisWidth/2, 0).vsub(centerOfMassAdjust),
+                body: wheelBody,
+                position: new CANNON.Vec3(5, axisWidth/2, 0).vadd(centerOfMassAdjust),
                 axis: new CANNON.Vec3(0, 1, 0),
                 direction: down
             });
 
+            var wheelBody = new CANNON.Body({ mass: mass, material: wheelMaterial });
+            wheelBody.addShape(wheelShape);
             vehicle.addWheel({
-                body: new CANNON.RigidBody(mass, wheelShape, wheelMaterial),
-                position: new CANNON.Vec3(5, -axisWidth/2, 0).vsub(centerOfMassAdjust),
+                body: wheelBody,
+                position: new CANNON.Vec3(5, -axisWidth/2, 0).vadd(centerOfMassAdjust),
                 axis: new CANNON.Vec3(0, -1, 0),
                 direction: down
             });
 
+            var wheelBody = new CANNON.Body({ mass: mass, material: wheelMaterial });
+            wheelBody.addShape(wheelShape);
             vehicle.addWheel({
-                body: new CANNON.RigidBody(mass, wheelShape, wheelMaterial),
-                position: new CANNON.Vec3(-5, axisWidth/2, 0).vsub(centerOfMassAdjust),
+                body: wheelBody,
+                position: new CANNON.Vec3(-5, axisWidth/2, 0).vadd(centerOfMassAdjust),
                 axis: new CANNON.Vec3(0, 1, 0),
                 direction: down
             });
 
+            var wheelBody = new CANNON.Body({ mass: mass, material: wheelMaterial });
+            wheelBody.addShape(wheelShape);
             vehicle.addWheel({
-                body: new CANNON.RigidBody(mass, wheelShape, wheelMaterial),
-                position: new CANNON.Vec3(-5, -axisWidth/2, 0).vsub(centerOfMassAdjust),
+                body: wheelBody,
+                position: new CANNON.Vec3(-5, -axisWidth/2, 0).vadd(centerOfMassAdjust),
                 axis: new CANNON.Vec3(0, -1, 0),
                 direction: down
             });
@@ -111,23 +109,25 @@
             if(false){
                 // Ground
                 var groundShape = new CANNON.Plane();
-                var ground = new CANNON.RigidBody(0, groundShape, groundMaterial);
+                var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
+                ground.addShape(groundShape);
                 ground.position.z = -3;
                 world.add(ground);
                 demo.addVisual(ground);
             } else {
                 var mock = false;
                 var matrix = [];
-                var sizeX = 128,
+                var sizeX = 64,
                     sizeY = sizeX;
 
                 for (var i = 0; i < sizeX; i++) {
                     matrix.push([]);
                     for (var j = 0; j < sizeY; j++) {
                         var height = Math.sin(i / sizeX * Math.PI * 8) * Math.sin(j / sizeY * Math.PI * 8) * 8 + 8;
-                        //height = 0;
                         if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
                             height = 10;
+                        // height = 0;
+
                         matrix[i].push(height);
                     }
                 }
@@ -135,8 +135,17 @@
                 var hfShape = new CANNON.Heightfield(matrix, {
                     elementSize: 300 / sizeX
                 });
-                var hfBody = new CANNON.RigidBody(0, hfShape, groundMaterial);
-                hfBody.position.set(-sizeX * hfShape.elementSize / 2, -20, -10);
+                var hfBody;
+
+                var quat = new CANNON.Quaternion();
+                var pos = new CANNON.Vec3(-sizeX * hfShape.elementSize / 2, -20, -20);
+
+                // Use normal
+                hfBody = new CANNON.Body({ mass: 0, material: groundMaterial });
+                hfBody.addShape(hfShape, new CANNON.Vec3(0,0,-1), new CANNON.Quaternion());
+                pos.copy(hfBody.position);
+                quat.copy(hfBody.quaternion);
+
                 if(!mock){
                     world.add(hfBody);
                     demo.addVisual(hfBody);
@@ -147,7 +156,8 @@
                         for (var j = 0; j < sizeY - 1; j++) {
                             for (var k = 0; k < 2; k++) {
                                 hfShape.getConvexTrianglePillar(i, j, !!k);
-                                var convexBody = new CANNON.RigidBody(0, hfShape.pillarConvex, groundMaterial);
+                                var convexBody = new CANNON.Body({ mass: 0, material: groundMaterial });
+                                convexBody.addShape(hfShape.pillarConvex);
                                 hfBody.pointToWorldFrame(hfShape.pillarOffset, convexBody.position);
                                 world.add(convexBody);
                                 demo.addVisual(convexBody);

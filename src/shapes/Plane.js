@@ -40,13 +40,13 @@ Plane.prototype.volume = function(){
 };
 
 var tempNormal = new Vec3();
-Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
+Plane.prototype.calculateWorldAABB = function(pos, quat, min, max){
     // The plane AABB is infinite, except if the normal is pointing along any axis
     tempNormal.set(0,0,1); // Default plane normal is z
     quat.vmult(tempNormal,tempNormal);
-    var max = Number.MAX_VALUE;
-    min.set(-max, -max, -max);
-    max.set(max, max, max);
+    var maxVal = Number.MAX_VALUE;
+    min.set(-maxVal, -maxVal, -maxVal);
+    max.set(maxVal, maxVal, maxVal);
 
     if(tempNormal.x === 1){ max.x = pos.x; }
     if(tempNormal.y === 1){ max.y = pos.y; }
@@ -55,4 +55,8 @@ Plane.prototype.calculateWorldAABB = function(pos,quat,min,max){
     if(tempNormal.x === -1){ min.x = pos.x; }
     if(tempNormal.y === -1){ min.y = pos.y; }
     if(tempNormal.z === -1){ min.z = pos.z; }
+};
+
+Plane.prototype.updateBoundingSphereRadius = function(){
+    this.boundingSphereRadius = Number.MAX_VALUE;
 };

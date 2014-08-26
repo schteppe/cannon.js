@@ -28,14 +28,16 @@
 
         // Create a static sphere
         var sphereShape = new CANNON.Sphere(0.1),
-            sphereBody = new CANNON.RigidBody(0,sphereShape);
+            sphereBody = new CANNON.Body({ mass: 0 });
+        sphereBody.addShape(sphereShape);
         world.add(sphereBody);
         demo.addVisual(sphereBody);
 
         // Create a box body
         var halfExtents = new CANNON.Vec3(size,size*0.3,size),
             boxShape = new CANNON.Box(halfExtents);
-            boxBody = new CANNON.RigidBody(5,boxShape);
+            boxBody = new CANNON.Body({ mass: 5 });
+        boxBody.addShape(boxShape);
         boxBody.position.set(-size,0,-size);
         world.add(boxBody);
         demo.addVisual(boxBody);

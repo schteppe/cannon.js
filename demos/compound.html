@@ -34,27 +34,28 @@
           var world = setupWorld(demo);
 
           // Create the compound shape
-          var compoundShape = new CANNON.Compound();
+          //var compoundShape = new CANNON.Compound();
           var s = 1.5;
+
+          // Now create a Body for our Compound
+          var mass = 10;
+          var body = new CANNON.Body({ mass: mass });
+          body.position.set(0,0,6);
+          body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 32);
 
           // Use a box shape as child shape
           var shape = new CANNON.Box(new CANNON.Vec3(0.5*s,0.5*s,0.5*s));
 
           // We can add the same shape several times to position child shapes within the Compound.
-          compoundShape.addChild(shape,new CANNON.Vec3( s, 0,-s));
-          compoundShape.addChild(shape,new CANNON.Vec3( s, 0, s));
-          compoundShape.addChild(shape,new CANNON.Vec3(-s, 0,-s));
-          compoundShape.addChild(shape,new CANNON.Vec3(-s, 0, s));
+          body.addShape(shape, new CANNON.Vec3( s, 0,-s));
+          body.addShape(shape, new CANNON.Vec3( s, 0, s));
+          body.addShape(shape, new CANNON.Vec3(-s, 0,-s));
+          body.addShape(shape, new CANNON.Vec3(-s, 0, s));
           // Note: we only use translational offsets. The third argument could be a CANNON.Quaternion to rotate the child shape.
-          compoundShape.addChild(shape,new CANNON.Vec3(-s, 0, 0));
-          compoundShape.addChild(shape,new CANNON.Vec3( 0, 0,-s));
-          compoundShape.addChild(shape,new CANNON.Vec3( 0, 0, s));
+          body.addShape(shape, new CANNON.Vec3(-s, 0, 0));
+          body.addShape(shape, new CANNON.Vec3( 0, 0,-s));
+          body.addShape(shape, new CANNON.Vec3( 0, 0, s));
 
-          // Now create a RigidBody for our Compound
-          var mass = 10;
-          var body = new CANNON.RigidBody(mass,compoundShape);
-          body.position.set(0,0,6);
-          body.quaternion.set(0,1,0,0.2);
           world.add(body);
           demo.addVisual(body);
 
@@ -64,16 +65,16 @@
       demo.addScene("Spheres",function(){
           var world = setupWorld(demo);
 
-          // Compound shape
-          var compoundShape = new CANNON.Compound();
-          var sphereShape = new CANNON.Sphere(1);
-          compoundShape.addChild(sphereShape,new CANNON.Vec3( 1, 0,-1));
-          compoundShape.addChild(sphereShape,new CANNON.Vec3( 1, 0, 1));
-          compoundShape.addChild(sphereShape,new CANNON.Vec3(-1, 0,-1));
-          compoundShape.addChild(sphereShape,new CANNON.Vec3(-1, 0, 1));
-
           var mass = 10;
-          var body = new CANNON.RigidBody(mass,compoundShape);
+          var body = new CANNON.Body({ mass: mass });
+
+          // Compound shape
+          var sphereShape = new CANNON.Sphere(1);
+          body.addShape(sphereShape, new CANNON.Vec3( 1, 0,-1));
+          body.addShape(sphereShape, new CANNON.Vec3( 1, 0, 1));
+          body.addShape(sphereShape, new CANNON.Vec3(-1, 0,-1));
+          body.addShape(sphereShape, new CANNON.Vec3(-1, 0, 1));
+
           body.position.set(0,0,6);
           body.quaternion.set(0,1,0,0.1);
           world.add(body);
@@ -89,7 +90,8 @@
 
         // ground plane
         var groundShape = new CANNON.Plane();
-        var groundBody = new CANNON.RigidBody(0,groundShape);
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
 

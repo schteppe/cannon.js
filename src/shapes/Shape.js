@@ -3,7 +3,6 @@ module.exports = Shape;
 var Shape = require('./Shape')
 ,   Vec3 = require('../math/Vec3')
 ,   Quaternion = require('../math/Quaternion')
-,   Particle = require('../objects/Particle')
 ,   Material = require('../material/Material')
 
 /**
@@ -72,5 +71,6 @@ Shape.types = {
     COMPOUND:8,
     CONVEXPOLYHEDRON:16,
     HEIGHTFIELD:32,
+    PARTICLE:64,
 };
 

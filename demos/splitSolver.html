@@ -68,7 +68,8 @@
 
         // ground plane
         var groundShape = new CANNON.Plane();
-        var groundBody = new CANNON.RigidBody(0,groundShape);
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
 
@@ -76,7 +77,8 @@
         var N = 5;
         for(var i=0; i<N; i++){
             for(var j=0; j<N; j++){
-                var shapeBody = new CANNON.RigidBody(1,shape);
+                var shapeBody = new CANNON.Body({ mass: 1 });
+                shapeBody.addShape(shape);
                 shapeBody.position.set( (i-N*0.5)*size*2*1.1,
                                         (j-N*0.5)*size*2*1.1,
                                         size*1.05);
@@ -86,7 +88,8 @@
         }
 
 
-        var shapeBody = new CANNON.RigidBody(1,shape);
+        var shapeBody = new CANNON.Body({ mass: 1 });
+        shapeBody.addShape(shape);
         shapeBody.position.set( size,size,
                                 size*5);
         world.add(shapeBody);

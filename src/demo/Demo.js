@@ -776,7 +776,8 @@ CANNON.Demo = function(options){
                 break;
 
             case 115: // s
-                updatePhysics();
+                var timeStep = 1 / settings.stepFrequency;
+                world.step(timeStep);
                 updateVisuals();
                 break;
 
@@ -907,11 +908,8 @@ CANNON.Demo.prototype.addVisual = function(body){
     var s = this.settings;
     // What geometry should be used?
     var mesh;
-    if(body instanceof CANNON.RigidBody)
-        mesh = this.shape2mesh(body.shape);
-    else if(body instanceof CANNON.Particle){
-        mesh = new THREE.Mesh( this.particleGeo, this.particleMaterial );
-        mesh.scale.set(s.particleSize,s.particleSize,s.particleSize);
+    if(body instanceof CANNON.Body){
+        mesh = this.shape2mesh(body);
     }
     if(mesh) {
         // Add body
@@ -953,116 +951,141 @@ CANNON.Demo.prototype.removeVisual = function(body){
     }
 };
 
-CANNON.Demo.prototype.shape2mesh = function(shape){
-    var wireframe = this.settings.renderMode=="wireframe";
-    var mesh;
-    switch(shape.type){
+CANNON.Demo.prototype.shape2mesh = function(body){
+    var wireframe = this.settings.renderMode === "wireframe";
+    var obj = new THREE.Object3D();
 
-    case CANNON.Shape.types.SPHERE:
-        var sphere_geometry = new THREE.SphereGeometry( shape.radius, 8, 8);
-        mesh = new THREE.Mesh( sphere_geometry, this.currentMaterial );
-        break;
+    for (var l = 0; l < body.shapes.length; l++) {
+        var shape = body.shapes[l];
 
-    case CANNON.Shape.types.PLANE:
-        var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
-        mesh = new THREE.Object3D();
-        var submesh = new THREE.Object3D();
-        var ground = new THREE.Mesh( geometry, this.currentMaterial );
-        ground.scale = new THREE.Vector3(100,100,100);
-        submesh.add(ground);
+        switch(shape.type){
 
-        ground.castShadow = true;
-        ground.receiveShadow = true;
+        case CANNON.Shape.types.SPHERE:
+            var sphere_geometry = new THREE.SphereGeometry( shape.radius, 8, 8);
+            mesh = new THREE.Mesh( sphere_geometry, this.currentMaterial );
+            break;
 
-        mesh.add(submesh);
-        break;
+        case CANNON.Shape.types.PARTICLE:
+            mesh = new THREE.Mesh( this.particleGeo, this.particleMaterial );
+            var s = this.settings;
+            mesh.scale.set(s.particleSize,s.particleSize,s.particleSize);
+            break;
 
-    case CANNON.Shape.types.BOX:
-        var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
-                                                    shape.halfExtents.y*2,
-                                                    shape.halfExtents.z*2 );
-        mesh = new THREE.Mesh( box_geometry, this.currentMaterial );
-        break;
+        case CANNON.Shape.types.PLANE:
+            var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
+            mesh = new THREE.Object3D();
+            var submesh = new THREE.Object3D();
+            var ground = new THREE.Mesh( geometry, this.currentMaterial );
+            ground.scale = new THREE.Vector3(100,100,100);
+            submesh.add(ground);
 
-    case CANNON.Shape.types.CONVEXPOLYHEDRON:
-        var verts = [];
-        for(var i=0; i<shape.vertices.length; i++){
-            verts.push(new THREE.Vector3(shape.vertices[i].x,
-            shape.vertices[i].y,
-            shape.vertices[i].z));
+            ground.castShadow = true;
+            ground.receiveShadow = true;
+
+            mesh.add(submesh);
+            break;
+
+        case CANNON.Shape.types.BOX:
+            var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
+                                                        shape.halfExtents.y*2,
+                                                        shape.halfExtents.z*2 );
+            mesh = new THREE.Mesh( box_geometry, this.currentMaterial );
+            break;
+
+        case CANNON.Shape.types.CONVEXPOLYHEDRON:
+            var verts = [];
+            for(var i=0; i<shape.vertices.length; i++){
+                verts.push(
+                    new THREE.Vector3(
+                        shape.vertices[i].x,
+                        shape.vertices[i].y,
+                        shape.vertices[i].z
+                    )
+                );
+            }
+            var geo = new THREE.ConvexGeometry( verts );
+            mesh = new THREE.Mesh( geo, this.currentMaterial );
+            break;
+
+        case CANNON.Shape.types.HEIGHTFIELD:
+            var geometry = new THREE.Geometry();
+
+            var v0 = new CANNON.Vec3();
+            var v1 = new CANNON.Vec3();
+            var v2 = new CANNON.Vec3();
+            for (var xi = 0; xi < shape.data.length - 1; xi++) {
+                for (var yi = 0; yi < shape.data[xi].length - 1; yi++) {
+                    for (var k = 0; k < 2; k++) {
+                        shape.getConvexTrianglePillar(xi, yi, k===0);
+                        shape.pillarConvex.vertices[0].copy(v0);
+                        shape.pillarConvex.vertices[1].copy(v1);
+                        shape.pillarConvex.vertices[2].copy(v2);
+                        v0.vadd(shape.pillarOffset, v0);
+                        v1.vadd(shape.pillarOffset, v1);
+                        v2.vadd(shape.pillarOffset, v2);
+                        geometry.vertices.push(
+                            new THREE.Vector3(v0.x, v0.y, v0.z),
+                            new THREE.Vector3(v1.x, v1.y, v1.z),
+                            new THREE.Vector3(v2.x, v2.y, v2.z)
+                        );
+                        var i = geometry.vertices.length - 3;
+                        geometry.faces.push(new THREE.Face3(i, i+1, i+2));
+                    }
+                }
+            }
+            geometry.computeBoundingSphere();
+            geometry.computeFaceNormals();
+            mesh = new THREE.Mesh(geometry, this.currentMaterial);
+            break;
+
+        /*
+        case CANNON.Shape.types.COMPOUND:
+            // recursive compounds
+            var o3d = new THREE.Object3D();
+            for(var i = 0; i<shape.childShapes.length; i++){
+
+                // Get child information
+                var subshape = shape.childShapes[i];
+                var o = shape.childOffsets[i];
+                var q = shape.childOrientations[i];
+
+                var submesh = this.shape2mesh(subshape);
+                submesh.position.set(o.x,o.y,o.z);
+                submesh.quaternion.set(q.x,q.y,q.z,q.w);
+
+                //submesh.useQuaternion = true;
+                o3d.add(submesh);
+                mesh = o3d;
+            }
+            break;
+        */
+
+        default:
+            throw "Visual type not recognized: "+shape.type;
         }
-        var geo = new THREE.ConvexGeometry( verts );
-        mesh = new THREE.Mesh( geo, this.currentMaterial );
-        break;
 
-    case CANNON.Shape.types.HEIGHTFIELD:
-        var geometry = new THREE.Geometry();
-
-        var v0 = new CANNON.Vec3();
-        var v1 = new CANNON.Vec3();
-        var v2 = new CANNON.Vec3();
-        for (var xi = 0; xi < shape.data.length - 1; xi++) {
-            for (var yi = 0; yi < shape.data[xi].length - 1; yi++) {
-                for (var k = 0; k < 2; k++) {
-                    shape.getConvexTrianglePillar(xi, yi, k===0);
-                    shape.pillarConvex.vertices[0].copy(v0);
-                    shape.pillarConvex.vertices[1].copy(v1);
-                    shape.pillarConvex.vertices[2].copy(v2);
-                    v0.vadd(shape.pillarOffset, v0);
-                    v1.vadd(shape.pillarOffset, v1);
-                    v2.vadd(shape.pillarOffset, v2);
-                    geometry.vertices.push(
-                        new THREE.Vector3(v0.x, v0.y, v0.z),
-                        new THREE.Vector3(v1.x, v1.y, v1.z),
-                        new THREE.Vector3(v2.x, v2.y, v2.z)
-                    );
-                    var i = geometry.vertices.length - 3;
-                    geometry.faces.push(new THREE.Face3(i, i+1, i+2));
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
+        if(mesh.children){
+            for(var i=0; i<mesh.children.length; i++){
+                mesh.children[i].castShadow = true;
+                mesh.children[i].receiveShadow = true;
+                if(mesh.children[i]){
+                    for(var j=0; j<mesh.children[i].length; j++){
+                        mesh.children[i].children[j].castShadow = true;
+                        mesh.children[i].children[j].receiveShadow = true;
+                    }
                 }
             }
         }
-        geometry.computeBoundingSphere();
-        geometry.computeFaceNormals();
-        mesh = new THREE.Mesh(geometry, this.currentMaterial);
-        break;
 
-    case CANNON.Shape.types.COMPOUND:
-        // recursive compounds
-        var o3d = new THREE.Object3D();
-        for(var i = 0; i<shape.childShapes.length; i++){
+        var o = body.shapeOffsets[l];
+        var q = body.shapeOrientations[l];
+        mesh.position.set(o.x, o.y, o.z);
+        mesh.quaternion.set(q.x, q.y, q.z, q.w);
 
-            // Get child information
-            var subshape = shape.childShapes[i];
-            var o = shape.childOffsets[i];
-            var q = shape.childOrientations[i];
-
-            var submesh = this.shape2mesh(subshape);
-            submesh.position.set(o.x,o.y,o.z);
-            submesh.quaternion.set(q.x,q.y,q.z,q.w);
-
-            //submesh.useQuaternion = true;
-            o3d.add(submesh);
-            mesh = o3d;
-        }
-        break;
-
-    default:
-        throw "Visual type not recognized: "+shape.type;
+        obj.add(mesh);
     }
 
-    mesh.receiveShadow = true;
-    mesh.castShadow = true;
-    if(mesh.children){
-        for(var i=0; i<mesh.children.length; i++){
-            mesh.children[i].castShadow = true;
-            mesh.children[i].receiveShadow = true;
-            if(mesh.children[i]){
-                for(var j=0; j<mesh.children[i].length; j++){
-                    mesh.children[i].children[j].castShadow = true;
-                    mesh.children[i].children[j].receiveShadow = true;
-                }
-            }
-        }
-    }
-    return mesh;
-}
+    return obj;
+};

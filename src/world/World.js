@@ -1,20 +1,19 @@
 module.exports = World;
 
-var Shape = require('../shapes/Shape')
-,   Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   GSSolver = require('../solver/GSSolver')
-,   Vec3Pool = require('../utils/Vec3Pool')
-,   ContactEquation = require('../equations/ContactEquation')
-,   FrictionEquation = require('../equations/FrictionEquation')
-,   ContactGenerator = require('./ContactGenerator')
-,   EventTarget = require('../utils/EventTarget')
-,   ArrayCollisionMatrix = require('../collision/ArrayCollisionMatrix')
-,   Material = require('../material/Material')
-,   ContactMaterial = require('../material/ContactMaterial')
-,   RigidBody = require('../objects/RigidBody')
-,   Body = require('../objects/Body')
-,   TupleDictionary = require('../utils/TupleDictionary')
+var Shape = require('../shapes/Shape');
+var Vec3 = require('../math/Vec3');
+var Quaternion = require('../math/Quaternion');
+var GSSolver = require('../solver/GSSolver');
+var Vec3Pool = require('../utils/Vec3Pool');
+var ContactEquation = require('../equations/ContactEquation');
+var FrictionEquation = require('../equations/FrictionEquation');
+var ContactGenerator = require('./ContactGenerator');
+var EventTarget = require('../utils/EventTarget');
+var ArrayCollisionMatrix = require('../collision/ArrayCollisionMatrix');
+var Material = require('../material/Material');
+var ContactMaterial = require('../material/ContactMaterial');
+var Body = require('../objects/Body');
+var TupleDictionary = require('../utils/TupleDictionary');
 
 /**
  * The physics world
@@ -235,7 +234,7 @@ World.prototype.add = function(body){
     body.position.copy(body.initPosition);
     body.velocity.copy(body.initVelocity);
     body.timeLastSleepy = this.time;
-    if(body instanceof RigidBody){
+    if(body instanceof Body){
         body.angularVelocity.copy(body.initAngularVelocity);
         body.quaternion.copy(body.initQuaternion);
     }
@@ -737,7 +736,7 @@ World.prototype.internalStep = function(dt){
             s = b.shape,
             force = b.force,
             tau = b.tau;
-        if((b.type & DYNAMIC_OR_KINEMATIC) && !b.isSleeping()){ // Only for dynamic
+        if((b.type & DYNAMIC_OR_KINEMATIC) && b.sleepState !== Body.SLEEPING){ // Only for dynamic
             var velo = b.velocity,
                 angularVelo = b.angularVelocity,
                 pos = b.position,

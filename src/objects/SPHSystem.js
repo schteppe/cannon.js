@@ -1,10 +1,11 @@
 module.exports = SPHSystem;
 
-var Shape = require('../shapes/Shape')
-,   Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   Particle = require('./Particle')
-,   Material = require('../material/Material')
+var Shape = require('../shapes/Shape');
+var Vec3 = require('../math/Vec3');
+var Quaternion = require('../math/Quaternion');
+var Particle = require('../shapes/Particle');
+var Body = require('../objects/Body');
+var Material = require('../material/Material');
 
 /**
  * Smoothed-particle hydrodynamics system
@@ -27,16 +28,18 @@ function SPHSystem(){
 
 SPHSystem.prototype.add = function(particle){
     this.particles.push(particle);
-    if(this.neighbors.length < this.particles.length)
+    if(this.neighbors.length < this.particles.length){
         this.neighbors.push([]);
+    }
 };
 
 SPHSystem.prototype.remove = function(particle){
     var idx = this.particles.indexOf(particle);
     if(idx !== -1){
         this.particles.splice(idx,1);
-        if(this.neighbors.length > this.particles.length)
+        if(this.neighbors.length > this.particles.length){
             this.neighbors.pop();
+        }
     }
 };
 

@@ -37,7 +37,8 @@
             var N=10, last;
             for(var i=0; i<N; i++){
                 // Create a box
-                var boxbody = new CANNON.RigidBody(mass,boxShape);
+                var boxbody = new CANNON.Body({ mass: mass });
+                boxbody.addShape(boxShape);
                 boxbody.position.set(0,0,(N-i)*(size*2+2*space) + size*2+space);
                 boxbody.linearDamping=0.01; // Damping makes the movement slow down with time
                 boxbody.angularDamping=0.01;
@@ -74,7 +75,8 @@
           for(var i=0; i<Ncols; i++){
             for(var j=0; j<Nrows; j++){
               // Create a new body
-              var body = new CANNON.Particle(mass);
+              var body = new CANNON.Body({ mass: mass });
+              body.addShape(new CANNON.Particle());
               body.position.set((i-Ncols*0.5)*dist,(j-Nrows*0.5)*dist,5);
               bodies[i+" "+j] = body;
               world.add(body);
@@ -95,7 +97,8 @@
 
           // Add the static sphere we throw the cloth on top of
           var sphere = new CANNON.Sphere(1.5);
-          var body = new CANNON.RigidBody(0,sphere);
+          var body = new CANNON.Body({ mass: 0 });
+          body.addShape(sphere);
           body.position.set(0,0,3.5);
           world.add(body);
           demo.addVisual(body);
@@ -108,7 +111,8 @@
             var sphereShape = new CANNON.Sphere(size);
             var mass = 1;
 
-            var spherebody = new CANNON.RigidBody(mass,sphereShape);
+            var spherebody = new CANNON.Body({ mass: mass });
+            spherebody.addShape(sphereShape);
             spherebody.position.set(0,0,size*3);
             spherebody.velocity.set(5,0,0);
             spherebody.linearDamping=0;
@@ -116,7 +120,8 @@
             world.add(spherebody);
             demo.addVisual(spherebody);
 
-            var spherebody2 = new CANNON.RigidBody(0,sphereShape);
+            var spherebody2 = new CANNON.Body({ mass: 0 });
+            spherebody2.addShape(sphereShape);
             spherebody2.position.set(0,0,size*7);
             world.add(spherebody2);
             demo.addVisual(spherebody2);
@@ -139,7 +144,8 @@
           world.solver.iterations = N; // To be able to propagate force throw the chain of N spheres, we need at least N solver iterations.
           for(var i=0; i<N; i++){
             // Create a new body
-            var spherebody = new CANNON.RigidBody(i===0 ? 0 :mass,sphereShape);
+            var spherebody = new CANNON.Body({ mass: i===0 ? 0 : mass });
+            spherebody.addShape(sphereShape);
             spherebody.position.set(0,0,(N-i)*dist);
             spherebody.velocity.x = i;
             world.add(spherebody);
@@ -170,7 +176,8 @@
           for(var i=0; i<Ncols; i++){
             for(var j=0; j<Nrows; j++){
               // Create a new body
-              var body = new CANNON.Particle(j==Nrows-1 ? 0 : mass);
+              var body = new CANNON.Body({ mass: j==Nrows-1 ? 0 : mass });
+              body.addShape(new CANNON.Particle());
               body.position.set(i*dist,0,j*dist+5);
               body.velocity.set(0, 3*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
               bodies[i+" "+j] = body;
@@ -202,7 +209,8 @@
             for(var j=0; j<Ny; j++){
               for(var k=0; k<Nz; k++){
                 // Create a new body
-                var body = new CANNON.Particle(mass);
+                var body = new CANNON.Body({ mass: mass });
+                body.addShape(new CANNON.Particle());
                 body.position.set(i*dist,j*dist, k*dist + Nz*dist*0.3+1);
                 body.velocity.set(0, 30*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
                 bodies[i+" "+j+" "+k] = body;
@@ -260,7 +268,8 @@
 
         // ground plane
         var groundShape = new CANNON.Plane();
-        var groundBody = new CANNON.RigidBody(0,groundShape);
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
         groundBody.position.set(0,0,1);
         world.add(groundBody);
         demo.addVisual(groundBody);

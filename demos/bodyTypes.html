@@ -34,9 +34,12 @@
           // Kinematic Box
           // Does only collide with dynamic bodies, but does not respond to any force.
           // Its movement can be controlled by setting its velocity.
-          var b1 = new CANNON.RigidBody(boxMass,boxShape);
-          b1.type = CANNON.Body.KINEMATIC;
-          b1.position.set(0,0,0.5*size);
+          var b1 = new CANNON.Body({
+            mass: boxMass,
+            type: CANNON.Body.KINEMATIC,
+            position: new CANNON.Vec3(0, 0, 0.5*size)
+          });
+          b1.addShape(boxShape);
           world.add(b1);
           demo.addVisual(b1);
 
@@ -51,7 +54,10 @@
 
           // Dynamic Sphere
           // Dynamic bodies can collide with bodies of all other types.
-          var b2 = new CANNON.RigidBody(mass,sphereShape);
+          var b2 = new CANNON.Body({
+            mass: mass,
+          });
+          b2.addShape(sphereShape);
           b2.position.set(0,0,3*size);
           world.add(b2);
           demo.addVisual(b2);
@@ -72,7 +78,10 @@
         // Static bodies only interacts with dynamic bodies. Velocity is always zero.
         var groundShape = new CANNON.Plane();
         var mass = 0; // mass=0 will produce a static body automatically
-        var groundBody = new CANNON.RigidBody(mass,groundShape);
+        var groundBody = new CANNON.Body({
+          mass: mass,
+        });
+        groundBody.addShape(groundShape);
         world.add(groundBody);
         demo.addVisual(groundBody);
 

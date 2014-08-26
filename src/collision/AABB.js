@@ -107,25 +107,31 @@ AABB.prototype.copy = function(aabb){
  * @param  {AABB} aabb
  * @todo
  */
-/*
 AABB.prototype.extend = function(aabb){
-    // Loop over x and y
-    var i = 2;
-    while(i--){
-        // Extend lower bound
-        var l = aabb.lowerBound[i];
-        if(this.lowerBound[i] > l){
-            this.lowerBound[i] = l;
-        }
+    // Extend lower bound
+    var l = aabb.lowerBound.x;
+    if(this.lowerBound.x > l){
+        this.lowerBound.x = l;
+    }
 
-        // Upper
-        var u = aabb.upperBound[i];
-        if(this.upperBound[i] < u){
-            this.upperBound[i] = u;
-        }
+    // Upper
+    var u = aabb.upperBound.x;
+    if(this.upperBound.x < u){
+        this.upperBound.x = u;
+    }
+
+    // Extend lower bound
+    var l = aabb.lowerBound.y;
+    if(this.lowerBound.y > l){
+        this.lowerBound.y = l;
+    }
+
+    // Upper
+    var u = aabb.upperBound.y;
+    if(this.upperBound.y < u){
+        this.upperBound.y = u;
     }
 };
-*/
 
 /**
  * Returns true if the given AABB overlaps this AABB.

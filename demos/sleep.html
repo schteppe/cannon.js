@@ -26,7 +26,7 @@
       var size = 1;
 
       // Sleep demo
-      demo.addScene("Sleep",function(){
+      demo.addScene("Sleep", function(){
 
         // Create world and collision detection
         var world = demo.getWorld();
@@ -38,11 +38,13 @@
 
         // Create ground plane
         var groundShape = new CANNON.Plane();
-        var groundBody = new CANNON.RigidBody(0,groundShape);
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
 
         // Create sphere
         var sphere = new CANNON.Sphere(size);
-        var sphereBody = new CANNON.RigidBody(1,sphere);
+        var sphereBody = new CANNON.Body({ mass: 1 });
+        sphereBody.addShape(sphere);
         var pos = new CANNON.Vec3(0,0,size);
         sphereBody.position.set(0,0,size*6);
 
@@ -82,17 +84,20 @@
 
         // Create ground plane
         var groundShape = new CANNON.Plane();
-        var groundBody = new CANNON.RigidBody(0,groundShape);
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
 
         // Create sphere
         var size = 2;
         var sphere = new CANNON.Sphere(size);
-        var sphereBody = new CANNON.RigidBody(1,sphere);
+        var sphereBody = new CANNON.Body({ mass: 1 });
+        sphereBody.addShape(sphere);
         sphereBody.position.set(0,0,size);
         sphereBody.sleep();
 
         // Create sphere that will wake up the first one
-        var sphereBody2 = new CANNON.RigidBody(1,sphere);
+        var sphereBody2 = new CANNON.Body({ mass: 1 });
+        sphereBody2.addShape(sphere);
         sphereBody2.position.set(size*10,0,size);
         sphereBody2.velocity.set(-10,0,0);
         sphereBody2.angularDamping = 0.0;

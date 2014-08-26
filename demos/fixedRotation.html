@@ -28,13 +28,15 @@
 
             // ground plane
             var groundShape = new CANNON.Plane();
-            var groundBody = new CANNON.RigidBody(0,groundShape);
+            var groundBody = new CANNON.Body({ mass: 0 });
+            groundBody.addShape(groundShape);
             world.add(groundBody);
             demo.addVisual(groundBody);
 
             // Create a box with fixed rotation
             var shape = new CANNON.Box(new CANNON.Vec3(size,size,size));
-            var boxBody = new CANNON.RigidBody(1,shape);
+            var boxBody = new CANNON.Body({ mass: 1 });
+            boxBody.addShape(shape);
             boxBody.position.set(0,0,size);
             boxBody.fixedRotation = true;
             boxBody.updateMassProperties();
@@ -43,7 +45,8 @@
 
             // Another one
             var shape2 = new CANNON.Box(new CANNON.Vec3(size, size, size));
-            var boxBody2 = new CANNON.RigidBody(1, shape2);
+            var boxBody2 = new CANNON.Body({ mass: 1, });
+            boxBody2.addShape(shape2);
             boxBody2.position.set(size*3/2, 0, size*4);
             boxBody2.fixedRotation = true;
             boxBody2.updateMassProperties();

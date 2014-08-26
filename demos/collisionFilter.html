@@ -43,7 +43,8 @@
 
             // Sphere
             var sphereShape = new CANNON.Sphere(size);
-            var sphereBody = new CANNON.RigidBody(mass,sphereShape);
+            var sphereBody = new CANNON.Body({ mass: mass });
+            sphereBody.addShape(sphereShape);
             sphereBody.position.set(5,0,0);
             sphereBody.velocity.set(-5,0,0);
             sphereBody.collisionFilterGroup = GROUP1;             // Put the sphere in group 1
@@ -51,13 +52,15 @@
 
             // Box
             var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
-            var boxBody = new CANNON.RigidBody(mass,boxShape);
+            var boxBody = new CANNON.Body({ mass: mass });
+            boxBody.addShape(boxShape);
             boxBody.collisionFilterGroup = GROUP2;                // Put the box in group 2
             boxBody.collisionFilterMask =  GROUP1;                // It can only collide with group 1 (the sphere)
 
             // Cylinder
             var cylinderShape = new CANNON.Cylinder(size,size,size*2.2,10);
-            var cylinderBody = new CANNON.RigidBody(mass,cylinderShape);
+            var cylinderBody = new CANNON.Body({ mass: mass });
+            cylinderBody.addShape(cylinderShape);
             cylinderBody.position.set(-5,0,0);
             cylinderBody.collisionFilterGroup = GROUP3;           // Put the cylinder in group 3
             cylinderBody.collisionFilterMask =  GROUP1;           // It can only collide with group 1 (the sphere)

@@ -27,7 +27,8 @@
 
           // Sphere 1
           var sphereShape = new CANNON.Sphere(1);
-          var b1 = new CANNON.RigidBody(5,sphereShape);
+          var b1 = new CANNON.Body({ mass: 5 });
+          b1.addShape(sphereShape);
           b1.position.set(5,0,0);
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
@@ -35,7 +36,8 @@
           demo.addVisual(b1);
 
           // Sphere 2
-          var b2 = new CANNON.RigidBody(5,sphereShape);
+          var b2 = new CANNON.Body({ mass: 5 });
+          b2.addShape(sphereShape);
           b2.linearDamping = 0;
           b2.position.set(-5,0,0);
           b2.velocity.set(5,0,0);
@@ -51,7 +53,8 @@
           var sphereShape = new CANNON.Sphere(1);
 
           // Box
-          var b1 = new CANNON.RigidBody(5,boxShape);
+          var b1 = new CANNON.Body({ mass: 5 });
+          b1.addShape(boxShape);
           b1.position.set(5,0,0);
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
@@ -59,7 +62,8 @@
           demo.addVisual(b1);
 
           // Sphere
-          var b2 = new CANNON.RigidBody(5,sphereShape);
+          var b2 = new CANNON.Body({ mass: 5 });
+          b2.addShape(sphereShape);
           b2.position.set(-5,0,0);
           b2.velocity.set(5,0,0);
           b2.linearDamping = 0;
@@ -74,7 +78,8 @@
           var sphereShape = new CANNON.Sphere(1);
 
           // Box
-          var b1 = new CANNON.RigidBody(5,boxShape);
+          var b1 = new CANNON.Body({ mass: 5 });
+          b1.addShape(boxShape);
           b1.position.set(5,0,0);
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
@@ -85,7 +90,8 @@
           demo.addVisual(b1);
 
           // Sphere
-          var b2 = new CANNON.RigidBody(5,sphereShape);
+          var b2 = new CANNON.Body({ mass: 5 });
+          b2.addShape(sphereShape);
           b2.position.set(-5,0,0);
           b2.velocity.set(5,0,0);
           b2.linearDamping = 0;
@@ -100,7 +106,8 @@
           var sphereShape = new CANNON.Sphere(1);
 
           // Box
-          var b1 = new CANNON.RigidBody(5,boxShape);
+          var b1 = new CANNON.Body({ mass: 5 });
+          b1.addShape(boxShape);
           b1.position.set(5,0,0);
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
@@ -114,7 +121,8 @@
           demo.addVisual(b1);
 
           // Sphere
-          var b2 = new CANNON.RigidBody(5,sphereShape);
+          var b2 = new CANNON.Body({ mass: 5 });
+          b2.addShape(sphereShape);
           b2.position.set(-5,0,0);
           b2.velocity.set(5,0,0);
           b2.linearDamping = 0;

@@ -84,7 +84,8 @@
           var hullShape = createBoxPolyhedron(size);
           // At the moment one must provide vertices, faces and normals..
           var mass = 10;
-          var boxbody1 = new CANNON.RigidBody(mass,hullShape);
+          var boxbody1 = new CANNON.Body({ mass: mass });
+          boxbody1.addShape(hullShape);
           boxbody1.position.set(0,0,size*2);
           boxbody1.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/4);
           world.add(boxbody1);
@@ -100,14 +101,16 @@
           var size = 0.5;
           var hullShape = createBoxPolyhedron(size);
           var mass = 10;
-          var boxbody = new CANNON.RigidBody(mass,hullShape);
+          var boxbody = new CANNON.Body({ mass: mass });
+          boxbody.addShape(hullShape);
           boxbody.position.set(1,0,size+1);
           world.add(boxbody);
           demo.addVisual(boxbody);
 
           // ConvexPolyhedron tetra shape
           var tetraShape = createTetra();
-          var tetraBody = new CANNON.RigidBody(mass,tetraShape);
+          var tetraBody = new CANNON.Body({ mass: mass });
+          tetraBody.addShape(tetraShape);
           tetraBody.position.set(5,-3,size+1);
           world.add(tetraBody);
           demo.addVisual(tetraBody);
@@ -122,7 +125,8 @@
           var topface = [];
           var L = 2, R = 0.5;
           var cylinderShape = new CANNON.Cylinder(R,R,L,num);
-          var cylinderBody = new CANNON.RigidBody(mass,cylinderShape);
+          var cylinderBody = new CANNON.Body({ mass: mass });
+          cylinderBody.addShape(cylinderShape);
           cylinderBody.position.set(0,0,size*4+1);
           cylinderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/3);
           world.add(cylinderBody);
@@ -138,8 +142,10 @@
           var size = 2;
           var hullShape = createBoxPolyhedron(size);
           var mass = 10;
-          var boxbody1 = new CANNON.RigidBody(mass,hullShape);
-          var boxbody2 = new CANNON.RigidBody(mass,hullShape);
+          var boxbody1 = new CANNON.Body({ mass: mass });
+          boxbody1.addShape(hullShape);
+          var boxbody2 = new CANNON.Body({ mass: mass });
+          boxbody2.addShape(hullShape);
           boxbody1.position.set(0,0,size+1);
           boxbody2.position.set(1.5,0,4*size+1);
           world.add(boxbody1);
@@ -157,7 +163,8 @@
           var mass = 10;
           for(var i=0; i<3; i++){
           for(var j=0; j<3; j++){
-              var boxbody = new CANNON.RigidBody(mass,hullShape);
+              var boxbody = new CANNON.Body({ mass: mass });
+              boxbody.addShape(hullShape);
               boxbody.position.set(2*size*i+0.01,0,2*size*j + size*1.2);
               world.add(boxbody);
               demo.addVisual(boxbody);
@@ -178,7 +185,8 @@
         var n = new CANNON.Vec3(0,0,1);
         n.normalize();
         var groundShape = new CANNON.Plane(n);
-        var groundBody = new CANNON.RigidBody(0,groundShape);
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
         groundBody.position.set(-10,0,0);
         world.add(groundBody);
         demo.addVisual(groundBody);

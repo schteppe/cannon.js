@@ -61,13 +61,13 @@ function pointInTriangle( p, a, b, c ) {
  * @return {Array} An array of results. The result objects has properties: distance (float), point (Vec3) and body (RigidBody).
  */
 Ray.prototype.intersectBody = function ( body ) {
-    if(body.shape instanceof ConvexPolyhedron){
-        return this.intersectShape(body.shape,
+    if(body.shapes[0] instanceof ConvexPolyhedron){
+        return this.intersectShape(body.shapes[0],
                                    body.quaternion,
                                    body.position,
                                    body);
-    } else if(body.shape instanceof Box){
-        return this.intersectShape(body.shape.convexPolyhedronRepresentation,
+    } else if(body.shapes[0] instanceof Box){
+        return this.intersectShape(body.shapes[0].convexPolyhedronRepresentation,
                                    body.quaternion,
                                    body.position,
                                    body);
