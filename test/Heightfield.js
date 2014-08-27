@@ -70,6 +70,9 @@ module.exports = {
     },
 
     getHeightAt: function(test){
+        var hfShape = createHeightfield();
+        console.warn('add more tests here');
+        hfShape.getHeightAt(0, 0);
         test.done();
     }
 };
