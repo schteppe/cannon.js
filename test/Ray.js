@@ -3,7 +3,7 @@ var Vec3 =     require("../src/math/Vec3")
 ,   Quaternion = require("../src/math/Quaternion")
 ,   Box =      require('../src/shapes/Box')
 ,   Ray =      require('../src/collision/Ray')
-,   RigidBody =      require('../src/objects/RigidBody')
+,   Body =      require('../src/objects/Body')
 
 module.exports = {
 
@@ -16,7 +16,8 @@ module.exports = {
     intersectBody : function(test) {
         var r = new Ray(new Vec3(5,0,0),new Vec3(-1,0,0));
         var shape = createPolyhedron(0.5);
-        var body = new RigidBody(1,shape);
+        var body = new Body({ mass: 1 });
+        body.addShape(shape);
         var result = r.intersectBody(body);
         test.equals(result.length,1,"Could not intersect body (got "+result.length+" intersections)");
         test.ok(result[0].point.almostEquals(new Vec3(0.5,0,0)));
@@ -76,8 +77,10 @@ module.exports = {
         test.expect(3);
         var r = new Ray(new Vec3(5,0,0),new Vec3(-1,0,0));
         var shape = createPolyhedron(0.5);
-        var body1 = new RigidBody(1,shape);
-        var body2 = new RigidBody(1,shape);
+        var body1 = new Body({ mass: 1 });
+        body1.addShape(shape);
+        var body2 = new Body({ mass: 1 });
+        body2.addShape(shape);
         body2.position.x = -2;
         var result = r.intersectBodies([body1,body2]);
         test.equals(result.length,2);
@@ -90,7 +93,8 @@ module.exports = {
         test.expect(2);
         var r = new Ray(new Vec3(5,0,0),new Vec3(-1,0,0));
         var shape = new Box(new Vec3(0.5,0.5,0.5));
-        var body = new RigidBody(1,shape);
+        var body = new Body({ mass: 1 });
+        body.addShape(shape);
         var result = r.intersectBody(body);
         test.equals(result.length,1,"Could not intersect box!");
         test.ok(result[0].point.almostEquals(new Vec3(0.5,0,0)));

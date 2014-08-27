@@ -4,7 +4,7 @@ var Box = require('../src/shapes/Box');
 var Heightfield = require('../src/shapes/heightfield');
 var ContactGenerator = require('../src/world/ContactGenerator');
 var Sphere = require('../src/shapes/Sphere');
-var RigidBody = require('../src/objects/RigidBody');
+var Body = require('../src/objects/Body');
 
 module.exports = {
 
@@ -12,6 +12,12 @@ module.exports = {
         var cg = new ContactGenerator();
         var result = [];
         var sphereShape = new Sphere(1);
+
+        var bodyA = new Body({ mass: 1 });
+        bodyA.addShape(sphereShape);
+        var bodyB = new Body({ mass: 1 });
+        bodyB.addShape(sphereShape);
+
         cg.sphereSphere(
             result,
             sphereShape,
@@ -20,8 +26,8 @@ module.exports = {
             new Vec3(-0.5, 0, 0),
             new Quaternion(),
             new Quaternion(),
-            new RigidBody(1, sphereShape),
-            new RigidBody(1, sphereShape)
+            bodyA,
+            bodyB
         );
 
         test.equal(result.length, 1);
@@ -42,8 +48,8 @@ module.exports = {
             new Vec3(0, 0, 0),
             new Quaternion(),
             new Quaternion(),
-            new RigidBody(1, sphereShape),
-            new RigidBody(1, hfShape)
+            new Body(1, sphereShape),
+            new Body(1, hfShape)
         );
 
         test.equal(result.length, 1);

@@ -69,6 +69,9 @@ module.exports = {
         test.done();
     },
 
+    getHeightAt: function(test){
+        test.done();
+    }
 };
 
 function createHeightfield(options){

@@ -2,7 +2,7 @@ var Vec3 =     require("../src/math/Vec3")
 ,   Mat3 =     require("../src/math/Mat3")
 ,   Quaternion = require("../src/math/Quaternion")
 ,   Box =      require('../src/shapes/Box')
-,   RigidBody =      require('../src/objects/RigidBody')
+,   Body =      require('../src/objects/Body')
 ,   Sphere =      require('../src/shapes/Sphere')
 ,   World =      require('../src/world/World')
 ,   NaiveBroadphase =      require('../src/collision/NaiveBroadphase')
@@ -71,7 +71,8 @@ module.exports = {
                 world.collisionMatrixPrevious = new CollisionMatrix();
 
                 for (var position_idx = 0; position_idx < test_config.positions.length; position_idx++) {
-                    var body = new RigidBody(1, new Sphere(1.1));
+                    var body = new Body({ mass: 1 });
+                    body.addShape(new Sphere(1.1));
                     body.position.set.apply(body.position, test_config.positions[position_idx]);
                     world.add(body);
                 }
