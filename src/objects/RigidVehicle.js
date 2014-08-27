@@ -60,16 +60,16 @@ RigidVehicle.prototype.addWheel = function(options){
 
     // Position constrain wheels
     var zero = new Vec3();
-    var position = options.position || new Vec3();
+    var position = typeof(options.position) !== 'undefined' ? options.position.clone() : new Vec3();
 
     // Set position locally to the chassis
     var worldPosition = new Vec3();
-    this.chassisBody.pointToLocalFrame(position, worldPosition);
+    this.chassisBody.pointToWorldFrame(position, worldPosition);
     wheelBody.position.set(worldPosition.x, worldPosition.y, worldPosition.z);
 
     // Constrain wheel
-    var axis = options.axis || new Vec3(0, 1, 0);
-    this.wheelAxes.push(axis.clone());
+    var axis = typeof(options.axis) !== 'undefined' ? options.axis.clone() : new Vec3(0, 1, 0);
+    this.wheelAxes.push(axis);
 
     var hingeConstraint = new HingeConstraint(this.chassisBody, wheelBody, {
         pivotA: position,
