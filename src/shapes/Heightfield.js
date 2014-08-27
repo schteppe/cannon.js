@@ -140,6 +140,41 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
     result[1] = max;
 };
 
+Heightfield.prototype.getIndexOfPosition = function (x, y, result, clamp) {
+
+    // Get the index of the data points to test against
+    var w = this.elementSize;
+    var data = this.data;
+    var xi = Math.floor(x / w) - 1;
+    var yi = Math.floor(y / w) - 1;
+
+    if(clamp){
+        // Clamp index to edges
+        if(xi < 0){ xi = 0; }
+        if(yi < 0){ yi = 0; }
+        if(xi >= data.length){ xi = data.length - 1; }
+        if(yi >= data[0].length){ yi = data[0].length - 1; }
+    }
+
+    // Bail out if we are out of the terrain
+    if(xi < 0 || yi < 0 || xi > data.length || yi > data[0].length){
+        return false;
+    }
+
+    return true;
+};
+
+Heightfield.prototype.getHeightAt = function(x, y, edgeClamp){
+    var idx = [];
+    this.getIndexOfPosition(x, y, idx, edgeClamp);
+
+    // TODO: do it better
+    var minmax = [];
+    this.getRectMinMax(idx[0], idx[1] + 1, idx[0], idx[1] + 1, minmax);
+
+    return (minmax[0] + minmax[1]) / 2; // average
+};
+
 Heightfield.prototype.getCachedConvexTrianglePillar = function(xi, yi, getUpperTriangle){
     return this._cachedPillars[xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0)];
 };
