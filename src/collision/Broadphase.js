@@ -108,26 +108,13 @@ var Broadphase_collisionPairs_r = new Vec3(), // Temp objects
     Broadphase_collisionPairs_quat =  new Quaternion(),
     Broadphase_collisionPairs_relpos  =  new Vec3();
 Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
-
-    // Temp vecs
     var r = Broadphase_collisionPairs_r;
-
-    for (var i = 0; i < bi.shapes.length; i++) {
-        for (var j = 0; j < bj.shapes.length; j++) {
-            var bishape = bi.shapes[i],
-                bjshape = bj.shapes[j];
-            if(bishape && bjshape){
-                var ti = bishape.type, tj = bjshape.type;
-
-                bj.position.vsub(bi.position,r);
-
-                var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
-                if(r.norm2() < boundingRadiusSum*boundingRadiusSum){
-                    pairs1.push(bi);
-                    pairs2.push(bj);
-                }
-            }
-        }
+    bj.position.vsub(bi.position,r);
+    var boundingRadiusSum2 = Math.pow(bi.boundingRadius + bj.boundingRadius, 2);
+    var norm2 = r.norm2();
+    if(norm2 < boundingRadiusSum2){
+        pairs1.push(bi);
+        pairs2.push(bj);
     }
 };
 
@@ -140,9 +127,6 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
  * @param {Array} pairs2
  */
 Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
-    var bishape = bi.shape,
-        bjshape = bj.shape;
-
     if(bi.aabbNeedsUpdate){
         bi.computeAABB();
     }
@@ -150,40 +134,15 @@ Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
         bj.computeAABB();
     }
 
-    if(bishape && bjshape){
-        // Check AABB / AABB
-        if( !(  bi.aabbmax.x < bj.aabbmin.x ||
-                bi.aabbmax.y < bj.aabbmin.y ||
-                bi.aabbmax.z < bj.aabbmin.z ||
-                bi.aabbmin.x > bj.aabbmax.x ||
-                bi.aabbmin.y > bj.aabbmax.y ||
-                bi.aabbmin.z > bj.aabbmax.z   ) ){
-            pairs1.push(bi);
-            pairs2.push(bj);
-        }
-    } else {
-        // Particle without shape
-        if(!bishape && !bjshape){
-            // No collisions between 2 particles
-        } else {
-            // particle vs AABB
-            var p =      !bishape ? bi : bj;
-            var other =  !bishape ? bj : bi;
-
-            if(other.shape instanceof Plane){
-                //console.log(p.position.z+"<"+other.aabbmin.z+" = ",p.position.z < other.aabbmin.z);
-            }
-
-            if( !(  p.position.x < other.aabbmin.x ||
-                    p.position.y < other.aabbmin.y ||
-                    p.position.z < other.aabbmin.z ||
-                    p.position.x > other.aabbmax.x ||
-                    p.position.y > other.aabbmax.y ||
-                    p.position.z > other.aabbmax.z   ) ){
-                pairs1.push(bi);
-                pairs2.push(bj);
-            }
-        }
+    // Check AABB / AABB
+    if( !(  bi.aabbmax.x < bj.aabbmin.x ||
+            bi.aabbmax.y < bj.aabbmin.y ||
+            bi.aabbmax.z < bj.aabbmin.z ||
+            bi.aabbmin.x > bj.aabbmax.x ||
+            bi.aabbmin.y > bj.aabbmax.y ||
+            bi.aabbmin.z > bj.aabbmax.z   ) ){
+        pairs1.push(bi);
+        pairs2.push(bj);
     }
 };
 

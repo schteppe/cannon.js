@@ -281,6 +281,9 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 // Do convex/convex instead
                 this.narrowphase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
                 break;
+            case PARTICLE: // Particle vs box
+                this.particleConvex(result,sj,si.convexPolyhedronRepresentation,xj,xi,qj,qi,bj,bi);
+                break;
             default:
                 warn("Collision between Shape.BOX and "+sj.type+" not implemented yet.");
                 break;
@@ -311,6 +314,9 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
             switch(sj.type){
             case types.CONVEXPOLYHEDRON: // convex polyhedron - convex polyhedron
                 this.convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
+                break;
+            case types.PARTICLE: // particle-convex
+                this.particleConvex(result,sj,si,xj,xi,qj,qi,bj,bi);
                 break;
             default:
                 warn("Collision between Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
@@ -568,6 +574,13 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
         side_ns.vadd(side_ns1,side_ns);
         side_ns2.mult(side_dot2,side_ns2);
         side_ns.vadd(side_ns2,r.rj);
+
+        // Make relative to bodies
+        r.ri.vadd(xi, r.ri);
+        r.ri.vsub(bi.position, r.ri);
+        r.rj.vadd(xj, r.rj);
+        r.rj.vsub(bj.position, r.rj);
+
         result.push(r);
     }
 
@@ -606,6 +619,13 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                     r.ri.copy(r.ni);
                     r.ri.mult(R,r.ri);
                     rj.copy(r.rj);
+
+                    // Make relative to bodies
+                    r.ri.vadd(xi, r.ri);
+                    r.ri.vsub(bi.position, r.ri);
+                    r.rj.vadd(xj, r.rj);
+                    r.rj.vsub(bj.position, r.rj);
+
                     result.push(r);
                 }
             }
@@ -663,6 +683,12 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                     res.ri.vsub(xi,res.ri);
                     res.ri.normalize();
                     res.ri.mult(R,res.ri);
+
+                    // Make relative to bodies
+                    res.ri.vadd(xi, res.ri);
+                    res.ri.vsub(bi.position, res.ri);
+                    res.rj.vadd(xj, res.rj);
+                    res.rj.vsub(bj.position, res.rj);
 
                     result.push(res);
                 }
@@ -1063,17 +1089,26 @@ ContactGenerator.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
         var res = [];
         var q = convexConvex_q;
         si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
-        //console.log(res.length);
-        for(var j=0; j!==res.length; j++){
-            var r = this.makeResult(bi,bj);
+        for(var j = 0; j !== res.length; j++){
+            var r = this.makeResult(bi,bj),
+                ri = r.ri,
+                rj = r.rj;
             sepAxis.negate(r.ni);
             res[j].normal.negate(q);
-            q.mult(res[j].depth,q);
-            res[j].point.vadd(q,r.ri);
-            res[j].point.copy(r.rj);
+            q.mult(res[j].depth, q);
+            res[j].point.vadd(q, ri);
+            res[j].point.copy(rj);
+
             // Contact points are in world coordinates. Transform back to relative
-            r.rj.vsub(xj,r.rj);
-            r.ri.vsub(xi,r.ri);
+            ri.vsub(xi,ri);
+            rj.vsub(xj,rj);
+
+            // Make relative to bodies
+            ri.vadd(xi, ri);
+            ri.vsub(bi.position, ri);
+            rj.vadd(xj, rj);
+            rj.vsub(bj.position, rj);
+
             result.push(r);
         }
     }
@@ -1229,6 +1264,16 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
             //qj.vmult(r.rj,r.rj);
             penetratedFaceNormal.negate( r.ni ); // Contact normal
             r.ri.set(0,0,0); // Center of particle
+
+            var ri = r.ri,
+                rj = r.rj;
+
+            // Make relative to bodies
+            ri.vadd(xi, ri);
+            ri.vsub(bi.position, ri);
+            rj.vadd(xj, rj);
+            rj.vsub(bj.position, rj);
+
             result.push(r);
         } else {
             console.warn("Point found inside convex, but did not find penetrating face!");
