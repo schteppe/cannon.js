@@ -40,29 +40,6 @@ function Heightfield(data, options){
         elementSize : 1
     });
 
-    if(options.minValue === null){
-        options.minValue = data[0][0];
-        for(var i=0; i !== data.length; i++){
-            for(var j=0; j !== data[i].length; j++){
-                var v = data[i][j];
-                if(v < options.minValue){
-                    options.minValue = v;
-                }
-            }
-        }
-    }
-    if(options.maxValue === null){
-        options.maxValue = data[0][0];
-        for(var i=0; i !== data.length; i++){
-            for(var j=0; j !== data[i].length; j++){
-                var v = data[i][j];
-                if(v > options.maxValue){
-                    options.maxValue = v;
-                }
-            }
-        }
-    }
-
     /**
      * An array of numbers, or height values, that are spread out along the x axis.
      * @property {array} data
@@ -88,6 +65,13 @@ function Heightfield(data, options){
      */
     this.elementSize = options.elementSize;
 
+    if(options.minValue === null){
+        this.updateMinValue();
+    }
+    if(options.maxValue === null){
+        this.updateMaxValue();
+    }
+
     this.cacheEnabled = true;
 
     Shape.call(this);
@@ -110,6 +94,65 @@ Heightfield.prototype = new Shape();
  */
 Heightfield.prototype.update = function(){
     this._cachedPillars = {};
+};
+
+/**
+ * Update the .minValue property
+ */
+Heightfield.prototype.updateMinValue = function(){
+    var data = this.data;
+    var minValue = data[0][0];
+    for(var i=0; i !== data.length; i++){
+        for(var j=0; j !== data[i].length; j++){
+            var v = data[i][j];
+            if(v < minValue){
+                minValue = v;
+            }
+        }
+    }
+    this.minValue = minValue;
+};
+
+/**
+ * Update the .maxValue property
+ */
+Heightfield.prototype.updateMaxValue = function(){
+    var data = this.data;
+    var maxValue = data[0][0];
+    for(var i=0; i !== data.length; i++){
+        for(var j=0; j !== data[i].length; j++){
+            var v = data[i][j];
+            if(v > maxValue){
+                maxValue = v;
+            }
+        }
+    }
+    this.maxValue = maxValue;
+};
+
+/**
+ * Set the height value at an index. Don't forget to update maxValue and minValue after you're done.
+ * @param {integer} xi
+ * @param {integer} yi
+ * @param {number} value
+ */
+Heightfield.prototype.setHeightValueAtIndex = function(xi, yi, value){
+    var data = this.data;
+    data[xi][yi] = value;
+
+    // Invalidate cache
+    this.clearCachedConvexTrianglePillar(xi, yi, false);
+    if(xi > 0){
+        this.clearCachedConvexTrianglePillar(xi - 1, yi, true);
+        this.clearCachedConvexTrianglePillar(xi - 1, yi, false);
+    }
+    if(yi > 0){
+        this.clearCachedConvexTrianglePillar(xi, yi - 1, true);
+        this.clearCachedConvexTrianglePillar(xi, yi - 1, false);
+    }
+    if(yi > 0 && xi > 0){
+        this.clearCachedConvexTrianglePillar(xi - 1, yi - 1, true);
+    }
 };
 
 /**
@@ -175,15 +218,23 @@ Heightfield.prototype.getHeightAt = function(x, y, edgeClamp){
     return (minmax[0] + minmax[1]) / 2; // average
 };
 
+Heightfield.prototype.getCacheConvexTrianglePillarKey = function(xi, yi, getUpperTriangle){
+    return xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0);
+};
+
 Heightfield.prototype.getCachedConvexTrianglePillar = function(xi, yi, getUpperTriangle){
-    return this._cachedPillars[xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0)];
+    return this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)];
 };
 
 Heightfield.prototype.setCachedConvexTrianglePillar = function(xi, yi, getUpperTriangle, convex, offset){
-    this._cachedPillars[xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0)] = {
+    this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)] = {
         convex: convex,
         offset: offset
     };
+};
+
+Heightfield.prototype.clearCachedConvexTrianglePillar = function(xi, yi, getUpperTriangle){
+    delete this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)];
 };
 
 /**

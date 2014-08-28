@@ -74,6 +74,28 @@ module.exports = {
         console.warn('add more tests here');
         hfShape.getHeightAt(0, 0);
         test.done();
+    },
+
+    update: function(test){
+        var hfShape = createHeightfield();
+        hfShape.update();
+        test.done();
+    },
+
+    updateMaxValue: function(test){
+        var hfShape = createHeightfield();
+        hfShape.data[0][0] = 10;
+        hfShape.updateMaxValue();
+        test.equal(hfShape.maxValue, 10);
+        test.done();
+    },
+
+    updateMinValue: function(test){
+        var hfShape = createHeightfield();
+        hfShape.data[0][0] = -10;
+        hfShape.updateMinValue();
+        test.equal(hfShape.minValue, -10);
+        test.done();
     }
 };
 
