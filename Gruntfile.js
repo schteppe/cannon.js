@@ -23,7 +23,9 @@ module.exports = function(grunt) {
                 src : ["src/Cannon.js"],
                 dest : bundlePath,
                 options : {
-                    standalone : "CANNON"
+                    bundleOptions: {
+                        standalone : "CANNON"
+                    }
                 }
             }
         },
