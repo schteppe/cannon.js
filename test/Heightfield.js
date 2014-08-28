@@ -96,7 +96,22 @@ module.exports = {
         hfShape.updateMinValue();
         test.equal(hfShape.minValue, -10);
         test.done();
-    }
+    },
+
+    setHeightValueAtIndex: function(test){
+        var hfShape = createHeightfield();
+        hfShape.setHeightValueAtIndex(0, 0, 10);
+        test.equal(hfShape.data[0][0], 10);
+        test.done();
+    },
+
+    getIndexOfPosition: function(test){
+        var hfShape = createHeightfield();
+        var result = [];
+        hfShape.getIndexOfPosition(0, 0, result);
+        test.deepEqual(result, [0,0]);
+        test.done();
+    },
 };
 
 function createHeightfield(options){

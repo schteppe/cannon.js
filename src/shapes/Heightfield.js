@@ -91,6 +91,7 @@ Heightfield.prototype = new Shape();
 
 /**
  * Call whenever you change the data array.
+ * @method update
  */
 Heightfield.prototype.update = function(){
     this._cachedPillars = {};
@@ -115,6 +116,7 @@ Heightfield.prototype.updateMinValue = function(){
 
 /**
  * Update the .maxValue property
+ * @method updateMaxValue
  */
 Heightfield.prototype.updateMaxValue = function(){
     var data = this.data;
@@ -132,6 +134,7 @@ Heightfield.prototype.updateMaxValue = function(){
 
 /**
  * Set the height value at an index. Don't forget to update maxValue and minValue after you're done.
+ * @method setHeightValueAtIndex
  * @param {integer} xi
  * @param {integer} yi
  * @param {number} value
@@ -157,6 +160,7 @@ Heightfield.prototype.setHeightValueAtIndex = function(xi, yi, value){
 
 /**
  * Get max/min in a rectangle in the matrix data
+ * @method getRectMinMax
  * @param  {integer} iMinX
  * @param  {integer} iMinY
  * @param  {integer} iMaxX
@@ -183,13 +187,24 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
     result[1] = max;
 };
 
+/**
+ * Get the index of a local position on the heightfield
+ * @param  {number} x
+ * @param  {number} y
+ * @param  {array} result Two-element array
+ * @param  {boolean} clamp If the position should be clamped to the heightfield edge.
+ * @return {boolean}
+ */
 Heightfield.prototype.getIndexOfPosition = function (x, y, result, clamp) {
 
     // Get the index of the data points to test against
     var w = this.elementSize;
     var data = this.data;
-    var xi = Math.floor(x / w) - 1;
-    var yi = Math.floor(y / w) - 1;
+    var xi = Math.floor(x / w);
+    var yi = Math.floor(y / w);
+
+    result[0] = xi;
+    result[1] = yi;
 
     if(clamp){
         // Clamp index to edges
