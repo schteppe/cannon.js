@@ -1,9 +1,9 @@
 module.exports = Cylinder;
 
-var Shape = require('./Shape')
-,   Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   ConvexPolyhedron = require('./ConvexPolyhedron')
+var Shape = require('./Shape');
+var Vec3 = require('../math/Vec3');
+var Quaternion = require('../math/Quaternion');
+var ConvexPolyhedron = require('./ConvexPolyhedron');
 
 /**
  * @class Cylinder
@@ -76,6 +76,6 @@ function Cylinder( radiusTop, radiusBottom, height , numSegments ) {
 
     this.type = Shape.types.CONVEXPOLYHEDRON;
     ConvexPolyhedron.call( this, verts, faces, normals );
-};
+}
 
 Cylinder.prototype = new ConvexPolyhedron();

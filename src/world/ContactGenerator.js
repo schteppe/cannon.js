@@ -110,14 +110,14 @@ ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts
 
         for (var i = 0; i < bi.shapes.length; i++) {
             bi.quaternion.mult(bi.shapeOrientations[i], qi);
-            qi.vmult(bi.shapeOffsets[i], xi);
+            bi.quaternion.vmult(bi.shapeOffsets[i], xi);
             xi.vadd(bi.position, xi);
 
             for (var j = 0; j < bj.shapes.length; j++) {
 
                 // Compute world transform of shapes
                 bj.quaternion.mult(bj.shapeOrientations[j], qj);
-                qj.vmult(bj.shapeOffsets[j], xj);
+                bj.quaternion.vmult(bj.shapeOffsets[j], xj);
                 xj.vadd(bj.position, xj);
 
                 // Get contacts
@@ -964,20 +964,28 @@ ContactGenerator.prototype.recurseCompound = function(result,si,sj,xi,xj,qi,qj,b
         var r = [];
         var newQuat = quatPool.pop() || new Quaternion();
         var newPos = v3pool.pop() || new Vec3();
-        qj.mult(sj.childOrientations[i],newQuat); // Can't reuse these since narrowphase() may recurse
+
+        // Calculate world quaternion for the shape
+        qj.mult(sj.childOrientations[i], newQuat); // Can't reuse these since narrowphase() may recurse
         newQuat.normalize();
+
+        // Calculate the world position for the shape.
         //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
         qj.vmult(sj.childOffsets[i],newPos);
         xj.vadd(newPos,newPos);
-        this.narrowphase(r,
-                      si,
-                      sj.childShapes[i],
-                      xi,
-                      newPos,//xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
-                      qi,
-                      newQuat, // Accumulate orientation
-                      bi,
-                      bj);
+
+        this.narrowphase(
+            r,
+            si,
+            sj.childShapes[i],
+            xi,
+            newPos,//xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
+            qi,
+            newQuat, // Accumulate orientation
+            bi,
+            bj
+        );
+
         // Release vector and quat
         quatPool.push(newQuat);
 
