@@ -148,11 +148,12 @@ Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var N=this.childShapes.length;
 
     // If the compound doesn't have any child
-    if(N === 0)
+    if(N === 0){
         return;
+    }
 
-    min.set(Infinity,Infinity,Infinity);
-    max.set(-Infinity,-Infinity,-Infinity);
+    min.set(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+    max.set(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
     // Get each axis max
     for(var i=0; i!==N; i++){
 

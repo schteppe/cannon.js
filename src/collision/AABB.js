@@ -50,44 +50,41 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
 
     // Set to the first point
     points[0].copy(l);
-    q.vmult(l, l);
+    if(q){
+        q.vmult(l, l);
+    }
     l.copy(u);
 
-    /*
     for(var i = 1; i<points.length; i++){
         var p = points[i];
 
-        if(angle !== 0){
-            var x = p[0],
-                y = p[1];
-            tmp[0] = cosAngle * x -sinAngle * y;
-            tmp[1] = sinAngle * x +cosAngle * y;
+        if(q){
+            q.vmult(p, tmp);
             p = tmp;
         }
 
-        for(var j=0; j<2; j++){
-            if(p[j] > u[j]){
-                u[j] = p[j];
-            }
-            if(p[j] < l[j]){
-                l[j] = p[j];
-            }
-        }
+        if(p.x > u.x){ u.x = p.x; }
+        if(p.x < l.x){ l.x = p.x; }
+        if(p.y > u.y){ u.y = p.y; }
+        if(p.y < l.y){ l.y = p.y; }
+        if(p.z > u.z){ u.z = p.z; }
+        if(p.z < l.z){ l.z = p.z; }
     }
 
     // Add offset
-    if(position){
-        vec2.add(this.lowerBound, this.lowerBound, position);
-        vec2.add(this.upperBound, this.upperBound, position);
+    if (position) {
+        position.vadd(l, l);
+        position.vadd(u, u);
     }
 
     if(skinSize){
-        this.lowerBound[0] -= skinSize;
-        this.lowerBound[1] -= skinSize;
-        this.upperBound[0] += skinSize;
-        this.upperBound[1] += skinSize;
+        l.x -= skinSize;
+        l.y -= skinSize;
+        l.z -= skinSize;
+        u.x += skinSize;
+        u.y += skinSize;
+        u.z += skinSize;
     }
-    */
 };
 
 /**

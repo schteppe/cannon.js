@@ -51,18 +51,17 @@ var tmpAABB = new AABB();
  * @method aabbQuery
  * @param  {World} world
  * @param  {AABB} aabb
- * @return {array} A list of bodies
+ * @param {array} result An array to store resulting bodies in.
+ * @return {array}
  */
-NaiveBroadphase.prototype.aabbQuery = function(world, aabb){
-    var result = [];
+NaiveBroadphase.prototype.aabbQuery = function(world, aabb, result){
+    result = result || [];
 
     // Naive loop
     for(var i = 0; i < world.bodies.length; i++){
         var b = world.bodies[i];
 
         // Ugly hack until RigidBody gets aabb
-        tmpAABB.lowerBound = b.aabbmin;
-        tmpAABB.upperBound = b.aabbmax;
         if(b.aabb.overlaps(aabb)){
             result.push(b);
         }

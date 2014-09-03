@@ -100,7 +100,7 @@ VoxelLandscape.prototype.update = function(){
             for(var j=0; !box && j<ny; j++){
                 for(var k=0; !box && k<nz; k++){
                     if(this.isFilled(i,j,k) && !this.isBoxified(i,j,k)){
-                        box = new CANNON.RigidBody(0,this.boxShape); // Todo we should really reuse these
+                        box = new CANNON.Body({ mass: 0 });
                         box.xi = i; // Position
                         box.yi = j;
                         box.zi = k;
@@ -123,7 +123,7 @@ VoxelLandscape.prototype.update = function(){
             box.nx = nx, // merge=1 means merge just with the self box
             box.ny = ny,
             box.nz = nz;
-            
+
             // Merge in x
             for(var i=xi; i<nx+1; i++){
                 if(!this.isFilled(i,yi,zi) || (this.isBoxified(i,yi,zi) && this.getBoxIndex(i,yi,zi)!==-1)){
@@ -156,7 +156,7 @@ VoxelLandscape.prototype.update = function(){
                     }
                 }
             }
-             
+
             if(box.nx==0) box.nx = 1;
             if(box.ny==0) box.ny = 1;
             if(box.nz==0) box.nz = 1;
@@ -179,22 +179,23 @@ VoxelLandscape.prototype.update = function(){
             break;
         }
     }
-    
+
     // Set box positions
     var sx = this.sx,
         sy = this.sy,
         sz = this.sz;
     for(var i=0; i<this.boxes.length; i++){
         var b = this.boxes[i];
-        b.position.set( b.xi * sx + b.nx*sx*0.5 ,
-                        b.yi * sy + b.ny*sy*0.5 ,
-                        b.zi * sz + b.nz*sz*0.5 );
+        b.position.set(
+            b.xi * sx + b.nx*sx*0.5,
+            b.yi * sy + b.ny*sy*0.5,
+            b.zi * sz + b.nz*sz*0.5
+        );
 
-        b.shape = new CANNON.Box(new CANNON.Vec3(b.nx*sx*0.5, b.ny*sy*0.5, b.nz*sz*0.5));
+        // Replace box shapes
+        b.addShape(new CANNON.Box(new CANNON.Vec3(b.nx*sx*0.5, b.ny*sy*0.5, b.nz*sz*0.5)));
         //b.aabbNeedsUpdate = true;
         world.add(b);
         //this.boxes.push(box);
     }
-
-    //console.log(boxes,this.boxified);
 };

@@ -14,6 +14,10 @@ var Material = require('../material/Material');
 var ContactMaterial = require('../material/ContactMaterial');
 var Body = require('../objects/Body');
 var TupleDictionary = require('../utils/TupleDictionary');
+var RaycastResult = require('../collision/RaycastResult');
+var AABB = require('../collision/AABB');
+var Ray = require('../collision/Ray');
+var NaiveBroadphase = require('../collision/NaiveBroadphase');
 
 /**
  * The physics world
@@ -84,7 +88,7 @@ function World(){
      * @property broadphase
      * @type {Broadphase}
      */
-    this.broadphase = null;
+    this.broadphase = new NaiveBroadphase();
 
     /**
      * @property bodies
@@ -188,6 +192,11 @@ function World(){
 }
 World.prototype = new EventTarget();
 
+// Temp stuff
+var tmpAABB1 = new AABB();
+var tmpArray1 = [];
+var tmpRay = new Ray();
+
 /**
  * Get the contact material between materials m1 and m2
  * @method getContactMaterial
@@ -203,6 +212,7 @@ World.prototype.getContactMaterial = function(m1,m2){
  * Get number of objects in the world.
  * @method numObjects
  * @return {Number}
+ * @deprecated
  */
 World.prototype.numObjects = function(){
     return this.bodies.length;
@@ -225,9 +235,9 @@ World.prototype.collisionMatrixTick = function(){
  * @param {Body} body
  * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
  * @todo Adding an array of bodies should be possible. This would save some loops too
- * @todo Rename to .addBody
+ * @deprecated Use .addBody instead
  */
-World.prototype.add = function(body){
+World.prototype.add = World.prototype.addBody = function(body){
     body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
@@ -261,6 +271,33 @@ World.prototype.removeConstraint = function(c){
     var idx = this.constraints.indexOf(c);
     if(idx!==-1){
         this.constraints.splice(idx,1);
+    }
+};
+
+/**
+ * Raycast test
+ * @method rayTest
+ * @param {Vec3} from
+ * @param {Vec3} to
+ * @param {function} callback
+ */
+World.prototype.rayTest = function(from, to, callback){
+    // result = result || new RaycastResult();
+
+    tmpArray1[0] = from;
+    tmpArray1[1] = to;
+    tmpAABB1.setFromPoints(tmpArray1);
+    tmpArray1.length = 0;
+
+    this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
+
+    from.copy(tmpRay.from);
+    to.copy(tmpRay.to);
+
+    var intersections = tmpRay.intersectBodies(tmpArray1);
+
+    for (var i = 0; i < intersections.length; i++) {
+        callback(intersections[i]);
     }
 };
 
@@ -781,7 +818,7 @@ World.prototype.internalStep = function(dt){
                 }
             }
 
-            if(b.aabbmin){
+            if(b.aabb){
                 b.aabbNeedsUpdate = true;
             }
 
@@ -798,8 +835,9 @@ World.prototype.internalStep = function(dt){
             }
 
             // Update world inertia
-            if(b.updateInertiaWorld)
+            if(b.updateInertiaWorld){
                 b.updateInertiaWorld();
+            }
         }
         b.force.set(0,0,0);
         if(b.tau){

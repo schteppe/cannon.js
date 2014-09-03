@@ -395,22 +395,22 @@ CANNON.Demo = function(options){
                     }
 
                     // Todo: cap the infinite AABB to scene AABB, for now just dont render
-                    if( isFinite(b.aabbmax.x) &&
-                        isFinite(b.aabbmax.y) &&
-                        isFinite(b.aabbmax.z) &&
-                        isFinite(b.aabbmin.x) &&
-                        isFinite(b.aabbmin.y) &&
-                        isFinite(b.aabbmin.z) &&
-                        b.aabbmax.x - b.aabbmin.x != 0 &&
-                        b.aabbmax.y - b.aabbmin.y != 0 &&
-                        b.aabbmax.z - b.aabbmin.z != 0){
+                    if( isFinite(b.aabb.lowerBound.x) &&
+                        isFinite(b.aabb.lowerBound.y) &&
+                        isFinite(b.aabb.lowerBound.z) &&
+                        isFinite(b.aabb.upperBound.x) &&
+                        isFinite(b.aabb.upperBound.y) &&
+                        isFinite(b.aabb.upperBound.z) &&
+                        b.aabb.lowerBound.x - b.aabb.upperBound.x != 0 &&
+                        b.aabb.lowerBound.y - b.aabb.upperBound.y != 0 &&
+                        b.aabb.lowerBound.z - b.aabb.upperBound.z != 0){
                             var mesh = bboxMeshCache.request();
-                            mesh.scale.set( b.aabbmax.x - b.aabbmin.x,
-                                            b.aabbmax.y - b.aabbmin.y,
-                                            b.aabbmax.z - b.aabbmin.z);
-                            mesh.position.set(  (b.aabbmax.x + b.aabbmin.x)*0.5,
-                                                (b.aabbmax.y + b.aabbmin.y)*0.5,
-                                                (b.aabbmax.z + b.aabbmin.z)*0.5);
+                            mesh.scale.set( b.aabb.lowerBound.x - b.aabb.upperBound.x,
+                                            b.aabb.lowerBound.y - b.aabb.upperBound.y,
+                                            b.aabb.lowerBound.z - b.aabb.upperBound.z);
+                            mesh.position.set(  (b.aabb.lowerBound.x + b.aabb.upperBound.x)*0.5,
+                                                (b.aabb.lowerBound.y + b.aabb.upperBound.y)*0.5,
+                                                (b.aabb.lowerBound.z + b.aabb.upperBound.z)*0.5);
                         }
                 }
             }

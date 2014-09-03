@@ -94,7 +94,10 @@
 
                 // Create sphere
                 var sphereShape = new CANNON.Sphere(ballSize*1.3);
-                sphereBody = new CANNON.RigidBody(0,sphereShape);
+                sphereBody = new CANNON.Body({
+                    mass: 0
+                });
+                sphereBody.addShape(sphereShape);
                 sphereBody.position.set(0,0,0);
                 world.add(sphereBody);
 
@@ -104,11 +107,14 @@
                     for ( var j = 0, jl = Ny+1; j !== jl; j++ ) {
                         var idx = j*(Nx+1) + i;
                         var p = clothFunction(i/(Nx+1), j/(Ny+1));
-                        var particle = new CANNON.Particle(j==Ny ? 0 : mass);
+                        var particle = new CANNON.Body({
+                            mass: j==Ny ? 0 : mass
+                        });
+                        particle.addShape(new CANNON.Particle());
                         particle.linearDamping = 0.5;
                         particle.position.set(
                             p.x,
-                            p.y-Ny*0.9*restDistance,
+                            p.y-Ny * 0.9 * restDistance,
                             p.z
                         );
                         particles[i].push(particle);
@@ -272,7 +278,7 @@
                 controls.update();
                 world.step(dt);
                 var t = world.time;
-                sphereBody.position.set(R*Math.sin(2*t),0,R*Math.cos(2*t));
+                sphereBody.position.set(R * Math.sin(t), 0, R * Math.cos(t));
                 render();
             }
 

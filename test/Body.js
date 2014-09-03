@@ -10,18 +10,18 @@ module.exports = {
         var body = new Body({ mass: 1 });
         body.addShape(new Box(new Vec3(1,1,1)));
         body.computeAABB();
-        test.equal(body.aabbmin.x,-1);
-        test.equal(body.aabbmin.y,-1);
-        test.equal(body.aabbmin.z,-1);
-        test.equal(body.aabbmax.x,1);
-        test.equal(body.aabbmax.y,1);
-        test.equal(body.aabbmax.z,1);
+        test.equal(body.aabb.lowerBound.x,-1);
+        test.equal(body.aabb.lowerBound.y,-1);
+        test.equal(body.aabb.lowerBound.z,-1);
+        test.equal(body.aabb.upperBound.x,1);
+        test.equal(body.aabb.upperBound.y,1);
+        test.equal(body.aabb.upperBound.z,1);
 
         body.position.x = 1;
         body.computeAABB();
 
-        test.equal(body.aabbmin.x,0);
-        test.equal(body.aabbmax.x,2);
+        test.equal(body.aabb.lowerBound.x,0);
+        test.equal(body.aabb.upperBound.x,2);
 
         test.done();
     },

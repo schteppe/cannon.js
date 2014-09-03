@@ -51,14 +51,16 @@
 
                 // Ground plane
                 var plane = new CANNON.Plane();
-                var groundBody = new CANNON.RigidBody(0,plane);
+                var groundBody = new CANNON.Body({ mass: 0 });
+                groundBody.addShape(plane);
                 groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
                 world.add(groundBody);
 
                 // Create N cubes
                 var shape = new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5));
                 for(var i=0; i!==e.data.N; i++){
-                    var body = new CANNON.RigidBody(1,shape);
+                    var body = new CANNON.Body({ mass: 1 });
+                    body.addShape(shape);
                     body.position.set(Math.random()-0.5,2.5*i+0.5,Math.random()-0.5);
                     world.add(body);
                 }

@@ -226,14 +226,16 @@
                 // Create a sphere
                 var mass = 5, radius = 1.3;
                 sphereShape = new CANNON.Sphere(radius);
-                sphereBody = new CANNON.RigidBody(mass,sphereShape,physicsMaterial);
+                sphereBody = new CANNON.Body({ mass: mass, material: physicsMaterial });
+                sphereBody.addShape(sphereShape);
                 sphereBody.position.set(nx*sx*0.5,ny*sy+radius*2,nz*sz*0.5);
                 sphereBody.linearDamping = 0.9;
                 world.add(sphereBody);
 
                 // Create a plane
                 var groundShape = new CANNON.Plane();
-                groundBody = new CANNON.RigidBody(0,groundShape,physicsMaterial);
+                groundBody = new CANNON.Body({ mass: 0, material: physicsMaterial });
+                groundBody.addShape(groundShape);
                 groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
                 groundBody.position.set(0,0,0);
                 world.add(groundBody);
@@ -378,7 +380,8 @@
                     var x = sphereBody.position.x;
                     var y = sphereBody.position.y;
                     var z = sphereBody.position.z;
-                    var ballBody = new CANNON.RigidBody(1,ballShape);
+                    var ballBody = new CANNON.Body({ mass: 1 });
+                    ballBody.addShape(ballShape);
                     var ballMesh = new THREE.Mesh( ballGeometry, material );
                     world.add(ballBody);
                     scene.add(ballMesh);

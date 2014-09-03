@@ -267,16 +267,10 @@ function Body(options){
     this.angularDamping = 0.01; // Perhaps default should be zero here?
 
     /**
-     * @property aabbmin
+     * @property aabb
      * @type {Vec3}
      */
-    this.aabbmin = new Vec3();
-
-    /**
-     * @property aabbmax
-     * @type {Vec3}
-     */
-    this.aabbmax = new Vec3();
+    this.aabb = new AABB();
 
     /**
      * Indicates if the AABB needs to be updated before use.
@@ -499,19 +493,11 @@ Body.prototype.updateBoundingRadius = function(){
 };
 
 /**
- * Updates the .aabbmin and .aabbmax properties
+ * Updates the .aabb
  * @method computeAABB
  * @todo rename to updateAABB()
  */
 Body.prototype.computeAABB = function(){
-    /*
-    this.shape.calculateWorldAABB(this.position,
-                                  this.quaternion,
-                                  this.aabbmin,
-                                  this.aabbmax);
-    this.aabbNeedsUpdate = false;
-    */
-
     var shapes = this.shapes,
         shapeOffsets = this.shapeOffsets,
         shapeOrientations = this.shapeOrientations,
@@ -519,7 +505,7 @@ Body.prototype.computeAABB = function(){
         offset = tmpVec,
         orientation = tmpQuat,
         bodyQuat = this.quaternion,
-        aabb = new AABB(),
+        aabb = this.aabb,
         shapeAABB = new AABB();
 
     for(var i=0; i!==N; i++){
@@ -544,9 +530,6 @@ Body.prototype.computeAABB = function(){
             aabb.extend(shapeAABB);
         }
     }
-
-    aabb.lowerBound.copy(this.aabbmin);
-    aabb.upperBound.copy(this.aabbmax);
 
     this.aabbNeedsUpdate = false;
 };
@@ -672,7 +655,11 @@ Body.prototype.updateMassProperties = function(){
 
     // Approximate with AABB
     this.computeAABB();
-    Box.calculateInertia(new Vec3((this.aabbmax.x-this.aabbmin.x)/2,(this.aabbmax.y-this.aabbmin.y)/2,(this.aabbmax.z-this.aabbmin.z)/2), this.mass, I);
+    Box.calculateInertia(new Vec3(
+        (this.aabb.upperBound.x-this.aabb.lowerBound.x) / 2,
+        (this.aabb.upperBound.y-this.aabb.lowerBound.y) / 2,
+        (this.aabb.upperBound.z-this.aabb.lowerBound.z) / 2
+    ), this.mass, I);
 
     this.invInertia.set(
         I.x > 0 && !fixed ? 1.0 / I.x : 0,

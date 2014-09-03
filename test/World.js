@@ -1,17 +1,32 @@
-var Vec3 =     require("../src/math/Vec3")
-,   Mat3 =     require("../src/math/Mat3")
-,   Quaternion = require("../src/math/Quaternion")
-,   Box =      require('../src/shapes/Box')
-,   Body =      require('../src/objects/Body')
-,   Sphere =      require('../src/shapes/Sphere')
-,   World =      require('../src/world/World')
-,   NaiveBroadphase =      require('../src/collision/NaiveBroadphase')
-,   ArrayCollisionMatrix =      require('../src/collision/ArrayCollisionMatrix')
-,   ObjectCollisionMatrix =      require('../src/collision/ObjectCollisionMatrix')
+var Vec3 = require("../src/math/Vec3");
+var Mat3 = require("../src/math/Mat3");
+var Quaternion = require("../src/math/Quaternion");
+var Box = require('../src/shapes/Box');
+var Body = require('../src/objects/Body');
+var Sphere = require('../src/shapes/Sphere');
+var World = require('../src/world/World');
+var NaiveBroadphase = require('../src/collision/NaiveBroadphase');
+var ArrayCollisionMatrix = require('../src/collision/ArrayCollisionMatrix');
+var ObjectCollisionMatrix = require('../src/collision/ObjectCollisionMatrix');
 
 module.exports = {
 
-    "collisionMatrix" : function(test) {
+    rayTest: function(test){
+        var world = new World();
+
+        var body = new Body();
+        body.addShape(new Box(new Vec3(1, 1, 1)));
+        world.addBody(body);
+
+        var from = new Vec3(-10, 0, 0);
+        var to = new Vec3(10, 0, 0);
+
+        world.rayTest(from, to, function(intersection){
+            test.done();
+        });
+    },
+
+    collisionMatrix : function(test) {
         function testCollisionMatrix(CollisionMatrix) {
             var test_configs = [
                 {
@@ -107,6 +122,7 @@ module.exports = {
         testCollisionMatrix(ObjectCollisionMatrix);
 
         test.done();
-    }
+    },
+
 
 };

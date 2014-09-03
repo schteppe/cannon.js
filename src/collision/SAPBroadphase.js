@@ -88,7 +88,7 @@ SAPBroadphase.insertionSortX = function(a) {
     for(var i=1,l=a.length;i<l;i++) {
         var v = a[i];
         for(var j=i - 1;j>=0;j--) {
-            if(a[j].aabbmin.x <= v.aabbmin.x){
+            if(a[j].aabb.lowerBound.x <= v.aabb.lowerBound.x){
                 break;
             }
             a[j+1] = a[j];
@@ -108,7 +108,7 @@ SAPBroadphase.insertionSortY = function(a) {
     for(var i=1,l=a.length;i<l;i++) {
         var v = a[i];
         for(var j=i - 1;j>=0;j--) {
-            if(a[j].aabbmin.y <= v.aabbmin.y){
+            if(a[j].aabb.lowerBound.y <= v.aabb.lowerBound.y){
                 break;
             }
             a[j+1] = a[j];
@@ -128,7 +128,7 @@ SAPBroadphase.insertionSortZ = function(a) {
     for(var i=1,l=a.length;i<l;i++) {
         var v = a[i];
         for(var j=i - 1;j>=0;j--) {
-            if(a[j].aabbmin.z <= v.aabbmin.z){
+            if(a[j].aabb.lowerBound.z <= v.aabb.lowerBound.z){
                 break;
             }
             a[j+1] = a[j];

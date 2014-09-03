@@ -1,7 +1,7 @@
 module.exports = DistanceConstraint;
 
-var Constraint = require('./Constraint')
-,   ContactEquation = require('../equations/ContactEquation')
+var Constraint = require('./Constraint');
+var ContactEquation = require('../equations/ContactEquation');
 
 /**
  * Constrains two bodies to be at a constant distance from each other.
@@ -38,5 +38,5 @@ function DistanceConstraint(bodyA,bodyB,distance,maxForce){
         normal.ni.mult( distance*0.5,normal.ri);
         normal.ni.mult( -distance*0.5,normal.rj);
     };
-};
+}
 DistanceConstraint.prototype = new Constraint();

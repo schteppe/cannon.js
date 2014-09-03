@@ -17,8 +17,8 @@
     <script>
 
       var scene, quaternionNode, translationNode,
-        world, mass, body, shape, timeStep=1/60;
-      
+        world, body, shape, timeStep=1/60;
+
       initCannon();
       initSceneJS();
       animate();
@@ -27,34 +27,34 @@
 
           world = new CANNON.World();
           world.gravity.set(0,0,0);
-          world.broadphase = new CANNON.NaiveBroadphase();
-          world.solver.iterations = 10;
-          
+
           shape = new CANNON.Box(new CANNON.Vec3(1,1,1));
-          mass = 1;
-          body = new CANNON.RigidBody(mass,shape);
+          body = new CANNON.Body({
+            mass: 1
+          });
+          body.addShape(shape);
           body.angularVelocity.set(0,10,0);
-          body.angularDamping = 0.5;
+          body.angularDamping = 0.01;
           world.add(body);
 
       }
-       
+
       function initSceneJS() {
 
           SceneJS.createScene({
-          
+
               id: "theScene",
               canvasId: "theCanvas",
               nodes: [
-          
+
                   {
                       type: "lookAt",
                       eye : { x: 0.0, y: 10.0, z: 15 },
                       look : { y:1.0 },
                       up : { y: 1.0 },
-          
+
                       nodes: [
-          
+
                           {
                               type: "camera",
                               optics: {
@@ -64,9 +64,9 @@
                                   near : 0.10,
                                   far : 300.0
                               },
-          
+
                               nodes: [
-          
+
                                   {
                                       type: "renderer",
                                       clearColor: { r: 1.0, g: 1.0, b: 1.0 },
@@ -74,9 +74,9 @@
                                           depth : true,
                                           color : true
                                       },
-          
+
                                       nodes: [
-          
+
                                           {
                                               type: "light",
                                               mode:                   "dir",
@@ -85,7 +85,7 @@
                                               specular:               true,
                                               dir:                    { x: 1.0, y: -0.5, z: -1.0 }
                                           },
-          
+
                                           {
                                               type: "light",
                                               mode:                   "dir",
@@ -94,19 +94,19 @@
                                               specular:               false,
                                               dir:                    { x: 0.0, y: -0.5, z: -1.0 }
                                           },
-          
+
 
                                           {
                                               type: "translate",
                                               id: "translate",
                                               x : 0.0, y : 0.0, z : 0.0,
-    
+
                                               nodes: [
                                                   {
                                                       type: "quaternion",
                                                       id: "quaternion",
                                                       x : 1.0, y : 0.0, z : 0.0, angle : 0.0,
-            
+
                                                       nodes: [
                                                           {
                                                               type: "material",
@@ -115,9 +115,9 @@
                                                               specularColor:  { r: 0.9, g: 0.9, b: 0.9 },
                                                               specular:       1.0,
                                                               shine:          70.0,
-                  
+
                                                               nodes: [
-                  
+
                                                                   {
                                                                       type : "cube",
                                                                       xSize: shape.halfExtents.x,
@@ -138,7 +138,7 @@
                   }
               ]
           });
-          
+
           // Get handles to some nodes
           scene = SceneJS.scene("theScene");
           quaternionNode = scene.findNode("quaternion");
@@ -170,7 +170,7 @@
           angle = axisAndAngle[1];
 
           // Copy orientation to the SceneJS quaternion node
-          quaternionNode.set("rotation",{ x: axis.x, y: axis.y, z: axis.z, angle: angle*180/Math.PI });
+          quaternionNode.set("rotation",{ x: axis.x, y: axis.y, z: axis.z, angle: angle*180 / Math.PI });
 
       }
 

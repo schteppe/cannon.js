@@ -1,33 +1,34 @@
 module.exports = Ray;
 
-var Vec3 = require('../math/Vec3')
-,   ConvexPolyhedron = require('../shapes/ConvexPolyhedron')
-,   Box = require('../shapes/Box')
+var Vec3 = require('../math/Vec3');
+var ConvexPolyhedron = require('../shapes/ConvexPolyhedron');
+var Box = require('../shapes/Box');
 
 /**
  * A line in 3D space that intersects bodies and return points.
  * @class Ray
- * @author Originally written by mr.doob / http://mrdoob.com/ for Three.js. Cannon.js-ified by schteppe.
- * @param {Vec3} origin
- * @param {Vec3} direction
+ * @param {Vec3} from
+ * @param {Vec3} to
  */
-function Ray(origin, direction){
+function Ray(from, to){
     /**
-     * @property {Vec3} origin
+     * @property {Vec3} from
      */
-    this.origin = origin || new Vec3();
+    this.from = from ? from.clone() : new Vec3();
 
     /**
-     * @property {Vec3} direction
+     * @property {Vec3} to
      */
-    this.direction = direction || new Vec3();
+    this.to = to ? to.clone() : new Vec3();
+
+    this._direction = new Vec3();
 
     /**
      * The precision of the ray. Used when checking parallelity etc.
      * @property {Number} precision
      */
     this.precision = 0.0001;
-};
+}
 Ray.prototype.constructor = Ray;
 
 var v1 = new Vec3(),
@@ -36,7 +37,7 @@ var v1 = new Vec3(),
 /*
  * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
  */
-function pointInTriangle( p, a, b, c ) {
+function pointInTriangle(p, a, b, c) {
     c.vsub(a,v0);
     b.vsub(a,v1);
     p.vsub(a,v2);
@@ -60,23 +61,35 @@ function pointInTriangle( p, a, b, c ) {
  * @param {RigidBody} body
  * @return {Array} An array of results. The result objects has properties: distance (float), point (Vec3) and body (RigidBody).
  */
-Ray.prototype.intersectBody = function ( body ) {
-    if(body.shapes[0] instanceof ConvexPolyhedron){
-        return this.intersectShape(body.shapes[0],
-                                   body.quaternion,
-                                   body.position,
-                                   body);
-    } else if(body.shapes[0] instanceof Box){
-        return this.intersectShape(body.shapes[0].convexPolyhedronRepresentation,
-                                   body.quaternion,
-                                   body.position,
-                                   body);
-    } else {
-        console.warn("Ray intersection is this far only implemented for ConvexPolyhedron and Box shapes.");
+Ray.prototype.intersectBody = function (body, direction) {
+    if(!direction){
+        this._updateDirection();
+        direction = this._direction;
+    }
+    for (var i = 0; i < body.shapes.length; i++) {
+        if(body.shapes[i] instanceof ConvexPolyhedron){
+            return this.intersectShape(
+                body.shapes[i],
+                body.quaternion,
+                body.position,
+                body,
+                direction
+            );
+        } else if(body.shapes[i] instanceof Box){
+            return this.intersectShape(
+                body.shapes[i].convexPolyhedronRepresentation,
+                body.quaternion,
+                body.position,
+                body,
+                direction
+            );
+        } else {
+            console.warn("Ray intersection is this far only implemented for ConvexPolyhedron and Box shapes.");
+        }
     }
 };
 
-function distanceSortFunc( a, b ) {
+function distanceSortFunc(a, b) {
     return a.distance - b.distance;
 }
 
@@ -85,12 +98,15 @@ function distanceSortFunc( a, b ) {
  * @param {Array} bodies An array of RigidBody objects.
  * @return {Array} See intersectBody
  */
-Ray.prototype.intersectBodies = function ( bodies ) {
+Ray.prototype.intersectBodies = function (bodies) {
     var intersects = [];
 
+    this._updateDirection();
+    var direction = this._direction;
+
     for ( var i = 0, l = bodies.length; i < l; i ++ ) {
-        var result = this.intersectBody( bodies[ i ] );
-        Array.prototype.push.apply( intersects, result );
+        var result = this.intersectBody(bodies[i], direction);
+        Array.prototype.push.apply(intersects, result);
     }
 
     intersects.sort( distanceSortFunc );
@@ -102,12 +118,17 @@ var vector = new Vec3();
 var normal = new Vec3();
 var intersectPoint = new Vec3();
 
-    var a = new Vec3();
-    var b = new Vec3();
-    var c = new Vec3();
-    var d = new Vec3();
+var a = new Vec3();
+var b = new Vec3();
+var c = new Vec3();
+var d = new Vec3();
 
-    var directionCopy = new Vec3();
+var directionCopy = new Vec3();
+
+Ray.prototype._updateDirection = function(){
+    this.to.vsub(this.from, this._direction);
+    this._direction.normalize();
+};
 
 /**
  * @method intersectShape
@@ -117,13 +138,13 @@ var intersectPoint = new Vec3();
  * @param {RigidBody} body
  * @return {Array} See intersectBody()
  */
-Ray.prototype.intersectShape = function(shape,quat,position,body){
+Ray.prototype.intersectShape = function(shape, quat, position, body, direction){
     var intersect, intersects = [];
 
     if ( shape instanceof ConvexPolyhedron ) {
         // Checking boundingSphere
 
-        var distance = distanceFromIntersection( this.origin, this.direction, position );
+        var distance = distanceFromIntersection( this.from, direction, position );
         if ( distance > shape.boundingSphereRadius ) {
             return intersects;
         }
@@ -147,16 +168,16 @@ Ray.prototype.intersectShape = function(shape,quat,position,body){
             q.vmult(vector,vector);
             vector.vadd(x,vector);
 
-            // ...but make it relative to the ray origin. We'll fix this later.
-            vector.vsub(this.origin,vector);
+            // ...but make it relative to the ray from. We'll fix this later.
+            vector.vsub(this.from,vector);
 
             // Get plane normal
             q.vmult(faceNormal,normal);
 
             // If this dot product is negative, we have something interesting
-            dot = this.direction.dot(normal);
+            dot = direction.dot(normal);
 
-            // bail if ray and plane are parallel
+            // Bail out if ray and plane are parallel
             if ( Math.abs( dot ) < this.precision ){
                 continue;
             }
@@ -171,9 +192,9 @@ Ray.prototype.intersectShape = function(shape,quat,position,body){
 
             if (  dot < 0 ) {
 
-                // Intersection point is origin + direction * scalar
-                this.direction.mult(scalar,intersectPoint);
-                intersectPoint.vadd(this.origin,intersectPoint);
+                // Intersection point is from + direction * scalar
+                direction.mult(scalar,intersectPoint);
+                intersectPoint.vadd(this.from,intersectPoint);
 
                 // a is the point we compare points b and c with.
                 vertices[ face[0] ].copy(a);
@@ -192,13 +213,13 @@ Ray.prototype.intersectShape = function(shape,quat,position,body){
                     if ( pointInTriangle( intersectPoint, a, b, c ) ) {
 
                         intersect = {
-                            distance: this.origin.distanceTo( intersectPoint ),
+                            distance: this.from.distanceTo( intersectPoint ),
                             point: intersectPoint.copy(),
                             face: face,
                             body: body
                         };
 
-                        intersects.push( intersect );
+                        intersects.push(intersect);
                         break;
                     }
                 }
@@ -210,17 +231,17 @@ Ray.prototype.intersectShape = function(shape,quat,position,body){
 
 var v0 = new Vec3(),
     intersect = new Vec3();
-function distanceFromIntersection( origin, direction, position ) {
+function distanceFromIntersection(from, direction, position) {
 
-    // v0 is vector from origin to position
-    position.vsub(origin,v0);
+    // v0 is vector from from to position
+    position.vsub(from,v0);
     var dot = v0.dot( direction );
 
-    // intersect = direction*dot + origin
+    // intersect = direction*dot + from
     direction.mult(dot,intersect);
-    intersect.vadd(origin,intersect);
+    intersect.vadd(from,intersect);
 
-    var distance = position.distanceTo( intersect );
+    var distance = position.distanceTo(intersect);
 
     return distance;
 }

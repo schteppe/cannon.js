@@ -654,8 +654,8 @@ ConvexPolyhedron.prototype.computeLocalAABB = function(aabbmin,aabbmax){
         vertices = this.vertices,
         worldVert = computeLocalAABB_worldVert;
 
-    aabbmin.set(Infinity,Infinity,Infinity);
-    aabbmax.set(-Infinity,-Infinity,-Infinity);
+    aabbmin.set(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+    aabbmax.set(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
 
     for(var i=0; i<n; i++){
         var v = vertices[i];

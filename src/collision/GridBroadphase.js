@@ -180,12 +180,12 @@ GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 			}
 
 			addBoxToBins(
-				bi.aabbmin.x,
-				bi.aabbmin.y,
-				bi.aabbmin.z,
-				bi.aabbmax.x,
-				bi.aabbmax.y,
-				bi.aabbmax.z,
+				bi.aabb.lowerBound.x,
+				bi.aabb.lowerBound.y,
+				bi.aabb.lowerBound.z,
+				bi.aabb.upperBound.x,
+				bi.aabb.upperBound.y,
+				bi.aabb.upperBound.z,
 				bi);
             break;
         }
