@@ -279,9 +279,9 @@ World.prototype.removeConstraint = function(c){
  * @method rayTest
  * @param {Vec3} from
  * @param {Vec3} to
- * @param {function} callback
+ * @param {Function|RaycastResult} result
  */
-World.prototype.rayTest = function(from, to, callback){
+World.prototype.rayTest = function(from, to, result){
     // result = result || new RaycastResult();
 
     tmpArray1[0] = from;
@@ -294,11 +294,7 @@ World.prototype.rayTest = function(from, to, callback){
     from.copy(tmpRay.from);
     to.copy(tmpRay.to);
 
-    var intersections = tmpRay.intersectBodies(tmpArray1);
-
-    for (var i = 0; i < intersections.length; i++) {
-        callback(intersections[i]);
-    }
+    tmpRay.intersectBodies(tmpArray1, result);
 };
 
 /**
