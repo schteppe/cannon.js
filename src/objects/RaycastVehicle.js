@@ -78,7 +78,7 @@ RaycastVehicle.prototype.applyEngineForce = function(value, wheelIndex){
     this.wheelInfos[wheelIndex].engineForce = value;
 };
 
-RaycastVehicle.setBrake = function(brake, wheelIndex){
+RaycastVehicle.prototype.setBrake = function(brake, wheelIndex){
     this.wheelInfos[wheelIndex].brake = brake;
 };
 
@@ -155,10 +155,10 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
 
     for (i = 0; i < numWheels; i++) {
         var wheel = wheelInfos[i];
-        var relpos = new Vec3();
-        wheel.chassisConnectionPointWorld.vsub(chassisBody.position, relpos);
+        //var relpos = new Vec3();
+        //wheel.chassisConnectionPointWorld.vsub(chassisBody.position, relpos);
         var vel = new Vec3();
-        chassisBody.getVelocityAtWorldPoint(relpos, vel);
+        chassisBody.getVelocityAtWorldPoint(wheel.chassisConnectionPointWorld, vel);
 
         if (wheel.isInContact) {
 
@@ -352,6 +352,7 @@ RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
     wheel.axleLocal.copy(right);
     up.cross(right, fwd);
     fwd.normalize();
+    right.normalize();
 
     // Rotate around steering over the wheelAxle
     var steering = wheel.steering;
@@ -365,6 +366,8 @@ RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
     var q = wheel.worldTransform.quaternion;
     this.chassisBody.quaternion.mult(steeringOrn, q);
     q.mult(rotatingOrn, q);
+
+    q.normalize();
 
     // world position of the wheel
     var p = wheel.worldTransform.position;
@@ -562,12 +565,10 @@ function calcRollingFriction(body0, body1, frictionPosWorld, frictionDirectionWo
     var rel_pos2 = new Vec3();
     contactPosWorld.vsub(body1.position, rel_pos2);
 
-    var maxImpulse  = maxImpulse;
-
     var vel1 = new Vec3();
-    body0.getVelocityAtWorldPoint(rel_pos1, vel1);
+    body0.getVelocityAtWorldPoint(contactPosWorld, vel1);
     var vel2 = new Vec3();
-    body1.getVelocityAtWorldPoint(rel_pos2, vel2);
+    body1.getVelocityAtWorldPoint(contactPosWorld, vel2);
     var vel = new Vec3();
     vel1.vsub(vel2, vel);
 
