@@ -668,3 +668,17 @@ Body.prototype.updateMassProperties = function(){
     );
     this.updateInertiaWorld(true);
 };
+
+/**
+ * Get world velocity of a point in the body.
+ * @param  {Vec3} worldPoint
+ * @param  {Vec3} result
+ * @return {Vec3} The result vector.
+ */
+Body.prototype.getVelocityAtWorldPoint = function(worldPoint, result){
+    var r = new Vec3();
+    worldPoint.vsub(this.position);
+    r.cross(this.angularVelocity, result);
+    this.velocity.vadd(result, result);
+    return result;
+};
