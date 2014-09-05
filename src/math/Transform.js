@@ -23,3 +23,9 @@ Transform.pointToWorldFrame = function(position, quaternion, localPoint, result)
     result.vadd(position, result);
     return result;
 };
+
+Transform.prototype.vectorToWorldFrame = function(localVector, result){
+    var result = result || new Vec3();
+    this.quaternion.vmult(localVector, result);
+    return result;
+};
