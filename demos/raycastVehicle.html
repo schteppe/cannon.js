@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - RaycastVehicle</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/ConvexGeometry.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+        var demo = new CANNON.Demo();
+        var mass = 1000;
+        var vehicle;
+
+        demo.addScene("car",function(){
+            var world = demo.getWorld();
+            world.gravity.set(0, 0, -10);
+            world.defaultContactMaterial.friction = 0.2;
+
+            var groundMaterial = new CANNON.Material("groundMaterial");
+            var wheelMaterial = new CANNON.Material("wheelMaterial");
+            var wheelGroundContactMaterial = window.wheelGroundContactMaterial = new CANNON.ContactMaterial(wheelMaterial, groundMaterial, {
+                friction: 0.3,
+                restitution: 0,
+                contactEquationStiffness: 1000
+            });
+
+            // We must add the contact materials to the world
+            world.addContactMaterial(wheelGroundContactMaterial);
+
+            var chassisShape;
+            chassisShape = new CANNON.Box(new CANNON.Vec3(5, 2, 0.5));
+            var chassisBody = new CANNON.Body({ mass: mass });
+            chassisBody.addShape(chassisShape);
+            chassisBody.position.set(0, 0, 4);
+            chassisBody.angularVelocity.set(0, 0, 0.5);
+            demo.addVisual(chassisBody);
+
+            // Create the vehicle
+            vehicle = new CANNON.RaycastVehicle({
+                chassisBody: chassisBody
+            });
+
+            var axisWidth = 7;
+            var stiffness = 100;
+            var suspensionRestLength = 2;
+            var down = new CANNON.Vec3(0, 0, -1);
+            var frictionSlip = 10;
+            var damping = 5;
+            var maxSuspensionForce = 10000;
+            vehicle.addWheel({
+                chassisConnectionPointLocal: new CANNON.Vec3(5, axisWidth / 2, 0),
+                axleLocal: new CANNON.Vec3(0, 1, 0),
+                directionLocal: down,
+                suspensionStiffness: stiffness,
+                suspensionRestLength: suspensionRestLength,
+                frictionSlip: frictionSlip,
+                dampingRelaxation: damping,
+                dampingCompression: damping,
+                maxSuspensionForce: maxSuspensionForce,
+            });
+
+            vehicle.addWheel({
+                chassisConnectionPointLocal: new CANNON.Vec3(5, -axisWidth / 2, 0),
+                axleLocal: new CANNON.Vec3(0, 1, 0),
+                directionLocal: down,
+                suspensionStiffness: stiffness,
+                suspensionRestLength: suspensionRestLength,
+                frictionSlip: frictionSlip,
+                dampingRelaxation: damping,
+                dampingCompression: damping,
+                maxSuspensionForce: maxSuspensionForce,
+            });
+
+            vehicle.addWheel({
+                chassisConnectionPointLocal: new CANNON.Vec3(-5, axisWidth / 2, 0),
+                axleLocal: new CANNON.Vec3(0, 1, 0),
+                directionLocal: down,
+                suspensionStiffness: stiffness,
+                suspensionRestLength: suspensionRestLength,
+                frictionSlip: frictionSlip,
+                dampingRelaxation: damping,
+                dampingCompression: damping,
+                maxSuspensionForce: maxSuspensionForce,
+            });
+
+            vehicle.addWheel({
+                chassisConnectionPointLocal: new CANNON.Vec3(-5, -axisWidth / 2, 0),
+                axleLocal: new CANNON.Vec3(0, 1, 0),
+                directionLocal: down,
+                suspensionStiffness: stiffness,
+                suspensionRestLength: suspensionRestLength,
+                frictionSlip: frictionSlip,
+                dampingRelaxation: damping,
+                dampingCompression: damping,
+                maxSuspensionForce: maxSuspensionForce,
+            });
+
+            vehicle.addToWorld(world);
+
+            // Ground
+            var groundShape = new CANNON.Plane();
+            var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
+            ground.addShape(groundShape);
+            world.add(ground);
+            demo.addVisual(ground);
+
+            var wheelBodies = [];
+            for(var i=0; i<vehicle.wheelInfos.length; i++){
+                var wheel = vehicle.wheelInfos[i];
+                var cylinderShape = new CANNON.Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20);
+                var wheelBody = new CANNON.Body({ mass: 1 });
+                var q = new CANNON.Quaternion();
+                q.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
+                wheelBody.addShape(cylinderShape, new CANNON.Vec3(), q);
+                wheelBodies.push(wheelBody);
+                demo.addVisual(wheelBody);
+            }
+            world.addEventListener('postStep', function(){
+                for (var i = 0; i < vehicle.wheelInfos.length; i++) {
+                    var t = vehicle.wheelInfos[i].worldTransform;
+                    t.position.copy(wheelBodies[i].position);
+                    t.quaternion.copy(wheelBodies[i].quaternion);
+                }
+            });
+        });
+
+        demo.start();
+
+        document.onkeydown = handler;
+        document.onkeyup = handler;
+
+        var maxSteerVal = Math.PI / 4;
+        var maxForce = 10000;
+        function handler(event){
+            var up = (event.type == 'keyup');
+
+            if(!up && event.type !== 'keydown')
+                return;
+
+            switch(event.keyCode){
+
+            case 38: // forward
+                vehicle.applyEngineForce(up ? 0 : -maxForce, 2);
+                vehicle.applyEngineForce(up ? 0 : -maxForce, 3);
+                break;
+
+            case 40: // backward
+                vehicle.applyEngineForce(up ? 0 : maxForce, 2);
+                vehicle.applyEngineForce(up ? 0 : maxForce, 3);
+                break;
+
+            case 39: // right
+                vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 0);
+                vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 1);
+                break;
+
+            case 37: // left
+                vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0);
+                vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1);
+                break;
+
+            }
+        }
+
+    </script>
+  </body>
+</html>

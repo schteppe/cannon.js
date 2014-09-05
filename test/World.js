@@ -8,10 +8,11 @@ var World = require('../src/world/World');
 var NaiveBroadphase = require('../src/collision/NaiveBroadphase');
 var ArrayCollisionMatrix = require('../src/collision/ArrayCollisionMatrix');
 var ObjectCollisionMatrix = require('../src/collision/ObjectCollisionMatrix');
+var RaycastResult = require('../src/collision/RaycastResult');
 
 module.exports = {
 
-    rayTest: function(test){
+    rayTestBox: function(test){
         var world = new World();
 
         var body = new Body();
@@ -21,9 +22,30 @@ module.exports = {
         var from = new Vec3(-10, 0, 0);
         var to = new Vec3(10, 0, 0);
 
-        world.rayTest(from, to, function(intersection){
-            test.done();
-        });
+        var result = new RaycastResult();
+        world.rayTest(from, to, result);
+
+        test.equal(result.hasHit, true);
+
+        test.done();
+    },
+
+    rayTestSphere: function(test){
+        var world = new World();
+
+        var body = new Body();
+        body.addShape(new Sphere(1));
+        world.addBody(body);
+
+        var from = new Vec3(-10, 0, 0);
+        var to = new Vec3(10, 0, 0);
+
+        var result = new RaycastResult();
+        world.rayTest(from, to, result);
+
+        test.equal(result.hasHit, true);
+
+        test.done();
     },
 
     collisionMatrix : function(test) {

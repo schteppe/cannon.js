@@ -1,75 +1,177 @@
-var Vec3 =     require("../src/math/Vec3");
-var Mat3 =     require("../src/math/Mat3");
+var Vec3 = require("../src/math/Vec3");
+var Mat3 = require("../src/math/Mat3");
 var Quaternion = require("../src/math/Quaternion");
-var Box =      require('../src/shapes/Box');
-var Ray =      require('../src/collision/Ray');
-var Body =      require('../src/objects/Body');
+var Box = require('../src/shapes/Box');
+var Sphere = require('../src/shapes/Sphere');
+var Plane = require('../src/shapes/Plane');
+var Ray = require('../src/collision/Ray');
+var Body = require('../src/objects/Body');
+var RaycastResult = require('../src/collision/RaycastResult');
+var Heightfield = require('../src/shapes/Heightfield');
 
 module.exports = {
 
     construct : function(test) {
         test.expect(0);
-        var r = new Ray(new Vec3(),new Vec3(1,0,0));
+        var r = new Ray(new Vec3(), new Vec3(1,0,0));
         test.done();
     },
 
     intersectBody : function(test) {
-        var r = new Ray(new Vec3(5,0,0),new Vec3(-5, 0, 0));
+        var r = new Ray(new Vec3(5,0,0), new Vec3(-5, 0, 0));
         var shape = createPolyhedron(0.5);
         var body = new Body({ mass: 1 });
         body.addShape(shape);
-        var result = r.intersectBody(body);
-        test.equals(result.length,1,"Could not intersect body (got "+result.length+" intersections)");
-        test.ok(result[0].point.almostEquals(new Vec3(0.5, 0, 0)));
+
+        var result = new RaycastResult();
+
+        r.intersectBody(body, result);
+        test.ok(result.hasHit);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5, 0, 0)));
 
         // test rotating the body first
-        body.quaternion.setFromAxisAngle(new Vec3(1,0,0),Math.PI);
-        var result = r.intersectBody(body);
-        test.equals(result.length,1);
-        test.ok(result[0].point.almostEquals(new Vec3(0.5,0,0)));
+        result.reset();
+        body.quaternion.setFromAxisAngle(new Vec3(1,0,0), Math.PI);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
 
         // test shooting from other direction
+        result.reset();
         r.to.set(0,0,-5);
         r.from.set(0,0,5);
-        var result = r.intersectBody(body);
-        test.equals(result.length,1,"Did not get any intersection after changing ray from!");
-        test.ok(result[0].point.almostEquals(new Vec3(0,0,0.5)));
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0,0,0.5)));
 
         // test miss
+        result.reset();
         var r = new Ray(new Vec3(5, 1, 0), new Vec3(-5, 1, 0));
-        var result = r.intersectBody(body);
-        test.equals(result.length,0);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, false);
 
         test.done();
     },
 
     intersectBodies : function(test) {
-        test.expect(3);
-        var r = new Ray(new Vec3(5,0,0),new Vec3(-1,0,0));
+        var r = new Ray(new Vec3(5,0,0), new Vec3(-5,0,0));
         var shape = createPolyhedron(0.5);
         var body1 = new Body({ mass: 1 });
         body1.addShape(shape);
         var body2 = new Body({ mass: 1 });
         body2.addShape(shape);
         body2.position.x = -2;
-        var result = r.intersectBodies([body1,body2]);
-        test.equals(result.length,2);
-        test.ok(result[0].point.almostEquals(new Vec3(0.5,0,0)));
-        test.ok(result[1].point.almostEquals(new Vec3(-1.5,0,0)));
+
+        var result = new RaycastResult();
+        r.intersectBodies([body1, body2], result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
         test.done();
     },
 
     box: function(test){
-        test.expect(2);
-        var r = new Ray(new Vec3(5,0,0),new Vec3(-1,0,0));
+        var r = new Ray(new Vec3(5,0,0),new Vec3(-5, 0, 0));
         var shape = new Box(new Vec3(0.5,0.5,0.5));
         var body = new Body({ mass: 1 });
         body.addShape(shape);
-        var result = r.intersectBody(body);
-        test.equals(result.length,1,"Could not intersect box!");
-        test.ok(result[0].point.almostEquals(new Vec3(0.5,0,0)));
+        var result = new RaycastResult();
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
         test.done();
-    }
+    },
+
+    sphere: function(test){
+        var r = new Ray(new Vec3(5,0,0), new Vec3(-5, 0, 0));
+        var shape = new Sphere(1);
+        var body = new Body({ mass: 1 });
+        body.addShape(shape);
+
+        var result = new RaycastResult();
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(1,0,0)));
+
+        result.reset();
+        body.position.set(1, 0, 0);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(2,0,0)));
+
+        result.reset();
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(2,0,0)));
+
+        result.reset();
+        var shape2 = new Sphere(1);
+        var body2 = new Body({ mass: 1 });
+        body2.addShape(shape2, new Vec3(1, 0, 0));
+        r.intersectBody(body2, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(2,0,0)));
+
+        test.done();
+    },
+
+    // heightfield: function(test){
+    //     var r = new Ray(new Vec3(0, 0, 10), new Vec3(0, 0, -10));
+    //     var data = [
+    //         [1, 1, 1],
+    //         [1, 1, 1],
+    //         [1, 1, 1]
+    //     ];
+    //     var shape = new Heightfield(data, {
+
+    //     });
+    //     var body = new Body({ mass: 1 }, new Vec3(-1.5, -1.5, 0));
+    //     body.addShape(shape);
+    //     var result = new RaycastResult();
+    //     r.intersectBody(body, result);
+    //     test.equals(result.hasHit, true);
+    //     test.ok(result.hitPointWorld.almostEquals(new Vec3(1,0,0)));
+    //     test.done();
+    // },
+
+    plane: function(test){
+        var r = new Ray(new Vec3(0,0,5), new Vec3(0, 0, -5));
+        var shape = new Plane();
+        var body = new Body({ mass: 1 });
+        body.addShape(shape);
+
+        var result = new RaycastResult();
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0,0,0)));
+        test.equal(result.distance, 5);
+
+        result.reset();
+        var body2 = new Body({ mass: 1 });
+        body2.addShape(shape, new Vec3(0, 0, 1), new Quaternion());
+        r.intersectBody(body2, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0,0,1)));
+
+        result.reset();
+        var body3 = new Body({ mass: 1 });
+        var quat = new Quaternion();
+        quat.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI / 2);
+        body3.addShape(shape, new Vec3(), quat);
+        r.intersectBody(body3, result);
+        test.equals(result.hasHit, false);
+
+        result.reset();
+        var body4 = new Body({ mass: 1 });
+        body4.addShape(shape);
+        var r = new Ray(new Vec3(1, 1, 5), new Vec3(1, 1, -5));
+        r.intersectBody(body4, result);
+        test.equals(result.hasHit, true);
+        test.deepEqual(result.hitPointWorld, new Vec3(1, 1, 0));
+        test.equal(result.distance, 5);
+
+        test.done();
+    },
+
 };
 
 function createPolyhedron(size){
