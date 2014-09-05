@@ -26,7 +26,7 @@ function Spring(bodyA,bodyB,options){
      * @property restLength
      * @type {number}
      */
-    this.restLength = typeof(options.restLength)=="number" ? options.restLength : 1;
+    this.restLength = typeof(options.restLength) === "number" ? options.restLength : 1;
 
     /**
      * Stiffness of the spring.
@@ -178,8 +178,8 @@ Spring.prototype.applyForce = function(){
     r_unit.mult(-k*(rlen-l) - d*u.dot(r_unit), f);
 
     // Add forces to bodies
-    bodyA.force.vsub(f,bodyA.force)
-    bodyB.force.vadd(f,bodyB.force)
+    bodyA.force.vsub(f,bodyA.force);
+    bodyB.force.vadd(f,bodyB.force);
 
     // Angular force
     ri.cross(f,ri_x_f);
