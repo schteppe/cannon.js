@@ -1004,6 +1004,27 @@ CANNON.Demo.prototype.shape2mesh = function(body){
                 );
             }
             var geo = new THREE.ConvexGeometry( verts );
+
+            // var geo = new THREE.Geometry();
+            // for(var i=0; i < shape.faces.length; i++){
+            //     var face = shape.faces[i];
+
+            //     // add triangles
+            //     for (var j = 0; j < face.length - 2; j++) {
+            //         var v0 = shape.vertices[face[j]];
+            //         var v1 = shape.vertices[face[j + 1]];
+            //         var v2 = shape.vertices[face[j + 2]];
+            //         geo.vertices.push(
+            //             new THREE.Vector3(v0.x, v0.y, v0.z),
+            //             new THREE.Vector3(v1.x, v1.y, v1.z),
+            //             new THREE.Vector3(v2.x, v2.y, v2.z)
+            //         );
+            //         var k = geo.vertices.length - 3;
+            //         geo.faces.push(new THREE.Face3(k, k+1, k+2));
+            //     }
+            // }
+            geo.computeBoundingSphere();
+            geo.computeFaceNormals();
             mesh = new THREE.Mesh( geo, this.currentMaterial );
             break;
 

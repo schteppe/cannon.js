@@ -1,6 +1,7 @@
 var Vec3 = require('../math/Vec3');
 var Transform = require('../math/Transform');
 var RaycastResult = require('../collision/RaycastResult');
+var Utils = require('../utils/Utils');
 
 module.exports = WheelInfo;
 
@@ -9,56 +10,58 @@ module.exports = WheelInfo;
  * @constructor
  */
 function WheelInfo(options){
+    options = Utils.defaults(options, {
+        chassisConnectionPointLocal: new Vec3(),
+        chassisConnectionPointWorld: new Vec3(),
+        directionLocal: new Vec3(),
+        directionWorld: new Vec3(),
+        axleLocal: new Vec3(),
+        axleWorld: new Vec3(),
+        suspensionRestLength: 1,
+        suspensionMaxLength: 2,
+        radius: 1,
+        suspensionStiffness: 100,
+        dampingCompression: 10,
+        dampingRelaxation: 10,
+        frictionSlip: 10000,
+        steering: 0,
+        rotation: 0,
+        deltaRotation: 0,
+        rollInfluence: 0.01,
+        maxSuspensionForce: Number.MAX_VALUE,
+        isFrontWheel: true,
+        clippedInvContactDotSuspension: 1,
+        suspensionRelativeVelocity: 0,
+        suspensionForce: 0,
+        skidInfo: 0,
+        suspensionLength: 0,
+        maxSuspensionTravelCm: 1
+    });
 
-    this.chassisConnectionPointLocal = new Vec3();
-    if(options.chassisConnectionPointLocal){
-        options.chassisConnectionPointLocal.copy(this.chassisConnectionPointLocal);
-    }
-
-    this.chassisConnectionPointWorld = new Vec3();
-    if(options.chassisConnectionPointWorld){
-        options.chassisConnectionPointWorld.copy(this.chassisConnectionPointWorld);
-    }
-
-    this.directionLocal = new Vec3();
-    if(options.directionLocal){
-        options.directionLocal.copy(this.directionLocal);
-    }
-
-    this.directionWorld = new Vec3();
-    if(options.directionWorld){
-        options.directionWorld.copy(this.directionWorld);
-    }
-
-    this.axleLocal = new Vec3();
-    if(options.axleLocal){
-        options.axleLocal.copy(this.axleLocal);
-    }
-
-    this.axleWorld = new Vec3();
-    if(options.axleWorld){
-        options.axleWorld.copy(this.axleWorld);
-    }
-
-    this.suspensionRestLength = typeof(options.suspensionRestLength) === 'number' ? options.suspensionRestLength : 1;
-    this.suspensionMaxLength = typeof(options.suspensionMaxLength) === 'number' ? options.suspensionMaxLength : 2;
-
-    this.radius = typeof(options.radius) === 'number' ? options.radius : 1;
-
-    this.suspensionStiffness = typeof(options.suspensionStiffness) === 'number' ? options.suspensionStiffness : 100;
-    this.dampingCompression = typeof(options.dampingCompression) === 'number' ? options.dampingCompression : 10;
-    this.dampingRelaxation = typeof(options.dampingRelaxation) === 'number' ? options.dampingRelaxation : 10;
-    this.frictionSlip = typeof(options.frictionSlip) === 'number' ? options.frictionSlip : 10000;
+    this.maxSuspensionTravelCm = options.maxSuspensionTravelCm;
+    this.chassisConnectionPointLocal = options.chassisConnectionPointLocal.clone();
+    this.chassisConnectionPointWorld = options.chassisConnectionPointWorld.clone();
+    this.directionLocal = options.directionLocal.clone();
+    this.directionWorld = options.directionWorld.clone();
+    this.axleLocal = options.axleLocal.clone();
+    this.axleWorld = options.axleWorld.clone();
+    this.suspensionRestLength = options.suspensionRestLength;
+    this.suspensionMaxLength = options.suspensionMaxLength;
+    this.radius = options.radius;
+    this.suspensionStiffness = options.suspensionStiffness;
+    this.dampingCompression = options.dampingCompression;
+    this.dampingRelaxation = options.dampingRelaxation;
+    this.frictionSlip = options.frictionSlip;
     this.steering = 0;
     this.rotation = 0;
     this.deltaRotation = 0;
-    this.rollInfluence = 0;
-    this.maxSuspensionForce = typeof(options.maxSuspensionForce) === 'number' ? options.maxSuspensionForce : 10000;
+    this.rollInfluence = options.rollInfluence;
+    this.maxSuspensionForce = options.maxSuspensionForce;
 
     this.engineForce = 0;
     this.brake = 0;
 
-    this.isFrontWheel = true;
+    this.isFrontWheel = options.isFrontWheel;
     this.clippedInvContactDotSuspension = 1;
     this.suspensionRelativeVelocity = 0;
     this.suspensionForce = 0;

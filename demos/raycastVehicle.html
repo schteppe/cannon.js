@@ -18,13 +18,13 @@
     <script>
 
         var demo = new CANNON.Demo();
-        var mass = 1000;
+        var mass = 150;
         var vehicle;
 
         demo.addScene("car",function(){
             var world = demo.getWorld();
             world.gravity.set(0, 0, -10);
-            world.defaultContactMaterial.friction = 0.2;
+            world.defaultContactMaterial.friction = 0;
 
             var groundMaterial = new CANNON.Material("groundMaterial");
             var wheelMaterial = new CANNON.Material("wheelMaterial");
@@ -38,72 +38,44 @@
             world.addContactMaterial(wheelGroundContactMaterial);
 
             var chassisShape;
-            chassisShape = new CANNON.Box(new CANNON.Vec3(5, 2, 0.5));
+            chassisShape = new CANNON.Box(new CANNON.Vec3(2, 1,0.5));
             var chassisBody = new CANNON.Body({ mass: mass });
             chassisBody.addShape(chassisShape);
             chassisBody.position.set(0, 0, 4);
             chassisBody.angularVelocity.set(0, 0, 0.5);
             demo.addVisual(chassisBody);
 
+            var options = {
+                radius: 0.5,
+                directionLocal: new CANNON.Vec3(0, 0, -1),
+                suspensionStiffness: 20,
+                suspensionRestLength: 0.3,
+                frictionSlip: 1,
+                dampingRelaxation: 2.3,
+                dampingCompression: 4.4,
+                maxSuspensionForce: 10000,
+                rollInfluence: 0.01,
+                axleLocal: new CANNON.Vec3(0, 1, 0),
+                chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0),
+                maxSuspensionTravelCm: 500,
+            };
+
             // Create the vehicle
             vehicle = new CANNON.RaycastVehicle({
                 chassisBody: chassisBody
             });
 
-            var axisWidth = 7;
-            var stiffness = 100;
-            var suspensionRestLength = 2;
-            var down = new CANNON.Vec3(0, 0, -1);
-            var frictionSlip = 10;
-            var damping = 5;
-            var maxSuspensionForce = 10000;
-            vehicle.addWheel({
-                chassisConnectionPointLocal: new CANNON.Vec3(5, axisWidth / 2, 0),
-                axleLocal: new CANNON.Vec3(0, 1, 0),
-                directionLocal: down,
-                suspensionStiffness: stiffness,
-                suspensionRestLength: suspensionRestLength,
-                frictionSlip: frictionSlip,
-                dampingRelaxation: damping,
-                dampingCompression: damping,
-                maxSuspensionForce: maxSuspensionForce,
-            });
+            options.chassisConnectionPointLocal.set(1, 1, 0);
+            vehicle.addWheel(options);
 
-            vehicle.addWheel({
-                chassisConnectionPointLocal: new CANNON.Vec3(5, -axisWidth / 2, 0),
-                axleLocal: new CANNON.Vec3(0, 1, 0),
-                directionLocal: down,
-                suspensionStiffness: stiffness,
-                suspensionRestLength: suspensionRestLength,
-                frictionSlip: frictionSlip,
-                dampingRelaxation: damping,
-                dampingCompression: damping,
-                maxSuspensionForce: maxSuspensionForce,
-            });
+            options.chassisConnectionPointLocal.set(1, -1, 0);
+            vehicle.addWheel(options);
 
-            vehicle.addWheel({
-                chassisConnectionPointLocal: new CANNON.Vec3(-5, axisWidth / 2, 0),
-                axleLocal: new CANNON.Vec3(0, 1, 0),
-                directionLocal: down,
-                suspensionStiffness: stiffness,
-                suspensionRestLength: suspensionRestLength,
-                frictionSlip: frictionSlip,
-                dampingRelaxation: damping,
-                dampingCompression: damping,
-                maxSuspensionForce: maxSuspensionForce,
-            });
+            options.chassisConnectionPointLocal.set(-1, 1, 0);
+            vehicle.addWheel(options);
 
-            vehicle.addWheel({
-                chassisConnectionPointLocal: new CANNON.Vec3(-5, -axisWidth / 2, 0),
-                axleLocal: new CANNON.Vec3(0, 1, 0),
-                directionLocal: down,
-                suspensionStiffness: stiffness,
-                suspensionRestLength: suspensionRestLength,
-                frictionSlip: frictionSlip,
-                dampingRelaxation: damping,
-                dampingCompression: damping,
-                maxSuspensionForce: maxSuspensionForce,
-            });
+            options.chassisConnectionPointLocal.set(-1, -1, 0);
+            vehicle.addWheel(options);
 
             vehicle.addToWorld(world);
 
@@ -127,6 +99,7 @@
             }
             world.addEventListener('postStep', function(){
                 for (var i = 0; i < vehicle.wheelInfos.length; i++) {
+                    vehicle.updateWheelTransform(i);
                     var t = vehicle.wheelInfos[i].worldTransform;
                     t.position.copy(wheelBodies[i].position);
                     t.quaternion.copy(wheelBodies[i].quaternion);
@@ -139,8 +112,8 @@
         document.onkeydown = handler;
         document.onkeyup = handler;
 
-        var maxSteerVal = Math.PI / 4;
-        var maxForce = 10000;
+        var maxSteerVal = 0.3;
+        var maxForce = 1500;
         function handler(event){
             var up = (event.type == 'keyup');
 

@@ -576,6 +576,10 @@ Body.prototype.updateInertiaWorld = function(force){
 var Body_applyForce_r = new Vec3();
 var Body_applyForce_rotForce = new Vec3();
 Body.prototype.applyForce = function(force,worldPoint){
+    if(this.type !== Body.DYNAMIC){
+        return;
+    }
+
     // Compute point position relative to the body center
     var r = Body_applyForce_r;
     worldPoint.vsub(this.position,r);
@@ -600,7 +604,11 @@ Body.prototype.applyForce = function(force,worldPoint){
 var Body_applyImpulse_r = new Vec3();
 var Body_applyImpulse_velo = new Vec3();
 var Body_applyImpulse_rotVelo = new Vec3();
-Body.prototype.applyImpulse = function(impulse,worldPoint){
+Body.prototype.applyImpulse = function(impulse, worldPoint){
+    if(this.type !== Body.DYNAMIC){
+        return;
+    }
+
     // Compute point position relative to the body center
     var r = Body_applyImpulse_r;
     worldPoint.vsub(this.position,r);
@@ -649,6 +657,8 @@ Body.prototype.applyImpulse = function(impulse,worldPoint){
 Body.prototype.updateMassProperties = function(){
     var target = new Vec3();
 
+    // TODO: check if only 1 shape at origin, use shape inertia in that case
+
     this.invMass = this.mass > 0 ? 1.0 / this.mass : 0;
     var I = this.inertia;
     var fixed = this.fixedRotation;
@@ -677,8 +687,8 @@ Body.prototype.updateMassProperties = function(){
  */
 Body.prototype.getVelocityAtWorldPoint = function(worldPoint, result){
     var r = new Vec3();
-    worldPoint.vsub(this.position);
-    r.cross(this.angularVelocity, result);
+    worldPoint.vsub(this.position, r);
+    this.angularVelocity.cross(r, result);
     this.velocity.vadd(result, result);
     return result;
 };

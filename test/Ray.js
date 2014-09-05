@@ -169,6 +169,25 @@ module.exports = {
         test.deepEqual(result.hitPointWorld, new Vec3(1, 1, 0));
         test.equal(result.distance, 5);
 
+        var result = new RaycastResult();
+        r.from.set(0, 1, 1);
+        r.to.set(0, -1, -1);
+        body.position.set(0, 0, 0);
+        r.intersectBody(body, result);
+        var distance1 = result.distance;
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0,0,0)));
+
+        var result = new RaycastResult();
+        r.from.set(0, 1 - 5, 1);
+        r.to.set(0, -1 - 5, -1);
+        body.position.set(0, 0, 0);
+        r.intersectBody(body, result);
+        var distance2 = result.distance;
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0,-5,0)));
+        test.equal(distance1, distance2);
+
         test.done();
     },
 

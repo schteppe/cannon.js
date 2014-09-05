@@ -291,13 +291,11 @@ RaycastVehicle.prototype.castRay = function(wheel) {
         wheel.raycastResult.hitNormalWorld  = raycastResult.hitNormalWorld;
         wheel.isInContact = true;
 
-        // wheel.raycastResult.groundObject = &getFixedBody();
-
         var hitDistance = raycastResult.distance;
         wheel.suspensionLength = hitDistance - wheel.radius;
 
         // clamp on max suspension travel
-        var  minSuspensionLength = wheel.suspensionRestLength - wheel.maxSuspensionTravelCm * 0.01;
+        var minSuspensionLength = wheel.suspensionRestLength - wheel.maxSuspensionTravelCm * 0.01;
         var maxSuspensionLength = wheel.suspensionRestLength + wheel.maxSuspensionTravelCm * 0.01;
         if (wheel.suspensionLength < minSuspensionLength) {
             wheel.suspensionLength = minSuspensionLength;
@@ -306,15 +304,10 @@ RaycastVehicle.prototype.castRay = function(wheel) {
             wheel.suspensionLength = maxSuspensionLength;
         }
 
-        // wheel.raycastResult.hitPointWorld = raycastResult.hitPointInWorld;
-
         var denominator = wheel.raycastResult.hitNormalWorld.dot(wheel.directionWorld);
 
         var chassis_velocity_at_contactPoint = new Vec3();
-        var relpos = new Vec3();
-        wheel.raycastResult.hitPointWorld.vsub(chassisBody.position);
-
-        chassisBody.getVelocityAtWorldPoint(relpos, chassis_velocity_at_contactPoint);
+        chassisBody.getVelocityAtWorldPoint(wheel.raycastResult.hitPointWorld, chassis_velocity_at_contactPoint);
 
         var projVel = wheel.raycastResult.hitNormalWorld.dot( chassis_velocity_at_contactPoint );
 
@@ -367,14 +360,6 @@ RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
 
     var rotatingOrn = new Quaternion();
     rotatingOrn.setFromAxisAngle(right, wheel.rotation);
-
-    // TODO Orientation
-    // btMatrix3x3 basis2(
-    //     right[0], fwd[0], up[0],
-    //     right[1], fwd[1], up[1],
-    //     right[2], fwd[2], up[2]
-    // );
-    // wheel.worldTransform.setBasis(steeringMat * rotatingMat * basis2);
 
     // World rotation of the wheel
     var q = wheel.worldTransform.quaternion;
@@ -434,26 +419,20 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
         var groundObject = wheel.raycastResult.body;
 
         if (groundObject) {
-
+            var axlei = axle[i];
             var wheelTrans = this.getWheelTransformWorld(i);
 
-            // btMatrix3x3 wheelBasis0 = wheelTrans.getBasis();
-            // axle[i] = btVector3(
-            //         wheelBasis0[0][indexRightAxis],
-            //         wheelBasis0[1][indexRightAxis],
-            //         wheelBasis0[2][indexRightAxis]);
-
             // Get world axle
-            wheelTrans.vectorToWorldFrame(directions[this.indexRightAxis], axle[i]);
+            wheelTrans.vectorToWorldFrame(directions[this.indexRightAxis], axlei);
 
             var surfNormalWS = wheel.raycastResult.hitNormalWorld;
             var surfNormalWS_scaled_proj = new Vec3();
-            var proj = axle[i].dot(surfNormalWS);
+            var proj = axlei.dot(surfNormalWS);
             surfNormalWS.scale(proj, surfNormalWS_scaled_proj);
-            axle[i].vsub(surfNormalWS_scaled_proj, axle[i]);
-            axle[i].normalize();
+            axlei.vsub(surfNormalWS_scaled_proj, axlei);
+            axlei.normalize();
 
-            surfNormalWS.cross(axle[i], forwardWS[i]);
+            surfNormalWS.cross(axlei, forwardWS[i]);
             forwardWS[i].normalize();
 
             sideImpulse[i] = resolveSingleBilateral(
@@ -461,7 +440,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
                 wheel.raycastResult.hitPointWorld,
                 groundObject,
                 wheel.raycastResult.hitPointWorld,
-                axle[i]
+                axlei
             );
 
             sideImpulse[i] *= sideFrictionStiffness2;
@@ -488,7 +467,8 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
                 // TODO:
                 // btWheelContactPoint contactPt(chassisBody,groundObject,wheelInfraycastInfo.hitPointWorld,forwardWS[wheel],maxImpulse);
                 // rollingFriction = calcRollingFriction(contactPt);
-                rollingFriction = 0;
+                rollingFriction = calcRollingFriction(chassisBody, groundObject, wheel.raycastResult.hitPointWorld, forwardWS[i], maxImpulse);
+                // rollingFriction = 0;
             }
         }
 
@@ -498,7 +478,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
         wheel.skidInfo = 1;
 
         if (groundObject) {
-            wheel.skidInfo= 1;
+            wheel.skidInfo = 1;
 
             var maximp = wheel.suspensionForce * timeStep * wheel.frictionSlip;
             var maximpSide = maximp;
@@ -564,7 +544,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
 // #else
             rel_pos[this.indexUpAxis] *= wheel.rollInfluence;
 //#endif
-            chassisBody.applyImpulse(sideImp,rel_pos);
+            chassisBody.applyImpulse(sideImp, rel_pos);
 
             //apply friction impulse on the ground
             sideImp.scale(-1, sideImp);
@@ -573,28 +553,33 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
     }
 };
 
-function calcRollingFriction(contactPoint) {
+function calcRollingFriction(body0, body1, frictionPosWorld, frictionDirectionWorld, maxImpulse) {
     var j1 = 0;
-    var contactPosWorld = contactPoint.frictionPositionWorld;
+    var contactPosWorld = frictionPosWorld;
 
     var rel_pos1 = new Vec3();
-    contactPosWorld.vsub(contactPoint.body0.position, rel_pos1);
+    contactPosWorld.vsub(body0.position, rel_pos1);
     var rel_pos2 = new Vec3();
-    contactPosWorld.vsub(contactPoint.body1.position, rel_pos2);
+    contactPosWorld.vsub(body1.position, rel_pos2);
 
-    var maxImpulse  = contactPoint.maxImpulse;
+    var maxImpulse  = maxImpulse;
 
     var vel1 = new Vec3();
-    contactPoint.body0.getVelocityAtWorldPoint(rel_pos1, vel1);
+    body0.getVelocityAtWorldPoint(rel_pos1, vel1);
     var vel2 = new Vec3();
-    contactPoint.body1.getVelocityAtWorldPoint(rel_pos2, vel2);
+    body1.getVelocityAtWorldPoint(rel_pos2, vel2);
     var vel = new Vec3();
     vel1.vsub(vel2, vel);
 
-    var vrel = contactPoint.frictionDirectionWorld.dot(vel);
+    var vrel = frictionDirectionWorld.dot(vel);
+
+    var denom0 = computeImpulseDenominator(body0, frictionPosWorld, frictionDirectionWorld);
+    var denom1 = computeImpulseDenominator(body1, frictionPosWorld, frictionDirectionWorld);
+    var relaxation = 1;
+    var jacDiagABInv = relaxation / (denom0 + denom1);
 
     // calculate j that moves us to zero relative velocity
-    j1 = -vrel * contactPoint.jacDiagABInv;
+    j1 = -vrel * jacDiagABInv;
 
     if (maxImpulse < j1) {
         j1 = maxImpulse;
@@ -606,6 +591,17 @@ function calcRollingFriction(contactPoint) {
     return j1;
 }
 
+function computeImpulseDenominator(body, pos, normal) {
+    var r0 = new Vec3();
+    var c0 = new Vec3();
+    var vec = new Vec3();
+    var m = new Vec3();
+    pos.vsub(body.position, r0);
+    r0.cross(normal, c0);
+    body.invInertiaWorld.vmult(c0, m);
+    m.cross(r0, vec);
+    return body.invMass + normal.dot(vec);
+}
 
 //bilateral constraint between two dynamic objects
 function resolveSingleBilateral(body1, pos1, body2, pos2, normal, impulse){
