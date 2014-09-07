@@ -29,6 +29,12 @@ function World(){
     EventTarget.apply(this);
 
     /**
+     * Last used timestep. Is set to -1 if not available.
+     * @property {Number} dt
+     */
+    this.dt = -1;
+
+    /**
      * Makes bodies go to sleep when they've been inactive
      * @property allowSleep
      * @type {Boolean}
@@ -75,7 +81,6 @@ function World(){
 
     /// Default and last timestep sizes
     this.default_dt = 1/60;
-    this.last_dt = this.default_dt;
 
     this.nextId = 0;
     /**
@@ -461,7 +466,7 @@ var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to s
     World_step_step_wq = new Quaternion(),
     invI_tau_dt = new Vec3();
 World.prototype.internalStep = function(dt){
-    if(dt <= 0 || isNaN(dt)) return;
+    this.dt = dt;
 
     var world = this,
         that = this,
@@ -486,10 +491,6 @@ World.prototype.internalStep = function(dt){
 
     if(doProfiling){
         profilingStart = performance.now();
-    }
-
-    if(dt===undefined){
-        dt = this.last_dt || this.default_dt;
     }
 
     // Add gravity to all objects
