@@ -2,10 +2,12 @@ module.exports = Ray;
 
 var Vec3 = require('../math/Vec3');
 var Quaternion = require('../math/Quaternion');
+var Transform = require('../math/Transform');
 var ConvexPolyhedron = require('../shapes/ConvexPolyhedron');
 var Box = require('../shapes/Box');
 var RaycastResult = require('../collision/RaycastResult');
 var Shape = require('../shapes/Shape');
+var AABB = require('../collision/AABB');
 
 /**
  * A line in 3D space that intersects bodies and return points.
@@ -199,9 +201,77 @@ Ray.prototype.intersectPlane = function(shape, quat, position, body, direction, 
 };
 Ray.prototype[Shape.types.PLANE] = Ray.prototype.intersectPlane;
 
+Ray.prototype.getAABB = function(result){
+    var to = this.to;
+    var from = this.from;
+    result.lowerBound.x = Math.min(to.x, from.x);
+    result.lowerBound.y = Math.min(to.y, from.y);
+    result.upperBound.x = Math.max(to.x, from.x);
+    result.upperBound.y = Math.max(to.y, from.y);
+};
 
 Ray.prototype.intersectHeightfield = function(shape, quat, position, body, direction, result){
+    var data = shape.data,
+        w = shape.elementSize,
+        worldPillarOffset = new Vec3();
 
+    // Convert the ray to local heightfield coordinates
+    var localRay = new Ray(this.from, this.to);
+    Transform.pointToLocalFrame(position, quat, localRay.from, localRay.from);
+    Transform.pointToLocalFrame(position, quat, localRay.to, localRay.to);
+
+    // Get the index of the data points to test against
+    var index = [];
+    var iMinX = null;
+    var iMinY = null;
+    var iMaxX = null;
+    var iMaxY = null;
+    if(shape.getIndexOfPosition(localRay.from.x, localRay.from.y, index, false)){
+        iMinX = index[0];
+        iMinY = index[1];
+        iMaxX = index[0];
+        iMaxY = index[1];
+    }
+    if(shape.getIndexOfPosition(localRay.to.x, localRay.to.y, index, false)){
+        if (iMinX === null || index[0] < iMinX) { iMinX = index[0]; }
+        if (iMaxX === null || index[0] > iMaxX) { iMaxX = index[0]; }
+        if (iMinY === null || index[1] < iMinY) { iMinY = index[1]; }
+        if (iMaxY === null || index[1] > iMaxY) { iMaxY = index[1]; }
+    }
+
+    if(iMinX === null){
+        return result;
+    }
+
+    var minMax = [];
+    shape.getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, minMax);
+    var min = minMax[0];
+    var max = minMax[1];
+
+    // // Bail out if the ray can't touch the bounding box
+    // // TODO
+    // var aabb = new AABB();
+    // this.getAABB(aabb);
+    // if(aabb.intersects()){
+    //     return;
+    // }
+
+    for(var i = iMinX; i <= iMaxX; i++){
+        for(var j = iMinY; j <= iMaxY; j++){
+
+            // Lower triangle
+            shape.getConvexTrianglePillar(i, j, false);
+            Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
+            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, direction, result);
+
+            // Upper triangle
+            shape.getConvexTrianglePillar(i, j, true);
+            Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
+            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, direction, result);
+        }
+    }
+
+    return result;
 };
 Ray.prototype[Shape.types.HEIGHTFIELD] = Ray.prototype.intersectHeightfield;
 

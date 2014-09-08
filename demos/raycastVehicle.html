@@ -57,7 +57,7 @@
                 rollInfluence: 0.01,
                 axleLocal: new CANNON.Vec3(0, 1, 0),
                 chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0),
-                maxSuspensionTravelCm: 500,
+                maxSuspensionTravelCm: 30,
             };
 
             // Create the vehicle
@@ -80,11 +80,11 @@
             vehicle.addToWorld(world);
 
             // Ground
-            var groundShape = new CANNON.Plane();
-            var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
-            ground.addShape(groundShape);
-            world.add(ground);
-            demo.addVisual(ground);
+            // var groundShape = new CANNON.Plane();
+            // var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
+            // ground.addShape(groundShape);
+            // world.add(ground);
+            // demo.addVisual(ground);
 
             var wheelBodies = [];
             for(var i=0; i<vehicle.wheelInfos.length; i++){
@@ -105,6 +105,29 @@
                     t.quaternion.copy(wheelBodies[i].quaternion);
                 }
             });
+
+            var matrix = [];
+            var sizeX = 64,
+                sizeY = 64;
+
+            for (var i = 0; i < sizeX; i++) {
+                matrix.push([]);
+                for (var j = 0; j < sizeY; j++) {
+                    var height = Math.cos(i / sizeX * Math.PI * 5) * Math.cos(j/sizeY * Math.PI * 5) * 2 + 2;
+                    if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
+                        height = 3;
+                    matrix[i].push(height);
+                }
+            }
+
+            var hfShape = new CANNON.Heightfield(matrix, {
+                elementSize: 500 / sizeX
+            });
+            var hfBody = new CANNON.Body({ mass: 0 });
+            hfBody.addShape(hfShape);
+            hfBody.position.set(-sizeX * hfShape.elementSize / 2, -sizeY * hfShape.elementSize / 2, -1);
+            world.add(hfBody);
+            demo.addVisual(hfBody);
         });
 
         demo.start();
@@ -113,7 +136,7 @@
         document.onkeyup = handler;
 
         var maxSteerVal = 0.5;
-        var maxForce = 3000;
+        var maxForce = 1000;
         var brakeForce = 1000000;
         function handler(event){
             var up = (event.type == 'keyup');

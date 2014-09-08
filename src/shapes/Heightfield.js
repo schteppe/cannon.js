@@ -210,12 +210,12 @@ Heightfield.prototype.getIndexOfPosition = function (x, y, result, clamp) {
         // Clamp index to edges
         if(xi < 0){ xi = 0; }
         if(yi < 0){ yi = 0; }
-        if(xi >= data.length){ xi = data.length - 1; }
-        if(yi >= data[0].length){ yi = data[0].length - 1; }
+        if(xi >= data.length - 1){ xi = data.length - 1; }
+        if(yi >= data[0].length - 1){ yi = data[0].length - 1; }
     }
 
     // Bail out if we are out of the terrain
-    if(xi < 0 || yi < 0 || xi > data.length || yi > data[0].length){
+    if(xi < 0 || yi < 0 || xi >= data.length-1 || yi >= data[0].length-1){
         return false;
     }
 

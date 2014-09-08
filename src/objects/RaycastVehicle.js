@@ -91,7 +91,7 @@ RaycastVehicle.prototype.addToWorld = function(world){
     world.add(this.chassisBody);
     var that = this;
     world.addEventListener('preStep', function(){
-        that.updateVehicle(world.last_dt);
+        that.updateVehicle(world.dt);
     });
     this.world = world;
 };
@@ -109,12 +109,6 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
     var wheelInfos = this.wheelInfos;
     var numWheels = wheelInfos.length;
     var chassisBody = this.chassisBody;
-
-    // for (var i = 0; i < wheelInfos.length; i++) {
-    //     this.castRay(i);
-    //     this.addSuspensionForces(i);
-    //     this.addEngineForces(i);
-    // }
 
     for (var i = 0; i < numWheels; i++) {
         this.updateWheelTransform(i, false);
@@ -238,31 +232,6 @@ RaycastVehicle.prototype.removeFromWorld = function(world){
 var from = new Vec3();
 var to = new Vec3();
 
-/**
- * Raycast from wheel position and down along the suspension vector. The distance to the ground is returned.
- * @param  {number} wheelIndex
- * @return {number}
- */
-/*RaycastVehicle.prototype.castRay = function(wheel){
-    var chassisBody = this.chassisBody;
-
-    // Set position locally to the chassis
-    var worldPosition = tmpVec1;
-    this.chassisBody.pointToWorldFrame(wheel.chassisConnectionPointLocal, from);
-
-    // Get wheel bottom point
-    wheel.directionLocal.scale(wheel.radius + wheel.suspensionMaxLength, to);
-    wheel.chassisConnectionPointLocal.vadd(to, to);
-    this.chassisBody.pointToWorldFrame(to, to);
-
-    // Shoot ray
-    var result = wheel.raycastResult;
-    this.world.rayTest(from, to, result);
-
-    wheel.isInContact = result.hasHit;
-};
-*/
-
 RaycastVehicle.prototype.castRay = function(wheel) {
     this.updateWheelTransformWorld(wheel);
     var chassisBody = this.chassisBody;
@@ -302,6 +271,8 @@ RaycastVehicle.prototype.castRay = function(wheel) {
         }
         if (wheel.suspensionLength > maxSuspensionLength) {
             wheel.suspensionLength = maxSuspensionLength;
+            wheel.raycastResult.isInContact = false;
+            wheel.raycastResult.body = null;
         }
 
         var denominator = wheel.raycastResult.hitNormalWorld.dot(wheel.directionWorld);
@@ -323,7 +294,7 @@ RaycastVehicle.prototype.castRay = function(wheel) {
     } else {
 
         //put wheel info as in rest position
-        wheel.suspensionLength = wheel.suspensionRestLength;
+        wheel.suspensionLength = wheel.suspensionRestLength + wheel.maxSuspensionTravelCm * 0.01;
         wheel.suspensionRelativeVelocity = 0.0;
         wheel.directionWorld.scale(-1, wheel.raycastResult.hitNormalWorld);
         wheel.clippedInvContactDotSuspension = 1.0;

@@ -114,24 +114,41 @@ module.exports = {
         test.done();
     },
 
-    // heightfield: function(test){
-    //     var r = new Ray(new Vec3(0, 0, 10), new Vec3(0, 0, -10));
-    //     var data = [
-    //         [1, 1, 1],
-    //         [1, 1, 1],
-    //         [1, 1, 1]
-    //     ];
-    //     var shape = new Heightfield(data, {
+    heightfield: function(test){
+        var r = new Ray(new Vec3(0, 0, 10), new Vec3(0, 0, -10));
+        var data = [
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]
+        ];
+        var shape = new Heightfield(data, {
+            elementSize: 1
+        });
+        var body = new Body({ mass: 1 }, new Vec3(-1.5, -1.5, 0));
+        body.addShape(shape);
 
-    //     });
-    //     var body = new Body({ mass: 1 }, new Vec3(-1.5, -1.5, 0));
-    //     body.addShape(shape);
-    //     var result = new RaycastResult();
-    //     r.intersectBody(body, result);
-    //     test.equals(result.hasHit, true);
-    //     test.ok(result.hitPointWorld.almostEquals(new Vec3(1,0,0)));
-    //     test.done();
-    // },
+        // Hit
+        var result = new RaycastResult();
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.deepEqual(result.hitPointWorld, new Vec3(0, 0, 1));
+
+        // Miss
+        var result = new RaycastResult();
+        r.from.set(-100, -100, 10);
+        r.to.set(-100, -100, -10);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, false);
+
+        // Hit the last index
+        var result = new RaycastResult();
+        r.from.set(-100, -100, 10);
+        r.to.set(-100, -100, -10);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, false);
+
+        test.done();
+    },
 
     plane: function(test){
         var r = new Ray(new Vec3(0,0,5), new Vec3(0, 0, -5));
