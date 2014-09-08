@@ -14,12 +14,6 @@ module.exports = RaycastVehicle;
 function RaycastVehicle(options){
 
     /**
-     * @property coordinateSystem
-     * @type {Vec3}
-     */
-    this.coordinateSystem = typeof(options.coordinateSystem)==='undefined' ? new Vec3(1, 2, 3) : options.coordinateSystem.clone();
-
-    /**
      * @property {Body} chassisBody
      */
     this.chassisBody = options.chassisBody;
@@ -28,9 +22,9 @@ function RaycastVehicle(options){
 
     this.world = null;
 
-    this.indexRightAxis = 1;
-    this.indexForwardAxis = 0;
-    this.indexUpAxis = 2;
+    this.indexRightAxis = typeof(options.indexRightAxis) !== 'undefined' ? options.indexRightAxis : 1;
+    this.indexForwardAxis = typeof(options.indexForwardAxis) !== 'undefined' ? options.indexForwardAxis : 0;
+    this.indexUpAxis = typeof(options.indexUpAxis) !== 'undefined' ? options.indexUpAxis : 2;
 }
 
 var tmpVec1 = new Vec3();
@@ -59,10 +53,8 @@ RaycastVehicle.prototype.addWheel = function(options){
  * Set the steering value of a wheel.
  * @param {number} value
  * @param {integer} wheelIndex
- * @todo check coordinateSystem
  */
 RaycastVehicle.prototype.setSteeringValue = function(value, wheelIndex){
-    // Set angle of the hinge axis
     var wheel = this.wheelInfos[wheelIndex];
     wheel.steering = value;
 };
@@ -154,11 +146,17 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
         var vel = new Vec3();
         chassisBody.getVelocityAtWorldPoint(wheel.chassisConnectionPointWorld, vel);
 
+        var m = 1;
+        switch(this.indexUpAxis){
+        case 1:
+            m = -1;
+            break;
+        }
+
         if (wheel.isInContact) {
 
             var fwd  = new Vec3();
             this.getVehicleAxisWorld(this.indexForwardAxis, fwd);
-
             var proj = fwd.dot(wheel.raycastResult.hitNormalWorld);
             var hitNormalWorldScaledWithProj = new Vec3();
             wheel.raycastResult.hitNormalWorld.scale(proj, hitNormalWorldScaledWithProj);
@@ -166,13 +164,9 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
             fwd.vsub(hitNormalWorldScaledWithProj, fwd);
 
             var proj2 = fwd.dot(vel);
-
-            wheel.deltaRotation = (proj2 * timeStep) / wheel.radius;
-            wheel.rotation += wheel.deltaRotation;
-
-        } else {
-            wheel.rotation += wheel.deltaRotation;
+            wheel.deltaRotation = m * proj2 * timeStep / wheel.radius;
         }
+        wheel.rotation += wheel.deltaRotation;
         wheel.deltaRotation *= 0.99; //damping of rotation when not in contact
     }
 };
@@ -192,7 +186,6 @@ RaycastVehicle.prototype.updateSuspension = function(deltaTime) {
             // Spring
             var susp_length = wheel.suspensionRestLength;
             var current_length = wheel.suspensionLength;
-
             var length_diff = (susp_length - current_length);
 
             force = wheel.suspensionStiffness * length_diff * wheel.clippedInvContactDotSuspension;
@@ -207,7 +200,6 @@ RaycastVehicle.prototype.updateSuspension = function(deltaTime) {
             }
             force -= susp_damping * projected_rel_vel;
 
-            // RESULT
             wheel.suspensionForce = force * chassisMass;
             if (wheel.suspensionForce < 0) {
                 wheel.suspensionForce = 0;
