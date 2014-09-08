@@ -284,6 +284,9 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
             case PARTICLE: // Particle vs box
                 this.particleConvex(result,sj,si.convexPolyhedronRepresentation,xj,xi,qj,qi,bj,bi);
                 break;
+            case HEIGHTFIELD: // Box vs heightfield
+                this.convexHeightfield(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+                break;
             default:
                 warn("Collision between Shape.BOX and "+sj.type+" not implemented yet.");
                 break;
@@ -1289,6 +1292,82 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
     }
 };
 
+var convexHeightfield_tmp1 = new Vec3();
+var convexHeightfield_tmp2 = new Vec3();
+
+/**
+ * @method sphereHeightfield
+ */
+ContactGenerator.prototype.convexHeightfield = function (
+    result,
+    convexShape,
+    hfShape,
+    convexPos,
+    hfPos,
+    convexQuat,
+    hfQuat,
+    convexBody,
+    hfBody
+){
+    var data = hfShape.data,
+        w = hfShape.elementSize,
+        radius = convexShape.boundingSphereRadius,
+        worldPillarOffset = convexHeightfield_tmp2;
+
+    // Get sphere position to heightfield local!
+    var localConvexPos = convexHeightfield_tmp1;
+    Transform.pointToLocalFrame(hfPos, hfQuat, convexPos, localConvexPos);
+
+    // Get the index of the data points to test against
+    var iMinX = Math.floor((localConvexPos.x - radius) / w) - 1,
+        iMaxX = Math.ceil((localConvexPos.x + radius) / w) + 1,
+        iMinY = Math.floor((localConvexPos.y - radius) / w) - 1,
+        iMaxY = Math.ceil((localConvexPos.y + radius) / w) + 1;
+
+    // Bail out if we are out of the terrain
+    if(iMaxX < 0 || iMaxY < 0 || iMinX > data.length || iMaxY > data[0].length){
+        return;
+    }
+
+    // Clamp index to edges
+    if(iMinX < 0){ iMinX = 0; }
+    if(iMaxX < 0){ iMaxX = 0; }
+    if(iMinY < 0){ iMinY = 0; }
+    if(iMaxY < 0){ iMaxY = 0; }
+    if(iMinX >= data.length){ iMinX = data.length - 1; }
+    if(iMaxX >= data.length){ iMaxX = data.length - 1; }
+    if(iMaxY >= data[0].length){ iMaxY = data[0].length - 1; }
+    if(iMinY >= data[0].length){ iMinY = data[0].length - 1; }
+
+    var minMax = [];
+    hfShape.getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, minMax);
+    var min = minMax[0];
+    var max = minMax[1];
+
+    // Bail out if we're cant touch the bounding height box
+    if(localConvexPos.z - radius > max || localConvexPos.z + radius < min){
+        return;
+    }
+
+    for(var i = iMinX; i < iMaxX; i++){
+        for(var j = iMinY; j < iMaxY; j++){
+
+            // Lower triangle
+            hfShape.getConvexTrianglePillar(i, j, false);
+            Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
+            this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+
+            // Upper triangle
+            hfShape.getConvexTrianglePillar(i, j, true);
+            Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
+            this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+        }
+    }
+};
+
+
+
+
 var sphereHeightfield_tmp1 = new Vec3();
 var sphereHeightfield_tmp2 = new Vec3();
 
@@ -1313,8 +1392,6 @@ ContactGenerator.prototype.sphereHeightfield = function (
 
     // Get sphere position to heightfield local!
     var localSpherePos = sphereHeightfield_tmp1;
-    //hfBody.pointToLocalFrame(spherePos, localSpherePos);
-
     Transform.pointToLocalFrame(hfPos, hfQuat, spherePos, localSpherePos);
 
     // Get the index of the data points to test against

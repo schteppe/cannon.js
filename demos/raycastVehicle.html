@@ -37,80 +37,83 @@
             // We must add the contact materials to the world
             world.addContactMaterial(wheelGroundContactMaterial);
 
-            var chassisShape;
-            chassisShape = new CANNON.Box(new CANNON.Vec3(2, 0.5, 1));
-            var chassisBody = new CANNON.Body({ mass: mass });
-            chassisBody.addShape(chassisShape);
-            chassisBody.position.set(0, 0, 4);
-            chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
-            // chassisBody.angularVelocity.set(0, 0, 0.5);
-            demo.addVisual(chassisBody);
+            if(true){
+                var chassisShape;
+                chassisShape = new CANNON.Box(new CANNON.Vec3(2, 0.5, 1));
+                var chassisBody = new CANNON.Body({ mass: mass });
+                chassisBody.addShape(chassisShape);
+                chassisBody.position.set(0, 0, 4);
+                chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
+                //chassisBody.angularVelocity.set(0, 5, 0);
+                demo.addVisual(chassisBody);
 
-            var options = {
-                radius: 0.5,
-                directionLocal: new CANNON.Vec3(0, -1, 0), // down in y
-                suspensionStiffness: 30,
-                suspensionRestLength: 0.3,
-                frictionSlip: 1,
-                dampingRelaxation: 2.3,
-                dampingCompression: 4.4,
-                maxSuspensionForce: 100000,
-                rollInfluence: 0.01,
-                axleLocal: new CANNON.Vec3(0, 0, 1), // z
-                chassisConnectionPointLocal: new CANNON.Vec3(1, 0, 1),
-                maxSuspensionTravelCm: 30,
-            };
+                var options = {
+                    radius: 0.5,
+                    directionLocal: new CANNON.Vec3(0, -1, 0), // down in y
+                    suspensionStiffness: 30,
+                    suspensionRestLength: 0.3,
+                    frictionSlip: 1,
+                    dampingRelaxation: 2.3,
+                    dampingCompression: 4.4,
+                    maxSuspensionForce: 100000,
+                    rollInfluence: 0.01,
+                    axleLocal: new CANNON.Vec3(0, 0, 1), // z
+                    chassisConnectionPointLocal: new CANNON.Vec3(1, 0, 1),
+                    maxSuspensionTravelCm: 30,
+                };
 
-            // Create the vehicle
-            vehicle = new CANNON.RaycastVehicle({
-                chassisBody: chassisBody,
-                indexForwardAxis: 0,
-                indexRightAxis: 2,
-                indexUpAxis: 1,
-            });
+                // Create the vehicle
+                vehicle = new CANNON.RaycastVehicle({
+                    chassisBody: chassisBody,
+                    indexForwardAxis: 0,
+                    indexRightAxis: 2,
+                    indexUpAxis: 1,
+                });
 
-            options.chassisConnectionPointLocal.set(1, 0, 1);
-            vehicle.addWheel(options);
+                options.chassisConnectionPointLocal.set(1, 0, 1);
+                vehicle.addWheel(options);
 
-            options.chassisConnectionPointLocal.set(1, 0, -1);
-            vehicle.addWheel(options);
+                options.chassisConnectionPointLocal.set(1, 0, -1);
+                vehicle.addWheel(options);
 
-            options.chassisConnectionPointLocal.set(-1, 0, 1);
-            vehicle.addWheel(options);
+                options.chassisConnectionPointLocal.set(-1, 0, 1);
+                vehicle.addWheel(options);
 
-            options.chassisConnectionPointLocal.set(-1, 0, -1);
-            vehicle.addWheel(options);
+                options.chassisConnectionPointLocal.set(-1, 0, -1);
+                vehicle.addWheel(options);
 
-            vehicle.addToWorld(world);
+                vehicle.addToWorld(world);
 
-            // Ground
-            // var groundShape = new CANNON.Plane();
-            // var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
-            // ground.addShape(groundShape);
-            // world.add(ground);
-            // demo.addVisual(ground);
-
-            var wheelBodies = [];
-            for(var i=0; i<vehicle.wheelInfos.length; i++){
-                var wheel = vehicle.wheelInfos[i];
-                var cylinderShape = new CANNON.Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20);
-                var wheelBody = new CANNON.Body({ mass: 1 });
-                var q = new CANNON.Quaternion();
-                //q.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
-                wheelBody.addShape(cylinderShape, new CANNON.Vec3(), q);
-                wheelBodies.push(wheelBody);
-                demo.addVisual(wheelBody);
-            }
-
-            // Update wheels
-            world.addEventListener('postStep', function(){
-                for (var i = 0; i < vehicle.wheelInfos.length; i++) {
-                    vehicle.updateWheelTransform(i);
-                    var t = vehicle.wheelInfos[i].worldTransform;
-                    t.position.copy(wheelBodies[i].position);
-                    t.quaternion.copy(wheelBodies[i].quaternion);
+                var wheelBodies = [];
+                for(var i=0; i<vehicle.wheelInfos.length; i++){
+                    var wheel = vehicle.wheelInfos[i];
+                    var cylinderShape = new CANNON.Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20);
+                    var wheelBody = new CANNON.Body({ mass: 1 });
+                    var q = new CANNON.Quaternion();
+                    //q.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
+                    wheelBody.addShape(cylinderShape, new CANNON.Vec3(), q);
+                    wheelBodies.push(wheelBody);
+                    demo.addVisual(wheelBody);
                 }
-            });
+
+                // Update wheels
+                world.addEventListener('postStep', function(){
+                    for (var i = 0; i < vehicle.wheelInfos.length; i++) {
+                        vehicle.updateWheelTransform(i);
+                        var t = vehicle.wheelInfos[i].worldTransform;
+                        t.position.copy(wheelBodies[i].position);
+                        t.quaternion.copy(wheelBodies[i].quaternion);
+                    }
+                });
+            } else {
+                // Just a cube
+                var boxShape = new CANNON.Box(new CANNON.Vec3(2, 0.5, 1));
+                var boxBody = new CANNON.Body({ mass: mass });
+                boxBody.addShape(boxShape);
+                boxBody.position.set(0, 0, 4);
+                world.add(boxBody);
+                demo.addVisual(boxBody);
+            }
 
             var matrix = [];
             var sizeX = 64,
