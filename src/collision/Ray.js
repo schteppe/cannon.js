@@ -338,8 +338,13 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
 
     var from = this.from;
     var to = this.to;
+    var fromToDistance = from.distanceTo(to);
+
+    var minDistNormal = new Vec3();
+    var minDistIntersect = new Vec3();
 
     var reportClosest = result instanceof RaycastResult;
+    var minDist = -1;
 
     for (var fi = 0; fi < faces.length; fi++ ) {
 
@@ -398,14 +403,23 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
                 x.vadd(b,b);
                 x.vadd(c,c);
 
-                if (pointInTriangle(intersectPoint, a, b, c)) {
+                var distance = intersectPoint.distanceTo(from);
 
-                    if(this.reportIntersection(normal, intersectPoint, shape, body, result)){
-                        return result;
-                    }
+                if(!pointInTriangle(intersectPoint, a, b, c) || distance > fromToDistance){
+                    continue;
+                }
+
+                if(minDist === -1 || distance < minDist){
+                    minDist = distance;
+                    normal.copy(minDistNormal);
+                    intersectPoint.copy(minDistIntersect);
                 }
             }
         }
+    }
+
+    if(minDist !== -1 && this.reportIntersection(minDistNormal, minDistIntersect, shape, body, result)){
+        return result;
     }
 
     return result;

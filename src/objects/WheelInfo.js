@@ -80,7 +80,7 @@ function WheelInfo(options){
 WheelInfo.prototype.updateWheel = function(chassis){
     var raycastResult = this.raycastResult;
 
-    if (raycastResult.isInContact){
+    if (this.isInContact){
         var project= raycastResult.hitNormalWorld.dot(raycastResult.directionWorld);
         var chassis_velocity_at_contactPoint = new Vec3();
         var relpos = new Vec3();
@@ -104,4 +104,4 @@ WheelInfo.prototype.updateWheel = function(chassis){
         raycastResult.directionWorld.scale(-1, raycastResult.hitNormalWorld);
         this.clippedInvContactDotSuspension = 1.0;
     }
-}
+};

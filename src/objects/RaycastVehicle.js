@@ -263,8 +263,7 @@ RaycastVehicle.prototype.castRay = function(wheel) {
         }
         if (wheel.suspensionLength > maxSuspensionLength) {
             wheel.suspensionLength = maxSuspensionLength;
-            wheel.raycastResult.isInContact = false;
-            wheel.raycastResult.body = null;
+            wheel.raycastResult.reset();
         }
 
         var denominator = wheel.raycastResult.hitNormalWorld.dot(wheel.directionWorld);
@@ -286,7 +285,7 @@ RaycastVehicle.prototype.castRay = function(wheel) {
     } else {
 
         //put wheel info as in rest position
-        wheel.suspensionLength = wheel.suspensionRestLength + wheel.maxSuspensionTravelCm * 0.01;
+        wheel.suspensionLength = wheel.suspensionRestLength + 0 * wheel.maxSuspensionTravelCm * 0.01;
         wheel.suspensionRelativeVelocity = 0.0;
         wheel.directionWorld.scale(-1, wheel.raycastResult.hitNormalWorld);
         wheel.clippedInvContactDotSuspension = 1.0;

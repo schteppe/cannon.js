@@ -243,6 +243,9 @@ World.prototype.collisionMatrixTick = function(){
  * @deprecated Use .addBody instead
  */
 World.prototype.add = World.prototype.addBody = function(body){
+    if(this.bodies.indexOf(body) !== -1){
+        return;
+    }
     body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
