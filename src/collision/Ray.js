@@ -210,6 +210,9 @@ Ray.prototype.getAABB = function(result){
     result.upperBound.y = Math.max(to.y, from.y);
 };
 
+var intersectConvexOptions = {
+    faceList: [0]
+};
 Ray.prototype.intersectHeightfield = function(shape, quat, position, body, direction, result){
     var data = shape.data,
         w = shape.elementSize,
@@ -262,12 +265,12 @@ Ray.prototype.intersectHeightfield = function(shape, quat, position, body, direc
             // Lower triangle
             shape.getConvexTrianglePillar(i, j, false);
             Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
-            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, direction, result);
+            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, direction, result, intersectConvexOptions);
 
             // Upper triangle
             shape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
-            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, direction, result);
+            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, direction, result, intersectConvexOptions);
         }
     }
 
@@ -330,7 +333,13 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body, direction,
 Ray.prototype[Shape.types.SPHERE] = Ray.prototype.intersectSphere;
 
 
-Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, body, direction, result){
+var intersectConvex_minDistNormal = new Vec3();
+var intersectConvex_minDistIntersect = new Vec3();
+Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, body, direction, result, options){
+    var minDistNormal = intersectConvex_minDistNormal;
+    var minDistIntersect = intersectConvex_minDistIntersect;
+    var faceList = (options && options.faceList) || null;
+
     // Checking faces
     var faces = shape.faces,
         vertices = shape.vertices,
@@ -340,16 +349,15 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
     var to = this.to;
     var fromToDistance = from.distanceTo(to);
 
-    var minDistNormal = new Vec3();
-    var minDistIntersect = new Vec3();
-
     var reportClosest = result instanceof RaycastResult;
     var minDist = -1;
+    var Nfaces = faceList ? faceList.length : faces.length;
 
-    for (var fi = 0; fi < faces.length; fi++ ) {
+    for (var j = 0; j < Nfaces; j++) {
+        var fi = faceList ? faceList[j] : j;
 
-        var face = faces[ fi ];
-        var faceNormal = normals[ fi ];
+        var face = faces[fi];
+        var faceNormal = normals[fi];
         var q = quat;
         var x = position;
 
