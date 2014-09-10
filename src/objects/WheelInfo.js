@@ -68,6 +68,9 @@ function WheelInfo(options){
     this.skidInfo = 0;
     this.suspensionLength = 0;
 
+    this.sideImpulse = 0;
+    this.forwardImpulse = 0;
+
     /**
      * raycast starting point
      * @property {Vec3} raycastStartWorld
