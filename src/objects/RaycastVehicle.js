@@ -202,8 +202,19 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
             var proj2 = fwd.dot(vel);
             wheel.deltaRotation = m * proj2 * timeStep / wheel.radius;
         }
-        wheel.rotation += wheel.deltaRotation;
-        wheel.deltaRotation *= 0.99; //damping of rotation when not in contact
+
+        if((wheel.sliding || !wheel.isInContact) && wheel.engineForce !== 0 && wheel.useCustomSlidingRotationalSpeed){
+            // Apply custom rotation when accelerating and sliding
+            wheel.deltaRotation = (wheel.engineForce > 0 ? 1 : -1) * wheel.customSlidingRotationalSpeed * timeStep;
+        }
+
+        // Lock wheels
+        if(Math.abs(wheel.brake) > Math.abs(wheel.engineForce)){
+            wheel.deltaRotation = 0;
+        }
+
+        wheel.rotation += wheel.deltaRotation; // Use the old value
+        wheel.deltaRotation *= 0.99; // damping of rotation when not in contact
     }
 };
 
@@ -294,8 +305,8 @@ RaycastVehicle.prototype.castRay = function(wheel) {
         wheel.suspensionLength = hitDistance - wheel.radius;
 
         // clamp on max suspension travel
-        var minSuspensionLength = wheel.suspensionRestLength - wheel.maxSuspensionTravelCm * 0.01;
-        var maxSuspensionLength = wheel.suspensionRestLength + wheel.maxSuspensionTravelCm * 0.01;
+        var minSuspensionLength = wheel.suspensionRestLength - wheel.maxSuspensionTravel;
+        var maxSuspensionLength = wheel.suspensionRestLength + wheel.maxSuspensionTravel;
         if (wheel.suspensionLength < minSuspensionLength) {
             wheel.suspensionLength = minSuspensionLength;
         }
@@ -312,8 +323,8 @@ RaycastVehicle.prototype.castRay = function(wheel) {
         var projVel = wheel.raycastResult.hitNormalWorld.dot( chassis_velocity_at_contactPoint );
 
         if (denominator >= -0.1) {
-            wheel.suspensionRelativeVelocity = 0.0;
-            wheel.clippedInvContactDotSuspension = 1.0 / 0.1;
+            wheel.suspensionRelativeVelocity = 0;
+            wheel.clippedInvContactDotSuspension = 1 / 0.1;
         } else {
             var inv = -1 / denominator;
             wheel.suspensionRelativeVelocity = projVel * inv;
@@ -323,7 +334,7 @@ RaycastVehicle.prototype.castRay = function(wheel) {
     } else {
 
         //put wheel info as in rest position
-        wheel.suspensionLength = wheel.suspensionRestLength + 0 * wheel.maxSuspensionTravelCm * 0.01;
+        wheel.suspensionLength = wheel.suspensionRestLength + 0 * wheel.maxSuspensionTravel;
         wheel.suspensionRelativeVelocity = 0.0;
         wheel.directionWorld.scale(-1, wheel.raycastResult.hitNormalWorld);
         wheel.clippedInvContactDotSuspension = 1.0;
@@ -388,15 +399,19 @@ RaycastVehicle.prototype.getWheelTransformWorld = function(wheelIndex) {
 };
 
 
+var updateFriction_surfNormalWS_scaled_proj = new Vec3();
+var updateFriction_axle = [];
+var updateFriction_forwardWS = [];
 var sideFrictionStiffness2 = 1;
 RaycastVehicle.prototype.updateFriction = function(timeStep) {
+    var surfNormalWS_scaled_proj = updateFriction_surfNormalWS_scaled_proj;
 
     //calculate the impulse, so that the wheels don't move sidewards
     var wheelInfos = this.wheelInfos;
     var numWheels = wheelInfos.length;
     var chassisBody = this.chassisBody;
-    var forwardWS = [];
-    var axle = [];
+    var forwardWS = updateFriction_forwardWS;
+    var axle = updateFriction_axle;
 
     var numWheelsOnGround = 0;
 
@@ -410,8 +425,12 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
 
         wheel.sideImpulse = 0;
         wheel.forwardImpulse = 0;
-        forwardWS[i] = new Vec3();
-        axle[i] = new Vec3();
+        if(!forwardWS[i]){
+            forwardWS[i] = new Vec3();
+        }
+        if(!axle[i]){
+            axle[i] = new Vec3();
+        }
     }
 
     for (var i = 0; i < numWheels; i++){
@@ -427,7 +446,6 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
             wheelTrans.vectorToWorldFrame(directions[this.indexRightAxis], axlei);
 
             var surfNormalWS = wheel.raycastResult.hitNormalWorld;
-            var surfNormalWS_scaled_proj = new Vec3();
             var proj = axlei.dot(surfNormalWS);
             surfNormalWS.scale(proj, surfNormalWS_scaled_proj);
             axlei.vsub(surfNormalWS_scaled_proj, axlei);
@@ -494,6 +512,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
 
             if (impulseSquared > maximpSquared) {
                 this.sliding = true;
+                wheel.sliding = true;
 
                 var factor = maximp / Math.sqrt(impulseSquared);
 

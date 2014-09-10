@@ -35,40 +35,169 @@ function WheelInfo(options){
         suspensionForce: 0,
         skidInfo: 0,
         suspensionLength: 0,
-        maxSuspensionTravelCm: 1
+        maxSuspensionTravel: 1,
+        useCustomSlidingRotationalSpeed: false,
+        customSlidingRotationalSpeed: -0.1
     });
 
-    this.maxSuspensionTravelCm = options.maxSuspensionTravelCm;
+    /**
+     * @property {number} maxSuspensionTravel
+     */
+    this.maxSuspensionTravel = options.maxSuspensionTravel;
+
+    /**
+     * @property {number} customSlidingRotationalSpeed
+     */
+    this.customSlidingRotationalSpeed = options.customSlidingRotationalSpeed;
+
+    /**
+     * @property {Boolean} useCustomSlidingRotationalSpeed]
+     */
+    this.useCustomSlidingRotationalSpeed = options.useCustomSlidingRotationalSpeed;
+
+    /**
+     * @property {Boolean} sliding
+     */
+    this.sliding = false;
+
+    /**
+     * @property {Vec3} chassisConnectionPointLocal
+     */
     this.chassisConnectionPointLocal = options.chassisConnectionPointLocal.clone();
+
+    /**
+     * @property {Vec3} chassisConnectionPointWorld
+     */
     this.chassisConnectionPointWorld = options.chassisConnectionPointWorld.clone();
+
+    /**
+     * @property {Vec3} directionLocal
+     */
     this.directionLocal = options.directionLocal.clone();
+
+    /**
+     * @property {Vec3} directionWorld
+     */
     this.directionWorld = options.directionWorld.clone();
+
+    /**
+     * @property {Vec3} axleLocal
+     */
     this.axleLocal = options.axleLocal.clone();
+
+    /**
+     * @property {Vec3} axleWorld
+     */
     this.axleWorld = options.axleWorld.clone();
+
+    /**
+     * @property {number} suspensionRestLength
+     */
     this.suspensionRestLength = options.suspensionRestLength;
+
+    /**
+     * @property {number} suspensionMaxLength
+     */
     this.suspensionMaxLength = options.suspensionMaxLength;
+
+    /**
+     * @property {number} radius
+     */
     this.radius = options.radius;
+
+    /**
+     * @property {number} suspensionStiffness
+     */
     this.suspensionStiffness = options.suspensionStiffness;
+
+    /**
+     * @property {number} dampingCompression
+     */
     this.dampingCompression = options.dampingCompression;
+
+    /**
+     * @property {number} dampingRelaxation
+     */
     this.dampingRelaxation = options.dampingRelaxation;
+
+    /**
+     * @property {number} frictionSlip
+     */
     this.frictionSlip = options.frictionSlip;
+
+    /**
+     * @property {number} steering
+     */
     this.steering = 0;
+
+    /**
+     * @property {number} rotation
+     */
     this.rotation = 0;
+
+    /**
+     * @property {number} deltaRotation
+     */
     this.deltaRotation = 0;
+
+    /**
+     * @property {number} rollInfluence
+     */
     this.rollInfluence = options.rollInfluence;
+
+    /**
+     * @property {number} maxSuspensionForce
+     */
     this.maxSuspensionForce = options.maxSuspensionForce;
 
+    /**
+     * @property {number} engineForce
+     */
     this.engineForce = 0;
+
+    /**
+     * @property {number} brake
+     */
     this.brake = 0;
 
+    /**
+     * @property {number} isFrontWheel
+     */
     this.isFrontWheel = options.isFrontWheel;
+
+    /**
+     * @property {number} clippedInvContactDotSuspension
+     */
     this.clippedInvContactDotSuspension = 1;
+
+    /**
+     * @property {number} suspensionRelativeVelocity
+     */
     this.suspensionRelativeVelocity = 0;
+
+    /**
+     * @property {number} suspensionForce
+     */
     this.suspensionForce = 0;
+
+    /**
+     * @property {number} skidInfo
+     */
     this.skidInfo = 0;
+
+    /**
+     * @property {number} suspensionLength
+     */
     this.suspensionLength = 0;
 
+    /**
+     * @property {number} sideImpulse
+     */
     this.sideImpulse = 0;
+
+    /**
+     * @property {number} forwardImpulse
+     */
     this.forwardImpulse = 0;
 
     /**
@@ -76,7 +205,15 @@ function WheelInfo(options){
      * @property {Vec3} raycastStartWorld
      */
     this.raycastResult = new RaycastResult();
+
+    /**
+     * @property {Transform} worldTransform
+     */
     this.worldTransform = new Transform();
+
+    /**
+     * @property {boolean} isInContact
+     */
     this.isInContact = false;
 }
 
