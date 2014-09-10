@@ -157,6 +157,8 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
 
     this.updateSuspension(timeStep);
 
+    var impulse = new Vec3();
+    var relpos = new Vec3();
     for (var i = 0; i < numWheels; i++) {
         //apply suspension force
         var wheel = wheelInfos[i];
@@ -164,21 +166,21 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
         if (suspensionForce > wheel.maxSuspensionForce) {
             suspensionForce = wheel.maxSuspensionForce;
         }
-        var impulse = new Vec3();
         wheel.raycastResult.hitNormalWorld.scale(suspensionForce * timeStep, impulse);
 
-        var relpos = new Vec3();
         wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, relpos);
         chassisBody.applyImpulse(impulse, wheel.raycastResult.hitPointWorld/*relpos*/);
     }
 
     this.updateFriction(timeStep);
 
+    var hitNormalWorldScaledWithProj = new Vec3();
+    var fwd  = new Vec3();
+    var vel = new Vec3();
     for (i = 0; i < numWheels; i++) {
         var wheel = wheelInfos[i];
         //var relpos = new Vec3();
         //wheel.chassisConnectionPointWorld.vsub(chassisBody.position, relpos);
-        var vel = new Vec3();
         chassisBody.getVelocityAtWorldPoint(wheel.chassisConnectionPointWorld, vel);
 
         // Hack to get the rotation in the correct direction
@@ -191,10 +193,8 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
 
         if (wheel.isInContact) {
 
-            var fwd  = new Vec3();
             this.getVehicleAxisWorld(this.indexForwardAxis, fwd);
             var proj = fwd.dot(wheel.raycastResult.hitNormalWorld);
-            var hitNormalWorldScaledWithProj = new Vec3();
             wheel.raycastResult.hitNormalWorld.scale(proj, hitNormalWorldScaledWithProj);
 
             fwd.vsub(hitNormalWorldScaledWithProj, fwd);

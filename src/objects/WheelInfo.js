@@ -201,12 +201,13 @@ function WheelInfo(options){
     this.forwardImpulse = 0;
 
     /**
-     * raycast starting point
-     * @property {Vec3} raycastStartWorld
+     * The result from raycasting
+     * @property {RaycastResult} raycastResult
      */
     this.raycastResult = new RaycastResult();
 
     /**
+     * Wheel world transform
      * @property {Transform} worldTransform
      */
     this.worldTransform = new Transform();
@@ -217,15 +218,15 @@ function WheelInfo(options){
     this.isInContact = false;
 }
 
+var chassis_velocity_at_contactPoint = new Vec3();
+var relpos = new Vec3();
+var chassis_velocity_at_contactPoint = new Vec3();
 WheelInfo.prototype.updateWheel = function(chassis){
     var raycastResult = this.raycastResult;
 
     if (this.isInContact){
         var project= raycastResult.hitNormalWorld.dot(raycastResult.directionWorld);
-        var chassis_velocity_at_contactPoint = new Vec3();
-        var relpos = new Vec3();
         raycastResult.hitPointWorld.vsub(chassis.position, relpos);
-        var chassis_velocity_at_contactPoint = new Vec3();
         chassis.getVelocityAtWorldPoint(relpos, chassis_velocity_at_contactPoint);
         var projVel = raycastResult.hitNormalWorld.dot( chassis_velocity_at_contactPoint );
         if (project >= -0.1) {
