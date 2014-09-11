@@ -29,3 +29,11 @@ Transform.prototype.vectorToWorldFrame = function(localVector, result){
     this.quaternion.vmult(localVector, result);
     return result;
 };
+
+Transform.vectorToLocalFrame = function(position, quaternion, worldVector, result){
+    var result = result || new Vec3();
+    quaternion.w *= -1;
+    quaternion.vmult(worldVector, result);
+    quaternion.w *= -1;
+    return result;
+};

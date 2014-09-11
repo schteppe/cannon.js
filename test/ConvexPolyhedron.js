@@ -1,6 +1,7 @@
 var Vec3 =     require("../src/math/Vec3")
 ,   Quaternion = require("../src/math/Quaternion")
 ,   Box =      require('../src/shapes/Box')
+,   ConvexPolyhedron =      require('../src/shapes/ConvexPolyhedron')
 
 function createBoxHull(size){
     size = (size===undefined ? 0.5 : size);
@@ -146,7 +147,44 @@ module.exports = {
         //console.log("SepAxis found:",found2,", the axis:",sepaxis.toString());
 
         test.done();
-    }
+    },
+
+    project : function(test){
+        var convex = createBoxHull(0.5),
+            pos = new Vec3(0, 0, 0),
+            quat = new Quaternion();
+
+        var axis = new Vec3(1, 0, 0);
+        var result = [];
+
+        ConvexPolyhedron.project(convex, axis, pos, quat, result);
+        test.deepEqual(result, [0.5, -0.5]);
+
+        axis.set(-1, 0, 0);
+        ConvexPolyhedron.project(convex, axis, pos, quat, result);
+        test.deepEqual(result, [0.5, -0.5]);
+
+        axis.set(0, 1, 0);
+        ConvexPolyhedron.project(convex, axis, pos, quat, result);
+        test.deepEqual(result, [0.5, -0.5]);
+
+        pos.set(0, 1, 0);
+        axis.set(0, 1, 0);
+        ConvexPolyhedron.project(convex, axis, pos, quat, result);
+        test.deepEqual(result, [1.5, 0.5]);
+
+        // Test to rotate
+        quat.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI / 2);
+        pos.set(0, 1, 0);
+        axis.set(0, 1, 0);
+        ConvexPolyhedron.project(convex, axis, pos, quat, result);
+        test.ok(Math.abs(result[0] - 1.5) < 0.01);
+        test.ok(Math.abs(result[1] - 0.5) < 0.01);
+
+        test.done();
+    },
+
+
 };
 
 function createPolyBox(sx,sy,sz){

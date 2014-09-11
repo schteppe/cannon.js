@@ -27,6 +27,11 @@ function Shape(){
      * @property {Number} boundingSphereRadius
      */
     this.boundingSphereRadius = 0;
+
+    /**
+     * @property {boolean} collisionResponse
+     */
+    this.collisionResponse = true;
 }
 Shape.prototype.constructor = Shape;
 

@@ -67,6 +67,8 @@ function Equation(bi,bj,minForce,maxForce){
 
     // Set typical spook params
     this.setSpookParams(1e7,4,1/60);
+
+    this.enabled = true;
 }
 Equation.prototype.constructor = Equation;
 

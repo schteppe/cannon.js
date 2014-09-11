@@ -188,7 +188,7 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
 };
 
 /**
- * Get the index of a local position on the heightfield
+ * Get the index of a local position on the heightfield. The indexes indicate the rectangles, so if your terrain is made of N x N height data points, you will have rectangle indexes ranging from 0 to N-1.
  * @param  {number} x
  * @param  {number} y
  * @param  {array} result Two-element array

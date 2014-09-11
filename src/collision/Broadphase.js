@@ -26,6 +26,8 @@ function Broadphase(){
      * @type {Boolean}
      */
     this.useBoundingBoxes = false;
+
+    this.dirty = true;
 }
 
 /**

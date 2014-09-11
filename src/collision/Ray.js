@@ -229,13 +229,16 @@ Ray.prototype.intersectHeightfield = function(shape, quat, position, body, direc
     var iMinY = null;
     var iMaxX = null;
     var iMaxY = null;
-    if(shape.getIndexOfPosition(localRay.from.x, localRay.from.y, index, false)){
+
+    var inside = shape.getIndexOfPosition(localRay.from.x, localRay.from.y, index, false);
+    if(inside){
         iMinX = index[0];
         iMinY = index[1];
         iMaxX = index[0];
         iMaxY = index[1];
     }
-    if(shape.getIndexOfPosition(localRay.to.x, localRay.to.y, index, false)){
+    inside = shape.getIndexOfPosition(localRay.to.x, localRay.to.y, index, false);
+    if(inside){
         if (iMinX === null || index[0] < iMinX) { iMinX = index[0]; }
         if (iMaxX === null || index[0] > iMaxX) { iMaxX = index[0]; }
         if (iMinY === null || index[1] < iMinY) { iMinY = index[1]; }

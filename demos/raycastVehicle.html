@@ -23,6 +23,7 @@
 
         demo.addScene("car",function(){
             var world = demo.getWorld();
+            world.broadphase = new CANNON.SAPBroadphase(world);
             world.gravity.set(0, 0, -10);
             world.defaultContactMaterial.friction = 0;
 

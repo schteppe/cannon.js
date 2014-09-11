@@ -476,18 +476,20 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
 
         var rollingFriction = 0;
 
+        wheel.slipInfo = 1;
         if (groundObject) {
-            if (wheel.engineForce !== 0) {
-                rollingFriction = wheel.engineForce * timeStep;
-            } else {
-                var defaultRollingFrictionImpulse = 0;
-                var maxImpulse = wheel.brake ? wheel.brake : defaultRollingFrictionImpulse;
+            var defaultRollingFrictionImpulse = 0;
+            var maxImpulse = wheel.brake ? wheel.brake : defaultRollingFrictionImpulse;
 
-                // btWheelContactPoint contactPt(chassisBody,groundObject,wheelInfraycastInfo.hitPointWorld,forwardWS[wheel],maxImpulse);
-                // rollingFriction = calcRollingFriction(contactPt);
-                rollingFriction = calcRollingFriction(chassisBody, groundObject, wheel.raycastResult.hitPointWorld, forwardWS[i], maxImpulse);
-                // rollingFriction = 0;
-            }
+            // btWheelContactPoint contactPt(chassisBody,groundObject,wheelInfraycastInfo.hitPointWorld,forwardWS[wheel],maxImpulse);
+            // rollingFriction = calcRollingFriction(contactPt);
+            rollingFriction = calcRollingFriction(chassisBody, groundObject, wheel.raycastResult.hitPointWorld, forwardWS[i], maxImpulse);
+
+            rollingFriction += wheel.engineForce * timeStep;
+
+            // rollingFriction = 0;
+            var factor = maxImpulse / rollingFriction;
+            wheel.slipInfo *= factor;
         }
 
         //switch between active rolling (throttle), braking and non-active rolling friction (nthrottle/break)

@@ -76,6 +76,7 @@ SAPBroadphase.prototype.setWorld = function(world){
     world.addEventListener("removeBody", this._removeBodyHandler);
 
     this.world = world;
+    this.dirty = true;
 };
 
 /**
@@ -147,34 +148,20 @@ SAPBroadphase.insertionSortZ = function(a) {
  */
 SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
     var bodies = this.axisList,
+        N = bodies.length,
         axisIndex = this.axisIndex,
         i, j;
 
-    var N = bodies.length;
-
-    // Update AABBs
-    for(i=0; i!==N; i++){
-        var bi = bodies[i];
-        if(bi.aabbNeedsUpdate){
-            bi.computeAABB();
-        }
-    }
-
-    // Sort the list
-    var sortFunc;
-    if(axisIndex === 0){
-        SAPBroadphase.insertionSortX(bodies);
-    } else if(axisIndex === 1){
-        SAPBroadphase.insertionSortY(bodies);
-    } else if(axisIndex === 2){
-        SAPBroadphase.insertionSortZ(bodies);
+    if(this.dirty){
+        this.sortList();
+        this.dirty = false;
     }
 
     // Look through the list
-    for(i=0; i!==N; i++){
+    for(i=0; i !== N; i++){
         var bi = bodies[i];
 
-        for(j=i+1; j<N; j++){
+        for(j=i+1; j < N; j++){
             var bj = bodies[j];
 
             if(!this.needBroadphaseCollision(bi,bj)){
@@ -187,6 +174,29 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
 
             this.doBoundingSphereBroadphase(bi,bj,p1,p2);
         }
+    }
+};
+
+SAPBroadphase.prototype.sortList = function(){
+    var axisList = this.axisList;
+    var axisIndex = this.axisIndex;
+    var N = axisList.length;
+
+    // Update AABBs
+    for(var i = 0; i!==N; i++){
+        var bi = axisList[i];
+        if(bi.aabbNeedsUpdate){
+            bi.computeAABB();
+        }
+    }
+
+    // Sort the list
+    if(axisIndex === 0){
+        SAPBroadphase.insertionSortX(axisList);
+    } else if(axisIndex === 1){
+        SAPBroadphase.insertionSortY(axisList);
+    } else if(axisIndex === 2){
+        SAPBroadphase.insertionSortZ(axisList);
     }
 };
 
@@ -264,4 +274,38 @@ SAPBroadphase.prototype.autoDetectAxis = function(){
     } else{
         this.axisIndex = 2;
     }
+};
+
+/**
+ * Returns all the bodies within an AABB.
+ * @method aabbQuery
+ * @param  {World} world
+ * @param  {AABB} aabb
+ * @param {array} result An array to store resulting bodies in.
+ * @return {array}
+ */
+SAPBroadphase.prototype.aabbQuery = function(world, aabb, result){
+    result = result || [];
+
+    if(this.dirty){
+        this.sortList();
+        this.dirty = false;
+    }
+
+    var axisIndex = this.axisIndex, axis = 'x';
+    if(axisIndex === 1){ axis = 'y'; }
+    if(axisIndex === 2){ axis = 'z'; }
+
+    var axisList = this.axisList;
+    var lower = aabb.lowerBound[axis];
+    var upper = aabb.upperBound[axis];
+    for(var i = 0; i < axisList.length; i++){
+        var b = axisList[i];
+
+        if(b.aabb.upperBound[axis] > lower && b.aabb.lowerBound[axis] < upper && b.aabb.overlaps(aabb)){
+            result.push(b);
+        }
+    }
+
+    return result;
 };

@@ -63,7 +63,6 @@ function Body(options){
      */
 	this.collisionResponse = true;
 
-
     /**
      * @property position
      * @type {Vec3}

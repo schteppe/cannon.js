@@ -12,7 +12,7 @@ function Solver(){
      * @property {Array} equations
      */
     this.equations = [];
-};
+}
 
 /**
  * Should be implemented in subclasses!
@@ -31,7 +31,9 @@ Solver.prototype.solve = function(dt,world){
  * @param {Equation} eq
  */
 Solver.prototype.addEquation = function(eq){
-    this.equations.push(eq);
+    if (eq.enabled) {
+        this.equations.push(eq);
+    }
 };
 
 /**

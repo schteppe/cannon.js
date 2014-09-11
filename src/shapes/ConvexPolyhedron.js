@@ -3,6 +3,7 @@ module.exports = ConvexPolyhedron;
 var Shape = require('./Shape')
 ,   Vec3 = require('../math/Vec3')
 ,   Quaternion = require('../math/Quaternion')
+,   Transform = require('../math/Transform')
 
 /**
  * A set of polygons describing a convex shape.
@@ -870,28 +871,42 @@ ConvexPolyhedron.prototype.pointIsInside = function(p){
  * @param {array} result result[0] and result[1] will be set to maximum and minimum, respectively.
  */
 var project_worldVertex = new Vec3();
-ConvexPolyhedron.project = function(hull,axis,pos,quat,result){
+var project_localAxis = new Vec3();
+var project_localOrigin = new Vec3();
+ConvexPolyhedron.project = function(hull, axis, pos, quat, result){
     var n = hull.vertices.length,
         worldVertex = project_worldVertex,
-        max = null,
-        min = null,
+        localAxis = project_localAxis,
+        max = 0,
+        min = 0,
+        localOrigin = project_localOrigin,
         vs = hull.vertices;
 
-    for(var i=0; i<n; i++){
-        vs[i].copy(worldVertex);
-        quat.vmult(worldVertex,worldVertex);
-        worldVertex.vadd(pos,worldVertex);
-        var val = worldVertex.dot(axis);
+    localOrigin.setZero();
 
-        if(max===null || val>max)
+    // Transform the axis to local
+    Transform.vectorToLocalFrame(pos, quat, axis, localAxis);
+    Transform.pointToLocalFrame(pos, quat, localOrigin, localOrigin);
+    var add = localOrigin.dot(localAxis);
+
+    min = max = vs[0].dot(localAxis);
+
+    for(var i = 1; i < n; i++){
+        var val = vs[i].dot(localAxis);
+
+        if(val > max){
             max = val;
+        }
 
-        if(min===null || val<min)
+        if(val < min){
             min = val;
-
+        }
     }
 
-    if(min>max){
+    min -= add;
+    max -= add;
+
+    if(min > max){
         // Inconsistent - swap
         var temp = min;
         min = max;
@@ -900,4 +915,4 @@ ConvexPolyhedron.project = function(hull,axis,pos,quat,result){
     // Output
     result[0] = max;
     result[1] = min;
-}
+};

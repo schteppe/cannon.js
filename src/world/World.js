@@ -574,7 +574,10 @@ World.prototype.internalStep = function(dt){
         var c = contacts[k];
 
         // Get current collision indeces
-        var bi=c.bi, bj=c.bj;
+        var bi = c.bi,
+            bj = c.bj,
+            si = c.si,
+            sj = c.sj;
 
         // Resolve indices
         var i = bodies.indexOf(bi), j = bodies.indexOf(bj);
@@ -596,52 +599,53 @@ World.prototype.internalStep = function(dt){
 
         // Action if penetration
         if(g < 0.0){
-			if (bi.collisionResponse && bj.collisionResponse) {
-				c.restitution = cm.restitution;
-				c.penetration = g;
-				c.setSpookParams(cm.contactEquationStiffness,
-                                 cm.contactEquationRelaxation,
-                                 dt);
 
-				solver.addEquation(c);
+            c.enabled = bi.collisionResponse && bj.collisionResponse && si.collisionResponse && sj.collisionResponse;
 
-				// Add friction constraint equation
-				if(mu > 0){
+			c.restitution = cm.restitution;
+			c.penetration = g;
+			c.setSpookParams(cm.contactEquationStiffness,
+                             cm.contactEquationRelaxation,
+                             dt);
 
-					// Create 2 tangent equations
-					var mug = mu*gnorm;
-					var reducedMass = (bi.invMass + bj.invMass);
-					if(reducedMass > 0){
-						reducedMass = 1/reducedMass;
-					}
-					var pool = frictionEquationPool;
-					var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-					var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-					this.frictionEquations.push(c1);
-					this.frictionEquations.push(c2);
+			solver.addEquation(c);
 
-					c1.bi = c2.bi = bi;
-					c1.bj = c2.bj = bj;
-					c1.minForce = c2.minForce = -mug*reducedMass;
-					c1.maxForce = c2.maxForce = mug*reducedMass;
+			// Add friction constraint equation
+			if(mu > 0){
 
-					// Copy over the relative vectors
-					c.ri.copy(c1.ri);
-					c.rj.copy(c1.rj);
-					c.ri.copy(c2.ri);
-					c.rj.copy(c2.rj);
-
-					// Construct tangents
-					c.ni.tangents(c1.t, c2.t);
-
-                    // Set spook params
-                    c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
-                    c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
-
-					// Add equations to solver
-					solver.addEquation(c1);
-					solver.addEquation(c2);
+				// Create 2 tangent equations
+				var mug = mu*gnorm;
+				var reducedMass = (bi.invMass + bj.invMass);
+				if(reducedMass > 0){
+					reducedMass = 1/reducedMass;
 				}
+				var pool = frictionEquationPool;
+				var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+				var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+				this.frictionEquations.push(c1);
+				this.frictionEquations.push(c2);
+
+				c1.bi = c2.bi = bi;
+				c1.bj = c2.bj = bj;
+				c1.minForce = c2.minForce = -mug*reducedMass;
+				c1.maxForce = c2.maxForce = mug*reducedMass;
+
+				// Copy over the relative vectors
+				c.ri.copy(c1.ri);
+				c.rj.copy(c1.rj);
+				c.ri.copy(c2.ri);
+				c.rj.copy(c2.rj);
+
+				// Construct tangents
+				c.ni.tangents(c1.t, c2.t);
+
+                // Set spook params
+                c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
+                c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
+
+				// Add equations to solver
+				solver.addEquation(c1);
+				solver.addEquation(c2);
 			}
 
             if( bi.allowSleep &&
@@ -845,6 +849,8 @@ World.prototype.internalStep = function(dt){
         }
 
     }
+
+    this.broadphase.dirty = true;
 
     if(doProfiling){
         profile.integrate = performance.now() - profilingStart;

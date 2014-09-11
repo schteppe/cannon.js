@@ -140,12 +140,25 @@ module.exports = {
         r.intersectBody(body, result);
         test.equals(result.hasHit, false);
 
-        // Hit the last index
+        // Hit all triangles!
         var result = new RaycastResult();
-        r.from.set(-100, -100, 10);
-        r.to.set(-100, -100, -10);
-        r.intersectBody(body, result);
-        test.equals(result.hasHit, false);
+        for(var i = 0; i < data.length - 1; i++){ // 3x3 data points will have 2x2 rectangles in the field
+            for(var j = 0; j < data[i].length - 1; j++){
+                for(var k = 0; k < 2; k++){
+                    result.reset();
+                    r.from.set(i + 0.25, j + 0.25, 10);
+                    r.to.set(i + 0.25, j + 0.25, -10);
+                    if (k) {
+                        r.from.x += 0.5;
+                        r.from.y += 0.5;
+                        r.to.x += 0.5;
+                        r.to.y += 0.5;
+                    }
+                    r.intersectBody(body, result);
+                    test.ok(result.hasHit, 'missed triangle ' + [i, j].join(','));
+                }
+            }
+        }
 
         test.done();
     },

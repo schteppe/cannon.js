@@ -20,28 +20,29 @@ CANNON.Demo = function(options){
 
     // Global settings
     var settings = this.settings = {
-        stepFrequency:60,
-        quatNormalizeSkip:2,
-        quatNormalizeFast:true,
-        gx:0.0,
-        gy:0.0,
-        gz:0.0,
-        iterations:3,
-        tolerance:0.0001,
-        k:1000,
-        d:3,
-        scene:0,
-        paused:false,
-        rendermode:"solid",
-        constraints:false,
-        contacts:false,  // Contact points
-        cm2contact:false, // center of mass to contact points
-        normals:false, // contact normals
-        axes:false, // "local" frame axes
-        particleSize:0.1,
-        shadows:true,
-        aabbs:false,
-        profiling:false,
+        stepFrequency: 60,
+        quatNormalizeSkip: 2,
+        quatNormalizeFast: true,
+        gx: 0,
+        gy: 0,
+        gz: 0,
+        iterations: 3,
+        tolerance: 0.0001,
+        k: 1e6,
+        d: 3,
+        scene: 0,
+        paused: false,
+        rendermode: "solid",
+        constraints: false,
+        contacts: false,  // Contact points
+        cm2contact: false, // center of mass to contact points
+        normals: false, // contact normals
+        axes: false, // "local" frame axes
+        particleSize: 0.1,
+        shadows: true,
+        aabbs: false,
+        profiling: false,
+        maxSubSteps:3
     };
 
     // Extend settings with options
@@ -65,7 +66,7 @@ CANNON.Demo = function(options){
     var scenePicker = {};
 
     var three_contactpoint_geo = new THREE.SphereGeometry( 0.1, 6, 6);
-    var particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
+    var particleGeo = this.particleGeo = new THREE.SphereGeometry( 1, 16, 8 );
 
     // Material
     var materialColor = 0xdddddd;
@@ -74,7 +75,7 @@ CANNON.Demo = function(options){
     var wireframeMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, wireframe:true } );
     this.currentMaterial = solidMaterial;
     var contactDotMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
-    var particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+    var particleMaterial = this.particleMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
 
     // Geometry caches
     var contactMeshCache = new GeometryCache(function(){
@@ -261,8 +262,9 @@ CANNON.Demo = function(options){
         for(var i=0; i<N; i++){
             var b = bodies[i], visual = visuals[i];
             b.position.copy(visual.position);
-            if(b.quaternion)
+            if(b.quaternion){
                 b.quaternion.copy(visual.quaternion);
+            }
         }
 
         // Render contacts
@@ -286,10 +288,10 @@ CANNON.Demo = function(options){
         if(settings.cm2contact){
             for(var ci=0; ci<world.contacts.length; ci++){
                 for(var ij=0; ij < 2; ij++){
-                    var  line = cm2contactMeshCache.request(),
-                    c = world.contacts[ci],
-                    b = ij===0 ? c.bi : c.bj,
-                    r = ij===0 ? c.ri : c.rj;
+                    var line = cm2contactMeshCache.request(),
+                        c = world.contacts[ci],
+                        b = ij===0 ? c.bi : c.bj,
+                        r = ij===0 ? c.ri : c.rj;
                     line.scale.set( r.x, r.y, r.z);
                     makeSureNotZero(line.scale);
                     b.position.copy(line.position);
@@ -393,22 +395,22 @@ CANNON.Demo = function(options){
                     }
 
                     // Todo: cap the infinite AABB to scene AABB, for now just dont render
-                    if( isFinite(b.aabbmax.x) &&
-                        isFinite(b.aabbmax.y) &&
-                        isFinite(b.aabbmax.z) &&
-                        isFinite(b.aabbmin.x) &&
-                        isFinite(b.aabbmin.y) &&
-                        isFinite(b.aabbmin.z) &&
-                        b.aabbmax.x - b.aabbmin.x != 0 &&
-                        b.aabbmax.y - b.aabbmin.y != 0 &&
-                        b.aabbmax.z - b.aabbmin.z != 0){
+                    if( isFinite(b.aabb.lowerBound.x) &&
+                        isFinite(b.aabb.lowerBound.y) &&
+                        isFinite(b.aabb.lowerBound.z) &&
+                        isFinite(b.aabb.upperBound.x) &&
+                        isFinite(b.aabb.upperBound.y) &&
+                        isFinite(b.aabb.upperBound.z) &&
+                        b.aabb.lowerBound.x - b.aabb.upperBound.x != 0 &&
+                        b.aabb.lowerBound.y - b.aabb.upperBound.y != 0 &&
+                        b.aabb.lowerBound.z - b.aabb.upperBound.z != 0){
                             var mesh = bboxMeshCache.request();
-                            mesh.scale.set( b.aabbmax.x - b.aabbmin.x,
-                                            b.aabbmax.y - b.aabbmin.y,
-                                            b.aabbmax.z - b.aabbmin.z);
-                            mesh.position.set(  (b.aabbmax.x + b.aabbmin.x)*0.5,
-                                                (b.aabbmax.y + b.aabbmin.y)*0.5,
-                                                (b.aabbmax.z + b.aabbmin.z)*0.5);
+                            mesh.scale.set( b.aabb.lowerBound.x - b.aabb.upperBound.x,
+                                            b.aabb.lowerBound.y - b.aabb.upperBound.y,
+                                            b.aabb.lowerBound.z - b.aabb.upperBound.z);
+                            mesh.position.set(  (b.aabb.lowerBound.x + b.aabb.upperBound.x)*0.5,
+                                                (b.aabb.lowerBound.y + b.aabb.upperBound.y)*0.5,
+                                                (b.aabb.lowerBound.z + b.aabb.upperBound.z)*0.5);
                         }
                 }
             }
@@ -693,11 +695,25 @@ CANNON.Demo = function(options){
         stats.update();
     }
 
+    var lastCallTime = 0;
     function updatePhysics(){
         // Step world
-        for(var i=0; i<Math.ceil(settings.stepFrequency/60); i++){
-            world.step(1/settings.stepFrequency);
+        var timeStep = 1 / settings.stepFrequency;
+
+        var now = Date.now() / 1000;
+
+        if(!lastCallTime){
+            // last call time not saved, cant guess elapsed time. Take a simple step.
+            world.step(timeStep);
+            lastCallTime = now;
+            return;
         }
+
+        var timeSinceLastCall = now - lastCallTime;
+
+        world.step(timeStep, timeSinceLastCall, settings.maxSubSteps);
+
+        lastCallTime = now;
     }
 
     function onDocumentMouseMove( event ) {
@@ -760,7 +776,8 @@ CANNON.Demo = function(options){
                 break;
 
             case 115: // s
-                updatePhysics();
+                var timeStep = 1 / settings.stepFrequency;
+                world.step(timeStep);
                 updateVisuals();
                 break;
 
@@ -891,11 +908,8 @@ CANNON.Demo.prototype.addVisual = function(body){
     var s = this.settings;
     // What geometry should be used?
     var mesh;
-    if(body instanceof CANNON.RigidBody)
-        mesh = this.shape2mesh(body.shape);
-    else if(body instanceof CANNON.Particle){
-        mesh = new THREE.Mesh( this.particleGeo, this.particleMaterial );
-        mesh.scale.set(s.particleSize,s.particleSize,s.particleSize);
+    if(body instanceof CANNON.Body){
+        mesh = this.shape2mesh(body);
     }
     if(mesh) {
         // Add body
@@ -937,86 +951,162 @@ CANNON.Demo.prototype.removeVisual = function(body){
     }
 };
 
-CANNON.Demo.prototype.shape2mesh = function(shape){
-    var wireframe = this.settings.renderMode=="wireframe";
-    var mesh;
-    switch(shape.type){
+CANNON.Demo.prototype.shape2mesh = function(body){
+    var wireframe = this.settings.renderMode === "wireframe";
+    var obj = new THREE.Object3D();
 
-    case CANNON.Shape.types.SPHERE:
-        var sphere_geometry = new THREE.SphereGeometry( shape.radius, 8, 8);
-        mesh = new THREE.Mesh( sphere_geometry, this.currentMaterial );
-        break;
+    for (var l = 0; l < body.shapes.length; l++) {
+        var shape = body.shapes[l];
 
-    case CANNON.Shape.types.PLANE:
-        var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
-        mesh = new THREE.Object3D();
-        var submesh = new THREE.Object3D();
-        var ground = new THREE.Mesh( geometry, this.currentMaterial );
-        ground.scale = new THREE.Vector3(100,100,100);
-        submesh.add(ground);
+        switch(shape.type){
 
-        ground.castShadow = true;
-        ground.receiveShadow = true;
+        case CANNON.Shape.types.SPHERE:
+            var sphere_geometry = new THREE.SphereGeometry( shape.radius, 8, 8);
+            mesh = new THREE.Mesh( sphere_geometry, this.currentMaterial );
+            break;
 
-        mesh.add(submesh);
-        break;
+        case CANNON.Shape.types.PARTICLE:
+            mesh = new THREE.Mesh( this.particleGeo, this.particleMaterial );
+            var s = this.settings;
+            mesh.scale.set(s.particleSize,s.particleSize,s.particleSize);
+            break;
 
-    case CANNON.Shape.types.BOX:
-        var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
-                                                    shape.halfExtents.y*2,
-                                                    shape.halfExtents.z*2 );
-        mesh = new THREE.Mesh( box_geometry, this.currentMaterial );
-        break;
+        case CANNON.Shape.types.PLANE:
+            var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
+            mesh = new THREE.Object3D();
+            var submesh = new THREE.Object3D();
+            var ground = new THREE.Mesh( geometry, this.currentMaterial );
+            ground.scale = new THREE.Vector3(100,100,100);
+            submesh.add(ground);
 
-    case CANNON.Shape.types.CONVEXPOLYHEDRON:
-        var verts = [];
-        for(var i=0; i<shape.vertices.length; i++){
-            verts.push(new THREE.Vector3(shape.vertices[i].x,
-            shape.vertices[i].y,
-            shape.vertices[i].z));
+            ground.castShadow = true;
+            ground.receiveShadow = true;
+
+            mesh.add(submesh);
+            break;
+
+        case CANNON.Shape.types.BOX:
+            var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
+                                                        shape.halfExtents.y*2,
+                                                        shape.halfExtents.z*2 );
+            mesh = new THREE.Mesh( box_geometry, this.currentMaterial );
+            break;
+
+        case CANNON.Shape.types.CONVEXPOLYHEDRON:
+            var verts = [];
+            for(var i=0; i<shape.vertices.length; i++){
+                verts.push(
+                    new THREE.Vector3(
+                        shape.vertices[i].x,
+                        shape.vertices[i].y,
+                        shape.vertices[i].z
+                    )
+                );
+            }
+            var geo = new THREE.ConvexGeometry( verts );
+
+            // var geo = new THREE.Geometry();
+            // for(var i=0; i < shape.faces.length; i++){
+            //     var face = shape.faces[i];
+
+            //     // add triangles
+            //     for (var j = 0; j < face.length - 2; j++) {
+            //         var v0 = shape.vertices[face[j]];
+            //         var v1 = shape.vertices[face[j + 1]];
+            //         var v2 = shape.vertices[face[j + 2]];
+            //         geo.vertices.push(
+            //             new THREE.Vector3(v0.x, v0.y, v0.z),
+            //             new THREE.Vector3(v1.x, v1.y, v1.z),
+            //             new THREE.Vector3(v2.x, v2.y, v2.z)
+            //         );
+            //         var k = geo.vertices.length - 3;
+            //         geo.faces.push(new THREE.Face3(k, k+1, k+2));
+            //     }
+            // }
+            geo.computeBoundingSphere();
+            geo.computeFaceNormals();
+            mesh = new THREE.Mesh( geo, this.currentMaterial );
+            break;
+
+        case CANNON.Shape.types.HEIGHTFIELD:
+            var geometry = new THREE.Geometry();
+
+            var v0 = new CANNON.Vec3();
+            var v1 = new CANNON.Vec3();
+            var v2 = new CANNON.Vec3();
+            for (var xi = 0; xi < shape.data.length - 1; xi++) {
+                for (var yi = 0; yi < shape.data[xi].length - 1; yi++) {
+                    for (var k = 0; k < 2; k++) {
+                        shape.getConvexTrianglePillar(xi, yi, k===0);
+                        shape.pillarConvex.vertices[0].copy(v0);
+                        shape.pillarConvex.vertices[1].copy(v1);
+                        shape.pillarConvex.vertices[2].copy(v2);
+                        v0.vadd(shape.pillarOffset, v0);
+                        v1.vadd(shape.pillarOffset, v1);
+                        v2.vadd(shape.pillarOffset, v2);
+                        geometry.vertices.push(
+                            new THREE.Vector3(v0.x, v0.y, v0.z),
+                            new THREE.Vector3(v1.x, v1.y, v1.z),
+                            new THREE.Vector3(v2.x, v2.y, v2.z)
+                        );
+                        var i = geometry.vertices.length - 3;
+                        geometry.faces.push(new THREE.Face3(i, i+1, i+2));
+                    }
+                }
+            }
+            geometry.computeBoundingSphere();
+            geometry.computeFaceNormals();
+            mesh = new THREE.Mesh(geometry, this.currentMaterial);
+            break;
+
+        /*
+        case CANNON.Shape.types.COMPOUND:
+            // recursive compounds
+            var o3d = new THREE.Object3D();
+            for(var i = 0; i<shape.childShapes.length; i++){
+
+                // Get child information
+                var subshape = shape.childShapes[i];
+                var o = shape.childOffsets[i];
+                var q = shape.childOrientations[i];
+
+                var submesh = this.shape2mesh(subshape);
+                submesh.position.set(o.x,o.y,o.z);
+                submesh.quaternion.set(q.x,q.y,q.z,q.w);
+
+                //submesh.useQuaternion = true;
+                o3d.add(submesh);
+                mesh = o3d;
+            }
+            break;
+        */
+
+        default:
+            throw "Visual type not recognized: "+shape.type;
         }
-        var geo = new THREE.ConvexGeometry( verts );
-        mesh = new THREE.Mesh( geo, this.currentMaterial );
 
-        break;
-
-    case CANNON.Shape.types.COMPOUND:
-        // recursive compounds
-        var o3d = new THREE.Object3D();
-        for(var i = 0; i<shape.childShapes.length; i++){
-
-            // Get child information
-            var subshape = shape.childShapes[i];
-            var o = shape.childOffsets[i];
-            var q = shape.childOrientations[i];
-
-            var submesh = this.shape2mesh(subshape);
-            submesh.position.set(o.x,o.y,o.z);
-            submesh.quaternion.set(q.x,q.y,q.z,q.w);
-
-            //submesh.useQuaternion = true;
-            o3d.add(submesh);
-            mesh = o3d;
-        }
-        break;
-
-    default:
-        throw "Visual type not recognized: "+shape.type;
-    }
-
-    mesh.receiveShadow = true;
-    mesh.castShadow = true;
-    if(mesh.children){
-        for(var i=0; i<mesh.children.length; i++){
-            mesh.children[i].castShadow = true;
-            mesh.children[i].receiveShadow = true;
-            if(mesh.children[i]){
-                for(var j=0; j<mesh.children[i].length; j++){
-                    mesh.children[i].children[j].castShadow = true;
-                    mesh.children[i].children[j].receiveShadow = true;
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
+        if(mesh.children){
+            for(var i=0; i<mesh.children.length; i++){
+                mesh.children[i].castShadow = true;
+                mesh.children[i].receiveShadow = true;
+                if(mesh.children[i]){
+                    for(var j=0; j<mesh.children[i].length; j++){
+                        mesh.children[i].children[j].castShadow = true;
+                        mesh.children[i].children[j].receiveShadow = true;
+                    }
                 }
             }
         }
+
+        var o = body.shapeOffsets[l];
+        var q = body.shapeOrientations[l];
+        mesh.position.set(o.x, o.y, o.z);
+        mesh.quaternion.set(q.x, q.y, q.z, q.w);
+
+        obj.add(mesh);
     }
-    return mesh;
-}
+
+    return obj;
+};

@@ -68,15 +68,21 @@ ContactGenerator.prototype.reduceContacts = function(contacts){
  * @method makeResult
  * @return {ContactEquation}
  */
-ContactGenerator.prototype.makeResult = function(bi,bj){
+ContactGenerator.prototype.makeResult = function(bi, bj, si, sj){
+    var c;
     if(this.contactPointPool.length){
-        var c = this.contactPointPool.pop();
+        c = this.contactPointPool.pop();
         c.bi = bi;
         c.bj = bj;
-        return c;
     } else {
-        return new ContactEquation(bi,bj);
+        c = new ContactEquation(bi, bj);
     }
+
+    c.enabled = true;
+    c.si = si;
+    c.sj = sj;
+
+    return c;
 };
 
 var tmpVec1 = new Vec3();
@@ -383,7 +389,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
  */
 ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have only one contact in this case
-    var r = this.makeResult(bi,bj);
+    var r = this.makeResult(bi,bj,si,sj);
 
     // Contact normal
     bj.position.vsub(xi, r.ni);
@@ -414,7 +420,7 @@ var plane_to_sphere_ortho = new Vec3();
  */
 ContactGenerator.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have one contact in this case
-    var r = this.makeResult(bi,bj);
+    var r = this.makeResult(bi,bj,si,sj);
 
     // Contact normal
     r.ni.set(0,0,1);
@@ -568,7 +574,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     }
     if(side_penetrations){
         found = true;
-        var r = this.makeResult(bi,bj);
+        var r = this.makeResult(bi,bj,si,sj);
         side_ns.mult(-R,r.ri); // Sphere r
         side_ns.copy(r.ni);
         r.ni.negate(r.ni); // Normal should be out of sphere
@@ -616,7 +622,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
 
                 if(sphere_to_corner.norm2() < R*R){
                     found = true;
-                    var r = this.makeResult(bi,bj);
+                    var r = this.makeResult(bi,bj,si,sj);
                     sphere_to_corner.copy(r.ri);
                     r.ri.normalize();
                     r.ri.copy(r.ni);
@@ -675,7 +681,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
 
                 if(tdist < sides[l].norm() && ndist<R){
                     found = true;
-                    var res = this.makeResult(bi,bj);
+                    var res = this.makeResult(bi,bj,si,sj);
                     edgeCenter.vadd(orthogonal,res.rj); // box rj
                     res.rj.copy(res.rj);
                     dist.negate(res.ni);
@@ -745,7 +751,7 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
         worldCorner.vsub(xi, sphere_to_corner);
         if(sphere_to_corner.norm2() < R * R){
             found = true;
-            var r = this.makeResult(bi,bj);
+            var r = this.makeResult(bi,bj,si,sj);
             sphere_to_corner.copy(r.ri);
             r.ri.normalize();
             r.ri.copy(r.ni);
@@ -807,7 +813,7 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
 
             if(pointInPolygon(faceVerts,worldNormal,xi)){ // Is the sphere center in the face polygon?
                 found = true;
-                var r = this.makeResult(bi,bj);
+                var r = this.makeResult(bi,bj,si,sj);
 
                 worldNormal.mult(-R, r.ri); // Contact offset, from sphere center to contact
                 worldNormal.negate(r.ni); // Normal pointing out of sphere
@@ -877,7 +883,7 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
                     // AND if p is in between v1 and v2
                     if(dot > 0 && dot*dot<edge.norm2() && xi_to_p.norm2() < R*R){ // Collision if the edge-sphere distance is less than the radius
                         // Edge contact!
-                        var r = this.makeResult(bi,bj);
+                        var r = this.makeResult(bi,bj,si,sj);
                         p.vsub(xj,r.rj);
 
                         p.vsub(xi,r.ni);
@@ -1055,7 +1061,7 @@ ContactGenerator.prototype.planeConvex = function(
         var dot = worldNormal.dot(relpos);
         if(dot <= 0.0){
 
-            var r = this.makeResult(planeBody, convexBody);
+            var r = this.makeResult(planeBody, convexBody, planeShape, convexShape);
 
             // Get vertex position projected on plane
             var projected = planeConvex_projected;
@@ -1101,7 +1107,7 @@ ContactGenerator.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
         var q = convexConvex_q;
         si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
         for(var j = 0; j !== res.length; j++){
-            var r = this.makeResult(bi,bj),
+            var r = this.makeResult(bi,bj,si,sj),
                 ri = r.ri,
                 rj = r.rj;
             sepAxis.negate(r.ni);
@@ -1149,7 +1155,7 @@ ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,
     xi.vsub(bj.position,relpos);
     var dot = normal.dot(relpos);
     if(dot <= 0.0){
-        var r = this.makeResult(bi,bj);
+        var r = this.makeResult(bi,bj,si,sj);
         normal.copy( r.ni ); // Contact normal is the plane normal
         r.ni.negate(r.ni);
         r.ri.set(0,0,0); // Center of particle
@@ -1188,7 +1194,7 @@ ContactGenerator.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi
     var lengthSquared = normal.norm2();
 
     if(lengthSquared <= sj.radius * sj.radius){
-        var r = this.makeResult(bi,bj);
+        var r = this.makeResult(bi,bj,si,sj);
         normal.normalize();
         normal.copy(r.rj);
         r.rj.mult(sj.radius,r.rj);
@@ -1262,7 +1268,7 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
 
         if(penetratedFaceIndex!==-1){
             // Setup contact
-            var r = this.makeResult(bi,bj);
+            var r = this.makeResult(bi,bj,si,sj);
             penetratedFaceNormal.mult(minPenetration, worldPenetrationVec);
 
             // rj is the particle position projected to the face
