@@ -510,6 +510,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
 
             var impulseSquared = x * x + y * y;
 
+            wheel.sliding = false;
             if (impulseSquared > maximpSquared) {
                 this.sliding = true;
                 wheel.sliding = true;
