@@ -70,7 +70,7 @@ function Body(options){
     this.position = new Vec3();
 
     if(options.position){
-        options.position.copy(this.position);
+        this.position.copy(options.position);
     }
 
     /**
@@ -398,8 +398,8 @@ Body.prototype.updateSolveMassProperties = function(){
         this.invInertiaWorldSolve.setZero();
     } else {
         this.invMassSolve = this.invMass;
-        this.invInertia.copy(this.invInertiaSolve);
-        this.invInertiaWorld.copy(this.invInertiaWorldSolve);
+        this.invInertiaSolve.copy(this.invInertia);
+        this.invInertiaWorldSolve.copy(this.invInertiaWorld);
     }
 };
 
@@ -453,10 +453,10 @@ Body.prototype.addShape = function(shape, _offset, _orientation){
     var orientation = new Quaternion();
 
     if(_offset){
-        _offset.copy(offset);
+        offset.copy(_offset);
     }
     if(_orientation){
-        _orientation.copy(orientation);
+        orientation.copy(_orientation);
     }
 
     this.shapes.push(shape);
@@ -614,7 +614,7 @@ Body.prototype.applyImpulse = function(impulse, worldPoint){
 
     // Compute produced central impulse velocity
     var velo = Body_applyImpulse_velo;
-    impulse.copy(velo);
+    velo.copy(impulse);
     velo.mult(this.invMass,velo);
 
     // Add linear impulse

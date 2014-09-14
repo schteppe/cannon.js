@@ -40,6 +40,6 @@ Particle.prototype.updateBoundingSphereRadius = function(){
 
 Particle.prototype.calculateWorldAABB = function(pos,quat,min,max){
     // Get each axis max
-    pos.copy(min);
-    pos.copy(max);
+    min.copy(pos);
+    max.copy(pos);
 };

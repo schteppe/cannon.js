@@ -216,7 +216,7 @@ ConvexPolyhedron.prototype.clipAgainstHull = function(posA,quatA,hullB,posB,quat
     var closestFaceB = -1;
     var dmax = -Infinity;
     for(var face=0; face < hullB.faces.length; face++){
-        hullB.faceNormals[face].copy(WorldNormal);
+        WorldNormal.copy(hullB.faceNormals[face]);
         quatB.vmult(WorldNormal,WorldNormal);
         //posB.vadd(WorldNormal,WorldNormal);
         var d = WorldNormal.dot(separatingNormal);
@@ -231,7 +231,7 @@ ConvexPolyhedron.prototype.clipAgainstHull = function(posA,quatA,hullB,posB,quat
     for(var e0=0; e0<numVertices; e0++){
         var b = hullB.vertices[polyB[e0]];
         var worldb = new Vec3();
-        b.copy(worldb);
+        worldb.copy(b);
         quatB.vmult(worldb,worldb);
         posB.vadd(worldb,worldb);
         worldVertsB1.push(worldb);
@@ -281,7 +281,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     // Test normals from hullA
     for(var i=0; i<numFacesA; i++){
         // Get world face normal
-        hullA.faceNormals[i].copy(faceANormalWS3);
+        faceANormalWS3.copy(hullA.faceNormals[i]);
         quatA.vmult(faceANormalWS3,faceANormalWS3);
         //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
         //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
@@ -292,14 +292,14 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
 
         if(d<dmin){
             dmin = d;
-            faceANormalWS3.copy(target);
+            target.copy(faceANormalWS3);
         }
     }
 
     // Test normals from hullB
     var numFacesB = hullB.faces.length;
     for(var i=0;i<numFacesB;i++){
-        hullB.faceNormals[i].copy(Worldnormal1);
+        Worldnormal1.copy(hullB.faceNormals[i]);
         quatB.vmult(Worldnormal1,Worldnormal1);
         //posB.vadd(Worldnormal1,Worldnormal1);
         //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
@@ -311,7 +311,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
 
         if(d<dmin){
             dmin = d;
-            Worldnormal1.copy(target);
+            target.copy(Worldnormal1);
         }
     }
 
@@ -321,14 +321,14 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     // Test edges
     for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
         // Get world edge
-        hullA.uniqueEdges[e0].copy(worldEdge0);
+        worldEdge0.copy(hullA.uniqueEdges[e0]);
         quatA.vmult(worldEdge0,worldEdge0);
         //posA.vadd(worldEdge0,worldEdge0); // needed?
 
         //console.log("edge0:",worldEdge0.toString());
 
         for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-            hullB.uniqueEdges[e1].copy(worldEdge1);
+            worldEdge1.copy(hullB.uniqueEdges[e1]);
             quatB.vmult(worldEdge1,worldEdge1);
             //posB.vadd(worldEdge1,worldEdge1); // needed?
             //console.log("edge1:",worldEdge1.toString());
@@ -342,7 +342,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
                 }
                 if(dist<dmin){
                     dmin = dist;
-                    Cross.copy(target);
+                    target.copy(Cross);
                 }
             }
         }
@@ -463,7 +463,7 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
     var closestFaceA = -1;
     var dmin = Infinity;
     for(var face=0; face<hullA.faces.length; face++){
-        hullA.faceNormals[face].copy(faceANormalWS);
+        faceANormalWS.copy(hullA.faceNormals[face]);
         quatA.vmult(faceANormalWS,faceANormalWS);
         //posA.vadd(faceANormalWS,faceANormalWS);
         var d = faceANormalWS.dot(separatingNormal);
@@ -495,30 +495,30 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
         var a = hullA.vertices[polyA[e0]];
         var b = hullA.vertices[polyA[(e0+1)%numVerticesA]];
         a.vsub(b,edge0);
-        edge0.copy(WorldEdge0);
+        WorldEdge0.copy(edge0);
         quatA.vmult(WorldEdge0,WorldEdge0);
         posA.vadd(WorldEdge0,WorldEdge0);
-        this.faceNormals[closestFaceA].copy(worldPlaneAnormal1);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
+        worldPlaneAnormal1.copy(this.faceNormals[closestFaceA]);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
         quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
         posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
         WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
         planeNormalWS1.negate(planeNormalWS1);
-        a.copy(worldA1);
+        worldA1.copy(a);
         quatA.vmult(worldA1,worldA1);
         posA.vadd(worldA1,worldA1);
         var planeEqWS1 = -worldA1.dot(planeNormalWS1);
         var planeEqWS;
         if(true){
             var otherFace = polyA.connectedFaces[e0];
-            this.faceNormals[otherFace].copy(localPlaneNormal);
+            localPlaneNormal.copy(this.faceNormals[otherFace]);
             var localPlaneEq = this.getPlaneConstantOfFace(otherFace);
 
-            localPlaneNormal.copy(planeNormalWS);
+            planeNormalWS.copy(localPlaneNormal);
             quatA.vmult(planeNormalWS,planeNormalWS);
             //posA.vadd(planeNormalWS,planeNormalWS);
             var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
         } else  {
-            planeNormalWS1.copy(planeNormalWS);
+            planeNormalWS.copy(planeNormalWS1);
             planeEqWS = planeEqWS1;
         }
 
@@ -537,10 +537,10 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
     //console.log("Resulting points after clip:",pVtxIn);
 
     // only keep contact points that are behind the witness face
-    this.faceNormals[closestFaceA].copy(localPlaneNormal);
+    localPlaneNormal.copy(this.faceNormals[closestFaceA]);
 
     var localPlaneEq = this.getPlaneConstantOfFace(closestFaceA);
-    localPlaneNormal.copy(planeNormalWS);
+    planeNormalWS.copy(localPlaneNormal);
     quatA.vmult(planeNormalWS,planeNormalWS);
 
     var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
@@ -607,7 +607,7 @@ ConvexPolyhedron.prototype.clipFaceAgainstPlane = function(inVertices,outVertice
             if(n_dot_last < 0){
                 // Start < 0, end < 0, so output lastVertex
                 var newv = new Vec3();
-                lastVertex.copy(newv);
+                newv.copy(lastVertex);
                 outVertices.push(newv);
             } else {
                 // Start < 0, end >= 0, so output intersection
@@ -729,7 +729,7 @@ ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var n = this.vertices.length, verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
     for(var i=0; i<n; i++){
-        verts[i].copy(tempWorldVertex);
+        tempWorldVertex.copy(verts[i]);
         quat.vmult(tempWorldVertex,tempWorldVertex);
         pos.vadd(tempWorldVertex,tempWorldVertex);
         var v = tempWorldVertex;

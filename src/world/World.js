@@ -248,12 +248,12 @@ World.prototype.add = World.prototype.addBody = function(body){
     body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
-    body.position.copy(body.initPosition);
-    body.velocity.copy(body.initVelocity);
+    body.initPosition.copy(body.position);
+    body.initVelocity.copy(body.velocity);
     body.timeLastSleepy = this.time;
     if(body instanceof Body){
-        body.angularVelocity.copy(body.initAngularVelocity);
-        body.quaternion.copy(body.initQuaternion);
+        body.initAngularVelocity.copy(body.angularVelocity);
+        body.initQuaternion.copy(body.quaternion);
     }
 	this.collisionMatrix.setNumObjects(this.bodies.length);
     this.addBodyEvent.body = body;
@@ -298,8 +298,8 @@ World.prototype.rayTest = function(from, to, result){
 
     this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
 
-    from.copy(tmpRay.from);
-    to.copy(tmpRay.to);
+    tmpRay.from.copy(from);
+    tmpRay.to.copy(to);
 
     tmpRay.intersectBodies(tmpArray1, result);
 };
@@ -435,8 +435,8 @@ World.prototype.step = function(dt, timeSinceLastCalled, maxSubSteps){
             } else {
 
                 // For static bodies, just copy. Who else will do it?
-                b.position.copy(b.interpolatedPosition);
-                b.quaternion.copy(b.interpolatedQuaternion);
+                b.interpolatedPosition.copy(b.position);
+                b.interpolatedQuaternion.copy(b.quaternion);
             }
         }
     }
@@ -630,10 +630,10 @@ World.prototype.internalStep = function(dt){
 				c1.maxForce = c2.maxForce = mug*reducedMass;
 
 				// Copy over the relative vectors
-				c.ri.copy(c1.ri);
-				c.rj.copy(c1.rj);
-				c.ri.copy(c2.ri);
-				c.rj.copy(c2.rj);
+				c1.ri.copy(c.ri);
+				c1.rj.copy(c.rj);
+				c2.ri.copy(c.ri);
+				c2.rj.copy(c.rj);
 
 				// Construct tangents
 				c.ni.tangents(c1.t, c2.t);

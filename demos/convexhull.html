@@ -53,24 +53,6 @@
           return box.convexPolyhedronRepresentation;
       }
 
-      // Just 1 box on a plane
-      demo.addScene("Hull on plane",function(){
-          var world = setupWorld(demo);
-          // ConvexPolyhedron box shape
-          var size = 2;
-          var hullShape = createBoxPolyhedron(size);
-          // At the moment one must provide vertices, faces and normals..
-          var mass = 10;
-          var boxbody1 = new CANNON.Body({ mass: mass });
-          boxbody1.addShape(hullShape);
-          boxbody1.position.set(0,0,size*2);
-          //boxbody1.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/4);
-          world.add(boxbody1);
-          demo.addVisual(boxbody1);
-        });
-
-
-
       // Various shapes
       demo.addScene("various",function(){
           var world = setupWorld(demo);
@@ -93,7 +75,6 @@
           demo.addVisual(tetraBody);
 
           // ConvexPolyhedron cylinder shape
-          // Yes, the Cylinder is actually a ConvexPolyhedron.
           var num = 20;
           var verts = [];
           var normals = [];

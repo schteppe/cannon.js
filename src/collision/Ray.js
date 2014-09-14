@@ -368,7 +368,7 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
         // note: this works regardless of the direction of the face normal
 
         // Get plane point in world coordinates...
-        vertices[face[0]].copy(vector);
+        vector.copy(vertices[face[0]]);
         q.vmult(vector,vector);
         vector.vadd(x,vector);
 
@@ -401,14 +401,14 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
             intersectPoint.vadd(from,intersectPoint);
 
             // a is the point we compare points b and c with.
-            vertices[face[0]].copy(a);
+            a.copy(vertices[face[0]]);
             q.vmult(a,a);
             x.vadd(a,a);
 
             for(var i = 1; i < face.length - 1; i++){
                 // Transform 3 vertices to world coords
-                vertices[ face[i] ].copy(b);
-                vertices[ face[i+1] ].copy(c);
+                b.copy(vertices[face[i]]);
+                c.copy(vertices[face[i+1]]);
                 q.vmult(b,b);
                 q.vmult(c,c);
                 x.vadd(b,b);
@@ -422,8 +422,8 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
 
                 if(minDist === -1 || distance < minDist){
                     minDist = distance;
-                    normal.copy(minDistNormal);
-                    intersectPoint.copy(minDistIntersect);
+                    minDistNormal.copy(normal);
+                    minDistIntersect.copy(intersectPoint);
                 }
             }
         }

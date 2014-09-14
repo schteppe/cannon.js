@@ -272,14 +272,17 @@ Quaternion.prototype.vmult = function(v,target){
 };
 
 /**
+ * Copies value of source to this quaternion.
  * @method copy
- * @param {Quaternion} target
+ * @param {Quaternion} source
+ * @return {Quaternion} this
  */
-Quaternion.prototype.copy = function(target){
-    target.x = this.x;
-    target.y = this.y;
-    target.z = this.z;
-    target.w = this.w;
+Quaternion.prototype.copy = function(source){
+    this.x = source.x;
+    this.y = source.y;
+    this.z = source.z;
+    this.w = source.w;
+    return this;
 };
 
 /**

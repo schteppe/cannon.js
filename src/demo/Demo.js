@@ -235,11 +235,11 @@ CANNON.Demo = function(options){
         var N = bodies.length;
         for(var i=0; i<N; i++){
             var b = bodies[i];
-            b.initPosition.copy(b.position);
-            b.initVelocity.copy(b.velocity);
+            b.position.copy(b.initPosition);
+            b.velocity.copy(b.initVelocity);
             if(b.initAngularVelocity){
-                b.initAngularVelocity.copy(b.angularVelocity);
-                b.initQuaternion.copy(b.quaternion);
+                b.angularVelocity.copy(b.initAngularVelocity);
+                b.quaternion.copy(b.initQuaternion);
             }
         }
     }
@@ -263,9 +263,9 @@ CANNON.Demo = function(options){
         // Read position data into visuals
         for(var i=0; i<N; i++){
             var b = bodies[i], visual = visuals[i];
-            b.position.copy(visual.position);
+            visual.position.copy(b.position);
             if(b.quaternion){
-                b.quaternion.copy(visual.quaternion);
+                visual.quaternion.copy(b.quaternion);
             }
         }
 
@@ -296,7 +296,7 @@ CANNON.Demo = function(options){
                         r = ij===0 ? c.ri : c.rj;
                     line.scale.set( r.x, r.y, r.z);
                     makeSureNotZero(line.scale);
-                    b.position.copy(line.position);
+                    line.position.copy(b.position);
                 }
             }
         }
@@ -328,7 +328,7 @@ CANNON.Demo = function(options){
                                 v.y-bi.position.y,
                                 v.z-bi.position.z );
                 makeSureNotZero(line.scale);
-                bi.position.copy(line.position);
+                line.position.copy(bi.position);
             }
 
 
@@ -348,8 +348,8 @@ CANNON.Demo = function(options){
                 makeSureNotZero(relLine1.scale);
                 makeSureNotZero(relLine2.scale);
                 makeSureNotZero(diffLine.scale);
-                bi.position.copy(relLine1.position);
-                bj.position.copy(relLine2.position);
+                relLine1.position.copy(bi.position);
+                relLine2.position.copy(bj.position);
                 n.bj.position.vadd(n.rj,diffLine.position);
             }
         }
@@ -367,7 +367,7 @@ CANNON.Demo = function(options){
                 var b = bi;
                 line.scale.set(n.x,n.y,n.z);
                 makeSureNotZero(line.scale);
-                b.position.copy(line.position);
+                line.position.copy(b.position);
                 c.ri.vadd(line.position,line.position);
             }
         }
@@ -378,9 +378,9 @@ CANNON.Demo = function(options){
         if(settings.axes){
             for(var bi=0; bi<bodies.length; bi++){
                 var b = bodies[bi], mesh=axesMeshCache.request();
-                b.position.copy(mesh.position);
+                mesh.position.copy(b.position);
                 if(b.quaternion){
-                    b.quaternion.copy(mesh.quaternion);
+                    mesh.quaternion.copy(b.quaternion);
                 }
             }
         }
@@ -1037,9 +1037,9 @@ CANNON.Demo.prototype.shape2mesh = function(body){
                 for (var yi = 0; yi < shape.data[xi].length - 1; yi++) {
                     for (var k = 0; k < 2; k++) {
                         shape.getConvexTrianglePillar(xi, yi, k===0);
-                        shape.pillarConvex.vertices[0].copy(v0);
-                        shape.pillarConvex.vertices[1].copy(v1);
-                        shape.pillarConvex.vertices[2].copy(v2);
+                        v0.copy(shape.pillarConvex.vertices[0]);
+                        v1.copy(shape.pillarConvex.vertices[1]);
+                        v2.copy(shape.pillarConvex.vertices[2]);
                         v0.vadd(shape.pillarOffset, v0);
                         v1.vadd(shape.pillarOffset, v1);
                         v2.vadd(shape.pillarOffset, v2);

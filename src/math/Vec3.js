@@ -310,18 +310,16 @@ Vec3.prototype.toArray = function(){
 };
 
 /**
- * Copy the vector.
+ * Copies value of source to this vector.
  * @method copy
- * @param {Vec3} target
- * @return {Vec3}
- * @todo Should copy the parameter to this, not the other way around.
+ * @param {Vec3} source
+ * @return {Vec3} this
  */
-Vec3.prototype.copy = function(target){
-    target = target || new Vec3();
-    target.x = this.x;
-    target.y = this.y;
-    target.z = this.z;
-    return target;
+Vec3.prototype.copy = function(source){
+    this.x = source.x;
+    this.y = source.y;
+    this.z = source.z;
+    return this;
 };
 
 

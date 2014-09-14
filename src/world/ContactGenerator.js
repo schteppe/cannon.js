@@ -364,8 +364,8 @@ ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,b
     r.ni.normalize();
 
     // Contact point locations
-    r.ni.copy(r.ri);
-    r.ni.copy(r.rj);
+    r.ri.copy(r.ni);
+    r.rj.copy(r.ni);
     r.ri.mult(si.radius, r.ri);
     r.rj.mult(-sj.radius, r.rj);
     result.push(r);
@@ -505,7 +505,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     for(var idx=0,nsides=sides.length; idx!==nsides && found===false; idx++){
         // Get the plane side normal (ns)
         var ns = sphereBox_ns;
-        sides[idx].copy(ns);
+        ns.copy(sides[idx]);
 
         var h = ns.norm();
         ns.normalize();
@@ -517,8 +517,8 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
             // Intersects plane. Now check the other two dimensions
             var ns1 = sphereBox_ns1;
             var ns2 = sphereBox_ns2;
-            sides[(idx+1)%3].copy(ns1);
-            sides[(idx+2)%3].copy(ns2);
+            ns1.copy(sides[(idx+1)%3]);
+            ns2.copy(sides[(idx+2)%3]);
             var h1 = ns1.norm();
             var h2 = ns2.norm();
             ns1.normalize();
@@ -532,9 +532,9 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                     side_dot1 = dot1;
                     side_dot2 = dot2;
                     side_h = h;
-                    ns.copy(side_ns);
-                    ns1.copy(side_ns1);
-                    ns2.copy(side_ns2);
+                    side_ns.copy(ns);
+                    side_ns1.copy(ns1);
+                    side_ns2.copy(ns2);
                     side_penetrations++;
                 }
             }
@@ -544,7 +544,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
         found = true;
         var r = this.makeResult(bi,bj,si,sj);
         side_ns.mult(-R,r.ri); // Sphere r
-        side_ns.copy(r.ni);
+        r.ni.copy(side_ns);
         r.ni.negate(r.ni); // Normal should be out of sphere
         side_ns.mult(side_h,side_ns);
         side_ns1.mult(side_dot1,side_ns1);
@@ -591,11 +591,11 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                 if(sphere_to_corner.norm2() < R*R){
                     found = true;
                     var r = this.makeResult(bi,bj,si,sj);
-                    sphere_to_corner.copy(r.ri);
+                    r.ri.copy(sphere_to_corner);
                     r.ri.normalize();
-                    r.ri.copy(r.ni);
+                    r.ni.copy(r.ri);
                     r.ri.mult(R,r.ri);
-                    rj.copy(r.rj);
+                    r.rj.copy(rj);
 
                     // Make relative to bodies
                     r.ri.vadd(xi, r.ri);
@@ -625,7 +625,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                 sides[k].cross(sides[j],edgeTangent);
                 edgeTangent.normalize();
                 sides[j].vadd(sides[k], edgeCenter);
-                xi.copy(r);
+                r.copy(xi);
                 r.vsub(edgeCenter,r);
                 r.vsub(xj,r);
                 var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
@@ -638,7 +638,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                 }
 
                 // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-                xi.copy(dist);
+                dist.copy(xi);
                 dist.vsub(orthogonal,dist);
                 dist.vsub(edgeCenter,dist);
                 dist.vsub(xj,dist);
@@ -655,7 +655,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                     dist.negate(res.ni);
                     res.ni.normalize();
 
-                    res.rj.copy(res.ri);
+                    res.ri.copy(res.rj);
                     res.ri.vadd(xj,res.ri);
                     res.ri.vsub(xi,res.ri);
                     res.ri.normalize();
@@ -720,9 +720,9 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
         if(sphere_to_corner.norm2() < R * R){
             found = true;
             var r = this.makeResult(bi,bj,si,sj);
-            sphere_to_corner.copy(r.ri);
+            r.ri.copy(sphere_to_corner);
             r.ri.normalize();
-            r.ri.copy(r.ni);
+            r.ni.copy(r.ri);
             r.ri.mult(R,r.ri);
             worldCorner.vsub(xj,r.rj);
 
@@ -956,7 +956,7 @@ ContactGenerator.prototype.planeConvex = function(
     for(var i = 0; i !== convexShape.vertices.length; i++){
 
         // Get world convex vertex
-        convexShape.vertices[i].copy(worldVertex);
+        worldVertex.copy(convexShape.vertices[i]);
         convexQuat.vmult(worldVertex, worldVertex);
         convexPosition.vadd(worldVertex, worldVertex);
         worldVertex.vsub(planePosition, relpos);
@@ -972,7 +972,7 @@ ContactGenerator.prototype.planeConvex = function(
             worldVertex.vsub(projected, projected);
             projected.vsub(planePosition, r.ri); // From plane to vertex projected on plane
 
-            worldNormal.copy(r.ni); // Contact normal is the plane normal out from plane
+            r.ni.copy(worldNormal); // Contact normal is the plane normal out from plane
 
             // rj is now just the vector from the convex center to the vertex
             worldVertex.vsub(convexPosition, r.rj);
@@ -1017,7 +1017,7 @@ ContactGenerator.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
             res[j].normal.negate(q);
             q.mult(res[j].depth, q);
             res[j].point.vadd(q, ri);
-            res[j].point.copy(rj);
+            rj.copy(res[j].point);
 
             // Contact points are in world coordinates. Transform back to relative
             ri.vsub(xi,ri);
@@ -1059,7 +1059,7 @@ ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,
     var dot = normal.dot(relpos);
     if(dot <= 0.0){
         var r = this.makeResult(bi,bj,si,sj);
-        normal.copy( r.ni ); // Contact normal is the plane normal
+        r.ni.copy(normal); // Contact normal is the plane normal
         r.ni.negate(r.ni);
         r.ri.set(0,0,0); // Center of particle
 
@@ -1070,7 +1070,7 @@ ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,
         //projected.vadd(bj.position,projected);
 
         // rj is now the projected world position minus plane position
-        projected.copy(r.rj);
+        r.rj.copy(projected);
         result.push(r);
     }
 };
@@ -1099,9 +1099,9 @@ ContactGenerator.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi
     if(lengthSquared <= sj.radius * sj.radius){
         var r = this.makeResult(bi,bj,si,sj);
         normal.normalize();
-        normal.copy(r.rj);
+        r.rj.copy(normal);
         r.rj.mult(sj.radius,r.rj);
-        normal.copy( r.ni ); // Contact normal
+        r.ni.copy(normal); // Contact normal
         r.ni.negate(r.ni);
         r.ri.set(0,0,0); // Center of particle
         result.push(r);
@@ -1137,7 +1137,7 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
 
     // Convert particle position xi to local coords in the convex
     var local = particleConvex_local;
-    xi.copy(local);
+    local.copy(xi);
     local.vsub(xj,local); // Convert position to relative the convex origin
     qj.conjugate(cqj);
     cqj.vmult(local,local);
@@ -1164,7 +1164,7 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
             if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
                 minPenetration = penetration;
                 penetratedFaceIndex = i;
-                normal.copy(penetratedFaceNormal);
+                penetratedFaceNormal.copy(normal);
                 numDetectedFaces++;
             }
         }
@@ -1177,7 +1177,7 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
             // rj is the particle position projected to the face
             worldPenetrationVec.vadd(xi,worldPenetrationVec);
             worldPenetrationVec.vsub(xj,worldPenetrationVec);
-            worldPenetrationVec.copy(r.rj);
+            r.rj.copy(worldPenetrationVec);
             //var projectedToFace = xi.vsub(xj).vadd(worldPenetrationVec);
             //projectedToFace.copy(r.rj);
 

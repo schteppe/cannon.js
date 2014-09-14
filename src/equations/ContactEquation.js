@@ -100,8 +100,8 @@ ContactEquation.prototype.computeB = function(h){
     // G = [ -ni  -rixn  ni  rjxn ]
     n.negate(GA.spatial);
     rixn.negate(GA.rotational);
-    n.copy(GB.spatial);
-    rjxn.copy(GB.rotational);
+    GB.spatial.copy(n);
+    GB.rotational.copy(rjxn);
 
     // Calculate the penetration vector
     var penetrationVec = this.penetrationVec;

@@ -39,10 +39,10 @@ function PointToPointConstraint(bodyA,pivotA,bodyB,pivotB,maxForce){
         bodyB.quaternion.vmult(pivotB,normal.rj);
 
         normal.ni.tangents(t1.ni,t2.ni);
-        normal.ri.copy(t1.ri);
-        normal.rj.copy(t1.rj);
-        normal.ri.copy(t2.ri);
-        normal.rj.copy(t2.rj);
+        t1.ri.copy(normal.ri);
+        t1.rj.copy(normal.rj);
+        t2.ri.copy(normal.ri);
+        t2.rj.copy(normal.rj);
     };
-};
+}
 PointToPointConstraint.prototype = new Constraint();

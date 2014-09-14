@@ -91,8 +91,8 @@ FrictionEquation.prototype.computeB = function(h){
         GB = this.jacobianElementB;
     t.negate(GA.spatial)
     rixt.negate(GA.rotational);
-    t.copy(GB.spatial)
-    rjxt.copy(GB.rotational);
+    GB.spatial.copy(t);
+    GB.rotational.copy(rjxt);
 
     if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
     else invIi_vmult_taui.set(0,0,0);

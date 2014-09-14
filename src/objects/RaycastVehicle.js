@@ -370,7 +370,7 @@ RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
     this.updateWheelTransformWorld(wheel);
 
     wheel.directionLocal.scale(-1, up);
-    wheel.axleLocal.copy(right);
+    right.copy(wheel.axleLocal);
     up.cross(right, fwd);
     fwd.normalize();
     right.normalize();
@@ -392,7 +392,7 @@ RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
 
     // world position of the wheel
     var p = wheel.worldTransform.position;
-    wheel.directionWorld.copy(p);
+    p.copy(wheel.directionWorld);
     p.scale(wheel.suspensionLength, p);
     p.vadd(wheel.chassisConnectionPointWorld, p);
 };
@@ -553,7 +553,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
         var rel_pos = new Vec3();
         //wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, rel_pos);
         // cannons applyimpulse is using world coord for the position
-        wheel.raycastResult.hitPointWorld.copy(rel_pos);
+        rel_pos.copy(wheel.raycastResult.hitPointWorld);
 
         if (wheel.forwardImpulse !== 0) {
             var impulse = new Vec3();
@@ -566,7 +566,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
 
             var rel_pos2 = new Vec3();
             //wheel.raycastResult.hitPointWorld.vsub(groundObject.position, rel_pos2);
-            wheel.raycastResult.hitPointWorld.copy(rel_pos2);
+            rel_pos2.copy(wheel.raycastResult.hitPointWorld);
             var sideImp = new Vec3();
             axle[i].scale(wheel.sideImpulse, sideImp);
 

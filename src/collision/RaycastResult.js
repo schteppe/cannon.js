@@ -33,10 +33,10 @@ RaycastResult.prototype.set = function(
 	body,
 	distance
 ){
-	rayFromWorld.copy(this.rayFromWorld);
-	rayToWorld.copy(this.rayToWorld);
-	hitNormalWorld.copy(this.hitNormalWorld);
-	hitPointWorld.copy(this.hitPointWorld);
+	this.rayFromWorld.copy(rayFromWorld);
+	this.rayToWorld.copy(rayToWorld);
+	this.hitNormalWorld.copy(hitNormalWorld);
+	this.hitPointWorld.copy(hitPointWorld);
 	this.shape = shape;
 	this.body = body;
 	this.distance = distance;

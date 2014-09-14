@@ -73,8 +73,8 @@ RotationalEquation.prototype.computeB = function(h){
     // gdot = (nj x ni) * wi + (ni x nj) * wj
     // G = [0 njxni 0 nixnj]
     // W = [vi wi vj wj]
-    njxni.copy(GA.rotational);
-    nixnj.copy(GB.rotational);
+    GA.rotational.copy(njxni);
+    GB.rotational.copy(nixnj);
 
     var g = -ni.dot(nj),
         GW = this.computeGW(),//njxni.dot(wi) + nixnj.dot(wj),

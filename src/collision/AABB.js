@@ -21,7 +21,7 @@ function AABB(options){
      */
     this.lowerBound = new Vec3();
     if(options.lowerBound){
-        options.lowerBound.copy(this.lowerBound);
+        this.lowerBound.copy(options.lowerBound);
     }
 
     /**
@@ -31,7 +31,7 @@ function AABB(options){
      */
     this.upperBound = new Vec3();
     if(options.upperBound){
-        options.upperBound.copy(this.upperBound);
+        this.upperBound.copy(options.upperBound);
     }
 }
 
@@ -49,11 +49,11 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
         q = quaternion;
 
     // Set to the first point
-    points[0].copy(l);
+    l.copy(points[0]);
     if(q){
         q.vmult(l, l);
     }
-    l.copy(u);
+    u.copy(l);
 
     for(var i = 1; i<points.length; i++){
         var p = points[i];
@@ -94,8 +94,8 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
  */
 AABB.prototype.copy = function(aabb){
     // vectors copy is the other direction... bad!
-    aabb.lowerBound.copy(this.lowerBound);
-    aabb.upperBound.copy(this.upperBound);
+    this.lowerBound.copy(aabb.lowerBound);
+    this.upperBound.copy(aabb.upperBound);
 };
 
 /**

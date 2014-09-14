@@ -239,17 +239,16 @@ Mat3.prototype.e = function( row , column ,value){
 };
 
 /**
- * Copy the matrix
+ * Copy another matrix into this matrix object.
  * @method copy
- * @param {Mat3} target Optional. Target to save the copy in.
- * @return {Mat3}
+ * @param {Mat3} source
+ * @return {Mat3} this
  */
-Mat3.prototype.copy = function(target){
-    target = target || new Mat3();
-    for(var i=0; i<this.elements.length; i++){
-        target.elements[i] = this.elements[i];
+Mat3.prototype.copy = function(source){
+    for(var i=0; i < source.elements.length; i++){
+        this.elements[i] = source.elements[i];
     }
-    return target;
+    return this;
 };
 
 /**

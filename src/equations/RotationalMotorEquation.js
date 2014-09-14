@@ -64,7 +64,7 @@ RotationalMotorEquation.prototype.computeB = function(h){
     // G = [0 axisA 0 -axisB]
     // W = [vi wi vj wj]
 
-    axisA.copy(GA.rotational);
+    GA.rotational.copy(axisA);
     axisB.negate(GB.rotational);
 
     var GW = this.computeGW() - this.targetVelocity,

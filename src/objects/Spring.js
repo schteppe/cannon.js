@@ -162,7 +162,7 @@ Spring.prototype.applyForce = function(){
     // Compute distance vector between world anchor points
     worldAnchorB.vsub(worldAnchorA,r);
     var rlen = r.norm();
-    r.copy(r_unit);
+    r_unit.copy(r);
     r_unit.normalize();
 
     // Compute relative velocity of the anchor points, u

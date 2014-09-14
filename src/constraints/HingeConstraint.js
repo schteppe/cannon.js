@@ -124,10 +124,10 @@ HingeConstraint.prototype.update = function(){
     bodyB.quaternion.vmult(this.pivotB,normal.rj);
 
     //normal.ni.tangents(t1.ni,t2.ni);
-    normal.ri.copy(t1.ri);
-    normal.rj.copy(t1.rj);
-    normal.ri.copy(t2.ri);
-    normal.rj.copy(t2.rj);
+    t1.ri.copy(normal.ri);
+    t1.rj.copy(normal.rj);
+    t2.ri.copy(normal.ri);
+    t2.rj.copy(normal.rj);
 
     axisA.cross(pivotA, axisA_x_pivotA);
     if(axisA_x_pivotA.norm2() < 0.001){ // pivotA is along the same line as axisA
