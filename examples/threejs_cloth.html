@@ -228,10 +228,10 @@
                 clothGeometry.computeFaceNormals();
 
                 // cloth mesh
-                object = new THREE.Mesh( clothGeometry, clothMaterial );
-                object.position.set( 0, 0, 0 );
+                object = new THREE.Mesh(clothGeometry, clothMaterial);
+                object.position.set(0, 0, 0);
                 object.castShadow = true;
-                object.receiveShadow = true;
+                //object.receiveShadow = true;
                 scene.add( object );
 
                 // sphere
@@ -240,7 +240,7 @@
 
                 sphereMesh = new THREE.Mesh( ballGeo, ballMaterial );
                 sphereMesh.castShadow = true;
-                sphereMesh.receiveShadow = true;
+                //sphereMesh.receiveShadow = true;
                 scene.add( sphereMesh );
 
 

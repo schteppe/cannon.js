@@ -276,7 +276,7 @@
                 // Add boxes
                 var halfExtents = new CANNON.Vec3(1,1,1);
                 var boxShape = new CANNON.Box(halfExtents);
-                var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
+                var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
                 for(var i=0; i<7; i++){
                     var x = (Math.random()-0.5)*20;
                     var y = 1 + (Math.random()-0.5)*1;
@@ -300,17 +300,17 @@
                 var he = new CANNON.Vec3(size,size,size*0.1);
                 var boxShape = new CANNON.Box(he);
                 var mass = 0;
-                var space = 0.1*size;
-                var N=5, last;
-                var boxGeometry = new THREE.CubeGeometry(he.x*2,he.y*2,he.z*2);
+                var space = 0.1 * size;
+                var N = 5, last;
+                var boxGeometry = new THREE.BoxGeometry(he.x*2,he.y*2,he.z*2);
                 for(var i=0; i<N; i++){
                     var boxbody = new CANNON.Body({ mass: mass });
                     boxbody.addShape(boxShape);
-                    var boxMesh = new THREE.Mesh( boxGeometry, material );
+                    var boxMesh = new THREE.Mesh(boxGeometry, material);
                     boxbody.position.set(5,(N-i)*(size*2+2*space) + size*2+space,0);
-                    boxbody.linearDamping=0.01;
-                    boxbody.angularDamping=0.01;
-                    boxMesh.castShadow = true;
+                    boxbody.linearDamping = 0.01;
+                    boxbody.angularDamping = 0.01;
+                    // boxMesh.castShadow = true;
                     boxMesh.receiveShadow = true;
                     world.add(boxbody);
                     scene.add(boxMesh);
@@ -362,7 +362,7 @@
             }
 
             var ballShape = new CANNON.Sphere(0.2);
-            var ballGeometry = new THREE.SphereGeometry(ballShape.radius);
+            var ballGeometry = new THREE.SphereGeometry(ballShape.radius, 32, 32);
             var shootDirection = new THREE.Vector3();
             var shootVelo = 15;
             var projector = new THREE.Projector();

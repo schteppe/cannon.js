@@ -21,7 +21,9 @@
         <script>
 
         var world;
+        var dt = 1 / 60;
 
+        var constraintDown = false;
         var camera, scene, renderer, gplane=false, clickMarker=false;
         var geometry, material, mesh;
         var controls,time = Date.now();
@@ -56,8 +58,8 @@
             // camera
             camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 0.5, 10000 );
             camera.position.set(10, 2, 0);
-            camera.quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2);
-            scene.add( camera );
+            camera.quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+            scene.add(camera);
 
             // lights
             var light, materials;
@@ -95,16 +97,16 @@
             mesh.castShadow = true;
             mesh.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.PI / 2);
             mesh.receiveShadow = true;
-            scene.add( mesh );
+            scene.add(mesh);
 
             // cubes
-            var cubeGeo = new THREE.CubeGeometry( 1, 1, 1, 10, 10 );
+            var cubeGeo = new THREE.BoxGeometry( 1, 1, 1, 10, 10 );
             var cubeMaterial = new THREE.MeshPhongMaterial( { color: 0x888888 } );
             for(var i=0; i<N; i++){
-                cubeMesh = new THREE.Mesh( cubeGeo, cubeMaterial );
+                cubeMesh = new THREE.Mesh(cubeGeo, cubeMaterial);
                 cubeMesh.castShadow = true;
-                meshes.push( cubeMesh );
-                scene.add( cubeMesh );
+                meshes.push(cubeMesh);
+                scene.add(cubeMesh);
             }
 
             renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -126,7 +128,7 @@
 
         function setClickMarker(x,y,z) {
             if(!clickMarker){
-                var shape = new THREE.SphereGeometry( 0.2, 8, 8);
+                var shape = new THREE.SphereGeometry(0.2, 8, 8);
                 clickMarker = new THREE.Mesh(shape, markerMaterial);
                 scene.add(clickMarker);
             }
@@ -149,12 +151,11 @@
             }
         }
 
-        var constraintDown = false;
         function onMouseDown(e){
             // Find mesh from a ray
             var entity = findNearestIntersectingObject(e.clientX,e.clientY,camera,meshes);
             var pos = entity.point;
-            if(pos && entity.object.geometry instanceof THREE.CubeGeometry){
+            if(pos && entity.object.geometry instanceof THREE.BoxGeometry){
                 constraintDown = true;
                 // Set marker on contact point
                 setClickMarker(pos.x,pos.y,pos.z,scene);
@@ -162,7 +163,6 @@
                 // Set the movement plane
                 setScreenPerpCenter(pos,camera);
 
-                // Send mouse Joint Event to server
                 var idx = meshes.indexOf(entity.object);
                 if(idx !== -1){
                     addMouseConstraint(pos.x,pos.y,pos.z,bodies[idx]);
@@ -184,7 +184,7 @@
             gplane.position.copy(point);
 
             // Make it face toward the camera
-            gplane.quaternion = camera.quaternion;
+            gplane.quaternion.copy(camera.quaternion);
         }
 
         function onMouseUp(e) {
@@ -250,17 +250,16 @@
             render();
         }
 
-        var dt = 1/60;
         function updatePhysics(){
             world.step(dt);
-            for(var i=0; i!==meshes.length; i++){
+            for(var i=0; i !== meshes.length; i++){
                 bodies[i].position.copy(meshes[i].position);
                 bodies[i].quaternion.copy(meshes[i].quaternion);
             }
         }
 
         function render() {
-            renderer.render( scene, camera );
+            renderer.render(scene, camera);
         }
 
         function initCannon(){
