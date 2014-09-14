@@ -1,12 +1,13 @@
 module.exports = RotationalMotorEquation;
 
-var Vec3 = require('../math/Vec3')
-,   Mat3 = require('../math/Mat3')
-,   Equation = require('./Equation')
+var Vec3 = require('../math/Vec3');
+var Mat3 = require('../math/Mat3');
+var Equation = require('./Equation');
 
 /**
  * Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
  * @class RotationalMotorEquation
+ * @constructor
  * @author schteppe
  * @param {RigidBody} bodyA
  * @param {RigidBody} bodyB
@@ -27,7 +28,7 @@ function RotationalMotorEquation(bodyA, bodyB, maxForce){
      * @property {Number} targetVelocity
      */
     this.targetVelocity = 0;
-};
+}
 
 RotationalMotorEquation.prototype = new Equation();
 RotationalMotorEquation.prototype.constructor = RotationalMotorEquation;

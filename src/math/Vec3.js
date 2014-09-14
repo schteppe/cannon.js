@@ -5,10 +5,14 @@ var Mat3 = require('./Mat3');
 /**
  * 3-dimensional vector
  * @class Vec3
+ * @constructor
  * @param {Number} x
  * @param {Number} y
  * @param {Number} z
  * @author schteppe
+ * @example
+ *     var v = new Vec3(1, 2, 3);
+ *     console.log('x=' + v.x); // x=1
  */
 function Vec3(x,y,z){
     /**

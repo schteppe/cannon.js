@@ -6,6 +6,7 @@ var ContactEquation = require('../equations/ContactEquation');
 /**
  * Constrains two bodies to be at a constant distance from each other.
  * @class DistanceConstraint
+ * @constructor
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB

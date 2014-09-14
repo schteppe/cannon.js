@@ -6,6 +6,7 @@ var Utils = require('../utils/Utils');
  * Constraint base class
  * @class Constraint
  * @author schteppe
+ * @constructor
  * @param {Body} bodyA
  * @param {Body} bodyB
  */

@@ -7,6 +7,7 @@ var Equation = require('./Equation')
 /**
  * Contact/non-penetration constraint equation
  * @class ContactEquation
+ * @constructor
  * @author schteppe
  * @param {Body} bj
  * @param {Body} bi

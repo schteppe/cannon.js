@@ -7,6 +7,7 @@ var Equation = require('./Equation')
 /**
  * Constrains the slipping in a contact along a tangent
  * @class FrictionEquation
+ * @constructor
  * @author schteppe
  * @param {Body} bi
  * @param {Body} bj

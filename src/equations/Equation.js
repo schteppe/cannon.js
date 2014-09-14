@@ -6,6 +6,7 @@ var JacobianElement = require('../math/JacobianElement'),
 /**
  * Equation base class
  * @class Equation
+ * @constructor
  * @author schteppe
  * @param {Body} bi
  * @param {Body} bj

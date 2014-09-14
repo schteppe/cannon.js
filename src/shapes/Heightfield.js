@@ -6,7 +6,7 @@ var Utils = require('../utils/Utils');
 module.exports = Heightfield;
 
 /**
- * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a distance "elementSize".
+ * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a given distance.
  * @class Heightfield
  * @extends Shape
  * @constructor

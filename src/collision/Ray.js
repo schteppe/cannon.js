@@ -12,6 +12,7 @@ var AABB = require('../collision/AABB');
 /**
  * A line in 3D space that intersects bodies and return points.
  * @class Ray
+ * @constructor
  * @param {Vec3} from
  * @param {Vec3} to
  */

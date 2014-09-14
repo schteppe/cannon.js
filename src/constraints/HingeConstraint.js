@@ -9,6 +9,7 @@ var Vec3 = require('../math/Vec3');
 /**
  * Hinge constraint. Tries to keep the local body axes equal.
  * @class HingeConstraint
+ * @constructor
  * @author schteppe
  * @param {RigidBody} bodyA
  * @param {RigidBody} bodyB

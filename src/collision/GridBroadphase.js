@@ -7,6 +7,7 @@ var Broadphase = require('./Broadphase')
 /**
  * Axis aligned uniform grid broadphase.
  * @class GridBroadphase
+ * @constructor
  * @extends Broadphase
  * @todo Needs support for more than just planes and spheres.
  * @param {Vec3} aabbMin

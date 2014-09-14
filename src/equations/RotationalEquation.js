@@ -7,6 +7,7 @@ var Vec3 = require('../math/Vec3')
 /**
  * Rotational constraint. Works to keep the local vectors orthogonal to each other.
  * @class RotationalEquation
+ * @constructor
  * @author schteppe
  * @param {RigidBody} bj
  * @param {Vec3} localVectorInBodyA
