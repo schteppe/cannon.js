@@ -1,3 +1,5 @@
+/* global CANNON,THREE,Detector */
+
 CANNON = CANNON || {};
 
 /**
@@ -39,7 +41,7 @@ CANNON.Demo = function(options){
         normals: false, // contact normals
         axes: false, // "local" frame axes
         particleSize: 0.1,
-        shadows: true,
+        shadows: false,
         aabbs: false,
         profiling: false,
         maxSubSteps:3
@@ -87,7 +89,7 @@ CANNON.Demo = function(options){
         geometry.vertices.push(new THREE.Vector3(1,1,1));
         return new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
     });
-    var bboxGeometry = new THREE.CubeGeometry(1,1,1);
+    var bboxGeometry = new THREE.BoxGeometry(1,1,1);
     var bboxMaterial = new THREE.MeshBasicMaterial({
         color: materialColor,
         wireframe:true
@@ -377,8 +379,9 @@ CANNON.Demo = function(options){
             for(var bi=0; bi<bodies.length; bi++){
                 var b = bodies[bi], mesh=axesMeshCache.request();
                 b.position.copy(mesh.position);
-                if(b.quaternion)
+                if(b.quaternion){
                     b.quaternion.copy(mesh.quaternion);
+                }
             }
         }
         axesMeshCache.hideCached();
@@ -418,8 +421,9 @@ CANNON.Demo = function(options){
         bboxMeshCache.hideCached();
     }
 
-    if ( ! Detector.webgl )
+    if (!Detector.webgl){
         Detector.addGetWebGLMessage();
+    }
 
     var SHADOW_MAP_WIDTH = 512;
     var SHADOW_MAP_HEIGHT = 512;
@@ -626,8 +630,9 @@ CANNON.Demo = function(options){
             wf.add(settings, 'stepFrequency',60,60*10).step(60);
             var maxg = 100;
             wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){
-                if(!isNaN(gx))
+                if(!isNaN(gx)){
                     world.gravity.set(gx,settings.gy,settings.gz);
+                }
             });
             wf.add(settings, 'gy',-maxg,maxg).onChange(function(gy){
                 if(!isNaN(gy))
@@ -829,8 +834,9 @@ CANNON.Demo = function(options){
             that.scene.remove(mesh);
         }
         // Remove all constraints
-        while(world.constraints.length)
+        while(world.constraints.length){
             world.removeConstraint(world.constraints[0]);
+        }
 
         // Run the user defined "build scene" function
         scenes[n]();
@@ -845,7 +851,7 @@ CANNON.Demo = function(options){
         updategui();
 
         restartGeometryCaches();
-    };
+    }
 
 
     function GeometryCache(createFunc){
@@ -862,16 +868,18 @@ CANNON.Demo = function(options){
         };
 
         this.restart = function(){
-            while(gone.length)
+            while(gone.length){
                 geometries.push(gone.pop());
+            }
         };
 
         this.hideCached = function(){
-            for(var i=0; i<geometries.length; i++)
+            for(var i=0; i<geometries.length; i++){
                 scene.remove(geometries[i]);
-        }
+            }
+        };
     }
-}
+};
 
 CANNON.Demo.prototype.setGlobalSpookParams = function(k,d,h){
     var world = this.world;
@@ -898,7 +906,7 @@ CANNON.Demo.prototype.setGlobalSpookParams = function(k,d,h){
     world.defaultContactMaterial.frictionEquationStiffness = k;
     world.defaultContactMaterial.contactEquationRelaxation = d;
     world.defaultContactMaterial.frictionEquationRelaxation = d;
-}
+};
 
 CANNON.Demo.prototype.getWorld = function(){
     return this.world;
@@ -958,6 +966,8 @@ CANNON.Demo.prototype.shape2mesh = function(body){
     for (var l = 0; l < body.shapes.length; l++) {
         var shape = body.shapes[l];
 
+        var mesh;
+
         switch(shape.type){
 
         case CANNON.Shape.types.SPHERE:
@@ -972,11 +982,11 @@ CANNON.Demo.prototype.shape2mesh = function(body){
             break;
 
         case CANNON.Shape.types.PLANE:
-            var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
+            var geometry = new THREE.PlaneGeometry(10, 10, 4, 4);
             mesh = new THREE.Object3D();
             var submesh = new THREE.Object3D();
             var ground = new THREE.Mesh( geometry, this.currentMaterial );
-            ground.scale = new THREE.Vector3(100,100,100);
+            ground.scale.set(100, 100, 100);
             submesh.add(ground);
 
             ground.castShadow = true;
@@ -986,43 +996,32 @@ CANNON.Demo.prototype.shape2mesh = function(body){
             break;
 
         case CANNON.Shape.types.BOX:
-            var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
+            var box_geometry = new THREE.BoxGeometry(  shape.halfExtents.x*2,
                                                         shape.halfExtents.y*2,
                                                         shape.halfExtents.z*2 );
             mesh = new THREE.Mesh( box_geometry, this.currentMaterial );
             break;
 
         case CANNON.Shape.types.CONVEXPOLYHEDRON:
-            var verts = [];
-            for(var i=0; i<shape.vertices.length; i++){
-                verts.push(
-                    new THREE.Vector3(
-                        shape.vertices[i].x,
-                        shape.vertices[i].y,
-                        shape.vertices[i].z
-                    )
-                );
+            var geo = new THREE.Geometry();
+
+            // Add vertices
+            for (var i = 0; i < shape.vertices.length; i++) {
+                var v = shape.vertices[i];
+                geo.vertices.push(new THREE.Vector3(v.x, v.y, v.z));
             }
-            var geo = new THREE.ConvexGeometry( verts );
 
-            // var geo = new THREE.Geometry();
-            // for(var i=0; i < shape.faces.length; i++){
-            //     var face = shape.faces[i];
+            for(var i=0; i < shape.faces.length; i++){
+                var face = shape.faces[i];
 
-            //     // add triangles
-            //     for (var j = 0; j < face.length - 2; j++) {
-            //         var v0 = shape.vertices[face[j]];
-            //         var v1 = shape.vertices[face[j + 1]];
-            //         var v2 = shape.vertices[face[j + 2]];
-            //         geo.vertices.push(
-            //             new THREE.Vector3(v0.x, v0.y, v0.z),
-            //             new THREE.Vector3(v1.x, v1.y, v1.z),
-            //             new THREE.Vector3(v2.x, v2.y, v2.z)
-            //         );
-            //         var k = geo.vertices.length - 3;
-            //         geo.faces.push(new THREE.Face3(k, k+1, k+2));
-            //     }
-            // }
+                // add triangles
+                var a = face[0];
+                for (var j = 1; j < face.length - 1; j++) {
+                    var b = face[j];
+                    var c = face[j + 1];
+                    geo.faces.push(new THREE.Face3(a, b, c));
+                }
+            }
             geo.computeBoundingSphere();
             geo.computeFaceNormals();
             mesh = new THREE.Mesh( geo, this.currentMaterial );
