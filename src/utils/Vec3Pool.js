@@ -6,7 +6,7 @@ var Vec3 = require('../math/Vec3')
 /**
  * @class Vec3Pool
  * @constructor
- * @extends {Pool}
+ * @extends Pool
  */
 function Vec3Pool(){
     Pool.call(this);

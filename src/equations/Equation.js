@@ -16,12 +16,12 @@ function Equation(bi,bj,minForce,maxForce){
     this.id = -1;
 
     /**
-     * @property float minForce
+     * @property {number} minForce
      */
     this.minForce = typeof(minForce)==="undefined" ? -1e6 : minForce;
 
     /**
-     * @property float maxForce
+     * @property {number} maxForce
      */
     this.maxForce = typeof(maxForce)==="undefined" ? 1e6 : maxForce;
 
@@ -39,19 +39,19 @@ function Equation(bi,bj,minForce,maxForce){
 
     /**
      * SPOOK parameter
-     * @property float a
+     * @property {number} a
      */
     this.a = 0.0;
 
     /**
      * SPOOK parameter
-     * @property float b
+     * @property {number} b
      */
     this.b = 0.0;
 
     /**
      * SPOOK parameter
-     * @property float eps
+     * @property {number} eps
      */
     this.eps = 0.0;
 

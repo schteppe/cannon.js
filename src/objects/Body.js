@@ -680,6 +680,7 @@ Body.prototype.updateMassProperties = function(){
 
 /**
  * Get world velocity of a point in the body.
+ * @method getVelocityAtWorldPoint
  * @param  {Vec3} worldPoint
  * @param  {Vec3} result
  * @return {Vec3} The result vector.

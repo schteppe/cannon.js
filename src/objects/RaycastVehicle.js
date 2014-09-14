@@ -9,7 +9,12 @@ module.exports = RaycastVehicle;
 
 /**
  * Vehicle helper class that casts rays from the wheel positions towards the ground and applies forces.
+ * @class RaycastVehicle
+ * @constructor
  * @param {object} [options.chassisBody]
+ * @param {object} [options.indexRightAxis]
+ * @param {object} [options.indexLeftAxis]
+ * @param {object} [options.indexUpAxis]
  */
 function RaycastVehicle(options){
 
@@ -65,8 +70,8 @@ var tmpVec6 = new Vec3();
 var tmpRay = new Ray();
 
 /**
- * Add a wheel
- * @param {object} options
+ * Add a wheel. For information about the options, see WheelInfo.
+ * @param {object} [options]
  * @method addWheel
  */
 RaycastVehicle.prototype.addWheel = function(options){
@@ -81,6 +86,7 @@ RaycastVehicle.prototype.addWheel = function(options){
 
 /**
  * Set the steering value of a wheel.
+ * @method setSteeringValue
  * @param {number} value
  * @param {integer} wheelIndex
  */
@@ -93,6 +99,7 @@ var torque = new Vec3();
 
 /**
  * Set the wheel force to apply on one of the wheels each time step
+ * @method applyEngineForce
  * @param  {number} value
  * @param  {integer} wheelIndex
  */
@@ -102,6 +109,7 @@ RaycastVehicle.prototype.applyEngineForce = function(value, wheelIndex){
 
 /**
  * Set the braking force of a wheel
+ * @method setBrake
  * @param {number} brake
  * @param {integer} wheelIndex
  */
@@ -111,6 +119,7 @@ RaycastVehicle.prototype.setBrake = function(brake, wheelIndex){
 
 /**
  * Add the vehicle including its constraints to the world.
+ * @method addToWorld
  * @param {World} world
  */
 RaycastVehicle.prototype.addToWorld = function(world){
@@ -259,6 +268,7 @@ RaycastVehicle.prototype.updateSuspension = function(deltaTime) {
 
 /**
  * Remove the vehicle including its constraints from the world.
+ * @method removeFromWorld
  * @param {World} world
  */
 RaycastVehicle.prototype.removeFromWorld = function(world){

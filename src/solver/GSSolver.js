@@ -11,7 +11,7 @@ var Vec3 = require('../math/Vec3')
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
- * @extends {Solver}
+ * @extends Solver
  */
 function GSSolver(){
     Solver.call(this);

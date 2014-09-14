@@ -9,7 +9,7 @@ var Vec3 = require('../math/Vec3')
  * Splits the equations into islands and solves them independently. Can improve performance.
  * @class SplitSolver
  * @constructor
- * @extends {Solver}
+ * @extends Solver
  * @param {Solver} subsolver
  */
 function SplitSolver(subsolver){

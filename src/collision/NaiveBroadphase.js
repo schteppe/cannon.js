@@ -8,7 +8,7 @@ var AABB = require('./AABB');
  * @class NaiveBroadphase
  * @constructor
  * @description The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
- * @extends {Broadphase}
+ * @extends Broadphase
  */
 function NaiveBroadphase(){
     Broadphase.apply(this);

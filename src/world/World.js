@@ -23,7 +23,7 @@ var NaiveBroadphase = require('../collision/NaiveBroadphase');
  * The physics world
  * @class World
  * @constructor
- * @extends {EventTarget}
+ * @extends EventTarget
  */
 function World(){
     EventTarget.apply(this);
@@ -120,15 +120,14 @@ function World(){
     this.contactgen = new ContactGenerator();
 
     /**
-     * It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
-     * @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
+     * @property {ArrayCollisionMatrix} collisionMatrix
 	 * @type {ArrayCollisionMatrix}
 	 */
 	this.collisionMatrix = new ArrayCollisionMatrix();
 
     /**
-     * collisionMatrix from the previous step
-     * @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
+     * CollisionMatrix from the previous step.
+     * @property {ArrayCollisionMatrix} collisionMatrixPrevious
 	 * @type {ArrayCollisionMatrix}
 	 */
 	this.collisionMatrixPrevious = new ArrayCollisionMatrix();

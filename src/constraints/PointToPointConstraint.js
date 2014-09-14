@@ -12,7 +12,7 @@ var Constraint = require('./Constraint')
  * @param {Body} bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
  * @param {Vec3} pivotB See pivotA.
  * @param {Number} maxForce The maximum force that should be applied to constrain the bodies.
- * @extends {Constraint}
+ * @extends Constraint
  */
 function PointToPointConstraint(bodyA,pivotA,bodyB,pivotB,maxForce){
     Constraint.call(this,bodyA,bodyB);

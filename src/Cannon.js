@@ -6,7 +6,6 @@ module.exports = {
     Body :                          require('./objects/Body'),
     Box :                           require('./shapes/Box'),
     Broadphase :                    require('./collision/Broadphase'),
-    Compound :                      require('./shapes/Compound'),
     Constraint :                    require('./constraints/Constraint'),
     ContactEquation :               require('./equations/ContactEquation'),
     ContactGenerator :              require('./world/ContactGenerator'),

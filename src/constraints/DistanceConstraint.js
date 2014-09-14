@@ -11,6 +11,7 @@ var ContactEquation = require('../equations/ContactEquation');
  * @param {Body} bodyB
  * @param {Number} distance
  * @param {Number} maxForce
+ * @extends Constraint
  */
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);

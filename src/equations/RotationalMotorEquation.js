@@ -11,7 +11,7 @@ var Vec3 = require('../math/Vec3')
  * @param {RigidBody} bodyA
  * @param {RigidBody} bodyB
  * @param {Number} maxForce
- * @extends {Equation}
+ * @extends Equation
  */
 function RotationalMotorEquation(bodyA, bodyB, maxForce){
     maxForce = maxForce || 1e6;

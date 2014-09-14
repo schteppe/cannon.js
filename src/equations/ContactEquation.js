@@ -10,7 +10,7 @@ var Equation = require('./Equation')
  * @author schteppe
  * @param {Body} bj
  * @param {Body} bi
- * @extends {Equation}
+ * @extends Equation
  */
 function ContactEquation(bi,bj){
     Equation.call(this,bi,bj,0,1e6);

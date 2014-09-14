@@ -8,6 +8,35 @@ module.exports = WheelInfo;
 /**
  * @class WheelInfo
  * @constructor
+ * @param {Object} [options]
+ *
+ * @param {Vec3} [options.chassisConnectionPointLocal]
+ * @param {Vec3} [options.chassisConnectionPointWorld]
+ * @param {Vec3} [options.directionLocal]
+ * @param {Vec3} [options.directionWorld]
+ * @param {Vec3} [options.axleLocal]
+ * @param {Vec3} [options.axleWorld]
+ * @param {number} [options.suspensionRestLength=1]
+ * @param {number} [options.suspensionMaxLength=2]
+ * @param {number} [options.radius=1]
+ * @param {number} [options.suspensionStiffness=100]
+ * @param {number} [options.dampingCompression=10]
+ * @param {number} [options.dampingRelaxation=10]
+ * @param {number} [options.frictionSlip=10000]
+ * @param {number} [options.steering=0]
+ * @param {number} [options.rotation=0]
+ * @param {number} [options.deltaRotation=0]
+ * @param {number} [options.rollInfluence=0.01]
+ * @param {number} [options.maxSuspensionForce]
+ * @param {number} [options.isFrontWheel=true]
+ * @param {number} [options.clippedInvContactDotSuspension=1]
+ * @param {number} [options.suspensionRelativeVelocity=0]
+ * @param {number} [options.suspensionForce=0]
+ * @param {number} [options.skidInfo=0]
+ * @param {number} [options.suspensionLength=0]
+ * @param {number} [options.maxSuspensionTravel=1]
+ * @param {number} [options.useCustomSlidingRotationalSpeed=false]
+ * @param {number} [options.customSlidingRotationalSpeed=-0.1]
  */
 function WheelInfo(options){
     options = Utils.defaults(options, {

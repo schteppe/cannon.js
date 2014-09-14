@@ -18,6 +18,7 @@ var Vec3 = require('../math/Vec3');
  * @param {Vec3} [options.pivotB]
  * @param {Vec3} [options.axisB]
  * @param {Number} [options.maxForce=1e6]
+ * @extends Constraint
  */
 function HingeConstraint(bodyA, bodyB, options){ // bodyA, pivotA, axisA, bodyB, pivotB, axisB, maxForce
     Constraint.call(this, bodyA, bodyB, options);

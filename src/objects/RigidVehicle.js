@@ -8,6 +8,8 @@ module.exports = RigidVehicle;
 
 /**
  * Simple vehicle helper class with spherical rigid body wheels.
+ * @class RigidVehicle
+ * @constructor
  * @param {object} [options.chassisBody]
  */
 function RigidVehicle(options){
@@ -42,6 +44,7 @@ function RigidVehicle(options){
 
 /**
  * Add a wheel
+ * @method addWheel
  * @param {object} options
  * @param {object} [options.isFrontWheel]
  * @param {Vec3} [options.position] Position of the wheel, locally in the chassis body.
@@ -85,6 +88,7 @@ RigidVehicle.prototype.addWheel = function(options){
 
 /**
  * Set the steering value of a wheel.
+ * @method setSteeringValue
  * @param {number} value
  * @param {integer} wheelIndex
  * @todo check coordinateSystem
@@ -131,6 +135,7 @@ var torque = new Vec3();
 
 /**
  * Set the wheel force to apply on one of the wheels each time step
+ * @method setWheelForce
  * @param  {number} value
  * @param  {integer} wheelIndex
  */
@@ -140,6 +145,7 @@ RigidVehicle.prototype.setWheelForce = function(value, wheelIndex){
 
 /**
  * Apply a torque on one of the wheels.
+ * @method applyWheelForce
  * @param  {number} value
  * @param  {integer} wheelIndex
  */
@@ -155,6 +161,7 @@ RigidVehicle.prototype.applyWheelForce = function(value, wheelIndex){
 
 /**
  * Add the vehicle including its constraints to the world.
+ * @method addToWorld
  * @param {World} world
  */
 RigidVehicle.prototype.addToWorld = function(world){
@@ -181,6 +188,7 @@ RigidVehicle.prototype._update = function(){
 
 /**
  * Remove the vehicle including its constraints from the world.
+ * @method removeFromWorld
  * @param {World} world
  */
 RigidVehicle.prototype.removeFromWorld = function(world){

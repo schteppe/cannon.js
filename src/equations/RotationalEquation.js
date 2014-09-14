@@ -12,7 +12,7 @@ var Vec3 = require('../math/Vec3')
  * @param {Vec3} localVectorInBodyA
  * @param {RigidBody} bi
  * @param {Vec3} localVectorInBodyB
- * @extends {Equation}
+ * @extends Equation
  */
 function RotationalEquation(bodyA, bodyB){
     Equation.call(this,bodyA,bodyB,-1e6,1e6);

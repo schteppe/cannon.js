@@ -72,7 +72,8 @@ ConvexPolyhedron.prototype = new Shape();
 ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
 
 /**
- * Computes .uniqueEdges.
+ * Computes uniqueEdges
+ * @method computeEdges
  */
 ConvexPolyhedron.prototype.computeEdges = function(){
     var faces = this.faces;
@@ -125,6 +126,7 @@ ConvexPolyhedron.prototype.computeEdges = function(){
 
 /**
  * Compute the normals of the faces. Will reuse existing Vec3 objects in the .faceNormals array if they exist.
+ * @method computeNormals
  */
 ConvexPolyhedron.prototype.computeNormals = function(){
     this.faceNormals.length = this.faces.length;

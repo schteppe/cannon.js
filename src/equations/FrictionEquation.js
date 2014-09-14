@@ -11,7 +11,7 @@ var Equation = require('./Equation')
  * @param {Body} bi
  * @param {Body} bj
  * @param {Number} slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
- * @extends {Equation}
+ * @extends Equation
  */
 function FrictionEquation(bi,bj,slipForce){
     Equation.call(this,bi,bj,-slipForce,slipForce);

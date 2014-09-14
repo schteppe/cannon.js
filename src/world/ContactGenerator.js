@@ -233,9 +233,6 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
             case BOX: // sphere-box
                 this.sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
-            case COMPOUND: // sphere-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
             case CONVEXPOLYHEDRON: // sphere-convexpolyhedron
                 this.sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
@@ -259,9 +256,6 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
             case BOX: // plane-box
                 this.planeBox(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
-            case COMPOUND: // plane-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
             case CONVEXPOLYHEDRON: // plane-convex polyhedron
                 this.planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
@@ -280,9 +274,6 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 // Do convex/convex instead
                 this.narrowphase(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
                 break;
-            case COMPOUND: // box-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
             case CONVEXPOLYHEDRON: // box-convexpolyhedron
                 // Do convex/convex instead
                 this.narrowphase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
@@ -295,26 +286,6 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 break;
             default:
                 warn("Collision between Shape.BOX and "+sj.type+" not implemented yet.");
-                break;
-            }
-
-        } else if(si.type===COMPOUND){
-
-            switch(sj.type){
-            case types.COMPOUND: // compound-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case types.CONVEXPOLYHEDRON: // compound-convex polyhedron
-                // Must swap
-                var r = [];
-                this.recurseCompound(r,sj,si,xj,xi,qj,qi,bj,bi);
-                for(var ri=0; ri!==r.length; ri++){
-                    this.swapResult(r[ri]);
-                    result.push(r[ri]);
-                }
-                break;
-            default:
-                warn("Collision between Shape.types.COMPOUND and "+sj.type+" not implemented yet.");
                 break;
             }
 
@@ -358,9 +329,6 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 break;
             case types.CONVEXPOLYHEDRON: // particle-convex
                 this.particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case types.COMPOUND: // particle-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
                 console.warn("Collision between Particle and "+sj.type+" not implemented yet.");
@@ -948,71 +916,6 @@ var plane_to_corner = new Vec3();
  */
 ContactGenerator.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     this.planeConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
-};
-
-/**
- * Go recursive for compound shapes
- * @method recurseCompound
- * @param  {Array}      result
- * @param  {Shape}      si
- * @param  {Shape}      sj
- * @param  {Vec3}       xi
- * @param  {Vec3}       xj
- * @param  {Quaternion} qi
- * @param  {Quaternion} qj
- * @param  {Body}       bi
- * @param  {Body}       bj
- */
-var recurseCompound_v3pool = [];
-var recurseCompound_quatpool = [];
-ContactGenerator.prototype.recurseCompound = function(result,si,sj,xi,xj,qi,qj,bi,bj){
-    var v3pool = recurseCompound_v3pool;
-    var quatPool = recurseCompound_quatpool;
-    var nr = 0;
-    for(var i=0, Nchildren=sj.childShapes.length; i!==Nchildren; i++){
-        var r = [];
-        var newQuat = quatPool.pop() || new Quaternion();
-        var newPos = v3pool.pop() || new Vec3();
-
-        // Calculate world quaternion for the shape
-        qj.mult(sj.childOrientations[i], newQuat); // Can't reuse these since narrowphase() may recurse
-        newQuat.normalize();
-
-        // Calculate the world position for the shape.
-        //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
-        qj.vmult(sj.childOffsets[i],newPos);
-        xj.vadd(newPos,newPos);
-
-        this.narrowphase(
-            r,
-            si,
-            sj.childShapes[i],
-            xi,
-            newPos,//xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
-            qi,
-            newQuat, // Accumulate orientation
-            bi,
-            bj
-        );
-
-        // Release vector and quat
-        quatPool.push(newQuat);
-
-        var tempVec = newPos;
-
-        if(!si){
-            nr+= r.length;
-        }
-        for(var j=0; j!==r.length; j++){
-            // The "rj" vector is in world coords, though we must add the world child offset vector.
-            //r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
-            // qj.vmult(sj.childOffsets[i],tempVec);
-            // r[j].rj.vadd(tempVec,r[j].rj);
-            result.push(r[j]);
-        }
-
-        v3pool.push(newPos);
-    }
 };
 
 var planeConvex_v = new Vec3();

@@ -27,7 +27,7 @@ module.exports = Heightfield;
  *
  *     // Create the heightfield shape
  *     var heightfieldShape = new Heightfield(data, {
- *         elementSize: 1 // Distance between the data points in X direction
+ *         elementSize: 1 // Distance between the data points in X and Y directions
  *     });
  *     var heightfieldBody = new Body();
  *     heightfieldBody.addShape(heightfieldShape);
@@ -98,6 +98,7 @@ Heightfield.prototype.update = function(){
 };
 
 /**
+ * @method updateMinValue
  * Update the .minValue property
  */
 Heightfield.prototype.updateMinValue = function(){
@@ -189,6 +190,7 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
 
 /**
  * Get the index of a local position on the heightfield. The indexes indicate the rectangles, so if your terrain is made of N x N height data points, you will have rectangle indexes ranging from 0 to N-1.
+ * @method getIndexOfPosition
  * @param  {number} x
  * @param  {number} y
  * @param  {array} result Two-element array
@@ -254,6 +256,7 @@ Heightfield.prototype.clearCachedConvexTrianglePillar = function(xi, yi, getUppe
 
 /**
  * Get a triangle in the terrain in the form of a triangular convex shape.
+ * @method getConvexTrianglePillar
  * @param  {integer} i
  * @param  {integer} j
  * @param  {boolean} getUpperTriangle
