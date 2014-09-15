@@ -646,6 +646,8 @@ World.prototype.internalStep = function(dt){
                 c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
                 c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
 
+                c1.enabled = c2.enabled = c.enabled;
+
 				// Add equations to solver
 				solver.addEquation(c1);
 				solver.addEquation(c2);
