@@ -77,5 +77,6 @@ Shape.types = {
     CONVEXPOLYHEDRON:16,
     HEIGHTFIELD:32,
     PARTICLE:64,
+    CYLINDER:128
 };
 

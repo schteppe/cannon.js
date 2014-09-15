@@ -287,7 +287,7 @@
                 for ( var i = 0, il = Nx+1; i !== il; i++ ) {
                     for ( var j = 0, jl = Ny+1; j !== jl; j++ ) {
                         var idx = j*(Nx+1) + i;
-                        particles[i][j].position.copy( clothGeometry.vertices[ idx ] );
+                        clothGeometry.vertices[idx].copy(particles[i][j].position);
                     }
                 }
 
@@ -297,7 +297,7 @@
                 clothGeometry.normalsNeedUpdate = true;
                 clothGeometry.verticesNeedUpdate = true;
 
-                sphereBody.position.copy(sphereMesh.position);
+                sphereMesh.position.copy(sphereBody.position);
 
                 renderer.render( scene, camera );
 

@@ -253,8 +253,8 @@
         function updatePhysics(){
             world.step(dt);
             for(var i=0; i !== meshes.length; i++){
-                bodies[i].position.copy(meshes[i].position);
-                bodies[i].quaternion.copy(meshes[i].quaternion);
+                meshes[i].position.copy(bodies[i].position);
+                meshes[i].quaternion.copy(bodies[i].quaternion);
             }
         }
 

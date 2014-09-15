@@ -301,7 +301,7 @@
 
                 mesh = new THREE.Mesh( geometry, material );
 
-                groundBody.position.copy(mesh.position);
+                mesh.position.copy(groundBody.position);
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;
                 scene.add( mesh );
@@ -343,14 +343,14 @@
 
                     // Update ball positions
                     for(var i=0; i<balls.length; i++){
-                        balls[i].position.copy(ballMeshes[i].position);
-                        balls[i].quaternion.copy(ballMeshes[i].quaternion);
+                        ballMeshes[i].position.copy(balls[i].position);
+                        ballMeshes[i].quaternion.copy(balls[i].quaternion);
                     }
 
                     // Update box positions
                     for(var i=0; i<voxels.boxes.length; i++){
-                        voxels.boxes[i].position.copy(boxMeshes[i].position);
-                        voxels.boxes[i].quaternion.copy(boxMeshes[i].quaternion);
+                        boxMeshes[i].position.copy(voxels.boxes[i].position);
+                        boxMeshes[i].quaternion.copy(voxels.boxes[i].quaternion);
                     }
                 }
 

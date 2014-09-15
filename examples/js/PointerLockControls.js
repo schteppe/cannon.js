@@ -35,7 +35,7 @@
         if(contact.bi.id == cannonBody.id)  // bi is the player body, flip the contact normal
             contact.ni.negate(contactNormal);
         else
-            contact.ni.copy(contactNormal); // bi is something else. Keep the normal as it is
+            contactNormal.copy(contact.ni); // bi is something else. Keep the normal as it is
 
         // If contactNormal.dot(upAxis) is between 0 and 1, we know that the contact normal is somewhat in the up direction.
         if(contactNormal.dot(upAxis) > 0.5) // Use a "good" threshold value between 0 and 1 here!
@@ -172,6 +172,6 @@
         velocity.x += inputVelocity.x;
         velocity.z += inputVelocity.z;
 
-        cannonBody.position.copy(yawObject.position);
+        yawObject.position.copy(cannonBody.position);
     };
 };

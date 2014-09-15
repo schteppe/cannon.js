@@ -68,7 +68,7 @@ Narrowphase.prototype.reduceContacts = function(contacts){
  * @method makeResult
  * @return {ContactEquation}
  */
-Narrowphase.prototype.makeResult = function(bi, bj, si, sj){
+Narrowphase.prototype.makeResult = function(bi, bj, si, sj, rsi, rsj){
     var c;
     if(this.contactPointPool.length){
         c = this.contactPointPool.pop();
@@ -79,8 +79,8 @@ Narrowphase.prototype.makeResult = function(bi, bj, si, sj){
     }
 
     c.enabled = true;
-    c.si = si;
-    c.sj = sj;
+    c.si = rsi || si;
+    c.sj = rsj || sj;
 
     return c;
 };
@@ -118,6 +118,7 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
             bi.quaternion.mult(bi.shapeOrientations[i], qi);
             bi.quaternion.vmult(bi.shapeOffsets[i], xi);
             xi.vadd(bi.position, xi);
+            var si = bi.shapes[i];
 
             for (var j = 0; j < bj.shapes.length; j++) {
 
@@ -125,8 +126,18 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
                 bj.quaternion.mult(bj.shapeOrientations[j], qj);
                 bj.quaternion.vmult(bj.shapeOffsets[j], xj);
                 xj.vadd(bj.position, xj);
+                var sj = bj.shapes[j];
 
                 // Get contacts
+                var resolver = this[si.type | sj.type];
+                if(resolver){
+                    if (si.type < sj.type) {
+                        resolver.call(this, result, si,sj,xi,xj,qi,qj,bi,bj,si,sj);
+                    } else {
+                        resolver.call(this, result, sj,si,xj,xi,qj,qi,bj,bi,si,sj);
+                    }
+                }
+                /*
                 this.narrowphase(
                     result,
                     bi.shapes[i],
@@ -135,6 +146,7 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
                     qi, qj,
                     bi, bj
                 );
+                */
             }
         }
     }
@@ -164,6 +176,7 @@ function warn(msg){
  * @param {Quaternion} qi Rotation around the center of mass
  * @param {Quaternion} qj
  */
+/*
 Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var swapped = false,
         types = Shape.types,
@@ -175,49 +188,26 @@ Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
         CONVEXPOLYHEDRON = types.CONVEXPOLYHEDRON,
         HEIGHTFIELD = types.HEIGHTFIELD;
 
-    if(si && sj){
-        if(si.type > sj.type){
-            var temp;
-            temp=sj;
-            sj=si;
-            si=temp;
+    if(si.type > sj.type){
+        var temp;
 
-            temp=xj;
-            xj=xi;
-            xi=temp;
+        temp = sj;
+        sj = si;
+        si = temp;
 
-            temp=qj;
-            qj=qi;
-            qi=temp;
+        temp = xj;
+        xj = xi;
+        xi = temp;
 
-            temp=bj;
-            bj=bi;
-            bi=temp;
+        temp = qj;
+        qj = qi;
+        qi = temp;
 
-            swapped = true;
-        }
-    } else {
-        // Particle!
-        if(si && !sj){
-            var temp;
-            temp=sj;
-            sj=si;
-            si=temp;
+        temp = bj;
+        bj = bi;
+        bi = temp;
 
-            temp=xj;
-            xj=xi;
-            xi=temp;
-
-            temp=qj;
-            qj=qi;
-            qi=temp;
-
-            temp=bj;
-            bj=bi;
-            bi=temp;
-
-            swapped = true;
-        }
+        swapped = true;
     }
 
     if(si && sj){
@@ -272,17 +262,17 @@ Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
             switch(sj.type){
             case BOX: // box-box
                 // Do convex/convex instead
-                this.narrowphase(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
+                this.convexConvex(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj,si,sj);
                 break;
             case CONVEXPOLYHEDRON: // box-convexpolyhedron
                 // Do convex/convex instead
-                this.narrowphase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+                this.convexConvex(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
                 break;
             case PARTICLE: // Particle vs box
-                this.particleConvex(result,sj,si.convexPolyhedronRepresentation,xj,xi,qj,qi,bj,bi);
+                this.convexParticle(result,sj,si.convexPolyhedronRepresentation,xj,xi,qj,qi,bj,bi,si,sj);
                 break;
             case HEIGHTFIELD: // Box vs heightfield
-                this.convexHeightfield(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+                this.convexHeightfield(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
                 break;
             default:
                 warn("Collision between Shape.BOX and "+sj.type+" not implemented yet.");
@@ -296,7 +286,7 @@ Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                 this.convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             case types.PARTICLE: // particle-convex
-                this.particleConvex(result,sj,si,xj,xi,qj,qi,bj,bi);
+                this.convexParticle(result,sj,si,xj,xi,qj,qi,bj,bi);
                 break;
             default:
                 warn("Collision between Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
@@ -325,10 +315,10 @@ Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                 this.particleSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             case types.BOX: // Particle vs box
-                this.particleConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
+                this.convexParticle(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
                 break;
             case types.CONVEXPOLYHEDRON: // particle-convex
-                this.particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
+                this.convexParticle(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
                 console.warn("Collision between Particle and "+sj.type+" not implemented yet.");
@@ -341,6 +331,23 @@ Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     for(var i=0, Nresults=result.length; swapped && i!==Nresults; i++){
         this.swapResult(result[i]);
     }
+};
+*/
+
+
+Narrowphase.prototype[Shape.types.BOX | Shape.types.BOX] =
+Narrowphase.prototype.boxBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+    this.convexConvex(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj,si,sj);
+};
+
+Narrowphase.prototype[Shape.types.BOX | Shape.types.CONVEXPOLYHEDRON] =
+Narrowphase.prototype.boxConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+    this.convexConvex(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
+};
+
+Narrowphase.prototype[Shape.types.BOX | Shape.types.PARTICLE] =
+Narrowphase.prototype.boxParticle = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+    this.convexParticle(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
 /**
@@ -355,6 +362,7 @@ Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
+Narrowphase.prototype[Shape.types.SPHERE] =
 Narrowphase.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have only one contact in this case
     var r = this.makeResult(bi,bj,si,sj);
@@ -386,6 +394,7 @@ var plane_to_sphere_ortho = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.PLANE] =
 Narrowphase.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have one contact in this case
     var r = this.makeResult(bi,bj,si,sj);
@@ -480,6 +489,7 @@ var sphereBox_side_ns2 = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.BOX] =
 Narrowphase.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var v3pool = this.v3pool;
 
@@ -698,6 +708,7 @@ var sphereConvex_sphereToWorldPoint = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.CONVEXPOLYHEDRON] =
 Narrowphase.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var v3pool = this.v3pool;
     xi.vsub(xj,convex_to_sphere);
@@ -914,6 +925,7 @@ var plane_to_corner = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
+Narrowphase.prototype[Shape.types.PLANE | Shape.types.BOX] =
 Narrowphase.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     this.planeConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
 };
@@ -935,6 +947,7 @@ var planeConvex_projected = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
+Narrowphase.prototype[Shape.types.PLANE | Shape.types.CONVEXPOLYHEDRON] =
 Narrowphase.prototype.planeConvex = function(
     result,
     planeShape,
@@ -1003,14 +1016,15 @@ var convexConvex_q = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON] =
+Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
     var sepAxis = convexConvex_sepAxis;
     if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
         var res = [];
         var q = convexConvex_q;
         si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
         for(var j = 0; j !== res.length; j++){
-            var r = this.makeResult(bi,bj,si,sj),
+            var r = this.makeResult(bi,bj,si,sj,rsi,rsj),
                 ri = r.ri,
                 rj = r.rj;
             sepAxis.negate(r.ni);
@@ -1050,7 +1064,8 @@ var particlePlane_projected = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-Narrowphase.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.PLANE | Shape.types.PARTICLE] =
+Narrowphase.prototype.planeParticle = function(result,sj,si,xj,xi,qj,qi,bj,bi){
     var normal = particlePlane_normal;
     normal.set(0,0,1);
     bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
@@ -1089,7 +1104,8 @@ var particleSphere_normal = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-Narrowphase.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.PARTICLE | Shape.types.SPHERE] =
+Narrowphase.prototype.sphereParticle = function(result,sj,si,xj,xi,qj,qi,bj,bi){
     // The normal is the unit vector from sphere center to particle center
     var normal = particleSphere_normal;
     normal.set(0,0,1);
@@ -1110,14 +1126,14 @@ Narrowphase.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
 
 // WIP
 var cqj = new Quaternion();
-var particleConvex_local = new Vec3();
-var particleConvex_normal = new Vec3();
-var particleConvex_penetratedFaceNormal = new Vec3();
-var particleConvex_vertexToParticle = new Vec3();
-var particleConvex_worldPenetrationVec = new Vec3();
+var convexParticle_local = new Vec3();
+var convexParticle_normal = new Vec3();
+var convexParticle_penetratedFaceNormal = new Vec3();
+var convexParticle_vertexToParticle = new Vec3();
+var convexParticle_worldPenetrationVec = new Vec3();
 
 /**
- * @method particleConvex
+ * @method convexParticle
  * @param  {Array}      result
  * @param  {Shape}      si
  * @param  {Shape}      sj
@@ -1128,15 +1144,16 @@ var particleConvex_worldPenetrationVec = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-Narrowphase.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.PARTICLE | Shape.types.CONVEXPOLYHEDRON] =
+Narrowphase.prototype.convexParticle = function(result,sj,si,xj,xi,qj,qi,bj,bi){
     var penetratedFaceIndex = -1;
-    var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
-    var worldPenetrationVec = particleConvex_worldPenetrationVec;
+    var penetratedFaceNormal = convexParticle_penetratedFaceNormal;
+    var worldPenetrationVec = convexParticle_worldPenetrationVec;
     var minPenetration = null;
     var numDetectedFaces = 0;
 
     // Convert particle position xi to local coords in the convex
-    var local = particleConvex_local;
+    var local = convexParticle_local;
     local.copy(xi);
     local.vsub(xj,local); // Convert position to relative the convex origin
     qj.conjugate(cqj);
@@ -1159,8 +1176,8 @@ Narrowphase.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
             var normal = sj.worldFaceNormals[i];
 
             // Check how much the particle penetrates the polygon plane.
-            xi.vsub(verts[0],particleConvex_vertexToParticle);
-            var penetration = -normal.dot(particleConvex_vertexToParticle);
+            xi.vsub(verts[0],convexParticle_vertexToParticle);
+            var penetration = -normal.dot(convexParticle_vertexToParticle);
             if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
                 minPenetration = penetration;
                 penetratedFaceIndex = i;
@@ -1201,12 +1218,18 @@ Narrowphase.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     }
 };
 
+Narrowphase.prototype[Shape.types.BOX | Shape.types.HEIGHTFIELD] =
+Narrowphase.prototype.boxHeightfield = function (result,si,sj,xi,xj,qi,qj,bi,bj){
+    this.convexHeightfield(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+};
+
 var convexHeightfield_tmp1 = new Vec3();
 var convexHeightfield_tmp2 = new Vec3();
 
 /**
  * @method sphereHeightfield
  */
+Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON | Shape.types.HEIGHTFIELD] =
 Narrowphase.prototype.convexHeightfield = function (
     result,
     convexShape,
@@ -1283,6 +1306,7 @@ var sphereHeightfield_tmp2 = new Vec3();
 /**
  * @method sphereHeightfield
  */
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.HEIGHTFIELD] =
 Narrowphase.prototype.sphereHeightfield = function (
     result,
     sphereShape,
