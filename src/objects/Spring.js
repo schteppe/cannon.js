@@ -74,7 +74,7 @@ function Spring(bodyA,bodyB,options){
         this.localAnchorA.copy(options.localAnchorA);
     }
     if(options.localAnchorB){
-        this.localAnchorB.copy(options.localAnchorB.x);
+        this.localAnchorB.copy(options.localAnchorB);
     }
     if(options.worldAnchorA){
         this.setWorldAnchorA(options.worldAnchorA);
