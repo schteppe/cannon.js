@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -256,6 +268,8 @@
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -270,8 +284,31 @@
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_constructObject">constructObject</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_defaults">defaults</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_get">get</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_release">release</a>
 
                                 
                                 
@@ -281,6 +318,28 @@
                 </div>
             
 
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_objects">objects</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_type">type</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
 
             
@@ -320,12 +379,12 @@
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Pool.html#method_constructObject">
+                Pool
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
@@ -364,9 +423,383 @@
 </div>
 
                 
+                    <div id="method_defaults" class="method item">
+    <h3 class="name"><code>defaults</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>defaults</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_utils_Utils.js.html#l5"><code>src&#x2F;utils&#x2F;Utils.js:5</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Extend an options object with default values.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The options object. May be falsy: in this case, a new object is created and returned.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">defaults</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An object containing default values.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>The modified options object.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_get" class="method item inherited">
+    <h3 class="name"><code>get</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Mixed</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Pool.html#method_get">Pool</a>:
+            
+        
+        
+        <a href="../files/src_utils_Pool.js.html#l34"><code>src&#x2F;utils&#x2F;Pool.js:34</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get an object</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Mixed</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_release" class="method item inherited">
+    <h3 class="name"><code>release</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>obj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Pool.html#method_release">Pool</a>:
+            
+        
+        
+        <a href="../files/src_utils_Pool.js.html#l22"><code>src&#x2F;utils&#x2F;Pool.js:22</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Release an object after use</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">obj</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
             </div>
         
 
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_objects" class="property item inherited">
+    <h3 class="name"><code>objects</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Pool.html#property_objects">Pool</a>:
+            
+        
+        
+        <a href="../files/src_utils_Pool.js.html#l9"><code>src&#x2F;utils&#x2F;Pool.js:9</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The pooled objects</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_type" class="property item inherited">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Mixed</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Pool.html#property_type">Pool</a>:
+            
+        
+        
+        <a href="../files/src_utils_Pool.js.html#l15"><code>src&#x2F;utils&#x2F;Pool.js:15</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Constructor of the objects</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

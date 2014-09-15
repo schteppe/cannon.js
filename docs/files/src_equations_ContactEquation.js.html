@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/constraints/RotationalEquation.js - cannon</title>
+    <title>src/equations/ContactEquation.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,176 +174,230 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/constraints/RotationalEquation.js</h1>
+                        <h1 class="file-heading">File: src/equations/ContactEquation.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = RotationalEquation;
+module.exports = ContactEquation;
 
-var Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Mat3 = require(&#x27;../math/Mat3&#x27;)
-,   Equation = require(&#x27;./Equation&#x27;)
+var Equation = require(&#x27;./Equation&#x27;);
+var Vec3 = require(&#x27;../math/Vec3&#x27;);
+var Mat3 = require(&#x27;../math/Mat3&#x27;);
 
 /**
- * Rotational constraint. Works to keep the local vectors orthogonal to each other.
- * @class RotationalEquation
+ * Contact/non-penetration constraint equation
+ * @class ContactEquation
+ * @constructor
  * @author schteppe
- * @param {RigidBody} bj
- * @param {Vec3} localVectorInBodyA
- * @param {RigidBody} bi
- * @param {Vec3} localVectorInBodyB
- * @extends {Equation}
+ * @param {Body} bj
+ * @param {Body} bi
+ * @extends Equation
  */
-function RotationalEquation(bodyA, bodyB){
-    Equation.call(this,bodyA,bodyB,-1e6,1e6);
-    this.ni = new Vec3(); // World oriented localVectorInBodyA
-    this.nj = new Vec3(); // ...and B
+function ContactEquation(bi,bj){
+    Equation.call(this,bi,bj,0,1e6);
 
-    this.nixnj = new Vec3();
-    this.njxni = new Vec3();
+    /**
+     * @property restitution
+     * @type {Number}
+     */
+    this.restitution = 0.0; // &quot;bounciness&quot;: u1 = -e*u0
+
+    /**
+     * World-oriented vector that goes from the center of bi to the contact point.
+     * @property {Vec3} ri
+     */
+    this.ri = new Vec3();
+
+    /**
+     * World-oriented vector that starts in body j position and goes to the contact point.
+     * @property {Vec3} rj
+     */
+    this.rj = new Vec3();
+
+    this.penetrationVec = new Vec3();
+
+    /**
+     * Contact normal, pointing out of body i.
+     * @property {Vec3} ni
+     */
+    this.ni = new Vec3();
+
+    this.rixn = new Vec3();
+    this.rjxn = new Vec3();
 
     this.invIi = new Mat3();
     this.invIj = new Mat3();
 
-    this.relVel = new Vec3();
-    this.relForce = new Vec3();
-};
+    // Cache
+    this.biInvInertiaTimesRixn =  new Vec3();
+    this.bjInvInertiaTimesRjxn =  new Vec3();
+}
 
-RotationalEquation.prototype = new Equation();
-RotationalEquation.prototype.constructor = RotationalEquation;
+ContactEquation.prototype = new Equation();
+ContactEquation.prototype.constructor = ContactEquation;
 
-RotationalEquation.prototype.computeB = function(h){
+var ContactEquation_computeB_temp1 = new Vec3(); // Temp vectors
+var ContactEquation_computeB_temp2 = new Vec3();
+var ContactEquation_computeB_zero = new Vec3();
+ContactEquation.prototype.computeB = function(h){
     var a = this.a,
-        b = this.b;
-    var bi = this.bi;
-    var bj = this.bj;
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
+        ri = this.ri,
+        rj = this.rj,
+        rixn = this.rixn,
+        rjxn = this.rjxn,
 
-    var ni = this.ni;
-    var nj = this.nj;
+        zero = ContactEquation_computeB_zero,
 
-    var nixnj = this.nixnj;
-    var njxni = this.njxni;
+        vi = bi.velocity,
+        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        fi = bi.force,
+        taui = bi.tau ? bi.tau : zero,
 
-    var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new Vec3();
-    var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new Vec3();
+        vj = bj.velocity,
+        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        fj = bj.force,
+        tauj = bj.tau ? bj.tau : zero,
 
-    var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new Vec3();
-    var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new Vec3();
+        penetrationVec = this.penetrationVec,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
 
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+        invIi = this.invIi,
+        invIj = this.invIj,
 
-    var invIi = this.invIi;
-    var invIj = this.invIj;
+        GA = this.jacobianElementA,
+        GB = this.jacobianElementB,
 
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertia) {
-        invIj.setTrace(bj.invInertia);
-    } else {
-        invIj.identity(); // ok?
-    }
+        n = this.ni;
 
     // Caluclate cross products
-    ni.cross(nj,nixnj);
-    nj.cross(ni,njxni);
+    ri.cross(n,rixn);
+    rj.cross(n,rjxn);
 
-    // g = ni * nj
-    // gdot = (nj x ni) * wi + (ni x nj) * wj
-    // G = [0 njxni 0 nixnj]
-    // W = [vi wi vj wj]
-    var Gq = -ni.dot(nj);
-    var GW = njxni.dot(wi) + nixnj.dot(wj);
-    var GiMf = 0;//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
+    // g = xj+rj -(xi+ri)
+    // G = [ -ni  -rixn  ni  rjxn ]
+    n.negate(GA.spatial);
+    rixn.negate(GA.rotational);
+    GB.spatial.copy(n);
+    GB.rotational.copy(rjxn);
 
-    var B = - Gq * a - GW * b - h*GiMf;
+    // Calculate the penetration vector
+    var penetrationVec = this.penetrationVec;
+    penetrationVec.set(0,0,0);
+    penetrationVec.vadd(bj.position,penetrationVec);
+    penetrationVec.vadd(rj,penetrationVec);
+    penetrationVec.vsub(bi.position,penetrationVec);
+    penetrationVec.vsub(ri,penetrationVec);
+
+    var g = n.dot(penetrationVec);
+
+    var invIi_vmult_taui = ContactEquation_computeB_temp1;
+    var invIj_vmult_tauj = ContactEquation_computeB_temp2;
+    if(bi.invInertiaWorld){
+        bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    } else {
+        invIi_vmult_taui.set(0,0,0);
+    }
+    if(bj.invInertiaWorld){
+        bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
+    } else {
+        invIj_vmult_tauj.set(0,0,0);
+    }
+
+    // Compute iteration
+    var ePlusOne = this.restitution+1;
+    var GW = ePlusOne*vj.dot(n) - ePlusOne*vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
+    var GiMf = this.computeGiMf();//fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui);
+
+    var B = - g * a - GW * b - h*GiMf;
 
     return B;
 };
 
-// Compute C = GMG+eps
-RotationalEquation.prototype.computeC = function(){
+// Compute C = GMG+eps in the SPOOK equation
+/*
+var computeC_temp1 = new Vec3();
+var computeC_temp2 = new Vec3();
+ContactEquation.prototype.computeC = function(){
     var bi = this.bi;
     var bj = this.bj;
-    var nixnj = this.nixnj;
-    var njxni = this.njxni;
+    var rixn = this.rixn;
+    var rjxn = this.rjxn;
     var invMassi = bi.invMass;
     var invMassj = bj.invMass;
 
-    var C = /*invMassi + invMassj +*/ this.eps;
+    var C = invMassi + invMassj + this.eps;
 
     var invIi = this.invIi;
     var invIj = this.invIj;
 
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
-    } else {
-        invIj.identity(); // ok?
-    }
+    // Compute rxn * I * rxn for each body
+    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(rixn, this.biInvInertiaTimesRixn);
+    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(rjxn, this.bjInvInertiaTimesRjxn);
 
-    C += invIi.vmult(njxni).dot(njxni);
-    C += invIj.vmult(nixnj).dot(nixnj);
+    C += this.biInvInertiaTimesRixn.dot(rixn);
+    C += this.bjInvInertiaTimesRjxn.dot(rjxn);
 
     return C;
 };
 
 var computeGWlambda_ulambda = new Vec3();
-RotationalEquation.prototype.computeGWlambda = function(){
+ContactEquation.prototype.computeGWlambda = function(){
     var bi = this.bi;
     var bj = this.bj;
     var ulambda = computeGWlambda_ulambda;
 
     var GWlambda = 0.0;
-    //bj.vlambda.vsub(bi.vlambda, ulambda);
-    //GWlambda += ulambda.dot(this.ni);
+
+    bj.vlambda.vsub(bi.vlambda, ulambda);
+    GWlambda += ulambda.dot(this.ni);
 
     // Angular
     if(bi.wlambda){
-        GWlambda += bi.wlambda.dot(this.njxni);
+        GWlambda -= bi.wlambda.dot(this.rixn);
     }
     if(bj.wlambda){
-        GWlambda += bj.wlambda.dot(this.nixnj);
+        GWlambda += bj.wlambda.dot(this.rjxn);
     }
-
-    //console.log(&quot;GWlambda:&quot;,GWlambda);
 
     return GWlambda;
 };
 
-RotationalEquation.prototype.addToWlambda = function(deltalambda){
-    var bi = this.bi;
-    var bj = this.bj;
-    var nixnj = this.nixnj;
-    var njxni = this.njxni;
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+var ContactEquation_addToWlambda_temp1 = new Vec3();
+var ContactEquation_addToWlambda_temp2 = new Vec3();
+ContactEquation.prototype.addToWlambda = function(deltalambda){
+    var bi = this.bi,
+        bj = this.bj,
+        rixn = this.rixn,
+        rjxn = this.rjxn,
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
+        n = this.ni,
+        temp1 = ContactEquation_addToWlambda_temp1,
+        temp2 = ContactEquation_addToWlambda_temp2;
+
 
     // Add to linear velocity
-    //bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
-    //bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
+    n.mult(invMassi * deltalambda, temp2);
+    bi.vlambda.vsub(temp2,bi.vlambda);
+    n.mult(invMassj * deltalambda, temp2);
+    bj.vlambda.vadd(temp2,bj.vlambda);
 
     // Add to angular velocity
-    if(bi.wlambda){
-        var I = this.invIi;
-        bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
+    if(bi.wlambda !== undefined){
+        this.biInvInertiaTimesRixn.mult(deltalambda,temp1);
+
+        bi.wlambda.vsub(temp1,bi.wlambda);
     }
-    if(bj.wlambda){
-        var I = this.invIj;
-        bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
+    if(bj.wlambda !== undefined){
+        this.bjInvInertiaTimesRjxn.mult(deltalambda,temp1);
+        bj.wlambda.vadd(temp1,bj.wlambda);
     }
 };
+*/
 
     </pre>
 </div>

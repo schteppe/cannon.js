@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/constraints/RotationalMotorEquation.js - cannon</title>
+    <title>src/equations/RotationalMotorEquation.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,24 +174,25 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/constraints/RotationalMotorEquation.js</h1>
+                        <h1 class="file-heading">File: src/equations/RotationalMotorEquation.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 module.exports = RotationalMotorEquation;
 
-var Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Mat3 = require(&#x27;../math/Mat3&#x27;)
-,   Equation = require(&#x27;./Equation&#x27;)
+var Vec3 = require(&#x27;../math/Vec3&#x27;);
+var Mat3 = require(&#x27;../math/Mat3&#x27;);
+var Equation = require(&#x27;./Equation&#x27;);
 
 /**
  * Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
  * @class RotationalMotorEquation
+ * @constructor
  * @author schteppe
  * @param {RigidBody} bodyA
  * @param {RigidBody} bodyB
  * @param {Number} maxForce
- * @extends {Equation}
+ * @extends Equation
  */
 function RotationalMotorEquation(bodyA, bodyB, maxForce){
     maxForce = maxForce || 1e6;
@@ -195,60 +208,55 @@ function RotationalMotorEquation(bodyA, bodyB, maxForce){
      * @property {Number} targetVelocity
      */
     this.targetVelocity = 0;
-};
+}
 
 RotationalMotorEquation.prototype = new Equation();
 RotationalMotorEquation.prototype.constructor = RotationalMotorEquation;
 
+var zero = new Vec3();
+
 RotationalMotorEquation.prototype.computeB = function(h){
     var a = this.a,
-        b = this.b;
-    var bi = this.bi;
-    var bj = this.bj;
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
 
-    var axisA = this.axisA;
-    var axisB = this.axisB;
+        axisA = this.axisA,
+        axisB = this.axisB,
 
-    var vi = bi.velocity;
-    var wi = bi.angularVelocity ? bi.angularVelocity : new Vec3();
-    var fi = bi.force;
-    var taui = bi.tau ? bi.tau : new Vec3();
+        vi = bi.velocity,
+        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        fi = bi.force,
+        taui = bi.tau ? bi.tau : zero,
 
-    var vj = bj.velocity;
-    var wj = bj.angularVelocity ? bj.angularVelocity : new Vec3();
-    var fj = bj.force;
-    var tauj = bj.tau ? bj.tau : new Vec3();
+        vj = bj.velocity,
+        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        fj = bj.force,
+        tauj = bj.tau ? bj.tau : zero,
 
-    var invMassi = bi.invMass;
-    var invMassj = bj.invMass;
+        GA = this.jacobianElementA,
+        GB = this.jacobianElementB,
 
-    var invIi = this.invIi;
-    var invIj = this.invIj;
-
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
-    } else {
-        invIj.identity(); // ok?
-    }
+        invMassi = bi.invMass,
+        invMassj = bj.invMass;
 
     // g = 0
     // gdot = axisA * wi - axisB * wj
     // G = [0 axisA 0 -axisB]
     // W = [vi wi vj wj]
-    var Gq = 0;
-    var GW = axisA.dot(wi) + axisB.dot(wj) + this.targetVelocity;
-    var GiMf = 0;//axis.dot(invIi.vmult(taui)) + axis.dot(invIj.vmult(tauj));
 
-    var B = - Gq * a - GW * b - h*GiMf;
+    GA.rotational.copy(axisA);
+    axisB.negate(GB.rotational);
+
+    var GW = this.computeGW() - this.targetVelocity,
+        GiMf = this.computeGiMf();//axis.dot(invIi.vmult(taui)) + axis.dot(invIj.vmult(tauj));
+
+    var B = - GW * b - h*GiMf;
 
     return B;
 };
 
+/*
 // Compute C = GMG+eps
 RotationalMotorEquation.prototype.computeC = function(){
     var bi = this.bi;
@@ -260,22 +268,8 @@ RotationalMotorEquation.prototype.computeC = function(){
 
     var C = this.eps;
 
-    var invIi = this.invIi;
-    var invIj = this.invIj;
-
-    if(bi.invInertia){
-        invIi.setTrace(bi.invInertia);
-    } else {
-        invIi.identity(); // ok?
-    }
-    if(bj.invInertia){
-        invIj.setTrace(bj.invInertia);
-    } else {
-        invIj.identity(); // ok?
-    }
-
-    C += invIi.vmult(axisA).dot(axisB);
-    C += invIj.vmult(axisB).dot(axisB);
+    C += bi.invInertiaWorld.vmult(axisA).dot(axisB);
+    C += bj.invInertiaWorld.vmult(axisB).dot(axisB);
 
     return C;
 };
@@ -319,14 +313,15 @@ RotationalMotorEquation.prototype.addToWlambda = function(deltalambda){
 
     // Add to angular velocity
     if(bi.wlambda){
-        var I = this.invIi;
+        var I = bi.invInertiaWorld;
         bi.wlambda.vsub(I.vmult(axisA).mult(deltalambda),bi.wlambda);
     }
     if(bj.wlambda){
-        var I = this.invIj;
+        var I = bj.invInertiaWorld;
         bj.wlambda.vadd(I.vmult(axisB).mult(deltalambda),bj.wlambda);
     }
 };
+*/
 
     </pre>
 </div>

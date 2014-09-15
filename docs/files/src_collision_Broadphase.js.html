@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -166,11 +178,11 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Body = require(&#x27;../objects/Body&#x27;)
-,   Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Quaternion = require(&#x27;../math/Quaternion&#x27;)
-,   Shape = require(&#x27;../shapes/Shape&#x27;)
-,   Plane = require(&#x27;../shapes/Plane&#x27;)
+var Body = require(&#x27;../objects/Body&#x27;);
+var Vec3 = require(&#x27;../math/Vec3&#x27;);
+var Quaternion = require(&#x27;../math/Quaternion&#x27;);
+var Shape = require(&#x27;../shapes/Shape&#x27;);
+var Plane = require(&#x27;../shapes/Plane&#x27;);
 
 module.exports = Broadphase;
 
@@ -194,7 +206,9 @@ function Broadphase(){
      * @type {Boolean}
      */
     this.useBoundingBoxes = false;
-};
+
+    this.dirty = true;
+}
 
 /**
  * Get the collision pairs from the world
@@ -223,34 +237,39 @@ Broadphase.prototype.needBroadphaseCollision = function(bodyA,bodyB){
         return false;
     }
 
-    // Check motionstate
-    if(((bodyA.motionstate &amp; Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyA.isSleeping()) &amp;&amp;
-       ((bodyB.motionstate &amp; Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyB.isSleeping())) {
+    // Check types
+    if(((bodyA.type &amp; Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyA.sleepState === Body.SLEEPING) &amp;&amp;
+       ((bodyB.type &amp; Broadphase_needBroadphaseCollision_STATIC_OR_KINEMATIC)!==0 || bodyB.sleepState === Body.SLEEPING)) {
         // Both bodies are static, kinematic or sleeping. Skip.
         return false;
     }
 
     // Two particles don&#x27;t collide
+    /*
     if(!bodyA.shape &amp;&amp; !bodyB.shape){
         return false;
     }
+    */
 
     // Two planes don&#x27;t collide
+    /*
     if(bodyA.shape instanceof Plane &amp;&amp; bodyB.shape instanceof Plane){
         return false;
     }
+    */
 
     return true;
 };
 
 /**
- * Check if a body pair needs to be intersection tested at all.
+ * Check if the bounding volumes of two bodies intersect.
  * @method intersectionTest
  * @param {Body} bodyA
  * @param {Body} bodyB
- * @return {Boolean}
- */
-Broadphase.prototype.intersectionTest = function(bi,bj,pairs1,pairs2){
+ * @param {array} pairs1
+ * @param {array} pairs2
+  */
+Broadphase.prototype.intersectionTest = function(bi, bj, pairs1, pairs2){
     if(this.useBoundingBoxes){
         this.doBoundingBoxBroadphase(bi,bj,pairs1,pairs2);
     } else {
@@ -271,110 +290,13 @@ var Broadphase_collisionPairs_r = new Vec3(), // Temp objects
     Broadphase_collisionPairs_quat =  new Quaternion(),
     Broadphase_collisionPairs_relpos  =  new Vec3();
 Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
-
-    // Local fast access
-    var types = Shape.types,
-        BOX_SPHERE_COMPOUND_CONVEX = types.SPHERE | types.BOX | types.COMPOUND | types.CONVEXPOLYHEDRON,
-        PLANE = types.PLANE,
-        STATIC_OR_KINEMATIC = Body.STATIC | Body.KINEMATIC;
-
-    // Temp vecs
-    var r = Broadphase_collisionPairs_r,
-        normal = Broadphase_collisionPairs_normal,
-        quat = Broadphase_collisionPairs_quat,
-        relpos = Broadphase_collisionPairs_relpos;
-
-    var bishape = bi.shape, bjshape = bj.shape;
-    if(bishape &amp;&amp; bjshape){
-        var ti = bishape.type, tj = bjshape.type;
-
-        // --- Box / sphere / compound / convexpolyhedron collision ---
-        if((ti &amp; BOX_SPHERE_COMPOUND_CONVEX) &amp;&amp; (tj &amp; BOX_SPHERE_COMPOUND_CONVEX)){
-            // Rel. position
-            bj.position.vsub(bi.position,r);
-
-            // Update bounding spheres if needed
-            if(bishape.boundingSphereRadiusNeedsUpdate){
-                bishape.computeBoundingSphereRadius();
-            }
-            if(bjshape.boundingSphereRadiusNeedsUpdate){
-                bjshape.computeBoundingSphereRadius();
-            }
-
-            var boundingRadiusSum = bishape.boundingSphereRadius + bjshape.boundingSphereRadius;
-            if(r.norm2() &lt; boundingRadiusSum*boundingRadiusSum){
-                pairs1.push(bi);
-                pairs2.push(bj);
-            }
-
-            // --- Sphere/box/compound/convexpoly versus plane ---
-        } else if((ti &amp; BOX_SPHERE_COMPOUND_CONVEX) &amp;&amp; (tj &amp; types.PLANE) || (tj &amp; BOX_SPHERE_COMPOUND_CONVEX) &amp;&amp; (ti &amp; types.PLANE)){
-            var planeBody = (ti===PLANE) ? bi : bj, // Plane
-                otherBody = (ti!==PLANE) ? bi : bj; // Other
-
-            var otherShape = otherBody.shape;
-            var planeShape = planeBody.shape;
-
-            // Rel. position
-            otherBody.position.vsub(planeBody.position,r);
-
-            if(planeShape.worldNormalNeedsUpdate){
-                planeShape.computeWorldNormal(planeBody.quaternion);
-            }
-
-            normal = planeShape.worldNormal;
-
-            if(otherShape.boundingSphereRadiusNeedsUpdate){
-                otherShape.computeBoundingSphereRadius();
-            }
-
-            var q = r.dot(normal) - otherShape.boundingSphereRadius;
-            if(q &lt; 0.0){
-                pairs1.push(bi);
-                pairs2.push(bj);
-            }
-        }
-    } else {
-        // Particle without shape
-        if(!bishape &amp;&amp; !bjshape){
-            // No collisions between 2 particles
-        } else {
-            var particle = bishape ? bj : bi;
-            var other = bishape ? bi : bj;
-            var otherShape = other.shape;
-            var type = otherShape.type;
-
-            if(type &amp; BOX_SPHERE_COMPOUND_CONVEX){
-                if(type === types.SPHERE){ // particle-sphere
-                    particle.position.vsub(other.position,relpos);
-                    if(otherShape.radius*otherShape.radius &gt;= relpos.norm2()){
-                        pairs1.push(particle);
-                        pairs2.push(other);
-                    }
-                } else if(type===types.CONVEXPOLYHEDRON || type===types.BOX || type===types.COMPOUND){
-
-                    if(otherShape.boundingSphereRadiusNeedsUpdate){
-                        otherShape.computeBoundingSphereRadius();
-                    }
-                    var R = otherShape.boundingSphereRadius;
-                    particle.position.vsub(other.position,relpos);
-                    if(R*R &gt;= relpos.norm2()){
-                        pairs1.push(particle);
-                        pairs2.push(other);
-                    }
-                }
-            } else if(type === types.PLANE){
-                // particle/plane
-                var plane = other;
-                normal.set(0,0,1);
-                plane.quaternion.vmult(normal,normal);
-                particle.position.vsub(plane.position,relpos);
-                if(normal.dot(relpos)&lt;=0.0){
-                    pairs1.push(particle);
-                    pairs2.push(other);
-                }
-            }
-        }
+    var r = Broadphase_collisionPairs_r;
+    bj.position.vsub(bi.position,r);
+    var boundingRadiusSum2 = Math.pow(bi.boundingRadius + bj.boundingRadius, 2);
+    var norm2 = r.norm2();
+    if(norm2 &lt; boundingRadiusSum2){
+        pairs1.push(bi);
+        pairs2.push(bj);
     }
 };
 
@@ -387,9 +309,6 @@ Broadphase.prototype.doBoundingSphereBroadphase = function(bi,bj,pairs1,pairs2){
  * @param {Array} pairs2
  */
 Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
-    var bishape = bi.shape,
-        bjshape = bj.shape;
-
     if(bi.aabbNeedsUpdate){
         bi.computeAABB();
     }
@@ -397,40 +316,15 @@ Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
         bj.computeAABB();
     }
 
-    if(bishape &amp;&amp; bjshape){
-        // Check AABB / AABB
-        if( !(  bi.aabbmax.x &lt; bj.aabbmin.x ||
-                bi.aabbmax.y &lt; bj.aabbmin.y ||
-                bi.aabbmax.z &lt; bj.aabbmin.z ||
-                bi.aabbmin.x &gt; bj.aabbmax.x ||
-                bi.aabbmin.y &gt; bj.aabbmax.y ||
-                bi.aabbmin.z &gt; bj.aabbmax.z   ) ){
-            pairs1.push(bi);
-            pairs2.push(bj);
-        }
-    } else {
-        // Particle without shape
-        if(!bishape &amp;&amp; !bjshape){
-            // No collisions between 2 particles
-        } else {
-            // particle vs AABB
-            var p =      !bishape ? bi : bj;
-            var other =  !bishape ? bj : bi;
-
-            if(other.shape instanceof Plane){
-                //console.log(p.position.z+&quot;&lt;&quot;+other.aabbmin.z+&quot; = &quot;,p.position.z &lt; other.aabbmin.z);
-            }
-
-            if( !(  p.position.x &lt; other.aabbmin.x ||
-                    p.position.y &lt; other.aabbmin.y ||
-                    p.position.z &lt; other.aabbmin.z ||
-                    p.position.x &gt; other.aabbmax.x ||
-                    p.position.y &gt; other.aabbmax.y ||
-                    p.position.z &gt; other.aabbmax.z   ) ){
-                pairs1.push(bi);
-                pairs2.push(bj);
-            }
-        }
+    // Check AABB / AABB
+    if( !(  bi.aabb.upperBound.x &lt; bj.aabb.lowerBound.x ||
+            bi.aabb.upperBound.y &lt; bj.aabb.lowerBound.y ||
+            bi.aabb.upperBound.z &lt; bj.aabb.lowerBound.z ||
+            bi.aabb.lowerBound.x &gt; bj.aabb.upperBound.x ||
+            bi.aabb.lowerBound.y &gt; bj.aabb.upperBound.y ||
+            bi.aabb.lowerBound.z &gt; bj.aabb.upperBound.z   ) ){
+        pairs1.push(bi);
+        pairs2.push(bj);
     }
 };
 
@@ -489,6 +383,17 @@ Broadphase.boundingSphereCheck = function(bi,bj){
     return Math.pow(bi.shape.boundingSphereRadius + bj.shape.boundingSphereRadius,2) &gt; dist.norm2();
 };
 
+/**
+ * Returns all the bodies within the AABB.
+ * @method aabbQuery
+ * @param  {World} world
+ * @param  {AABB} aabb
+ * @return {array}
+ */
+Broadphase.prototype.aabbQuery = function(world, aabb){
+    console.warn(&#x27;.aabbQuery is not implemented in this Broadphase subclass.&#x27;);
+    return [];
+};
     </pre>
 </div>
 

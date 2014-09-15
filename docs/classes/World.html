@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -174,7 +186,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_world_World.js.html#l18"><code>src&#x2F;world&#x2F;World.js:18</code></a>
+            Defined in: <a href="../files/src_world_World.js.html#l24"><code>src&#x2F;world&#x2F;World.js:24</code></a>
         </div>
     
 
@@ -225,7 +237,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l18"><code>src&#x2F;world&#x2F;World.js:18</code></a>
+        <a href="../files/src_world_World.js.html#l24"><code>src&#x2F;world&#x2F;World.js:24</code></a>
         
         </p>
 
@@ -273,10 +285,12 @@
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
+                            <li class="index-item method deprecated">
                                 <a href="#method_add">add</a>
 
                                 
+                                
+                                    <span class="flag deprecated">deprecated</span>
                                 
                             </li>
                         
@@ -289,6 +303,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_addContactMaterial">addContactMaterial</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_addEventListener">addEventListener</a>
 
                                 
                                 
@@ -308,6 +329,13 @@
                                 
                             </li>
                         
+                            <li class="index-item method inherited">
+                                <a href="#method_dispatchEvent">dispatchEvent</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method">
                                 <a href="#method_getContactMaterial">getContactMaterial</a>
 
@@ -315,15 +343,24 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_id">id</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_hasEventListener">hasEventListener</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method deprecated">
                                 <a href="#method_numObjects">numObjects</a>
+
+                                
+                                
+                                    <span class="flag deprecated">deprecated</span>
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_rayTest">rayTest</a>
 
                                 
                                 
@@ -338,6 +375,20 @@
                         
                             <li class="index-item method">
                                 <a href="#method_removeConstraint">removeConstraint</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_removeEventListener">removeEventListener</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_step">step</a>
 
                                 
                                 
@@ -382,14 +433,14 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_Collision &quot;matrix&quot;, size (Nbodies * (Nbodies.length + 1))/2">Collision &quot;matrix&quot;, size (Nbodies * (Nbodies.length + 1))/2</a>
+                                <a href="#property_collisionMatrix">collisionMatrix</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_Collision &quot;matrix&quot;, size (Nbodies * (Nbodies.length + 1))/2">Collision &quot;matrix&quot;, size (Nbodies * (Nbodies.length + 1))/2</a>
+                                <a href="#property_collisionMatrixPrevious">collisionMatrixPrevious</a>
 
                                 
                                 
@@ -403,14 +454,14 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_contactgen">contactgen</a>
+                                <a href="#property_contactmaterials">contactmaterials</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_contactmaterials">contactmaterials</a>
+                                <a href="#property_contactMaterialTable">contactMaterialTable</a>
 
                                 
                                 
@@ -438,6 +489,13 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_dt">dt</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_gravity">gravity</a>
 
                                 
@@ -446,6 +504,13 @@
                         
                             <li class="index-item property">
                                 <a href="#property_materials">materials</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_narrowphase">narrowphase</a>
 
                                 
                                 
@@ -514,7 +579,7 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_add" class="method item">
+                    <div id="method_add" class="method item deprecated">
     <h3 class="name"><code>add</code></h3>
 
     
@@ -533,6 +598,8 @@
 
     
 
+    
+        <span class="flag deprecated" title="Use .addBody instead">deprecated</span>
     
 
     
@@ -556,11 +623,13 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l229"><code>src&#x2F;world&#x2F;World.js:229</code></a>
+        <a href="../files/src_world_World.js.html#l238"><code>src&#x2F;world&#x2F;World.js:238</code></a>
         
         </p>
 
 
+        
+            <p>Deprecated: Use .addBody instead</p>
         
 
         
@@ -644,7 +713,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l253"><code>src&#x2F;world&#x2F;World.js:253</code></a>
+        <a href="../files/src_world_World.js.html#l265"><code>src&#x2F;world&#x2F;World.js:265</code></a>
         
         </p>
 
@@ -732,7 +801,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l320"><code>src&#x2F;world&#x2F;World.js:320</code></a>
+        <a href="../files/src_world_World.js.html#l344"><code>src&#x2F;world&#x2F;World.js:344</code></a>
         
         </p>
 
@@ -772,6 +841,130 @@
         </div>
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_addEventListener" class="method item inherited">
+    <h3 class="name"><code>addEventListener</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_addEventListener">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_utils_EventTarget.js.html#l15"><code>src&#x2F;utils&#x2F;EventTarget.js:15</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add an event listener</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -820,7 +1013,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l302"><code>src&#x2F;world&#x2F;World.js:302</code></a>
+        <a href="../files/src_world_World.js.html#l334"><code>src&#x2F;world&#x2F;World.js:334</code></a>
         
         </p>
 
@@ -831,7 +1024,7 @@
     </div>
 
     <div class="description">
-        <p>Adds a material to the World. A material can only be added once, it&#39;s added more times then nothing will happen.</p>
+        <p>Adds a material to the World.</p>
 
     </div>
 
@@ -898,7 +1091,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l218"><code>src&#x2F;world&#x2F;World.js:218</code></a>
+        <a href="../files/src_world_World.js.html#l227"><code>src&#x2F;world&#x2F;World.js:227</code></a>
         
         </p>
 
@@ -915,6 +1108,126 @@
 
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_dispatchEvent" class="method item inherited">
+    <h3 class="name"><code>dispatchEvent</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>event</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_dispatchEvent">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_utils_EventTarget.js.html#l68"><code>src&#x2F;utils&#x2F;EventTarget.js:68</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Emit an event.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">event</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">type</code>
+                                    <span class="type">String</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -973,7 +1286,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l187"><code>src&#x2F;world&#x2F;World.js:187</code></a>
+        <a href="../files/src_world_World.js.html#l206"><code>src&#x2F;world&#x2F;World.js:206</code></a>
         
         </p>
 
@@ -1048,16 +1361,32 @@
 </div>
 
                 
-                    <div id="method_id" class="method item">
-    <h3 class="name"><code>id</code></h3>
+                    <div id="method_hasEventListener" class="method item inherited">
+    <h3 class="name"><code>hasEventListener</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
         <span class="returns-inline">
-            <span class="type">Number</span>
+            <span class="type">Boolean</span>
         </span>
     
 
@@ -1076,15 +1405,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_hasEventListener">EventTarget</a>:
             
         
         
-        <a href="../files/src_world_World.js.html#l275"><code>src&#x2F;world&#x2F;World.js:275</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l34"><code>src&#x2F;utils&#x2F;EventTarget.js:34</code></a>
         
         </p>
 
@@ -1095,10 +1421,48 @@
     </div>
 
     <div class="description">
-        <p>Generate a new unique integer identifyer</p>
+        <p>Check if an event listener is added</p>
 
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -1108,7 +1472,7 @@
             <div class="returns-description">
                 
                     
-                        <span class="type">Number</span>:
+                        <span class="type">Boolean</span>:
                     
                 
             </div>
@@ -1119,7 +1483,7 @@
 </div>
 
                 
-                    <div id="method_numObjects" class="method item">
+                    <div id="method_numObjects" class="method item deprecated">
     <h3 class="name"><code>numObjects</code></h3>
 
     
@@ -1133,6 +1497,8 @@
     
 
     
+        <span class="flag deprecated">deprecated</span>
+    
 
     
 
@@ -1155,7 +1521,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l209"><code>src&#x2F;world&#x2F;World.js:209</code></a>
+        <a href="../files/src_world_World.js.html#l217"><code>src&#x2F;world&#x2F;World.js:217</code></a>
         
         </p>
 
@@ -1184,6 +1550,136 @@
                 
             </div>
         </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_rayTest" class="method item">
+    <h3 class="name"><code>rayTest</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>from</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>to</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>result</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l286"><code>src&#x2F;world&#x2F;World.js:286</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Raycast test</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">from</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">to</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type">Function | RaycastResult</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
     
 
     
@@ -1232,7 +1728,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l284"><code>src&#x2F;world&#x2F;World.js:284</code></a>
+        <a href="../files/src_world_World.js.html#l309"><code>src&#x2F;world&#x2F;World.js:309</code></a>
         
         </p>
 
@@ -1320,7 +1816,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l263"><code>src&#x2F;world&#x2F;World.js:263</code></a>
+        <a href="../files/src_world_World.js.html#l274"><code>src&#x2F;world&#x2F;World.js:274</code></a>
         
         </p>
 
@@ -1362,6 +1858,276 @@
 
     
 
+    
+</div>
+
+                
+                    <div id="method_removeEventListener" class="method item inherited">
+    <h3 class="name"><code>removeEventListener</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>listener</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_removeEventListener">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_utils_EventTarget.js.html#l50"><code>src&#x2F;utils&#x2F;EventTarget.js:50</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Remove an event listener</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">listener</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
+                    
+                    <p>The self object, for chainability.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_step" class="method item">
+    <h3 class="name"><code>step</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>dt</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[timeSinceLastCalled]</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[maxSubSteps=10]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l374"><code>src&#x2F;world&#x2F;World.js:374</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Step the physics world forward in time.</p>
+<p>There are two modes. The simple mode is fixed timestepping without interpolation. In this case you only use the first argument. The second case uses interpolation. In that you also provide the time since the function was last used, as well as the maximum fixed timesteps to take.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">dt</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The fixed time step size to use.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[timeSinceLastCalled]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The time elapsed since the function was last called.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[maxSubSteps=10]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Maximum number of fixed steps to take per function call.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>// fixed timestepping without interpolation
+world.step(1/60);</code></pre>
+
+            </div>
+        </div>
     
 </div>
 
@@ -1408,7 +2174,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l358"><code>src&#x2F;world&#x2F;World.js:358</code></a>
+        <a href="../files/src_world_World.js.html#l448"><code>src&#x2F;world&#x2F;World.js:448</code></a>
         
         </p>
 
@@ -1485,7 +2251,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l27"><code>src&#x2F;world&#x2F;World.js:27</code></a>
+        <a href="../files/src_world_World.js.html#l39"><code>src&#x2F;world&#x2F;World.js:39</code></a>
         
         </p>
 
@@ -1530,7 +2296,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l89"><code>src&#x2F;world&#x2F;World.js:89</code></a>
+        <a href="../files/src_world_World.js.html#l100"><code>src&#x2F;world&#x2F;World.js:100</code></a>
         
         </p>
 
@@ -1574,7 +2340,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l83"><code>src&#x2F;world&#x2F;World.js:83</code></a>
+        <a href="../files/src_world_World.js.html#l94"><code>src&#x2F;world&#x2F;World.js:94</code></a>
         
         </p>
 
@@ -1595,8 +2361,8 @@
 </div>
 
                 
-                    <div id="property_Collision &quot;matrix&quot;, size (Nbodies * (Nbodies.length + 1))/2" class="property item">
-    <h3 class="name"><code>Collision &quot;matrix&quot;, size (Nbodies * (Nbodies.length + 1))/2</code></h3>
+                    <div id="property_collisionMatrix" class="property item">
+    <h3 class="name"><code>collisionMatrix</code></h3>
     <span class="type"><a href="../classes/ArrayCollisionMatrix.html" class="crosslink">ArrayCollisionMatrix</a></span>
 
     
@@ -1618,7 +2384,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l120"><code>src&#x2F;world&#x2F;World.js:120</code></a>
+        <a href="../files/src_world_World.js.html#l124"><code>src&#x2F;world&#x2F;World.js:124</code></a>
         
         </p>
 
@@ -1628,8 +2394,7 @@
     </div>
 
     <div class="description">
-        <p>collisionMatrix from the previous step</p>
-
+        
     </div>
 
     
@@ -1640,8 +2405,8 @@
 </div>
 
                 
-                    <div id="property_Collision &quot;matrix&quot;, size (Nbodies * (Nbodies.length + 1))/2" class="property item">
-    <h3 class="name"><code>Collision &quot;matrix&quot;, size (Nbodies * (Nbodies.length + 1))/2</code></h3>
+                    <div id="property_collisionMatrixPrevious" class="property item">
+    <h3 class="name"><code>collisionMatrixPrevious</code></h3>
     <span class="type"><a href="../classes/ArrayCollisionMatrix.html" class="crosslink">ArrayCollisionMatrix</a></span>
 
     
@@ -1663,7 +2428,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l113"><code>src&#x2F;world&#x2F;World.js:113</code></a>
+        <a href="../files/src_world_World.js.html#l130"><code>src&#x2F;world&#x2F;World.js:130</code></a>
         
         </p>
 
@@ -1673,7 +2438,7 @@
     </div>
 
     <div class="description">
-        <p>It&#39;s actually a triangular-shaped array of whether two bodies are touching this step, for reference next step</p>
+        <p>CollisionMatrix from the previous step.</p>
 
     </div>
 
@@ -1708,51 +2473,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l101"><code>src&#x2F;world&#x2F;World.js:101</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_contactgen" class="property item">
-    <h3 class="name"><code>contactgen</code></h3>
-    <span class="type"><a href="../classes/ContactGenerator.html" class="crosslink">ContactGenerator</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_World.js.html#l107"><code>src&#x2F;world&#x2F;World.js:107</code></a>
+        <a href="../files/src_world_World.js.html#l112"><code>src&#x2F;world&#x2F;World.js:112</code></a>
         
         </p>
 
@@ -1796,7 +2517,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l134"><code>src&#x2F;world&#x2F;World.js:134</code></a>
+        <a href="../files/src_world_World.js.html#l144"><code>src&#x2F;world&#x2F;World.js:144</code></a>
         
         </p>
 
@@ -1807,6 +2528,51 @@
 
     <div class="description">
         
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_contactMaterialTable" class="property item">
+    <h3 class="name"><code>contactMaterialTable</code></h3>
+    <span class="type"><a href="../classes/TupleDictionary.html" class="crosslink">TupleDictionary</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l150"><code>src&#x2F;world&#x2F;World.js:150</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Used to look up a ContactMaterial given two instances of Material.</p>
+
     </div>
 
     
@@ -1840,7 +2606,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l34"><code>src&#x2F;world&#x2F;World.js:34</code></a>
+        <a href="../files/src_world_World.js.html#l46"><code>src&#x2F;world&#x2F;World.js:46</code></a>
         
         </p>
 
@@ -1885,7 +2651,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l144"><code>src&#x2F;world&#x2F;World.js:144</code></a>
+        <a href="../files/src_world_World.js.html#l158"><code>src&#x2F;world&#x2F;World.js:158</code></a>
         
         </p>
 
@@ -1930,7 +2696,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l151"><code>src&#x2F;world&#x2F;World.js:151</code></a>
+        <a href="../files/src_world_World.js.html#l165"><code>src&#x2F;world&#x2F;World.js:165</code></a>
         
         </p>
 
@@ -1941,6 +2707,51 @@
 
     <div class="description">
         
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_dt" class="property item">
+    <h3 class="name"><code>dt</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l33"><code>src&#x2F;world&#x2F;World.js:33</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Last used timestep. Is set to -1 if not available.</p>
+
     </div>
 
     
@@ -1974,7 +2785,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l77"><code>src&#x2F;world&#x2F;World.js:77</code></a>
+        <a href="../files/src_world_World.js.html#l88"><code>src&#x2F;world&#x2F;World.js:88</code></a>
         
         </p>
 
@@ -2018,7 +2829,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l127"><code>src&#x2F;world&#x2F;World.js:127</code></a>
+        <a href="../files/src_world_World.js.html#l137"><code>src&#x2F;world&#x2F;World.js:137</code></a>
         
         </p>
 
@@ -2030,6 +2841,50 @@
     <div class="description">
         <p>All added materials</p>
 
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_narrowphase" class="property item">
+    <h3 class="name"><code>narrowphase</code></h3>
+    <span class="type"><a href="../classes/Narrowphase.html" class="crosslink">Narrowphase</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_World.js.html#l118"><code>src&#x2F;world&#x2F;World.js:118</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
     </div>
 
     
@@ -2063,7 +2918,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l157"><code>src&#x2F;world&#x2F;World.js:157</code></a>
+        <a href="../files/src_world_World.js.html#l171"><code>src&#x2F;world&#x2F;World.js:171</code></a>
         
         </p>
 
@@ -2107,7 +2962,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l49"><code>src&#x2F;world&#x2F;World.js:49</code></a>
+        <a href="../files/src_world_World.js.html#l61"><code>src&#x2F;world&#x2F;World.js:61</code></a>
         
         </p>
 
@@ -2152,7 +3007,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l42"><code>src&#x2F;world&#x2F;World.js:42</code></a>
+        <a href="../files/src_world_World.js.html#l54"><code>src&#x2F;world&#x2F;World.js:54</code></a>
         
         </p>
 
@@ -2197,7 +3052,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l95"><code>src&#x2F;world&#x2F;World.js:95</code></a>
+        <a href="../files/src_world_World.js.html#l106"><code>src&#x2F;world&#x2F;World.js:106</code></a>
         
         </p>
 
@@ -2241,7 +3096,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l65"><code>src&#x2F;world&#x2F;World.js:65</code></a>
+        <a href="../files/src_world_World.js.html#l77"><code>src&#x2F;world&#x2F;World.js:77</code></a>
         
         </p>
 
@@ -2286,7 +3141,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l169"><code>src&#x2F;world&#x2F;World.js:169</code></a>
+        <a href="../files/src_world_World.js.html#l183"><code>src&#x2F;world&#x2F;World.js:183</code></a>
         
         </p>
 
@@ -2330,7 +3185,7 @@
             
         
         
-        <a href="../files/src_world_World.js.html#l58"><code>src&#x2F;world&#x2F;World.js:58</code></a>
+        <a href="../files/src_world_World.js.html#l70"><code>src&#x2F;world&#x2F;World.js:70</code></a>
         
         </p>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ContactGenerator - cannon</title>
+    <title>Narrowphase - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,7 +174,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>ContactGenerator Class</h1>
+                        <h1>Narrowphase Class</h1>
 <div class="box meta">
     
 
@@ -170,7 +182,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_world_ContactGenerator.js.html#l10"><code>src&#x2F;world&#x2F;ContactGenerator.js:10</code></a>
+            Defined in: <a href="../files/src_world_Narrowphase.js.html#l12"><code>src&#x2F;world&#x2F;Narrowphase.js:12</code></a>
         </div>
     
 
@@ -189,8 +201,8 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_ContactGenerator" class="method item">
-    <h3 class="name"><code>ContactGenerator</code></h3>
+        <div id="method_Narrowphase" class="method item">
+    <h3 class="name"><code>Narrowphase</code></h3>
 
     
         <span class="paren">()</span>
@@ -221,7 +233,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l10"><code>src&#x2F;world&#x2F;ContactGenerator.js:10</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l12"><code>src&#x2F;world&#x2F;Narrowphase.js:12</code></a>
         
         </p>
 
@@ -277,6 +289,13 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_convexParticle">convexParticle</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_getContacts">getContacts</a>
 
                                 
@@ -292,13 +311,6 @@
                         
                             <li class="index-item method">
                                 <a href="#method_narrowphase">narrowphase</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_particleConvex">particleConvex</a>
 
                                 
                                 
@@ -333,13 +345,6 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_recurseCompound">recurseCompound</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
                                 <a href="#method_reduceContacts">reduceContacts</a>
 
                                 
@@ -355,6 +360,20 @@
                         
                             <li class="index-item method">
                                 <a href="#method_sphereConvex">sphereConvex</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sphereHeightfield">sphereHeightfield</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_sphereHeightfield">sphereHeightfield</a>
 
                                 
                                 
@@ -516,7 +535,262 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l927"><code>src&#x2F;world&#x2F;ContactGenerator.js:927</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1007"><code>src&#x2F;world&#x2F;Narrowphase.js:1007</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xi</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">xj</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">qi</code>
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">qj</code>
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_convexParticle" class="method item">
+    <h3 class="name"><code>convexParticle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>result</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>si</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>sj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>xj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>qi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>qj</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bi</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>bj</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_Narrowphase.js.html#l1135"><code>src&#x2F;world&#x2F;Narrowphase.js:1135</code></a>
         
         </p>
 
@@ -747,7 +1021,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l80"><code>src&#x2F;world&#x2F;ContactGenerator.js:80</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l93"><code>src&#x2F;world&#x2F;Narrowphase.js:93</code></a>
         
         </p>
 
@@ -893,7 +1167,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l64"><code>src&#x2F;world&#x2F;ContactGenerator.js:64</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l66"><code>src&#x2F;world&#x2F;Narrowphase.js:66</code></a>
         
         </p>
 
@@ -1006,7 +1280,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l112"><code>src&#x2F;world&#x2F;ContactGenerator.js:112</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l168"><code>src&#x2F;world&#x2F;Narrowphase.js:168</code></a>
         
         </p>
 
@@ -1146,261 +1420,6 @@
 </div>
 
                 
-                    <div id="method_particleConvex" class="method item">
-    <h3 class="name"><code>particleConvex</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>result</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>si</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>sj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>xi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>xj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>qi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>qj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bj</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_ContactGenerator.js.html#l1043"><code>src&#x2F;world&#x2F;ContactGenerator.js:1043</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">result</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">si</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">sj</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">xi</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">xj</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">qi</code>
-                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">qj</code>
-                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bi</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bj</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
                     <div id="method_particlePlane" class="method item">
     <h3 class="name"><code>particlePlane</code></h3>
 
@@ -1491,7 +1510,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l965"><code>src&#x2F;world&#x2F;ContactGenerator.js:965</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1055"><code>src&#x2F;world&#x2F;Narrowphase.js:1055</code></a>
         
         </p>
 
@@ -1746,7 +1765,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l1004"><code>src&#x2F;world&#x2F;ContactGenerator.js:1004</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1095"><code>src&#x2F;world&#x2F;Narrowphase.js:1095</code></a>
         
         </p>
 
@@ -2001,7 +2020,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l800"><code>src&#x2F;world&#x2F;ContactGenerator.js:800</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l916"><code>src&#x2F;world&#x2F;Narrowphase.js:916</code></a>
         
         </p>
 
@@ -2256,7 +2275,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l878"><code>src&#x2F;world&#x2F;ContactGenerator.js:878</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l938"><code>src&#x2F;world&#x2F;Narrowphase.js:938</code></a>
         
         </p>
 
@@ -2268,262 +2287,6 @@
 
     <div class="description">
         
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">result</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">si</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">sj</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">xi</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">xj</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">qi</code>
-                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">qj</code>
-                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bi</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">bj</code>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_recurseCompound" class="method item">
-    <h3 class="name"><code>recurseCompound</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>result</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>si</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>sj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>xi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>xj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>qi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>qj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>bj</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_ContactGenerator.js.html#l816"><code>src&#x2F;world&#x2F;ContactGenerator.js:816</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Go recursive for compound shapes</p>
-
     </div>
 
     
@@ -2719,7 +2482,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l55"><code>src&#x2F;world&#x2F;ContactGenerator.js:55</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l57"><code>src&#x2F;world&#x2F;Narrowphase.js:57</code></a>
         
         </p>
 
@@ -2855,7 +2618,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l419"><code>src&#x2F;world&#x2F;ContactGenerator.js:419</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l480"><code>src&#x2F;world&#x2F;Narrowphase.js:480</code></a>
         
         </p>
 
@@ -3110,7 +2873,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l617"><code>src&#x2F;world&#x2F;ContactGenerator.js:617</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l699"><code>src&#x2F;world&#x2F;Narrowphase.js:699</code></a>
         
         </p>
 
@@ -3275,6 +3038,114 @@
 </div>
 
                 
+                    <div id="method_sphereHeightfield" class="method item">
+    <h3 class="name"><code>sphereHeightfield</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_Narrowphase.js.html#l1306"><code>src&#x2F;world&#x2F;Narrowphase.js:1306</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_sphereHeightfield" class="method item">
+    <h3 class="name"><code>sphereHeightfield</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_world_Narrowphase.js.html#l1229"><code>src&#x2F;world&#x2F;Narrowphase.js:1229</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_spherePlane" class="method item">
     <h3 class="name"><code>spherePlane</code></h3>
 
@@ -3365,7 +3236,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l334"><code>src&#x2F;world&#x2F;ContactGenerator.js:334</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l385"><code>src&#x2F;world&#x2F;Narrowphase.js:385</code></a>
         
         </p>
 
@@ -3620,7 +3491,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l303"><code>src&#x2F;world&#x2F;ContactGenerator.js:303</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l353"><code>src&#x2F;world&#x2F;Narrowphase.js:353</code></a>
         
         </p>
 
@@ -3827,7 +3698,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l39"><code>src&#x2F;world&#x2F;ContactGenerator.js:39</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l41"><code>src&#x2F;world&#x2F;Narrowphase.js:41</code></a>
         
         </p>
 
@@ -3905,7 +3776,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l20"><code>src&#x2F;world&#x2F;ContactGenerator.js:20</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l22"><code>src&#x2F;world&#x2F;Narrowphase.js:22</code></a>
         
         </p>
 
@@ -3950,7 +3821,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l26"><code>src&#x2F;world&#x2F;ContactGenerator.js:26</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l28"><code>src&#x2F;world&#x2F;Narrowphase.js:28</code></a>
         
         </p>
 
@@ -3995,7 +3866,7 @@
             
         
         
-        <a href="../files/src_world_ContactGenerator.js.html#l32"><code>src&#x2F;world&#x2F;ContactGenerator.js:32</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l34"><code>src&#x2F;world&#x2F;Narrowphase.js:34</code></a>
         
         </p>
 

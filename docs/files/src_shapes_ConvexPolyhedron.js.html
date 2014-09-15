@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -168,9 +180,10 @@
     <pre class="code prettyprint linenums">
 module.exports = ConvexPolyhedron;
 
-var Shape = require(&#x27;./Shape&#x27;)
-,   Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Quaternion = require(&#x27;../math/Quaternion&#x27;)
+var Shape = require(&#x27;./Shape&#x27;);
+var Vec3 = require(&#x27;../math/Vec3&#x27;);
+var Quaternion = require(&#x27;../math/Quaternion&#x27;);
+var Transform = require(&#x27;../math/Transform&#x27;);
 
 /**
  * A set of polygons describing a convex shape.
@@ -220,34 +233,7 @@ function ConvexPolyhedron( points , faces , normals ) {
      * @type {Array}
      */
     this.faceNormals = [];
-    /*
-    for(var i=0; i&lt;this.faceNormals.length; i++){
-        this.faceNormals[i].normalize();
-    }
-     */
-    // Generate normals
-    for(var i=0; i&lt;this.faces.length; i++){
-
-        // Check so all vertices exists for this face
-        for(var j=0; j&lt;this.faces[i].length; j++){
-            if(!this.vertices[this.faces[i][j]]){
-                throw new Error(&quot;Vertex &quot;+this.faces[i][j]+&quot; not found!&quot;);
-            }
-        }
-
-        var n = new Vec3();
-        this.getFaceNormal(i,n);
-        n.negate(n);
-        this.faceNormals.push(n);
-        //console.log(n.toString());
-        var vertex = this.vertices[this.faces[i][0]];
-        if(n.dot(vertex)&lt;0){
-            console.warn(&quot;Face normal &quot;+i+&quot; (&quot;+n.toString()+&quot;) looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.&quot;);
-            for(var j=0; j&lt;this.faces[i].length; j++){
-                console.warn(&quot;Vertex &quot;+this.faces[i][j]+&quot;: (&quot;+this.vertices[faces[i][j]].toString()+&quot;)&quot;);
-            }
-        }
-    }
+    this.computeNormals();
 
     this.worldFaceNormalsNeedsUpdate = true;
     this.worldFaceNormals = []; // World transformed version of .faceNormals
@@ -258,33 +244,51 @@ function ConvexPolyhedron( points , faces , normals ) {
      * @type {Array}
      */
     this.uniqueEdges = [];
-    var nv = this.vertices.length;
+
+    this.computeEdges();
+    this.updateBoundingSphereRadius();
+}
+ConvexPolyhedron.prototype = new Shape();
+ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
+
+/**
+ * Computes uniqueEdges
+ * @method computeEdges
+ */
+ConvexPolyhedron.prototype.computeEdges = function(){
+    var faces = this.faces;
+    var vertices = this.vertices;
+    var nv = vertices.length;
+    var edges = this.uniqueEdges;
+
+    edges.length = 0;
+
     for(var pi=0; pi&lt;nv; pi++){
-        var p = this.vertices[pi];
+        var p = vertices[pi];
         if(!(p instanceof Vec3)){
             throw &quot;Argument 1 must be instance of Vec3&quot;;
         }
         this.uniqueEdges.push(p);
     }
 
-    for(var i=0; i&lt;this.faces.length; i++){
-        var numVertices = this.faces[i].length;
-        var NbTris = numVertices;
-        for(var j=0; j&lt;NbTris; j++){
+    for(var i=0; i&lt;faces.length; i++){
+        var face = faces[i];
+        var numVertices = face.length;
+        for(var j = 0; j &lt; numVertices; j++){
             var k = ( j+1 ) % numVertices;
             var edge = new Vec3();
-            this.vertices[this.faces[i][j]].vsub(this.vertices[this.faces[i][k]],edge);
+            vertices[face[j]].vsub(vertices[face[k]], edge);
             edge.normalize();
             var found = false;
-            for(var p=0;p&lt;this.uniqueEdges.length;p++){
-                if (this.uniqueEdges[p].almostEquals(edge) || this.uniqueEdges[p].almostEquals(edge)){
+            for(var p=0; p &lt; edges.length; p++){
+                if (edges[p].almostEquals(edge) || edges[p].almostEquals(edge)){
                     found = true;
                     break;
                 }
             }
 
             if (!found){
-                this.uniqueEdges.push(edge);
+                edges.push(edge);
             }
 
             if (edge) {
@@ -299,8 +303,37 @@ function ConvexPolyhedron( points , faces , normals ) {
         }
     }
 };
-ConvexPolyhedron.prototype = new Shape();
-ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
+
+/**
+ * Compute the normals of the faces. Will reuse existing Vec3 objects in the .faceNormals array if they exist.
+ * @method computeNormals
+ */
+ConvexPolyhedron.prototype.computeNormals = function(){
+    this.faceNormals.length = this.faces.length;
+
+    // Generate normals
+    for(var i=0; i&lt;this.faces.length; i++){
+
+        // Check so all vertices exists for this face
+        for(var j=0; j&lt;this.faces[i].length; j++){
+            if(!this.vertices[this.faces[i][j]]){
+                throw new Error(&quot;Vertex &quot;+this.faces[i][j]+&quot; not found!&quot;);
+            }
+        }
+
+        var n = this.faceNormals[i] || new Vec3();
+        this.getFaceNormal(i,n);
+        n.negate(n);
+        this.faceNormals[i] = n;
+        var vertex = this.vertices[this.faces[i][0]];
+        if(n.dot(vertex) &lt; 0){
+            console.error(&quot;.faceNormals[&quot; + i + &quot;] = Vec3(&quot;+n.toString()+&quot;) looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.&quot;);
+            for(var j=0; j&lt;this.faces[i].length; j++){
+                console.warn(&quot;.vertices[&quot;+this.faces[i][j]+&quot;] = Vec3(&quot;+this.vertices[this.faces[i][j]].toString()+&quot;)&quot;);
+            }
+        }
+    }
+};
 
 /**
  * Get face normal given 3 vertices
@@ -320,7 +353,7 @@ ConvexPolyhedron.computeNormal = function ( va, vb, vc, target ) {
     if ( !target.isZero() ) {
         target.normalize();
     }
-}
+};
 
 /**
  * Compute the normal of a face from its vertices
@@ -334,7 +367,7 @@ ConvexPolyhedron.prototype.getFaceNormal = function(i,target){
     var vb = this.vertices[f[1]];
     var vc = this.vertices[f[2]];
     return ConvexPolyhedron.computeNormal(va,vb,vc,target);
-}
+};
 
 /**
  * @method clipAgainstHull
@@ -363,7 +396,7 @@ ConvexPolyhedron.prototype.clipAgainstHull = function(posA,quatA,hullB,posB,quat
     var closestFaceB = -1;
     var dmax = -Infinity;
     for(var face=0; face &lt; hullB.faces.length; face++){
-        hullB.faceNormals[face].copy(WorldNormal);
+        WorldNormal.copy(hullB.faceNormals[face]);
         quatB.vmult(WorldNormal,WorldNormal);
         //posB.vadd(WorldNormal,WorldNormal);
         var d = WorldNormal.dot(separatingNormal);
@@ -378,7 +411,7 @@ ConvexPolyhedron.prototype.clipAgainstHull = function(posA,quatA,hullB,posB,quat
     for(var e0=0; e0&lt;numVertices; e0++){
         var b = hullB.vertices[polyB[e0]];
         var worldb = new Vec3();
-        b.copy(worldb);
+        worldb.copy(b);
         quatB.vmult(worldb,worldb);
         posB.vadd(worldb,worldb);
         worldVertsB1.push(worldb);
@@ -428,7 +461,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     // Test normals from hullA
     for(var i=0; i&lt;numFacesA; i++){
         // Get world face normal
-        hullA.faceNormals[i].copy(faceANormalWS3);
+        faceANormalWS3.copy(hullA.faceNormals[i]);
         quatA.vmult(faceANormalWS3,faceANormalWS3);
         //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
         //console.log(&quot;face normal:&quot;,hullA.faceNormals[i].toString(),&quot;world face normal:&quot;,faceANormalWS3);
@@ -439,14 +472,14 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
 
         if(d&lt;dmin){
             dmin = d;
-            faceANormalWS3.copy(target);
+            target.copy(faceANormalWS3);
         }
     }
 
     // Test normals from hullB
     var numFacesB = hullB.faces.length;
     for(var i=0;i&lt;numFacesB;i++){
-        hullB.faceNormals[i].copy(Worldnormal1);
+        Worldnormal1.copy(hullB.faceNormals[i]);
         quatB.vmult(Worldnormal1,Worldnormal1);
         //posB.vadd(Worldnormal1,Worldnormal1);
         //console.log(&quot;facenormal&quot;,hullB.faceNormals[i].toString(),&quot;world:&quot;,Worldnormal1.toString());
@@ -458,7 +491,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
 
         if(d&lt;dmin){
             dmin = d;
-            Worldnormal1.copy(target);
+            target.copy(Worldnormal1);
         }
     }
 
@@ -468,14 +501,14 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     // Test edges
     for(var e0=0; e0&lt;hullA.uniqueEdges.length; e0++){
         // Get world edge
-        hullA.uniqueEdges[e0].copy(worldEdge0);
+        worldEdge0.copy(hullA.uniqueEdges[e0]);
         quatA.vmult(worldEdge0,worldEdge0);
         //posA.vadd(worldEdge0,worldEdge0); // needed?
 
         //console.log(&quot;edge0:&quot;,worldEdge0.toString());
 
         for(var e1=0; e1&lt;hullB.uniqueEdges.length; e1++){
-            hullB.uniqueEdges[e1].copy(worldEdge1);
+            worldEdge1.copy(hullB.uniqueEdges[e1]);
             quatB.vmult(worldEdge1,worldEdge1);
             //posB.vadd(worldEdge1,worldEdge1); // needed?
             //console.log(&quot;edge1:&quot;,worldEdge1.toString());
@@ -489,7 +522,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
                 }
                 if(dist&lt;dmin){
                     dmin = dist;
-                    Cross.copy(target);
+                    target.copy(Cross);
                 }
             }
         }
@@ -531,6 +564,9 @@ ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB
     return depth;
 };
 
+var cli_aabbmin = new Vec3(),
+    cli_aabbmax = new Vec3();
+
 /**
  * @method calculateLocalInertia
  * @param  {Number} mass
@@ -539,10 +575,10 @@ ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB
 ConvexPolyhedron.prototype.calculateLocalInertia = function(mass,target){
     // Approximate with box inertia
     // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
-    this.computeAABB();
-    var x = this.aabbmax.x - this.aabbmin.x,
-        y = this.aabbmax.y - this.aabbmin.y,
-        z = this.aabbmax.z - this.aabbmin.z;
+    this.computeLocalAABB(cli_aabbmin,cli_aabbmax);
+    var x = cli_aabbmax.x - cli_aabbmin.x,
+        y = cli_aabbmax.y - cli_aabbmin.y,
+        z = cli_aabbmax.z - cli_aabbmin.z;
     target.x = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*z*2*z );
     target.y = 1.0 / 12.0 * mass * ( 2*x*2*x + 2*z*2*z );
     target.z = 1.0 / 12.0 * mass * ( 2*y*2*y + 2*x*2*x );
@@ -607,7 +643,7 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
     var closestFaceA = -1;
     var dmin = Infinity;
     for(var face=0; face&lt;hullA.faces.length; face++){
-        hullA.faceNormals[face].copy(faceANormalWS);
+        faceANormalWS.copy(hullA.faceNormals[face]);
         quatA.vmult(faceANormalWS,faceANormalWS);
         //posA.vadd(faceANormalWS,faceANormalWS);
         var d = faceANormalWS.dot(separatingNormal);
@@ -639,30 +675,30 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
         var a = hullA.vertices[polyA[e0]];
         var b = hullA.vertices[polyA[(e0+1)%numVerticesA]];
         a.vsub(b,edge0);
-        edge0.copy(WorldEdge0);
+        WorldEdge0.copy(edge0);
         quatA.vmult(WorldEdge0,WorldEdge0);
         posA.vadd(WorldEdge0,WorldEdge0);
-        this.faceNormals[closestFaceA].copy(worldPlaneAnormal1);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
+        worldPlaneAnormal1.copy(this.faceNormals[closestFaceA]);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
         quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
         posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
         WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
         planeNormalWS1.negate(planeNormalWS1);
-        a.copy(worldA1);
+        worldA1.copy(a);
         quatA.vmult(worldA1,worldA1);
         posA.vadd(worldA1,worldA1);
         var planeEqWS1 = -worldA1.dot(planeNormalWS1);
         var planeEqWS;
         if(true){
             var otherFace = polyA.connectedFaces[e0];
-            this.faceNormals[otherFace].copy(localPlaneNormal);
+            localPlaneNormal.copy(this.faceNormals[otherFace]);
             var localPlaneEq = this.getPlaneConstantOfFace(otherFace);
 
-            localPlaneNormal.copy(planeNormalWS);
+            planeNormalWS.copy(localPlaneNormal);
             quatA.vmult(planeNormalWS,planeNormalWS);
             //posA.vadd(planeNormalWS,planeNormalWS);
             var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
         } else  {
-            planeNormalWS1.copy(planeNormalWS);
+            planeNormalWS.copy(planeNormalWS1);
             planeEqWS = planeEqWS1;
         }
 
@@ -681,10 +717,10 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
     //console.log(&quot;Resulting points after clip:&quot;,pVtxIn);
 
     // only keep contact points that are behind the witness face
-    this.faceNormals[closestFaceA].copy(localPlaneNormal);
+    localPlaneNormal.copy(this.faceNormals[closestFaceA]);
 
     var localPlaneEq = this.getPlaneConstantOfFace(closestFaceA);
-    localPlaneNormal.copy(planeNormalWS);
+    planeNormalWS.copy(localPlaneNormal);
     quatA.vmult(planeNormalWS,planeNormalWS);
 
     var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
@@ -736,8 +772,9 @@ ConvexPolyhedron.prototype.clipFaceAgainstPlane = function(inVertices,outVertice
     var n_dot_first, n_dot_last;
     var numVerts = inVertices.length;
 
-    if(numVerts &lt; 2)
+    if(numVerts &lt; 2){
         return outVertices;
+    }
 
     var firstVertex = inVertices[inVertices.length-1],
         lastVertex =   inVertices[0];
@@ -751,7 +788,7 @@ ConvexPolyhedron.prototype.clipFaceAgainstPlane = function(inVertices,outVertice
             if(n_dot_last &lt; 0){
                 // Start &lt; 0, end &lt; 0, so output lastVertex
                 var newv = new Vec3();
-                lastVertex.copy(newv);
+                newv.copy(lastVertex);
                 outVertices.push(newv);
             } else {
                 // Start &lt; 0, end &gt;= 0, so output intersection
@@ -795,16 +832,14 @@ ConvexPolyhedron.prototype.computeWorldVertices = function(position,quat){
     this.worldVerticesNeedsUpdate = false;
 };
 
-var computeAABB_worldVert = new Vec3();
-ConvexPolyhedron.prototype.computeAABB = function(){
+var computeLocalAABB_worldVert = new Vec3();
+ConvexPolyhedron.prototype.computeLocalAABB = function(aabbmin,aabbmax){
     var n = this.vertices.length,
-        aabbmin = this.aabbmin,
-        aabbmax = this.aabbmax,
         vertices = this.vertices,
-        worldVert = computeAABB_worldVert;
+        worldVert = computeLocalAABB_worldVert;
 
-    aabbmin.set(Infinity,Infinity,Infinity);
-    aabbmax.set(-Infinity,-Infinity,-Infinity);
+    aabbmin.set(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+    aabbmax.set(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
 
     for(var i=0; i&lt;n; i++){
         var v = vertices[i];
@@ -847,9 +882,9 @@ ConvexPolyhedron.prototype.computeWorldFaceNormals = function(quat){
 };
 
 /**
- * @method computeBoundingSphereRadius
+ * @method updateBoundingSphereRadius
  */
-ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
+ConvexPolyhedron.prototype.updateBoundingSphereRadius = function(){
     // Assume points are distributed with local (0,0,0) as center
     var max2 = 0;
     var verts = this.vertices;
@@ -860,7 +895,6 @@ ConvexPolyhedron.prototype.computeBoundingSphereRadius = function(){
         }
     }
     this.boundingSphereRadius = Math.sqrt(max2);
-    this.boundingSphereRadiusNeedsUpdate = false;
 };
 
 var tempWorldVertex = new Vec3();
@@ -876,7 +910,7 @@ ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var n = this.vertices.length, verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
     for(var i=0; i&lt;n; i++){
-        verts[i].copy(tempWorldVertex);
+        tempWorldVertex.copy(verts[i]);
         quat.vmult(tempWorldVertex,tempWorldVertex);
         pos.vadd(tempWorldVertex,tempWorldVertex);
         var v = tempWorldVertex;
@@ -908,9 +942,6 @@ ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
  * @return {Number}
  */
 ConvexPolyhedron.prototype.volume = function(){
-    if(this.boundingSphereRadiusNeedsUpdate){
-        this.computeBoundingSphereRadius();
-    }
     return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
 };
 
@@ -1023,28 +1054,42 @@ ConvexPolyhedron.prototype.pointIsInside = function(p){
  * @param {array} result result[0] and result[1] will be set to maximum and minimum, respectively.
  */
 var project_worldVertex = new Vec3();
-ConvexPolyhedron.project = function(hull,axis,pos,quat,result){
+var project_localAxis = new Vec3();
+var project_localOrigin = new Vec3();
+ConvexPolyhedron.project = function(hull, axis, pos, quat, result){
     var n = hull.vertices.length,
         worldVertex = project_worldVertex,
-        max = null,
-        min = null,
+        localAxis = project_localAxis,
+        max = 0,
+        min = 0,
+        localOrigin = project_localOrigin,
         vs = hull.vertices;
 
-    for(var i=0; i&lt;n; i++){
-        vs[i].copy(worldVertex);
-        quat.vmult(worldVertex,worldVertex);
-        worldVertex.vadd(pos,worldVertex);
-        var val = worldVertex.dot(axis);
+    localOrigin.setZero();
 
-        if(max===null || val&gt;max)
+    // Transform the axis to local
+    Transform.vectorToLocalFrame(pos, quat, axis, localAxis);
+    Transform.pointToLocalFrame(pos, quat, localOrigin, localOrigin);
+    var add = localOrigin.dot(localAxis);
+
+    min = max = vs[0].dot(localAxis);
+
+    for(var i = 1; i &lt; n; i++){
+        var val = vs[i].dot(localAxis);
+
+        if(val &gt; max){
             max = val;
+        }
 
-        if(min===null || val&lt;min)
+        if(val &lt; min){
             min = val;
-
+        }
     }
 
-    if(min&gt;max){
+    min -= add;
+    max -= add;
+
+    if(min &gt; max){
         // Inconsistent - swap
         var temp = min;
         min = max;
@@ -1053,7 +1098,7 @@ ConvexPolyhedron.project = function(hull,axis,pos,quat,result){
     // Output
     result[0] = max;
     result[1] = min;
-}
+};
 
     </pre>
 </div>

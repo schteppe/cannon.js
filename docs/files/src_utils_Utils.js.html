@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/constraints/Equation.js - cannon</title>
+    <title>src/utils/Utils.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,94 +174,32 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/constraints/Equation.js</h1>
+                        <h1 class="file-heading">File: src/utils/Utils.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = Equation;
+function Utils(){}
+
+module.exports = Utils;
 
 /**
- * Equation base class
- * @class Equation
- * @author schteppe
- * @param {Body} bi
- * @param {Body} bj
- * @param {Number} minForce Minimum (read: negative max) force to be applied by the constraint.
- * @param {Number} maxForce Maximum (read: positive max) force to be applied by the constraint.
+ * Extend an options object with default values.
+ * @static
+ * @method defaults
+ * @param  {object} options The options object. May be falsy: in this case, a new object is created and returned.
+ * @param  {object} defaults An object containing default values.
+ * @return {object} The modified options object.
  */
-function Equation(bi,bj,minForce,maxForce){
-    this.id = -1;
+Utils.defaults = function(options, defaults){
+    options = options || {};
 
-    /**
-     * @property float minForce
-     */
-    this.minForce = typeof(minForce)===&quot;undefined&quot; ? -1e6 : minForce;
+    for(var key in defaults){
+        if(!(key in options)){
+            options[key] = defaults[key];
+        }
+    }
 
-    /**
-     * @property float maxForce
-     */
-    this.maxForce = typeof(maxForce)===&quot;undefined&quot; ? 1e6 : maxForce;
-
-    /**
-     * @property bi
-     * @type {Body}
-     */
-    this.bi = bi;
-
-    /**
-     * @property bj
-     * @type {Body}
-     */
-    this.bj = bj;
-
-    /**
-     * Corresponds to spring stiffness. Makes constraints stiffer, but harder to solve.
-     * @property float stiffness
-     */
-    this.stiffness = 1e7;
-
-    /**
-     * Similar to damping. Represents the number of timesteps needed to stabilize the constraint.
-     * @property float regularizationTime
-     */
-    this.regularizationTime = 5;
-
-    /**
-     * SPOOK parameter
-     * @property float a
-     */
-    this.a = 0.0;
-
-    /**
-     * SPOOK parameter
-     * @property float b
-     */
-    this.b = 0.0;
-
-    /**
-     * SPOOK parameter
-     * @property float eps
-     */
-    this.eps = 0.0;
-
-    /**
-     * Set to true if you just changed stiffness or regularization. The parameters a,b,eps will be recalculated by the solver before solve.
-     * @property bool spookParamsNeedsUpdate
-     */
-    this.spookParamsNeedsUpdate = true;
-};
-Equation.prototype.constructor = Equation;
-
-/**
- * Recalculates a,b,eps.
- * @method updateSpookParams
- */
-Equation.prototype.updateSpookParams = function(h){
-    var d = this.regularizationTime,
-        k = this.stiffness;
-    this.a = 4.0 / (h * (1 + 4 * d));
-    this.b = (4.0 * d) / (1 + 4 * d);
-    this.eps = 4.0 / (h * h * k * (1 + 4 * d));
+    return options;
 };
 
     </pre>

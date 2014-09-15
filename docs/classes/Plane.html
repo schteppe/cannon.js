@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -281,21 +293,7 @@
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_calculateTransformedInertia">calculateTransformedInertia</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_computeBoundingSphereRadius">computeBoundingSphereRadius</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_getBoundingSphereRadius">getBoundingSphereRadius</a>
+                                <a href="#method_updateBoundingSphereRadius">updateBoundingSphereRadius</a>
 
                                 
                                 
@@ -317,6 +315,20 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_boundingSphereRadius">boundingSphereRadius</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_collisionResponse">collisionResponse</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
@@ -372,7 +384,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l64"><code>src&#x2F;shapes&#x2F;Shape.js:64</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l56"><code>src&#x2F;shapes&#x2F;Shape.js:56</code></a>
         
         </p>
 
@@ -407,76 +419,8 @@
 </div>
 
                 
-                    <div id="method_calculateTransformedInertia" class="method item inherited">
-    <h3 class="name"><code>calculateTransformedInertia</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#method_calculateTransformedInertia">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l74"><code>src&#x2F;shapes&#x2F;Shape.js:74</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Calculates inertia in a specified frame for this shape.</p>
-
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_computeBoundingSphereRadius" class="method item inherited">
-    <h3 class="name"><code>computeBoundingSphereRadius</code></h3>
+                    <div id="method_updateBoundingSphereRadius" class="method item inherited">
+    <h3 class="name"><code>updateBoundingSphereRadius</code></h3>
 
     
         <span class="paren">()</span>
@@ -504,11 +448,11 @@
         
             
                 <p>Inherited from
-                <a href="../classes/Shape.html#method_computeBoundingSphereRadius">Shape</a>:
+                <a href="../classes/Shape.html#method_updateBoundingSphereRadius">Shape</a>:
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l34"><code>src&#x2F;shapes&#x2F;Shape.js:34</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l38"><code>src&#x2F;shapes&#x2F;Shape.js:38</code></a>
         
         </p>
 
@@ -520,74 +464,6 @@
 
     <div class="description">
         <p>Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius</p>
-
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Number</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_getBoundingSphereRadius" class="method item inherited">
-    <h3 class="name"><code>getBoundingSphereRadius</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Number</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#method_getBoundingSphereRadius">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l43"><code>src&#x2F;shapes&#x2F;Shape.js:43</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Returns the bounding sphere radius. The result is stored in the property .boundingSphereRadius</p>
 
     </div>
 
@@ -644,7 +520,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l55"><code>src&#x2F;shapes&#x2F;Shape.js:55</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l47"><code>src&#x2F;shapes&#x2F;Shape.js:47</code></a>
         
         </p>
 
@@ -687,6 +563,89 @@
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property_boundingSphereRadius" class="property item inherited">
+    <h3 class="name"><code>boundingSphereRadius</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_boundingSphereRadius">Shape</a>:
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l25"><code>src&#x2F;shapes&#x2F;Shape.js:25</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The local bounding sphere radius of this shape.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_collisionResponse" class="property item inherited">
+    <h3 class="name"><code>collisionResponse</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l31"><code>src&#x2F;shapes&#x2F;Shape.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_type" class="property item inherited">
     <h3 class="name"><code>type</code></h3>
     <span class="type">Number</span>
@@ -707,7 +666,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l18"><code>src&#x2F;shapes&#x2F;Shape.js:18</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l17"><code>src&#x2F;shapes&#x2F;Shape.js:17</code></a>
         
         </p>
 

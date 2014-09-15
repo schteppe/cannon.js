@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>RigidBody - cannon</title>
+    <title>Spring - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,7 +174,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>RigidBody Class</h1>
+                        <h1>Spring Class</h1>
 <div class="box meta">
     
 
@@ -170,7 +182,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_RigidBody.js.html#l9"><code>src&#x2F;objects&#x2F;RigidBody.js:9</code></a>
+            Defined in: <a href="../files/src_objects_Spring.js.html#l5"><code>src&#x2F;objects&#x2F;Spring.js:5</code></a>
         </div>
     
 
@@ -182,15 +194,15 @@
 
 
 <div class="box intro">
-    <p>Rigid body base class</p>
+    <p>A spring, connecting two bodies.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_RigidBody" class="method item">
-    <h3 class="name"><code>RigidBody</code></h3>
+        <div id="method_Spring" class="method item">
+    <h3 class="name"><code>Spring</code></h3>
 
     
         <div class="args">
@@ -198,19 +210,19 @@
             
                 <li class="arg">
                     
-                        <code>mass</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>shape</code>
+                        <code>bodyB</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>material</code>
+                        <code class="optional">[options]</code>
                     
                 </li>
             
@@ -243,7 +255,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l9"><code>src&#x2F;objects&#x2F;RigidBody.js:9</code></a>
+        <a href="../files/src_objects_Spring.js.html#l5"><code>src&#x2F;objects&#x2F;Spring.js:5</code></a>
         
         </p>
 
@@ -265,8 +277,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">mass</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
@@ -280,8 +292,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">shape</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
@@ -295,8 +307,9 @@
             
                 <li class="param">
                     
-                        <code class="param-name">material</code>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
@@ -305,6 +318,113 @@
                          
                     </div>
 
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[restLength]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A number &gt; 0. Default: 1</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[stiffness]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A number &gt;= 0. Default: 100</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[damping]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A number &gt;= 0. Default: 1</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[worldAnchorA]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Where to hook the spring to body A, in world coordinates.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[worldAnchorB]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[localAnchorA]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>Where to hook the spring to body A, in local body coordinates.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[localAnchorB]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -352,14 +472,28 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_applyImpulse">applyImpulse</a>
+                                <a href="#method_getWorldAnchorA">getWorldAnchorA</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_computeAABB">computeAABB</a>
+                                <a href="#method_getWorldAnchorB">getWorldAnchorB</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setWorldAnchorA">setWorldAnchorA</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setWorldAnchorB">setWorldAnchorB</a>
 
                                 
                                 
@@ -376,84 +510,49 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_aabbmax">aabbmax</a>
+                                <a href="#property_bodyA">bodyA</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_aabbmin">aabbmin</a>
+                                <a href="#property_bodyB">bodyB</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_aabbNeedsUpdate">aabbNeedsUpdate</a>
+                                <a href="#property_damping">damping</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_angularDamping">angularDamping</a>
+                                <a href="#property_localAnchorA">localAnchorA</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_angularVelocity">angularVelocity</a>
+                                <a href="#property_localAnchorB">localAnchorB</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_inertia">inertia</a>
+                                <a href="#property_restLength">restLength</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_initAngularVelocity">initAngularVelocity</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_initQuaternion">initQuaternion</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_invInertia">invInertia</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_quaternion">quaternion</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_shape">shape</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_Vec3 tau">Vec3 tau</a>
+                                <a href="#property_stiffness">stiffness</a>
 
                                 
                                 
@@ -475,228 +574,6 @@
                 
                     <div id="method_applyForce" class="method item">
     <h3 class="name"><code>applyForce</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>force</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>worldPoint</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_RigidBody.js.html#l134"><code>src&#x2F;objects&#x2F;RigidBody.js:134</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.tau.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">force</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The amount of force to add.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">worldPoint</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>A world point to apply the force on.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_applyImpulse" class="method item">
-    <h3 class="name"><code>applyImpulse</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>impulse</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>worldPoint</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_RigidBody.js.html#l158"><code>src&#x2F;objects&#x2F;RigidBody.js:158</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Apply impulse to a world point. This could for example be a point on the RigidBody surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">impulse</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The amount of impulse to add.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">worldPoint</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>A world point to apply the force on.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_computeAABB" class="method item">
-    <h3 class="name"><code>computeAABB</code></h3>
 
     
         <span class="paren">()</span>
@@ -727,7 +604,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l122"><code>src&#x2F;objects&#x2F;RigidBody.js:122</code></a>
+        <a href="../files/src_objects_Spring.js.html#l135"><code>src&#x2F;objects&#x2F;Spring.js:135</code></a>
         
         </p>
 
@@ -738,10 +615,364 @@
     </div>
 
     <div class="description">
-        <p>Updates the .aabbmin and .aabbmax properties</p>
+        <p>Apply the spring force to the connected bodies.</p>
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getWorldAnchorA" class="method item">
+    <h3 class="name"><code>getWorldAnchorA</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>result</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Spring.js.html#l105"><code>src&#x2F;objects&#x2F;Spring.js:105</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the anchor point on body A, in world coordinates.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The vector to store the result in.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getWorldAnchorB" class="method item">
+    <h3 class="name"><code>getWorldAnchorB</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>result</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Spring.js.html#l114"><code>src&#x2F;objects&#x2F;Spring.js:114</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the anchor point on body B, in world coordinates.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The vector to store the result in.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setWorldAnchorA" class="method item">
+    <h3 class="name"><code>setWorldAnchorA</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>worldAnchorA</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Spring.js.html#l87"><code>src&#x2F;objects&#x2F;Spring.js:87</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the anchor point on body A, using world coordinates.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">worldAnchorA</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setWorldAnchorB" class="method item">
+    <h3 class="name"><code>setWorldAnchorB</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>worldAnchorB</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Spring.js.html#l96"><code>src&#x2F;objects&#x2F;Spring.js:96</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the anchor point on body B, using world coordinates.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">worldAnchorB</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -758,9 +989,9 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_aabbmax" class="property item">
-    <h3 class="name"><code>aabbmax</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    <div id="property_bodyA" class="property item">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
 
@@ -781,7 +1012,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l103"><code>src&#x2F;objects&#x2F;RigidBody.js:103</code></a>
+        <a href="../files/src_objects_Spring.js.html#l45"><code>src&#x2F;objects&#x2F;Spring.js:45</code></a>
         
         </p>
 
@@ -791,7 +1022,8 @@
     </div>
 
     <div class="description">
-        
+        <p>First connected body.</p>
+
     </div>
 
     
@@ -802,9 +1034,9 @@
 </div>
 
                 
-                    <div id="property_aabbmin" class="property item">
-    <h3 class="name"><code>aabbmin</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    <div id="property_bodyB" class="property item">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
 
     
 
@@ -825,7 +1057,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l97"><code>src&#x2F;objects&#x2F;RigidBody.js:97</code></a>
+        <a href="../files/src_objects_Spring.js.html#l52"><code>src&#x2F;objects&#x2F;Spring.js:52</code></a>
         
         </p>
 
@@ -835,51 +1067,7 @@
     </div>
 
     <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_aabbNeedsUpdate" class="property item">
-    <h3 class="name"><code>aabbNeedsUpdate</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_RigidBody.js.html#l109"><code>src&#x2F;objects&#x2F;RigidBody.js:109</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Indicates if the AABB needs to be updated before use.</p>
+        <p>Second connected body.</p>
 
     </div>
 
@@ -891,8 +1079,8 @@
 </div>
 
                 
-                    <div id="property_angularDamping" class="property item">
-    <h3 class="name"><code>angularDamping</code></h3>
+                    <div id="property_damping" class="property item">
+    <h3 class="name"><code>damping</code></h3>
     <span class="type">Number</span>
 
     
@@ -914,7 +1102,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l91"><code>src&#x2F;objects&#x2F;RigidBody.js:91</code></a>
+        <a href="../files/src_objects_Spring.js.html#l38"><code>src&#x2F;objects&#x2F;Spring.js:38</code></a>
         
         </p>
 
@@ -924,7 +1112,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Damping of the spring.</p>
+
     </div>
 
     
@@ -935,8 +1124,8 @@
 </div>
 
                 
-                    <div id="property_angularVelocity" class="property item">
-    <h3 class="name"><code>angularVelocity</code></h3>
+                    <div id="property_localAnchorA" class="property item">
+    <h3 class="name"><code>localAnchorA</code></h3>
     <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
 
     
@@ -958,7 +1147,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l51"><code>src&#x2F;objects&#x2F;RigidBody.js:51</code></a>
+        <a href="../files/src_objects_Spring.js.html#l59"><code>src&#x2F;objects&#x2F;Spring.js:59</code></a>
         
         </p>
 
@@ -968,7 +1157,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Anchor for bodyA in local bodyA coordinates.</p>
+
     </div>
 
     
@@ -979,8 +1169,8 @@
 </div>
 
                 
-                    <div id="property_inertia" class="property item">
-    <h3 class="name"><code>inertia</code></h3>
+                    <div id="property_localAnchorB" class="property item">
+    <h3 class="name"><code>localAnchorB</code></h3>
     <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
 
     
@@ -1002,7 +1192,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l69"><code>src&#x2F;objects&#x2F;RigidBody.js:69</code></a>
+        <a href="../files/src_objects_Spring.js.html#l66"><code>src&#x2F;objects&#x2F;Spring.js:66</code></a>
         
         </p>
 
@@ -1012,7 +1202,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Anchor for bodyB in local bodyB coordinates.</p>
+
     </div>
 
     
@@ -1023,9 +1214,9 @@
 </div>
 
                 
-                    <div id="property_initAngularVelocity" class="property item">
-    <h3 class="name"><code>initAngularVelocity</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    <div id="property_restLength" class="property item">
+    <h3 class="name"><code>restLength</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -1046,7 +1237,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l57"><code>src&#x2F;objects&#x2F;RigidBody.js:57</code></a>
+        <a href="../files/src_objects_Spring.js.html#l24"><code>src&#x2F;objects&#x2F;Spring.js:24</code></a>
         
         </p>
 
@@ -1056,7 +1247,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Rest length of the spring.</p>
+
     </div>
 
     
@@ -1067,9 +1259,9 @@
 </div>
 
                 
-                    <div id="property_initQuaternion" class="property item">
-    <h3 class="name"><code>initQuaternion</code></h3>
-    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+                    <div id="property_stiffness" class="property item">
+    <h3 class="name"><code>stiffness</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -1090,7 +1282,7 @@
             
         
         
-        <a href="../files/src_objects_RigidBody.js.html#l45"><code>src&#x2F;objects&#x2F;RigidBody.js:45</code></a>
+        <a href="../files/src_objects_Spring.js.html#l31"><code>src&#x2F;objects&#x2F;Spring.js:31</code></a>
         
         </p>
 
@@ -1100,184 +1292,7 @@
     </div>
 
     <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_invInertia" class="property item">
-    <h3 class="name"><code>invInertia</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_RigidBody.js.html#l80"><code>src&#x2F;objects&#x2F;RigidBody.js:80</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_quaternion" class="property item">
-    <h3 class="name"><code>quaternion</code></h3>
-    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_RigidBody.js.html#l38"><code>src&#x2F;objects&#x2F;RigidBody.js:38</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Orientation of the body</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_shape" class="property item">
-    <h3 class="name"><code>shape</code></h3>
-    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_RigidBody.js.html#l63"><code>src&#x2F;objects&#x2F;RigidBody.js:63</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_Vec3 tau" class="property item">
-    <h3 class="name"><code>Vec3 tau</code></h3>
-    <span class="type">Unknown</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_RigidBody.js.html#l31"><code>src&#x2F;objects&#x2F;RigidBody.js:31</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Rotational force on the body, around center of mass</p>
+        <p>Stiffness of the spring.</p>
 
     </div>
 

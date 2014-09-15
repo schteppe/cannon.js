@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/objects/Particle.js - cannon</title>
+    <title>src/shapes/Particle.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,196 +174,54 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/objects/Particle.js</h1>
+                        <h1 class="file-heading">File: src/shapes/Particle.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 module.exports = Particle;
 
-var Shape = require(&#x27;../shapes/Shape&#x27;)
-,   Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Quaternion = require(&#x27;../math/Quaternion&#x27;)
-,   Body = require(&#x27;./Body&#x27;)
-,   Material = require(&#x27;../material/Material&#x27;)
+var Shape = require(&#x27;./Shape&#x27;);
+var Vec3 = require(&#x27;../math/Vec3&#x27;);
 
 /**
- * A body consisting of one point mass. Does not have orientation.
+ * A 3d box shape.
  * @class Particle
  * @constructor
- * @param {Number} mass
- * @param {Material} material
+ * @author schteppe
+ * @extends Shape
  */
-function Particle(mass,material){
+function Particle(){
+    Shape.call(this);
 
-    // Check input
-    if(typeof(mass)!==&quot;number&quot;){
-        throw new Error(&quot;Argument 1 (mass) must be a number.&quot;);
-    }
-    if(typeof(material)!==&quot;undefined&quot; &amp;&amp; !(material instanceof(Material))){
-        throw new Error(&quot;Argument 2 (material) must be an instance of Material.&quot;);
-    }
-
-    Body.call(this,&quot;particle&quot;);
-
-    /**
-     * @property position
-     * @type {Vec3}
-     */
-    this.position = new Vec3();
-
-    /**
-     * Initial position of the body
-     * @property initPosition
-     * @type {Vec3}
-     */
-    this.initPosition = new Vec3();
-
-    /**
-     * @property velocity
-     * @type {Vec3}
-     */
-    this.velocity = new Vec3();
-
-    /**
-     * @property initVelocity
-     * @type {Vec3}
-     */
-    this.initVelocity = new Vec3();
-
-    /**
-     * Linear force on the body
-     * @property force
-     * @type {Vec3}
-     */
-    this.force = new Vec3();
-
-    /**
-     * @property mass
-     * @type {Number}
-     */
-    this.mass = mass;
-
-    /**
-     * @property invMass
-     * @type {Number}
-     */
-    this.invMass = mass&gt;0 ? 1.0/mass : 0;
-
-    /**
-     * @property material
-     * @type {Material}
-     */
-    this.material = material;
-
-    /**
-     * @property float linearDamping
-     * @type {Number}
-     */
-    this.linearDamping = 0.01; // Perhaps default should be zero here?
-
-    /**
-     * One of the states Body.DYNAMIC, Body.STATIC and Body.KINEMATIC
-     * @property motionstate
-     * @type {Number}
-     */
-    this.motionstate = (mass &lt;= 0.0 ? Body.STATIC : Body.DYNAMIC);
-
-    /**
-     * If true, the body will automatically fall to sleep.
-     * @property allowSleep
-     * @type {Boolean}
-     */
-    this.allowSleep = true;
-
-    // 0:awake, 1:sleepy, 2:sleeping
-    this.sleepState = 0;
-
-    /**
-     * If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
-     * @property sleepSpeedLimit
-     * @type {Number}
-     */
-    this.sleepSpeedLimit = 0.1;
-
-    /**
-     * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
-     * @property sleepTimeLimit
-     * @type {Number}
-     */
-    this.sleepTimeLimit = 1;
-
-    this.timeLastSleepy = 0;
-
-};
-
-Particle.prototype = new Body();
+    this.type = Shape.types.PARTICLE;
+}
+Particle.prototype = new Shape();
 Particle.prototype.constructor = Particle;
 
 /**
-* @method isAwake
-* @return bool
-*/
-Particle.prototype.isAwake = function(){
-    return this.sleepState === 0;
-};
-
-/**
-* @method isSleepy
-* @return bool
-*/
-Particle.prototype.isSleepy = function(){
-    return this.sleepState === 1;
-};
-
-/**
- * @method isSleeping
- * @return bool
+ * @method calculateLocalInertia
+ * @param  {Number} mass
+ * @param  {Vec3} target
+ * @return {Vec3}
  */
-Particle.prototype.isSleeping = function(){
-    return this.sleepState === 2;
+Particle.prototype.calculateLocalInertia = function(mass,target){
+    target = target || new Vec3();
+    target.set(0, 0, 0);
+    return target;
 };
 
-/**
- * Wake the body up.
- * @method wakeUp
- */
-Particle.prototype.wakeUp = function(){
-    var s = this.sleepState;
-    this.sleepState = 0;
-    if(s === 2){
-        this.dispatchEvent({type:&quot;wakeup&quot;});
-    }
+Particle.prototype.volume = function(){
+    return 0;
 };
 
-/**
- * Force body sleep
- * @method sleep
- */
-Particle.prototype.sleep = function(){
-    this.sleepState = 2;
+Particle.prototype.updateBoundingSphereRadius = function(){
+    this.boundingSphereRadius = 0;
 };
 
-/**
- * Called every timestep to update internal sleep timer and change sleep state if needed.
- * @method sleepTick
- * @param {Number} time The world time in seconds
- */
-Particle.prototype.sleepTick = function(time){
-    if(this.allowSleep){
-        var sleepState = this.sleepState;
-        var speedSquared = this.velocity.norm2();
-        var speedLimitSquared = Math.pow(this.sleepSpeedLimit,2);
-        if(sleepState===0 &amp;&amp; speedSquared &lt; speedLimitSquared){
-            this.sleepState = 1; // Sleepy
-            this.timeLastSleepy = time;
-            this.dispatchEvent({type:&quot;sleepy&quot;});
-        } else if(sleepState===1 &amp;&amp; speedSquared &gt; speedLimitSquared){
-            this.wakeUp(); // Wake up
-        } else if(sleepState===1 &amp;&amp; (time - this.timeLastSleepy ) &gt; this.sleepTimeLimit){
-            this.sleepState = 2; // Sleeping
-            this.dispatchEvent({type:&quot;sleep&quot;});
-        }
-    }
+Particle.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    // Get each axis max
+    min.copy(pos);
+    max.copy(pos);
 };
 
     </pre>

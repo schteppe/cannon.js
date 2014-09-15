@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -168,7 +180,7 @@
     <pre class="code prettyprint linenums">
 module.exports = Mat3;
 
-var Vec3 = require(&#x27;./Vec3&#x27;)
+var Vec3 = require(&#x27;./Vec3&#x27;);
 
 /**
  * A 3x3 matrix.
@@ -187,7 +199,7 @@ function Mat3(elements){
     } else {
         this.elements = [0,0,0,0,0,0,0,0,0];
     }
-};
+}
 
 /**
  * Sets the matrix to identity
@@ -238,6 +250,18 @@ Mat3.prototype.setTrace = function(vec3){
 };
 
 /**
+ * Sets the matrix diagonal elements from a Vec3
+ * @method setTrace
+ */
+Mat3.prototype.getTrace = function(target){
+    var target = target || new Vec3();
+    var e = this.elements;
+    target.x = e[0];
+    target.y = e[4];
+    target.z = e[8];
+};
+
+/**
  * Matrix-Vector multiplication
  * @method vmult
  * @param {Vec3} v The vector to multiply with
@@ -274,8 +298,8 @@ Mat3.prototype.smult = function(s){
  * @param {Mat3} m Matrix to multiply with from left side.
  * @return {Mat3} The result.
  */
-Mat3.prototype.mmult = function(m){
-    var r = new Mat3();
+Mat3.prototype.mmult = function(m,target){
+    var r = target || new Mat3();
     for(var i=0; i&lt;3; i++){
         for(var j=0; j&lt;3; j++){
             var sum = 0.0;
@@ -286,6 +310,24 @@ Mat3.prototype.mmult = function(m){
         }
     }
     return r;
+};
+
+/**
+ * Scale each column of the matrix
+ * @method scale
+ * @param {Vec3} v
+ * @return {Mat3} The result.
+ */
+Mat3.prototype.scale = function(v,target){
+    target = target || new Mat3();
+    var e = this.elements,
+        t = target.elements;
+    for(var i=0; i!==3; i++){
+        t[3*i + 0] = v.x * e[3*i + 0];
+        t[3*i + 1] = v.y * e[3*i + 1];
+        t[3*i + 2] = v.z * e[3*i + 2];
+    }
+    return target;
 };
 
 /**
@@ -377,17 +419,16 @@ Mat3.prototype.e = function( row , column ,value){
 };
 
 /**
- * Copy the matrix
+ * Copy another matrix into this matrix object.
  * @method copy
- * @param {Mat3} target Optional. Target to save the copy in.
- * @return {Mat3}
+ * @param {Mat3} source
+ * @return {Mat3} this
  */
-Mat3.prototype.copy = function(target){
-    target = target || new Mat3();
-    for(var i=0; i&lt;this.elements.length; i++){
-        target.elements[i] = this.elements[i];
+Mat3.prototype.copy = function(source){
+    for(var i=0; i &lt; source.elements.length; i++){
+        this.elements[i] = source.elements[i];
     }
-    return target;
+    return this;
 };
 
 /**
@@ -504,6 +545,55 @@ Mat3.prototype.reverse = function(target){
             target.e( i , j , p );
         } while (j--);
     } while (i--);
+
+    return target;
+};
+
+/**
+ * Set the matrix from a quaterion
+ * @method setRotationFromQuaternion
+ * @param {Quaternion} q
+ */
+Mat3.prototype.setRotationFromQuaternion = function( q ) {
+    var x = q.x, y = q.y, z = q.z, w = q.w,
+        x2 = x + x, y2 = y + y, z2 = z + z,
+        xx = x * x2, xy = x * y2, xz = x * z2,
+        yy = y * y2, yz = y * z2, zz = z * z2,
+        wx = w * x2, wy = w * y2, wz = w * z2,
+        e = this.elements;
+
+    e[3*0 + 0] = 1 - ( yy + zz );
+    e[3*0 + 1] = xy - wz;
+    e[3*0 + 2] = xz + wy;
+
+    e[3*1 + 0] = xy + wz;
+    e[3*1 + 1] = 1 - ( xx + zz );
+    e[3*1 + 2] = yz - wx;
+
+    e[3*2 + 0] = xz - wy;
+    e[3*2 + 1] = yz + wx;
+    e[3*2 + 2] = 1 - ( xx + yy );
+
+    return this;
+};
+
+/**
+ * Transpose the matrix
+ * @method transpose
+ * @param  {Mat3} target Where to store the result.
+ * @return {Mat3} The target Mat3, or a new Mat3 if target was omitted.
+ */
+Mat3.prototype.transpose = function( target ) {
+    target = target || new Mat3();
+
+    var Mt = target.elements,
+        M = this.elements;
+
+    for(var i=0; i!==3; i++){
+        for(var j=0; j!==3; j++){
+            Mt[3*i + j] = M[3*j + i];
+        }
+    }
 
     return target;
 };

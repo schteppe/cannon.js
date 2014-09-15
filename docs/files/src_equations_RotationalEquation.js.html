@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/objects/RigidBody.js - cannon</title>
+    <title>src/equations/RotationalEquation.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,199 +174,163 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/objects/RigidBody.js</h1>
+                        <h1 class="file-heading">File: src/equations/RotationalEquation.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = RigidBody;
+module.exports = RotationalEquation;
 
-var Shape = require(&#x27;../shapes/Shape&#x27;)
-,   Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Quaternion = require(&#x27;../math/Quaternion&#x27;)
-,   Particle = require(&#x27;./Particle&#x27;)
-,   Material = require(&#x27;../material/Material&#x27;)
+var Vec3 = require(&#x27;../math/Vec3&#x27;);
+var Mat3 = require(&#x27;../math/Mat3&#x27;);
+var Equation = require(&#x27;./Equation&#x27;);
 
 /**
- * Rigid body base class
- * @class RigidBody
+ * Rotational constraint. Works to keep the local vectors orthogonal to each other.
+ * @class RotationalEquation
  * @constructor
- * @param {Number} mass
- * @param {Shape} shape
- * @param {Material} material
+ * @author schteppe
+ * @param {RigidBody} bj
+ * @param {Vec3} localVectorInBodyA
+ * @param {RigidBody} bi
+ * @param {Vec3} localVectorInBodyB
+ * @extends Equation
  */
-function RigidBody(mass,shape,material){
+function RotationalEquation(bodyA, bodyB){
+    Equation.call(this,bodyA,bodyB,-1e6,1e6);
+    this.ni = new Vec3(); // World oriented localVectorInBodyA
+    this.nj = new Vec3(); // ...and B
 
-    // Check input
-    if(typeof(mass)!==&quot;number&quot;){
-        throw new Error(&quot;Argument 1 (mass) must be a number.&quot;);
+    this.nixnj = new Vec3();
+    this.njxni = new Vec3();
+
+    this.invIi = new Mat3();
+    this.invIj = new Mat3();
+
+    this.relVel = new Vec3();
+    this.relForce = new Vec3();
+}
+
+RotationalEquation.prototype = new Equation();
+RotationalEquation.prototype.constructor = RotationalEquation;
+
+var zero = new Vec3();
+
+RotationalEquation.prototype.computeB = function(h){
+    var a = this.a,
+        b = this.b,
+        bi = this.bi,
+        bj = this.bj,
+
+        ni = this.ni,
+        nj = this.nj,
+
+        nixnj = this.nixnj,
+        njxni = this.njxni,
+
+        vi = bi.velocity,
+        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        fi = bi.force,
+        taui = bi.tau ? bi.tau : zero,
+
+        vj = bj.velocity,
+        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        fj = bj.force,
+        tauj = bj.tau ? bj.tau : zero,
+
+        invMassi = bi.invMass,
+        invMassj = bj.invMass,
+
+        GA = this.jacobianElementA,
+        GB = this.jacobianElementB,
+
+        invIi = this.invIi,
+        invIj = this.invIj;
+
+    // Caluclate cross products
+    ni.cross(nj,nixnj);
+    nj.cross(ni,njxni);
+
+    // g = ni * nj
+    // gdot = (nj x ni) * wi + (ni x nj) * wj
+    // G = [0 njxni 0 nixnj]
+    // W = [vi wi vj wj]
+    GA.rotational.copy(njxni);
+    GB.rotational.copy(nixnj);
+
+    var g = -ni.dot(nj),
+        GW = this.computeGW(),//njxni.dot(wi) + nixnj.dot(wj),
+        GiMf = this.computeGiMf();//njxni.dot(invIi.vmult(taui)) + nixnj.dot(invIj.vmult(tauj));
+
+    var B = - g * a - GW * b - h*GiMf;
+
+    return B;
+};
+
+/*
+// Compute C = GMG+eps
+RotationalEquation.prototype.computeC = function(){
+    var bi = this.bi;
+    var bj = this.bj;
+    var nixnj = this.nixnj;
+    var njxni = this.njxni;
+    var invMassi = bi.invMass;
+    var invMassj = bj.invMass;
+
+    var C = this.eps;
+
+
+    C += bi.invInertiaWorld.vmult(njxni).dot(njxni);
+    C += bj.invInertiaWorld.vmult(nixnj).dot(nixnj);
+
+    return C;
+};
+
+var computeGWlambda_ulambda = new Vec3();
+RotationalEquation.prototype.computeGWlambda = function(){
+    var bi = this.bi;
+    var bj = this.bj;
+    var ulambda = computeGWlambda_ulambda;
+
+    var GWlambda = 0.0;
+    //bj.vlambda.vsub(bi.vlambda, ulambda);
+    //GWlambda += ulambda.dot(this.ni);
+
+    // Angular
+    if(bi.wlambda){
+        GWlambda += bi.wlambda.dot(this.njxni);
     }
-    if(typeof(material)!==&quot;undefined&quot; &amp;&amp; !(material instanceof(Material))){
-        throw new Error(&quot;Argument 3 (material) must be an instance of Material.&quot;);
+    if(bj.wlambda){
+        GWlambda += bj.wlambda.dot(this.nixnj);
     }
 
-    Particle.call(this,mass,material);
+    //console.log(&quot;GWlambda:&quot;,GWlambda);
 
-    var that = this;
-
-    /**
-     * Rotational force on the body, around center of mass
-     * @property Vec3 tau
-     * @todo should be renamed to .angularForce
-     */
-    this.tau = new Vec3();
-
-    /**
-     * Orientation of the body
-     * @property quaternion
-     * @type {Quaternion}
-     */
-    this.quaternion = new Quaternion();
-
-    /**
-     * @property initQuaternion
-     * @type {Quaternion}
-     */
-    this.initQuaternion = new Quaternion();
-
-    /**
-     * @property angularVelocity
-     * @type {Vec3}
-     */
-    this.angularVelocity = new Vec3();
-
-    /**
-     * @property initAngularVelocity
-     * @type {Vec3}
-     */
-    this.initAngularVelocity = new Vec3();
-
-    /**
-     * @property shape
-     * @type {Shape}
-     */
-    this.shape = shape;
-
-    /**
-     * @property inertia
-     * @type {Vec3}
-     */
-    this.inertia = new Vec3();
-    shape.calculateLocalInertia(mass,this.inertia);
-
-    this.inertiaWorld = new Vec3();
-    this.inertia.copy(this.inertiaWorld);
-    this.inertiaWorldAutoUpdate = false;
-
-    /**
-     * @property invInertia
-     * @type {Vec3}
-     */
-    this.invInertia = new Vec3(this.inertia.x&gt;0 ? 1.0/this.inertia.x : 0,
-                                      this.inertia.y&gt;0 ? 1.0/this.inertia.y : 0,
-                                      this.inertia.z&gt;0 ? 1.0/this.inertia.z : 0);
-    this.invInertiaWorld = new Vec3();
-    this.invInertia.copy(this.invInertiaWorld);
-    this.invInertiaWorldAutoUpdate = false;
-
-    /**
-     * @property angularDamping
-     * @type {Number}
-     */
-    this.angularDamping = 0.01; // Perhaps default should be zero here?
-
-    /**
-     * @property aabbmin
-     * @type {Vec3}
-     */
-    this.aabbmin = new Vec3();
-
-    /**
-     * @property aabbmax
-     * @type {Vec3}
-     */
-    this.aabbmax = new Vec3();
-
-    /**
-     * Indicates if the AABB needs to be updated before use.
-     * @property aabbNeedsUpdate
-     * @type {Boolean}
-     */
-    this.aabbNeedsUpdate = true;
-
-    this.wlambda = new Vec3();
+    return GWlambda;
 };
 
-RigidBody.prototype = new Particle(0);
-RigidBody.prototype.constructor = RigidBody;
+RotationalEquation.prototype.addToWlambda = function(deltalambda){
+    var bi = this.bi;
+    var bj = this.bj;
+    var nixnj = this.nixnj;
+    var njxni = this.njxni;
+    var invMassi = bi.invMass;
+    var invMassj = bj.invMass;
 
-/**
- * Updates the .aabbmin and .aabbmax properties
- * @method computeAABB
- */
-RigidBody.prototype.computeAABB = function(){
-    this.shape.calculateWorldAABB(this.position,
-                                  this.quaternion,
-                                  this.aabbmin,
-                                  this.aabbmax);
-    this.aabbNeedsUpdate = false;
+    // Add to linear velocity
+    //bi.vlambda.vsub(n.mult(invMassi * deltalambda),bi.vlambda);
+    //bj.vlambda.vadd(n.mult(invMassj * deltalambda),bj.vlambda);
+
+    // Add to angular velocity
+    if(bi.wlambda){
+        var I = bi.invInertiaWorld;
+        bi.wlambda.vsub(I.vmult(nixnj).mult(deltalambda),bi.wlambda);
+    }
+    if(bj.wlambda){
+        var I = bj.invInertiaWorld;
+        bj.wlambda.vadd(I.vmult(nixnj).mult(deltalambda),bj.wlambda);
+    }
 };
-
-/**
- * Apply force to a world point. This could for example be a point on the RigidBody surface. Applying force this way will add to Body.force and Body.tau.
- * @method applyForce
- * @param  {Vec3} force The amount of force to add.
- * @param  {Vec3} worldPoint A world point to apply the force on.
- */
-var RigidBody_applyForce_r = new Vec3();
-var RigidBody_applyForce_rotForce = new Vec3();
-RigidBody.prototype.applyForce = function(force,worldPoint){
-    // Compute point position relative to the body center
-    var r = RigidBody_applyForce_r;
-    worldPoint.vsub(this.position,r);
-
-    // Compute produced rotational force
-    var rotForce = RigidBody_applyForce_rotForce;
-    r.cross(force,rotForce);
-
-    // Add linear force
-    this.force.vadd(force,this.force);
-
-    // Add rotational force
-    this.tau.vadd(rotForce,this.tau);
-};
-
-/**
- * Apply impulse to a world point. This could for example be a point on the RigidBody surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
- * @method applyImpulse
- * @param  {Vec3} impulse The amount of impulse to add.
- * @param  {Vec3} worldPoint A world point to apply the force on.
- */
-var RigidBody_applyImpulse_r = new Vec3();
-var RigidBody_applyImpulse_velo = new Vec3();
-var RigidBody_applyImpulse_rotVelo = new Vec3();
-RigidBody.prototype.applyImpulse = function(impulse,worldPoint){
-    // Compute point position relative to the body center
-    var r = RigidBody_applyImpulse_r;
-    worldPoint.vsub(this.position,r);
-
-    // Compute produced central impulse velocity
-    var velo = RigidBody_applyImpulse_velo;
-    impulse.copy(velo);
-    velo.mult(this.invMass,velo);
-
-    // Add linear impulse
-    this.velocity.vadd(velo, this.velocity);
-
-    // Compute produced rotational impulse velocity
-    var rotVelo = RigidBody_applyImpulse_rotVelo;
-    r.cross(impulse,rotVelo);
-    rotVelo.x *= this.invInertia.x;
-    rotVelo.y *= this.invInertia.y;
-    rotVelo.z *= this.invInertia.z;
-
-    // Add rotational Impulse
-    this.angularVelocity.vadd(rotVelo, this.angularVelocity);
-};
+*/
 
     </pre>
 </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/SAP1DBroadphase.js - cannon</title>
+    <title>src/collision/SAPBroadphase.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,23 +174,24 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/collision/SAP1DBroadphase.js</h1>
+                        <h1 class="file-heading">File: src/collision/SAPBroadphase.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-var Shape = require(&#x27;../shapes/Shape&#x27;)
-,   Broadphase = require(&#x27;../collision/Broadphase&#x27;)
+var Shape = require(&#x27;../shapes/Shape&#x27;);
+var Broadphase = require(&#x27;../collision/Broadphase&#x27;);
 
-module.exports = SAP1DBroadphase;
+module.exports = SAPBroadphase;
 
 /**
  * Sweep and prune broadphase along one axis.
  *
- * @class SAP1DBroadphase
+ * @class SAPBroadphase
  * @constructor
+ * @param {World} world
  * @extends Broadphase
  */
-function SAP1DBroadphase(world){
+function SAPBroadphase(world){
     Broadphase.apply(this);
 
     /**
@@ -210,98 +223,161 @@ function SAP1DBroadphase(world){
 
     this._removeBodyHandler = function(e){
         var idx = axisList.indexOf(e.body);
-        if(idx !== -1)
+        if(idx !== -1){
             axisList.splice(idx,1);
-    }
+        }
+    };
 
-    if(world) this.setWorld(world);
-};
-SAP1DBroadphase.prototype = new Broadphase();
+    if(world){
+        this.setWorld(world);
+    }
+}
+SAPBroadphase.prototype = new Broadphase();
 
 /**
  * Change the world
  * @method setWorld
  * @param  {World} world
  */
-SAP1DBroadphase.prototype.setWorld = function(world){
+SAPBroadphase.prototype.setWorld = function(world){
     // Clear the old axis array
     this.axisList.length = 0;
 
     // Add all bodies from the new world
-    for(var i=0; i&lt;world.bodies.length; i++)
+    for(var i=0; i&lt;world.bodies.length; i++){
         this.axisList.push(world.bodies[i]);
+    }
 
     // Remove old handlers, if any
-    world.removeEventListener(&quot;addBody&quot;,this._addBodyHandler);
-    world.removeEventListener(&quot;removeBody&quot;,this._removeBodyHandler);
+    world.removeEventListener(&quot;addBody&quot;, this._addBodyHandler);
+    world.removeEventListener(&quot;removeBody&quot;, this._removeBodyHandler);
 
     // Add handlers to update the list of bodies.
-    world.addEventListener(&quot;addBody&quot;,this._addBodyHandler);
-    world.addEventListener(&quot;removeBody&quot;,this._removeBodyHandler);
+    world.addEventListener(&quot;addBody&quot;, this._addBodyHandler);
+    world.addEventListener(&quot;removeBody&quot;, this._removeBodyHandler);
 
     this.world = world;
+    this.dirty = true;
 };
 
 /**
- * Function for sorting bodies along the X axis. To be passed to array.sort()
- * @method sortAxisListX
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Number}
+ * @static
+ * @method insertionSortX
+ * @param  {Array} a
+ * @return {Array}
  */
-SAP1DBroadphase.sortAxisListX = function(bodyA,bodyB){
-    return (bodyA.position.x-bodyA.shape.boundingSphereRadius) - (bodyB.position.x-bodyB.shape.boundingSphereRadius);
+SAPBroadphase.insertionSortX = function(a) {
+    for(var i=1,l=a.length;i&lt;l;i++) {
+        var v = a[i];
+        for(var j=i - 1;j&gt;=0;j--) {
+            if(a[j].aabb.lowerBound.x &lt;= v.aabb.lowerBound.x){
+                break;
+            }
+            a[j+1] = a[j];
+        }
+        a[j+1] = v;
+    }
+    return a;
 };
 
 /**
- * Function for sorting bodies along the Y axis. To be passed to array.sort()
- * @method sortAxisListY
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Number}
+ * @static
+ * @method insertionSortY
+ * @param  {Array} a
+ * @return {Array}
  */
-SAP1DBroadphase.sortAxisListY = function(bodyA,bodyB){
-    return (bodyA.position.y-bodyA.shape.boundingSphereRadius) - (bodyB.position.y-bodyB.shape.boundingSphereRadius);
+SAPBroadphase.insertionSortY = function(a) {
+    for(var i=1,l=a.length;i&lt;l;i++) {
+        var v = a[i];
+        for(var j=i - 1;j&gt;=0;j--) {
+            if(a[j].aabb.lowerBound.y &lt;= v.aabb.lowerBound.y){
+                break;
+            }
+            a[j+1] = a[j];
+        }
+        a[j+1] = v;
+    }
+    return a;
 };
 
 /**
- * Function for sorting bodies along the Y axis. To be passed to array.sort()
- * @method sortAxisListY
- * @param  {Body} bodyA
- * @param  {Body} bodyB
- * @return {Number}
+ * @static
+ * @method insertionSortZ
+ * @param  {Array} a
+ * @return {Array}
  */
-SAP1DBroadphase.sortAxisListZ = function(bodyA,bodyB){
-    return (bodyA.position.z-bodyA.shape.boundingSphereRadius) - (bodyB.position.z-bodyB.shape.boundingSphereRadius);
+SAPBroadphase.insertionSortZ = function(a) {
+    for(var i=1,l=a.length;i&lt;l;i++) {
+        var v = a[i];
+        for(var j=i - 1;j&gt;=0;j--) {
+            if(a[j].aabb.lowerBound.z &lt;= v.aabb.lowerBound.z){
+                break;
+            }
+            a[j+1] = a[j];
+        }
+        a[j+1] = v;
+    }
+    return a;
 };
 
-SAP1DBroadphase.prototype.collisionPairs = function(world,p1,p2){
+/**
+ * Collect all collision pairs
+ * @method collisionPairs
+ * @param  {World} world
+ * @param  {Array} p1
+ * @param  {Array} p2
+ */
+SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
     var bodies = this.axisList,
+        N = bodies.length,
         axisIndex = this.axisIndex,
-        i,j;
+        i, j;
 
-    // Sort the list
-    var sortFunc;
-    if(axisIndex === 0)
-        sortFunc = SAP1DBroadphase.sortAxisListX;
-    else if(axisIndex === 1)
-        sortFunc = SAP1DBroadphase.sortAxisListY;
-    else if(axisIndex === 2)
-        sortFunc = SAP1DBroadphase.sortAxisListZ;
-    bodies.sort(sortFunc);
+    if(this.dirty){
+        this.sortList();
+        this.dirty = false;
+    }
 
     // Look through the list
-    for(i=0, N=bodies.length; i!==N; i++){
+    for(i=0; i !== N; i++){
         var bi = bodies[i];
 
-        for(j=i+1; j&lt;N; j++){
+        for(j=i+1; j &lt; N; j++){
             var bj = bodies[j];
 
-            if(!SAP1DBroadphase.checkBounds(bi,bj,axisIndex))
+            if(!this.needBroadphaseCollision(bi,bj)){
+                continue;
+            }
+
+            if(!SAPBroadphase.checkBounds(bi,bj,axisIndex)){
                 break;
+            }
 
             this.doBoundingSphereBroadphase(bi,bj,p1,p2);
         }
+    }
+};
+
+SAPBroadphase.prototype.sortList = function(){
+    var axisList = this.axisList;
+    var axisIndex = this.axisIndex;
+    var N = axisList.length;
+
+    // Update AABBs
+    for(var i = 0; i!==N; i++){
+        var bi = axisList[i];
+        if(bi.aabbNeedsUpdate){
+            bi.computeAABB();
+        }
+    }
+
+    // Sort the list
+    if(axisIndex === 0){
+        SAPBroadphase.insertionSortX(axisList);
+    } else if(axisIndex === 1){
+        SAPBroadphase.insertionSortY(axisList);
+    } else if(axisIndex === 2){
+        SAPBroadphase.insertionSortZ(axisList);
     }
 };
 
@@ -314,24 +390,106 @@ SAP1DBroadphase.prototype.collisionPairs = function(world,p1,p2){
  * @param  {Number} axisIndex
  * @return {Boolean}
  */
-SAP1DBroadphase.checkBounds = function(bi,bj,axisIndex){
+SAPBroadphase.checkBounds = function(bi, bj, axisIndex){
     var axis;
-    if(axisIndex==0) axis = &#x27;x&#x27;;
-    if(axisIndex==1) axis = &#x27;y&#x27;;
-    if(axisIndex==2) axis = &#x27;z&#x27;;
+    if(axisIndex === 0){ axis = &#x27;x&#x27;; }
+    if(axisIndex === 1){ axis = &#x27;y&#x27;; }
+    if(axisIndex === 2){ axis = &#x27;z&#x27;; }
 
     var biPos = bi.position[axis],
-        ri = bi.shape.boundingSphereRadius,
+        ri = bi.boundingRadius,
         bjPos = bj.position[axis],
-        rj = bj.shape.boundingSphereRadius,
-        boundA1 = biPos-ri,
-        boundA2 = biPos+ri,
-        boundB1 = bjPos-rj,
-        boundB2 = bjPos+rj;
+        rj = bj.boundingRadius,
+        boundA1 = biPos - ri,
+        boundA2 = biPos + ri,
+        boundB1 = bjPos - rj,
+        boundB2 = bjPos + rj;
 
     return boundB1 &lt; boundA2;
 };
 
+/**
+ * Computes the variance of the body positions and estimates the best
+ * axis to use. Will automatically set property .axisIndex.
+ * @method autoDetectAxis
+ */
+SAPBroadphase.prototype.autoDetectAxis = function(){
+    var sumX=0,
+        sumX2=0,
+        sumY=0,
+        sumY2=0,
+        sumZ=0,
+        sumZ2=0,
+        bodies = this.axisList,
+        N = bodies.length,
+        invN=1/N;
+
+    for(var i=0; i!==N; i++){
+        var b = bodies[i];
+
+        var centerX = b.position.x;
+        sumX += centerX;
+        sumX2 += centerX*centerX;
+
+        var centerY = b.position.y;
+        sumY += centerY;
+        sumY2 += centerY*centerY;
+
+        var centerZ = b.position.z;
+        sumZ += centerZ;
+        sumZ2 += centerZ*centerZ;
+    }
+
+    var varianceX = sumX2 - sumX*sumX*invN,
+        varianceY = sumY2 - sumY*sumY*invN,
+        varianceZ = sumZ2 - sumZ*sumZ*invN;
+
+    if(varianceX &gt; varianceY){
+        if(varianceX &gt; varianceZ){
+            this.axisIndex = 0;
+        } else{
+            this.axisIndex = 2;
+        }
+    } else if(varianceY &gt; varianceZ){
+        this.axisIndex = 1;
+    } else{
+        this.axisIndex = 2;
+    }
+};
+
+/**
+ * Returns all the bodies within an AABB.
+ * @method aabbQuery
+ * @param  {World} world
+ * @param  {AABB} aabb
+ * @param {array} result An array to store resulting bodies in.
+ * @return {array}
+ */
+SAPBroadphase.prototype.aabbQuery = function(world, aabb, result){
+    result = result || [];
+
+    if(this.dirty){
+        this.sortList();
+        this.dirty = false;
+    }
+
+    var axisIndex = this.axisIndex, axis = &#x27;x&#x27;;
+    if(axisIndex === 1){ axis = &#x27;y&#x27;; }
+    if(axisIndex === 2){ axis = &#x27;z&#x27;; }
+
+    var axisList = this.axisList;
+    var lower = aabb.lowerBound[axis];
+    var upper = aabb.upperBound[axis];
+    for(var i = 0; i &lt; axisList.length; i++){
+        var b = axisList[i];
+
+        if(b.aabb.upperBound[axis] &gt; lower &amp;&amp; b.aabb.lowerBound[axis] &lt; upper &amp;&amp; b.aabb.overlaps(aabb)){
+            result.push(b);
+        }
+    }
+
+    return result;
+};
     </pre>
 </div>
 

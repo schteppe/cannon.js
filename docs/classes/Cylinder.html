@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -377,13 +389,6 @@
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_calculateTransformedInertia">calculateTransformedInertia</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
                                 <a href="#method_calculateWorldAABB">calculateWorldAABB</a>
 
                                 
@@ -411,8 +416,15 @@
                                 
                             </li>
                         
-                            <li class="index-item method inherited inherited">
-                                <a href="#method_computeBoundingSphereRadius">computeBoundingSphereRadius</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_computeEdges">computeEdges</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_computeNormals">computeNormals</a>
 
                                 
                                 
@@ -434,13 +446,6 @@
                         
                             <li class="index-item method inherited">
                                 <a href="#method_getAveragePointLocal">getAveragePointLocal</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_getBoundingSphereRadius">getBoundingSphereRadius</a>
 
                                 
                                 
@@ -482,6 +487,13 @@
                             </li>
                         
                             <li class="index-item method inherited inherited">
+                                <a href="#method_updateBoundingSphereRadius">updateBoundingSphereRadius</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited inherited">
                                 <a href="#method_volume">volume</a>
 
                                 
@@ -497,6 +509,20 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_boundingSphereRadius">boundingSphereRadius</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_collisionResponse">collisionResponse</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item property inherited">
                                 <a href="#property_faceNormals">faceNormals</a>
@@ -595,7 +621,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l366"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:366</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l390"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:390</code></a>
         
         </p>
 
@@ -649,74 +675,6 @@
         </div>
     
 
-    
-
-    
-</div>
-
-                
-                    <div id="method_calculateTransformedInertia" class="method item inherited">
-    <h3 class="name"><code>calculateTransformedInertia</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#method_calculateTransformedInertia">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l74"><code>src&#x2F;shapes&#x2F;Shape.js:74</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Calculates inertia in a specified frame for this shape.</p>
-
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
-                    
-                
-            </div>
-        </div>
     
 
     
@@ -780,7 +738,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l700"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:700</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l722"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:722</code></a>
         
         </p>
 
@@ -957,7 +915,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l171"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:171</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l192"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:192</code></a>
         
         </p>
 
@@ -1199,7 +1157,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l396"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:396</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l420"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:420</code></a>
         
         </p>
 
@@ -1395,7 +1353,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l550"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:550</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l574"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:574</code></a>
         
         </p>
 
@@ -1487,8 +1445,8 @@
 </div>
 
                 
-                    <div id="method_computeBoundingSphereRadius" class="method item inherited">
-    <h3 class="name"><code>computeBoundingSphereRadius</code></h3>
+                    <div id="method_computeEdges" class="method item inherited">
+    <h3 class="name"><code>computeEdges</code></h3>
 
     
         <span class="paren">()</span>
@@ -1510,16 +1468,13 @@
 
     <div class="meta">
         
-            <p>Inherited from
-            <a href="../classes/Shape.html#method_computeBoundingSphereRadius">
-                Shape
-            </a>
             
-            but overwritten in
+                <p>Inherited from
+                <a href="../classes/ConvexPolyhedron.html#method_computeEdges">ConvexPolyhedron</a>:
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l681"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:681</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l74"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:74</code></a>
         
         </p>
 
@@ -1530,7 +1485,60 @@
     </div>
 
     <div class="description">
+        <p>Computes uniqueEdges</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_computeNormals" class="method item inherited">
+    <h3 class="name"><code>computeNormals</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
         
+            
+                <p>Inherited from
+                <a href="../classes/ConvexPolyhedron.html#method_computeNormals">ConvexPolyhedron</a>:
+            
+        
+        
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l127"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:127</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Compute the normals of the faces. Will reuse existing Vec3 objects in the .faceNormals array if they exist.</p>
+
     </div>
 
     
@@ -1580,7 +1588,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l661"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:661</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l684"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:684</code></a>
         
         </p>
 
@@ -1699,7 +1707,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l230"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:230</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l251"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:251</code></a>
         
         </p>
 
@@ -1878,7 +1886,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l749"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:749</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l768"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:768</code></a>
         
         </p>
 
@@ -1936,74 +1944,6 @@
 </div>
 
                 
-                    <div id="method_getBoundingSphereRadius" class="method item inherited">
-    <h3 class="name"><code>getBoundingSphereRadius</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Number</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Shape.html#method_getBoundingSphereRadius">Shape</a>:
-            
-        
-        
-        <a href="../files/src_shapes_Shape.js.html#l43"><code>src&#x2F;shapes&#x2F;Shape.js:43</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Returns the bounding sphere radius. The result is stored in the property .boundingSphereRadius</p>
-
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Number</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
                     <div id="method_getFaceNormal" class="method item inherited">
     <h3 class="name"><code>getFaceNormal</code></h3>
 
@@ -2049,7 +1989,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l157"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:157</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l178"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:178</code></a>
         
         </p>
 
@@ -2153,7 +2093,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l383"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:383</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l407"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:407</code></a>
         
         </p>
 
@@ -2254,7 +2194,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l805"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:805</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l824"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:824</code></a>
         
         </p>
 
@@ -2386,7 +2326,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l337"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:337</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l358"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:358</code></a>
         
         </p>
 
@@ -2566,7 +2506,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l766"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:766</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l785"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:785</code></a>
         
         </p>
 
@@ -2627,6 +2567,60 @@
 </div>
 
                 
+                    <div id="method_updateBoundingSphereRadius" class="method item inherited">
+    <h3 class="name"><code>updateBoundingSphereRadius</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/Shape.html#method_updateBoundingSphereRadius">
+                Shape
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l704"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:704</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_volume" class="method item inherited">
     <h3 class="name"><code>volume</code></h3>
 
@@ -2663,7 +2657,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l737"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:737</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l759"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:759</code></a>
         
         </p>
 
@@ -2706,6 +2700,89 @@
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property_boundingSphereRadius" class="property item inherited">
+    <h3 class="name"><code>boundingSphereRadius</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_boundingSphereRadius">Shape</a>:
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l25"><code>src&#x2F;shapes&#x2F;Shape.js:25</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The local bounding sphere radius of this shape.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_collisionResponse" class="property item inherited">
+    <h3 class="name"><code>collisionResponse</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l31"><code>src&#x2F;shapes&#x2F;Shape.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_faceNormals" class="property item inherited">
     <h3 class="name"><code>faceNormals</code></h3>
     <span class="type">Array</span>
@@ -2726,7 +2803,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l49"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:49</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l50"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:50</code></a>
         
         </p>
 
@@ -2768,7 +2845,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l42"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:42</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l43"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:43</code></a>
         
         </p>
 
@@ -2810,7 +2887,7 @@
             
         
         
-        <a href="../files/src_shapes_Shape.js.html#l18"><code>src&#x2F;shapes&#x2F;Shape.js:18</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l17"><code>src&#x2F;shapes&#x2F;Shape.js:17</code></a>
         
         </p>
 
@@ -2852,7 +2929,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l87"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:87</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l61"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:61</code></a>
         
         </p>
 
@@ -2894,7 +2971,7 @@
             
         
         
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l32"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:32</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l33"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:33</code></a>
         
         </p>
 

@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -167,10 +179,14 @@
     
 
     
+        <div class="extends">
+            Extends <a href="../classes/Shape.html" class="crosslink">Shape</a>
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Particle.js.html#l9"><code>src&#x2F;objects&#x2F;Particle.js:9</code></a>
+            Defined in: <a href="../files/src_shapes_Particle.js.html#l6"><code>src&#x2F;shapes&#x2F;Particle.js:6</code></a>
         </div>
     
 
@@ -182,7 +198,7 @@
 
 
 <div class="box intro">
-    <p>A body consisting of one point mass. Does not have orientation.</p>
+    <p>A 3d box shape.</p>
 
 </div>
 
@@ -193,23 +209,7 @@
     <h3 class="name"><code>Particle</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>mass</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>material</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -237,7 +237,173 @@
             
         
         
-        <a href="../files/src_objects_Particle.js.html#l9"><code>src&#x2F;objects&#x2F;Particle.js:9</code></a>
+        <a href="../files/src_shapes_Particle.js.html#l6"><code>src&#x2F;shapes&#x2F;Particle.js:6</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_calculateLocalInertia">calculateLocalInertia</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_updateBoundingSphereRadius">updateBoundingSphereRadius</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_volume">volume</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_boundingSphereRadius">boundingSphereRadius</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_collisionResponse">collisionResponse</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_type">type</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+        </div>
+
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_calculateLocalInertia" class="method item">
+    <h3 class="name"><code>calculateLocalInertia</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>mass</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>target</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/Shape.html#method_calculateLocalInertia">
+                Shape
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_shapes_Particle.js.html#l21"><code>src&#x2F;shapes&#x2F;Particle.js:21</code></a>
         
         </p>
 
@@ -274,8 +440,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">material</code>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
                     
 
                     
@@ -292,196 +458,25 @@
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
 
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
-            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods">
-                        
-                            <li class="index-item method">
-                                <a href="#method_isAwake">isAwake</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_isSleeping">isSleeping</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_isSleepy">isSleepy</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_sleep">sleep</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_sleepTick">sleepTick</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_wakeUp">wakeUp</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
-
-            
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-
-                    <ul class="index-list properties">
-                        
-                            <li class="index-item property">
-                                <a href="#property_allowSleep">allowSleep</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_float linearDamping">float linearDamping</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_force">force</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_initPosition">initPosition</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_initVelocity">initVelocity</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_invMass">invMass</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_mass">mass</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_material">material</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_motionstate">motionstate</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_position">position</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_sleepSpeedLimit">sleepSpeedLimit</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_sleepTimeLimit">sleepTimeLimit</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_velocity">velocity</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
-
-            
-
-            
-        </div>
-
-        
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
                 
-                    <div id="method_isAwake" class="method item">
-    <h3 class="name"><code>isAwake</code></h3>
+                    <div id="method_updateBoundingSphereRadius" class="method item inherited">
+    <h3 class="name"><code>updateBoundingSphereRadius</code></h3>
 
     
         <span class="paren">()</span>
@@ -489,7 +484,7 @@
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Number</span>
         </span>
     
 
@@ -508,15 +503,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Shape.html#method_updateBoundingSphereRadius">Shape</a>:
             
         
         
-        <a href="../files/src_objects_Particle.js.html#l122"><code>src&#x2F;objects&#x2F;Particle.js:122</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l38"><code>src&#x2F;shapes&#x2F;Shape.js:38</code></a>
         
         </p>
 
@@ -527,7 +519,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius</p>
+
     </div>
 
     
@@ -539,8 +532,8 @@
             <div class="returns-description">
                 
                     
-                    <p>bool</p>
-
+                        <span class="type">Number</span>:
+                    
                 
             </div>
         </div>
@@ -550,8 +543,8 @@
 </div>
 
                 
-                    <div id="method_isSleeping" class="method item">
-    <h3 class="name"><code>isSleeping</code></h3>
+                    <div id="method_volume" class="method item inherited">
+    <h3 class="name"><code>volume</code></h3>
 
     
         <span class="paren">()</span>
@@ -559,7 +552,7 @@
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Number</span>
         </span>
     
 
@@ -578,15 +571,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Shape.html#method_volume">Shape</a>:
             
         
         
-        <a href="../files/src_objects_Particle.js.html#l138"><code>src&#x2F;objects&#x2F;Particle.js:138</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l47"><code>src&#x2F;shapes&#x2F;Shape.js:47</code></a>
         
         </p>
 
@@ -597,7 +587,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Get the volume of this shape</p>
+
     </div>
 
     
@@ -609,280 +600,11 @@
             <div class="returns-description">
                 
                     
-                    <p>bool</p>
-
+                        <span class="type">Number</span>:
+                    
                 
             </div>
         </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_isSleepy" class="method item">
-    <h3 class="name"><code>isSleepy</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l130"><code>src&#x2F;objects&#x2F;Particle.js:130</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                    <p>bool</p>
-
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_sleep" class="method item">
-    <h3 class="name"><code>sleep</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l158"><code>src&#x2F;objects&#x2F;Particle.js:158</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Force body sleep</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_sleepTick" class="method item">
-    <h3 class="name"><code>sleepTick</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>time</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l166"><code>src&#x2F;objects&#x2F;Particle.js:166</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Called every timestep to update internal sleep timer and change sleep state if needed.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">time</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The world time in seconds</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_wakeUp" class="method item">
-    <h3 class="name"><code>wakeUp</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l146"><code>src&#x2F;objects&#x2F;Particle.js:146</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Wake the body up.</p>
-
-    </div>
-
-    
-
     
 
     
@@ -897,8 +619,50 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_allowSleep" class="property item">
-    <h3 class="name"><code>allowSleep</code></h3>
+                    <div id="property_boundingSphereRadius" class="property item inherited">
+    <h3 class="name"><code>boundingSphereRadius</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_boundingSphereRadius">Shape</a>:
+            
+        
+        
+        <a href="../files/src_shapes_Shape.js.html#l25"><code>src&#x2F;shapes&#x2F;Shape.js:25</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The local bounding sphere radius of this shape.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_collisionResponse" class="property item inherited">
+    <h3 class="name"><code>collisionResponse</code></h3>
     <span class="type">Boolean</span>
 
     
@@ -912,15 +676,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
             
         
         
-        <a href="../files/src_objects_Particle.js.html#l91"><code>src&#x2F;objects&#x2F;Particle.js:91</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l31"><code>src&#x2F;shapes&#x2F;Shape.js:31</code></a>
         
         </p>
 
@@ -930,8 +691,7 @@
     </div>
 
     <div class="description">
-        <p>If true, the body will automatically fall to sleep.</p>
-
+        
     </div>
 
     
@@ -942,8 +702,8 @@
 </div>
 
                 
-                    <div id="property_float linearDamping" class="property item">
-    <h3 class="name"><code>float linearDamping</code></h3>
+                    <div id="property_type" class="property item inherited">
+    <h3 class="name"><code>type</code></h3>
     <span class="type">Number</span>
 
     
@@ -957,15 +717,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_type">Shape</a>:
             
         
         
-        <a href="../files/src_objects_Particle.js.html#l78"><code>src&#x2F;objects&#x2F;Particle.js:78</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l17"><code>src&#x2F;shapes&#x2F;Shape.js:17</code></a>
         
         </p>
 
@@ -975,496 +732,8 @@
     </div>
 
     <div class="description">
-        
-    </div>
+        <p>The type of this shape. Must be set to an int &gt; 0 by subclasses.</p>
 
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_force" class="property item">
-    <h3 class="name"><code>force</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l53"><code>src&#x2F;objects&#x2F;Particle.js:53</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Linear force on the body</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_initPosition" class="property item">
-    <h3 class="name"><code>initPosition</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l34"><code>src&#x2F;objects&#x2F;Particle.js:34</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Initial position of the body</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_initVelocity" class="property item">
-    <h3 class="name"><code>initVelocity</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l47"><code>src&#x2F;objects&#x2F;Particle.js:47</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_invMass" class="property item">
-    <h3 class="name"><code>invMass</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l66"><code>src&#x2F;objects&#x2F;Particle.js:66</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_mass" class="property item">
-    <h3 class="name"><code>mass</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l60"><code>src&#x2F;objects&#x2F;Particle.js:60</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_material" class="property item">
-    <h3 class="name"><code>material</code></h3>
-    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l72"><code>src&#x2F;objects&#x2F;Particle.js:72</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_motionstate" class="property item">
-    <h3 class="name"><code>motionstate</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l84"><code>src&#x2F;objects&#x2F;Particle.js:84</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>One of the states Body.DYNAMIC, Body.STATIC and Body.KINEMATIC</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_position" class="property item">
-    <h3 class="name"><code>position</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l28"><code>src&#x2F;objects&#x2F;Particle.js:28</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_sleepSpeedLimit" class="property item">
-    <h3 class="name"><code>sleepSpeedLimit</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l101"><code>src&#x2F;objects&#x2F;Particle.js:101</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_sleepTimeLimit" class="property item">
-    <h3 class="name"><code>sleepTimeLimit</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l108"><code>src&#x2F;objects&#x2F;Particle.js:108</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_velocity" class="property item">
-    <h3 class="name"><code>velocity</code></h3>
-    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Particle.js.html#l41"><code>src&#x2F;objects&#x2F;Particle.js:41</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
     </div>
 
     

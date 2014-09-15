@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -339,6 +351,27 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_scale">scale</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setRotationFromQuaternion">setRotationFromQuaternion</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setTrace">setTrace</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_setTrace">setTrace</a>
 
                                 
@@ -368,6 +401,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_toString">toString</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_transpose">transpose</a>
 
                                 
                                 
@@ -420,7 +460,7 @@
             
                 <li class="arg">
                     
-                        <code>target</code>
+                        <code>source</code>
                     
                 </li>
             
@@ -457,7 +497,7 @@
             
         
         
-        <a href="../files/src_math_Mat3.js.html#l211"><code>src&#x2F;math&#x2F;Mat3.js:211</code></a>
+        <a href="../files/src_math_Mat3.js.html#l241"><code>src&#x2F;math&#x2F;Mat3.js:241</code></a>
         
         </p>
 
@@ -468,7 +508,7 @@
     </div>
 
     <div class="description">
-        <p>Copy the matrix</p>
+        <p>Copy another matrix into this matrix object.</p>
 
     </div>
 
@@ -480,15 +520,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">target</code>
+                        <code class="param-name">source</code>
                         <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Optional. Target to save the copy in.</p>
-
+                         
                     </div>
 
                     
@@ -507,6 +546,8 @@
                     
                         <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>:
                     
+                    <p>this</p>
+
                 
             </div>
         </div>
@@ -574,7 +615,7 @@
             
         
         
-        <a href="../files/src_math_Mat3.js.html#l194"><code>src&#x2F;math&#x2F;Mat3.js:194</code></a>
+        <a href="../files/src_math_Mat3.js.html#l224"><code>src&#x2F;math&#x2F;Mat3.js:224</code></a>
         
         </p>
 
@@ -764,7 +805,7 @@
             
         
         
-        <a href="../files/src_math_Mat3.js.html#l103"><code>src&#x2F;math&#x2F;Mat3.js:103</code></a>
+        <a href="../files/src_math_Mat3.js.html#l115"><code>src&#x2F;math&#x2F;Mat3.js:115</code></a>
         
         </p>
 
@@ -871,7 +912,7 @@
             
         
         
-        <a href="../files/src_math_Mat3.js.html#l239"><code>src&#x2F;math&#x2F;Mat3.js:239</code></a>
+        <a href="../files/src_math_Mat3.js.html#l268"><code>src&#x2F;math&#x2F;Mat3.js:268</code></a>
         
         </p>
 
@@ -926,6 +967,255 @@
                 
             </div>
         </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_scale" class="method item">
+    <h3 class="name"><code>scale</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>v</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_math_Mat3.js.html#l135"><code>src&#x2F;math&#x2F;Mat3.js:135</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Scale each column of the matrix</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">v</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>:
+                    
+                    <p>The result.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_setRotationFromQuaternion" class="method item">
+    <h3 class="name"><code>setRotationFromQuaternion</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>q</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_math_Mat3.js.html#l372"><code>src&#x2F;math&#x2F;Mat3.js:372</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the matrix from a quaterion</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">q</code>
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setTrace" class="method item">
+    <h3 class="name"><code>setTrace</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_math_Mat3.js.html#l72"><code>src&#x2F;math&#x2F;Mat3.js:72</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sets the matrix diagonal elements from a Vec3</p>
+
+    </div>
+
+    
+
     
 
     
@@ -1084,7 +1374,7 @@
             
         
         
-        <a href="../files/src_math_Mat3.js.html#l92"><code>src&#x2F;math&#x2F;Mat3.js:92</code></a>
+        <a href="../files/src_math_Mat3.js.html#l104"><code>src&#x2F;math&#x2F;Mat3.js:104</code></a>
         
         </p>
 
@@ -1182,7 +1472,7 @@
             
         
         
-        <a href="../files/src_math_Mat3.js.html#l123"><code>src&#x2F;math&#x2F;Mat3.js:123</code></a>
+        <a href="../files/src_math_Mat3.js.html#l153"><code>src&#x2F;math&#x2F;Mat3.js:153</code></a>
         
         </p>
 
@@ -1295,7 +1585,7 @@
             
         
         
-        <a href="../files/src_math_Mat3.js.html#l225"><code>src&#x2F;math&#x2F;Mat3.js:225</code></a>
+        <a href="../files/src_math_Mat3.js.html#l254"><code>src&#x2F;math&#x2F;Mat3.js:254</code></a>
         
         </p>
 
@@ -1320,6 +1610,113 @@
                 
                     
                     <p>string</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_transpose" class="method item">
+    <h3 class="name"><code>transpose</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>target</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_math_Mat3.js.html#l400"><code>src&#x2F;math&#x2F;Mat3.js:400</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Transpose the matrix</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Where to store the result.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>:
+                    
+                    <p>The target Mat3, or a new Mat3 if target was omitted.</p>
 
                 
             </div>
@@ -1378,7 +1775,7 @@
             
         
         
-        <a href="../files/src_math_Mat3.js.html#l72"><code>src&#x2F;math&#x2F;Mat3.js:72</code></a>
+        <a href="../files/src_math_Mat3.js.html#l84"><code>src&#x2F;math&#x2F;Mat3.js:84</code></a>
         
         </p>
 

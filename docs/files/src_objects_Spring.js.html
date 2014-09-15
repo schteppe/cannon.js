@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/shapes/Compound.js - cannon</title>
+    <title>src/objects/Spring.js - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,6 +41,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/AABB.html">AABB</a></li>
+            
                 <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
             
                 <li><a href="../classes/Body.html">Body</a></li>
@@ -49,13 +51,9 @@
             
                 <li><a href="../classes/Broadphase.html">Broadphase</a></li>
             
-                <li><a href="../classes/Compound.html">Compound</a></li>
-            
                 <li><a href="../classes/Constraint.html">Constraint</a></li>
             
                 <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
-            
-                <li><a href="../classes/ContactGenerator.html">ContactGenerator</a></li>
             
                 <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
             
@@ -77,13 +75,19 @@
             
                 <li><a href="../classes/GSSolver.html">GSSolver</a></li>
             
+                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+            
                 <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+            
+                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
             
                 <li><a href="../classes/Mat3.html">Mat3</a></li>
             
                 <li><a href="../classes/Material.html">Material</a></li>
             
                 <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+            
+                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
             
                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
             
@@ -99,13 +103,15 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
-                <li><a href="../classes/RigidBody.html">RigidBody</a></li>
+                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+            
+                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
             
                 <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
             
                 <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
             
-                <li><a href="../classes/SAP1DBroadphase.html">SAP1DBroadphase</a></li>
+                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
             
                 <li><a href="../classes/Shape.html">Shape</a></li>
             
@@ -117,9 +123,15 @@
             
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
+                <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+            
                 <li><a href="../classes/Vec3.html">Vec3</a></li>
             
                 <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+            
+                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
             
                 <li><a href="../classes/World.html">World</a></li>
             
@@ -162,163 +174,202 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/shapes/Compound.js</h1>
+                        <h1 class="file-heading">File: src/objects/Spring.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-module.exports = Compound;
+var Vec3 = require(&#x27;../math/Vec3&#x27;);
 
-var Shape = require(&#x27;./Shape&#x27;)
-,   Vec3 = require(&#x27;../math/Vec3&#x27;)
-,   Quaternion = require(&#x27;../math/Quaternion&#x27;)
+module.exports = Spring;
 
 /**
- * A shape made of several other shapes.
- * @class Compound
- * @extends {Shape}
- * @author schteppe
+ * A spring, connecting two bodies.
+ *
+ * @class Spring
+ * @constructor
+ * @param {Body} bodyA
+ * @param {Body} bodyB
+ * @param {Object} [options]
+ * @param {number} [options.restLength]   A number &gt; 0. Default: 1
+ * @param {number} [options.stiffness]    A number &gt;= 0. Default: 100
+ * @param {number} [options.damping]      A number &gt;= 0. Default: 1
+ * @param {Vec3}  [options.worldAnchorA] Where to hook the spring to body A, in world coordinates.
+ * @param {Vec3}  [options.worldAnchorB]
+ * @param {Vec3}  [options.localAnchorA] Where to hook the spring to body A, in local body coordinates.
+ * @param {Vec3}  [options.localAnchorB]
  */
-function Compound(){
-    Shape.call(this);
-    this.type = Shape.types.COMPOUND;
+function Spring(bodyA,bodyB,options){
+    options = options || {};
 
     /**
-     * @property {Array} childShapes
+     * Rest length of the spring.
+     * @property restLength
+     * @type {number}
      */
-    this.childShapes = [];
+    this.restLength = typeof(options.restLength) === &quot;number&quot; ? options.restLength : 1;
 
     /**
-     * @property {Array} childOffsets
+     * Stiffness of the spring.
+     * @property stiffness
+     * @type {number}
      */
-    this.childOffsets = [];
+    this.stiffness = options.stiffness || 100;
 
     /**
-     * @property {Array} childOrientations
+     * Damping of the spring.
+     * @property damping
+     * @type {number}
      */
-    this.childOrientations = [];
-};
-Compound.prototype = new Shape();
-Compound.prototype.constructor = Compound;
+    this.damping = options.damping || 1;
+
+    /**
+     * First connected body.
+     * @property bodyA
+     * @type {Body}
+     */
+    this.bodyA = bodyA;
+
+    /**
+     * Second connected body.
+     * @property bodyB
+     * @type {Body}
+     */
+    this.bodyB = bodyB;
+
+    /**
+     * Anchor for bodyA in local bodyA coordinates.
+     * @property localAnchorA
+     * @type {Vec3}
+     */
+    this.localAnchorA = new Vec3();
+
+    /**
+     * Anchor for bodyB in local bodyB coordinates.
+     * @property localAnchorB
+     * @type {Vec3}
+     */
+    this.localAnchorB = new Vec3();
+
+    if(options.localAnchorA){
+        this.localAnchorA.copy(options.localAnchorA);
+    }
+    if(options.localAnchorB){
+        this.localAnchorB.copy(options.localAnchorB);
+    }
+    if(options.worldAnchorA){
+        this.setWorldAnchorA(options.worldAnchorA);
+    }
+    if(options.worldAnchorB){
+        this.setWorldAnchorB(options.worldAnchorB);
+    }
+}
 
 /**
- * Add a child shape.
- * @method addChild
- * @param {Shape} shape
- * @param {Vec3} offset
- * @param {Quaternion} orientation
+ * Set the anchor point on body A, using world coordinates.
+ * @method setWorldAnchorA
+ * @param {Vec3} worldAnchorA
  */
-Compound.prototype.addChild = function(shape,offset,orientation){
-    offset = offset || new Vec3();
-    orientation = orientation || new Quaternion();
-    this.childShapes.push(shape);
-    this.childOffsets.push(offset);
-    this.childOrientations.push(orientation);
+Spring.prototype.setWorldAnchorA = function(worldAnchorA){
+    this.bodyA.pointToLocalFrame(worldAnchorA,this.localAnchorA);
 };
 
-Compound.prototype.volume = function(){
-    var r = 0.0;
-    var Nchildren = this.childShapes.length;
-    for(var i=0; i!==Nchildren; i++){
-        r += this.childShapes[i].volume();
-    }
-    return r;
+/**
+ * Set the anchor point on body B, using world coordinates.
+ * @method setWorldAnchorB
+ * @param {Vec3} worldAnchorB
+ */
+Spring.prototype.setWorldAnchorB = function(worldAnchorB){
+    this.bodyB.pointToLocalFrame(worldAnchorB,this.localAnchorB);
 };
 
-var Compound_calculateLocalInertia_mr2 = new Vec3();
-var Compound_calculateLocalInertia_childInertia = new Vec3();
-Compound.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new Vec3();
-
-    // Calculate the total volume, we will spread out this objects&#x27; mass on the sub shapes
-    var V = this.volume();
-    var childInertia = Compound_calculateLocalInertia_childInertia;
-    for(var i=0, Nchildren=this.childShapes.length; i!==Nchildren; i++){
-        // Get child information
-        var b = this.childShapes[i];
-        var o = this.childOffsets[i];
-        var q = this.childOrientations[i];
-        var m = b.volume() / V * mass;
-
-        // Get the child inertia, transformed relative to local frame
-        //var inertia = b.calculateTransformedInertia(m,q);
-        b.calculateLocalInertia(m,childInertia); // Todo transform!
-        //console.log(childInertia,m,b.volume(),V);
-
-        // Add its inertia using the parallel axis theorem, i.e.
-        // I += I_child;
-        // I += m_child * r^2
-
-        target.vadd(childInertia,target);
-        var mr2 = Compound_calculateLocalInertia_mr2;
-        mr2.set(m*o.x*o.x,
-                m*o.y*o.y,
-                m*o.z*o.z);
-        target.vadd(mr2,target);
-    }
-
-    return target;
+/**
+ * Get the anchor point on body A, in world coordinates.
+ * @method getWorldAnchorA
+ * @param {Vec3} result The vector to store the result in.
+ */
+Spring.prototype.getWorldAnchorA = function(result){
+    this.bodyA.pointToWorldFrame(this.localAnchorA,result);
 };
 
-Compound.prototype.computeBoundingSphereRadius = function(){
-    var r = 0.0;
-    for(var i = 0; i&lt;this.childShapes.length; i++){
-        var si = this.childShapes[i];
-        if(si.boundingSphereRadiusNeedsUpdate){
-            si.computeBoundingSphereRadius();
-        }
-        var candidate = this.childOffsets[i].norm() + si.boundingSphereRadius;
-        if(r &lt; candidate){
-            r = candidate;
-        }
-    }
-    this.boundingSphereRadius = r;
-    this.boundingSphereRadiusNeedsUpdate = false;
+/**
+ * Get the anchor point on body B, in world coordinates.
+ * @method getWorldAnchorB
+ * @param {Vec3} result The vector to store the result in.
+ */
+Spring.prototype.getWorldAnchorB = function(result){
+    this.bodyB.pointToWorldFrame(this.localAnchorB,result);
 };
 
-var aabbmaxTemp = new Vec3();
-var aabbminTemp = new Vec3();
-var childPosTemp = new Vec3();
-var childQuatTemp = new Quaternion();
-Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
-    var N=this.childShapes.length;
-    min.set(Infinity,Infinity,Infinity);
-    max.set(-Infinity,-Infinity,-Infinity);
-    // Get each axis max
-    for(var i=0; i!==N; i++){
+var applyForce_r =              new Vec3(),
+    applyForce_r_unit =         new Vec3(),
+    applyForce_u =              new Vec3(),
+    applyForce_f =              new Vec3(),
+    applyForce_worldAnchorA =   new Vec3(),
+    applyForce_worldAnchorB =   new Vec3(),
+    applyForce_ri =             new Vec3(),
+    applyForce_rj =             new Vec3(),
+    applyForce_ri_x_f =         new Vec3(),
+    applyForce_rj_x_f =         new Vec3(),
+    applyForce_tmp =            new Vec3();
 
-        // Accumulate transformation to child
-        this.childOffsets[i].copy(childPosTemp);
-        quat.vmult(childPosTemp,childPosTemp);
-        pos.vadd(childPosTemp,childPosTemp);
+/**
+ * Apply the spring force to the connected bodies.
+ * @method applyForce
+ */
+Spring.prototype.applyForce = function(){
+    var k = this.stiffness,
+        d = this.damping,
+        l = this.restLength,
+        bodyA = this.bodyA,
+        bodyB = this.bodyB,
+        r = applyForce_r,
+        r_unit = applyForce_r_unit,
+        u = applyForce_u,
+        f = applyForce_f,
+        tmp = applyForce_tmp;
 
-        quat.mult(this.childOrientations[i],childQuatTemp);
+    var worldAnchorA = applyForce_worldAnchorA,
+        worldAnchorB = applyForce_worldAnchorB,
+        ri = applyForce_ri,
+        rj = applyForce_rj,
+        ri_x_f = applyForce_ri_x_f,
+        rj_x_f = applyForce_rj_x_f;
 
-        // Get child AABB
-        this.childShapes[i].calculateWorldAABB(childPosTemp,
-                                               childQuatTemp,//this.childOrientations[i],
-                                               aabbminTemp,
-                                               aabbmaxTemp);
+    // Get world anchors
+    this.getWorldAnchorA(worldAnchorA);
+    this.getWorldAnchorB(worldAnchorB);
 
-        if(aabbminTemp.x &lt; min.x){
-            min.x = aabbminTemp.x;
-        }
-        if(aabbminTemp.y &lt; min.y){
-            min.y = aabbminTemp.y;
-        }
-        if(aabbminTemp.z &lt; min.z){
-            min.z = aabbminTemp.z;
-        }
+    // Get offset points
+    worldAnchorA.vsub(bodyA.position,ri);
+    worldAnchorB.vsub(bodyB.position,rj);
 
-        if(aabbmaxTemp.x &gt; max.x){
-            max.x = aabbmaxTemp.x;
-        }
-        if(aabbmaxTemp.y &gt; max.y){
-            max.y = aabbmaxTemp.y;
-        }
-        if(aabbmaxTemp.z &gt; max.z){
-            max.z = aabbmaxTemp.z;
-        }
-    }
+    // Compute distance vector between world anchor points
+    worldAnchorB.vsub(worldAnchorA,r);
+    var rlen = r.norm();
+    r_unit.copy(r);
+    r_unit.normalize();
+
+    // Compute relative velocity of the anchor points, u
+    bodyB.velocity.vsub(bodyA.velocity,u);
+    // Add rotational velocity
+
+    bodyB.angularVelocity.cross(rj,tmp);
+    u.vadd(tmp,u);
+    bodyA.angularVelocity.cross(ri,tmp);
+    u.vsub(tmp,u);
+
+    // F = - k * ( x - L ) - D * ( u )
+    r_unit.mult(-k*(rlen-l) - d*u.dot(r_unit), f);
+
+    // Add forces to bodies
+    bodyA.force.vsub(f,bodyA.force);
+    bodyB.force.vadd(f,bodyB.force);
+
+    // Angular force
+    ri.cross(f,ri_x_f);
+    rj.cross(f,rj_x_f);
+    bodyA.tau.vsub(ri_x_f,bodyA.tau);
+    bodyB.tau.vadd(rj_x_f,bodyB.tau);
 };
 
     </pre>
