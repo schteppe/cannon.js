@@ -2,14 +2,14 @@ var Vec3 = require("../src/math/Vec3");
 var Quaternion = require("../src/math/Quaternion");
 var Box = require('../src/shapes/Box');
 var Heightfield = require('../src/shapes/heightfield');
-var ContactGenerator = require('../src/world/ContactGenerator');
+var Narrowphase = require('../src/world/Narrowphase');
 var Sphere = require('../src/shapes/Sphere');
 var Body = require('../src/objects/Body');
 
 module.exports = {
 
     sphereSphere : function(test){
-        var cg = new ContactGenerator();
+        var cg = new Narrowphase();
         var result = [];
         var sphereShape = new Sphere(1);
 
@@ -36,7 +36,7 @@ module.exports = {
     },
 
     sphereHeightfield : function(test){
-        var cg = new ContactGenerator();
+        var cg = new Narrowphase();
         var result = [];
         var hfShape = createHeightfield();
         var sphereShape = new Sphere(0.1);

@@ -8,7 +8,7 @@ module.exports = {
     Broadphase :                    require('./collision/Broadphase'),
     Constraint :                    require('./constraints/Constraint'),
     ContactEquation :               require('./equations/ContactEquation'),
-    ContactGenerator :              require('./world/ContactGenerator'),
+    Narrowphase :                   require('./world/Narrowphase'),
     ContactMaterial :               require('./material/ContactMaterial'),
     ConvexPolyhedron :              require('./shapes/ConvexPolyhedron'),
     Cylinder :                      require('./shapes/Cylinder'),

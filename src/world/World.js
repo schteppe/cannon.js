@@ -9,7 +9,7 @@ var GSSolver = require('../solver/GSSolver');
 var Vec3Pool = require('../utils/Vec3Pool');
 var ContactEquation = require('../equations/ContactEquation');
 var FrictionEquation = require('../equations/FrictionEquation');
-var ContactGenerator = require('./ContactGenerator');
+var Narrowphase = require('./Narrowphase');
 var EventTarget = require('../utils/EventTarget');
 var ArrayCollisionMatrix = require('../collision/ArrayCollisionMatrix');
 var Material = require('../material/Material');
@@ -116,10 +116,10 @@ function World(){
     this.constraints = [];
 
     /**
-     * @property contactgen
-     * @type {ContactGenerator}
+     * @property narrowphase
+     * @type {Narrowphase}
      */
-    this.contactgen = new ContactGenerator();
+    this.narrowphase = new Narrowphase();
 
     /**
      * @property {ArrayCollisionMatrix} collisionMatrix
@@ -548,7 +548,7 @@ World.prototype.internalStep = function(dt){
     }
     contacts.length = 0;
 
-    this.contactgen.getContacts(p1,p2,
+    this.narrowphase.getContacts(p1,p2,
                                 this,
                                 contacts,
                                 oldcontacts // To be reused

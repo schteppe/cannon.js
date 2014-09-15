@@ -1,4 +1,4 @@
-module.exports = ContactGenerator;
+module.exports = Narrowphase;
 
 var Shape = require('../shapes/Shape');
 var Vec3 = require('../math/Vec3');
@@ -11,13 +11,13 @@ var ContactEquation = require('../equations/ContactEquation');
 
 /**
  * Helper class for the World. Generates ContactEquations.
- * @class ContactGenerator
+ * @class Narrowphase
  * @constructor
  * @todo Sphere-ConvexPolyhedron contacts
  * @todo Contact reduction
  * @todo  should move methods to prototype
  */
-function ContactGenerator(){
+function Narrowphase(){
 
     /**
      * Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
@@ -43,7 +43,7 @@ function ContactGenerator(){
  * @method swapResult
  * @param object r
  */
-ContactGenerator.prototype.swapResult = function(r){
+Narrowphase.prototype.swapResult = function(r){
     var temp;
     temp = r.ri;
     r.ri = r.rj;
@@ -59,7 +59,7 @@ ContactGenerator.prototype.swapResult = function(r){
  * @method reduceContacts
  * @param {Array} contacts
  */
-ContactGenerator.prototype.reduceContacts = function(contacts){
+Narrowphase.prototype.reduceContacts = function(contacts){
 
 };
 
@@ -68,7 +68,7 @@ ContactGenerator.prototype.reduceContacts = function(contacts){
  * @method makeResult
  * @return {ContactEquation}
  */
-ContactGenerator.prototype.makeResult = function(bi, bj, si, sj){
+Narrowphase.prototype.makeResult = function(bi, bj, si, sj){
     var c;
     if(this.contactPointPool.length){
         c = this.contactPointPool.pop();
@@ -99,7 +99,7 @@ var tmpQuat2 = new Quaternion();
  * @param {array} result Array to store generated contacts
  * @param {array} oldcontacts Optional. Array of reusable contact objects
  */
-ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
+Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
     // Save old contact objects
     this.contactPointPool = oldcontacts;
 
@@ -164,7 +164,7 @@ function warn(msg){
  * @param {Quaternion} qi Rotation around the center of mass
  * @param {Quaternion} qj
  */
-ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var swapped = false,
         types = Shape.types,
         SPHERE = types.SPHERE,
@@ -355,7 +355,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have only one contact in this case
     var r = this.makeResult(bi,bj,si,sj);
 
@@ -386,7 +386,7 @@ var plane_to_sphere_ortho = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have one contact in this case
     var r = this.makeResult(bi,bj,si,sj);
 
@@ -480,7 +480,7 @@ var sphereBox_side_ns2 = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var v3pool = this.v3pool;
 
     // we refer to the box as body j
@@ -698,7 +698,7 @@ var sphereConvex_sphereToWorldPoint = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var v3pool = this.v3pool;
     xi.vsub(xj,convex_to_sphere);
     var normals = sj.faceNormals;
@@ -914,7 +914,7 @@ var plane_to_corner = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     this.planeConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
 };
 
@@ -935,7 +935,7 @@ var planeConvex_projected = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.planeConvex = function(
+Narrowphase.prototype.planeConvex = function(
     result,
     planeShape,
     convexShape,
@@ -1003,7 +1003,7 @@ var convexConvex_q = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var sepAxis = convexConvex_sepAxis;
     if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
         var res = [];
@@ -1050,7 +1050,7 @@ var particlePlane_projected = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var normal = particlePlane_normal;
     normal.set(0,0,1);
     bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
@@ -1089,7 +1089,7 @@ var particleSphere_normal = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // The normal is the unit vector from sphere center to particle center
     var normal = particleSphere_normal;
     normal.set(0,0,1);
@@ -1128,7 +1128,7 @@ var particleConvex_worldPenetrationVec = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var penetratedFaceIndex = -1;
     var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
     var worldPenetrationVec = particleConvex_worldPenetrationVec;
@@ -1207,7 +1207,7 @@ var convexHeightfield_tmp2 = new Vec3();
 /**
  * @method sphereHeightfield
  */
-ContactGenerator.prototype.convexHeightfield = function (
+Narrowphase.prototype.convexHeightfield = function (
     result,
     convexShape,
     hfShape,
@@ -1283,7 +1283,7 @@ var sphereHeightfield_tmp2 = new Vec3();
 /**
  * @method sphereHeightfield
  */
-ContactGenerator.prototype.sphereHeightfield = function (
+Narrowphase.prototype.sphereHeightfield = function (
     result,
     sphereShape,
     hfShape,
