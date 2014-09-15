@@ -13,7 +13,7 @@ function ObjectCollisionMatrix() {
      * @type {Object}
      */
 	this.matrix = {};
-};
+}
 
 /**
  * @method get

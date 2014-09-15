@@ -1,8 +1,8 @@
 module.exports = FrictionEquation;
 
-var Equation = require('./Equation')
-,   Vec3 = require('../math/Vec3')
-,   Mat3 = require('../math/Mat3')
+var Equation = require('./Equation');
+var Vec3 = require('../math/Vec3');
+var Mat3 = require('../math/Mat3');
 
 /**
  * Constrains the slipping in a contact along a tangent
@@ -35,7 +35,7 @@ function FrictionEquation(bi,bj,slipForce){
 
     this.biInvInertiaTimesRixt =  new Vec3();
     this.bjInvInertiaTimesRjxt =  new Vec3();
-};
+}
 
 FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
@@ -90,18 +90,18 @@ FrictionEquation.prototype.computeB = function(h){
     // And remember, this is a pure velocity constraint, g is always zero!
     var GA = this.jacobianElementA,
         GB = this.jacobianElementB;
-    t.negate(GA.spatial)
+    t.negate(GA.spatial);
     rixt.negate(GA.rotational);
     GB.spatial.copy(t);
     GB.rotational.copy(rjxt);
 
-    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
-    else invIi_vmult_taui.set(0,0,0);
-    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
-    else invIj_vmult_tauj.set(0,0,0);
+    if(bi.invInertiaWorld){ bi.invInertiaWorld.vmult(taui,invIi_vmult_taui); }
+    else { invIi_vmult_taui.set(0,0,0); }
+    if(bj.invInertiaWorld){ bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj); }
+    else { invIj_vmult_tauj.set(0,0,0); }
 
     var GW = this.computeGW();//vj.dot(t) - vi.dot(t) + wjxrj.dot(t) - wixri.dot(t), // eq. 40
-        GiMf = this.computeGiMf();//fj.dot(t)*invMassj - fi.dot(t)*invMassi + rjxt.dot(invIj_vmult_tauj) - rixt.dot(invIi_vmult_taui);
+    var GiMf = this.computeGiMf();//fj.dot(t)*invMassj - fi.dot(t)*invMassi + rjxt.dot(invIj_vmult_tauj) - rixt.dot(invIi_vmult_taui);
 
     // we do only want to constrain velocity, so g=0
     var B = - GW * b - h*GiMf;

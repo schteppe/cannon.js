@@ -18,7 +18,7 @@ function JacobianElement(){
      * @property {Vec3} rotational
      */
     this.rotational = new Vec3();
-};
+}
 
 /**
  * Multiply with other JacobianElement

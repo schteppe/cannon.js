@@ -1,8 +1,8 @@
 module.exports = ContactEquation;
 
-var Equation = require('./Equation')
-,   Vec3 = require('../math/Vec3')
-,   Mat3 = require('../math/Mat3')
+var Equation = require('./Equation');
+var Vec3 = require('../math/Vec3');
+var Mat3 = require('../math/Mat3');
 
 /**
  * Contact/non-penetration constraint equation
@@ -116,10 +116,16 @@ ContactEquation.prototype.computeB = function(h){
 
     var invIi_vmult_taui = ContactEquation_computeB_temp1;
     var invIj_vmult_tauj = ContactEquation_computeB_temp2;
-    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
-    else invIi_vmult_taui.set(0,0,0);
-    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
-    else invIj_vmult_tauj.set(0,0,0);
+    if(bi.invInertiaWorld){
+        bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    } else {
+        invIi_vmult_taui.set(0,0,0);
+    }
+    if(bj.invInertiaWorld){
+        bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
+    } else {
+        invIj_vmult_tauj.set(0,0,0);
+    }
 
     // Compute iteration
     var ePlusOne = this.restitution+1;

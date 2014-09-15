@@ -1,6 +1,6 @@
 module.exports = Quaternion;
 
-var Vec3 = require('./Vec3')
+var Vec3 = require('./Vec3');
 
 /**
  * A Quaternion describes a rotation in 3D space. The Quaternion is mathematically defined as Q = x*i + y*j + z*k + w, where (i,j,k) are imaginary basis vectors. (x,y,z) can be seen as a vector related to the axis of rotation, while the real multiplier, w, is related to the amount of rotation.
@@ -33,7 +33,7 @@ function Quaternion(x,y,z,w){
      * @property {Number} w
      */
     this.w = w!==undefined ? w : 1;
-};
+}
 
 /**
  * Set the value of the quaternion.

@@ -1,8 +1,8 @@
 module.exports = GSSolver;
 
-var Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   Solver = require('./Solver')
+var Vec3 = require('../math/Vec3');
+var Quaternion = require('../math/Quaternion');
+var Solver = require('./Solver');
 
 /**
  * Constraint equation Gauss-Seidel solver.

@@ -1,5 +1,5 @@
-var Shape = require('../shapes/Shape')
-,   Broadphase = require('../collision/Broadphase')
+var Shape = require('../shapes/Shape');
+var Broadphase = require('../collision/Broadphase');
 
 module.exports = SAPBroadphase;
 

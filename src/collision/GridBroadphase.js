@@ -1,8 +1,8 @@
 module.exports = GridBroadphase;
 
-var Broadphase = require('./Broadphase')
-,   Vec3 = require('../math/Vec3')
-,   Shape = require('../shapes/Shape')
+var Broadphase = require('./Broadphase');
+var Vec3 = require('../math/Vec3');
+var Shape = require('../shapes/Shape');
 
 /**
  * Axis aligned uniform grid broadphase.
@@ -35,7 +35,7 @@ function GridBroadphase(aabbMin,aabbMax,nx,ny,nz){
 		this.bins[i]=[];
 		this.binLengths[i]=0;
 	}
-};
+}
 GridBroadphase.prototype = new Broadphase();
 GridBroadphase.prototype.constructor = GridBroadphase;
 
@@ -107,12 +107,12 @@ GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 			yoff1 = ceil((y1 - ymin) * ymult),
 			zoff1 = ceil((z1 - zmin) * zmult);
 
-		if (xoff0 < 0) xoff0 = 0; else if (xoff0 >= nx) xoff0 = nx - 1;
-		if (yoff0 < 0) yoff0 = 0; else if (yoff0 >= ny) yoff0 = ny - 1;
-		if (zoff0 < 0) zoff0 = 0; else if (zoff0 >= nz) zoff0 = nz - 1;
-		if (xoff1 < 0) xoff1 = 0; else if (xoff1 >= nx) xoff1 = nx - 1;
-		if (yoff1 < 0) yoff1 = 0; else if (yoff1 >= ny) yoff1 = ny - 1;
-		if (zoff1 < 0) zoff1 = 0; else if (zoff1 >= nz) zoff1 = nz - 1;
+		if (xoff0 < 0) { xoff0 = 0; } else if (xoff0 >= nx) { xoff0 = nx - 1; }
+		if (yoff0 < 0) { yoff0 = 0; } else if (yoff0 >= ny) { yoff0 = ny - 1; }
+		if (zoff0 < 0) { zoff0 = 0; } else if (zoff0 >= nz) { zoff0 = nz - 1; }
+		if (xoff1 < 0) { xoff1 = 0; } else if (xoff1 >= nx) { xoff1 = nx - 1; }
+		if (yoff1 < 0) { yoff1 = 0; } else if (yoff1 >= ny) { yoff1 = ny - 1; }
+		if (zoff1 < 0) { zoff1 = 0; } else if (zoff1 >= nz) { zoff1 = nz - 1; }
 
 		xoff0 *= xstep;
 		yoff0 *= ystep;

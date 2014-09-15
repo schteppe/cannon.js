@@ -14,6 +14,6 @@ function Material(name){
      */
     this.name = name;
     this.id = Material.idCounter++;
-};
+}
 
 Material.idCounter = 0;

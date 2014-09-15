@@ -13,7 +13,7 @@ function ArrayCollisionMatrix() {
      * @type {Array}
      */
 	this.matrix = [];
-};
+}
 
 /**
  * Get an element

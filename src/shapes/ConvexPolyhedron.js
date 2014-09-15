@@ -1,9 +1,9 @@
 module.exports = ConvexPolyhedron;
 
-var Shape = require('./Shape')
-,   Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   Transform = require('../math/Transform')
+var Shape = require('./Shape');
+var Vec3 = require('../math/Vec3');
+var Quaternion = require('../math/Quaternion');
+var Transform = require('../math/Transform');
 
 /**
  * A set of polygons describing a convex shape.
@@ -147,7 +147,7 @@ ConvexPolyhedron.prototype.computeNormals = function(){
         this.faceNormals[i] = n;
         var vertex = this.vertices[this.faces[i][0]];
         if(n.dot(vertex) < 0){
-            throw new Error(".faceNormals[" + i + "] = Vec3("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
+            console.error(".faceNormals[" + i + "] = Vec3("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
             for(var j=0; j<this.faces[i].length; j++){
                 console.warn(".vertices["+this.faces[i][j]+"] = Vec3("+this.vertices[this.faces[i][j]].toString()+")");
             }
@@ -592,8 +592,9 @@ ConvexPolyhedron.prototype.clipFaceAgainstPlane = function(inVertices,outVertice
     var n_dot_first, n_dot_last;
     var numVerts = inVertices.length;
 
-    if(numVerts < 2)
+    if(numVerts < 2){
         return outVertices;
+    }
 
     var firstVertex = inVertices[inVertices.length-1],
         lastVertex =   inVertices[0];

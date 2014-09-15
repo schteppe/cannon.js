@@ -14,6 +14,18 @@ var Box = require('../shapes/Box');
  * @class Body
  * @constructor
  * @extends EventTarget
+ * @param {object} [options]
+ * @param {Vec3} [options.position]
+ * @param {number} [options.mass]
+ * @param {number} [options.type]
+ * @param {number} [options.linearDamping]
+ * @example
+ *     var body = new Body({
+ *         mass: 1
+ *     });
+ *     var shape = new Sphere(1);
+ *     body.addShape(shape);
+ *     world.add(body);
  */
 function Body(options){
     options = options || {};
@@ -543,7 +555,7 @@ var uiw_m1 = new Mat3(),
  */
 Body.prototype.updateInertiaWorld = function(force){
     var I = this.invInertia;
-    if (I.x == I.y && I.y == I.z && !force) {
+    if (I.x === I.y && I.y === I.z && !force) {
         // If inertia M = s*I, where I is identity and s a scalar, then
         //    R*M*R' = R*(s*I)*R' = s*R*I*R' = s*R*R' = s*I = M
         // where R is the rotation matrix.

@@ -1,8 +1,8 @@
 module.exports = Box;
 
-var Shape = require('./Shape')
-,   Vec3 = require('../math/Vec3')
-,   ConvexPolyhedron = require('./ConvexPolyhedron')
+var Shape = require('./Shape');
+var Vec3 = require('../math/Vec3');
+var ConvexPolyhedron = require('./ConvexPolyhedron');
 
 /**
  * A 3d box shape.
@@ -32,7 +32,7 @@ function Box(halfExtents){
 
     this.updateConvexPolyhedronRepresentation();
     this.updateBoundingSphereRadius();
-};
+}
 Box.prototype = new Shape();
 Box.prototype.constructor = Box;
 

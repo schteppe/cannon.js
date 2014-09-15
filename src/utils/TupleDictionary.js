@@ -12,7 +12,7 @@ function TupleDictionary() {
      * @type {Object}
      */
     this.data = { keys:[] };
-};
+}
 
 /**
  * @method get
@@ -45,8 +45,9 @@ TupleDictionary.prototype.set = function(i, j, value) {
     var key = i+'-'+j;
 
     // Check if key already exists
-    if(!this.get(i,j))
+    if(!this.get(i,j)){
         this.data.keys.push(key);
+    }
 
     this.data[key] = value;
 };

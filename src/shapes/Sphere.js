@@ -1,7 +1,7 @@
 module.exports = Sphere;
 
-var Shape = require('./Shape')
-,   Vec3 = require('../math/Vec3')
+var Shape = require('./Shape');
+var Vec3 = require('../math/Vec3');
 
 /**
  * Spherical shape
@@ -21,7 +21,7 @@ function Sphere(radius){
     this.type = Shape.types.SPHERE;
 
     this.updateBoundingSphereRadius();
-};
+}
 Sphere.prototype = new Shape();
 Sphere.prototype.constructor = Sphere;
 

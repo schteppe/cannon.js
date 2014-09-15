@@ -17,7 +17,7 @@ function Pool(){
      * @property {mixed} type
      */
     this.type = Object;
-};
+}
 
 /**
  * Release an object after use

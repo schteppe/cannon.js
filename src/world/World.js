@@ -1,3 +1,5 @@
+/* global performance */
+
 module.exports = World;
 
 var Shape = require('../shapes/Shape');
@@ -354,15 +356,16 @@ World.prototype.addContactMaterial = function(cmat) {
 };
 
 // performance.now()
-if(typeof performance === 'undefined')
+if(typeof performance === 'undefined'){
     performance = {};
+}
 if(!performance.now){
     var nowOffset = Date.now();
     if (performance.timing && performance.timing.navigationStart){
-      nowOffset = performance.timing.navigationStart
+        nowOffset = performance.timing.navigationStart;
     }
     performance.now = function(){
-      return Date.now() - nowOffset;
+        return Date.now() - nowOffset;
     };
 }
 
@@ -583,10 +586,11 @@ World.prototype.internalStep = function(dt){
 
         // Get collision properties
         var cm;
-        if(bi.material && bj.material)
+        if(bi.material && bj.material){
             cm = this.getContactMaterial(bi.material,bj.material) || this.defaultContactMaterial;
-        else
+        } else {
             cm = this.defaultContactMaterial;
+        }
         var mu = cm.friction;
 
         // g = ( xj + rj - xi - ri ) .dot ( ni )

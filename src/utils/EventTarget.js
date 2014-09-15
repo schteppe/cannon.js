@@ -3,7 +3,9 @@
  * @class EventTarget
  * @constructor
  */
-var EventTarget = function () {}
+var EventTarget = function () {
+
+};
 
 module.exports = EventTarget;
 
@@ -18,7 +20,7 @@ EventTarget.prototype = {
      * @return {EventTarget} The self object, for chainability.
      */
     addEventListener: function ( type, listener ) {
-        if ( this._listeners === undefined ) this._listeners = {};
+        if ( this._listeners === undefined ){ this._listeners = {}; }
         var listeners = this._listeners;
         if ( listeners[ type ] === undefined ) {
             listeners[ type ] = [];
@@ -37,7 +39,7 @@ EventTarget.prototype = {
      * @return {Boolean}
      */
     hasEventListener: function ( type, listener ) {
-        if ( this._listeners === undefined ) return false;
+        if ( this._listeners === undefined ){ return false; }
         var listeners = this._listeners;
         if ( listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1 ) {
             return true;
@@ -53,9 +55,9 @@ EventTarget.prototype = {
      * @return {EventTarget} The self object, for chainability.
      */
     removeEventListener: function ( type, listener ) {
-        if ( this._listeners === undefined ) return this;
+        if ( this._listeners === undefined ){ return this; }
         var listeners = this._listeners;
-        if ( listeners[type] === undefined ) return this;
+        if ( listeners[type] === undefined ){ return this; }
         var index = listeners[ type ].indexOf( listener );
         if ( index !== - 1 ) {
             listeners[ type ].splice( index, 1 );
@@ -71,7 +73,7 @@ EventTarget.prototype = {
      * @return {EventTarget} The self object, for chainability.
      */
     dispatchEvent: function ( event ) {
-        if ( this._listeners === undefined ) return this;
+        if ( this._listeners === undefined ){ return this; }
         var listeners = this._listeners;
         var listenerArray = listeners[ event.type ];
         if ( listenerArray !== undefined ) {

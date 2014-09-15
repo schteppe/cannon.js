@@ -1,6 +1,6 @@
 module.exports = Mat3;
 
-var Vec3 = require('./Vec3')
+var Vec3 = require('./Vec3');
 
 /**
  * A 3x3 matrix.
@@ -19,7 +19,7 @@ function Mat3(elements){
     } else {
         this.elements = [0,0,0,0,0,0,0,0,0];
     }
-};
+}
 
 /**
  * Sets the matrix to identity

@@ -1,7 +1,6 @@
 {
     // environments
     "node" : true,
-    "es5" : true,
     "browser" : true,
 
     // options

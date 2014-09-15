@@ -1,8 +1,8 @@
 module.exports = RotationalEquation;
 
-var Vec3 = require('../math/Vec3')
-,   Mat3 = require('../math/Mat3')
-,   Equation = require('./Equation')
+var Vec3 = require('../math/Vec3');
+var Mat3 = require('../math/Mat3');
+var Equation = require('./Equation');
 
 /**
  * Rotational constraint. Works to keep the local vectors orthogonal to each other.
@@ -28,7 +28,7 @@ function RotationalEquation(bodyA, bodyB){
 
     this.relVel = new Vec3();
     this.relForce = new Vec3();
-};
+}
 
 RotationalEquation.prototype = new Equation();
 RotationalEquation.prototype.constructor = RotationalEquation;

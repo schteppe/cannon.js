@@ -10,13 +10,13 @@ module.exports = Spring;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {number} options.restLength   A number > 0. Default: 1
- * @param {number} options.stiffness    A number >= 0. Default: 100
- * @param {number} options.damping      A number >= 0. Default: 1
- * @param {Array}  options.worldAnchorA Where to hook the spring to body A, in world coordinates.
- * @param {Array}  options.worldAnchorB
- * @param {Array}  options.localAnchorA Where to hook the spring to body A, in local body coordinates.
- * @param {Array}  options.localAnchorB
+ * @param {number} [options.restLength]   A number > 0. Default: 1
+ * @param {number} [options.stiffness]    A number >= 0. Default: 100
+ * @param {number} [options.damping]      A number >= 0. Default: 1
+ * @param {Vec3}  [options.worldAnchorA] Where to hook the spring to body A, in world coordinates.
+ * @param {Vec3}  [options.worldAnchorB]
+ * @param {Vec3}  [options.localAnchorA] Where to hook the spring to body A, in local body coordinates.
+ * @param {Vec3}  [options.localAnchorB]
  */
 function Spring(bodyA,bodyB,options){
     options = options || {};
@@ -70,15 +70,19 @@ function Spring(bodyA,bodyB,options){
      */
     this.localAnchorB = new Vec3();
 
-    if(options.localAnchorA) this.localAnchorA.set( options.localAnchorA.x,
-                                                    options.localAnchorA.y,
-                                                    options.localAnchorA.z);
-    if(options.localAnchorB) this.localAnchorB.set( options.localAnchorB.x,
-                                                    options.localAnchorB.y,
-                                                    options.localAnchorB.z);
-    if(options.worldAnchorA) this.setWorldAnchorA(options.worldAnchorA);
-    if(options.worldAnchorB) this.setWorldAnchorB(options.worldAnchorB);
-};
+    if(options.localAnchorA){
+        this.localAnchorA.copy(options.localAnchorA);
+    }
+    if(options.localAnchorB){
+        this.localAnchorB.copy(options.localAnchorB.x);
+    }
+    if(options.worldAnchorA){
+        this.setWorldAnchorA(options.worldAnchorA);
+    }
+    if(options.worldAnchorB){
+        this.setWorldAnchorB(options.worldAnchorB);
+    }
+}
 
 /**
  * Set the anchor point on body A, using world coordinates.

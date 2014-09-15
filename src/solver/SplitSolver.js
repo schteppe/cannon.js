@@ -1,9 +1,9 @@
 module.exports = SplitSolver;
 
-var Vec3 = require('../math/Vec3')
-,   Quaternion = require('../math/Quaternion')
-,   Solver = require('./Solver')
-,   Body = require('../objects/Body')
+var Vec3 = require('../math/Vec3');
+var Quaternion = require('../math/Quaternion');
+var Solver = require('./Solver');
+var Body = require('../objects/Body');
 
 /**
  * Splits the equations into islands and solves them independently. Can improve performance.
@@ -15,7 +15,7 @@ var Vec3 = require('../math/Vec3')
 function SplitSolver(subsolver){
     Solver.call(this);
     this.subsolver = subsolver;
-};
+}
 SplitSolver.prototype = new Solver();
 
 // Returns the number of subsystems

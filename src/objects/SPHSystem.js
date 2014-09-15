@@ -143,7 +143,7 @@ SPHSystem.prototype.update = function(){
             Pij = -neighbor.mass * (this.pressures[i] / (this.densities[i]*this.densities[i] + eps) + this.pressures[j] / (this.densities[j]*this.densities[j] + eps));
             this.gradw(r_vec, gradW);
             // Add to pressure acceleration
-            gradW.mult(Pij , gradW)
+            gradW.mult(Pij , gradW);
             a_pressure.vadd(gradW, a_pressure);
 
             // Viscosity contribution
