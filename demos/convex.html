@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>cannon.js - convex hull demo</title>
+    <title>cannon.js - convex demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
   </head>
@@ -11,7 +11,6 @@
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
     <script src="../libs/TrackballControls.js"></script>
-    <script src="../libs/ConvexGeometry.js"></script>
     <script src="../libs/Detector.js"></script>
     <script src="../libs/Stats.js"></script>
     <script src="../libs/smoothie.js"></script>
@@ -58,10 +57,10 @@
           var world = setupWorld(demo);
           // ConvexPolyhedron box shape
           var size = 0.5;
-          var hullShape = createBoxPolyhedron(size);
+          var convexShape = createBoxPolyhedron(size);
           var mass = 10;
           var boxbody = new CANNON.Body({ mass: mass });
-          boxbody.addShape(hullShape);
+          boxbody.addShape(convexShape);
           boxbody.position.set(1,0,size+1);
           world.add(boxbody);
           demo.addVisual(boxbody);
@@ -94,16 +93,16 @@
 
 
       // Box on box tilting over
-      demo.addScene("Hull on hull",function(){
+      demo.addScene("convex on convex",function(){
           var world = setupWorld(demo);
           // ConvexPolyhedron box shape
           var size = 2;
-          var hullShape = createBoxPolyhedron(size);
+          var convexShape = createBoxPolyhedron(size);
           var mass = 10;
           var boxbody1 = new CANNON.Body({ mass: mass });
-          boxbody1.addShape(hullShape);
+          boxbody1.addShape(convexShape);
           var boxbody2 = new CANNON.Body({ mass: mass });
-          boxbody2.addShape(hullShape);
+          boxbody2.addShape(convexShape);
           boxbody1.position.set(0,0,size+1);
           boxbody2.position.set(1.5,0,4*size+1);
           world.add(boxbody1);
@@ -113,16 +112,16 @@
         });
 
       // Pile of boxes
-      demo.addScene("Hull wall",function(){
+      demo.addScene("convex wall",function(){
           var world = setupWorld(demo);
           // ConvexPolyhedron box shape
           var size = 1;
-          var hullShape = createBoxPolyhedron(size);
+          var convexShape = createBoxPolyhedron(size);
           var mass = 10;
           for(var i=0; i<3; i++){
           for(var j=0; j<3; j++){
               var boxbody = new CANNON.Body({ mass: mass });
-              boxbody.addShape(hullShape);
+              boxbody.addShape(convexShape);
               boxbody.position.set(2*size*i+0.01,0,2*size*j + size*1.2);
               world.add(boxbody);
               demo.addVisual(boxbody);
