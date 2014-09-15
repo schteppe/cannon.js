@@ -1,3 +1,5 @@
+/* global CANNON,THREE,Detector */
+
 CANNON = CANNON || {};
 
 /**
@@ -39,7 +41,7 @@ CANNON.Demo = function(options){
         normals: false, // contact normals
         axes: false, // "local" frame axes
         particleSize: 0.1,
-        shadows: true,
+        shadows: false,
         aabbs: false,
         profiling: false,
         maxSubSteps:3
@@ -87,7 +89,7 @@ CANNON.Demo = function(options){
         geometry.vertices.push(new THREE.Vector3(1,1,1));
         return new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xff0000 } ) );
     });
-    var bboxGeometry = new THREE.CubeGeometry(1,1,1);
+    var bboxGeometry = new THREE.BoxGeometry(1,1,1);
     var bboxMaterial = new THREE.MeshBasicMaterial({
         color: materialColor,
         wireframe:true
@@ -233,11 +235,11 @@ CANNON.Demo = function(options){
         var N = bodies.length;
         for(var i=0; i<N; i++){
             var b = bodies[i];
-            b.initPosition.copy(b.position);
-            b.initVelocity.copy(b.velocity);
+            b.position.copy(b.initPosition);
+            b.velocity.copy(b.initVelocity);
             if(b.initAngularVelocity){
-                b.initAngularVelocity.copy(b.angularVelocity);
-                b.initQuaternion.copy(b.quaternion);
+                b.angularVelocity.copy(b.initAngularVelocity);
+                b.quaternion.copy(b.initQuaternion);
             }
         }
     }
@@ -261,9 +263,9 @@ CANNON.Demo = function(options){
         // Read position data into visuals
         for(var i=0; i<N; i++){
             var b = bodies[i], visual = visuals[i];
-            b.position.copy(visual.position);
+            visual.position.copy(b.position);
             if(b.quaternion){
-                b.quaternion.copy(visual.quaternion);
+                visual.quaternion.copy(b.quaternion);
             }
         }
 
@@ -294,7 +296,7 @@ CANNON.Demo = function(options){
                         r = ij===0 ? c.ri : c.rj;
                     line.scale.set( r.x, r.y, r.z);
                     makeSureNotZero(line.scale);
-                    b.position.copy(line.position);
+                    line.position.copy(b.position);
                 }
             }
         }
@@ -326,7 +328,7 @@ CANNON.Demo = function(options){
                                 v.y-bi.position.y,
                                 v.z-bi.position.z );
                 makeSureNotZero(line.scale);
-                bi.position.copy(line.position);
+                line.position.copy(bi.position);
             }
 
 
@@ -346,8 +348,8 @@ CANNON.Demo = function(options){
                 makeSureNotZero(relLine1.scale);
                 makeSureNotZero(relLine2.scale);
                 makeSureNotZero(diffLine.scale);
-                bi.position.copy(relLine1.position);
-                bj.position.copy(relLine2.position);
+                relLine1.position.copy(bi.position);
+                relLine2.position.copy(bj.position);
                 n.bj.position.vadd(n.rj,diffLine.position);
             }
         }
@@ -365,7 +367,7 @@ CANNON.Demo = function(options){
                 var b = bi;
                 line.scale.set(n.x,n.y,n.z);
                 makeSureNotZero(line.scale);
-                b.position.copy(line.position);
+                line.position.copy(b.position);
                 c.ri.vadd(line.position,line.position);
             }
         }
@@ -376,9 +378,10 @@ CANNON.Demo = function(options){
         if(settings.axes){
             for(var bi=0; bi<bodies.length; bi++){
                 var b = bodies[bi], mesh=axesMeshCache.request();
-                b.position.copy(mesh.position);
-                if(b.quaternion)
-                    b.quaternion.copy(mesh.quaternion);
+                mesh.position.copy(b.position);
+                if(b.quaternion){
+                    mesh.quaternion.copy(b.quaternion);
+                }
             }
         }
         axesMeshCache.hideCached();
@@ -418,8 +421,9 @@ CANNON.Demo = function(options){
         bboxMeshCache.hideCached();
     }
 
-    if ( ! Detector.webgl )
+    if (!Detector.webgl){
         Detector.addGetWebGLMessage();
+    }
 
     var SHADOW_MAP_WIDTH = 512;
     var SHADOW_MAP_HEIGHT = 512;
@@ -626,8 +630,9 @@ CANNON.Demo = function(options){
             wf.add(settings, 'stepFrequency',60,60*10).step(60);
             var maxg = 100;
             wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){
-                if(!isNaN(gx))
+                if(!isNaN(gx)){
                     world.gravity.set(gx,settings.gy,settings.gz);
+                }
             });
             wf.add(settings, 'gy',-maxg,maxg).onChange(function(gy){
                 if(!isNaN(gy))
@@ -829,8 +834,9 @@ CANNON.Demo = function(options){
             that.scene.remove(mesh);
         }
         // Remove all constraints
-        while(world.constraints.length)
+        while(world.constraints.length){
             world.removeConstraint(world.constraints[0]);
+        }
 
         // Run the user defined "build scene" function
         scenes[n]();
@@ -845,7 +851,7 @@ CANNON.Demo = function(options){
         updategui();
 
         restartGeometryCaches();
-    };
+    }
 
 
     function GeometryCache(createFunc){
@@ -862,16 +868,18 @@ CANNON.Demo = function(options){
         };
 
         this.restart = function(){
-            while(gone.length)
+            while(gone.length){
                 geometries.push(gone.pop());
+            }
         };
 
         this.hideCached = function(){
-            for(var i=0; i<geometries.length; i++)
+            for(var i=0; i<geometries.length; i++){
                 scene.remove(geometries[i]);
-        }
+            }
+        };
     }
-}
+};
 
 CANNON.Demo.prototype.setGlobalSpookParams = function(k,d,h){
     var world = this.world;
@@ -898,7 +906,7 @@ CANNON.Demo.prototype.setGlobalSpookParams = function(k,d,h){
     world.defaultContactMaterial.frictionEquationStiffness = k;
     world.defaultContactMaterial.contactEquationRelaxation = d;
     world.defaultContactMaterial.frictionEquationRelaxation = d;
-}
+};
 
 CANNON.Demo.prototype.getWorld = function(){
     return this.world;
@@ -958,6 +966,8 @@ CANNON.Demo.prototype.shape2mesh = function(body){
     for (var l = 0; l < body.shapes.length; l++) {
         var shape = body.shapes[l];
 
+        var mesh;
+
         switch(shape.type){
 
         case CANNON.Shape.types.SPHERE:
@@ -972,11 +982,11 @@ CANNON.Demo.prototype.shape2mesh = function(body){
             break;
 
         case CANNON.Shape.types.PLANE:
-            var geometry = new THREE.PlaneGeometry( 10, 10 , 4 , 4 );
+            var geometry = new THREE.PlaneGeometry(10, 10, 4, 4);
             mesh = new THREE.Object3D();
             var submesh = new THREE.Object3D();
             var ground = new THREE.Mesh( geometry, this.currentMaterial );
-            ground.scale = new THREE.Vector3(100,100,100);
+            ground.scale.set(100, 100, 100);
             submesh.add(ground);
 
             ground.castShadow = true;
@@ -986,43 +996,32 @@ CANNON.Demo.prototype.shape2mesh = function(body){
             break;
 
         case CANNON.Shape.types.BOX:
-            var box_geometry = new THREE.CubeGeometry(  shape.halfExtents.x*2,
+            var box_geometry = new THREE.BoxGeometry(  shape.halfExtents.x*2,
                                                         shape.halfExtents.y*2,
                                                         shape.halfExtents.z*2 );
             mesh = new THREE.Mesh( box_geometry, this.currentMaterial );
             break;
 
         case CANNON.Shape.types.CONVEXPOLYHEDRON:
-            var verts = [];
-            for(var i=0; i<shape.vertices.length; i++){
-                verts.push(
-                    new THREE.Vector3(
-                        shape.vertices[i].x,
-                        shape.vertices[i].y,
-                        shape.vertices[i].z
-                    )
-                );
+            var geo = new THREE.Geometry();
+
+            // Add vertices
+            for (var i = 0; i < shape.vertices.length; i++) {
+                var v = shape.vertices[i];
+                geo.vertices.push(new THREE.Vector3(v.x, v.y, v.z));
             }
-            var geo = new THREE.ConvexGeometry( verts );
 
-            // var geo = new THREE.Geometry();
-            // for(var i=0; i < shape.faces.length; i++){
-            //     var face = shape.faces[i];
+            for(var i=0; i < shape.faces.length; i++){
+                var face = shape.faces[i];
 
-            //     // add triangles
-            //     for (var j = 0; j < face.length - 2; j++) {
-            //         var v0 = shape.vertices[face[j]];
-            //         var v1 = shape.vertices[face[j + 1]];
-            //         var v2 = shape.vertices[face[j + 2]];
-            //         geo.vertices.push(
-            //             new THREE.Vector3(v0.x, v0.y, v0.z),
-            //             new THREE.Vector3(v1.x, v1.y, v1.z),
-            //             new THREE.Vector3(v2.x, v2.y, v2.z)
-            //         );
-            //         var k = geo.vertices.length - 3;
-            //         geo.faces.push(new THREE.Face3(k, k+1, k+2));
-            //     }
-            // }
+                // add triangles
+                var a = face[0];
+                for (var j = 1; j < face.length - 1; j++) {
+                    var b = face[j];
+                    var c = face[j + 1];
+                    geo.faces.push(new THREE.Face3(a, b, c));
+                }
+            }
             geo.computeBoundingSphere();
             geo.computeFaceNormals();
             mesh = new THREE.Mesh( geo, this.currentMaterial );
@@ -1038,9 +1037,9 @@ CANNON.Demo.prototype.shape2mesh = function(body){
                 for (var yi = 0; yi < shape.data[xi].length - 1; yi++) {
                     for (var k = 0; k < 2; k++) {
                         shape.getConvexTrianglePillar(xi, yi, k===0);
-                        shape.pillarConvex.vertices[0].copy(v0);
-                        shape.pillarConvex.vertices[1].copy(v1);
-                        shape.pillarConvex.vertices[2].copy(v2);
+                        v0.copy(shape.pillarConvex.vertices[0]);
+                        v1.copy(shape.pillarConvex.vertices[1]);
+                        v2.copy(shape.pillarConvex.vertices[2]);
                         v0.vadd(shape.pillarOffset, v0);
                         v1.vadd(shape.pillarOffset, v1);
                         v2.vadd(shape.pillarOffset, v2);
@@ -1058,28 +1057,6 @@ CANNON.Demo.prototype.shape2mesh = function(body){
             geometry.computeFaceNormals();
             mesh = new THREE.Mesh(geometry, this.currentMaterial);
             break;
-
-        /*
-        case CANNON.Shape.types.COMPOUND:
-            // recursive compounds
-            var o3d = new THREE.Object3D();
-            for(var i = 0; i<shape.childShapes.length; i++){
-
-                // Get child information
-                var subshape = shape.childShapes[i];
-                var o = shape.childOffsets[i];
-                var q = shape.childOrientations[i];
-
-                var submesh = this.shape2mesh(subshape);
-                submesh.position.set(o.x,o.y,o.z);
-                submesh.quaternion.set(q.x,q.y,q.z,q.w);
-
-                //submesh.useQuaternion = true;
-                o3d.add(submesh);
-                mesh = o3d;
-            }
-            break;
-        */
 
         default:
             throw "Visual type not recognized: "+shape.type;

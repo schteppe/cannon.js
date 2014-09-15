@@ -76,10 +76,9 @@ module.exports = {
     Body :                          _dereq_('./objects/Body'),
     Box :                           _dereq_('./shapes/Box'),
     Broadphase :                    _dereq_('./collision/Broadphase'),
-    Compound :                      _dereq_('./shapes/Compound'),
     Constraint :                    _dereq_('./constraints/Constraint'),
     ContactEquation :               _dereq_('./equations/ContactEquation'),
-    ContactGenerator :              _dereq_('./world/ContactGenerator'),
+    Narrowphase :                   _dereq_('./world/Narrowphase'),
     ContactMaterial :               _dereq_('./material/ContactMaterial'),
     ConvexPolyhedron :              _dereq_('./shapes/ConvexPolyhedron'),
     Cylinder :                      _dereq_('./shapes/Cylinder'),
@@ -117,7 +116,7 @@ module.exports = {
     World :                         _dereq_('./world/World'),
 };
 
-},{"../package.json":1,"./collision/ArrayCollisionMatrix":4,"./collision/Broadphase":5,"./collision/GridBroadphase":6,"./collision/NaiveBroadphase":7,"./collision/ObjectCollisionMatrix":8,"./collision/Ray":9,"./collision/SAPBroadphase":11,"./constraints/Constraint":12,"./constraints/DistanceConstraint":13,"./constraints/HingeConstraint":14,"./constraints/PointToPointConstraint":15,"./equations/ContactEquation":16,"./equations/Equation":17,"./equations/FrictionEquation":18,"./equations/RotationalEquation":19,"./equations/RotationalMotorEquation":20,"./material/ContactMaterial":21,"./material/Material":22,"./math/Mat3":24,"./math/Quaternion":25,"./math/Vec3":27,"./objects/Body":28,"./objects/RaycastVehicle":29,"./objects/RigidVehicle":30,"./objects/SPHSystem":31,"./objects/Spring":32,"./shapes/Box":34,"./shapes/Compound":35,"./shapes/ConvexPolyhedron":36,"./shapes/Cylinder":37,"./shapes/Heightfield":38,"./shapes/Particle":39,"./shapes/Plane":40,"./shapes/Shape":41,"./shapes/Sphere":42,"./solver/GSSolver":43,"./solver/Solver":44,"./solver/SplitSolver":45,"./utils/EventTarget":46,"./utils/Pool":47,"./utils/Vec3Pool":50,"./world/ContactGenerator":51,"./world/World":52}],3:[function(_dereq_,module,exports){
+},{"../package.json":1,"./collision/ArrayCollisionMatrix":4,"./collision/Broadphase":5,"./collision/GridBroadphase":6,"./collision/NaiveBroadphase":7,"./collision/ObjectCollisionMatrix":8,"./collision/Ray":9,"./collision/SAPBroadphase":11,"./constraints/Constraint":12,"./constraints/DistanceConstraint":13,"./constraints/HingeConstraint":14,"./constraints/PointToPointConstraint":15,"./equations/ContactEquation":16,"./equations/Equation":17,"./equations/FrictionEquation":18,"./equations/RotationalEquation":19,"./equations/RotationalMotorEquation":20,"./material/ContactMaterial":21,"./material/Material":22,"./math/Mat3":24,"./math/Quaternion":25,"./math/Vec3":27,"./objects/Body":28,"./objects/RaycastVehicle":29,"./objects/RigidVehicle":30,"./objects/SPHSystem":31,"./objects/Spring":32,"./shapes/Box":34,"./shapes/ConvexPolyhedron":35,"./shapes/Cylinder":36,"./shapes/Heightfield":37,"./shapes/Particle":38,"./shapes/Plane":39,"./shapes/Shape":40,"./shapes/Sphere":41,"./solver/GSSolver":42,"./solver/Solver":43,"./solver/SplitSolver":44,"./utils/EventTarget":45,"./utils/Pool":46,"./utils/Vec3Pool":49,"./world/Narrowphase":50,"./world/World":51}],3:[function(_dereq_,module,exports){
 var Vec3 = _dereq_('../math/Vec3');
 var Utils = _dereq_('../utils/Utils');
 
@@ -141,7 +140,7 @@ function AABB(options){
      */
     this.lowerBound = new Vec3();
     if(options.lowerBound){
-        options.lowerBound.copy(this.lowerBound);
+        this.lowerBound.copy(options.lowerBound);
     }
 
     /**
@@ -151,7 +150,7 @@ function AABB(options){
      */
     this.upperBound = new Vec3();
     if(options.upperBound){
-        options.upperBound.copy(this.upperBound);
+        this.upperBound.copy(options.upperBound);
     }
 }
 
@@ -169,11 +168,11 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
         q = quaternion;
 
     // Set to the first point
-    points[0].copy(l);
+    l.copy(points[0]);
     if(q){
         q.vmult(l, l);
     }
-    l.copy(u);
+    u.copy(l);
 
     for(var i = 1; i<points.length; i++){
         var p = points[i];
@@ -214,8 +213,8 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
  */
 AABB.prototype.copy = function(aabb){
     // vectors copy is the other direction... bad!
-    aabb.lowerBound.copy(this.lowerBound);
-    aabb.upperBound.copy(this.upperBound);
+    this.lowerBound.copy(aabb.lowerBound);
+    this.upperBound.copy(aabb.upperBound);
 };
 
 /**
@@ -271,7 +270,7 @@ AABB.prototype.overlaps = function(aabb){
            ((l2.y <= u1.y && u1.y <= u2.y) || (l1.y <= u2.y && u2.y <= u1.y));
 };
 
-},{"../math/Vec3":27,"../utils/Utils":49}],4:[function(_dereq_,module,exports){
+},{"../math/Vec3":27,"../utils/Utils":48}],4:[function(_dereq_,module,exports){
 module.exports = ArrayCollisionMatrix;
 
 /**
@@ -287,7 +286,7 @@ function ArrayCollisionMatrix() {
      * @type {Array}
      */
 	this.matrix = [];
-};
+}
 
 /**
  * Get an element
@@ -561,17 +560,18 @@ Broadphase.prototype.aabbQuery = function(world, aabb){
     console.warn('.aabbQuery is not implemented in this Broadphase subclass.');
     return [];
 };
-},{"../math/Quaternion":25,"../math/Vec3":27,"../objects/Body":28,"../shapes/Plane":40,"../shapes/Shape":41}],6:[function(_dereq_,module,exports){
+},{"../math/Quaternion":25,"../math/Vec3":27,"../objects/Body":28,"../shapes/Plane":39,"../shapes/Shape":40}],6:[function(_dereq_,module,exports){
 module.exports = GridBroadphase;
 
-var Broadphase = _dereq_('./Broadphase')
-,   Vec3 = _dereq_('../math/Vec3')
-,   Shape = _dereq_('../shapes/Shape')
+var Broadphase = _dereq_('./Broadphase');
+var Vec3 = _dereq_('../math/Vec3');
+var Shape = _dereq_('../shapes/Shape');
 
 /**
  * Axis aligned uniform grid broadphase.
  * @class GridBroadphase
- * @extends {Broadphase}
+ * @constructor
+ * @extends Broadphase
  * @todo Needs support for more than just planes and spheres.
  * @param {Vec3} aabbMin
  * @param {Vec3} aabbMax
@@ -598,7 +598,7 @@ function GridBroadphase(aabbMin,aabbMax,nx,ny,nz){
 		this.bins[i]=[];
 		this.binLengths[i]=0;
 	}
-};
+}
 GridBroadphase.prototype = new Broadphase();
 GridBroadphase.prototype.constructor = GridBroadphase;
 
@@ -670,12 +670,12 @@ GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
 			yoff1 = ceil((y1 - ymin) * ymult),
 			zoff1 = ceil((z1 - zmin) * zmult);
 
-		if (xoff0 < 0) xoff0 = 0; else if (xoff0 >= nx) xoff0 = nx - 1;
-		if (yoff0 < 0) yoff0 = 0; else if (yoff0 >= ny) yoff0 = ny - 1;
-		if (zoff0 < 0) zoff0 = 0; else if (zoff0 >= nz) zoff0 = nz - 1;
-		if (xoff1 < 0) xoff1 = 0; else if (xoff1 >= nx) xoff1 = nx - 1;
-		if (yoff1 < 0) yoff1 = 0; else if (yoff1 >= ny) yoff1 = ny - 1;
-		if (zoff1 < 0) zoff1 = 0; else if (zoff1 >= nz) zoff1 = nz - 1;
+		if (xoff0 < 0) { xoff0 = 0; } else if (xoff0 >= nx) { xoff0 = nx - 1; }
+		if (yoff0 < 0) { yoff0 = 0; } else if (yoff0 >= ny) { yoff0 = ny - 1; }
+		if (zoff0 < 0) { zoff0 = 0; } else if (zoff0 >= nz) { zoff0 = nz - 1; }
+		if (xoff1 < 0) { xoff1 = 0; } else if (xoff1 >= nx) { xoff1 = nx - 1; }
+		if (yoff1 < 0) { yoff1 = 0; } else if (yoff1 >= ny) { yoff1 = ny - 1; }
+		if (zoff1 < 0) { zoff1 = 0; } else if (zoff1 >= nz) { zoff1 = nz - 1; }
 
 		xoff0 *= xstep;
 		yoff0 *= ystep;
@@ -790,7 +790,7 @@ GridBroadphase.prototype.collisionPairs = function(world,pairs1,pairs2){
     this.makePairsUnique(pairs1,pairs2);
 };
 
-},{"../math/Vec3":27,"../shapes/Shape":41,"./Broadphase":5}],7:[function(_dereq_,module,exports){
+},{"../math/Vec3":27,"../shapes/Shape":40,"./Broadphase":5}],7:[function(_dereq_,module,exports){
 module.exports = NaiveBroadphase;
 
 var Broadphase = _dereq_('./Broadphase');
@@ -801,7 +801,7 @@ var AABB = _dereq_('./AABB');
  * @class NaiveBroadphase
  * @constructor
  * @description The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
- * @extends {Broadphase}
+ * @extends Broadphase
  */
 function NaiveBroadphase(){
     Broadphase.apply(this);
@@ -878,7 +878,7 @@ function ObjectCollisionMatrix() {
      * @type {Object}
      */
 	this.matrix = {};
-};
+}
 
 /**
  * @method get
@@ -950,6 +950,7 @@ var AABB = _dereq_('../collision/AABB');
 /**
  * A line in 3D space that intersects bodies and return points.
  * @class Ray
+ * @constructor
  * @param {Vec3} from
  * @param {Vec3} to
  */
@@ -1306,7 +1307,7 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
         // note: this works regardless of the direction of the face normal
 
         // Get plane point in world coordinates...
-        vertices[face[0]].copy(vector);
+        vector.copy(vertices[face[0]]);
         q.vmult(vector,vector);
         vector.vadd(x,vector);
 
@@ -1339,14 +1340,14 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
             intersectPoint.vadd(from,intersectPoint);
 
             // a is the point we compare points b and c with.
-            vertices[face[0]].copy(a);
+            a.copy(vertices[face[0]]);
             q.vmult(a,a);
             x.vadd(a,a);
 
             for(var i = 1; i < face.length - 1; i++){
                 // Transform 3 vertices to world coords
-                vertices[ face[i] ].copy(b);
-                vertices[ face[i+1] ].copy(c);
+                b.copy(vertices[face[i]]);
+                c.copy(vertices[face[i+1]]);
                 q.vmult(b,b);
                 q.vmult(c,c);
                 x.vadd(b,b);
@@ -1360,8 +1361,8 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
 
                 if(minDist === -1 || distance < minDist){
                     minDist = distance;
-                    normal.copy(minDistNormal);
-                    intersectPoint.copy(minDistIntersect);
+                    minDistNormal.copy(normal);
+                    minDistIntersect.copy(intersectPoint);
                 }
             }
         }
@@ -1436,7 +1437,7 @@ function distanceFromIntersection(from, direction, position) {
 }
 
 
-},{"../collision/AABB":3,"../collision/RaycastResult":10,"../math/Quaternion":25,"../math/Transform":26,"../math/Vec3":27,"../shapes/Box":34,"../shapes/ConvexPolyhedron":36,"../shapes/Shape":41}],10:[function(_dereq_,module,exports){
+},{"../collision/AABB":3,"../collision/RaycastResult":10,"../math/Quaternion":25,"../math/Transform":26,"../math/Vec3":27,"../shapes/Box":34,"../shapes/ConvexPolyhedron":35,"../shapes/Shape":40}],10:[function(_dereq_,module,exports){
 var Vec3 = _dereq_('../math/Vec3');
 
 module.exports = RaycastResult;
@@ -1472,17 +1473,17 @@ RaycastResult.prototype.set = function(
 	body,
 	distance
 ){
-	rayFromWorld.copy(this.rayFromWorld);
-	rayToWorld.copy(this.rayToWorld);
-	hitNormalWorld.copy(this.hitNormalWorld);
-	hitPointWorld.copy(this.hitPointWorld);
+	this.rayFromWorld.copy(rayFromWorld);
+	this.rayToWorld.copy(rayToWorld);
+	this.hitNormalWorld.copy(hitNormalWorld);
+	this.hitPointWorld.copy(hitPointWorld);
 	this.shape = shape;
 	this.body = body;
 	this.distance = distance;
 };
 },{"../math/Vec3":27}],11:[function(_dereq_,module,exports){
-var Shape = _dereq_('../shapes/Shape')
-,   Broadphase = _dereq_('../collision/Broadphase')
+var Shape = _dereq_('../shapes/Shape');
+var Broadphase = _dereq_('../collision/Broadphase');
 
 module.exports = SAPBroadphase;
 
@@ -1491,6 +1492,7 @@ module.exports = SAPBroadphase;
  *
  * @class SAPBroadphase
  * @constructor
+ * @param {World} world
  * @extends Broadphase
  */
 function SAPBroadphase(world){
@@ -1792,7 +1794,7 @@ SAPBroadphase.prototype.aabbQuery = function(world, aabb, result){
 
     return result;
 };
-},{"../collision/Broadphase":5,"../shapes/Shape":41}],12:[function(_dereq_,module,exports){
+},{"../collision/Broadphase":5,"../shapes/Shape":40}],12:[function(_dereq_,module,exports){
 module.exports = Constraint;
 
 var Utils = _dereq_('../utils/Utils');
@@ -1801,6 +1803,7 @@ var Utils = _dereq_('../utils/Utils');
  * Constraint base class
  * @class Constraint
  * @author schteppe
+ * @constructor
  * @param {Body} bodyA
  * @param {Body} bodyB
  */
@@ -1858,7 +1861,7 @@ Constraint.prototype.update = function(){
 
 Constraint.idCounter = 0;
 
-},{"../utils/Utils":49}],13:[function(_dereq_,module,exports){
+},{"../utils/Utils":48}],13:[function(_dereq_,module,exports){
 module.exports = DistanceConstraint;
 
 var Constraint = _dereq_('./Constraint');
@@ -1867,11 +1870,13 @@ var ContactEquation = _dereq_('../equations/ContactEquation');
 /**
  * Constrains two bodies to be at a constant distance from each other.
  * @class DistanceConstraint
+ * @constructor
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Number} distance
  * @param {Number} maxForce
+ * @extends Constraint
  */
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
@@ -1914,6 +1919,7 @@ var Vec3 = _dereq_('../math/Vec3');
 /**
  * Hinge constraint. Tries to keep the local body axes equal.
  * @class HingeConstraint
+ * @constructor
  * @author schteppe
  * @param {RigidBody} bodyA
  * @param {RigidBody} bodyB
@@ -1923,6 +1929,7 @@ var Vec3 = _dereq_('../math/Vec3');
  * @param {Vec3} [options.pivotB]
  * @param {Vec3} [options.axisB]
  * @param {Number} [options.maxForce=1e6]
+ * @extends Constraint
  */
 function HingeConstraint(bodyA, bodyB, options){ // bodyA, pivotA, axisA, bodyB, pivotB, axisB, maxForce
     Constraint.call(this, bodyA, bodyB, options);
@@ -1984,6 +1991,9 @@ function HingeConstraint(bodyA, bodyB, options){ // bodyA, pivotA, axisA, bodyB,
 }
 HingeConstraint.prototype = new Constraint();
 
+/**
+ * @method enableMotor
+ */
 HingeConstraint.prototype.enableMotor = function(){
     if(!this.motorEnabled){
         this.equations.push(this.motorEquation);
@@ -1991,6 +2001,9 @@ HingeConstraint.prototype.enableMotor = function(){
     }
 };
 
+/**
+ * @method disableMotor
+ */
 HingeConstraint.prototype.disableMotor = function(){
     if(this.motorEnabled){
         this.motorEnabled = false;
@@ -2028,10 +2041,10 @@ HingeConstraint.prototype.update = function(){
     bodyB.quaternion.vmult(this.pivotB,normal.rj);
 
     //normal.ni.tangents(t1.ni,t2.ni);
-    normal.ri.copy(t1.ri);
-    normal.rj.copy(t1.rj);
-    normal.ri.copy(t2.ri);
-    normal.rj.copy(t2.rj);
+    t1.ri.copy(normal.ri);
+    t1.rj.copy(normal.rj);
+    t2.ri.copy(normal.ri);
+    t2.rj.copy(normal.rj);
 
     axisA.cross(pivotA, axisA_x_pivotA);
     if(axisA_x_pivotA.norm2() < 0.001){ // pivotA is along the same line as axisA
@@ -2070,19 +2083,33 @@ HingeConstraint.prototype.getPointToPointEquation3 = function(){ return this.equ
 },{"../equations/ContactEquation":16,"../equations/RotationalEquation":19,"../equations/RotationalMotorEquation":20,"../math/Vec3":27,"./Constraint":12}],15:[function(_dereq_,module,exports){
 module.exports = PointToPointConstraint;
 
-var Constraint = _dereq_('./Constraint')
-,   ContactEquation = _dereq_('../equations/ContactEquation')
+var Constraint = _dereq_('./Constraint');
+var ContactEquation = _dereq_('../equations/ContactEquation');
 
 /**
- * Connects two bodies at given offset points
+ * Connects two bodies at given offset points.
  * @class PointToPointConstraint
- * @author schteppe
+ * @extends Constraint
+ * @constructor
  * @param {Body} bodyA
  * @param {Vec3} pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
  * @param {Body} bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get sort of a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
  * @param {Vec3} pivotB See pivotA.
  * @param {Number} maxForce The maximum force that should be applied to constrain the bodies.
- * @extends {Constraint}
+ *
+ * @example
+ *     var bodyA = new Body({ mass: 1 });
+ *     var bodyB = new Body({ mass: 1 });
+ *     bodyA.position.set(-1, 0, 0);
+ *     bodyB.position.set(1, 0, 0);
+ *     bodyA.addShape(shapeA);
+ *     bodyB.addShape(shapeB);
+ *     world.addBody(bodyA);
+ *     world.addBody(bodyB);
+ *     var localPivotA = new Vec3(1, 0, 0);
+ *     var localPivotB = new Vec3(-1, 0, 0);
+ *     var constraint = new PointToPointConstraint(bodyA, localPivotA, bodyB, localPivotB);
+ *     world.addConstraint(constraint);
  */
 function PointToPointConstraint(bodyA,pivotA,bodyB,pivotB,maxForce){
     Constraint.call(this,bodyA,bodyB);
@@ -2109,28 +2136,29 @@ function PointToPointConstraint(bodyA,pivotA,bodyB,pivotB,maxForce){
         bodyB.quaternion.vmult(pivotB,normal.rj);
 
         normal.ni.tangents(t1.ni,t2.ni);
-        normal.ri.copy(t1.ri);
-        normal.rj.copy(t1.rj);
-        normal.ri.copy(t2.ri);
-        normal.rj.copy(t2.rj);
+        t1.ri.copy(normal.ri);
+        t1.rj.copy(normal.rj);
+        t2.ri.copy(normal.ri);
+        t2.rj.copy(normal.rj);
     };
-};
+}
 PointToPointConstraint.prototype = new Constraint();
 
 },{"../equations/ContactEquation":16,"./Constraint":12}],16:[function(_dereq_,module,exports){
 module.exports = ContactEquation;
 
-var Equation = _dereq_('./Equation')
-,   Vec3 = _dereq_('../math/Vec3')
-,   Mat3 = _dereq_('../math/Mat3')
+var Equation = _dereq_('./Equation');
+var Vec3 = _dereq_('../math/Vec3');
+var Mat3 = _dereq_('../math/Mat3');
 
 /**
  * Contact/non-penetration constraint equation
  * @class ContactEquation
+ * @constructor
  * @author schteppe
  * @param {Body} bj
  * @param {Body} bi
- * @extends {Equation}
+ * @extends Equation
  */
 function ContactEquation(bi,bj){
     Equation.call(this,bi,bj,0,1e6);
@@ -2220,8 +2248,8 @@ ContactEquation.prototype.computeB = function(h){
     // G = [ -ni  -rixn  ni  rjxn ]
     n.negate(GA.spatial);
     rixn.negate(GA.rotational);
-    n.copy(GB.spatial);
-    rjxn.copy(GB.rotational);
+    GB.spatial.copy(n);
+    GB.rotational.copy(rjxn);
 
     // Calculate the penetration vector
     var penetrationVec = this.penetrationVec;
@@ -2235,10 +2263,16 @@ ContactEquation.prototype.computeB = function(h){
 
     var invIi_vmult_taui = ContactEquation_computeB_temp1;
     var invIj_vmult_tauj = ContactEquation_computeB_temp2;
-    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
-    else invIi_vmult_taui.set(0,0,0);
-    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
-    else invIj_vmult_tauj.set(0,0,0);
+    if(bi.invInertiaWorld){
+        bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
+    } else {
+        invIi_vmult_taui.set(0,0,0);
+    }
+    if(bj.invInertiaWorld){
+        bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
+    } else {
+        invIj_vmult_tauj.set(0,0,0);
+    }
 
     // Compute iteration
     var ePlusOne = this.restitution+1;
@@ -2341,6 +2375,7 @@ var JacobianElement = _dereq_('../math/JacobianElement'),
 /**
  * Equation base class
  * @class Equation
+ * @constructor
  * @author schteppe
  * @param {Body} bi
  * @param {Body} bj
@@ -2351,12 +2386,12 @@ function Equation(bi,bj,minForce,maxForce){
     this.id = -1;
 
     /**
-     * @property float minForce
+     * @property {number} minForce
      */
     this.minForce = typeof(minForce)==="undefined" ? -1e6 : minForce;
 
     /**
-     * @property float maxForce
+     * @property {number} maxForce
      */
     this.maxForce = typeof(maxForce)==="undefined" ? 1e6 : maxForce;
 
@@ -2374,19 +2409,19 @@ function Equation(bi,bj,minForce,maxForce){
 
     /**
      * SPOOK parameter
-     * @property float a
+     * @property {number} a
      */
     this.a = 0.0;
 
     /**
      * SPOOK parameter
-     * @property float b
+     * @property {number} b
      */
     this.b = 0.0;
 
     /**
      * SPOOK parameter
-     * @property float eps
+     * @property {number} eps
      */
     this.eps = 0.0;
 
@@ -2600,18 +2635,19 @@ Equation.prototype.computeC = function(){
 },{"../math/JacobianElement":23,"../math/Vec3":27}],18:[function(_dereq_,module,exports){
 module.exports = FrictionEquation;
 
-var Equation = _dereq_('./Equation')
-,   Vec3 = _dereq_('../math/Vec3')
-,   Mat3 = _dereq_('../math/Mat3')
+var Equation = _dereq_('./Equation');
+var Vec3 = _dereq_('../math/Vec3');
+var Mat3 = _dereq_('../math/Mat3');
 
 /**
  * Constrains the slipping in a contact along a tangent
  * @class FrictionEquation
+ * @constructor
  * @author schteppe
  * @param {Body} bi
  * @param {Body} bj
  * @param {Number} slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
- * @extends {Equation}
+ * @extends Equation
  */
 function FrictionEquation(bi,bj,slipForce){
     Equation.call(this,bi,bj,-slipForce,slipForce);
@@ -2634,7 +2670,7 @@ function FrictionEquation(bi,bj,slipForce){
 
     this.biInvInertiaTimesRixt =  new Vec3();
     this.bjInvInertiaTimesRjxt =  new Vec3();
-};
+}
 
 FrictionEquation.prototype = new Equation();
 FrictionEquation.prototype.constructor = FrictionEquation;
@@ -2689,18 +2725,18 @@ FrictionEquation.prototype.computeB = function(h){
     // And remember, this is a pure velocity constraint, g is always zero!
     var GA = this.jacobianElementA,
         GB = this.jacobianElementB;
-    t.negate(GA.spatial)
+    t.negate(GA.spatial);
     rixt.negate(GA.rotational);
-    t.copy(GB.spatial)
-    rjxt.copy(GB.rotational);
+    GB.spatial.copy(t);
+    GB.rotational.copy(rjxt);
 
-    if(bi.invInertiaWorld) bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
-    else invIi_vmult_taui.set(0,0,0);
-    if(bj.invInertiaWorld) bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
-    else invIj_vmult_tauj.set(0,0,0);
+    if(bi.invInertiaWorld){ bi.invInertiaWorld.vmult(taui,invIi_vmult_taui); }
+    else { invIi_vmult_taui.set(0,0,0); }
+    if(bj.invInertiaWorld){ bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj); }
+    else { invIj_vmult_tauj.set(0,0,0); }
 
     var GW = this.computeGW();//vj.dot(t) - vi.dot(t) + wjxrj.dot(t) - wixri.dot(t), // eq. 40
-        GiMf = this.computeGiMf();//fj.dot(t)*invMassj - fi.dot(t)*invMassi + rjxt.dot(invIj_vmult_tauj) - rixt.dot(invIi_vmult_taui);
+    var GiMf = this.computeGiMf();//fj.dot(t)*invMassj - fi.dot(t)*invMassi + rjxt.dot(invIj_vmult_tauj) - rixt.dot(invIi_vmult_taui);
 
     // we do only want to constrain velocity, so g=0
     var B = - GW * b - h*GiMf;
@@ -2788,19 +2824,20 @@ FrictionEquation.prototype.addToWlambda = function(deltalambda){
 },{"../math/Mat3":24,"../math/Vec3":27,"./Equation":17}],19:[function(_dereq_,module,exports){
 module.exports = RotationalEquation;
 
-var Vec3 = _dereq_('../math/Vec3')
-,   Mat3 = _dereq_('../math/Mat3')
-,   Equation = _dereq_('./Equation')
+var Vec3 = _dereq_('../math/Vec3');
+var Mat3 = _dereq_('../math/Mat3');
+var Equation = _dereq_('./Equation');
 
 /**
  * Rotational constraint. Works to keep the local vectors orthogonal to each other.
  * @class RotationalEquation
+ * @constructor
  * @author schteppe
  * @param {RigidBody} bj
  * @param {Vec3} localVectorInBodyA
  * @param {RigidBody} bi
  * @param {Vec3} localVectorInBodyB
- * @extends {Equation}
+ * @extends Equation
  */
 function RotationalEquation(bodyA, bodyB){
     Equation.call(this,bodyA,bodyB,-1e6,1e6);
@@ -2815,7 +2852,7 @@ function RotationalEquation(bodyA, bodyB){
 
     this.relVel = new Vec3();
     this.relForce = new Vec3();
-};
+}
 
 RotationalEquation.prototype = new Equation();
 RotationalEquation.prototype.constructor = RotationalEquation;
@@ -2861,8 +2898,8 @@ RotationalEquation.prototype.computeB = function(h){
     // gdot = (nj x ni) * wi + (ni x nj) * wj
     // G = [0 njxni 0 nixnj]
     // W = [vi wi vj wj]
-    njxni.copy(GA.rotational);
-    nixnj.copy(GB.rotational);
+    GA.rotational.copy(njxni);
+    GB.rotational.copy(nixnj);
 
     var g = -ni.dot(nj),
         GW = this.computeGW(),//njxni.dot(wi) + nixnj.dot(wj),
@@ -2942,18 +2979,19 @@ RotationalEquation.prototype.addToWlambda = function(deltalambda){
 },{"../math/Mat3":24,"../math/Vec3":27,"./Equation":17}],20:[function(_dereq_,module,exports){
 module.exports = RotationalMotorEquation;
 
-var Vec3 = _dereq_('../math/Vec3')
-,   Mat3 = _dereq_('../math/Mat3')
-,   Equation = _dereq_('./Equation')
+var Vec3 = _dereq_('../math/Vec3');
+var Mat3 = _dereq_('../math/Mat3');
+var Equation = _dereq_('./Equation');
 
 /**
  * Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
  * @class RotationalMotorEquation
+ * @constructor
  * @author schteppe
  * @param {RigidBody} bodyA
  * @param {RigidBody} bodyB
  * @param {Number} maxForce
- * @extends {Equation}
+ * @extends Equation
  */
 function RotationalMotorEquation(bodyA, bodyB, maxForce){
     maxForce = maxForce || 1e6;
@@ -2969,7 +3007,7 @@ function RotationalMotorEquation(bodyA, bodyB, maxForce){
      * @property {Number} targetVelocity
      */
     this.targetVelocity = 0;
-};
+}
 
 RotationalMotorEquation.prototype = new Equation();
 RotationalMotorEquation.prototype.constructor = RotationalMotorEquation;
@@ -3006,7 +3044,7 @@ RotationalMotorEquation.prototype.computeB = function(h){
     // G = [0 axisA 0 -axisB]
     // W = [vi wi vj wj]
 
-    axisA.copy(GA.rotational);
+    GA.rotational.copy(axisA);
     axisB.negate(GB.rotational);
 
     var GW = this.computeGW() - this.targetVelocity,
@@ -3160,7 +3198,7 @@ function ContactMaterial(m1, m2, options){
 
 ContactMaterial.idCounter = 0;
 
-},{"../utils/Utils":49}],22:[function(_dereq_,module,exports){
+},{"../utils/Utils":48}],22:[function(_dereq_,module,exports){
 module.exports = Material;
 
 /**
@@ -3177,7 +3215,7 @@ function Material(name){
      */
     this.name = name;
     this.id = Material.idCounter++;
-};
+}
 
 Material.idCounter = 0;
 
@@ -3202,7 +3240,7 @@ function JacobianElement(){
      * @property {Vec3} rotational
      */
     this.rotational = new Vec3();
-};
+}
 
 /**
  * Multiply with other JacobianElement
@@ -3228,7 +3266,7 @@ JacobianElement.prototype.multiplyVectors = function(spatial,rotational){
 },{"./Vec3":27}],24:[function(_dereq_,module,exports){
 module.exports = Mat3;
 
-var Vec3 = _dereq_('./Vec3')
+var Vec3 = _dereq_('./Vec3');
 
 /**
  * A 3x3 matrix.
@@ -3247,7 +3285,7 @@ function Mat3(elements){
     } else {
         this.elements = [0,0,0,0,0,0,0,0,0];
     }
-};
+}
 
 /**
  * Sets the matrix to identity
@@ -3467,17 +3505,16 @@ Mat3.prototype.e = function( row , column ,value){
 };
 
 /**
- * Copy the matrix
+ * Copy another matrix into this matrix object.
  * @method copy
- * @param {Mat3} target Optional. Target to save the copy in.
- * @return {Mat3}
+ * @param {Mat3} source
+ * @return {Mat3} this
  */
-Mat3.prototype.copy = function(target){
-    target = target || new Mat3();
-    for(var i=0; i<this.elements.length; i++){
-        target.elements[i] = this.elements[i];
+Mat3.prototype.copy = function(source){
+    for(var i=0; i < source.elements.length; i++){
+        this.elements[i] = source.elements[i];
     }
-    return target;
+    return this;
 };
 
 /**
@@ -3650,7 +3687,7 @@ Mat3.prototype.transpose = function( target ) {
 },{"./Vec3":27}],25:[function(_dereq_,module,exports){
 module.exports = Quaternion;
 
-var Vec3 = _dereq_('./Vec3')
+var Vec3 = _dereq_('./Vec3');
 
 /**
  * A Quaternion describes a rotation in 3D space. The Quaternion is mathematically defined as Q = x*i + y*j + z*k + w, where (i,j,k) are imaginary basis vectors. (x,y,z) can be seen as a vector related to the axis of rotation, while the real multiplier, w, is related to the amount of rotation.
@@ -3683,7 +3720,7 @@ function Quaternion(x,y,z,w){
      * @property {Number} w
      */
     this.w = w!==undefined ? w : 1;
-};
+}
 
 /**
  * Set the value of the quaternion.
@@ -3922,14 +3959,17 @@ Quaternion.prototype.vmult = function(v,target){
 };
 
 /**
+ * Copies value of source to this quaternion.
  * @method copy
- * @param {Quaternion} target
+ * @param {Quaternion} source
+ * @return {Quaternion} this
  */
-Quaternion.prototype.copy = function(target){
-    target.x = this.x;
-    target.y = this.y;
-    target.z = this.z;
-    target.w = this.w;
+Quaternion.prototype.copy = function(source){
+    this.x = source.x;
+    this.y = source.y;
+    this.z = source.z;
+    this.w = source.w;
+    return this;
 };
 
 /**
@@ -4093,10 +4133,14 @@ var Mat3 = _dereq_('./Mat3');
 /**
  * 3-dimensional vector
  * @class Vec3
+ * @constructor
  * @param {Number} x
  * @param {Number} y
  * @param {Number} z
  * @author schteppe
+ * @example
+ *     var v = new Vec3(1, 2, 3);
+ *     console.log('x=' + v.x); // x=1
  */
 function Vec3(x,y,z){
     /**
@@ -4398,18 +4442,16 @@ Vec3.prototype.toArray = function(){
 };
 
 /**
- * Copy the vector.
+ * Copies value of source to this vector.
  * @method copy
- * @param {Vec3} target
- * @return {Vec3}
- * @todo Should copy the parameter to this, not the other way around.
+ * @param {Vec3} source
+ * @return {Vec3} this
  */
-Vec3.prototype.copy = function(target){
-    target = target || new Vec3();
-    target.x = this.x;
-    target.y = this.y;
-    target.z = this.z;
-    return target;
+Vec3.prototype.copy = function(source){
+    this.x = source.x;
+    this.y = source.y;
+    this.z = source.z;
+    return this;
 };
 
 
@@ -4502,6 +4544,18 @@ var Box = _dereq_('../shapes/Box');
  * @class Body
  * @constructor
  * @extends EventTarget
+ * @param {object} [options]
+ * @param {Vec3} [options.position]
+ * @param {number} [options.mass]
+ * @param {number} [options.type]
+ * @param {number} [options.linearDamping]
+ * @example
+ *     var body = new Body({
+ *         mass: 1
+ *     });
+ *     var shape = new Sphere(1);
+ *     body.addShape(shape);
+ *     world.add(body);
  */
 function Body(options){
     options = options || {};
@@ -4558,7 +4612,7 @@ function Body(options){
     this.position = new Vec3();
 
     if(options.position){
-        options.position.copy(this.position);
+        this.position.copy(options.position);
     }
 
     /**
@@ -4886,8 +4940,8 @@ Body.prototype.updateSolveMassProperties = function(){
         this.invInertiaWorldSolve.setZero();
     } else {
         this.invMassSolve = this.invMass;
-        this.invInertia.copy(this.invInertiaSolve);
-        this.invInertiaWorld.copy(this.invInertiaWorldSolve);
+        this.invInertiaSolve.copy(this.invInertia);
+        this.invInertiaWorldSolve.copy(this.invInertiaWorld);
     }
 };
 
@@ -4941,10 +4995,10 @@ Body.prototype.addShape = function(shape, _offset, _orientation){
     var orientation = new Quaternion();
 
     if(_offset){
-        _offset.copy(offset);
+        offset.copy(_offset);
     }
     if(_orientation){
-        _orientation.copy(orientation);
+        orientation.copy(_orientation);
     }
 
     this.shapes.push(shape);
@@ -5031,7 +5085,7 @@ var uiw_m1 = new Mat3(),
  */
 Body.prototype.updateInertiaWorld = function(force){
     var I = this.invInertia;
-    if (I.x == I.y && I.y == I.z && !force) {
+    if (I.x === I.y && I.y === I.z && !force) {
         // If inertia M = s*I, where I is identity and s a scalar, then
         //    R*M*R' = R*(s*I)*R' = s*R*I*R' = s*R*R' = s*I = M
         // where R is the rotation matrix.
@@ -5102,7 +5156,7 @@ Body.prototype.applyImpulse = function(impulse, worldPoint){
 
     // Compute produced central impulse velocity
     var velo = Body_applyImpulse_velo;
-    impulse.copy(velo);
+    velo.copy(impulse);
     velo.mult(this.invMass,velo);
 
     // Add linear impulse
@@ -5168,6 +5222,7 @@ Body.prototype.updateMassProperties = function(){
 
 /**
  * Get world velocity of a point in the body.
+ * @method getVelocityAtWorldPoint
  * @param  {Vec3} worldPoint
  * @param  {Vec3} result
  * @return {Vec3} The result vector.
@@ -5180,7 +5235,7 @@ Body.prototype.getVelocityAtWorldPoint = function(worldPoint, result){
     return result;
 };
 
-},{"../collision/AABB":3,"../material/Material":22,"../math/Mat3":24,"../math/Quaternion":25,"../math/Vec3":27,"../shapes/Box":34,"../shapes/Shape":41,"../utils/EventTarget":46}],29:[function(_dereq_,module,exports){
+},{"../collision/AABB":3,"../material/Material":22,"../math/Mat3":24,"../math/Quaternion":25,"../math/Vec3":27,"../shapes/Box":34,"../shapes/Shape":40,"../utils/EventTarget":45}],29:[function(_dereq_,module,exports){
 var Body = _dereq_('./Body');
 var Vec3 = _dereq_('../math/Vec3');
 var Quaternion = _dereq_('../math/Quaternion');
@@ -5192,7 +5247,12 @@ module.exports = RaycastVehicle;
 
 /**
  * Vehicle helper class that casts rays from the wheel positions towards the ground and applies forces.
+ * @class RaycastVehicle
+ * @constructor
  * @param {object} [options.chassisBody]
+ * @param {object} [options.indexRightAxis]
+ * @param {object} [options.indexLeftAxis]
+ * @param {object} [options.indexUpAxis]
  */
 function RaycastVehicle(options){
 
@@ -5248,8 +5308,8 @@ var tmpVec6 = new Vec3();
 var tmpRay = new Ray();
 
 /**
- * Add a wheel
- * @param {object} options
+ * Add a wheel. For information about the options, see WheelInfo.
+ * @param {object} [options]
  * @method addWheel
  */
 RaycastVehicle.prototype.addWheel = function(options){
@@ -5264,6 +5324,7 @@ RaycastVehicle.prototype.addWheel = function(options){
 
 /**
  * Set the steering value of a wheel.
+ * @method setSteeringValue
  * @param {number} value
  * @param {integer} wheelIndex
  */
@@ -5276,6 +5337,7 @@ var torque = new Vec3();
 
 /**
  * Set the wheel force to apply on one of the wheels each time step
+ * @method applyEngineForce
  * @param  {number} value
  * @param  {integer} wheelIndex
  */
@@ -5285,6 +5347,7 @@ RaycastVehicle.prototype.applyEngineForce = function(value, wheelIndex){
 
 /**
  * Set the braking force of a wheel
+ * @method setBrake
  * @param {number} brake
  * @param {integer} wheelIndex
  */
@@ -5294,6 +5357,7 @@ RaycastVehicle.prototype.setBrake = function(brake, wheelIndex){
 
 /**
  * Add the vehicle including its constraints to the world.
+ * @method addToWorld
  * @param {World} world
  */
 RaycastVehicle.prototype.addToWorld = function(world){
@@ -5442,6 +5506,7 @@ RaycastVehicle.prototype.updateSuspension = function(deltaTime) {
 
 /**
  * Remove the vehicle including its constraints from the world.
+ * @method removeFromWorld
  * @param {World} world
  */
 RaycastVehicle.prototype.removeFromWorld = function(world){
@@ -5543,7 +5608,7 @@ RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
     this.updateWheelTransformWorld(wheel);
 
     wheel.directionLocal.scale(-1, up);
-    wheel.axleLocal.copy(right);
+    right.copy(wheel.axleLocal);
     up.cross(right, fwd);
     fwd.normalize();
     right.normalize();
@@ -5565,7 +5630,7 @@ RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
 
     // world position of the wheel
     var p = wheel.worldTransform.position;
-    wheel.directionWorld.copy(p);
+    p.copy(wheel.directionWorld);
     p.scale(wheel.suspensionLength, p);
     p.vadd(wheel.chassisConnectionPointWorld, p);
 };
@@ -5726,7 +5791,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
         var rel_pos = new Vec3();
         //wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, rel_pos);
         // cannons applyimpulse is using world coord for the position
-        wheel.raycastResult.hitPointWorld.copy(rel_pos);
+        rel_pos.copy(wheel.raycastResult.hitPointWorld);
 
         if (wheel.forwardImpulse !== 0) {
             var impulse = new Vec3();
@@ -5739,7 +5804,7 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
 
             var rel_pos2 = new Vec3();
             //wheel.raycastResult.hitPointWorld.vsub(groundObject.position, rel_pos2);
-            wheel.raycastResult.hitPointWorld.copy(rel_pos2);
+            rel_pos2.copy(wheel.raycastResult.hitPointWorld);
             var sideImp = new Vec3();
             axle[i].scale(wheel.sideImpulse, sideImp);
 
@@ -5858,6 +5923,8 @@ module.exports = RigidVehicle;
 
 /**
  * Simple vehicle helper class with spherical rigid body wheels.
+ * @class RigidVehicle
+ * @constructor
  * @param {object} [options.chassisBody]
  */
 function RigidVehicle(options){
@@ -5892,6 +5959,7 @@ function RigidVehicle(options){
 
 /**
  * Add a wheel
+ * @method addWheel
  * @param {object} options
  * @param {object} [options.isFrontWheel]
  * @param {Vec3} [options.position] Position of the wheel, locally in the chassis body.
@@ -5935,6 +6003,7 @@ RigidVehicle.prototype.addWheel = function(options){
 
 /**
  * Set the steering value of a wheel.
+ * @method setSteeringValue
  * @param {number} value
  * @param {integer} wheelIndex
  * @todo check coordinateSystem
@@ -5981,6 +6050,7 @@ var torque = new Vec3();
 
 /**
  * Set the wheel force to apply on one of the wheels each time step
+ * @method setWheelForce
  * @param  {number} value
  * @param  {integer} wheelIndex
  */
@@ -5990,6 +6060,7 @@ RigidVehicle.prototype.setWheelForce = function(value, wheelIndex){
 
 /**
  * Apply a torque on one of the wheels.
+ * @method applyWheelForce
  * @param  {number} value
  * @param  {integer} wheelIndex
  */
@@ -6005,6 +6076,7 @@ RigidVehicle.prototype.applyWheelForce = function(value, wheelIndex){
 
 /**
  * Add the vehicle including its constraints to the world.
+ * @method addToWorld
  * @param {World} world
  */
 RigidVehicle.prototype.addToWorld = function(world){
@@ -6031,6 +6103,7 @@ RigidVehicle.prototype._update = function(){
 
 /**
  * Remove the vehicle including its constraints from the world.
+ * @method removeFromWorld
  * @param {World} world
  */
 RigidVehicle.prototype.removeFromWorld = function(world){
@@ -6061,7 +6134,7 @@ RigidVehicle.prototype.getWheelSpeed = function(wheelIndex){
     return w.dot(worldAxis);
 };
 
-},{"../constraints/HingeConstraint":14,"../math/Vec3":27,"../shapes/Box":34,"../shapes/Sphere":42,"./Body":28}],31:[function(_dereq_,module,exports){
+},{"../constraints/HingeConstraint":14,"../math/Vec3":27,"../shapes/Box":34,"../shapes/Sphere":41,"./Body":28}],31:[function(_dereq_,module,exports){
 module.exports = SPHSystem;
 
 var Shape = _dereq_('../shapes/Shape');
@@ -6207,7 +6280,7 @@ SPHSystem.prototype.update = function(){
             Pij = -neighbor.mass * (this.pressures[i] / (this.densities[i]*this.densities[i] + eps) + this.pressures[j] / (this.densities[j]*this.densities[j] + eps));
             this.gradw(r_vec, gradW);
             // Add to pressure acceleration
-            gradW.mult(Pij , gradW)
+            gradW.mult(Pij , gradW);
             a_pressure.vadd(gradW, a_pressure);
 
             // Viscosity contribution
@@ -6250,7 +6323,7 @@ SPHSystem.prototype.nablaw = function(r){
     return nabla;
 };
 
-},{"../material/Material":22,"../math/Quaternion":25,"../math/Vec3":27,"../objects/Body":28,"../shapes/Particle":39,"../shapes/Shape":41}],32:[function(_dereq_,module,exports){
+},{"../material/Material":22,"../math/Quaternion":25,"../math/Vec3":27,"../objects/Body":28,"../shapes/Particle":38,"../shapes/Shape":40}],32:[function(_dereq_,module,exports){
 var Vec3 = _dereq_('../math/Vec3');
 
 module.exports = Spring;
@@ -6263,13 +6336,13 @@ module.exports = Spring;
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {Object} [options]
- * @param {number} options.restLength   A number > 0. Default: 1
- * @param {number} options.stiffness    A number >= 0. Default: 100
- * @param {number} options.damping      A number >= 0. Default: 1
- * @param {Array}  options.worldAnchorA Where to hook the spring to body A, in world coordinates.
- * @param {Array}  options.worldAnchorB
- * @param {Array}  options.localAnchorA Where to hook the spring to body A, in local body coordinates.
- * @param {Array}  options.localAnchorB
+ * @param {number} [options.restLength]   A number > 0. Default: 1
+ * @param {number} [options.stiffness]    A number >= 0. Default: 100
+ * @param {number} [options.damping]      A number >= 0. Default: 1
+ * @param {Vec3}  [options.worldAnchorA] Where to hook the spring to body A, in world coordinates.
+ * @param {Vec3}  [options.worldAnchorB]
+ * @param {Vec3}  [options.localAnchorA] Where to hook the spring to body A, in local body coordinates.
+ * @param {Vec3}  [options.localAnchorB]
  */
 function Spring(bodyA,bodyB,options){
     options = options || {};
@@ -6323,15 +6396,19 @@ function Spring(bodyA,bodyB,options){
      */
     this.localAnchorB = new Vec3();
 
-    if(options.localAnchorA) this.localAnchorA.set( options.localAnchorA.x,
-                                                    options.localAnchorA.y,
-                                                    options.localAnchorA.z);
-    if(options.localAnchorB) this.localAnchorB.set( options.localAnchorB.x,
-                                                    options.localAnchorB.y,
-                                                    options.localAnchorB.z);
-    if(options.worldAnchorA) this.setWorldAnchorA(options.worldAnchorA);
-    if(options.worldAnchorB) this.setWorldAnchorB(options.worldAnchorB);
-};
+    if(options.localAnchorA){
+        this.localAnchorA.copy(options.localAnchorA);
+    }
+    if(options.localAnchorB){
+        this.localAnchorB.copy(options.localAnchorB);
+    }
+    if(options.worldAnchorA){
+        this.setWorldAnchorA(options.worldAnchorA);
+    }
+    if(options.worldAnchorB){
+        this.setWorldAnchorB(options.worldAnchorB);
+    }
+}
 
 /**
  * Set the anchor point on body A, using world coordinates.
@@ -6415,7 +6492,7 @@ Spring.prototype.applyForce = function(){
     // Compute distance vector between world anchor points
     worldAnchorB.vsub(worldAnchorA,r);
     var rlen = r.norm();
-    r.copy(r_unit);
+    r_unit.copy(r);
     r_unit.normalize();
 
     // Compute relative velocity of the anchor points, u
@@ -6452,6 +6529,35 @@ module.exports = WheelInfo;
 /**
  * @class WheelInfo
  * @constructor
+ * @param {Object} [options]
+ *
+ * @param {Vec3} [options.chassisConnectionPointLocal]
+ * @param {Vec3} [options.chassisConnectionPointWorld]
+ * @param {Vec3} [options.directionLocal]
+ * @param {Vec3} [options.directionWorld]
+ * @param {Vec3} [options.axleLocal]
+ * @param {Vec3} [options.axleWorld]
+ * @param {number} [options.suspensionRestLength=1]
+ * @param {number} [options.suspensionMaxLength=2]
+ * @param {number} [options.radius=1]
+ * @param {number} [options.suspensionStiffness=100]
+ * @param {number} [options.dampingCompression=10]
+ * @param {number} [options.dampingRelaxation=10]
+ * @param {number} [options.frictionSlip=10000]
+ * @param {number} [options.steering=0]
+ * @param {number} [options.rotation=0]
+ * @param {number} [options.deltaRotation=0]
+ * @param {number} [options.rollInfluence=0.01]
+ * @param {number} [options.maxSuspensionForce]
+ * @param {number} [options.isFrontWheel=true]
+ * @param {number} [options.clippedInvContactDotSuspension=1]
+ * @param {number} [options.suspensionRelativeVelocity=0]
+ * @param {number} [options.suspensionForce=0]
+ * @param {number} [options.skidInfo=0]
+ * @param {number} [options.suspensionLength=0]
+ * @param {number} [options.maxSuspensionTravel=1]
+ * @param {number} [options.useCustomSlidingRotationalSpeed=false]
+ * @param {number} [options.customSlidingRotationalSpeed=-0.1]
  */
 function WheelInfo(options){
     options = Utils.defaults(options, {
@@ -6690,12 +6796,12 @@ WheelInfo.prototype.updateWheel = function(chassis){
         this.clippedInvContactDotSuspension = 1.0;
     }
 };
-},{"../collision/RaycastResult":10,"../math/Transform":26,"../math/Vec3":27,"../utils/Utils":49}],34:[function(_dereq_,module,exports){
+},{"../collision/RaycastResult":10,"../math/Transform":26,"../math/Vec3":27,"../utils/Utils":48}],34:[function(_dereq_,module,exports){
 module.exports = Box;
 
-var Shape = _dereq_('./Shape')
-,   Vec3 = _dereq_('../math/Vec3')
-,   ConvexPolyhedron = _dereq_('./ConvexPolyhedron')
+var Shape = _dereq_('./Shape');
+var Vec3 = _dereq_('../math/Vec3');
+var ConvexPolyhedron = _dereq_('./ConvexPolyhedron');
 
 /**
  * A 3d box shape.
@@ -6725,7 +6831,7 @@ function Box(halfExtents){
 
     this.updateConvexPolyhedronRepresentation();
     this.updateBoundingSphereRadius();
-};
+}
 Box.prototype = new Shape();
 Box.prototype.constructor = Box;
 
@@ -6866,208 +6972,13 @@ Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
     });
 };
 
-},{"../math/Vec3":27,"./ConvexPolyhedron":36,"./Shape":41}],35:[function(_dereq_,module,exports){
-module.exports = Compound;
-
-var Shape = _dereq_('./Shape')
-,   Vec3 = _dereq_('../math/Vec3')
-,   Box = _dereq_('../shapes/Box')
-,   Mat3 = _dereq_('../math/Mat3')
-,   Quaternion = _dereq_('../math/Quaternion')
-
-/**
- * A shape made of several other shapes.
- * @class Compound
- * @extends {Shape}
- * @author schteppe
- */
-function Compound(){
-    Shape.call(this);
-    this.type = Shape.types.COMPOUND;
-
-    /**
-     * @property {Array} childShapes
-     */
-    this.childShapes = [];
-
-    /**
-     * @property {Array} childOffsets
-     */
-    this.childOffsets = [];
-
-    /**
-     * @property {Array} childOrientations
-     */
-    this.childOrientations = [];
-}
-Compound.prototype = new Shape();
-Compound.prototype.constructor = Compound;
-
-/**
- * Add a child shape.
- * @method addChild
- * @param {Shape} shape
- * @param {Vec3} offset
- * @param {Quaternion} orientation
- */
-Compound.prototype.addChild = function(shape,offset,orientation){
-    offset = offset || new Vec3();
-    orientation = orientation || new Quaternion();
-    this.childShapes.push(shape);
-    this.childOffsets.push(offset);
-    this.childOrientations.push(orientation);
-    this.updateBoundingSphereRadius();
-};
-
-Compound.prototype.clearAllChildren = function(){
-    this.childOffsets = [];
-    this.childOrientations = [];
-    this.childShapes = [];
-};
-
-Compound.prototype.volume = function(){
-    var r = 0.0;
-    var Nchildren = this.childShapes.length;
-    for(var i=0; i!==Nchildren; i++){
-        r += this.childShapes[i].volume();
-    }
-    return r;
-};
-
-/*
-var Compound_calculateLocalInertia_mr2 = new Vec3();
-var Compound_calculateLocalInertia_childInertia = new Vec3();
-var cli_m1 = new Mat3(),
-    cli_m2 = new Mat3(),
-    cli_m3 = new Mat3();
-*/
-var cli_min = new Vec3(),
-    cli_max = new Vec3(),
-    cli_pos = new Vec3(),
-    cli_quat = new Quaternion();
-Compound.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new Vec3();
-
-    var min = cli_min,
-        max = cli_max,
-        pos = cli_pos,
-        quat =cli_quat;
-
-    this.calculateWorldAABB(pos,quat,min,max);
-    Box.calculateInertia(new Vec3((max.x-min.x)/2,(max.y-min.y)/2,(max.z-min.z)/2),mass,target);
-
-    /*
-    // Calculate the total volume, we will spread out this objects' mass on the sub shapes
-    var m1 = cli_m1,
-        m2 = cli_m2,
-        m3 = cli_m3;
-    var V = this.volume();
-    var childInertia = Compound_calculateLocalInertia_childInertia;
-    for(var i=0, Nchildren=this.childShapes.length; i!==Nchildren; i++){
-        // Get child information
-        var b = this.childShapes[i];
-        var o = this.childOffsets[i];
-        var q = this.childOrientations[i];
-        var m = b.volume() / V * mass;
-
-        // Get the child inertia, transformed relative to local frame
-        b.calculateLocalInertia(m,childInertia);
-
-        // Transform it to the local compound frame
-        m1.setRotationFromQuaternion(q);
-        m1.transpose(m2);
-        m1.scale(childInertia,m1);
-        m1.mmult(m2,m3);
-        m3.getTrace(childInertia);
-
-        // Add its inertia using the parallel axis theorem, i.e.
-        // I = Icm + m * r^2
-
-        target.vadd(childInertia,target);
-        var mr2 = Compound_calculateLocalInertia_mr2;
-        mr2.set(m*o.x*o.x,
-                m*o.y*o.y,
-                m*o.z*o.z);
-        target.vadd(mr2,target);
-    }
-    */
-
-    return target;
-};
-
-Compound.prototype.updateBoundingSphereRadius = function(){
-    var r = 0.0;
-    for(var i = 0; i<this.childShapes.length; i++){
-        var si = this.childShapes[i];
-        si.updateBoundingSphereRadius();
-
-        var candidate = this.childOffsets[i].norm() + si.boundingSphereRadius;
-        if(r < candidate){
-            r = candidate;
-        }
-    }
-    this.boundingSphereRadius = r;
-};
-
-var aabbmaxTemp = new Vec3();
-var aabbminTemp = new Vec3();
-var childPosTemp = new Vec3();
-var childQuatTemp = new Quaternion();
-Compound.prototype.calculateWorldAABB = function(pos,quat,min,max){
-    var N=this.childShapes.length;
-
-    // If the compound doesn't have any child
-    if(N === 0){
-        return;
-    }
-
-    min.set(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-    max.set(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
-    // Get each axis max
-    for(var i=0; i!==N; i++){
-
-        // Accumulate transformation to child
-        this.childOffsets[i].copy(childPosTemp);
-        quat.vmult(childPosTemp,childPosTemp);
-        pos.vadd(childPosTemp,childPosTemp);
-
-        quat.mult(this.childOrientations[i],childQuatTemp);
-
-        // Get child AABB
-        this.childShapes[i].calculateWorldAABB(childPosTemp,
-                                               childQuatTemp,//this.childOrientations[i],
-                                               aabbminTemp,
-                                               aabbmaxTemp);
-
-        if(aabbminTemp.x < min.x){
-            min.x = aabbminTemp.x;
-        }
-        if(aabbminTemp.y < min.y){
-            min.y = aabbminTemp.y;
-        }
-        if(aabbminTemp.z < min.z){
-            min.z = aabbminTemp.z;
-        }
-
-        if(aabbmaxTemp.x > max.x){
-            max.x = aabbmaxTemp.x;
-        }
-        if(aabbmaxTemp.y > max.y){
-            max.y = aabbmaxTemp.y;
-        }
-        if(aabbmaxTemp.z > max.z){
-            max.z = aabbmaxTemp.z;
-        }
-    }
-};
-
-},{"../math/Mat3":24,"../math/Quaternion":25,"../math/Vec3":27,"../shapes/Box":34,"./Shape":41}],36:[function(_dereq_,module,exports){
+},{"../math/Vec3":27,"./ConvexPolyhedron":35,"./Shape":40}],35:[function(_dereq_,module,exports){
 module.exports = ConvexPolyhedron;
 
-var Shape = _dereq_('./Shape')
-,   Vec3 = _dereq_('../math/Vec3')
-,   Quaternion = _dereq_('../math/Quaternion')
-,   Transform = _dereq_('../math/Transform')
+var Shape = _dereq_('./Shape');
+var Vec3 = _dereq_('../math/Vec3');
+var Quaternion = _dereq_('../math/Quaternion');
+var Transform = _dereq_('../math/Transform');
 
 /**
  * A set of polygons describing a convex shape.
@@ -7136,7 +7047,8 @@ ConvexPolyhedron.prototype = new Shape();
 ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
 
 /**
- * Computes .uniqueEdges.
+ * Computes uniqueEdges
+ * @method computeEdges
  */
 ConvexPolyhedron.prototype.computeEdges = function(){
     var faces = this.faces;
@@ -7189,6 +7101,7 @@ ConvexPolyhedron.prototype.computeEdges = function(){
 
 /**
  * Compute the normals of the faces. Will reuse existing Vec3 objects in the .faceNormals array if they exist.
+ * @method computeNormals
  */
 ConvexPolyhedron.prototype.computeNormals = function(){
     this.faceNormals.length = this.faces.length;
@@ -7209,7 +7122,7 @@ ConvexPolyhedron.prototype.computeNormals = function(){
         this.faceNormals[i] = n;
         var vertex = this.vertices[this.faces[i][0]];
         if(n.dot(vertex) < 0){
-            throw new Error(".faceNormals[" + i + "] = Vec3("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
+            console.error(".faceNormals[" + i + "] = Vec3("+n.toString()+") looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.");
             for(var j=0; j<this.faces[i].length; j++){
                 console.warn(".vertices["+this.faces[i][j]+"] = Vec3("+this.vertices[this.faces[i][j]].toString()+")");
             }
@@ -7278,7 +7191,7 @@ ConvexPolyhedron.prototype.clipAgainstHull = function(posA,quatA,hullB,posB,quat
     var closestFaceB = -1;
     var dmax = -Infinity;
     for(var face=0; face < hullB.faces.length; face++){
-        hullB.faceNormals[face].copy(WorldNormal);
+        WorldNormal.copy(hullB.faceNormals[face]);
         quatB.vmult(WorldNormal,WorldNormal);
         //posB.vadd(WorldNormal,WorldNormal);
         var d = WorldNormal.dot(separatingNormal);
@@ -7293,7 +7206,7 @@ ConvexPolyhedron.prototype.clipAgainstHull = function(posA,quatA,hullB,posB,quat
     for(var e0=0; e0<numVertices; e0++){
         var b = hullB.vertices[polyB[e0]];
         var worldb = new Vec3();
-        b.copy(worldb);
+        worldb.copy(b);
         quatB.vmult(worldb,worldb);
         posB.vadd(worldb,worldb);
         worldVertsB1.push(worldb);
@@ -7343,7 +7256,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     // Test normals from hullA
     for(var i=0; i<numFacesA; i++){
         // Get world face normal
-        hullA.faceNormals[i].copy(faceANormalWS3);
+        faceANormalWS3.copy(hullA.faceNormals[i]);
         quatA.vmult(faceANormalWS3,faceANormalWS3);
         //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
         //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
@@ -7354,14 +7267,14 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
 
         if(d<dmin){
             dmin = d;
-            faceANormalWS3.copy(target);
+            target.copy(faceANormalWS3);
         }
     }
 
     // Test normals from hullB
     var numFacesB = hullB.faces.length;
     for(var i=0;i<numFacesB;i++){
-        hullB.faceNormals[i].copy(Worldnormal1);
+        Worldnormal1.copy(hullB.faceNormals[i]);
         quatB.vmult(Worldnormal1,Worldnormal1);
         //posB.vadd(Worldnormal1,Worldnormal1);
         //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
@@ -7373,7 +7286,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
 
         if(d<dmin){
             dmin = d;
-            Worldnormal1.copy(target);
+            target.copy(Worldnormal1);
         }
     }
 
@@ -7383,14 +7296,14 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     // Test edges
     for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
         // Get world edge
-        hullA.uniqueEdges[e0].copy(worldEdge0);
+        worldEdge0.copy(hullA.uniqueEdges[e0]);
         quatA.vmult(worldEdge0,worldEdge0);
         //posA.vadd(worldEdge0,worldEdge0); // needed?
 
         //console.log("edge0:",worldEdge0.toString());
 
         for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-            hullB.uniqueEdges[e1].copy(worldEdge1);
+            worldEdge1.copy(hullB.uniqueEdges[e1]);
             quatB.vmult(worldEdge1,worldEdge1);
             //posB.vadd(worldEdge1,worldEdge1); // needed?
             //console.log("edge1:",worldEdge1.toString());
@@ -7404,7 +7317,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
                 }
                 if(dist<dmin){
                     dmin = dist;
-                    Cross.copy(target);
+                    target.copy(Cross);
                 }
             }
         }
@@ -7525,7 +7438,7 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
     var closestFaceA = -1;
     var dmin = Infinity;
     for(var face=0; face<hullA.faces.length; face++){
-        hullA.faceNormals[face].copy(faceANormalWS);
+        faceANormalWS.copy(hullA.faceNormals[face]);
         quatA.vmult(faceANormalWS,faceANormalWS);
         //posA.vadd(faceANormalWS,faceANormalWS);
         var d = faceANormalWS.dot(separatingNormal);
@@ -7557,30 +7470,30 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
         var a = hullA.vertices[polyA[e0]];
         var b = hullA.vertices[polyA[(e0+1)%numVerticesA]];
         a.vsub(b,edge0);
-        edge0.copy(WorldEdge0);
+        WorldEdge0.copy(edge0);
         quatA.vmult(WorldEdge0,WorldEdge0);
         posA.vadd(WorldEdge0,WorldEdge0);
-        this.faceNormals[closestFaceA].copy(worldPlaneAnormal1);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
+        worldPlaneAnormal1.copy(this.faceNormals[closestFaceA]);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
         quatA.vmult(worldPlaneAnormal1,worldPlaneAnormal1);
         posA.vadd(worldPlaneAnormal1,worldPlaneAnormal1);
         WorldEdge0.cross(worldPlaneAnormal1,planeNormalWS1);
         planeNormalWS1.negate(planeNormalWS1);
-        a.copy(worldA1);
+        worldA1.copy(a);
         quatA.vmult(worldA1,worldA1);
         posA.vadd(worldA1,worldA1);
         var planeEqWS1 = -worldA1.dot(planeNormalWS1);
         var planeEqWS;
         if(true){
             var otherFace = polyA.connectedFaces[e0];
-            this.faceNormals[otherFace].copy(localPlaneNormal);
+            localPlaneNormal.copy(this.faceNormals[otherFace]);
             var localPlaneEq = this.getPlaneConstantOfFace(otherFace);
 
-            localPlaneNormal.copy(planeNormalWS);
+            planeNormalWS.copy(localPlaneNormal);
             quatA.vmult(planeNormalWS,planeNormalWS);
             //posA.vadd(planeNormalWS,planeNormalWS);
             var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
         } else  {
-            planeNormalWS1.copy(planeNormalWS);
+            planeNormalWS.copy(planeNormalWS1);
             planeEqWS = planeEqWS1;
         }
 
@@ -7599,10 +7512,10 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
     //console.log("Resulting points after clip:",pVtxIn);
 
     // only keep contact points that are behind the witness face
-    this.faceNormals[closestFaceA].copy(localPlaneNormal);
+    localPlaneNormal.copy(this.faceNormals[closestFaceA]);
 
     var localPlaneEq = this.getPlaneConstantOfFace(closestFaceA);
-    localPlaneNormal.copy(planeNormalWS);
+    planeNormalWS.copy(localPlaneNormal);
     quatA.vmult(planeNormalWS,planeNormalWS);
 
     var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
@@ -7654,8 +7567,9 @@ ConvexPolyhedron.prototype.clipFaceAgainstPlane = function(inVertices,outVertice
     var n_dot_first, n_dot_last;
     var numVerts = inVertices.length;
 
-    if(numVerts < 2)
+    if(numVerts < 2){
         return outVertices;
+    }
 
     var firstVertex = inVertices[inVertices.length-1],
         lastVertex =   inVertices[0];
@@ -7669,7 +7583,7 @@ ConvexPolyhedron.prototype.clipFaceAgainstPlane = function(inVertices,outVertice
             if(n_dot_last < 0){
                 // Start < 0, end < 0, so output lastVertex
                 var newv = new Vec3();
-                lastVertex.copy(newv);
+                newv.copy(lastVertex);
                 outVertices.push(newv);
             } else {
                 // Start < 0, end >= 0, so output intersection
@@ -7791,7 +7705,7 @@ ConvexPolyhedron.prototype.calculateWorldAABB = function(pos,quat,min,max){
     var n = this.vertices.length, verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
     for(var i=0; i<n; i++){
-        verts[i].copy(tempWorldVertex);
+        tempWorldVertex.copy(verts[i]);
         quat.vmult(tempWorldVertex,tempWorldVertex);
         pos.vadd(tempWorldVertex,tempWorldVertex);
         var v = tempWorldVertex;
@@ -7981,7 +7895,7 @@ ConvexPolyhedron.project = function(hull, axis, pos, quat, result){
     result[1] = min;
 };
 
-},{"../math/Quaternion":25,"../math/Transform":26,"../math/Vec3":27,"./Shape":41}],37:[function(_dereq_,module,exports){
+},{"../math/Quaternion":25,"../math/Transform":26,"../math/Vec3":27,"./Shape":40}],36:[function(_dereq_,module,exports){
 module.exports = Cylinder;
 
 var Shape = _dereq_('./Shape');
@@ -8064,7 +7978,7 @@ function Cylinder( radiusTop, radiusBottom, height , numSegments ) {
 
 Cylinder.prototype = new ConvexPolyhedron();
 
-},{"../math/Quaternion":25,"../math/Vec3":27,"./ConvexPolyhedron":36,"./Shape":41}],38:[function(_dereq_,module,exports){
+},{"../math/Quaternion":25,"../math/Vec3":27,"./ConvexPolyhedron":35,"./Shape":40}],37:[function(_dereq_,module,exports){
 var Shape = _dereq_('./Shape');
 var ConvexPolyhedron = _dereq_('./ConvexPolyhedron');
 var Vec3 = _dereq_('../math/Vec3');
@@ -8073,7 +7987,7 @@ var Utils = _dereq_('../utils/Utils');
 module.exports = Heightfield;
 
 /**
- * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a distance "elementSize".
+ * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a given distance.
  * @class Heightfield
  * @extends Shape
  * @constructor
@@ -8094,7 +8008,7 @@ module.exports = Heightfield;
  *
  *     // Create the heightfield shape
  *     var heightfieldShape = new Heightfield(data, {
- *         elementSize: 1 // Distance between the data points in X direction
+ *         elementSize: 1 // Distance between the data points in X and Y directions
  *     });
  *     var heightfieldBody = new Body();
  *     heightfieldBody.addShape(heightfieldShape);
@@ -8165,6 +8079,7 @@ Heightfield.prototype.update = function(){
 };
 
 /**
+ * @method updateMinValue
  * Update the .minValue property
  */
 Heightfield.prototype.updateMinValue = function(){
@@ -8256,6 +8171,7 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
 
 /**
  * Get the index of a local position on the heightfield. The indexes indicate the rectangles, so if your terrain is made of N x N height data points, you will have rectangle indexes ranging from 0 to N-1.
+ * @method getIndexOfPosition
  * @param  {number} x
  * @param  {number} y
  * @param  {array} result Two-element array
@@ -8321,6 +8237,7 @@ Heightfield.prototype.clearCachedConvexTrianglePillar = function(xi, yi, getUppe
 
 /**
  * Get a triangle in the terrain in the form of a triangular convex shape.
+ * @method getConvexTrianglePillar
  * @param  {integer} i
  * @param  {integer} j
  * @param  {boolean} getUpperTriangle
@@ -8546,7 +8463,7 @@ Heightfield.prototype.updateBoundingSphereRadius = function(){
         s = this.elementSize;
     this.boundingSphereRadius = new Vec3(data.length * s, data[0].length * s, Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))).norm();
 };
-},{"../math/Vec3":27,"../utils/Utils":49,"./ConvexPolyhedron":36,"./Shape":41}],39:[function(_dereq_,module,exports){
+},{"../math/Vec3":27,"../utils/Utils":48,"./ConvexPolyhedron":35,"./Shape":40}],38:[function(_dereq_,module,exports){
 module.exports = Particle;
 
 var Shape = _dereq_('./Shape');
@@ -8589,11 +8506,11 @@ Particle.prototype.updateBoundingSphereRadius = function(){
 
 Particle.prototype.calculateWorldAABB = function(pos,quat,min,max){
     // Get each axis max
-    pos.copy(min);
-    pos.copy(max);
+    min.copy(pos);
+    max.copy(pos);
 };
 
-},{"../math/Vec3":27,"./Shape":41}],40:[function(_dereq_,module,exports){
+},{"../math/Vec3":27,"./Shape":40}],39:[function(_dereq_,module,exports){
 module.exports = Plane;
 
 var Shape = _dereq_('./Shape');
@@ -8656,13 +8573,13 @@ Plane.prototype.calculateWorldAABB = function(pos, quat, min, max){
 Plane.prototype.updateBoundingSphereRadius = function(){
     this.boundingSphereRadius = Number.MAX_VALUE;
 };
-},{"../math/Vec3":27,"./Shape":41}],41:[function(_dereq_,module,exports){
+},{"../math/Vec3":27,"./Shape":40}],40:[function(_dereq_,module,exports){
 module.exports = Shape;
 
-var Shape = _dereq_('./Shape')
-,   Vec3 = _dereq_('../math/Vec3')
-,   Quaternion = _dereq_('../math/Quaternion')
-,   Material = _dereq_('../material/Material')
+var Shape = _dereq_('./Shape');
+var Vec3 = _dereq_('../math/Vec3');
+var Quaternion = _dereq_('../math/Quaternion');
+var Material = _dereq_('../material/Material');
 
 /**
  * Base class for shapes
@@ -8736,14 +8653,15 @@ Shape.types = {
     CONVEXPOLYHEDRON:16,
     HEIGHTFIELD:32,
     PARTICLE:64,
+    CYLINDER:128
 };
 
 
-},{"../material/Material":22,"../math/Quaternion":25,"../math/Vec3":27,"./Shape":41}],42:[function(_dereq_,module,exports){
+},{"../material/Material":22,"../math/Quaternion":25,"../math/Vec3":27,"./Shape":40}],41:[function(_dereq_,module,exports){
 module.exports = Sphere;
 
-var Shape = _dereq_('./Shape')
-,   Vec3 = _dereq_('../math/Vec3')
+var Shape = _dereq_('./Shape');
+var Vec3 = _dereq_('../math/Vec3');
 
 /**
  * Spherical shape
@@ -8763,7 +8681,7 @@ function Sphere(radius){
     this.type = Shape.types.SPHERE;
 
     this.updateBoundingSphereRadius();
-};
+}
 Sphere.prototype = new Shape();
 Sphere.prototype.constructor = Sphere;
 
@@ -8794,12 +8712,12 @@ Sphere.prototype.calculateWorldAABB = function(pos,quat,min,max){
     }
 };
 
-},{"../math/Vec3":27,"./Shape":41}],43:[function(_dereq_,module,exports){
+},{"../math/Vec3":27,"./Shape":40}],42:[function(_dereq_,module,exports){
 module.exports = GSSolver;
 
-var Vec3 = _dereq_('../math/Vec3')
-,   Quaternion = _dereq_('../math/Quaternion')
-,   Solver = _dereq_('./Solver')
+var Vec3 = _dereq_('../math/Vec3');
+var Quaternion = _dereq_('../math/Quaternion');
+var Solver = _dereq_('./Solver');
 
 /**
  * Constraint equation Gauss-Seidel solver.
@@ -8808,7 +8726,7 @@ var Vec3 = _dereq_('../math/Vec3')
  * @todo The spook parameters should be specified for each constraint, not globally.
  * @author schteppe / https://github.com/schteppe
  * @see https://www8.cs.umu.se/kurser/5DV058/VT09/lectures/spooknotes.pdf
- * @extends {Solver}
+ * @extends Solver
  */
 function GSSolver(){
     Solver.call(this);
@@ -8929,7 +8847,7 @@ GSSolver.prototype.solve = function(dt,world){
     return iter;
 };
 
-},{"../math/Quaternion":25,"../math/Vec3":27,"./Solver":44}],44:[function(_dereq_,module,exports){
+},{"../math/Quaternion":25,"../math/Vec3":27,"./Solver":43}],43:[function(_dereq_,module,exports){
 module.exports = Solver;
 
 /**
@@ -8990,25 +8908,25 @@ Solver.prototype.removeAllEquations = function(){
 };
 
 
-},{}],45:[function(_dereq_,module,exports){
+},{}],44:[function(_dereq_,module,exports){
 module.exports = SplitSolver;
 
-var Vec3 = _dereq_('../math/Vec3')
-,   Quaternion = _dereq_('../math/Quaternion')
-,   Solver = _dereq_('./Solver')
-,   Body = _dereq_('../objects/Body')
+var Vec3 = _dereq_('../math/Vec3');
+var Quaternion = _dereq_('../math/Quaternion');
+var Solver = _dereq_('./Solver');
+var Body = _dereq_('../objects/Body');
 
 /**
  * Splits the equations into islands and solves them independently. Can improve performance.
  * @class SplitSolver
  * @constructor
- * @extends {Solver}
+ * @extends Solver
  * @param {Solver} subsolver
  */
 function SplitSolver(subsolver){
     Solver.call(this);
     this.subsolver = subsolver;
-};
+}
 SplitSolver.prototype = new Solver();
 
 // Returns the number of subsystems
@@ -9118,13 +9036,15 @@ SplitSolver.prototype.solve = function(dt,world){
     return n;
 };
 
-},{"../math/Quaternion":25,"../math/Vec3":27,"../objects/Body":28,"./Solver":44}],46:[function(_dereq_,module,exports){
+},{"../math/Quaternion":25,"../math/Vec3":27,"../objects/Body":28,"./Solver":43}],45:[function(_dereq_,module,exports){
 /**
  * Base class for objects that dispatches events.
  * @class EventTarget
  * @constructor
  */
-var EventTarget = function () {}
+var EventTarget = function () {
+
+};
 
 module.exports = EventTarget;
 
@@ -9139,7 +9059,7 @@ EventTarget.prototype = {
      * @return {EventTarget} The self object, for chainability.
      */
     addEventListener: function ( type, listener ) {
-        if ( this._listeners === undefined ) this._listeners = {};
+        if ( this._listeners === undefined ){ this._listeners = {}; }
         var listeners = this._listeners;
         if ( listeners[ type ] === undefined ) {
             listeners[ type ] = [];
@@ -9158,7 +9078,7 @@ EventTarget.prototype = {
      * @return {Boolean}
      */
     hasEventListener: function ( type, listener ) {
-        if ( this._listeners === undefined ) return false;
+        if ( this._listeners === undefined ){ return false; }
         var listeners = this._listeners;
         if ( listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1 ) {
             return true;
@@ -9174,9 +9094,9 @@ EventTarget.prototype = {
      * @return {EventTarget} The self object, for chainability.
      */
     removeEventListener: function ( type, listener ) {
-        if ( this._listeners === undefined ) return this;
+        if ( this._listeners === undefined ){ return this; }
         var listeners = this._listeners;
-        if ( listeners[type] === undefined ) return this;
+        if ( listeners[type] === undefined ){ return this; }
         var index = listeners[ type ].indexOf( listener );
         if ( index !== - 1 ) {
             listeners[ type ].splice( index, 1 );
@@ -9192,7 +9112,7 @@ EventTarget.prototype = {
      * @return {EventTarget} The self object, for chainability.
      */
     dispatchEvent: function ( event ) {
-        if ( this._listeners === undefined ) return this;
+        if ( this._listeners === undefined ){ return this; }
         var listeners = this._listeners;
         var listenerArray = listeners[ event.type ];
         if ( listenerArray !== undefined ) {
@@ -9205,7 +9125,7 @@ EventTarget.prototype = {
     }
 };
 
-},{}],47:[function(_dereq_,module,exports){
+},{}],46:[function(_dereq_,module,exports){
 module.exports = Pool;
 
 /**
@@ -9225,7 +9145,7 @@ function Pool(){
      * @property {mixed} type
      */
     this.type = Object;
-};
+}
 
 /**
  * Release an object after use
@@ -9261,7 +9181,7 @@ Pool.prototype.constructObject = function(){
     throw new Error("constructObject() not implemented in this Pool subclass yet!");
 };
 
-},{}],48:[function(_dereq_,module,exports){
+},{}],47:[function(_dereq_,module,exports){
 module.exports = TupleDictionary;
 
 /**
@@ -9276,7 +9196,7 @@ function TupleDictionary() {
      * @type {Object}
      */
     this.data = { keys:[] };
-};
+}
 
 /**
  * @method get
@@ -9309,8 +9229,9 @@ TupleDictionary.prototype.set = function(i, j, value) {
     var key = i+'-'+j;
 
     // Check if key already exists
-    if(!this.get(i,j))
+    if(!this.get(i,j)){
         this.data.keys.push(key);
+    }
 
     this.data[key] = value;
 };
@@ -9327,7 +9248,7 @@ TupleDictionary.prototype.reset = function() {
     }
 };
 
-},{}],49:[function(_dereq_,module,exports){
+},{}],48:[function(_dereq_,module,exports){
 function Utils(){}
 
 module.exports = Utils;
@@ -9352,21 +9273,21 @@ Utils.defaults = function(options, defaults){
     return options;
 };
 
-},{}],50:[function(_dereq_,module,exports){
+},{}],49:[function(_dereq_,module,exports){
 module.exports = Vec3Pool;
 
-var Vec3 = _dereq_('../math/Vec3')
-,   Pool = _dereq_('./Pool')
+var Vec3 = _dereq_('../math/Vec3');
+var Pool = _dereq_('./Pool');
 
 /**
  * @class Vec3Pool
  * @constructor
- * @extends {Pool}
+ * @extends Pool
  */
 function Vec3Pool(){
     Pool.call(this);
     this.type = Vec3;
-};
+}
 Vec3Pool.prototype = new Pool();
 
 /**
@@ -9378,8 +9299,8 @@ Vec3Pool.prototype.constructObject = function(){
     return new Vec3();
 };
 
-},{"../math/Vec3":27,"./Pool":47}],51:[function(_dereq_,module,exports){
-module.exports = ContactGenerator;
+},{"../math/Vec3":27,"./Pool":46}],50:[function(_dereq_,module,exports){
+module.exports = Narrowphase;
 
 var Shape = _dereq_('../shapes/Shape');
 var Vec3 = _dereq_('../math/Vec3');
@@ -9392,13 +9313,13 @@ var ContactEquation = _dereq_('../equations/ContactEquation');
 
 /**
  * Helper class for the World. Generates ContactEquations.
- * @class ContactGenerator
+ * @class Narrowphase
  * @constructor
  * @todo Sphere-ConvexPolyhedron contacts
  * @todo Contact reduction
  * @todo  should move methods to prototype
  */
-function ContactGenerator(){
+function Narrowphase(){
 
     /**
      * Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
@@ -9424,7 +9345,7 @@ function ContactGenerator(){
  * @method swapResult
  * @param object r
  */
-ContactGenerator.prototype.swapResult = function(r){
+Narrowphase.prototype.swapResult = function(r){
     var temp;
     temp = r.ri;
     r.ri = r.rj;
@@ -9440,7 +9361,7 @@ ContactGenerator.prototype.swapResult = function(r){
  * @method reduceContacts
  * @param {Array} contacts
  */
-ContactGenerator.prototype.reduceContacts = function(contacts){
+Narrowphase.prototype.reduceContacts = function(contacts){
 
 };
 
@@ -9449,7 +9370,7 @@ ContactGenerator.prototype.reduceContacts = function(contacts){
  * @method makeResult
  * @return {ContactEquation}
  */
-ContactGenerator.prototype.makeResult = function(bi, bj, si, sj){
+Narrowphase.prototype.makeResult = function(bi, bj, si, sj, rsi, rsj){
     var c;
     if(this.contactPointPool.length){
         c = this.contactPointPool.pop();
@@ -9459,8 +9380,9 @@ ContactGenerator.prototype.makeResult = function(bi, bj, si, sj){
         c = new ContactEquation(bi, bj);
     }
 
-    c.si = si;
-    c.sj = sj;
+    c.enabled = true;
+    c.si = rsi || si;
+    c.sj = rsj || sj;
 
     return c;
 };
@@ -9479,7 +9401,7 @@ var tmpQuat2 = new Quaternion();
  * @param {array} result Array to store generated contacts
  * @param {array} oldcontacts Optional. Array of reusable contact objects
  */
-ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
+Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
     // Save old contact objects
     this.contactPointPool = oldcontacts;
 
@@ -9498,6 +9420,7 @@ ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts
             bi.quaternion.mult(bi.shapeOrientations[i], qi);
             bi.quaternion.vmult(bi.shapeOffsets[i], xi);
             xi.vadd(bi.position, xi);
+            var si = bi.shapes[i];
 
             for (var j = 0; j < bj.shapes.length; j++) {
 
@@ -9505,8 +9428,18 @@ ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts
                 bj.quaternion.mult(bj.shapeOrientations[j], qj);
                 bj.quaternion.vmult(bj.shapeOffsets[j], xj);
                 xj.vadd(bj.position, xj);
+                var sj = bj.shapes[j];
 
                 // Get contacts
+                var resolver = this[si.type | sj.type];
+                if(resolver){
+                    if (si.type < sj.type) {
+                        resolver.call(this, result, si,sj,xi,xj,qi,qj,bi,bj,si,sj);
+                    } else {
+                        resolver.call(this, result, sj,si,xj,xi,qj,qi,bj,bi,si,sj);
+                    }
+                }
+                /*
                 this.narrowphase(
                     result,
                     bi.shapes[i],
@@ -9515,6 +9448,7 @@ ContactGenerator.prototype.getContacts = function(p1,p2,world,result,oldcontacts
                     qi, qj,
                     bi, bj
                 );
+                */
             }
         }
     }
@@ -9544,7 +9478,8 @@ function warn(msg){
  * @param {Quaternion} qi Rotation around the center of mass
  * @param {Quaternion} qj
  */
-ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+/*
+Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var swapped = false,
         types = Shape.types,
         SPHERE = types.SPHERE,
@@ -9555,49 +9490,26 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
         CONVEXPOLYHEDRON = types.CONVEXPOLYHEDRON,
         HEIGHTFIELD = types.HEIGHTFIELD;
 
-    if(si && sj){
-        if(si.type > sj.type){
-            var temp;
-            temp=sj;
-            sj=si;
-            si=temp;
+    if(si.type > sj.type){
+        var temp;
 
-            temp=xj;
-            xj=xi;
-            xi=temp;
+        temp = sj;
+        sj = si;
+        si = temp;
 
-            temp=qj;
-            qj=qi;
-            qi=temp;
+        temp = xj;
+        xj = xi;
+        xi = temp;
 
-            temp=bj;
-            bj=bi;
-            bi=temp;
+        temp = qj;
+        qj = qi;
+        qi = temp;
 
-            swapped = true;
-        }
-    } else {
-        // Particle!
-        if(si && !sj){
-            var temp;
-            temp=sj;
-            sj=si;
-            si=temp;
+        temp = bj;
+        bj = bi;
+        bi = temp;
 
-            temp=xj;
-            xj=xi;
-            xi=temp;
-
-            temp=qj;
-            qj=qi;
-            qi=temp;
-
-            temp=bj;
-            bj=bi;
-            bi=temp;
-
-            swapped = true;
-        }
+        swapped = true;
     }
 
     if(si && sj){
@@ -9612,9 +9524,6 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 break;
             case BOX: // sphere-box
                 this.sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case COMPOUND: // sphere-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             case CONVEXPOLYHEDRON: // sphere-convexpolyhedron
                 this.sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
@@ -9639,9 +9548,6 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
             case BOX: // plane-box
                 this.planeBox(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
-            case COMPOUND: // plane-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
             case CONVEXPOLYHEDRON: // plane-convex polyhedron
                 this.planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
@@ -9658,43 +9564,20 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
             switch(sj.type){
             case BOX: // box-box
                 // Do convex/convex instead
-                this.narrowphase(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
-                break;
-            case COMPOUND: // box-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+                this.convexConvex(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj,si,sj);
                 break;
             case CONVEXPOLYHEDRON: // box-convexpolyhedron
                 // Do convex/convex instead
-                this.narrowphase(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+                this.convexConvex(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
                 break;
             case PARTICLE: // Particle vs box
-                this.particleConvex(result,sj,si.convexPolyhedronRepresentation,xj,xi,qj,qi,bj,bi);
+                this.convexParticle(result,sj,si.convexPolyhedronRepresentation,xj,xi,qj,qi,bj,bi,si,sj);
                 break;
             case HEIGHTFIELD: // Box vs heightfield
-                this.convexHeightfield(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+                this.convexHeightfield(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
                 break;
             default:
                 warn("Collision between Shape.BOX and "+sj.type+" not implemented yet.");
-                break;
-            }
-
-        } else if(si.type===COMPOUND){
-
-            switch(sj.type){
-            case types.COMPOUND: // compound-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case types.CONVEXPOLYHEDRON: // compound-convex polyhedron
-                // Must swap
-                var r = [];
-                this.recurseCompound(r,sj,si,xj,xi,qj,qi,bj,bi);
-                for(var ri=0; ri!==r.length; ri++){
-                    this.swapResult(r[ri]);
-                    result.push(r[ri]);
-                }
-                break;
-            default:
-                warn("Collision between Shape.types.COMPOUND and "+sj.type+" not implemented yet.");
                 break;
             }
 
@@ -9705,7 +9588,7 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 this.convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             case types.PARTICLE: // particle-convex
-                this.particleConvex(result,sj,si,xj,xi,qj,qi,bj,bi);
+                this.convexParticle(result,sj,si,xj,xi,qj,qi,bj,bi);
                 break;
             default:
                 warn("Collision between Shape.types.CONVEXPOLYHEDRON and "+sj.type+" not implemented yet.");
@@ -9734,13 +9617,10 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
                 this.particleSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             case types.BOX: // Particle vs box
-                this.particleConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
+                this.convexParticle(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
                 break;
             case types.CONVEXPOLYHEDRON: // particle-convex
-                this.particleConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case types.COMPOUND: // particle-compound
-                this.recurseCompound(result,si,sj,xi,xj,qi,qj,bi,bj);
+                this.convexParticle(result,si,sj,xi,xj,qi,qj,bi,bj);
                 break;
             default:
                 console.warn("Collision between Particle and "+sj.type+" not implemented yet.");
@@ -9753,6 +9633,23 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
     for(var i=0, Nresults=result.length; swapped && i!==Nresults; i++){
         this.swapResult(result[i]);
     }
+};
+*/
+
+
+Narrowphase.prototype[Shape.types.BOX | Shape.types.BOX] =
+Narrowphase.prototype.boxBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+    this.convexConvex(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj,si,sj);
+};
+
+Narrowphase.prototype[Shape.types.BOX | Shape.types.CONVEXPOLYHEDRON] =
+Narrowphase.prototype.boxConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+    this.convexConvex(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
+};
+
+Narrowphase.prototype[Shape.types.BOX | Shape.types.PARTICLE] =
+Narrowphase.prototype.boxParticle = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+    this.convexParticle(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
 /**
@@ -9767,7 +9664,8 @@ ContactGenerator.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.SPHERE] =
+Narrowphase.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have only one contact in this case
     var r = this.makeResult(bi,bj,si,sj);
 
@@ -9776,8 +9674,8 @@ ContactGenerator.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,b
     r.ni.normalize();
 
     // Contact point locations
-    r.ni.copy(r.ri);
-    r.ni.copy(r.rj);
+    r.ri.copy(r.ni);
+    r.rj.copy(r.ni);
     r.ri.mult(si.radius, r.ri);
     r.rj.mult(-sj.radius, r.rj);
     result.push(r);
@@ -9798,7 +9696,8 @@ var plane_to_sphere_ortho = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.PLANE] =
+Narrowphase.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     // We will have one contact in this case
     var r = this.makeResult(bi,bj,si,sj);
 
@@ -9892,7 +9791,8 @@ var sphereBox_side_ns2 = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.BOX] =
+Narrowphase.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var v3pool = this.v3pool;
 
     // we refer to the box as body j
@@ -9917,7 +9817,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     for(var idx=0,nsides=sides.length; idx!==nsides && found===false; idx++){
         // Get the plane side normal (ns)
         var ns = sphereBox_ns;
-        sides[idx].copy(ns);
+        ns.copy(sides[idx]);
 
         var h = ns.norm();
         ns.normalize();
@@ -9929,8 +9829,8 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
             // Intersects plane. Now check the other two dimensions
             var ns1 = sphereBox_ns1;
             var ns2 = sphereBox_ns2;
-            sides[(idx+1)%3].copy(ns1);
-            sides[(idx+2)%3].copy(ns2);
+            ns1.copy(sides[(idx+1)%3]);
+            ns2.copy(sides[(idx+2)%3]);
             var h1 = ns1.norm();
             var h2 = ns2.norm();
             ns1.normalize();
@@ -9944,9 +9844,9 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                     side_dot1 = dot1;
                     side_dot2 = dot2;
                     side_h = h;
-                    ns.copy(side_ns);
-                    ns1.copy(side_ns1);
-                    ns2.copy(side_ns2);
+                    side_ns.copy(ns);
+                    side_ns1.copy(ns1);
+                    side_ns2.copy(ns2);
                     side_penetrations++;
                 }
             }
@@ -9956,7 +9856,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
         found = true;
         var r = this.makeResult(bi,bj,si,sj);
         side_ns.mult(-R,r.ri); // Sphere r
-        side_ns.copy(r.ni);
+        r.ni.copy(side_ns);
         r.ni.negate(r.ni); // Normal should be out of sphere
         side_ns.mult(side_h,side_ns);
         side_ns1.mult(side_dot1,side_ns1);
@@ -10003,11 +9903,11 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                 if(sphere_to_corner.norm2() < R*R){
                     found = true;
                     var r = this.makeResult(bi,bj,si,sj);
-                    sphere_to_corner.copy(r.ri);
+                    r.ri.copy(sphere_to_corner);
                     r.ri.normalize();
-                    r.ri.copy(r.ni);
+                    r.ni.copy(r.ri);
                     r.ri.mult(R,r.ri);
-                    rj.copy(r.rj);
+                    r.rj.copy(rj);
 
                     // Make relative to bodies
                     r.ri.vadd(xi, r.ri);
@@ -10037,7 +9937,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                 sides[k].cross(sides[j],edgeTangent);
                 edgeTangent.normalize();
                 sides[j].vadd(sides[k], edgeCenter);
-                xi.copy(r);
+                r.copy(xi);
                 r.vsub(edgeCenter,r);
                 r.vsub(xj,r);
                 var orthonorm = r.dot(edgeTangent); // distance from edge center to sphere center in the tangent direction
@@ -10050,7 +9950,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                 }
 
                 // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-                xi.copy(dist);
+                dist.copy(xi);
                 dist.vsub(orthogonal,dist);
                 dist.vsub(edgeCenter,dist);
                 dist.vsub(xj,dist);
@@ -10067,7 +9967,7 @@ ContactGenerator.prototype.sphereBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
                     dist.negate(res.ni);
                     res.ni.normalize();
 
-                    res.rj.copy(res.ri);
+                    res.ri.copy(res.rj);
                     res.ri.vadd(xj,res.ri);
                     res.ri.vsub(xi,res.ri);
                     res.ri.normalize();
@@ -10110,7 +10010,8 @@ var sphereConvex_sphereToWorldPoint = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.CONVEXPOLYHEDRON] =
+Narrowphase.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var v3pool = this.v3pool;
     xi.vsub(xj,convex_to_sphere);
     var normals = sj.faceNormals;
@@ -10132,9 +10033,9 @@ ContactGenerator.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,b
         if(sphere_to_corner.norm2() < R * R){
             found = true;
             var r = this.makeResult(bi,bj,si,sj);
-            sphere_to_corner.copy(r.ri);
+            r.ri.copy(sphere_to_corner);
             r.ri.normalize();
-            r.ri.copy(r.ni);
+            r.ni.copy(r.ri);
             r.ri.mult(R,r.ri);
             worldCorner.vsub(xj,r.rj);
 
@@ -10326,73 +10227,9 @@ var plane_to_corner = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.PLANE | Shape.types.BOX] =
+Narrowphase.prototype.planeBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     this.planeConvex(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
-};
-
-/**
- * Go recursive for compound shapes
- * @method recurseCompound
- * @param  {Array}      result
- * @param  {Shape}      si
- * @param  {Shape}      sj
- * @param  {Vec3}       xi
- * @param  {Vec3}       xj
- * @param  {Quaternion} qi
- * @param  {Quaternion} qj
- * @param  {Body}       bi
- * @param  {Body}       bj
- */
-var recurseCompound_v3pool = [];
-var recurseCompound_quatpool = [];
-ContactGenerator.prototype.recurseCompound = function(result,si,sj,xi,xj,qi,qj,bi,bj){
-    var v3pool = recurseCompound_v3pool;
-    var quatPool = recurseCompound_quatpool;
-    var nr = 0;
-    for(var i=0, Nchildren=sj.childShapes.length; i!==Nchildren; i++){
-        var r = [];
-        var newQuat = quatPool.pop() || new Quaternion();
-        var newPos = v3pool.pop() || new Vec3();
-
-        // Calculate world quaternion for the shape
-        qj.mult(sj.childOrientations[i], newQuat); // Can't reuse these since narrowphase() may recurse
-        newQuat.normalize();
-
-        // Calculate the world position for the shape.
-        //var newPos = xj.vadd(qj.vmult(sj.childOffsets[i]));
-        qj.vmult(sj.childOffsets[i],newPos);
-        xj.vadd(newPos,newPos);
-
-        this.narrowphase(
-            r,
-            si,
-            sj.childShapes[i],
-            xi,
-            newPos,//xj.vadd(qj.vmult(sj.childOffsets[i])), // Transform the shape to its local frame
-            qi,
-            newQuat, // Accumulate orientation
-            bi,
-            bj
-        );
-
-        // Release vector and quat
-        quatPool.push(newQuat);
-
-        var tempVec = newPos;
-
-        if(!si){
-            nr+= r.length;
-        }
-        for(var j=0; j!==r.length; j++){
-            // The "rj" vector is in world coords, though we must add the world child offset vector.
-            //r[j].rj.vadd(qj.vmult(sj.childOffsets[i]),r[j].rj);
-            // qj.vmult(sj.childOffsets[i],tempVec);
-            // r[j].rj.vadd(tempVec,r[j].rj);
-            result.push(r[j]);
-        }
-
-        v3pool.push(newPos);
-    }
 };
 
 var planeConvex_v = new Vec3();
@@ -10412,7 +10249,8 @@ var planeConvex_projected = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.planeConvex = function(
+Narrowphase.prototype[Shape.types.PLANE | Shape.types.CONVEXPOLYHEDRON] =
+Narrowphase.prototype.planeConvex = function(
     result,
     planeShape,
     convexShape,
@@ -10433,7 +10271,7 @@ ContactGenerator.prototype.planeConvex = function(
     for(var i = 0; i !== convexShape.vertices.length; i++){
 
         // Get world convex vertex
-        convexShape.vertices[i].copy(worldVertex);
+        worldVertex.copy(convexShape.vertices[i]);
         convexQuat.vmult(worldVertex, worldVertex);
         convexPosition.vadd(worldVertex, worldVertex);
         worldVertex.vsub(planePosition, relpos);
@@ -10449,7 +10287,7 @@ ContactGenerator.prototype.planeConvex = function(
             worldVertex.vsub(projected, projected);
             projected.vsub(planePosition, r.ri); // From plane to vertex projected on plane
 
-            worldNormal.copy(r.ni); // Contact normal is the plane normal out from plane
+            r.ni.copy(worldNormal); // Contact normal is the plane normal out from plane
 
             // rj is now just the vector from the convex center to the vertex
             worldVertex.vsub(convexPosition, r.rj);
@@ -10480,21 +10318,22 @@ var convexConvex_q = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON] =
+Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
     var sepAxis = convexConvex_sepAxis;
     if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
         var res = [];
         var q = convexConvex_q;
         si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
         for(var j = 0; j !== res.length; j++){
-            var r = this.makeResult(bi,bj,si,sj),
+            var r = this.makeResult(bi,bj,si,sj,rsi,rsj),
                 ri = r.ri,
                 rj = r.rj;
             sepAxis.negate(r.ni);
             res[j].normal.negate(q);
             q.mult(res[j].depth, q);
             res[j].point.vadd(q, ri);
-            res[j].point.copy(rj);
+            rj.copy(res[j].point);
 
             // Contact points are in world coordinates. Transform back to relative
             ri.vsub(xi,ri);
@@ -10527,7 +10366,8 @@ var particlePlane_projected = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.PLANE | Shape.types.PARTICLE] =
+Narrowphase.prototype.planeParticle = function(result,sj,si,xj,xi,qj,qi,bj,bi){
     var normal = particlePlane_normal;
     normal.set(0,0,1);
     bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
@@ -10536,7 +10376,7 @@ ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,
     var dot = normal.dot(relpos);
     if(dot <= 0.0){
         var r = this.makeResult(bi,bj,si,sj);
-        normal.copy( r.ni ); // Contact normal is the plane normal
+        r.ni.copy(normal); // Contact normal is the plane normal
         r.ni.negate(r.ni);
         r.ri.set(0,0,0); // Center of particle
 
@@ -10547,7 +10387,7 @@ ContactGenerator.prototype.particlePlane = function(result,si,sj,xi,xj,qi,qj,bi,
         //projected.vadd(bj.position,projected);
 
         // rj is now the projected world position minus plane position
-        projected.copy(r.rj);
+        r.rj.copy(projected);
         result.push(r);
     }
 };
@@ -10566,7 +10406,8 @@ var particleSphere_normal = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.PARTICLE | Shape.types.SPHERE] =
+Narrowphase.prototype.sphereParticle = function(result,sj,si,xj,xi,qj,qi,bj,bi){
     // The normal is the unit vector from sphere center to particle center
     var normal = particleSphere_normal;
     normal.set(0,0,1);
@@ -10576,9 +10417,9 @@ ContactGenerator.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi
     if(lengthSquared <= sj.radius * sj.radius){
         var r = this.makeResult(bi,bj,si,sj);
         normal.normalize();
-        normal.copy(r.rj);
+        r.rj.copy(normal);
         r.rj.mult(sj.radius,r.rj);
-        normal.copy( r.ni ); // Contact normal
+        r.ni.copy(normal); // Contact normal
         r.ni.negate(r.ni);
         r.ri.set(0,0,0); // Center of particle
         result.push(r);
@@ -10587,14 +10428,14 @@ ContactGenerator.prototype.particleSphere = function(result,si,sj,xi,xj,qi,qj,bi
 
 // WIP
 var cqj = new Quaternion();
-var particleConvex_local = new Vec3();
-var particleConvex_normal = new Vec3();
-var particleConvex_penetratedFaceNormal = new Vec3();
-var particleConvex_vertexToParticle = new Vec3();
-var particleConvex_worldPenetrationVec = new Vec3();
+var convexParticle_local = new Vec3();
+var convexParticle_normal = new Vec3();
+var convexParticle_penetratedFaceNormal = new Vec3();
+var convexParticle_vertexToParticle = new Vec3();
+var convexParticle_worldPenetrationVec = new Vec3();
 
 /**
- * @method particleConvex
+ * @method convexParticle
  * @param  {Array}      result
  * @param  {Shape}      si
  * @param  {Shape}      sj
@@ -10605,16 +10446,17 @@ var particleConvex_worldPenetrationVec = new Vec3();
  * @param  {Body}       bi
  * @param  {Body}       bj
  */
-ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype[Shape.types.PARTICLE | Shape.types.CONVEXPOLYHEDRON] =
+Narrowphase.prototype.convexParticle = function(result,sj,si,xj,xi,qj,qi,bj,bi){
     var penetratedFaceIndex = -1;
-    var penetratedFaceNormal = particleConvex_penetratedFaceNormal;
-    var worldPenetrationVec = particleConvex_worldPenetrationVec;
+    var penetratedFaceNormal = convexParticle_penetratedFaceNormal;
+    var worldPenetrationVec = convexParticle_worldPenetrationVec;
     var minPenetration = null;
     var numDetectedFaces = 0;
 
     // Convert particle position xi to local coords in the convex
-    var local = particleConvex_local;
-    xi.copy(local);
+    var local = convexParticle_local;
+    local.copy(xi);
     local.vsub(xj,local); // Convert position to relative the convex origin
     qj.conjugate(cqj);
     cqj.vmult(local,local);
@@ -10636,12 +10478,12 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
             var normal = sj.worldFaceNormals[i];
 
             // Check how much the particle penetrates the polygon plane.
-            xi.vsub(verts[0],particleConvex_vertexToParticle);
-            var penetration = -normal.dot(particleConvex_vertexToParticle);
+            xi.vsub(verts[0],convexParticle_vertexToParticle);
+            var penetration = -normal.dot(convexParticle_vertexToParticle);
             if(minPenetration===null || Math.abs(penetration)<Math.abs(minPenetration)){
                 minPenetration = penetration;
                 penetratedFaceIndex = i;
-                normal.copy(penetratedFaceNormal);
+                penetratedFaceNormal.copy(normal);
                 numDetectedFaces++;
             }
         }
@@ -10654,7 +10496,7 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
             // rj is the particle position projected to the face
             worldPenetrationVec.vadd(xi,worldPenetrationVec);
             worldPenetrationVec.vsub(xj,worldPenetrationVec);
-            worldPenetrationVec.copy(r.rj);
+            r.rj.copy(worldPenetrationVec);
             //var projectedToFace = xi.vsub(xj).vadd(worldPenetrationVec);
             //projectedToFace.copy(r.rj);
 
@@ -10678,13 +10520,19 @@ ContactGenerator.prototype.particleConvex = function(result,si,sj,xi,xj,qi,qj,bi
     }
 };
 
+Narrowphase.prototype[Shape.types.BOX | Shape.types.HEIGHTFIELD] =
+Narrowphase.prototype.boxHeightfield = function (result,si,sj,xi,xj,qi,qj,bi,bj){
+    this.convexHeightfield(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+};
+
 var convexHeightfield_tmp1 = new Vec3();
 var convexHeightfield_tmp2 = new Vec3();
 
 /**
  * @method sphereHeightfield
  */
-ContactGenerator.prototype.convexHeightfield = function (
+Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON | Shape.types.HEIGHTFIELD] =
+Narrowphase.prototype.convexHeightfield = function (
     result,
     convexShape,
     hfShape,
@@ -10760,7 +10608,8 @@ var sphereHeightfield_tmp2 = new Vec3();
 /**
  * @method sphereHeightfield
  */
-ContactGenerator.prototype.sphereHeightfield = function (
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.HEIGHTFIELD] =
+Narrowphase.prototype.sphereHeightfield = function (
     result,
     sphereShape,
     hfShape,
@@ -10840,7 +10689,9 @@ ContactGenerator.prototype.sphereHeightfield = function (
         }
     }
 };
-},{"../equations/ContactEquation":16,"../math/Quaternion":25,"../math/Transform":26,"../math/Vec3":27,"../shapes/ConvexPolyhedron":36,"../shapes/Shape":41,"../solver/Solver":44,"../utils/Vec3Pool":50}],52:[function(_dereq_,module,exports){
+},{"../equations/ContactEquation":16,"../math/Quaternion":25,"../math/Transform":26,"../math/Vec3":27,"../shapes/ConvexPolyhedron":35,"../shapes/Shape":40,"../solver/Solver":43,"../utils/Vec3Pool":49}],51:[function(_dereq_,module,exports){
+/* global performance */
+
 module.exports = World;
 
 var Shape = _dereq_('../shapes/Shape');
@@ -10850,7 +10701,7 @@ var GSSolver = _dereq_('../solver/GSSolver');
 var Vec3Pool = _dereq_('../utils/Vec3Pool');
 var ContactEquation = _dereq_('../equations/ContactEquation');
 var FrictionEquation = _dereq_('../equations/FrictionEquation');
-var ContactGenerator = _dereq_('./ContactGenerator');
+var Narrowphase = _dereq_('./Narrowphase');
 var EventTarget = _dereq_('../utils/EventTarget');
 var ArrayCollisionMatrix = _dereq_('../collision/ArrayCollisionMatrix');
 var Material = _dereq_('../material/Material');
@@ -10866,7 +10717,7 @@ var NaiveBroadphase = _dereq_('../collision/NaiveBroadphase');
  * The physics world
  * @class World
  * @constructor
- * @extends {EventTarget}
+ * @extends EventTarget
  */
 function World(){
     EventTarget.apply(this);
@@ -10957,21 +10808,20 @@ function World(){
     this.constraints = [];
 
     /**
-     * @property contactgen
-     * @type {ContactGenerator}
+     * @property narrowphase
+     * @type {Narrowphase}
      */
-    this.contactgen = new ContactGenerator();
+    this.narrowphase = new Narrowphase();
 
     /**
-     * It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
-     * @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
+     * @property {ArrayCollisionMatrix} collisionMatrix
 	 * @type {ArrayCollisionMatrix}
 	 */
 	this.collisionMatrix = new ArrayCollisionMatrix();
 
     /**
-     * collisionMatrix from the previous step
-     * @property Collision "matrix", size (Nbodies * (Nbodies.length + 1))/2
+     * CollisionMatrix from the previous step.
+     * @property {ArrayCollisionMatrix} collisionMatrixPrevious
 	 * @type {ArrayCollisionMatrix}
 	 */
 	this.collisionMatrixPrevious = new ArrayCollisionMatrix();
@@ -11092,12 +10942,12 @@ World.prototype.add = World.prototype.addBody = function(body){
     body.index = this.bodies.length;
     this.bodies.push(body);
     body.world = this;
-    body.position.copy(body.initPosition);
-    body.velocity.copy(body.initVelocity);
+    body.initPosition.copy(body.position);
+    body.initVelocity.copy(body.velocity);
     body.timeLastSleepy = this.time;
     if(body instanceof Body){
-        body.angularVelocity.copy(body.initAngularVelocity);
-        body.quaternion.copy(body.initQuaternion);
+        body.initAngularVelocity.copy(body.angularVelocity);
+        body.initQuaternion.copy(body.quaternion);
     }
 	this.collisionMatrix.setNumObjects(this.bodies.length);
     this.addBodyEvent.body = body;
@@ -11142,8 +10992,8 @@ World.prototype.rayTest = function(from, to, result){
 
     this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
 
-    from.copy(tmpRay.from);
-    to.copy(tmpRay.to);
+    tmpRay.from.copy(from);
+    tmpRay.to.copy(to);
 
     tmpRay.intersectBodies(tmpArray1, result);
 };
@@ -11198,15 +11048,16 @@ World.prototype.addContactMaterial = function(cmat) {
 };
 
 // performance.now()
-if(typeof performance === 'undefined')
+if(typeof performance === 'undefined'){
     performance = {};
+}
 if(!performance.now){
     var nowOffset = Date.now();
     if (performance.timing && performance.timing.navigationStart){
-      nowOffset = performance.timing.navigationStart
+        nowOffset = performance.timing.navigationStart;
     }
     performance.now = function(){
-      return Date.now() - nowOffset;
+        return Date.now() - nowOffset;
     };
 }
 
@@ -11279,8 +11130,8 @@ World.prototype.step = function(dt, timeSinceLastCalled, maxSubSteps){
             } else {
 
                 // For static bodies, just copy. Who else will do it?
-                b.position.copy(b.interpolatedPosition);
-                b.quaternion.copy(b.interpolatedQuaternion);
+                b.interpolatedPosition.copy(b.position);
+                b.interpolatedQuaternion.copy(b.quaternion);
             }
         }
     }
@@ -11389,7 +11240,7 @@ World.prototype.internalStep = function(dt){
     }
     contacts.length = 0;
 
-    this.contactgen.getContacts(p1,p2,
+    this.narrowphase.getContacts(p1,p2,
                                 this,
                                 contacts,
                                 oldcontacts // To be reused
@@ -11427,10 +11278,11 @@ World.prototype.internalStep = function(dt){
 
         // Get collision properties
         var cm;
-        if(bi.material && bj.material)
+        if(bi.material && bj.material){
             cm = this.getContactMaterial(bi.material,bj.material) || this.defaultContactMaterial;
-        else
+        } else {
             cm = this.defaultContactMaterial;
+        }
         var mu = cm.friction;
 
         // g = ( xj + rj - xi - ri ) .dot ( ni )
@@ -11474,10 +11326,10 @@ World.prototype.internalStep = function(dt){
 				c1.maxForce = c2.maxForce = mug*reducedMass;
 
 				// Copy over the relative vectors
-				c.ri.copy(c1.ri);
-				c.rj.copy(c1.rj);
-				c.ri.copy(c2.ri);
-				c.rj.copy(c2.rj);
+				c1.ri.copy(c.ri);
+				c1.rj.copy(c.rj);
+				c2.ri.copy(c.ri);
+				c2.rj.copy(c.rj);
 
 				// Construct tangents
 				c.ni.tangents(c1.t, c2.t);
@@ -11485,6 +11337,8 @@ World.prototype.internalStep = function(dt){
                 // Set spook params
                 c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
                 c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
+
+                c1.enabled = c2.enabled = c.enabled;
 
 				// Add equations to solver
 				solver.addEquation(c1);
@@ -11722,6 +11576,6 @@ World.prototype.internalStep = function(dt){
     }
 };
 
-},{"../collision/AABB":3,"../collision/ArrayCollisionMatrix":4,"../collision/NaiveBroadphase":7,"../collision/Ray":9,"../collision/RaycastResult":10,"../equations/ContactEquation":16,"../equations/FrictionEquation":18,"../material/ContactMaterial":21,"../material/Material":22,"../math/Quaternion":25,"../math/Vec3":27,"../objects/Body":28,"../shapes/Shape":41,"../solver/GSSolver":43,"../utils/EventTarget":46,"../utils/TupleDictionary":48,"../utils/Vec3Pool":50,"./ContactGenerator":51}]},{},[2])
+},{"../collision/AABB":3,"../collision/ArrayCollisionMatrix":4,"../collision/NaiveBroadphase":7,"../collision/Ray":9,"../collision/RaycastResult":10,"../equations/ContactEquation":16,"../equations/FrictionEquation":18,"../material/ContactMaterial":21,"../material/Material":22,"../math/Quaternion":25,"../math/Vec3":27,"../objects/Body":28,"../shapes/Shape":40,"../solver/GSSolver":42,"../utils/EventTarget":45,"../utils/TupleDictionary":47,"../utils/Vec3Pool":49,"./Narrowphase":50}]},{},[2])
 (2)
 });
