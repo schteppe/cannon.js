@@ -1058,28 +1058,6 @@ CANNON.Demo.prototype.shape2mesh = function(body){
             mesh = new THREE.Mesh(geometry, this.currentMaterial);
             break;
 
-        /*
-        case CANNON.Shape.types.COMPOUND:
-            // recursive compounds
-            var o3d = new THREE.Object3D();
-            for(var i = 0; i<shape.childShapes.length; i++){
-
-                // Get child information
-                var subshape = shape.childShapes[i];
-                var o = shape.childOffsets[i];
-                var q = shape.childOrientations[i];
-
-                var submesh = this.shape2mesh(subshape);
-                submesh.position.set(o.x,o.y,o.z);
-                submesh.quaternion.set(q.x,q.y,q.z,q.w);
-
-                //submesh.useQuaternion = true;
-                o3d.add(submesh);
-                mesh = o3d;
-            }
-            break;
-        */
-
         default:
             throw "Visual type not recognized: "+shape.type;
         }

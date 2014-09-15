@@ -81,6 +81,9 @@ function HingeConstraint(bodyA, bodyB, options){ // bodyA, pivotA, axisA, bodyB,
 }
 HingeConstraint.prototype = new Constraint();
 
+/**
+ * @method enableMotor
+ */
 HingeConstraint.prototype.enableMotor = function(){
     if(!this.motorEnabled){
         this.equations.push(this.motorEquation);
@@ -88,6 +91,9 @@ HingeConstraint.prototype.enableMotor = function(){
     }
 };
 
+/**
+ * @method disableMotor
+ */
 HingeConstraint.prototype.disableMotor = function(){
     if(this.motorEnabled){
         this.motorEnabled = false;

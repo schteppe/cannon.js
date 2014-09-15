@@ -56,35 +56,3 @@ exports.overlaps = function(test){
     test.done();
 };
 
-/*
-exports.setFromPoints = function(test){
-    var a = new AABB();
-    var points = [
-        [-1,-1],
-        [1, 1],
-        [0, 0],
-    ];
-    var position = [1,1];
-    var angle = 0;
-    a.setFromPoints(points, position, angle);
-
-    test.equal(a.lowerBound[0], 0);
-    test.equal(a.lowerBound[1], 0);
-    test.equal(a.upperBound[0], 2);
-    test.equal(a.upperBound[1], 2);
-
-    // One point
-    a.setFromPoints([[1,2]], [0,0], 0);
-    test.equal(a.lowerBound[0], 1);
-    test.equal(a.lowerBound[1], 2);
-    test.equal(a.upperBound[0], 1);
-    test.equal(a.upperBound[1], 2);
-
-    // Rotated 45 degrees
-    a.setFromPoints(points, [0,0], Math.PI/4);
-    test.ok(Math.abs(a.lowerBound[0]) < 0.01);
-    test.ok(Math.abs(a.upperBound[0]) < 0.01);
-
-    test.done();
-};
-*/
