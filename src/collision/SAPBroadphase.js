@@ -173,7 +173,7 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
                 break;
             }
 
-            this.doBoundingSphereBroadphase(bi,bj,p1,p2);
+            this.intersectionTest(bi,bj,p1,p2);
         }
     }
 };

@@ -722,6 +722,10 @@ Narrowphase.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var R =     si.radius;
     var penetrating_sides = [];
 
+    if(convex_to_sphere.norm2() > si.boundingSphereRadius + sj.boundingSphereRadius){
+        return;
+    }
+
     // Check corners
     for(var i=0; i!==verts.length; i++){
         var v = verts[i];
