@@ -128,6 +128,10 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
                 xj.vadd(bj.position, xj);
                 var sj = bj.shapes[j];
 
+                if(xi.distanceTo(xj) > si.boundingSphereRadius + sj.boundingSphereRadius){
+                    break;
+                }
+
                 // Get contacts
                 var resolver = this[si.type | sj.type];
                 if(resolver){
@@ -1019,6 +1023,11 @@ var convexConvex_q = new Vec3();
 Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON] =
 Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
     var sepAxis = convexConvex_sepAxis;
+
+    if(xi.distanceTo(xj) > si.boundingSphereRadius + sj.boundingSphereRadius){
+        return;
+    }
+
     if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
         var res = [];
         var q = convexConvex_q;
