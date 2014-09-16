@@ -146,11 +146,40 @@ Box.prototype.forEachWorldCorner = function(pos,quat,callback){
     }
 };
 
+var worldCornersTemp = [
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3()
+];
 Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
-    // Get each axis max
-    min.set(Infinity,Infinity,Infinity);
-    max.set(-Infinity,-Infinity,-Infinity);
-    this.forEachWorldCorner(pos,quat,function(x,y,z){
+
+    var e = this.halfExtents;
+    worldCornersTemp[0].set(e.x, e.y, e.z);
+    worldCornersTemp[1].set(-e.x,  e.y, e.z);
+    worldCornersTemp[2].set(-e.x, -e.y, e.z);
+    worldCornersTemp[3].set(-e.x, -e.y, -e.z);
+    worldCornersTemp[4].set(e.x, -e.y, -e.z);
+    worldCornersTemp[5].set(e.x,  e.y, -e.z);
+    worldCornersTemp[6].set(-e.x,  e.y, -e.z);
+    worldCornersTemp[7].set(e.x, -e.y,  e.z);
+
+    var wc = worldCornersTemp[0];
+    quat.vmult(wc, wc);
+    pos.vadd(wc, wc);
+    max.copy(wc);
+    min.copy(wc);
+    for(var i=1; i<8; i++){
+        var wc = worldCornersTemp[i];
+        quat.vmult(wc, wc);
+        pos.vadd(wc, wc);
+        var x = wc.x;
+        var y = wc.y;
+        var z = wc.z;
         if(x > max.x){
             max.x = x;
         }
@@ -170,5 +199,30 @@ Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
         if(z < min.z){
             min.z = z;
         }
-    });
+    }
+
+    // Get each axis max
+    // min.set(Infinity,Infinity,Infinity);
+    // max.set(-Infinity,-Infinity,-Infinity);
+    // this.forEachWorldCorner(pos,quat,function(x,y,z){
+    //     if(x > max.x){
+    //         max.x = x;
+    //     }
+    //     if(y > max.y){
+    //         max.y = y;
+    //     }
+    //     if(z > max.z){
+    //         max.z = z;
+    //     }
+
+    //     if(x < min.x){
+    //         min.x = x;
+    //     }
+    //     if(y < min.y){
+    //         min.y = y;
+    //     }
+    //     if(z < min.z){
+    //         min.z = z;
+    //     }
+    // });
 };
