@@ -27,7 +27,44 @@
      */
 
       var demo = new CANNON.Demo();
+      
 
+		demo.addScene("Spinning top",function(){
+			// Create world
+			var world = demo.getWorld();
+			world.gravity.set(0,0,-9.81);
+			world.broadphase = new CANNON.NaiveBroadphase();
+			world.solver.iterations = 10;
+			world.quatNormalizeFast = false;
+			world.quatNormalizeSkip = 0;
+			var up   = new CANNON.Vec3(0,0,1);
+			var zero = new CANNON.Vec3(0,0,0);
+			
+			// ground plane
+			var groundShape = new CANNON.Plane();
+			var groundMaterial = new CANNON.Material("groundMaterial");
+			var groundBody = new CANNON.RigidBody(0,groundShape,groundMaterial);
+			groundBody.position.set(0,0,0);
+			world.add(groundBody);
+			demo.addVisual(groundBody);
+
+			//top is a compound body with two cylinders
+			var topCompound = new CANNON.Compound();
+			topCompound.addChild(new CANNON.Cylinder(1.00,0.600,0.4,32), zero);
+			topCompound.addChild(new CANNON.Cylinder(0.10,0.005,2.0,32), zero);
+			var topMaterial = new CANNON.Material("topMaterial");
+			var topBody     = new CANNON.RigidBody(600*topCompound.volume(), topCompound, topMaterial);//pine wood
+			topBody.position.set(1,8,3);
+			topBody.angularVelocity.set(30,0,100);
+			//topBody.angularDamping=0.01;
+			world.add(topBody);
+			demo.addVisual(topBody);
+
+			//contact material to adjust friction and coeff of restitution:
+			topGroundContactMaterial = new CANNON.ContactMaterial(groundMaterial,topMaterial, 1.0, 0.5);
+			world.addContactMaterial(topGroundContactMaterial);
+		});
+		
       // A compound shape consisting of a number of boxes.
       demo.addScene("Boxes",function(){
           var world = setupWorld(demo);
