@@ -137,12 +137,7 @@ Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
     }
 
     // Check AABB / AABB
-    if( !(  bi.aabb.upperBound.x < bj.aabb.lowerBound.x ||
-            bi.aabb.upperBound.y < bj.aabb.lowerBound.y ||
-            bi.aabb.upperBound.z < bj.aabb.lowerBound.z ||
-            bi.aabb.lowerBound.x > bj.aabb.upperBound.x ||
-            bi.aabb.lowerBound.y > bj.aabb.upperBound.y ||
-            bi.aabb.lowerBound.z > bj.aabb.upperBound.z   ) ){
+    if(bi.aabb.overlaps(bj.aabb)){
         pairs1.push(bi);
         pairs2.push(bj);
     }
