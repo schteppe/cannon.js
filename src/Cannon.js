@@ -31,6 +31,7 @@ module.exports = {
     Quaternion :                    require('./math/Quaternion'),
     Ray :                           require('./collision/Ray'),
     RaycastVehicle :                require('./objects/RaycastVehicle'),
+    RaycastResult :                 require('./collision/RaycastResult'),
     RigidVehicle :                  require('./objects/RigidVehicle'),
     RotationalEquation :            require('./equations/RotationalEquation'),
     RotationalMotorEquation :       require('./equations/RotationalMotorEquation'),
