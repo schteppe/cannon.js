@@ -101,6 +101,7 @@ module.exports = {
     Quaternion :                    _dereq_('./math/Quaternion'),
     Ray :                           _dereq_('./collision/Ray'),
     RaycastVehicle :                _dereq_('./objects/RaycastVehicle'),
+    RaycastResult :                 _dereq_('./collision/RaycastResult'),
     RigidVehicle :                  _dereq_('./objects/RigidVehicle'),
     RotationalEquation :            _dereq_('./equations/RotationalEquation'),
     RotationalMotorEquation :       _dereq_('./equations/RotationalMotorEquation'),
@@ -116,7 +117,7 @@ module.exports = {
     World :                         _dereq_('./world/World'),
 };
 
-},{"../package.json":1,"./collision/ArrayCollisionMatrix":4,"./collision/Broadphase":5,"./collision/GridBroadphase":6,"./collision/NaiveBroadphase":7,"./collision/ObjectCollisionMatrix":8,"./collision/Ray":9,"./collision/SAPBroadphase":11,"./constraints/Constraint":12,"./constraints/DistanceConstraint":13,"./constraints/HingeConstraint":14,"./constraints/PointToPointConstraint":15,"./equations/ContactEquation":16,"./equations/Equation":17,"./equations/FrictionEquation":18,"./equations/RotationalEquation":19,"./equations/RotationalMotorEquation":20,"./material/ContactMaterial":21,"./material/Material":22,"./math/Mat3":24,"./math/Quaternion":25,"./math/Vec3":27,"./objects/Body":28,"./objects/RaycastVehicle":29,"./objects/RigidVehicle":30,"./objects/SPHSystem":31,"./objects/Spring":32,"./shapes/Box":34,"./shapes/ConvexPolyhedron":35,"./shapes/Cylinder":36,"./shapes/Heightfield":37,"./shapes/Particle":38,"./shapes/Plane":39,"./shapes/Shape":40,"./shapes/Sphere":41,"./solver/GSSolver":42,"./solver/Solver":43,"./solver/SplitSolver":44,"./utils/EventTarget":45,"./utils/Pool":46,"./utils/Vec3Pool":49,"./world/Narrowphase":50,"./world/World":51}],3:[function(_dereq_,module,exports){
+},{"../package.json":1,"./collision/ArrayCollisionMatrix":4,"./collision/Broadphase":5,"./collision/GridBroadphase":6,"./collision/NaiveBroadphase":7,"./collision/ObjectCollisionMatrix":8,"./collision/Ray":9,"./collision/RaycastResult":10,"./collision/SAPBroadphase":11,"./constraints/Constraint":12,"./constraints/DistanceConstraint":13,"./constraints/HingeConstraint":14,"./constraints/PointToPointConstraint":15,"./equations/ContactEquation":16,"./equations/Equation":17,"./equations/FrictionEquation":18,"./equations/RotationalEquation":19,"./equations/RotationalMotorEquation":20,"./material/ContactMaterial":21,"./material/Material":22,"./math/Mat3":24,"./math/Quaternion":25,"./math/Vec3":27,"./objects/Body":28,"./objects/RaycastVehicle":29,"./objects/RigidVehicle":30,"./objects/SPHSystem":31,"./objects/Spring":32,"./shapes/Box":34,"./shapes/ConvexPolyhedron":35,"./shapes/Cylinder":36,"./shapes/Heightfield":37,"./shapes/Particle":38,"./shapes/Plane":39,"./shapes/Shape":40,"./shapes/Sphere":41,"./solver/GSSolver":42,"./solver/Solver":43,"./solver/SplitSolver":44,"./utils/EventTarget":45,"./utils/Pool":46,"./utils/Vec3Pool":49,"./world/Narrowphase":50,"./world/World":51}],3:[function(_dereq_,module,exports){
 var Vec3 = _dereq_('../math/Vec3');
 var Utils = _dereq_('../utils/Utils');
 
@@ -483,12 +484,7 @@ Broadphase.prototype.doBoundingBoxBroadphase = function(bi,bj,pairs1,pairs2){
     }
 
     // Check AABB / AABB
-    if( !(  bi.aabb.upperBound.x < bj.aabb.lowerBound.x ||
-            bi.aabb.upperBound.y < bj.aabb.lowerBound.y ||
-            bi.aabb.upperBound.z < bj.aabb.lowerBound.z ||
-            bi.aabb.lowerBound.x > bj.aabb.upperBound.x ||
-            bi.aabb.lowerBound.y > bj.aabb.upperBound.y ||
-            bi.aabb.lowerBound.z > bj.aabb.upperBound.z   ) ){
+    if(bi.aabb.overlaps(bj.aabb)){
         pairs1.push(bi);
         pairs2.push(bj);
     }
@@ -1657,7 +1653,7 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
                 break;
             }
 
-            this.doBoundingSphereBroadphase(bi,bj,p1,p2);
+            this.intersectionTest(bi,bj,p1,p2);
         }
     }
 };
@@ -6945,11 +6941,40 @@ Box.prototype.forEachWorldCorner = function(pos,quat,callback){
     }
 };
 
+var worldCornersTemp = [
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3()
+];
 Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
-    // Get each axis max
-    min.set(Infinity,Infinity,Infinity);
-    max.set(-Infinity,-Infinity,-Infinity);
-    this.forEachWorldCorner(pos,quat,function(x,y,z){
+
+    var e = this.halfExtents;
+    worldCornersTemp[0].set(e.x, e.y, e.z);
+    worldCornersTemp[1].set(-e.x,  e.y, e.z);
+    worldCornersTemp[2].set(-e.x, -e.y, e.z);
+    worldCornersTemp[3].set(-e.x, -e.y, -e.z);
+    worldCornersTemp[4].set(e.x, -e.y, -e.z);
+    worldCornersTemp[5].set(e.x,  e.y, -e.z);
+    worldCornersTemp[6].set(-e.x,  e.y, -e.z);
+    worldCornersTemp[7].set(e.x, -e.y,  e.z);
+
+    var wc = worldCornersTemp[0];
+    quat.vmult(wc, wc);
+    pos.vadd(wc, wc);
+    max.copy(wc);
+    min.copy(wc);
+    for(var i=1; i<8; i++){
+        var wc = worldCornersTemp[i];
+        quat.vmult(wc, wc);
+        pos.vadd(wc, wc);
+        var x = wc.x;
+        var y = wc.y;
+        var z = wc.z;
         if(x > max.x){
             max.x = x;
         }
@@ -6969,7 +6994,32 @@ Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
         if(z < min.z){
             min.z = z;
         }
-    });
+    }
+
+    // Get each axis max
+    // min.set(Infinity,Infinity,Infinity);
+    // max.set(-Infinity,-Infinity,-Infinity);
+    // this.forEachWorldCorner(pos,quat,function(x,y,z){
+    //     if(x > max.x){
+    //         max.x = x;
+    //     }
+    //     if(y > max.y){
+    //         max.y = y;
+    //     }
+    //     if(z > max.z){
+    //         max.z = z;
+    //     }
+
+    //     if(x < min.x){
+    //         min.x = x;
+    //     }
+    //     if(y < min.y){
+    //         min.y = y;
+    //     }
+    //     if(z < min.z){
+    //         min.z = z;
+    //     }
+    // });
 };
 
 },{"../math/Vec3":27,"./ConvexPolyhedron":35,"./Shape":40}],35:[function(_dereq_,module,exports){
@@ -9430,6 +9480,10 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
                 xj.vadd(bj.position, xj);
                 var sj = bj.shapes[j];
 
+                if(xi.distanceTo(xj) > si.boundingSphereRadius + sj.boundingSphereRadius){
+                    break;
+                }
+
                 // Get contacts
                 var resolver = this[si.type | sj.type];
                 if(resolver){
@@ -10020,6 +10074,10 @@ Narrowphase.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var R =     si.radius;
     var penetrating_sides = [];
 
+    if(convex_to_sphere.norm2() > si.boundingSphereRadius + sj.boundingSphereRadius){
+        return;
+    }
+
     // Check corners
     for(var i=0; i!==verts.length; i++){
         var v = verts[i];
@@ -10321,6 +10379,11 @@ var convexConvex_q = new Vec3();
 Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON] =
 Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
     var sepAxis = convexConvex_sepAxis;
+
+    if(xi.distanceTo(xj) > si.boundingSphereRadius + sj.boundingSphereRadius){
+        return;
+    }
+
     if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
         var res = [];
         var q = convexConvex_q;
