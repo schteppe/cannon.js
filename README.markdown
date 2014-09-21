@@ -26,16 +26,21 @@ world.gravity.set(0,0,-9.82); // m/s²
 world.broadphase = new CANNON.NaiveBroadphase();
 
 // Create a sphere
-var mass = 5,   // kg
-    radius = 1; // m
+var radius = 1; // m
+var sphereBody = new CANNON.Body({
+   mass: 5 // kg
+});
 var sphereShape = new CANNON.Sphere(radius);
-var sphereBody = new CANNON.RigidBody(mass,sphereShape);
+sphereBody.addShape(sphereShape);
 sphereBody.position.set(0,0,10); // m
 world.add(sphereBody);
 
 // Create a plane
+var groundBody = new CANNON.Body({
+    mass: 0 // mass == 0 makes the body static
+});
 var groundShape = new CANNON.Plane();
-var groundBody = new CANNON.RigidBody(0,groundShape); // mass == 0 makes the body static
+groundBody.addShape(groundShape);
 world.add(groundBody);
 
 // Step the simulation
