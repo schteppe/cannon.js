@@ -64,8 +64,10 @@ function pointInTriangle(p, a, b, c) {
 /**
  * Shoot a ray at a body, get back information about the hit.
  * @method intersectBody
+ * @private
  * @param {Body} body
- * @return {Array} An array of results. The result objects has properties: distance (float), point (Vec3) and body (Body).
+ * @param {RaycastResult} result
+ * @param {Vec3} [direction]
  */
 Ray.prototype.intersectBody = function (body, result, direction) {
     if(!direction){
@@ -95,7 +97,7 @@ Ray.prototype.intersectBody = function (body, result, direction) {
 /**
  * @method intersectBodies
  * @param {Array} bodies An array of Body objects.
- * @return {Array} See intersectBody
+ * @param {RaycastResult} result
  */
 Ray.prototype.intersectBodies = function (bodies, result) {
     this._updateDirection();
@@ -117,11 +119,13 @@ Ray.prototype._updateDirection = function(){
 
 /**
  * @method intersectShape
+ * @private
  * @param {Shape} shape
  * @param {Quaternion} quat
  * @param {Vec3} position
  * @param {Body} body
- * @return {Array} See intersectBody()
+ * @param {Vec3} direction
+ * @param {RaycastResult} result
  */
 Ray.prototype.intersectShape = function(shape, quat, position, body, direction, result){
     var from = this.from;
@@ -148,13 +152,31 @@ var d = new Vec3();
 
 var tmpRaycastResult = new RaycastResult();
 
-
+/**
+ * @method intersectBox
+ * @private
+ * @param  {Shape} shape
+ * @param  {Quaternion} quat
+ * @param  {Vec3} position
+ * @param  {Body} body
+ * @param  {Vec3} direction
+ * @param  {RaycastResult} result
+ */
 Ray.prototype.intersectBox = function(shape, quat, position, body, direction, result){
     return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body, direction, result);
 };
 Ray.prototype[Shape.types.BOX] = Ray.prototype.intersectBox;
 
-
+/**
+ * @method intersectPlane
+ * @private
+ * @param  {Shape} shape
+ * @param  {Quaternion} quat
+ * @param  {Vec3} position
+ * @param  {Body} body
+ * @param  {Vec3} direction
+ * @param  {RaycastResult} result
+ */
 Ray.prototype.intersectPlane = function(shape, quat, position, body, direction, result){
     var from = this.from;
     var to = this.to;
@@ -202,6 +224,11 @@ Ray.prototype.intersectPlane = function(shape, quat, position, body, direction, 
 };
 Ray.prototype[Shape.types.PLANE] = Ray.prototype.intersectPlane;
 
+/**
+ * Get the AABB of the ray.
+ * @method getAABB
+ * @param  {AABB} aabb
+ */
 Ray.prototype.getAABB = function(result){
     var to = this.to;
     var from = this.from;
@@ -214,6 +241,17 @@ Ray.prototype.getAABB = function(result){
 var intersectConvexOptions = {
     faceList: [0]
 };
+
+/**
+ * @method intersectHeightfield
+ * @private
+ * @param  {Shape} shape
+ * @param  {Quaternion} quat
+ * @param  {Vec3} position
+ * @param  {Body} body
+ * @param  {Vec3} direction
+ * @param  {RaycastResult} result
+ */
 Ray.prototype.intersectHeightfield = function(shape, quat, position, body, direction, result){
     var data = shape.data,
         w = shape.elementSize,
@@ -282,7 +320,16 @@ Ray.prototype.intersectHeightfield = function(shape, quat, position, body, direc
 };
 Ray.prototype[Shape.types.HEIGHTFIELD] = Ray.prototype.intersectHeightfield;
 
-
+/**
+ * @method intersectSphere
+ * @private
+ * @param  {Shape} shape
+ * @param  {Quaternion} quat
+ * @param  {Vec3} position
+ * @param  {Body} body
+ * @param  {Vec3} direction
+ * @param  {RaycastResult} result
+ */
 Ray.prototype.intersectSphere = function(shape, quat, position, body, direction, result){
     var from = this.from,
         to = this.to,
@@ -339,6 +386,19 @@ Ray.prototype[Shape.types.SPHERE] = Ray.prototype.intersectSphere;
 
 var intersectConvex_minDistNormal = new Vec3();
 var intersectConvex_minDistIntersect = new Vec3();
+
+/**
+ * @method intersectConvex
+ * @private
+ * @param  {Shape} shape
+ * @param  {Quaternion} quat
+ * @param  {Vec3} position
+ * @param  {Body} body
+ * @param  {Vec3} direction
+ * @param  {RaycastResult} result
+ * @param {object} [options]
+ * @param {array} [options.faceList]
+ */
 Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, body, direction, result, options){
     var minDistNormal = intersectConvex_minDistNormal;
     var minDistIntersect = intersectConvex_minDistIntersect;
@@ -439,7 +499,16 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
 
 Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype.intersectConvex;
 
-
+/**
+ * @method reportIntersection
+ * @private
+ * @param  {Vec3} normal
+ * @param  {Vec3} hitPointWorld
+ * @param  {Shape} shape
+ * @param  {Body} body
+ * @param  {RaycastResult} result
+ * @return {boolean} True if the intersections should continue
+ */
 Ray.prototype.reportIntersection = function(normal, hitPointWorld, shape, body, result){
     var from = this.from;
     var to = this.to;
