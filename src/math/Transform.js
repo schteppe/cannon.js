@@ -3,12 +3,25 @@ var Quaternion = require('./Quaternion');
 
 module.exports = Transform;
 
+/**
+ * @class Transform
+ * @constructor
+ */
 function Transform() {
 	this.position = new Vec3();
 	this.quaternion = new Quaternion();
 }
 
 var tmpQuat = new Quaternion();
+
+/**
+ * @static
+ * @method pointToLocaFrame
+ * @param {Vec3} position
+ * @param {Quaternion} quaternion
+ * @param {Vec3} worldPoint
+ * @param {Vec3} result
+ */
 Transform.pointToLocalFrame = function(position, quaternion, worldPoint, result){
     var result = result || new Vec3();
     worldPoint.vsub(position, result);
