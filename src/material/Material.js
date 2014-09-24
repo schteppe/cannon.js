@@ -13,6 +13,11 @@ function Material(name){
      * @type {String}
      */
     this.name = name;
+    
+    /**
+     * material id.
+     * @property id
+     */
     this.id = Material.idCounter++;
 }
 

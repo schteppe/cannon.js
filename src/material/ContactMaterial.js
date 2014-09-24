@@ -8,8 +8,13 @@ module.exports = ContactMaterial;
  * @constructor
  * @param {Material} m1
  * @param {Material} m2
- * @param {Number} friction
- * @param {Number} restitution
+ * @param {object} [options]
+ * @param {Number} [options.friction=0.3]
+ * @param {Number} [options.restitution=0.3]
+ * @param {number} [options.contactEquationStiffness=1e7]
+ * @param {number} [options.contactEquationRelaxation=3]
+ * @param {number} [options.frictionEquationStiffness=1e7]
+ * @param {Number} [options.frictionEquationRelaxation=3]
  */
 function ContactMaterial(m1, m2, options){
     options = Utils.defaults(options, {
