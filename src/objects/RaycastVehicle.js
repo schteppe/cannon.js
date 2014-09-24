@@ -11,10 +11,11 @@ module.exports = RaycastVehicle;
  * Vehicle helper class that casts rays from the wheel positions towards the ground and applies forces.
  * @class RaycastVehicle
  * @constructor
- * @param {object} [options.chassisBody]
- * @param {object} [options.indexRightAxis]
- * @param {object} [options.indexLeftAxis]
- * @param {object} [options.indexUpAxis]
+ * @param {object} [options]
+ * @param {Body} [options.chassisBody] The car chassis body.
+ * @param {integer} [options.indexRightAxis] Axis to use for right. x=0, y=1, z=2
+ * @param {integer} [options.indexLeftAxis]
+ * @param {integer} [options.indexUpAxis]
  */
 function RaycastVehicle(options){
 
@@ -71,8 +72,8 @@ var tmpRay = new Ray();
 
 /**
  * Add a wheel. For information about the options, see WheelInfo.
- * @param {object} [options]
  * @method addWheel
+ * @param {object} [options]
  */
 RaycastVehicle.prototype.addWheel = function(options){
     options = options || {};
@@ -132,6 +133,13 @@ RaycastVehicle.prototype.addToWorld = function(world){
     this.world = world;
 };
 
+/**
+ * Get one of the wheel axles, world-oriented.
+ * @private
+ * @method getVehicleAxisWorld
+ * @param  {integer} axisIndex
+ * @param  {Vec3} result
+ */
 RaycastVehicle.prototype.getVehicleAxisWorld = function(axisIndex, result){
     result.set(
         axisIndex === 0 ? 1 : 0,
@@ -278,8 +286,6 @@ RaycastVehicle.prototype.removeFromWorld = function(world){
     this.world = null;
 };
 
-// var from = new Vec3();
-// var to = new Vec3();
 var castRay_rayvector = new Vec3();
 var castRay_target = new Vec3();
 RaycastVehicle.prototype.castRay = function(wheel) {
@@ -403,7 +409,12 @@ var directions = [
     new Vec3(0, 0, 1)
 ];
 
-
+/**
+ * Get the world transform of one of the wheels
+ * @method getWheelTransformWorld
+ * @param  {integer} wheelIndex
+ * @return {Transform}
+ */
 RaycastVehicle.prototype.getWheelTransformWorld = function(wheelIndex) {
     return this.wheelInfos[wheelIndex].worldTransform;
 };

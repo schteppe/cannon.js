@@ -70,17 +70,20 @@ function WheelInfo(options){
     });
 
     /**
+     * Max travel distance of the suspension, in meters.
      * @property {number} maxSuspensionTravel
      */
     this.maxSuspensionTravel = options.maxSuspensionTravel;
 
     /**
+     * Speed to apply to the wheel rotation when the wheel is sliding.
      * @property {number} customSlidingRotationalSpeed
      */
     this.customSlidingRotationalSpeed = options.customSlidingRotationalSpeed;
 
     /**
-     * @property {Boolean} useCustomSlidingRotationalSpeed]
+     * If the customSlidingRotationalSpeed should be used.
+     * @property {Boolean} useCustomSlidingRotationalSpeed
      */
     this.useCustomSlidingRotationalSpeed = options.useCustomSlidingRotationalSpeed;
 
@@ -90,6 +93,7 @@ function WheelInfo(options){
     this.sliding = false;
 
     /**
+     * Connection point, defined locally in the chassis body frame.
      * @property {Vec3} chassisConnectionPointLocal
      */
     this.chassisConnectionPointLocal = options.chassisConnectionPointLocal.clone();
@@ -160,6 +164,7 @@ function WheelInfo(options){
     this.steering = 0;
 
     /**
+     * Rotation value, in radians.
      * @property {number} rotation
      */
     this.rotation = 0;
