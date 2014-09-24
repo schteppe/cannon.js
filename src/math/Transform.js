@@ -8,7 +8,14 @@ module.exports = Transform;
  * @constructor
  */
 function Transform() {
+	/**
+	 * @property {Vec3} position
+	 */
 	this.position = new Vec3();
+	
+	/**
+	 * @property {Quaternion} quaternion
+	 */
 	this.quaternion = new Quaternion();
 }
 
@@ -30,6 +37,14 @@ Transform.pointToLocalFrame = function(position, quaternion, worldPoint, result)
     return result;
 };
 
+/**
+ * @static
+ * @method pointToWorldFrame
+ * @param {Vec3} position
+ * @param {Vec3} quaternion
+ * @param {Vec3} localPoint
+ * @param {Vec3} result
+ */
 Transform.pointToWorldFrame = function(position, quaternion, localPoint, result){
     var result = result || new Vec3();
     quaternion.vmult(localPoint, result);
