@@ -9,6 +9,9 @@ var Utils = require('../utils/Utils');
  * @constructor
  * @param {Body} bodyA
  * @param {Body} bodyB
+ * @param {object} [options]
+ * @param {boolean} [options.collideConnected=true]
+ * @param {boolean} [options.wakeUpBodies=true]
  */
 function Constraint(bodyA, bodyB, options){
     options = Utils.defaults(options,{
