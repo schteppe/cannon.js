@@ -1300,12 +1300,16 @@ Narrowphase.prototype.convexHeightfield = function (
             // Lower triangle
             hfShape.getConvexTrianglePillar(i, j, false);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
-            this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+            if (convexPos.distanceTo(worldPillarOffset) < hfShape.pillarConvex.boundingSphereRadius + convexShape.boundingSphereRadius) {
+                this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+            }
 
             // Upper triangle
             hfShape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
-            this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+            if (convexPos.distanceTo(worldPillarOffset) < hfShape.pillarConvex.boundingSphereRadius + convexShape.boundingSphereRadius) {
+                this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+            }
         }
     }
 };
@@ -1379,12 +1383,16 @@ Narrowphase.prototype.sphereHeightfield = function (
             // Lower triangle
             hfShape.getConvexTrianglePillar(i, j, false);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
-            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            if (spherePos.distanceTo(worldPillarOffset) < hfShape.pillarConvex.boundingSphereRadius + sphereShape.boundingSphereRadius) {
+                this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            }
 
             // Upper triangle
             hfShape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
-            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            if (spherePos.distanceTo(worldPillarOffset) < hfShape.pillarConvex.boundingSphereRadius + sphereShape.boundingSphereRadius) {
+                this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            }
 
             var numContacts = result.length - numContactsBefore;
 
