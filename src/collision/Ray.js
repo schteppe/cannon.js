@@ -34,6 +34,12 @@ function Ray(from, to){
      * @property {Number} precision
      */
     this.precision = 0.0001;
+
+    /**
+     * Set to true if you want the Ray to take .collisionResponse flags into account on bodies and shapes.
+     * @property {Boolean} checkCollisionResponse
+     */
+    this.checkCollisionResponse = true;
 }
 Ray.prototype.constructor = Ray;
 
@@ -70,6 +76,12 @@ function pointInTriangle(p, a, b, c) {
  * @param {Vec3} [direction]
  */
 Ray.prototype.intersectBody = function (body, result, direction) {
+    var checkCollisionResponse = this.checkCollisionResponse;
+
+    if(checkCollisionResponse && !body.collisionResponse){
+        return result;
+    }
+
     if(!direction){
         this._updateDirection();
         direction = this._direction;
@@ -78,13 +90,18 @@ Ray.prototype.intersectBody = function (body, result, direction) {
     var xi = new Vec3();
     var qi = new Quaternion();
     for (var i = 0; i < body.shapes.length; i++) {
+        var shape = body.shapes[i];
+
+        if(checkCollisionResponse && !shape.collisionResponse){
+            continue; // Skip
+        }
 
         body.quaternion.mult(body.shapeOrientations[i], qi);
         body.quaternion.vmult(body.shapeOffsets[i], xi);
         xi.vadd(body.position, xi);
 
         return this.intersectShape(
-            body.shapes[i],
+            shape,
             qi,
             xi,
             body,
