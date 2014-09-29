@@ -78,7 +78,7 @@ module.exports = function(grunt) {
         [bundlePath, minifiedBundlePath].forEach(function(path){
             var text = fs.readFileSync(path).toString();
             text = text.replace('define.amd', 'false'); // This makes the bundle skip using define() from RequireJS
-            fs.writeFileSync(bundlePath, text);
+            fs.writeFileSync(path, text);
         });
     });
 };
