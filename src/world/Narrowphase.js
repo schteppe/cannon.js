@@ -129,7 +129,7 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
                 var sj = bj.shapes[j];
 
                 if(xi.distanceTo(xj) > si.boundingSphereRadius + sj.boundingSphereRadius){
-                    break;
+                    continue;
                 }
 
                 // Get contacts
@@ -141,16 +141,6 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
                         resolver.call(this, result, sj,si,xj,xi,qj,qi,bj,bi,si,sj);
                     }
                 }
-                /*
-                this.narrowphase(
-                    result,
-                    bi.shapes[i],
-                    bj.shapes[j],
-                    xi, xj,
-                    qi, qj,
-                    bi, bj
-                );
-                */
             }
         }
     }
