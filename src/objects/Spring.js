@@ -188,6 +188,6 @@ Spring.prototype.applyForce = function(){
     // Angular force
     ri.cross(f,ri_x_f);
     rj.cross(f,rj_x_f);
-    bodyA.tau.vsub(ri_x_f,bodyA.tau);
-    bodyB.tau.vadd(rj_x_f,bodyB.tau);
+    bodyA.torque.vsub(ri_x_f,bodyA.torque);
+    bodyB.torque.vadd(rj_x_f,bodyB.torque);
 };

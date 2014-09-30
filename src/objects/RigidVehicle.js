@@ -152,7 +152,7 @@ RigidVehicle.prototype.setWheelForce = function(value, wheelIndex){
 RigidVehicle.prototype.applyWheelForce = function(value, wheelIndex){
     var axis = this.wheelAxes[wheelIndex];
     var wheelBody = this.wheelBodies[wheelIndex];
-    var bodyTorque = wheelBody.tau;
+    var bodyTorque = wheelBody.torque;
 
     axis.scale(value, torque);
     wheelBody.vectorToWorldFrame(torque, torque);

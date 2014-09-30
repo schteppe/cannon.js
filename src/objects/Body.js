@@ -187,10 +187,9 @@ function Body(options){
 
     /**
      * Rotational force on the body, around center of mass
-     * @property Vec3 tau
-     * @todo should be renamed to .angularForce
+     * @property {Vec3} torque
      */
-    this.tau = new Vec3();
+    this.torque = new Vec3();
 
     /**
      * Orientation of the body
@@ -308,7 +307,7 @@ Body.DYNAMIC = 1;
 /**
  * A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
  * @static
- * @property DYNAMIC
+ * @property STATIC
  * @type {Number}
  */
 Body.STATIC = 2;
@@ -316,7 +315,7 @@ Body.STATIC = 2;
 /**
  * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
  * @static
- * @property DYNAMIC
+ * @property KINEMATIC
  * @type {Number}
  */
 Body.KINEMATIC = 4;
@@ -432,7 +431,7 @@ Body.prototype.pointToLocalFrame = function(worldPoint,result){
 /**
  * Convert a local body point to world frame.
  * @method pointToWorldFrame
- * @param  {Vec3} worldPoint
+ * @param  {Vec3} localPoint
  * @param  {Vec3} result
  * @return {Vec3}
  */
@@ -445,8 +444,8 @@ Body.prototype.pointToWorldFrame = function(localPoint,result){
 
 /**
  * Convert a local body point to world frame.
- * @method pointToWorldFrame
- * @param  {Vec3} worldPoint
+ * @method vectorToWorldFrame
+ * @param  {Vec3} localVector
  * @param  {Vec3} result
  * @return {Vec3}
  */
@@ -579,7 +578,7 @@ Body.prototype.updateInertiaWorld = function(force){
 };
 
 /**
- * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.tau.
+ * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.torque.
  * @method applyForce
  * @param  {Vec3} force The amount of force to add.
  * @param  {Vec3} worldPoint A world point to apply the force on.
@@ -603,7 +602,7 @@ Body.prototype.applyForce = function(force,worldPoint){
     this.force.vadd(force,this.force);
 
     // Add rotational force
-    this.tau.vadd(rotForce,this.tau);
+    this.torque.vadd(rotForce,this.torque);
 };
 
 /**

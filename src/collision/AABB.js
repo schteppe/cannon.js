@@ -41,7 +41,9 @@ var tmp = new Vec3();
  * Set the AABB bounds from a set of points.
  * @method setFromPoints
  * @param {Array} points An array of Vec3's.
- * @todo
+ * @param {Vec3} position
+ * @param {Quaternion} quaternion
+ * @param {number} skinSize
  */
 AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
     var l = this.lowerBound,
@@ -90,7 +92,7 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
 /**
  * Copy bounds from an AABB to this AABB
  * @method copy
- * @param  {AABB} aabb
+ * @param  {AABB} aabb Source to copy from
  */
 AABB.prototype.copy = function(aabb){
     // vectors copy is the other direction... bad!

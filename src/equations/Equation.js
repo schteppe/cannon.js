@@ -165,9 +165,9 @@ Equation.prototype.computeGiMf = function(){
         bi = this.bi,
         bj = this.bj,
         fi = bi.force,
-        ti = bi.tau,
+        ti = bi.torque,
         fj = bj.force,
-        tj = bj.tau,
+        tj = bj.torque,
         invMassi = bi.invMassSolve,
         invMassj = bj.invMassSolve;
 

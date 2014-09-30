@@ -8,7 +8,7 @@ module.exports = SAPBroadphase;
  *
  * @class SAPBroadphase
  * @constructor
- * @param {World} world
+ * @param {World} [world]
  * @extends Broadphase
  */
 function SAPBroadphase(world){

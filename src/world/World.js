@@ -781,7 +781,7 @@ World.prototype.internalStep = function(dt){
         var b = bodies[i],
             s = b.shape,
             force = b.force,
-            tau = b.tau;
+            tau = b.torque;
         if((b.type & DYNAMIC_OR_KINEMATIC) && b.sleepState !== Body.SLEEPING){ // Only for dynamic
             var velo = b.velocity,
                 angularVelo = b.angularVelocity,
@@ -849,8 +849,8 @@ World.prototype.internalStep = function(dt){
             }
         }
         b.force.set(0,0,0);
-        if(b.tau){
-            b.tau.set(0,0,0);
+        if(b.torque){
+            b.torque.set(0,0,0);
         }
 
     }

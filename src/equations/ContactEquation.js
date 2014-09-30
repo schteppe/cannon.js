@@ -74,12 +74,12 @@ ContactEquation.prototype.computeB = function(h){
         vi = bi.velocity,
         wi = bi.angularVelocity ? bi.angularVelocity : zero,
         fi = bi.force,
-        taui = bi.tau ? bi.tau : zero,
+        taui = bi.torque ? bi.torque : zero,
 
         vj = bj.velocity,
         wj = bj.angularVelocity ? bj.angularVelocity : zero,
         fj = bj.force,
-        tauj = bj.tau ? bj.tau : zero,
+        tauj = bj.torque ? bj.torque : zero,
 
         penetrationVec = this.penetrationVec,
         invMassi = bi.invMass,
