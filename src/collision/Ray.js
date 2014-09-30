@@ -100,7 +100,7 @@ Ray.prototype.intersectBody = function (body, result, direction) {
         body.quaternion.vmult(body.shapeOffsets[i], xi);
         xi.vadd(body.position, xi);
 
-        return this.intersectShape(
+        this.intersectShape(
             shape,
             qi,
             xi,
@@ -109,6 +109,8 @@ Ray.prototype.intersectBody = function (body, result, direction) {
             result
         );
     }
+
+    return result;
 };
 
 /**
@@ -401,8 +403,10 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body, direction,
 Ray.prototype[Shape.types.SPHERE] = Ray.prototype.intersectSphere;
 
 
+var intersectConvex_normal = new Vec3();
 var intersectConvex_minDistNormal = new Vec3();
 var intersectConvex_minDistIntersect = new Vec3();
+var intersectConvex_vector = new Vec3();
 
 /**
  * @method intersectConvex
@@ -418,6 +422,8 @@ var intersectConvex_minDistIntersect = new Vec3();
  */
 Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, body, direction, result, options){
     var minDistNormal = intersectConvex_minDistNormal;
+    var normal = intersectConvex_normal;
+    var vector = intersectConvex_vector;
     var minDistIntersect = intersectConvex_minDistIntersect;
     var faceList = (options && options.faceList) || null;
 
