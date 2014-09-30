@@ -75,9 +75,29 @@ module.exports = {
         var body = new Body({ mass: 1 });
         body.addShape(shape);
         var result = new RaycastResult();
+
         r.intersectBody(body, result);
         test.equals(result.hasHit, true);
         test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
+
+        result.reset();
+        body.quaternion.setFromAxisAngle(new Vec3(1,0,0), Math.PI / 2);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
+
+        result.reset();
+        body.quaternion.setFromAxisAngle(new Vec3(1,0,0), Math.PI);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
+
+        result.reset();
+        body.quaternion.setFromAxisAngle(new Vec3(1,0,0), 3 * Math.PI / 2);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
+
         test.done();
     },
 
