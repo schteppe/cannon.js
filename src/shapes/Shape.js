@@ -29,6 +29,7 @@ function Shape(){
     this.boundingSphereRadius = 0;
 
     /**
+     * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.
      * @property {boolean} collisionResponse
      */
     this.collisionResponse = true;

@@ -70,7 +70,7 @@ function Body(options){
     this.collisionFilterMask = 1;
 
     /**
-     * Whether to produce contact forces
+     * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.
      * @property {Number} collisionResponse
      */
 	this.collisionResponse = true;
@@ -137,13 +137,13 @@ function Body(options){
     this.material = options.material || null;
 
     /**
-     * @property float linearDamping
+     * @property linearDamping
      * @type {Number}
      */
     this.linearDamping = typeof(options.linearDamping) === 'number' ? options.linearDamping : 0.01;
 
     /**
-     * One of the states Body.DYNAMIC, Body.STATIC and Body.KINEMATIC
+     * One of: Body.DYNAMIC, Body.STATIC and Body.KINEMATIC.
      * @property type
      * @type {Number}
      */

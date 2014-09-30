@@ -4,7 +4,7 @@ var Shape = require('./Shape');
 var Vec3 = require('../math/Vec3');
 
 /**
- * A 3d box shape.
+ * Particle shape.
  * @class Particle
  * @constructor
  * @author schteppe

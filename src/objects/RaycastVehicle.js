@@ -25,7 +25,8 @@ function RaycastVehicle(options){
     this.chassisBody = options.chassisBody;
 
     /**
-     * @property {array} wheelInfos An array of WheelInfo objects.
+     * An array of WheelInfo objects.
+     * @property {array} wheelInfos
      */
     this.wheelInfos = [];
 

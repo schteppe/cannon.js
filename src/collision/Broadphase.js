@@ -38,9 +38,8 @@ function Broadphase(){
  * Get the collision pairs from the world
  * @method collisionPairs
  * @param {World} world The world to search in
- * @param Array p1 Empty array to be filled with body objects
- * @param Array p2 Empty array to be filled with body objects
- * @return array An array with two subarrays of body indices
+ * @param {Array} p1 Empty array to be filled with body objects
+ * @param {Array} p2 Empty array to be filled with body objects
  */
 Broadphase.prototype.collisionPairs = function(world,p1,p2){
     throw new Error("collisionPairs not implemented for this BroadPhase class!");

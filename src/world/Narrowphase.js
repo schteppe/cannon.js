@@ -20,12 +20,6 @@ var ContactEquation = require('../equations/ContactEquation');
 function Narrowphase(){
 
     /**
-     * Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
-     * @property bool contactReduction
-     */
-    this.contactReduction = false;
-
-    /**
      * Internal storage of pooled contact points.
      * @property {Array} contactPointPool
      */
@@ -37,31 +31,6 @@ function Narrowphase(){
      */
     this.v3pool = new Vec3Pool();
 }
-
-/**
- * Swaps the body references in the contact
- * @method swapResult
- * @param object r
- */
-Narrowphase.prototype.swapResult = function(r){
-    var temp;
-    temp = r.ri;
-    r.ri = r.rj;
-    r.rj = temp;
-    r.ni.negate(r.ni);
-    temp = r.bi;
-    r.bi = r.bj;
-    r.bj = temp;
-};
-
-/**
- * Removes unnecessary members of an array of ContactEquation.
- * @method reduceContacts
- * @param {Array} contacts
- */
-Narrowphase.prototype.reduceContacts = function(contacts){
-
-};
 
 /**
  * Make a contact object, by using the internal pool or creating a new one.

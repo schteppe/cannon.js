@@ -15,7 +15,6 @@ var Transform = require('../math/Transform');
  *
  * @param {array} points An array of Vec3's
  * @param {array} faces Array of integer arrays, describing which vertices that is included in each face.
- * @param {array} normals Deprecated. Normals are now automatically generated from polygons.
  *
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
@@ -25,9 +24,9 @@ var Transform = require('../math/Transform');
  * @todo Move the clipping functions to ContactGenerator?
  * @todo Automatically merge coplanar polygons in constructor.
  */
-function ConvexPolyhedron( points , faces , normals ) {
+function ConvexPolyhedron(points, faces) {
     var that = this;
-    Shape.call( this );
+    Shape.call(this);
     this.type = Shape.types.CONVEXPOLYHEDRON;
 
     /**
