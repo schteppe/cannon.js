@@ -307,7 +307,14 @@ RaycastVehicle.prototype.castRay = function(wheel) {
     var param = 0;
 
     raycastResult.reset();
+    // Turn off ray collision with the chassis temporarily
+    var oldState = chassisBody.collisionResponse;
+    chassisBody.collisionResponse = false;
+
+    // Cast ray against world
     this.world.rayTest(source, target, raycastResult);
+    chassisBody.collisionResponse = oldState;
+
     var object = raycastResult.body;
 
     wheel.raycastResult.groundObject = 0;
