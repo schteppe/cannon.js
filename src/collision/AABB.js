@@ -102,7 +102,6 @@ AABB.prototype.copy = function(aabb){
  * Extend this AABB so that it covers the given AABB too.
  * @method extend
  * @param  {AABB} aabb
- * @todo
  */
 AABB.prototype.extend = function(aabb){
     // Extend lower bound
@@ -127,6 +126,18 @@ AABB.prototype.extend = function(aabb){
     var u = aabb.upperBound.y;
     if(this.upperBound.y < u){
         this.upperBound.y = u;
+    }
+
+    // Extend lower bound
+    var l = aabb.lowerBound.z;
+    if(this.lowerBound.z > l){
+        this.lowerBound.z = l;
+    }
+
+    // Upper
+    var u = aabb.upperBound.z;
+    if(this.upperBound.z < u){
+        this.upperBound.z = u;
     }
 };
 
