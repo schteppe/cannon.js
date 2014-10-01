@@ -303,7 +303,11 @@ SAPBroadphase.prototype.aabbQuery = function(world, aabb, result){
     for(var i = 0; i < axisList.length; i++){
         var b = axisList[i];
 
-        if(b.aabb.upperBound[axis] > lower && b.aabb.lowerBound[axis] < upper && b.aabb.overlaps(aabb)){
+        if(b.aabbNeedsUpdate){
+            b.computeAABB();
+        }
+
+        if(b.aabb.overlaps(aabb)){
             result.push(b);
         }
     }

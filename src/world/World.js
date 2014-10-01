@@ -293,15 +293,12 @@ World.prototype.removeConstraint = function(c){
 World.prototype.rayTest = function(from, to, result){
     // result = result || new RaycastResult();
 
-    tmpArray1[0] = from;
-    tmpArray1[1] = to;
-    tmpAABB1.setFromPoints(tmpArray1);
-    tmpArray1.length = 0;
-
-    this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
-
     tmpRay.from.copy(from);
     tmpRay.to.copy(to);
+    tmpRay.getAABB(tmpAABB1);
+
+    tmpArray1.length = 0;
+    this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
 
     tmpRay.intersectBodies(tmpArray1, result);
 };

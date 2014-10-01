@@ -253,8 +253,10 @@ Ray.prototype.getAABB = function(result){
     var from = this.from;
     result.lowerBound.x = Math.min(to.x, from.x);
     result.lowerBound.y = Math.min(to.y, from.y);
+    result.lowerBound.z = Math.min(to.z, from.z);
     result.upperBound.x = Math.max(to.x, from.x);
     result.upperBound.y = Math.max(to.y, from.y);
+    result.upperBound.z = Math.max(to.z, from.z);
 };
 
 var intersectConvexOptions = {
