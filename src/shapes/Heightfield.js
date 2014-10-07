@@ -339,17 +339,17 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         verts[3].set(
             -0.25 * elementSize,
             -0.25 * elementSize,
-            -h
+            -h-1
         );
         verts[4].set(
             0.75 * elementSize,
             -0.25 * elementSize,
-            -h
+            -h-1
         );
         verts[5].set(
             -0.25 * elementSize,
             0.75  * elementSize,
-            -h
+            -h-1
         );
 
         // top triangle
@@ -411,17 +411,17 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         verts[3].set(
             0.25 * elementSize,
             0.25 * elementSize,
-            - h
+            - h-1
         );
         verts[4].set(
             -0.75 * elementSize,
             0.25 * elementSize,
-            - h
+            - h-1
         );
         verts[5].set(
             0.25 * elementSize,
             -0.75 * elementSize,
-            - h
+            - h-1
         );
 
         // Top triangle
