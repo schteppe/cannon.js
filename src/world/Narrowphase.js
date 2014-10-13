@@ -814,14 +814,14 @@ var convexConvex_q = new Vec3();
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON] =
-Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
+Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj,faceListA,faceListB){
     var sepAxis = convexConvex_sepAxis;
 
     if(xi.distanceTo(xj) > si.boundingSphereRadius + sj.boundingSphereRadius){
         return;
     }
 
-    if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
+    if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis,faceListA,faceListB)){
         var res = [];
         var q = convexConvex_q;
         si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
@@ -1027,6 +1027,7 @@ Narrowphase.prototype.boxHeightfield = function (result,si,sj,xi,xj,qi,qj,bi,bj)
 
 var convexHeightfield_tmp1 = new Vec3();
 var convexHeightfield_tmp2 = new Vec3();
+var convexHeightfield_faceList = [0];
 
 /**
  * @method sphereHeightfield
@@ -1046,7 +1047,8 @@ Narrowphase.prototype.convexHeightfield = function (
     var data = hfShape.data,
         w = hfShape.elementSize,
         radius = convexShape.boundingSphereRadius,
-        worldPillarOffset = convexHeightfield_tmp2;
+        worldPillarOffset = convexHeightfield_tmp2,
+        faceList = convexHeightfield_faceList;
 
     // Get sphere position to heightfield local!
     var localConvexPos = convexHeightfield_tmp1;
@@ -1090,14 +1092,14 @@ Narrowphase.prototype.convexHeightfield = function (
             hfShape.getConvexTrianglePillar(i, j, false);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
             if (convexPos.distanceTo(worldPillarOffset) < hfShape.pillarConvex.boundingSphereRadius + convexShape.boundingSphereRadius) {
-                this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+                this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody, null, null, faceList, null);
             }
 
             // Upper triangle
             hfShape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
             if (convexPos.distanceTo(worldPillarOffset) < hfShape.pillarConvex.boundingSphereRadius + convexShape.boundingSphereRadius) {
-                this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+                this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody, null, null, faceList, null);
             }
         }
     }

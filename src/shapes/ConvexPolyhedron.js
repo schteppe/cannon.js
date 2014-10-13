@@ -264,7 +264,7 @@ var fsa_faceANormalWS3 = new Vec3(),
     fsa_worldEdge0 = new Vec3(),
     fsa_worldEdge1 = new Vec3(),
     fsa_Cross = new Vec3();
-ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
+ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target, faceListA, faceListB){
     var faceANormalWS3 = fsa_faceANormalWS3,
         Worldnormal1 = fsa_Worldnormal1,
         deltaC = fsa_deltaC,
@@ -275,15 +275,16 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     var dmin = Infinity;
     var hullA = this;
     var curPlaneTests=0;
-    var numFacesA = hullA.faces.length;
+    var numFacesA = faceListA ? faceListA.length : hullA.faces.length;
 
     // Test normals from hullA
     for(var i=0; i<numFacesA; i++){
+        var fi = faceListA ? faceListA[i] : i;
         // Get world face normal
-        faceANormalWS3.copy(hullA.faceNormals[i]);
+        faceANormalWS3.copy(hullA.faceNormals[fi]);
         quatA.vmult(faceANormalWS3,faceANormalWS3);
         //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
-        //console.log("face normal:",hullA.faceNormals[i].toString(),"world face normal:",faceANormalWS3);
+        //console.log("face normal:",hullA.faceNormals[fi].toString(),"world face normal:",faceANormalWS3);
         var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
         if(d===false){
             return false;
@@ -296,12 +297,15 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     }
 
     // Test normals from hullB
-    var numFacesB = hullB.faces.length;
+    var numFacesB = faceListB ? faceListB.length : hullB.faces.length;
     for(var i=0;i<numFacesB;i++){
-        Worldnormal1.copy(hullB.faceNormals[i]);
+
+        var fi = faceListB ? faceListB[i] : i;
+
+        Worldnormal1.copy(hullB.faceNormals[fi]);
         quatB.vmult(Worldnormal1,Worldnormal1);
         //posB.vadd(Worldnormal1,Worldnormal1);
-        //console.log("facenormal",hullB.faceNormals[i].toString(),"world:",Worldnormal1.toString());
+        //console.log("facenormal",hullB.faceNormals[fi].toString(),"world:",Worldnormal1.toString());
         curPlaneTests++;
         var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
         if(d===false){
