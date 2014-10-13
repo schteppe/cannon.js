@@ -502,6 +502,8 @@ Body.prototype.updateBoundingRadius = function(){
     this.boundingRadius = radius;
 };
 
+var computeAABB_shapeAABB = new AABB();
+
 /**
  * Updates the .aabb
  * @method computeAABB
@@ -516,7 +518,7 @@ Body.prototype.computeAABB = function(){
         orientation = tmpQuat,
         bodyQuat = this.quaternion,
         aabb = this.aabb,
-        shapeAABB = new AABB();
+        shapeAABB = computeAABB_shapeAABB;
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i];
