@@ -57,9 +57,12 @@ var tmpAABB = new AABB();
 NaiveBroadphase.prototype.aabbQuery = function(world, aabb, result){
     result = result || [];
 
-    // Naive loop
     for(var i = 0; i < world.bodies.length; i++){
         var b = world.bodies[i];
+
+        if(b.aabbNeedsUpdate){
+            b.computeAABB();
+        }
 
         // Ugly hack until RigidBody gets aabb
         if(b.aabb.overlaps(aabb)){
