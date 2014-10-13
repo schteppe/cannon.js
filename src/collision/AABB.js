@@ -95,7 +95,6 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
  * @param  {AABB} aabb Source to copy from
  */
 AABB.prototype.copy = function(aabb){
-    // vectors copy is the other direction... bad!
     this.lowerBound.copy(aabb.lowerBound);
     this.upperBound.copy(aabb.upperBound);
 };
@@ -161,5 +160,6 @@ AABB.prototype.overlaps = function(aabb){
     // l1       u1
 
     return ((l2.x <= u1.x && u1.x <= u2.x) || (l1.x <= u2.x && u2.x <= u1.x)) &&
-           ((l2.y <= u1.y && u1.y <= u2.y) || (l1.y <= u2.y && u2.y <= u1.y));
+           ((l2.y <= u1.y && u1.y <= u2.y) || (l1.y <= u2.y && u2.y <= u1.y)) &&
+           ((l2.z <= u1.z && u1.z <= u2.z) || (l1.z <= u2.z && u2.z <= u1.z));
 };
