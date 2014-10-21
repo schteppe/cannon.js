@@ -954,8 +954,14 @@ CANNON.Demo.prototype.removeVisual = function(body){
             }
         }
         body.visualref.visualId = null;
-        this. scene.remove(body.visualref);
+        this.scene.remove(body.visualref);
         body.visualref = null;
+    }
+};
+
+CANNON.Demo.prototype.removeAllVisuals = function(){
+    while(this.bodies.length) {
+        this.removeVisual(this.bodies[0]);
     }
 };
 
