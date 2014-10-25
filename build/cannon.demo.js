@@ -930,6 +930,12 @@ CANNON.Demo.prototype.addVisual = function(body){
     }
 };
 
+CANNON.Demo.prototype.addVisuals = function(bodies){
+    for (var i = 0; i < bodies.length; i++) {
+        this.addVisual(bodies[i]);
+    }
+};
+
 CANNON.Demo.prototype.removeVisual = function(body){
     if(body.visualref){
         var bodies = this.bodies,
@@ -954,8 +960,14 @@ CANNON.Demo.prototype.removeVisual = function(body){
             }
         }
         body.visualref.visualId = null;
-        this. scene.remove(body.visualref);
+        this.scene.remove(body.visualref);
         body.visualref = null;
+    }
+};
+
+CANNON.Demo.prototype.removeAllVisuals = function(){
+    while(this.bodies.length) {
+        this.removeVisual(this.bodies[0]);
     }
 };
 

@@ -930,6 +930,12 @@ CANNON.Demo.prototype.addVisual = function(body){
     }
 };
 
+CANNON.Demo.prototype.addVisuals = function(bodies){
+    for (var i = 0; i < bodies.length; i++) {
+        this.addVisual(bodies[i]);
+    }
+};
+
 CANNON.Demo.prototype.removeVisual = function(body){
     if(body.visualref){
         var bodies = this.bodies,
