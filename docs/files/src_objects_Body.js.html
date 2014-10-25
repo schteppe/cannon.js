@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -196,6 +200,9 @@ var Box = require(&#x27;../shapes/Box&#x27;);
  * @extends EventTarget
  * @param {object} [options]
  * @param {Vec3} [options.position]
+ * @param {Vec3} [options.velocity]
+ * @param {Vec3} [options.angularVelocity]
+ * @param {Quaternion} [options.quaternion]
  * @param {number} [options.mass]
  * @param {number} [options.type]
  * @param {number} [options.linearDamping]
@@ -250,7 +257,7 @@ function Body(options){
     this.collisionFilterMask = 1;
 
     /**
-     * Whether to produce contact forces
+     * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.
      * @property {Number} collisionResponse
      */
 	this.collisionResponse = true;
@@ -282,6 +289,10 @@ function Body(options){
      * @type {Vec3}
      */
     this.velocity = new Vec3();
+
+    if(options.velocity){
+        this.velocity.copy(options.velocity);
+    }
 
     /**
      * @property initVelocity
@@ -317,13 +328,13 @@ function Body(options){
     this.material = options.material || null;
 
     /**
-     * @property float linearDamping
+     * @property linearDamping
      * @type {Number}
      */
     this.linearDamping = typeof(options.linearDamping) === &#x27;number&#x27; ? options.linearDamping : 0.01;
 
     /**
-     * One of the states Body.DYNAMIC, Body.STATIC and Body.KINEMATIC
+     * One of: Body.DYNAMIC, Body.STATIC and Body.KINEMATIC.
      * @property type
      * @type {Number}
      */
@@ -367,10 +378,9 @@ function Body(options){
 
     /**
      * Rotational force on the body, around center of mass
-     * @property Vec3 tau
-     * @todo should be renamed to .angularForce
+     * @property {Vec3} torque
      */
-    this.tau = new Vec3();
+    this.torque = new Vec3();
 
     /**
      * Orientation of the body
@@ -378,6 +388,10 @@ function Body(options){
      * @type {Quaternion}
      */
     this.quaternion = new Quaternion();
+
+    if(options.quaternion){
+        this.quaternion.copy(options.quaternion);
+    }
 
     /**
      * @property initQuaternion
@@ -390,6 +404,10 @@ function Body(options){
      * @type {Vec3}
      */
     this.angularVelocity = new Vec3();
+
+    if(options.angularVelocity){
+        this.angularVelocity.copy(options.angularVelocity);
+    }
 
     /**
      * @property initAngularVelocity
@@ -488,7 +506,7 @@ Body.DYNAMIC = 1;
 /**
  * A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
  * @static
- * @property DYNAMIC
+ * @property STATIC
  * @type {Number}
  */
 Body.STATIC = 2;
@@ -496,7 +514,7 @@ Body.STATIC = 2;
 /**
  * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
  * @static
- * @property DYNAMIC
+ * @property KINEMATIC
  * @type {Number}
  */
 Body.KINEMATIC = 4;
@@ -612,7 +630,7 @@ Body.prototype.pointToLocalFrame = function(worldPoint,result){
 /**
  * Convert a local body point to world frame.
  * @method pointToWorldFrame
- * @param  {Vec3} worldPoint
+ * @param  {Vec3} localPoint
  * @param  {Vec3} result
  * @return {Vec3}
  */
@@ -625,8 +643,8 @@ Body.prototype.pointToWorldFrame = function(localPoint,result){
 
 /**
  * Convert a local body point to world frame.
- * @method pointToWorldFrame
- * @param  {Vec3} worldPoint
+ * @method vectorToWorldFrame
+ * @param  {Vec3} localVector
  * @param  {Vec3} result
  * @return {Vec3}
  */
@@ -683,6 +701,8 @@ Body.prototype.updateBoundingRadius = function(){
     this.boundingRadius = radius;
 };
 
+var computeAABB_shapeAABB = new AABB();
+
 /**
  * Updates the .aabb
  * @method computeAABB
@@ -697,7 +717,7 @@ Body.prototype.computeAABB = function(){
         orientation = tmpQuat,
         bodyQuat = this.quaternion,
         aabb = this.aabb,
-        shapeAABB = new AABB();
+        shapeAABB = computeAABB_shapeAABB;
 
     for(var i=0; i!==N; i++){
         var shape = shapes[i];
@@ -759,7 +779,7 @@ Body.prototype.updateInertiaWorld = function(force){
 };
 
 /**
- * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.tau.
+ * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.torque.
  * @method applyForce
  * @param  {Vec3} force The amount of force to add.
  * @param  {Vec3} worldPoint A world point to apply the force on.
@@ -783,7 +803,7 @@ Body.prototype.applyForce = function(force,worldPoint){
     this.force.vadd(force,this.force);
 
     // Add rotational force
-    this.tau.vadd(rotForce,this.tau);
+    this.torque.vadd(rotForce,this.torque);
 };
 
 /**

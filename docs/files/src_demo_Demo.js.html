@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -1110,6 +1114,12 @@ CANNON.Demo.prototype.addVisual = function(body){
     }
 };
 
+CANNON.Demo.prototype.addVisuals = function(bodies){
+    for (var i = 0; i &lt; bodies.length; i++) {
+        this.addVisual(bodies[i]);
+    }
+};
+
 CANNON.Demo.prototype.removeVisual = function(body){
     if(body.visualref){
         var bodies = this.bodies,
@@ -1134,8 +1144,14 @@ CANNON.Demo.prototype.removeVisual = function(body){
             }
         }
         body.visualref.visualId = null;
-        this. scene.remove(body.visualref);
+        this.scene.remove(body.visualref);
         body.visualref = null;
+    }
+};
+
+CANNON.Demo.prototype.removeAllVisuals = function(){
+    while(this.bodies.length) {
+        this.removeVisual(this.bodies[0]);
     }
 };
 

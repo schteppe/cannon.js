@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -310,13 +314,6 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_narrowphase">narrowphase</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
                                 <a href="#method_particlePlane">particlePlane</a>
 
                                 
@@ -339,13 +336,6 @@
                         
                             <li class="index-item method">
                                 <a href="#method_planeConvex">planeConvex</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_reduceContacts">reduceContacts</a>
 
                                 
                                 
@@ -393,13 +383,6 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_swapResult">swapResult</a>
-
-                                
-                                
-                            </li>
-                        
                     </ul>
                 </div>
             
@@ -409,13 +392,6 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties">
-                        
-                            <li class="index-item property">
-                                <a href="#property_bool contactReduction">bool contactReduction</a>
-
-                                
-                                
-                            </li>
                         
                             <li class="index-item property">
                                 <a href="#property_contactPointPool">contactPointPool</a>
@@ -535,7 +511,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l1007"><code>src&#x2F;world&#x2F;Narrowphase.js:1007</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l804"><code>src&#x2F;world&#x2F;Narrowphase.js:804</code></a>
         
         </p>
 
@@ -790,7 +766,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l1135"><code>src&#x2F;world&#x2F;Narrowphase.js:1135</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l937"><code>src&#x2F;world&#x2F;Narrowphase.js:937</code></a>
         
         </p>
 
@@ -1021,7 +997,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l93"><code>src&#x2F;world&#x2F;Narrowphase.js:93</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l62"><code>src&#x2F;world&#x2F;Narrowphase.js:62</code></a>
         
         </p>
 
@@ -1167,7 +1143,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l66"><code>src&#x2F;world&#x2F;Narrowphase.js:66</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l35"><code>src&#x2F;world&#x2F;Narrowphase.js:35</code></a>
         
         </p>
 
@@ -1196,224 +1172,6 @@
                 
             </div>
         </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_narrowphase" class="method item">
-    <h3 class="name"><code>narrowphase</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>result</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>si</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>sj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>xi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>xj</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>qi</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>qj</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_Narrowphase.js.html#l168"><code>src&#x2F;world&#x2F;Narrowphase.js:168</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Narrowphase calculation. Get the ContactEquations given two shapes: i and j</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">result</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The result one will get back with all the contact point information</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">si</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Colliding shape. If not given, particle is assumed.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">sj</code>
-                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">xi</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Position of the center of mass</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">xj</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">qi</code>
-                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Rotation around the center of mass</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">qj</code>
-                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
     
 
     
@@ -1510,7 +1268,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l1055"><code>src&#x2F;world&#x2F;Narrowphase.js:1055</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l857"><code>src&#x2F;world&#x2F;Narrowphase.js:857</code></a>
         
         </p>
 
@@ -1765,7 +1523,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l1095"><code>src&#x2F;world&#x2F;Narrowphase.js:1095</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l897"><code>src&#x2F;world&#x2F;Narrowphase.js:897</code></a>
         
         </p>
 
@@ -2020,7 +1778,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l916"><code>src&#x2F;world&#x2F;Narrowphase.js:916</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l713"><code>src&#x2F;world&#x2F;Narrowphase.js:713</code></a>
         
         </p>
 
@@ -2275,7 +2033,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l938"><code>src&#x2F;world&#x2F;Narrowphase.js:938</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l735"><code>src&#x2F;world&#x2F;Narrowphase.js:735</code></a>
         
         </p>
 
@@ -2440,94 +2198,6 @@
 </div>
 
                 
-                    <div id="method_reduceContacts" class="method item">
-    <h3 class="name"><code>reduceContacts</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>contacts</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_Narrowphase.js.html#l57"><code>src&#x2F;world&#x2F;Narrowphase.js:57</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Removes unnecessary members of an array of ContactEquation.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">contacts</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
                     <div id="method_sphereBox" class="method item">
     <h3 class="name"><code>sphereBox</code></h3>
 
@@ -2618,7 +2288,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l480"><code>src&#x2F;world&#x2F;Narrowphase.js:480</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l273"><code>src&#x2F;world&#x2F;Narrowphase.js:273</code></a>
         
         </p>
 
@@ -2873,7 +2543,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l699"><code>src&#x2F;world&#x2F;Narrowphase.js:699</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l492"><code>src&#x2F;world&#x2F;Narrowphase.js:492</code></a>
         
         </p>
 
@@ -3070,7 +2740,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l1306"><code>src&#x2F;world&#x2F;Narrowphase.js:1306</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1032"><code>src&#x2F;world&#x2F;Narrowphase.js:1032</code></a>
         
         </p>
 
@@ -3124,7 +2794,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l1229"><code>src&#x2F;world&#x2F;Narrowphase.js:1229</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1114"><code>src&#x2F;world&#x2F;Narrowphase.js:1114</code></a>
         
         </p>
 
@@ -3236,7 +2906,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l385"><code>src&#x2F;world&#x2F;Narrowphase.js:385</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l178"><code>src&#x2F;world&#x2F;Narrowphase.js:178</code></a>
         
         </p>
 
@@ -3491,7 +3161,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l353"><code>src&#x2F;world&#x2F;Narrowphase.js:353</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l146"><code>src&#x2F;world&#x2F;Narrowphase.js:146</code></a>
         
         </p>
 
@@ -3656,146 +3326,12 @@
 </div>
 
                 
-                    <div id="method_swapResult" class="method item">
-    <h3 class="name"><code>swapResult</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>object</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_Narrowphase.js.html#l41"><code>src&#x2F;world&#x2F;Narrowphase.js:41</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Swaps the body references in the contact</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">object</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>r</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
             </div>
         
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
-
-                
-                    <div id="property_bool contactReduction" class="property item">
-    <h3 class="name"><code>bool contactReduction</code></h3>
-    <span class="type">Unknown</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_world_Narrowphase.js.html#l22"><code>src&#x2F;world&#x2F;Narrowphase.js:22</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
 
                 
                     <div id="property_contactPointPool" class="property item">
@@ -3821,7 +3357,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l28"><code>src&#x2F;world&#x2F;Narrowphase.js:28</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l22"><code>src&#x2F;world&#x2F;Narrowphase.js:22</code></a>
         
         </p>
 
@@ -3866,7 +3402,7 @@
             
         
         
-        <a href="../files/src_world_Narrowphase.js.html#l34"><code>src&#x2F;world&#x2F;Narrowphase.js:34</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l28"><code>src&#x2F;world&#x2F;Narrowphase.js:28</code></a>
         
         </p>
 

@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -221,7 +225,9 @@ var tmp = new Vec3();
  * Set the AABB bounds from a set of points.
  * @method setFromPoints
  * @param {Array} points An array of Vec3&#x27;s.
- * @todo
+ * @param {Vec3} position
+ * @param {Quaternion} quaternion
+ * @param {number} skinSize
  */
 AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
     var l = this.lowerBound,
@@ -270,10 +276,9 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
 /**
  * Copy bounds from an AABB to this AABB
  * @method copy
- * @param  {AABB} aabb
+ * @param  {AABB} aabb Source to copy from
  */
 AABB.prototype.copy = function(aabb){
-    // vectors copy is the other direction... bad!
     this.lowerBound.copy(aabb.lowerBound);
     this.upperBound.copy(aabb.upperBound);
 };
@@ -282,7 +287,6 @@ AABB.prototype.copy = function(aabb){
  * Extend this AABB so that it covers the given AABB too.
  * @method extend
  * @param  {AABB} aabb
- * @todo
  */
 AABB.prototype.extend = function(aabb){
     // Extend lower bound
@@ -308,6 +312,18 @@ AABB.prototype.extend = function(aabb){
     if(this.upperBound.y &lt; u){
         this.upperBound.y = u;
     }
+
+    // Extend lower bound
+    var l = aabb.lowerBound.z;
+    if(this.lowerBound.z &gt; l){
+        this.lowerBound.z = l;
+    }
+
+    // Upper
+    var u = aabb.upperBound.z;
+    if(this.upperBound.z &lt; u){
+        this.upperBound.z = u;
+    }
 };
 
 /**
@@ -328,7 +344,8 @@ AABB.prototype.overlaps = function(aabb){
     // l1       u1
 
     return ((l2.x &lt;= u1.x &amp;&amp; u1.x &lt;= u2.x) || (l1.x &lt;= u2.x &amp;&amp; u2.x &lt;= u1.x)) &amp;&amp;
-           ((l2.y &lt;= u1.y &amp;&amp; u1.y &lt;= u2.y) || (l1.y &lt;= u2.y &amp;&amp; u2.y &lt;= u1.y));
+           ((l2.y &lt;= u1.y &amp;&amp; u1.y &lt;= u2.y) || (l1.y &lt;= u2.y &amp;&amp; u2.y &lt;= u1.y)) &amp;&amp;
+           ((l2.z &lt;= u1.z &amp;&amp; u1.z &lt;= u2.z) || (l1.z &lt;= u2.z &amp;&amp; u2.z &lt;= u1.z));
 };
 
     </pre>

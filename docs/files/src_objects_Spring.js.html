@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -368,8 +372,8 @@ Spring.prototype.applyForce = function(){
     // Angular force
     ri.cross(f,ri_x_f);
     rj.cross(f,rj_x_f);
-    bodyA.tau.vsub(ri_x_f,bodyA.tau);
-    bodyB.tau.vadd(rj_x_f,bodyB.tau);
+    bodyA.torque.vsub(ri_x_f,bodyA.torque);
+    bodyB.torque.vadd(rj_x_f,bodyB.torque);
 };
 
     </pre>

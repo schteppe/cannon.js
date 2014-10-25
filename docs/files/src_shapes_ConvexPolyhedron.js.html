@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -195,7 +199,6 @@ var Transform = require(&#x27;../math/Transform&#x27;);
  *
  * @param {array} points An array of Vec3&#x27;s
  * @param {array} faces Array of integer arrays, describing which vertices that is included in each face.
- * @param {array} normals Deprecated. Normals are now automatically generated from polygons.
  *
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
@@ -205,9 +208,9 @@ var Transform = require(&#x27;../math/Transform&#x27;);
  * @todo Move the clipping functions to ContactGenerator?
  * @todo Automatically merge coplanar polygons in constructor.
  */
-function ConvexPolyhedron( points , faces , normals ) {
+function ConvexPolyhedron(points, faces) {
     var that = this;
-    Shape.call( this );
+    Shape.call(this);
     this.type = Shape.types.CONVEXPOLYHEDRON;
 
     /**
@@ -445,7 +448,7 @@ var fsa_faceANormalWS3 = new Vec3(),
     fsa_worldEdge0 = new Vec3(),
     fsa_worldEdge1 = new Vec3(),
     fsa_Cross = new Vec3();
-ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target){
+ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,quatB,target, faceListA, faceListB){
     var faceANormalWS3 = fsa_faceANormalWS3,
         Worldnormal1 = fsa_Worldnormal1,
         deltaC = fsa_deltaC,
@@ -456,15 +459,16 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     var dmin = Infinity;
     var hullA = this;
     var curPlaneTests=0;
-    var numFacesA = hullA.faces.length;
+    var numFacesA = faceListA ? faceListA.length : hullA.faces.length;
 
     // Test normals from hullA
     for(var i=0; i&lt;numFacesA; i++){
+        var fi = faceListA ? faceListA[i] : i;
         // Get world face normal
-        faceANormalWS3.copy(hullA.faceNormals[i]);
+        faceANormalWS3.copy(hullA.faceNormals[fi]);
         quatA.vmult(faceANormalWS3,faceANormalWS3);
         //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
-        //console.log(&quot;face normal:&quot;,hullA.faceNormals[i].toString(),&quot;world face normal:&quot;,faceANormalWS3);
+        //console.log(&quot;face normal:&quot;,hullA.faceNormals[fi].toString(),&quot;world face normal:&quot;,faceANormalWS3);
         var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
         if(d===false){
             return false;
@@ -477,12 +481,15 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     }
 
     // Test normals from hullB
-    var numFacesB = hullB.faces.length;
+    var numFacesB = faceListB ? faceListB.length : hullB.faces.length;
     for(var i=0;i&lt;numFacesB;i++){
-        Worldnormal1.copy(hullB.faceNormals[i]);
+
+        var fi = faceListB ? faceListB[i] : i;
+
+        Worldnormal1.copy(hullB.faceNormals[fi]);
         quatB.vmult(Worldnormal1,Worldnormal1);
         //posB.vadd(Worldnormal1,Worldnormal1);
-        //console.log(&quot;facenormal&quot;,hullB.faceNormals[i].toString(),&quot;world:&quot;,Worldnormal1.toString());
+        //console.log(&quot;facenormal&quot;,hullB.faceNormals[fi].toString(),&quot;world:&quot;,Worldnormal1.toString());
         curPlaneTests++;
         var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
         if(d===false){

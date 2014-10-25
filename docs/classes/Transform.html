@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ArrayCollisionMatrix - cannon</title>
+    <title>Transform - cannon</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -178,7 +178,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>ArrayCollisionMatrix Class</h1>
+                        <h1>Transform Class</h1>
 <div class="box meta">
     
 
@@ -186,7 +186,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_ArrayCollisionMatrix.js.html#l3"><code>src&#x2F;collision&#x2F;ArrayCollisionMatrix.js:3</code></a>
+            Defined in: <a href="../files/src_math_Transform.js.html#l6"><code>src&#x2F;math&#x2F;Transform.js:6</code></a>
         </div>
     
 
@@ -198,15 +198,14 @@
 
 
 <div class="box intro">
-    <p>Collision &quot;matrix&quot;. It&#39;s actually a triangular-shaped array of whether two bodies are touching this step, for reference next step</p>
-
+    
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_ArrayCollisionMatrix" class="method item">
-    <h3 class="name"><code>ArrayCollisionMatrix</code></h3>
+        <div id="method_Transform" class="method item">
+    <h3 class="name"><code>Transform</code></h3>
 
     
         <span class="paren">()</span>
@@ -237,7 +236,7 @@
             
         
         
-        <a href="../files/src_collision_ArrayCollisionMatrix.js.html#l3"><code>src&#x2F;collision&#x2F;ArrayCollisionMatrix.js:3</code></a>
+        <a href="../files/src_math_Transform.js.html#l6"><code>src&#x2F;math&#x2F;Transform.js:6</code></a>
         
         </p>
 
@@ -286,29 +285,19 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_get">get</a>
+                                <a href="#method_pointToLocaFrame">pointToLocaFrame</a>
 
+                                
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_reset">reset</a>
+                                <a href="#method_pointToWorldFrame">pointToWorldFrame</a>
 
                                 
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_set">set</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_setNumObjects">setNumObjects</a>
-
+                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -324,7 +313,14 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_matrix">matrix</a>
+                                <a href="#property_position">position</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_quaternion">quaternion</a>
 
                                 
                                 
@@ -344,8 +340,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_get" class="method item">
-    <h3 class="name"><code>get</code></h3>
+                    <div id="method_pointToLocaFrame" class="method item">
+    <h3 class="name"><code>pointToLocaFrame</code></h3>
 
     
         <div class="args">
@@ -353,199 +349,25 @@
             
                 <li class="arg">
                     
-                        <code>i</code>
+                        <code>position</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>j</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Number</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_collision_ArrayCollisionMatrix.js.html#l18"><code>src&#x2F;collision&#x2F;ArrayCollisionMatrix.js:18</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Get an element</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">i</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">j</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Number</span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_reset" class="method item">
-    <h3 class="name"><code>reset</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_collision_ArrayCollisionMatrix.js.html#l54"><code>src&#x2F;collision&#x2F;ArrayCollisionMatrix.js:54</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Sets all elements to zero</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_set" class="method item">
-    <h3 class="name"><code>set</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>i</code>
+                        <code>quaternion</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>j</code>
+                        <code>worldPoint</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>value</code>
+                        <code>result</code>
                     
                 </li>
             
@@ -562,6 +384,8 @@
     
 
     
+        <span class="flag static">static</span>
+    
 
     
 
@@ -578,7 +402,7 @@
             
         
         
-        <a href="../files/src_collision_ArrayCollisionMatrix.js.html#l36"><code>src&#x2F;collision&#x2F;ArrayCollisionMatrix.js:36</code></a>
+        <a href="../files/src_math_Transform.js.html#l24"><code>src&#x2F;math&#x2F;Transform.js:24</code></a>
         
         </p>
 
@@ -589,8 +413,7 @@
     </div>
 
     <div class="description">
-        <p>Set an element</p>
-
+        
     </div>
 
     
@@ -601,8 +424,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">i</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">position</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
                     
 
                     
@@ -616,8 +439,8 @@
             
                 <li class="param">
                     
-                        <code class="param-name">j</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">quaternion</code>
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
                     
 
                     
@@ -631,8 +454,23 @@
             
                 <li class="param">
                     
-                        <code class="param-name">value</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">worldPoint</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
                     
 
                     
@@ -654,8 +492,8 @@
 </div>
 
                 
-                    <div id="method_setNumObjects" class="method item">
-    <h3 class="name"><code>setNumObjects</code></h3>
+                    <div id="method_pointToWorldFrame" class="method item">
+    <h3 class="name"><code>pointToWorldFrame</code></h3>
 
     
         <div class="args">
@@ -663,7 +501,25 @@
             
                 <li class="arg">
                     
-                        <code>n</code>
+                        <code>position</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>quaternion</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>localPoint</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>result</code>
                     
                 </li>
             
@@ -679,6 +535,8 @@
 
     
 
+    
+        <span class="flag static">static</span>
     
 
     
@@ -696,7 +554,7 @@
             
         
         
-        <a href="../files/src_collision_ArrayCollisionMatrix.js.html#l64"><code>src&#x2F;collision&#x2F;ArrayCollisionMatrix.js:64</code></a>
+        <a href="../files/src_math_Transform.js.html#l40"><code>src&#x2F;math&#x2F;Transform.js:40</code></a>
         
         </p>
 
@@ -707,8 +565,7 @@
     </div>
 
     <div class="description">
-        <p>Sets the max number of objects</p>
-
+        
     </div>
 
     
@@ -719,8 +576,53 @@
             
                 <li class="param">
                     
-                        <code class="param-name">n</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">position</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">quaternion</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">localPoint</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
                     
 
                     
@@ -750,9 +652,9 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_matrix" class="property item">
-    <h3 class="name"><code>matrix</code></h3>
-    <span class="type">Array</span>
+                    <div id="property_position" class="property item">
+    <h3 class="name"><code>position</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
 
     
 
@@ -773,7 +675,7 @@
             
         
         
-        <a href="../files/src_collision_ArrayCollisionMatrix.js.html#l10"><code>src&#x2F;collision&#x2F;ArrayCollisionMatrix.js:10</code></a>
+        <a href="../files/src_math_Transform.js.html#l11"><code>src&#x2F;math&#x2F;Transform.js:11</code></a>
         
         </p>
 
@@ -783,8 +685,51 @@
     </div>
 
     <div class="description">
-        <p>The matrix storage</p>
+        
+    </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_quaternion" class="property item">
+    <h3 class="name"><code>quaternion</code></h3>
+    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_math_Transform.js.html#l16"><code>src&#x2F;math&#x2F;Transform.js:16</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
     </div>
 
     

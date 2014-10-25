@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -237,9 +241,12 @@ var tmpAABB = new AABB();
 NaiveBroadphase.prototype.aabbQuery = function(world, aabb, result){
     result = result || [];
 
-    // Naive loop
     for(var i = 0; i &lt; world.bodies.length; i++){
         var b = world.bodies[i];
+
+        if(b.aabbNeedsUpdate){
+            b.computeAABB();
+        }
 
         // Ugly hack until RigidBody gets aabb
         if(b.aabb.overlaps(aabb)){

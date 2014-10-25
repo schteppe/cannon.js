@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -210,25 +214,7 @@
             
                 <li class="arg">
                     
-                        <code class="optional">[options.chassisBody]</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code class="optional">[options.indexRightAxis]</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code class="optional">[options.indexLeftAxis]</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code class="optional">[options.indexUpAxis]</code>
+                        <code class="optional">[options]</code>
                     
                 </li>
             
@@ -283,7 +269,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name optional">[options.chassisBody]</code>
+                        <code class="param-name optional">[options]</code>
                         <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
@@ -295,53 +281,67 @@
                     </div>
 
                     
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name optional">[options.indexRightAxis]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[chassisBody]</code>
+                                    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
+                                <div class="param-description">
+                                    <p>The car chassis body.</p>
 
-                    <div class="param-description">
-                         
-                    </div>
+                                </div>
 
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name optional">[options.indexLeftAxis]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[indexRightAxis]</code>
+                                    <span class="type">Integer</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
+                                <div class="param-description">
+                                    <p>Axis to use for right. x=0, y=1, z=2</p>
 
-                    <div class="param-description">
-                         
-                    </div>
+                                </div>
 
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name optional">[options.indexUpAxis]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[indexLeftAxis]</code>
+                                    <span class="type">Integer</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
+                                <div class="param-description">
+                                    
+                                </div>
 
-                    <div class="param-description">
-                         
-                    </div>
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[indexUpAxis]</code>
+                                    <span class="type">Integer</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -397,6 +397,20 @@
                         
                             <li class="index-item method">
                                 <a href="#method_applyEngineForce">applyEngineForce</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_getVehicleAxisWorld">getVehicleAxisWorld</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getWheelTransformWorld">getWheelTransformWorld</a>
 
                                 
                                 
@@ -469,7 +483,7 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_wheelInfos An array of WheelInfo objects.">wheelInfos An array of WheelInfo objects.</a>
+                                <a href="#property_wheelInfos">wheelInfos</a>
 
                                 
                                 
@@ -538,7 +552,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l120"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:120</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l122"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:122</code></a>
         
         </p>
 
@@ -626,7 +640,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l72"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:72</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l74"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:74</code></a>
         
         </p>
 
@@ -721,7 +735,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l100"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:100</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l102"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:102</code></a>
         
         </p>
 
@@ -782,6 +796,221 @@
 </div>
 
                 
+                    <div id="method_getVehicleAxisWorld" class="method item private">
+    <h3 class="name"><code>getVehicleAxisWorld</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>axisIndex</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>result</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_RaycastVehicle.js.html#l137"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:137</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get one of the wheel axles, world-oriented.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">axisIndex</code>
+                        <span class="type">Integer</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getWheelTransformWorld" class="method item">
+    <h3 class="name"><code>getWheelTransformWorld</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>wheelIndex</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_RaycastVehicle.js.html#l420"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:420</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get the world transform of one of the wheels</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">wheelIndex</code>
+                        <span class="type">Integer</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_removeFromWorld" class="method item">
     <h3 class="name"><code>removeFromWorld</code></h3>
 
@@ -824,7 +1053,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l269"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:269</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l278"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:278</code></a>
         
         </p>
 
@@ -918,7 +1147,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l110"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:110</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l112"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:112</code></a>
         
         </p>
 
@@ -1027,7 +1256,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l87"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:87</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l89"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:89</code></a>
         
         </p>
 
@@ -1119,7 +1348,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l21"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:21</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l22"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:22</code></a>
         
         </p>
 
@@ -1163,7 +1392,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l49"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:49</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l51"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:51</code></a>
         
         </p>
 
@@ -1210,7 +1439,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l42"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:42</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l44"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:44</code></a>
         
         </p>
 
@@ -1257,7 +1486,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l56"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:56</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l58"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:58</code></a>
         
         </p>
 
@@ -1304,7 +1533,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l31"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:31</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l33"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:33</code></a>
         
         </p>
 
@@ -1326,8 +1555,8 @@
 </div>
 
                 
-                    <div id="property_wheelInfos An array of WheelInfo objects." class="property item">
-    <h3 class="name"><code>wheelInfos An array of WheelInfo objects.</code></h3>
+                    <div id="property_wheelInfos" class="property item">
+    <h3 class="name"><code>wheelInfos</code></h3>
     <span class="type">Array</span>
 
     
@@ -1349,7 +1578,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l26"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:26</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l27"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:27</code></a>
         
         </p>
 
@@ -1359,7 +1588,8 @@
     </div>
 
     <div class="description">
-        
+        <p>An array of WheelInfo objects.</p>
+
     </div>
 
     
@@ -1393,7 +1623,7 @@
             
         
         
-        <a href="../files/src_objects_RaycastVehicle.js.html#l37"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:37</code></a>
+        <a href="../files/src_objects_RaycastVehicle.js.html#l39"><code>src&#x2F;objects&#x2F;RaycastVehicle.js:39</code></a>
         
         </p>
 

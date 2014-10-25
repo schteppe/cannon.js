@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -200,12 +204,6 @@ var ContactEquation = require(&#x27;../equations/ContactEquation&#x27;);
 function Narrowphase(){
 
     /**
-     * Turns on or off contact reduction. Can be handy to turn off when debugging new collision types.
-     * @property bool contactReduction
-     */
-    this.contactReduction = false;
-
-    /**
      * Internal storage of pooled contact points.
      * @property {Array} contactPointPool
      */
@@ -217,31 +215,6 @@ function Narrowphase(){
      */
     this.v3pool = new Vec3Pool();
 }
-
-/**
- * Swaps the body references in the contact
- * @method swapResult
- * @param object r
- */
-Narrowphase.prototype.swapResult = function(r){
-    var temp;
-    temp = r.ri;
-    r.ri = r.rj;
-    r.rj = temp;
-    r.ni.negate(r.ni);
-    temp = r.bi;
-    r.bi = r.bj;
-    r.bj = temp;
-};
-
-/**
- * Removes unnecessary members of an array of ContactEquation.
- * @method reduceContacts
- * @param {Array} contacts
- */
-Narrowphase.prototype.reduceContacts = function(contacts){
-
-};
 
 /**
  * Make a contact object, by using the internal pool or creating a new one.
@@ -308,6 +281,10 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
                 xj.vadd(bj.position, xj);
                 var sj = bj.shapes[j];
 
+                if(xi.distanceTo(xj) &gt; si.boundingSphereRadius + sj.boundingSphereRadius){
+                    continue;
+                }
+
                 // Get contacts
                 var resolver = this[si.type | sj.type];
                 if(resolver){
@@ -317,16 +294,6 @@ Narrowphase.prototype.getContacts = function(p1,p2,world,result,oldcontacts){
                         resolver.call(this, result, sj,si,xj,xi,qj,qi,bj,bi,si,sj);
                     }
                 }
-                /*
-                this.narrowphase(
-                    result,
-                    bi.shapes[i],
-                    bj.shapes[j],
-                    xi, xj,
-                    qi, qj,
-                    bi, bj
-                );
-                */
             }
         }
     }
@@ -344,176 +311,6 @@ function warn(msg){
 
     console.warn(msg);
 }
-
-/**
- * Narrowphase calculation. Get the ContactEquations given two shapes: i and j
- * @method narrowphase
- * @param {array} result The result one will get back with all the contact point information
- * @param {Shape} si Colliding shape. If not given, particle is assumed.
- * @param {Shape} sj
- * @param {Vec3} xi Position of the center of mass
- * @param {Vec3} xj
- * @param {Quaternion} qi Rotation around the center of mass
- * @param {Quaternion} qj
- */
-/*
-Narrowphase.prototype.narrowphase = function(result,si,sj,xi,xj,qi,qj,bi,bj){
-    var swapped = false,
-        types = Shape.types,
-        SPHERE = types.SPHERE,
-        PLANE = types.PLANE,
-        PARTICLE = types.PARTICLE,
-        BOX = types.BOX,
-        COMPOUND = types.COMPOUND,
-        CONVEXPOLYHEDRON = types.CONVEXPOLYHEDRON,
-        HEIGHTFIELD = types.HEIGHTFIELD;
-
-    if(si.type &gt; sj.type){
-        var temp;
-
-        temp = sj;
-        sj = si;
-        si = temp;
-
-        temp = xj;
-        xj = xi;
-        xi = temp;
-
-        temp = qj;
-        qj = qi;
-        qi = temp;
-
-        temp = bj;
-        bj = bi;
-        bi = temp;
-
-        swapped = true;
-    }
-
-    if(si &amp;&amp; sj){
-        if(si.type === SPHERE){
-
-            switch(sj.type){
-            case SPHERE: // sphere-sphere
-                this.sphereSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case PLANE: // sphere-plane
-                this.spherePlane(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case BOX: // sphere-box
-                this.sphereBox(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case CONVEXPOLYHEDRON: // sphere-convexpolyhedron
-                this.sphereConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case HEIGHTFIELD: // sphere-heightfield
-                this.sphereHeightfield(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case PARTICLE: // Particle vs sphere
-                this.particleSphere(result,sj,si,xj,xi,qj,qi,bj,bi);
-                break;
-            default:
-                warn(&quot;Collision between Shape.types.SPHERE and &quot;+sj.type+&quot; not implemented yet.&quot;);
-                break;
-            }
-
-        } else if(si.type === types.PLANE){
-
-            switch(sj.type){
-            case PLANE: // plane-plane
-                // Should not give collision
-                break;
-            case BOX: // plane-box
-                this.planeBox(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case CONVEXPOLYHEDRON: // plane-convex polyhedron
-                this.planeConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case PARTICLE: // plane-convex polyhedron
-                this.particlePlane(result,sj,si,xj,xi,qj,qi,bj,bi);
-                break;
-            default:
-                warn(&quot;Collision between Shape.types.PLANE and &quot;+sj.type+&quot; not implemented yet.&quot;);
-                break;
-            }
-
-        } else if(si.type===types.BOX){
-
-            switch(sj.type){
-            case BOX: // box-box
-                // Do convex/convex instead
-                this.convexConvex(result,si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj,si,sj);
-                break;
-            case CONVEXPOLYHEDRON: // box-convexpolyhedron
-                // Do convex/convex instead
-                this.convexConvex(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
-                break;
-            case PARTICLE: // Particle vs box
-                this.convexParticle(result,sj,si.convexPolyhedronRepresentation,xj,xi,qj,qi,bj,bi,si,sj);
-                break;
-            case HEIGHTFIELD: // Box vs heightfield
-                this.convexHeightfield(result,si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
-                break;
-            default:
-                warn(&quot;Collision between Shape.BOX and &quot;+sj.type+&quot; not implemented yet.&quot;);
-                break;
-            }
-
-        } else if(si.type===types.CONVEXPOLYHEDRON){
-
-            switch(sj.type){
-            case types.CONVEXPOLYHEDRON: // convex polyhedron - convex polyhedron
-                this.convexConvex(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case types.PARTICLE: // particle-convex
-                this.convexParticle(result,sj,si,xj,xi,qj,qi,bj,bi);
-                break;
-            default:
-                warn(&quot;Collision between Shape.types.CONVEXPOLYHEDRON and &quot;+sj.type+&quot; not implemented yet.&quot;);
-                break;
-            }
-
-        } else if(si.type===types.HEIGHTFIELD){
-
-            switch(sj.type){
-            case types.SPHERE: // heightfield/sphere
-                this.sphereHeightfield(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            default:
-                warn(&quot;Collision between Shape.types.HEIGHTFIELD and &quot;+sj.type+&quot; not implemented yet.&quot;);
-                break;
-            }
-
-        } else if(si.type === PARTICLE){
-
-            // Particle!
-            switch(sj.type){
-            case types.PLANE: // Particle vs plane
-                this.particlePlane(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case types.SPHERE: // Particle vs sphere
-                this.particleSphere(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            case types.BOX: // Particle vs box
-                this.convexParticle(result,si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
-                break;
-            case types.CONVEXPOLYHEDRON: // particle-convex
-                this.convexParticle(result,si,sj,xi,xj,qi,qj,bi,bj);
-                break;
-            default:
-                console.warn(&quot;Collision between Particle and &quot;+sj.type+&quot; not implemented yet.&quot;);
-                break;
-            }
-        }
-    }
-
-    // Swap back if we swapped bodies in the beginning
-    for(var i=0, Nresults=result.length; swapped &amp;&amp; i!==Nresults; i++){
-        this.swapResult(result[i]);
-    }
-};
-*/
-
 
 Narrowphase.prototype[Shape.types.BOX | Shape.types.BOX] =
 Narrowphase.prototype.boxBox = function(result,si,sj,xi,xj,qi,qj,bi,bj){
@@ -898,6 +695,10 @@ Narrowphase.prototype.sphereConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var R =     si.radius;
     var penetrating_sides = [];
 
+    // if(convex_to_sphere.norm2() &gt; si.boundingSphereRadius + sj.boundingSphereRadius){
+    //     return;
+    // }
+
     // Check corners
     for(var i=0; i!==verts.length; i++){
         var v = verts[i];
@@ -1197,9 +998,14 @@ var convexConvex_q = new Vec3();
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON] =
-Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
+Narrowphase.prototype.convexConvex = function(result,si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj,faceListA,faceListB){
     var sepAxis = convexConvex_sepAxis;
-    if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis)){
+
+    if(xi.distanceTo(xj) &gt; si.boundingSphereRadius + sj.boundingSphereRadius){
+        return;
+    }
+
+    if(si.findSeparatingAxis(sj,xi,qi,xj,qj,sepAxis,faceListA,faceListB)){
         var res = [];
         var q = convexConvex_q;
         si.clipAgainstHull(xi,qi,sj,xj,qj,sepAxis,-100,100,res);
@@ -1405,6 +1211,7 @@ Narrowphase.prototype.boxHeightfield = function (result,si,sj,xi,xj,qi,qj,bi,bj)
 
 var convexHeightfield_tmp1 = new Vec3();
 var convexHeightfield_tmp2 = new Vec3();
+var convexHeightfield_faceList = [0];
 
 /**
  * @method sphereHeightfield
@@ -1424,7 +1231,8 @@ Narrowphase.prototype.convexHeightfield = function (
     var data = hfShape.data,
         w = hfShape.elementSize,
         radius = convexShape.boundingSphereRadius,
-        worldPillarOffset = convexHeightfield_tmp2;
+        worldPillarOffset = convexHeightfield_tmp2,
+        faceList = convexHeightfield_faceList;
 
     // Get sphere position to heightfield local!
     var localConvexPos = convexHeightfield_tmp1;
@@ -1467,12 +1275,16 @@ Narrowphase.prototype.convexHeightfield = function (
             // Lower triangle
             hfShape.getConvexTrianglePillar(i, j, false);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
-            this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+            if (convexPos.distanceTo(worldPillarOffset) &lt; hfShape.pillarConvex.boundingSphereRadius + convexShape.boundingSphereRadius) {
+                this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody, null, null, faceList, null);
+            }
 
             // Upper triangle
             hfShape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
-            this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody);
+            if (convexPos.distanceTo(worldPillarOffset) &lt; hfShape.pillarConvex.boundingSphereRadius + convexShape.boundingSphereRadius) {
+                this.convexConvex(result, convexShape, hfShape.pillarConvex, convexPos, worldPillarOffset, convexQuat, hfQuat, convexBody, hfBody, null, null, faceList, null);
+            }
         }
     }
 };
@@ -1546,12 +1358,16 @@ Narrowphase.prototype.sphereHeightfield = function (
             // Lower triangle
             hfShape.getConvexTrianglePillar(i, j, false);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
-            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            if (spherePos.distanceTo(worldPillarOffset) &lt; hfShape.pillarConvex.boundingSphereRadius + sphereShape.boundingSphereRadius) {
+                this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            }
 
             // Upper triangle
             hfShape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(hfPos, hfQuat, hfShape.pillarOffset, worldPillarOffset);
-            this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            if (spherePos.distanceTo(worldPillarOffset) &lt; hfShape.pillarConvex.boundingSphereRadius + sphereShape.boundingSphereRadius) {
+                this.sphereConvex(result, sphereShape, hfShape.pillarConvex, spherePos, worldPillarOffset, sphereQuat, hfQuat, sphereBody, hfBody);
+            }
 
             var numContacts = result.length - numContactsBefore;
 

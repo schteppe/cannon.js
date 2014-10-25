@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -289,6 +293,13 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_boundingSphereCheck">boundingSphereCheck</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_collisionPairs">collisionPairs</a>
 
                                 
@@ -346,6 +357,13 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_dirty">dirty</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item property">
                                 <a href="#property_useBoundingBoxes">useBoundingBoxes</a>
@@ -427,7 +445,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l206"><code>src&#x2F;collision&#x2F;Broadphase.js:206</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l197"><code>src&#x2F;collision&#x2F;Broadphase.js:197</code></a>
         
         </p>
 
@@ -500,8 +518,8 @@
 </div>
 
                 
-                    <div id="method_collisionPairs" class="method item">
-    <h3 class="name"><code>collisionPairs</code></h3>
+                    <div id="method_boundingSphereCheck" class="method item">
+    <h3 class="name"><code>boundingSphereCheck</code></h3>
 
     
         <div class="args">
@@ -509,19 +527,13 @@
             
                 <li class="arg">
                     
-                        <code>world</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>Array</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>Array</code>
+                        <code>bodyB</code>
                     
                 </li>
             
@@ -531,7 +543,7 @@
 
     
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Boolean</span>
         </span>
     
 
@@ -558,7 +570,134 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l33"><code>src&#x2F;collision&#x2F;Broadphase.js:33</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l183"><code>src&#x2F;collision&#x2F;Broadphase.js:183</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Check if the bounding spheres of two bodies overlap.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_collisionPairs" class="method item">
+    <h3 class="name"><code>collisionPairs</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>world</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>p1</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>p2</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l37"><code>src&#x2F;collision&#x2F;Broadphase.js:37</code></a>
         
         </p>
 
@@ -597,14 +736,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">Array</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">p1</code>
+                        <span class="type">Array</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>p1 Empty array to be filled with body objects</p>
+                        <p>Empty array to be filled with body objects</p>
 
                     </div>
 
@@ -613,14 +752,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">Array</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">p2</code>
+                        <span class="type">Array</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>p2 Empty array to be filled with body objects</p>
+                        <p>Empty array to be filled with body objects</p>
 
                     </div>
 
@@ -631,18 +770,6 @@
         </div>
     
 
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                    <p>array An array with two subarrays of body indices</p>
-
-                
-            </div>
-        </div>
     
 
     
@@ -658,13 +785,13 @@
             
                 <li class="arg">
                     
-                        <code>Body</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>Body</code>
+                        <code>bodyB</code>
                     
                 </li>
             
@@ -709,7 +836,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l123"><code>src&#x2F;collision&#x2F;Broadphase.js:123</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l112"><code>src&#x2F;collision&#x2F;Broadphase.js:112</code></a>
         
         </p>
 
@@ -732,15 +859,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">Body</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>bi</p>
-
+                         
                     </div>
 
                     
@@ -748,15 +874,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">Body</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>bj</p>
-
+                         
                     </div>
 
                     
@@ -811,13 +936,13 @@
             
                 <li class="arg">
                     
-                        <code>bi</code>
+                        <code>bodyA</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>bj</code>
+                        <code>bodyB</code>
                     
                 </li>
             
@@ -862,7 +987,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l100"><code>src&#x2F;collision&#x2F;Broadphase.js:100</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l89"><code>src&#x2F;collision&#x2F;Broadphase.js:89</code></a>
         
         </p>
 
@@ -885,7 +1010,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bi</code>
+                        <code class="param-name">bodyA</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -900,7 +1025,7 @@
             
                 <li class="param">
                     
-                        <code class="param-name">bj</code>
+                        <code class="param-name">bodyB</code>
                         <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
 
@@ -922,7 +1047,7 @@
                     
 
                     <div class="param-description">
-                        <p>bi is appended to this array if intersection</p>
+                        <p>bodyA is appended to this array if intersection</p>
 
                     </div>
 
@@ -938,7 +1063,7 @@
                     
 
                     <div class="param-description">
-                        <p>bj is appended to this array if intersection</p>
+                        <p>bodyB is appended to this array if intersection</p>
 
                     </div>
 
@@ -1015,7 +1140,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l84"><code>src&#x2F;collision&#x2F;Broadphase.js:84</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l73"><code>src&#x2F;collision&#x2F;Broadphase.js:73</code></a>
         
         </p>
 
@@ -1154,7 +1279,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l151"><code>src&#x2F;collision&#x2F;Broadphase.js:151</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l135"><code>src&#x2F;collision&#x2F;Broadphase.js:135</code></a>
         
         </p>
 
@@ -1267,7 +1392,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l45"><code>src&#x2F;collision&#x2F;Broadphase.js:45</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l48"><code>src&#x2F;collision&#x2F;Broadphase.js:48</code></a>
         
         </p>
 
@@ -1382,7 +1507,7 @@
             
         
         
-        <a href="../files/src_collision_Broadphase.js.html#l191"><code>src&#x2F;collision&#x2F;Broadphase.js:191</code></a>
+        <a href="../files/src_collision_Broadphase.js.html#l175"><code>src&#x2F;collision&#x2F;Broadphase.js:175</code></a>
         
         </p>
 
@@ -1434,6 +1559,51 @@
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_dirty" class="property item">
+    <h3 class="name"><code>dirty</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_collision_Broadphase.js.html#l30"><code>src&#x2F;collision&#x2F;Broadphase.js:30</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set to true if the objects in the world moved.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="property_useBoundingBoxes" class="property item">

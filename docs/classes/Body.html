@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -299,6 +303,48 @@
                             
                             <li class="param">
                                 
+                                    <code class="param-name optional">[velocity]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[angularVelocity]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[quaternion]</code>
+                                    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
                                     <code class="param-name optional">[mass]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -456,13 +502,6 @@ world.add(body);</code></pre>
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_pointToWorldFrame">pointToWorldFrame</a>
-
-                                
-                                
-                            </li>
-                        
                             <li class="index-item method inherited">
                                 <a href="#method_removeEventListener">removeEventListener</a>
 
@@ -507,6 +546,13 @@ world.add(body);</code></pre>
                         
                             <li class="index-item method">
                                 <a href="#method_updateSolveMassProperties">updateSolveMassProperties</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_vectorToWorldFrame">vectorToWorldFrame</a>
 
                                 
                                 
@@ -604,32 +650,7 @@ world.add(body);</code></pre>
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_DYNAMIC">DYNAMIC</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_DYNAMIC">DYNAMIC</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
                                 <a href="#property_fixedRotation">fixedRotation</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_float linearDamping">float linearDamping</a>
 
                                 
                                 
@@ -707,6 +728,22 @@ world.add(body);</code></pre>
                         
                             <li class="index-item property">
                                 <a href="#property_invMass">invMass</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_KINEMATIC">KINEMATIC</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_linearDamping">linearDamping</a>
 
                                 
                                 
@@ -826,14 +863,23 @@ world.add(body);</code></pre>
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_type">type</a>
+                                <a href="#property_STATIC">STATIC</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_torque">torque</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_Vec3 tau">Vec3 tau</a>
+                                <a href="#property_type">type</a>
 
                                 
                                 
@@ -1039,7 +1085,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l581"><code>src&#x2F;objects&#x2F;Body.js:581</code></a>
+        <a href="../files/src_objects_Body.js.html#l597"><code>src&#x2F;objects&#x2F;Body.js:597</code></a>
         
         </p>
 
@@ -1050,7 +1096,7 @@ world.add(body);</code></pre>
     </div>
 
     <div class="description">
-        <p>Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.tau.</p>
+        <p>Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.torque.</p>
 
     </div>
 
@@ -1150,7 +1196,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l609"><code>src&#x2F;objects&#x2F;Body.js:609</code></a>
+        <a href="../files/src_objects_Body.js.html#l625"><code>src&#x2F;objects&#x2F;Body.js:625</code></a>
         
         </p>
 
@@ -1245,7 +1291,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l506"><code>src&#x2F;objects&#x2F;Body.js:506</code></a>
+        <a href="../files/src_objects_Body.js.html#l522"><code>src&#x2F;objects&#x2F;Body.js:522</code></a>
         
         </p>
 
@@ -1440,7 +1486,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l693"><code>src&#x2F;objects&#x2F;Body.js:693</code></a>
+        <a href="../files/src_objects_Body.js.html#l709"><code>src&#x2F;objects&#x2F;Body.js:709</code></a>
         
         </p>
 
@@ -1689,7 +1735,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l418"><code>src&#x2F;objects&#x2F;Body.js:418</code></a>
+        <a href="../files/src_objects_Body.js.html#l432"><code>src&#x2F;objects&#x2F;Body.js:432</code></a>
         
         </p>
 
@@ -1771,132 +1817,7 @@ world.add(body);</code></pre>
             
                 <li class="arg">
                     
-                        <code>worldPoint</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>result</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Body.js.html#l432"><code>src&#x2F;objects&#x2F;Body.js:432</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Convert a local body point to world frame.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">worldPoint</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">result</code>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
-                    
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_pointToWorldFrame" class="method item">
-    <h3 class="name"><code>pointToWorldFrame</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>worldPoint</code>
+                        <code>localPoint</code>
                     
                 </li>
             
@@ -1962,7 +1883,7 @@ world.add(body);</code></pre>
             
                 <li class="param">
                     
-                        <code class="param-name">worldPoint</code>
+                        <code class="param-name">localPoint</code>
                         <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
                     
 
@@ -2168,7 +2089,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l361"><code>src&#x2F;objects&#x2F;Body.js:361</code></a>
+        <a href="../files/src_objects_Body.js.html#l375"><code>src&#x2F;objects&#x2F;Body.js:375</code></a>
         
         </p>
 
@@ -2233,7 +2154,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l379"><code>src&#x2F;objects&#x2F;Body.js:379</code></a>
+        <a href="../files/src_objects_Body.js.html#l393"><code>src&#x2F;objects&#x2F;Body.js:393</code></a>
         
         </p>
 
@@ -2312,7 +2233,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l483"><code>src&#x2F;objects&#x2F;Body.js:483</code></a>
+        <a href="../files/src_objects_Body.js.html#l497"><code>src&#x2F;objects&#x2F;Body.js:497</code></a>
         
         </p>
 
@@ -2367,7 +2288,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l552"><code>src&#x2F;objects&#x2F;Body.js:552</code></a>
+        <a href="../files/src_objects_Body.js.html#l568"><code>src&#x2F;objects&#x2F;Body.js:568</code></a>
         
         </p>
 
@@ -2422,7 +2343,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l650"><code>src&#x2F;objects&#x2F;Body.js:650</code></a>
+        <a href="../files/src_objects_Body.js.html#l666"><code>src&#x2F;objects&#x2F;Body.js:666</code></a>
         
         </p>
 
@@ -2477,7 +2398,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l402"><code>src&#x2F;objects&#x2F;Body.js:402</code></a>
+        <a href="../files/src_objects_Body.js.html#l416"><code>src&#x2F;objects&#x2F;Body.js:416</code></a>
         
         </p>
 
@@ -2494,6 +2415,131 @@ world.add(body);</code></pre>
 
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_vectorToWorldFrame" class="method item">
+    <h3 class="name"><code>vectorToWorldFrame</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>localVector</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>result</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l460"><code>src&#x2F;objects&#x2F;Body.js:460</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Convert a local body point to world frame.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">localVector</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">result</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+                    
+                
+            </div>
+        </div>
     
 
     
@@ -2532,7 +2578,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l349"><code>src&#x2F;objects&#x2F;Body.js:349</code></a>
+        <a href="../files/src_objects_Body.js.html#l363"><code>src&#x2F;objects&#x2F;Body.js:363</code></a>
         
         </p>
 
@@ -2586,7 +2632,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l280"><code>src&#x2F;objects&#x2F;Body.js:280</code></a>
+        <a href="../files/src_objects_Body.js.html#l294"><code>src&#x2F;objects&#x2F;Body.js:294</code></a>
         
         </p>
 
@@ -2630,7 +2676,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l286"><code>src&#x2F;objects&#x2F;Body.js:286</code></a>
+        <a href="../files/src_objects_Body.js.html#l300"><code>src&#x2F;objects&#x2F;Body.js:300</code></a>
         
         </p>
 
@@ -2675,7 +2721,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l155"><code>src&#x2F;objects&#x2F;Body.js:155</code></a>
+        <a href="../files/src_objects_Body.js.html#l162"><code>src&#x2F;objects&#x2F;Body.js:162</code></a>
         
         </p>
 
@@ -2720,7 +2766,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l275"><code>src&#x2F;objects&#x2F;Body.js:275</code></a>
+        <a href="../files/src_objects_Body.js.html#l289"><code>src&#x2F;objects&#x2F;Body.js:289</code></a>
         
         </p>
 
@@ -2764,7 +2810,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l208"><code>src&#x2F;objects&#x2F;Body.js:208</code></a>
+        <a href="../files/src_objects_Body.js.html#l218"><code>src&#x2F;objects&#x2F;Body.js:218</code></a>
         
         </p>
 
@@ -2810,7 +2856,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l326"><code>src&#x2F;objects&#x2F;Body.js:326</code></a>
+        <a href="../files/src_objects_Body.js.html#l340"><code>src&#x2F;objects&#x2F;Body.js:340</code></a>
         
         </p>
 
@@ -2854,7 +2900,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l62"><code>src&#x2F;objects&#x2F;Body.js:62</code></a>
+        <a href="../files/src_objects_Body.js.html#l65"><code>src&#x2F;objects&#x2F;Body.js:65</code></a>
         
         </p>
 
@@ -2898,7 +2944,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l67"><code>src&#x2F;objects&#x2F;Body.js:67</code></a>
+        <a href="../files/src_objects_Body.js.html#l70"><code>src&#x2F;objects&#x2F;Body.js:70</code></a>
         
         </p>
 
@@ -2942,7 +2988,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l72"><code>src&#x2F;objects&#x2F;Body.js:72</code></a>
+        <a href="../files/src_objects_Body.js.html#l75"><code>src&#x2F;objects&#x2F;Body.js:75</code></a>
         
         </p>
 
@@ -2952,7 +2998,7 @@ world.add(body);</code></pre>
     </div>
 
     <div class="description">
-        <p>Whether to produce contact forces</p>
+        <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.</p>
 
     </div>
 
@@ -2989,7 +3035,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l300"><code>src&#x2F;objects&#x2F;Body.js:300</code></a>
+        <a href="../files/src_objects_Body.js.html#l314"><code>src&#x2F;objects&#x2F;Body.js:314</code></a>
         
         </p>
 
@@ -3000,100 +3046,6 @@ world.add(body);</code></pre>
 
     <div class="description">
         <p>A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_DYNAMIC" class="property item">
-    <h3 class="name"><code>DYNAMIC</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Body.js.html#l308"><code>src&#x2F;objects&#x2F;Body.js:308</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_DYNAMIC" class="property item">
-    <h3 class="name"><code>DYNAMIC</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Body.js.html#l316"><code>src&#x2F;objects&#x2F;Body.js:316</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.</p>
 
     </div>
 
@@ -3128,7 +3080,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l269"><code>src&#x2F;objects&#x2F;Body.js:269</code></a>
+        <a href="../files/src_objects_Body.js.html#l283"><code>src&#x2F;objects&#x2F;Body.js:283</code></a>
         
         </p>
 
@@ -3140,50 +3092,6 @@ world.add(body);</code></pre>
     <div class="description">
         <p>Set to true if you don&#39;t want the body to rotate. Make sure to run .updateMassProperties() after changing this.</p>
 
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_float linearDamping" class="property item">
-    <h3 class="name"><code>float linearDamping</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Body.js.html#l139"><code>src&#x2F;objects&#x2F;Body.js:139</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
     </div>
 
     
@@ -3217,7 +3125,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l112"><code>src&#x2F;objects&#x2F;Body.js:112</code></a>
+        <a href="../files/src_objects_Body.js.html#l119"><code>src&#x2F;objects&#x2F;Body.js:119</code></a>
         
         </p>
 
@@ -3262,7 +3170,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l241"><code>src&#x2F;objects&#x2F;Body.js:241</code></a>
+        <a href="../files/src_objects_Body.js.html#l255"><code>src&#x2F;objects&#x2F;Body.js:255</code></a>
         
         </p>
 
@@ -3306,7 +3214,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l214"><code>src&#x2F;objects&#x2F;Body.js:214</code></a>
+        <a href="../files/src_objects_Body.js.html#l228"><code>src&#x2F;objects&#x2F;Body.js:228</code></a>
         
         </p>
 
@@ -3350,7 +3258,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l93"><code>src&#x2F;objects&#x2F;Body.js:93</code></a>
+        <a href="../files/src_objects_Body.js.html#l96"><code>src&#x2F;objects&#x2F;Body.js:96</code></a>
         
         </p>
 
@@ -3395,7 +3303,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l202"><code>src&#x2F;objects&#x2F;Body.js:202</code></a>
+        <a href="../files/src_objects_Body.js.html#l212"><code>src&#x2F;objects&#x2F;Body.js:212</code></a>
         
         </p>
 
@@ -3439,7 +3347,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l106"><code>src&#x2F;objects&#x2F;Body.js:106</code></a>
+        <a href="../files/src_objects_Body.js.html#l113"><code>src&#x2F;objects&#x2F;Body.js:113</code></a>
         
         </p>
 
@@ -3483,7 +3391,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l247"><code>src&#x2F;objects&#x2F;Body.js:247</code></a>
+        <a href="../files/src_objects_Body.js.html#l261"><code>src&#x2F;objects&#x2F;Body.js:261</code></a>
         
         </p>
 
@@ -3527,7 +3435,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l259"><code>src&#x2F;objects&#x2F;Body.js:259</code></a>
+        <a href="../files/src_objects_Body.js.html#l273"><code>src&#x2F;objects&#x2F;Body.js:273</code></a>
         
         </p>
 
@@ -3571,7 +3479,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l252"><code>src&#x2F;objects&#x2F;Body.js:252</code></a>
+        <a href="../files/src_objects_Body.js.html#l266"><code>src&#x2F;objects&#x2F;Body.js:266</code></a>
         
         </p>
 
@@ -3615,7 +3523,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l264"><code>src&#x2F;objects&#x2F;Body.js:264</code></a>
+        <a href="../files/src_objects_Body.js.html#l278"><code>src&#x2F;objects&#x2F;Body.js:278</code></a>
         
         </p>
 
@@ -3659,7 +3567,98 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l127"><code>src&#x2F;objects&#x2F;Body.js:127</code></a>
+        <a href="../files/src_objects_Body.js.html#l134"><code>src&#x2F;objects&#x2F;Body.js:134</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_KINEMATIC" class="property item">
+    <h3 class="name"><code>KINEMATIC</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l330"><code>src&#x2F;objects&#x2F;Body.js:330</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_linearDamping" class="property item">
+    <h3 class="name"><code>linearDamping</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l146"><code>src&#x2F;objects&#x2F;Body.js:146</code></a>
         
         </p>
 
@@ -3703,7 +3702,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l121"><code>src&#x2F;objects&#x2F;Body.js:121</code></a>
+        <a href="../files/src_objects_Body.js.html#l128"><code>src&#x2F;objects&#x2F;Body.js:128</code></a>
         
         </p>
 
@@ -3747,7 +3746,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l133"><code>src&#x2F;objects&#x2F;Body.js:133</code></a>
+        <a href="../files/src_objects_Body.js.html#l140"><code>src&#x2F;objects&#x2F;Body.js:140</code></a>
         
         </p>
 
@@ -3791,7 +3790,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l78"><code>src&#x2F;objects&#x2F;Body.js:78</code></a>
+        <a href="../files/src_objects_Body.js.html#l81"><code>src&#x2F;objects&#x2F;Body.js:81</code></a>
         
         </p>
 
@@ -3837,7 +3836,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l52"><code>src&#x2F;objects&#x2F;Body.js:52</code></a>
+        <a href="../files/src_objects_Body.js.html#l55"><code>src&#x2F;objects&#x2F;Body.js:55</code></a>
         
         </p>
 
@@ -3886,7 +3885,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l44"><code>src&#x2F;objects&#x2F;Body.js:44</code></a>
+        <a href="../files/src_objects_Body.js.html#l47"><code>src&#x2F;objects&#x2F;Body.js:47</code></a>
         
         </p>
 
@@ -3933,7 +3932,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l88"><code>src&#x2F;objects&#x2F;Body.js:88</code></a>
+        <a href="../files/src_objects_Body.js.html#l91"><code>src&#x2F;objects&#x2F;Body.js:91</code></a>
         
         </p>
 
@@ -3977,7 +3976,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l195"><code>src&#x2F;objects&#x2F;Body.js:195</code></a>
+        <a href="../files/src_objects_Body.js.html#l201"><code>src&#x2F;objects&#x2F;Body.js:201</code></a>
         
         </p>
 
@@ -4022,7 +4021,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l229"><code>src&#x2F;objects&#x2F;Body.js:229</code></a>
+        <a href="../files/src_objects_Body.js.html#l243"><code>src&#x2F;objects&#x2F;Body.js:243</code></a>
         
         </p>
 
@@ -4066,7 +4065,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l235"><code>src&#x2F;objects&#x2F;Body.js:235</code></a>
+        <a href="../files/src_objects_Body.js.html#l249"><code>src&#x2F;objects&#x2F;Body.js:249</code></a>
         
         </p>
 
@@ -4110,7 +4109,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l223"><code>src&#x2F;objects&#x2F;Body.js:223</code></a>
+        <a href="../files/src_objects_Body.js.html#l237"><code>src&#x2F;objects&#x2F;Body.js:237</code></a>
         
         </p>
 
@@ -4156,7 +4155,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l340"><code>src&#x2F;objects&#x2F;Body.js:340</code></a>
+        <a href="../files/src_objects_Body.js.html#l354"><code>src&#x2F;objects&#x2F;Body.js:354</code></a>
         
         </p>
 
@@ -4200,7 +4199,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l169"><code>src&#x2F;objects&#x2F;Body.js:169</code></a>
+        <a href="../files/src_objects_Body.js.html#l176"><code>src&#x2F;objects&#x2F;Body.js:176</code></a>
         
         </p>
 
@@ -4245,7 +4244,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l162"><code>src&#x2F;objects&#x2F;Body.js:162</code></a>
+        <a href="../files/src_objects_Body.js.html#l169"><code>src&#x2F;objects&#x2F;Body.js:169</code></a>
         
         </p>
 
@@ -4290,7 +4289,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l176"><code>src&#x2F;objects&#x2F;Body.js:176</code></a>
+        <a href="../files/src_objects_Body.js.html#l183"><code>src&#x2F;objects&#x2F;Body.js:183</code></a>
         
         </p>
 
@@ -4337,7 +4336,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l333"><code>src&#x2F;objects&#x2F;Body.js:333</code></a>
+        <a href="../files/src_objects_Body.js.html#l347"><code>src&#x2F;objects&#x2F;Body.js:347</code></a>
         
         </p>
 
@@ -4348,6 +4347,98 @@ world.add(body);</code></pre>
 
     <div class="description">
         
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_STATIC" class="property item">
+    <h3 class="name"><code>STATIC</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l322"><code>src&#x2F;objects&#x2F;Body.js:322</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_torque" class="property item">
+    <h3 class="name"><code>torque</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_objects_Body.js.html#l195"><code>src&#x2F;objects&#x2F;Body.js:195</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Rotational force on the body, around center of mass</p>
+
     </div>
 
     
@@ -4381,7 +4472,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l145"><code>src&#x2F;objects&#x2F;Body.js:145</code></a>
+        <a href="../files/src_objects_Body.js.html#l152"><code>src&#x2F;objects&#x2F;Body.js:152</code></a>
         
         </p>
 
@@ -4391,52 +4482,7 @@ world.add(body);</code></pre>
     </div>
 
     <div class="description">
-        <p>One of the states Body.DYNAMIC, Body.STATIC and Body.KINEMATIC</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_Vec3 tau" class="property item">
-    <h3 class="name"><code>Vec3 tau</code></h3>
-    <span class="type">Unknown</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_objects_Body.js.html#l188"><code>src&#x2F;objects&#x2F;Body.js:188</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Rotational force on the body, around center of mass</p>
+        <p>One of: Body.DYNAMIC, Body.STATIC and Body.KINEMATIC.</p>
 
     </div>
 
@@ -4471,7 +4517,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l100"><code>src&#x2F;objects&#x2F;Body.js:100</code></a>
+        <a href="../files/src_objects_Body.js.html#l103"><code>src&#x2F;objects&#x2F;Body.js:103</code></a>
         
         </p>
 
@@ -4515,7 +4561,7 @@ world.add(body);</code></pre>
             
         
         
-        <a href="../files/src_objects_Body.js.html#l37"><code>src&#x2F;objects&#x2F;Body.js:37</code></a>
+        <a href="../files/src_objects_Body.js.html#l40"><code>src&#x2F;objects&#x2F;Body.js:40</code></a>
         
         </p>
 

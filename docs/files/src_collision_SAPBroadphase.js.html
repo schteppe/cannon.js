@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -188,7 +192,7 @@ module.exports = SAPBroadphase;
  *
  * @class SAPBroadphase
  * @constructor
- * @param {World} world
+ * @param {World} [world]
  * @extends Broadphase
  */
 function SAPBroadphase(world){
@@ -353,7 +357,7 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
                 break;
             }
 
-            this.doBoundingSphereBroadphase(bi,bj,p1,p2);
+            this.intersectionTest(bi,bj,p1,p2);
         }
     }
 };
@@ -483,7 +487,11 @@ SAPBroadphase.prototype.aabbQuery = function(world, aabb, result){
     for(var i = 0; i &lt; axisList.length; i++){
         var b = axisList[i];
 
-        if(b.aabb.upperBound[axis] &gt; lower &amp;&amp; b.aabb.lowerBound[axis] &lt; upper &amp;&amp; b.aabb.overlaps(aabb)){
+        if(b.aabbNeedsUpdate){
+            b.computeAABB();
+        }
+
+        if(b.aabb.overlaps(aabb)){
             result.push(b);
         }
     }

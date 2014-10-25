@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.0</em>
+            <em>API Docs for: 0.6.1</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -103,6 +103,8 @@
             
                 <li><a href="../classes/Ray.html">Ray</a></li>
             
+                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+            
                 <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
             
                 <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
@@ -124,6 +126,8 @@
                 <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
             
                 <li><a href="../classes/Spring.html">Spring</a></li>
+            
+                <li><a href="../classes/Transform.html">Transform</a></li>
             
                 <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
             
@@ -473,15 +477,12 @@ World.prototype.removeConstraint = function(c){
 World.prototype.rayTest = function(from, to, result){
     // result = result || new RaycastResult();
 
-    tmpArray1[0] = from;
-    tmpArray1[1] = to;
-    tmpAABB1.setFromPoints(tmpArray1);
-    tmpArray1.length = 0;
-
-    this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
-
     tmpRay.from.copy(from);
     tmpRay.to.copy(to);
+    tmpRay.getAABB(tmpAABB1);
+
+    tmpArray1.length = 0;
+    this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
 
     tmpRay.intersectBodies(tmpArray1, result);
 };
@@ -961,7 +962,7 @@ World.prototype.internalStep = function(dt){
         var b = bodies[i],
             s = b.shape,
             force = b.force,
-            tau = b.tau;
+            tau = b.torque;
         if((b.type &amp; DYNAMIC_OR_KINEMATIC) &amp;&amp; b.sleepState !== Body.SLEEPING){ // Only for dynamic
             var velo = b.velocity,
                 angularVelo = b.angularVelocity,
@@ -1029,8 +1030,8 @@ World.prototype.internalStep = function(dt){
             }
         }
         b.force.set(0,0,0);
-        if(b.tau){
-            b.tau.set(0,0,0);
+        if(b.torque){
+            b.torque.set(0,0,0);
         }
 
     }
