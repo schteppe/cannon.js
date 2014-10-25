@@ -16,6 +16,9 @@ var Box = require('../shapes/Box');
  * @extends EventTarget
  * @param {object} [options]
  * @param {Vec3} [options.position]
+ * @param {Vec3} [options.velocity]
+ * @param {Vec3} [options.angularVelocity]
+ * @param {Quaternion} [options.quaternion]
  * @param {number} [options.mass]
  * @param {number} [options.type]
  * @param {number} [options.linearDamping]
@@ -102,6 +105,10 @@ function Body(options){
      * @type {Vec3}
      */
     this.velocity = new Vec3();
+
+    if(options.velocity){
+        this.velocity.copy(options.velocity);
+    }
 
     /**
      * @property initVelocity
@@ -198,6 +205,10 @@ function Body(options){
      */
     this.quaternion = new Quaternion();
 
+    if(options.quaternion){
+        this.quaternion.copy(options.quaternion);
+    }
+
     /**
      * @property initQuaternion
      * @type {Quaternion}
@@ -209,6 +220,10 @@ function Body(options){
      * @type {Vec3}
      */
     this.angularVelocity = new Vec3();
+
+    if(options.angularVelocity){
+        this.angularVelocity.copy(options.angularVelocity);
+    }
 
     /**
      * @property initAngularVelocity
