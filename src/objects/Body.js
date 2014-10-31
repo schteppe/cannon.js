@@ -20,6 +20,7 @@ var Box = require('../shapes/Box');
  * @param {Vec3} [options.angularVelocity]
  * @param {Quaternion} [options.quaternion]
  * @param {number} [options.mass]
+ * @param {number} [options.material]
  * @param {number} [options.type]
  * @param {number} [options.linearDamping]
  * @example
