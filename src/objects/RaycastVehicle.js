@@ -128,9 +128,10 @@ RaycastVehicle.prototype.addToWorld = function(world){
     var constraints = this.constraints;
     world.add(this.chassisBody);
     var that = this;
-    world.addEventListener('preStep', function(){
+    this.preStepCallback = function(){
         that.updateVehicle(world.dt);
-    });
+    };
+    world.addEventListener('preStep', this.preStepCallback);
     this.world = world;
 };
 
@@ -283,7 +284,7 @@ RaycastVehicle.prototype.updateSuspension = function(deltaTime) {
 RaycastVehicle.prototype.removeFromWorld = function(world){
     var constraints = this.constraints;
     world.remove(this.chassisBody);
-    world.removeEventListener('preStep', this.updateVehicle);
+    world.removeEventListener('preStep', this.preStepCallback);
     this.world = null;
 };
 
