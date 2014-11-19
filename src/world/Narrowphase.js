@@ -206,7 +206,7 @@ Narrowphase.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     r.ni.mult(r.ni.dot(point_on_plane_to_sphere), plane_to_sphere_ortho);
     point_on_plane_to_sphere.vsub(plane_to_sphere_ortho,r.rj); // The sphere position projected to plane
 
-    if(plane_to_sphere_ortho.norm2() <= si.radius * si.radius){
+    if(-point_on_plane_to_sphere.dot(r.ni) <= si.radius * si.radius){
         result.push(r);
 
         // Make it relative to the body
