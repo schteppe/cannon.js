@@ -2,6 +2,7 @@
 module.exports = {
     version :                       require('../package.json').version,
 
+    AABB :                          require('./collision/AABB'),
     ArrayCollisionMatrix :          require('./collision/ArrayCollisionMatrix'),
     Body :                          require('./objects/Body'),
     Box :                           require('./shapes/Box'),
