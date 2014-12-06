@@ -474,7 +474,14 @@ Body.prototype.vectorToWorldFrame = function(localVector, result){
 var tmpVec = new Vec3();
 var tmpQuat = new Quaternion();
 
-
+/**
+ * Add a shape to the body with a local offset and orientation.
+ * @method addShape
+ * @param {Shape} shape
+ * @param {Vec3} offset
+ * @param {Quaternion} quaternion
+ * @return {Body} The body object, for chainability.
+ */
 Body.prototype.addShape = function(shape, _offset, _orientation){
     var offset = new Vec3();
     var orientation = new Quaternion();
@@ -493,6 +500,8 @@ Body.prototype.addShape = function(shape, _offset, _orientation){
     this.updateBoundingRadius();
 
     this.aabbNeedsUpdate = true;
+
+    return this;
 };
 
 /**
