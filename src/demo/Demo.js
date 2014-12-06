@@ -1070,6 +1070,27 @@ CANNON.Demo.prototype.shape2mesh = function(body){
             mesh = new THREE.Mesh(geometry, this.currentMaterial);
             break;
 
+        case CANNON.Shape.types.TRIMESH:
+            var geometry = new THREE.Geometry();
+
+            var v0 = new CANNON.Vec3();
+            var v1 = new CANNON.Vec3();
+            var v2 = new CANNON.Vec3();
+            for (var i = 0; i < shape.indices.length / 3; i++) {
+                shape.getTriangleVertices(i, v0, v1, v2);
+                geometry.vertices.push(
+                    new THREE.Vector3(v0.x, v0.y, v0.z),
+                    new THREE.Vector3(v1.x, v1.y, v1.z),
+                    new THREE.Vector3(v2.x, v2.y, v2.z)
+                );
+                var j = geometry.vertices.length - 3;
+                geometry.faces.push(new THREE.Face3(j, j+1, j+2));
+            }
+            geometry.computeBoundingSphere();
+            geometry.computeFaceNormals();
+            mesh = new THREE.Mesh(geometry, this.currentMaterial);
+            break;
+
         default:
             throw "Visual type not recognized: "+shape.type;
         }

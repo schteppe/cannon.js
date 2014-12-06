@@ -172,6 +172,96 @@ Narrowphase.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     result.push(r);
 };
 
+/**
+ * @method sphereTrimesh
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
+var planeTrimesh_normal = new Vec3();
+var planeTrimesh_relpos = new Vec3();
+var planeTrimesh_projected = new Vec3();
+Narrowphase.prototype[Shape.types.PLANE | Shape.types.TRIMESH] =
+Narrowphase.prototype.planeTrimesh = function(
+    result,
+    planeShape,
+    trimeshShape,
+    planePos,
+    trimeshPos,
+    planeQuat,
+    trimeshQuat,
+    planeBody,
+    trimeshBody
+){
+    // Make contacts!
+    var v = new Vec3();
+
+    var normal = planeTrimesh_normal;
+    normal.set(0,0,1);
+    planeQuat.vmult(normal,normal); // Turn normal according to plane
+
+    for(var i=0; i<trimeshShape.vertices.length / 3; i++){
+
+        // Get world vertex from trimesh
+        trimeshShape.getVertex(i, v);
+
+        // Safe up
+        var v2 = new Vec3();
+        v2.copy(v);
+        Transform.pointToWorldFrame(trimeshPos, trimeshQuat, v2, v);
+
+        // Check plane side
+        var relpos = planeTrimesh_relpos;
+        v.vsub(planePos, relpos);
+        var dot = normal.dot(relpos);
+
+        if(dot <= 0.0){
+            var r = this.makeResult(planeBody,trimeshBody,planeShape,trimeshShape);
+
+            r.ni.copy(normal); // Contact normal is the plane normal
+
+            // Get vertex position projected on plane
+            var projected = planeTrimesh_projected;
+            normal.mult(v.dot(normal), projected);
+            v.vsub(projected,projected);
+
+            // ri is the projected world position minus plane position
+            r.ri.copy(projected);
+            //r.ri.vsub(planePos, r.ri);
+            r.ri.vsub(planeBody.position, r.ri);
+
+            r.rj.copy(v);
+            //r.rj.vsub(trimeshPos, r.rj);
+            r.rj.vsub(trimeshBody.position, r.rj);
+
+            // Store result
+            result.push(r);
+        }
+    }
+
+    /*
+    // We will have only one contact in this case
+    var r = this.makeResult(bi,bj,si,sj);
+
+    // Contact normal
+    bj.position.vsub(xi, r.ni);
+    r.ni.normalize();
+
+    // Contact point locations
+    r.ri.copy(r.ni);
+    r.rj.copy(r.ni);
+    r.ri.mult(si.radius, r.ri);
+    r.rj.mult(-sj.radius, r.rj);
+    result.push(r);
+    */
+};
+
 var point_on_plane_to_sphere = new Vec3();
 var plane_to_sphere_ortho = new Vec3();
 

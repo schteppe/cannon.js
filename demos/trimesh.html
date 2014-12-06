@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - single body on plane demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+      var demo = new CANNON.Demo();
+      var size = 2;
+
+      demo.addScene("Sphere",function(){
+          var sphereShape = makeTorus(1, 0.5);
+          createBodyOnPlane(demo,sphereShape);
+        });
+
+      demo.start();
+
+      function createBodyOnPlane(demo,shape){
+
+        // Create world
+        var world = demo.getWorld();
+        world.gravity.set(0,0,-10);
+        world.broadphase = new CANNON.NaiveBroadphase();
+        world.solver.iterations = 10;
+
+        world.defaultContactMaterial.contactEquationStiffness = 1e7;
+        world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+
+        // ground plane
+        var groundShape = new CANNON.Plane();
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
+        world.add(groundBody);
+        demo.addVisual(groundBody);
+
+        // Shape on plane
+        var shapeBody = new CANNON.Body({ mass: 1 });
+        shapeBody.addShape(shape);
+        var pos = new CANNON.Vec3(0,0,size);
+        shapeBody.position.set(0,size,size*2);
+        shapeBody.velocity.set(0,1,1);
+        shapeBody.angularVelocity.set(2,1,0);
+        world.add(shapeBody);
+        demo.addVisual(shapeBody);
+      }
+
+      /**
+       */
+      function makeTorus(radius, tube, radialSegments, tubularSegments, arc) {
+          radius = radius || 1;
+          tube = tube || 0.5;
+          radialSegments = radialSegments || 16;
+          tubularSegments = tubularSegments || 16;
+          arc = arc || Math.PI * 2;
+
+          var vertices = [];
+          var indices = [];
+
+          for ( var j = 0; j <= radialSegments; j ++ ) {
+              for ( var i = 0; i <= tubularSegments; i ++ ) {
+                  var u = i / tubularSegments * arc;
+                  var v = j / radialSegments * Math.PI * 2;
+
+                  var x = ( radius + tube * Math.cos( v ) ) * Math.cos( u );
+                  var y = ( radius + tube * Math.cos( v ) ) * Math.sin( u );
+                  var z = tube * Math.sin( v );
+
+                  vertices.push( x, y, z );
+              }
+          }
+
+          for ( var j = 1; j <= radialSegments; j ++ ) {
+              for ( var i = 1; i <= tubularSegments; i ++ ) {
+                  var a = ( tubularSegments + 1 ) * j + i - 1;
+                  var b = ( tubularSegments + 1 ) * ( j - 1 ) + i - 1;
+                  var c = ( tubularSegments + 1 ) * ( j - 1 ) + i;
+                  var d = ( tubularSegments + 1 ) * j + i;
+
+                  indices.push(a, b, d);
+                  indices.push(b, c, d);
+              }
+          }
+
+          return new CANNON.Trimesh(vertices, indices);
+      };
+
+    </script>
+  </body>
+</html>
