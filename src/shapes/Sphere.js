@@ -8,7 +8,7 @@ var Vec3 = require('../math/Vec3');
  * @class Sphere
  * @constructor
  * @extends Shape
- * @param {Number} radius
+ * @param {Number} radius The radius of the sphere, a non-negative number.
  * @author schteppe / http://github.com/schteppe
  */
 function Sphere(radius){
@@ -19,6 +19,10 @@ function Sphere(radius){
      */
     this.radius = radius!==undefined ? Number(radius) : 1.0;
     this.type = Shape.types.SPHERE;
+
+    if(this.radius < 0){
+        throw new Error('The sphere radius cannot be negative.');
+    }
 
     this.updateBoundingSphereRadius();
 }
