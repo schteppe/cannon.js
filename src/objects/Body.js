@@ -724,40 +724,27 @@ Body.prototype.applyLocalImpulse = function(localImpulse, localPoint){
     this.applyImpulse(worldImpulse, worldPoint);
 };
 
+var Body_updateMassProperties_halfExtents = new Vec3();
+
 /**
- * Should be called whenever you change the body mass.
+ * Should be called whenever you change the body shape or mass.
  * @method updateMassProperties
  */
-/*Body.prototype.updateMassProperties = function(){
-    this.invMass = this.mass>0 ? 1.0/this.mass : 0;
-    this.shape.calculateLocalInertia(this.mass, this.inertia);
-    var I = this.inertia;
-    var fixed = this.fixedRotation;
-    this.invInertia.set(
-        I.x > 0 && !fixed ? 1.0 / I.x : 0,
-        I.y > 0 && !fixed ? 1.0 / I.y : 0,
-        I.z > 0 && !fixed ? 1.0 / I.z : 0
-    );
-    this.updateInertiaWorld(true);
-};
-*/
-
 Body.prototype.updateMassProperties = function(){
-    var target = new Vec3();
-
-    // TODO: check if only 1 shape at origin, use shape inertia in that case
+    var halfExtents = Body_updateMassProperties_halfExtents;
 
     this.invMass = this.mass > 0 ? 1.0 / this.mass : 0;
     var I = this.inertia;
     var fixed = this.fixedRotation;
 
-    // Approximate with AABB
+    // Approximate with AABB box
     this.computeAABB();
-    Box.calculateInertia(new Vec3(
+    halfExtents.set(
         (this.aabb.upperBound.x-this.aabb.lowerBound.x) / 2,
         (this.aabb.upperBound.y-this.aabb.lowerBound.y) / 2,
         (this.aabb.upperBound.z-this.aabb.lowerBound.z) / 2
-    ), this.mass, I);
+    );
+    Box.calculateInertia(halfExtents, this.mass, I);
 
     this.invInertia.set(
         I.x > 0 && !fixed ? 1.0 / I.x : 0,
