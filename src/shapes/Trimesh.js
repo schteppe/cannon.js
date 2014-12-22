@@ -84,6 +84,12 @@ Trimesh.prototype.getVertex = function(i, out){
     return out;
 };
 
+Trimesh.prototype.getWorldVertex = function(i, pos, quat, out){
+    this.getVertex(i, out);
+    Transform.pointToWorldFrame(pos, quat, out, out);
+    return out;
+};
+
 Trimesh.prototype.getTriangleVertices = function(i, a, b, c){
     this.getVertex(this.indices[i * 3], a);
     this.getVertex(this.indices[i * 3 + 1], b);
@@ -202,11 +208,11 @@ Trimesh.prototype.calculateWorldAABB = function(pos,quat,min,max){
         verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
 
+    var v = tempWorldVertex;
     for(var i=0; i<n; i++){
-        this.getVertex(i, tempWorldVertex);
-        quat.vmult(tempWorldVertex,tempWorldVertex);
-        pos.vadd(tempWorldVertex,tempWorldVertex);
-        var v = tempWorldVertex;
+        this.getVertex(i, v);
+        quat.vmult(v, v);
+        pos.vadd(v, v);
         if (v.x < minx || minx===undefined){
             minx = v.x;
         } else if(v.x > maxx || maxx===undefined){

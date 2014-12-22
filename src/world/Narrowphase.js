@@ -173,7 +173,7 @@ Narrowphase.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
 };
 
 /**
- * @method sphereTrimesh
+ * @method planeTrimesh
  * @param  {Array}      result
  * @param  {Shape}      si
  * @param  {Shape}      sj
@@ -233,33 +233,80 @@ Narrowphase.prototype.planeTrimesh = function(
 
             // ri is the projected world position minus plane position
             r.ri.copy(projected);
-            //r.ri.vsub(planePos, r.ri);
             r.ri.vsub(planeBody.position, r.ri);
 
             r.rj.copy(v);
-            //r.rj.vsub(trimeshPos, r.rj);
             r.rj.vsub(trimeshBody.position, r.rj);
 
             // Store result
             result.push(r);
         }
     }
+};
 
-    /*
-    // We will have only one contact in this case
-    var r = this.makeResult(bi,bj,si,sj);
+/**
+ * @method sphereTrimesh
+ * @param  {Array}      result
+ * @param  {Shape}      si
+ * @param  {Shape}      sj
+ * @param  {Vec3}       xi
+ * @param  {Vec3}       xj
+ * @param  {Quaternion} qi
+ * @param  {Quaternion} qj
+ * @param  {Body}       bi
+ * @param  {Body}       bj
+ */
+var sphereTrimesh_normal = new Vec3();
+var sphereTrimesh_relpos = new Vec3();
+var sphereTrimesh_projected = new Vec3();
+var sphereTrimesh_v = new Vec3();
+Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] =
+Narrowphase.prototype.sphereTrimesh = function (
+    result,
+    sphereShape,
+    trimeshShape,
+    spherePos,
+    trimeshPos,
+    sphereQuat,
+    trimeshQuat,
+    sphereBody,
+    trimeshBody
+) {
+    // Make contacts!
+    var v = sphereTrimesh_v;
+    var radiusSquared = sphereShape.radius * sphereShape.radius;
+    for(var i=0; i<trimeshShape.vertices.length / 3; i++){
 
-    // Contact normal
-    bj.position.vsub(xi, r.ni);
-    r.ni.normalize();
+        trimeshShape.getVertex(i, v);
 
-    // Contact point locations
-    r.ri.copy(r.ni);
-    r.rj.copy(r.ni);
-    r.ri.mult(si.radius, r.ri);
-    r.rj.mult(-sj.radius, r.rj);
-    result.push(r);
-    */
+        // Safe up
+        var v2 = new Vec3();
+        v2.copy(v);
+        Transform.pointToWorldFrame(trimeshPos, trimeshQuat, v2, v);
+
+        // Check vertex overlap in sphere
+        var relpos = sphereTrimesh_relpos;
+        v.vsub(spherePos, relpos);
+
+        if(relpos.norm2() <= radiusSquared){
+
+            var r = this.makeResult(sphereBody,trimeshBody,sphereShape,trimeshShape);
+            r.ni.copy(relpos);
+            r.ni.normalize();
+
+            // ri is the vector from sphere center to the sphere surface
+            r.ri.copy(r.ni);
+            r.ri.scale(sphereShape.radius, r.ri);
+            r.ri.vadd(spherePos, r.ri);
+            r.ri.vsub(sphereBody.position, r.ri);
+
+            r.rj.copy(v);
+            r.rj.vsub(trimeshBody.position, r.rj);
+
+            // Store result
+            result.push(r);
+        }
+    }
 };
 
 var point_on_plane_to_sphere = new Vec3();
@@ -296,7 +343,7 @@ Narrowphase.prototype.spherePlane = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     r.ni.mult(r.ni.dot(point_on_plane_to_sphere), plane_to_sphere_ortho);
     point_on_plane_to_sphere.vsub(plane_to_sphere_ortho,r.rj); // The sphere position projected to plane
 
-    if(-point_on_plane_to_sphere.dot(r.ni) <= si.radius * si.radius){
+    if(-point_on_plane_to_sphere.dot(r.ni) <= si.radius){
         result.push(r);
 
         // Make it relative to the body

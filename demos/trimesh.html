@@ -21,13 +21,8 @@
       var size = 2;
 
       demo.addScene("Sphere",function(){
-          var sphereShape = makeTorus(1, 0.5);
-          createBodyOnPlane(demo,sphereShape);
-        });
 
-      demo.start();
-
-      function createBodyOnPlane(demo,shape){
+        var shape = makeTorus(1, 0.5);
 
         // Create world
         var world = demo.getWorld();
@@ -45,15 +40,31 @@
         world.add(groundBody);
         demo.addVisual(groundBody);
 
+        // sphere
+        var sphereShape = new CANNON.Sphere(1);
+        var sphereBody = new CANNON.Body({
+          mass: 1,
+          shape: sphereShape,
+          position: new CANNON.Vec3(0,0,7)
+        });
+        world.add(sphereBody);
+        demo.addVisual(sphereBody);
+
         // Shape on plane
         var shapeBody = new CANNON.Body({ mass: 1 });
         shapeBody.addShape(shape);
         var pos = new CANNON.Vec3(0,0,size);
-        shapeBody.position.set(0,size,size*2);
+        shapeBody.position.set(0,0,size*2);
         shapeBody.velocity.set(0,1,1);
-        shapeBody.angularVelocity.set(2,1,0);
+        shapeBody.angularVelocity.set(0,0,0);
         world.add(shapeBody);
         demo.addVisual(shapeBody);
+      });
+
+      demo.start();
+
+      function createBodyOnPlane(demo,shape){
+
       }
 
       /**
