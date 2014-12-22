@@ -12,6 +12,21 @@ var RaycastResult = require('../src/collision/RaycastResult');
 
 module.exports = {
 
+    clearForces: function(test){
+        var world = new World();
+        var body = new Body();
+        world.addBody(body);
+        body.force.set(1,2,3);
+        body.torque.set(4,5,6);
+
+        world.clearForces();
+
+        test.ok(body.force.almostEquals(new Vec3(0,0,0)));
+        test.ok(body.torque.almostEquals(new Vec3(0,0,0)));
+
+        test.done();
+    },
+
     rayTestBox: function(test){
         var world = new World();
 
