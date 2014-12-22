@@ -638,6 +638,29 @@ Body.prototype.applyForce = function(force,worldPoint){
 };
 
 /**
+ * Apply force to a local point in the body.
+ * @method applyLocalForce
+ * @param  {Vec3} force The force vector to apply, defined locally in the body frame.
+ * @param  {Vec3} localPoint A local point in the body to apply the force on.
+ */
+var Body_applyLocalForce_worldForce = new Vec3();
+var Body_applyLocalForce_worldPoint = new Vec3();
+Body.prototype.applyLocalForce = function(localForce, localPoint){
+    if(this.type !== Body.DYNAMIC){
+        return;
+    }
+
+    var worldForce = Body_applyLocalForce_worldForce;
+    var worldPoint = Body_applyLocalForce_worldPoint;
+
+    // Transform the force vector to world space
+    this.vectorToWorldFrame(localForce, worldForce);
+    this.pointToWorldFrame(localPoint, worldPoint);
+
+    this.applyForce(worldForce, worldPoint);
+};
+
+/**
  * Apply impulse to a world point. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
  * @method applyImpulse
  * @param  {Vec3} impulse The amount of impulse to add.
@@ -676,6 +699,29 @@ Body.prototype.applyImpulse = function(impulse, worldPoint){
 
     // Add rotational Impulse
     this.angularVelocity.vadd(rotVelo, this.angularVelocity);
+};
+
+/**
+ * Apply locally-defined impulse to a local point in the body.
+ * @method applyLocalImpulse
+ * @param  {Vec3} force The force vector to apply, defined locally in the body frame.
+ * @param  {Vec3} localPoint A local point in the body to apply the force on.
+ */
+var Body_applyLocalImpulse_worldImpulse = new Vec3();
+var Body_applyLocalImpulse_worldPoint = new Vec3();
+Body.prototype.applyLocalImpulse = function(localImpulse, localPoint){
+    if(this.type !== Body.DYNAMIC){
+        return;
+    }
+
+    var worldImpulse = Body_applyLocalImpulse_worldImpulse;
+    var worldPoint = Body_applyLocalImpulse_worldPoint;
+
+    // Transform the force vector to world space
+    this.vectorToWorldFrame(localImpulse, worldImpulse);
+    this.pointToWorldFrame(localPoint, worldPoint);
+
+    this.applyImpulse(worldImpulse, worldPoint);
 };
 
 /**
