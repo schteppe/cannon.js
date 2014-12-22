@@ -68,15 +68,16 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 * Experimental SPH / fluid support
 * Various shapes and collisions (see table below)
 
-|             | Sphere | Plane | Box | Convex | Particle | Heightfield |
-| :-----------|:------:|:-----:|:---:|:------:|:--------:|:-----------:|
-| Sphere      | Yes    | Yes   | Yes | Yes    | Yes      | Yes         |
-| Plane       | -      | -     | Yes | Yes    | Yes      | -           |
-| Box         | -      | -     | Yes | Yes    | Yes      | Yes         |
-| Cylinder    | -      | -     | Yes | Yes    | Yes      | Yes         |
-| Convex      | -      | -     | -   | Yes    | Yes      | Yes         |
-| Particle    | -      | -     | -   | -      | -        | (todo)      |
-| Heightfield | -      | -     | -   | -      | -        | -           |
+|             | Sphere | Plane | Box | Convex | Particle | Heightfield | Trimesh |
+| :-----------|:------:|:-----:|:---:|:------:|:--------:|:-----------:|:-------:|
+| Sphere      | Yes    | Yes   | Yes | Yes    | Yes      | Yes         | (todo)  |
+| Plane       | -      | -     | Yes | Yes    | Yes      | -           | Yes     |
+| Box         | -      | -     | Yes | Yes    | Yes      | Yes         | (todo)  |
+| Cylinder    | -      | -     | Yes | Yes    | Yes      | Yes         | (todo)  |
+| Convex      | -      | -     | -   | Yes    | Yes      | Yes         | (todo)  |
+| Particle    | -      | -     | -   | -      | -        | (todo)      | (todo)  |
+| Heightfield | -      | -     | -   | -      | -        | -           | -       |
+| Trimesh     | -      | -     | -   | -      | -        | -           | (todo)  |
 
 ### Todo
 The simpler todos are marked with ```@todo``` in the code. Github Issues can and should also be used for todos.
