@@ -137,6 +137,29 @@ ContactEquation.prototype.computeB = function(h){
     return B;
 };
 
+var ContactEquation_getImpactVelocityAlongNormal_vi = new Vec3();
+var ContactEquation_getImpactVelocityAlongNormal_vj = new Vec3();
+var ContactEquation_getImpactVelocityAlongNormal_xi = new Vec3();
+var ContactEquation_getImpactVelocityAlongNormal_xj = new Vec3();
+var ContactEquation_getImpactVelocityAlongNormal_relVel = new Vec3();
+ContactEquation.prototype.getImpactVelocityAlongNormal = function(){
+    var vi = ContactEquation_getImpactVelocityAlongNormal_vi;
+    var vj = ContactEquation_getImpactVelocityAlongNormal_vj;
+    var xi = ContactEquation_getImpactVelocityAlongNormal_xi;
+    var xj = ContactEquation_getImpactVelocityAlongNormal_xj;
+    var relVel = ContactEquation_getImpactVelocityAlongNormal_relVel;
+
+    this.bi.position.vadd(this.ri, xi);
+    this.bj.position.vadd(this.rj, xj);
+
+    this.bi.getVelocityAtWorldPoint(xi, vi);
+    this.bj.getVelocityAtWorldPoint(xj, vj);
+
+    vi.vsub(vj, relVel);
+
+    return this.ni.dot(relVel);
+};
+
 // Compute C = GMG+eps in the SPOOK equation
 /*
 var computeC_temp1 = new Vec3();
