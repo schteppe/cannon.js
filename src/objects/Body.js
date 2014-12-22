@@ -23,6 +23,7 @@ var Box = require('../shapes/Box');
  * @param {number} [options.material]
  * @param {number} [options.type]
  * @param {number} [options.linearDamping]
+ * @param {number} [options.shape]
  * @example
  *     var body = new Body({
  *         mass: 1
@@ -306,6 +307,10 @@ function Body(options){
     this.aabbNeedsUpdate = true;
 
     this.wlambda = new Vec3();
+
+    if(options.shape){
+        this.addShape(options.shape);
+    }
 
     this.updateMassProperties();
 }

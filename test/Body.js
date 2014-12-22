@@ -51,4 +51,22 @@ module.exports = {
         test.ok(worldPoint.almostEquals(new Vec3(2,2,2)));
         test.done();
     },
+
+    addShape : function(test){
+        var sphereShape = new Sphere(1);
+
+        var bodyA = new Body({
+            mass: 1,
+            shape: sphereShape
+        });
+        var bodyB = new Body({
+            mass: 1
+        });
+        bodyB.addShape(sphereShape);
+
+        test.deepEqual(bodyA.shapes, bodyB.shapes, 'Adding shape via options did not work.');
+        test.deepEqual(bodyA.inertia, bodyB.inertia);
+
+        test.done();
+    },
 };
