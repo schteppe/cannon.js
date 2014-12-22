@@ -776,7 +776,6 @@ World.prototype.internalStep = function(dt){
 
     for(i=0; i!==N; i++){
         var b = bodies[i],
-            s = b.shape,
             force = b.force,
             tau = b.torque;
         if((b.type & DYNAMIC_OR_KINEMATIC) && b.sleepState !== Body.SLEEPING){ // Only for dynamic
@@ -795,12 +794,6 @@ World.prototype.internalStep = function(dt){
                 invInertia.vmult(tau,invI_tau_dt);
                 invI_tau_dt.mult(dt,invI_tau_dt);
                 invI_tau_dt.vadd(angularVelo,angularVelo);
-                //console.log(invI_tau_dt);
-                /*
-                angularVelo.x += tau.x * invInertia.x * dt;
-                angularVelo.y += tau.y * invInertia.y * dt;
-                angularVelo.z += tau.z * invInertia.z * dt;
-                */
             }
 
             // Use new velocity  - leap frog
@@ -828,29 +821,13 @@ World.prototype.internalStep = function(dt){
                 b.aabbNeedsUpdate = true;
             }
 
-            if(s){
-                switch(s.type){
-                case PLANE:
-                    s.worldNormalNeedsUpdate = true;
-                    break;
-                case CONVEX:
-                    s.worldFaceNormalsNeedsUpdate = true;
-                    s.worldVerticesNeedsUpdate = true;
-                    break;
-                }
-            }
-
             // Update world inertia
             if(b.updateInertiaWorld){
                 b.updateInertiaWorld();
             }
         }
-        b.force.set(0,0,0);
-        if(b.torque){
-            b.torque.set(0,0,0);
-        }
-
     }
+    this.clearForces();
 
     this.broadphase.dirty = true;
 
@@ -878,5 +855,22 @@ World.prototype.internalStep = function(dt){
         for(i=0; i!==N; i++){
             bodies[i].sleepTick(this.time);
         }
+    }
+};
+
+/**
+ * Sets all body forces in the world to zero.
+ * @method clearForces
+ */
+World.prototype.clearForces = function(){
+    var bodies = this.bodies;
+    var N = bodies.length;
+    for(var i=0; i !== N; i++){
+        var b = bodies[i],
+            force = b.force,
+            tau = b.torque;
+
+        b.force.set(0,0,0);
+        b.torque.set(0,0,0);
     }
 };
