@@ -68,7 +68,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 * Experimental SPH / fluid support
 * Various shapes and collisions (see table below)
 
-|             | Sphere | Plane | Box | Convex | Particle | Heightfield | Trimesh |
+|             | [Sphere](http://schteppe.github.io/cannon.js/docs/classes/Sphere.html) | [Plane](http://schteppe.github.io/cannon.js/docs/classes/Plane.html) | [Box](http://schteppe.github.io/cannon.js/docs/classes/Box.html) | [Convex](http://schteppe.github.io/cannon.js/docs/classes/ConvexPolyhedron.html) | [Particle](http://schteppe.github.io/cannon.js/docs/classes/Particle.html) | [Heightfield](http://schteppe.github.io/cannon.js/docs/classes/Heightfield.html) | Trimesh |
 | :-----------|:------:|:-----:|:---:|:------:|:--------:|:-----------:|:-------:|
 | Sphere      | Yes    | Yes   | Yes | Yes    | Yes      | Yes         | (todo)  |
 | Plane       | -      | -     | Yes | Yes    | Yes      | -           | Yes     |
