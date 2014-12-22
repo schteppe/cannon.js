@@ -31,7 +31,7 @@ function World(){
     EventTarget.apply(this);
 
     /**
-     * Last used timestep. Is set to -1 if not available.
+     * Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is "fresh" inside event callbacks.
      * @property {Number} dt
      */
     this.dt = -1;
