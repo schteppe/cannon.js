@@ -7,9 +7,9 @@ module.exports = AABB;
  * Axis aligned bounding box class.
  * @class AABB
  * @constructor
- * @param {Object}  [options]
- * @param {Array}   [options.upperBound]
- * @param {Array}   [options.lowerBound]
+ * @param {Object} [options]
+ * @param {Vec3}   [options.upperBound]
+ * @param {Vec3}   [options.lowerBound]
  */
 function AABB(options){
     options = options || {};
@@ -44,6 +44,7 @@ var tmp = new Vec3();
  * @param {Vec3} position
  * @param {Quaternion} quaternion
  * @param {number} skinSize
+ * @return {AABB} The self object
  */
 AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
     var l = this.lowerBound,
@@ -87,6 +88,8 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
         u.y += skinSize;
         u.z += skinSize;
     }
+
+    return this;
 };
 
 /**
@@ -162,4 +165,91 @@ AABB.prototype.overlaps = function(aabb){
     return ((l2.x <= u1.x && u1.x <= u2.x) || (l1.x <= u2.x && u2.x <= u1.x)) &&
            ((l2.y <= u1.y && u1.y <= u2.y) || (l1.y <= u2.y && u2.y <= u1.y)) &&
            ((l2.z <= u1.z && u1.z <= u2.z) || (l1.z <= u2.z && u2.z <= u1.z));
+};
+
+AABB.prototype.getCorners = function(a, b, c, d, e, f, g, h){
+    var l = this.lowerBound,
+        u = this.upperBound;
+
+    a.copy(l);
+    b.set( u.x, l.y, l.z );
+    c.set( u.x, u.y, l.z );
+    d.set( l.x, u.y, u.z );
+    e.set( u.x, l.y, l.z );
+    f.set( l.x, u.y, l.z );
+    g.set( l.x, l.y, u.z );
+    h.copy(u);
+};
+
+var transformIntoFrame_corners = [
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3()
+];
+
+/**
+ * Get the representation of an AABB in another frame.
+ * @method toLocalFrame
+ * @param  {Transform} frame
+ * @param  {AABB} target
+ * @return {AABB} The "target" AABB object.
+ */
+AABB.prototype.toLocalFrame = function(frame, target){
+
+    var corners = transformIntoFrame_corners;
+    var a = corners[0];
+    var b = corners[1];
+    var c = corners[2];
+    var d = corners[3];
+    var e = corners[4];
+    var f = corners[5];
+    var g = corners[6];
+    var h = corners[7];
+
+    // Get corners in current frame
+    this.getCorners(a, b, c, d, e, f, g, h);
+
+    // Transform them to new local frame
+    for(var i=0; i !== 8; i++){
+        var corner = corners[i];
+        frame.pointToLocal(corner, corner);
+    }
+
+    return target.setFromPoints(corners);
+};
+
+/**
+ * Get the representation of an AABB in the global frame.
+ * @method toWorldFrame
+ * @param  {Transform} frame
+ * @param  {AABB} target
+ * @return {AABB} The "target" AABB object.
+ */
+AABB.prototype.toWorldFrame = function(frame, target){
+
+    var corners = transformIntoFrame_corners;
+    var a = corners[0];
+    var b = corners[1];
+    var c = corners[2];
+    var d = corners[3];
+    var e = corners[4];
+    var f = corners[5];
+    var g = corners[6];
+    var h = corners[7];
+
+    // Get corners in current frame
+    this.getCorners(a, b, c, d, e, f, g, h);
+
+    // Transform them to new local frame
+    for(var i=0; i !== 8; i++){
+        var corner = corners[i];
+        frame.pointToWorld(corner, corner);
+    }
+
+    return target.setFromPoints(corners);
 };
