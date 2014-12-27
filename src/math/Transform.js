@@ -12,7 +12,7 @@ function Transform() {
 	 * @property {Vec3} position
 	 */
 	this.position = new Vec3();
-	
+
 	/**
 	 * @property {Quaternion} quaternion
 	 */
@@ -38,6 +38,16 @@ Transform.pointToLocalFrame = function(position, quaternion, worldPoint, result)
 };
 
 /**
+ * Get a global point in local transform coordinates.
+ * @param  {Vec3} point
+ * @param  {Vec3} result
+ * @return {Vec3} The "result" vector object
+ */
+Transform.prototype.pointToLocal = function(worldPoint, result){
+    return Transform.pointToLocalFrame(this.position, this.quaternion, worldPoint, result);
+};
+
+/**
  * @static
  * @method pointToWorldFrame
  * @param {Vec3} position
@@ -51,6 +61,17 @@ Transform.pointToWorldFrame = function(position, quaternion, localPoint, result)
     result.vadd(position, result);
     return result;
 };
+
+/**
+ * Get a local point in global transform coordinates.
+ * @param  {Vec3} point
+ * @param  {Vec3} result
+ * @return {Vec3} The "result" vector object
+ */
+Transform.prototype.pointToWorld = function(localPoint, result){
+    return Transform.pointToWorldFrame(this.position, this.quaternion, localPoint, result);
+};
+
 
 Transform.prototype.vectorToWorldFrame = function(localVector, result){
     var result = result || new Vec3();
