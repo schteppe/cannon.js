@@ -73,15 +73,16 @@ module.exports = {
         test.done();
     },
 
-
     calculateWorldAABB : function(test){
         var poly = makeTorus();
         var min = new Vec3();
         var max = new Vec3();
-        poly.calculateWorldAABB(new Vec3(1,0,0), // Translate 2 x in world
-                                new Quaternion(0,0,0,1),
-                                min,
-                                max);
+        poly.calculateWorldAABB(
+            new Vec3(1,0,0), // Translate 2 x in world
+            new Quaternion(0,0,0,1),
+            min,
+            max
+        );
         test.ok(!isNaN(min.x));
         test.ok(!isNaN(max.x));
         test.done();
