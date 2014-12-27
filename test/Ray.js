@@ -3,6 +3,7 @@ var Mat3 = require("../src/math/Mat3");
 var Quaternion = require("../src/math/Quaternion");
 var Box = require('../src/shapes/Box');
 var Sphere = require('../src/shapes/Sphere');
+var Trimesh = require('../src/shapes/Trimesh');
 var Plane = require('../src/shapes/Plane');
 var Ray = require('../src/collision/Ray');
 var Body = require('../src/objects/Body');
@@ -237,6 +238,40 @@ module.exports = {
         test.equals(result.hasHit, true);
         test.ok(result.hitPointWorld.almostEquals(new Vec3(0,-5,0)));
         test.equal(distance1, distance2);
+
+        test.done();
+    },
+
+
+    trimesh: function(test){
+        var r = new Ray(new Vec3(0.5, 0.5, 10), new Vec3(0.5, 0.5, -10));
+
+        var vertices = [
+            0, 0, 0,
+            1, 0, 0,
+            0, 1, 0
+        ];
+        var indices = [
+            0, 1, 2
+        ];
+
+        var body = new Body({
+            mass: 1,
+            shape: new Trimesh(vertices, indices)
+        });
+
+        // Hit
+        var result = new RaycastResult();
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.deepEqual(result.hitPointWorld, new Vec3(0.5, 0.5, 0));
+
+        // Miss
+        result = new RaycastResult();
+        r.from.set(-100, -100, 10);
+        r.to.set(-100, -100, -10);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, false);
 
         test.done();
     },

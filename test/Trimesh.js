@@ -1,19 +1,79 @@
 var Vec3 =     require("../src/math/Vec3")
 ,   Quaternion = require("../src/math/Quaternion")
-,   Box =      require('../src/shapes/Box')
 ,   Plane =      require('../src/shapes/Plane')
 ,   Trimesh =      require('../src/shapes/Trimesh')
 ,   World =      require('../src/world/World')
 ,   Body =      require('../src/objects/Body')
 
-function createBoxHull(size){
-    size = (size===undefined ? 0.5 : size);
-
-    var box = new Box(new Vec3(size,size,size));
-    return box.convexPolyhedronRepresentation;
-}
-
 module.exports = {
+    computeNormals: function(test){
+        var mesh = makeTorus();
+        mesh.normals[0] = 1;
+        mesh.computeNormals();
+        test.ok(mesh.normals[0] !== 1);
+        test.done();
+    },
+
+    getVertex: function(test){
+        var mesh = makeTorus();
+        var vertex = new Vec3();
+        mesh.getVertex(0, vertex);
+        test.deepEqual(vertex, new Vec3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
+        test.done();
+    },
+
+    getWorldVertex: function(test){
+        var mesh = makeTorus();
+        var vertex = new Vec3();
+        mesh.getWorldVertex(0, new Vec3(), new Quaternion(), vertex);
+        test.deepEqual(vertex, new Vec3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
+        test.done();
+    },
+
+    getTriangleVertices: function(test){
+        var mesh = makeTorus();
+        var va = new Vec3();
+        var vb = new Vec3();
+        var vc = new Vec3();
+        var va1 = new Vec3();
+        var vb1 = new Vec3();
+        var vc1 = new Vec3();
+        mesh.getVertex(mesh.indices[0], va);
+        mesh.getVertex(mesh.indices[1], vb);
+        mesh.getVertex(mesh.indices[2], vc);
+        mesh.getTriangleVertices(0, va1, vb1, vc1);
+        test.deepEqual(va, va1);
+        test.deepEqual(vb, vb1);
+        test.deepEqual(vc, vc1);
+        test.done();
+    },
+
+    getNormal: function(test){
+        var mesh = makeTorus();
+        var normal = new Vec3();
+        mesh.getNormal(0, normal);
+        test.deepEqual(new Vec3(mesh.normals[0], mesh.normals[1], mesh.normals[2]), normal);
+        test.done();
+    },
+
+    calculateLocalInertia: function(test){
+        var mesh = makeTorus();
+        var inertia = new Vec3();
+        mesh.calculateLocalInertia(1,inertia);
+        test.done();
+    },
+
+    computeLocalAABB: function(test){
+        console.warn('Trimesh::computeLocalAABB is todo');
+        test.done();
+    },
+
+    updateBoundingSphereRadius: function(test){
+        console.warn('Trimesh::updateBoundingSphereRadius is todo');
+        test.done();
+    },
+
+
     calculateWorldAABB : function(test){
         var poly = makeTorus();
         var min = new Vec3();
@@ -27,7 +87,13 @@ module.exports = {
         test.done();
     },
 
-    againstPlane: function(test){
+    volume: function(test){
+        var mesh = makeTorus();
+        test.ok(mesh.volume() > 0);
+        test.done();
+    },
+
+    narrowphaseAgainstPlane: function(test){
         var world = new World();
 
         var torusShape = makeTorus();

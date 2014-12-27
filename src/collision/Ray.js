@@ -524,6 +524,114 @@ Ray.prototype.intersectConvex = function intersectConvex(shape, quat, position, 
 
 Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype.intersectConvex;
 
+
+
+/**
+ * @method intersectTrimesh
+ * @private
+ * @param  {Shape} shape
+ * @param  {Quaternion} quat
+ * @param  {Vec3} position
+ * @param  {Body} body
+ * @param  {Vec3} direction
+ * @param  {RaycastResult} result
+ * @param {object} [options]
+ * @todo Optimize by transforming the world to local space first.
+ */
+Ray.prototype.intersectTrimesh = function intersectTrimesh(
+    mesh,
+    quat,
+    position,
+    body,
+    direction,
+    result,
+    options
+){
+    var minDistNormal = intersectConvex_minDistNormal;
+    var normal = intersectConvex_normal;
+    var vector = intersectConvex_vector;
+    var minDistIntersect = intersectConvex_minDistIntersect;
+    var faceList = (options && options.faceList) || null;
+
+    // Checking faces
+    var indices = mesh.indices,
+        vertices = mesh.vertices,
+        normals = mesh.faceNormals;
+
+    var from = this.from;
+    var to = this.to;
+    var fromToDistance = from.distanceTo(to);
+
+    var reportClosest = result instanceof RaycastResult;
+    var minDist = -1;
+    var normal = new Vec3();
+
+    for (var j = 0; j < indices.length / 3; j++) {
+        mesh.getNormal(j, normal);
+
+        // determine if ray intersects the plane of the face
+        // note: this works regardless of the direction of the face normal
+
+        // Get plane point in world coordinates...
+        mesh.getWorldVertex(indices[j] * 3, position, quat, vector);
+
+        // ...but make it relative to the ray from. We'll fix this later.
+        vector.vsub(from,vector);
+
+        // Get plane normal
+        quat.vmult(normal, normal);
+
+        // If this dot product is negative, we have something interesting
+        var dot = direction.dot(normal);
+
+
+        // Bail out if ray and plane are parallel
+        if ( Math.abs( dot ) < this.precision ){
+            continue;
+        }
+
+        // calc distance to plane
+        var scalar = normal.dot(vector) / dot;
+
+        // if negative distance, then plane is behind ray
+        if (scalar < 0){
+            continue;
+        }
+
+        if (dot < 0) {
+
+            // Intersection point is from + direction * scalar
+            direction.mult(scalar,intersectPoint);
+            intersectPoint.vadd(from,intersectPoint);
+
+            // Get triangle vertices
+            mesh.getWorldVertex(indices[j] * 3, position, quat, a);
+            mesh.getWorldVertex(indices[j] * 3 + 1, position, quat, b);
+            mesh.getWorldVertex(indices[j] * 3 + 2, position, quat, c);
+
+            var distance = intersectPoint.distanceTo(from);
+
+            if(!pointInTriangle(intersectPoint, b, a, c) || distance > fromToDistance){
+                continue;
+            }
+
+            if(minDist === -1 || distance < minDist){
+                minDist = distance;
+                minDistNormal.copy(normal);
+                minDistIntersect.copy(intersectPoint);
+            }
+        }
+    }
+
+    if(minDist !== -1 && this.reportIntersection(minDistNormal, minDistIntersect, mesh, body, result)){
+        return result;
+    }
+
+    return result;
+};
+Ray.prototype[Shape.types.TRIMESH] = Ray.prototype.intersectTrimesh;
+
+
 /**
  * @method reportIntersection
  * @private
