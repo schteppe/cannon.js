@@ -20,9 +20,9 @@
       var demo = new CANNON.Demo();
       var size = 2;
 
-      demo.addScene("Sphere",function(){
+      demo.addScene("Trimesh",function(){
 
-        var shape = makeTorus(1, 0.5);
+        var shape = CANNON.Trimesh.createTorus(1, 0.5, 16, 16);
 
         // Create world
         var world = demo.getWorld();
@@ -62,50 +62,6 @@
       });
 
       demo.start();
-
-      function createBodyOnPlane(demo,shape){
-
-      }
-
-      /**
-       */
-      function makeTorus(radius, tube, radialSegments, tubularSegments, arc) {
-          radius = radius || 1;
-          tube = tube || 0.5;
-          radialSegments = radialSegments || 16;
-          tubularSegments = tubularSegments || 16;
-          arc = arc || Math.PI * 2;
-
-          var vertices = [];
-          var indices = [];
-
-          for ( var j = 0; j <= radialSegments; j ++ ) {
-              for ( var i = 0; i <= tubularSegments; i ++ ) {
-                  var u = i / tubularSegments * arc;
-                  var v = j / radialSegments * Math.PI * 2;
-
-                  var x = ( radius + tube * Math.cos( v ) ) * Math.cos( u );
-                  var y = ( radius + tube * Math.cos( v ) ) * Math.sin( u );
-                  var z = tube * Math.sin( v );
-
-                  vertices.push( x, y, z );
-              }
-          }
-
-          for ( var j = 1; j <= radialSegments; j ++ ) {
-              for ( var i = 1; i <= tubularSegments; i ++ ) {
-                  var a = ( tubularSegments + 1 ) * j + i - 1;
-                  var b = ( tubularSegments + 1 ) * ( j - 1 ) + i - 1;
-                  var c = ( tubularSegments + 1 ) * ( j - 1 ) + i;
-                  var d = ( tubularSegments + 1 ) * j + i;
-
-                  indices.push(a, b, d);
-                  indices.push(b, c, d);
-              }
-          }
-
-          return new CANNON.Trimesh(vertices, indices);
-      };
 
     </script>
   </body>

@@ -4,6 +4,7 @@ var Shape = require('./Shape');
 var Vec3 = require('../math/Vec3');
 var Quaternion = require('../math/Quaternion');
 var Transform = require('../math/Transform');
+var AABB = require('../collision/AABB');
 
 /**
  * @class Trimesh
@@ -170,8 +171,7 @@ Trimesh.prototype.getNormal = function(i, target){
     );
 };
 
-var cli_aabbmin = new Vec3(),
-    cli_aabbmax = new Vec3();
+var cli_aabb = new AABB();
 
 /**
  * @method calculateLocalInertia
@@ -182,10 +182,10 @@ var cli_aabbmin = new Vec3(),
 Trimesh.prototype.calculateLocalInertia = function(mass,target){
     // Approximate with box inertia
     // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
-    this.computeLocalAABB(cli_aabbmin,cli_aabbmax);
-    var x = cli_aabbmax.x - cli_aabbmin.x,
-        y = cli_aabbmax.y - cli_aabbmin.y,
-        z = cli_aabbmax.z - cli_aabbmin.z;
+    this.computeLocalAABB(cli_aabb);
+    var x = cli_aabb.upperBound.x - cli_aabb.lowerBound.x,
+        y = cli_aabb.upperBound.y - cli_aabb.lowerBound.y,
+        z = cli_aabb.upperBound.z - cli_aabb.lowerBound.z;
     return target.set(
         1.0 / 12.0 * mass * ( 2*y*2*y + 2*z*2*z ),
         1.0 / 12.0 * mass * ( 2*x*2*x + 2*z*2*z ),
@@ -198,35 +198,39 @@ var computeLocalAABB_worldVert = new Vec3();
 /**
  * Compute the local AABB for the trimesh
  * @method computeLocalAABB
- * @param  {Vec3} aabbmin
- * @param  {Vec3} aabbmax
+ * @param  {AABB} aabb
  */
-Trimesh.prototype.computeLocalAABB = function(aabbmin,aabbmax){
-    var n = this.vertices.length,
+Trimesh.prototype.computeLocalAABB = function(aabb){
+    var l = aabb.lowerBound,
+        u = aabb.upperBound,
+        n = this.vertices.length,
         vertices = this.vertices,
         worldVert = computeLocalAABB_worldVert;
 
     var v = new Vec3();
     this.getVertex(0, v);
-    aabbmin.copy(v);
-    aabbmax.copy(v);
+    l.copy(v);
+    u.copy(v);
 
     for(var i=0; i !== n; i++){
         this.getVertex(0, v);
-        if(v.x < aabbmin.x){
-            aabbmin.x = v.x;
-        } else if(v.x > aabbmax.x){
-            aabbmax.x = v.x;
+
+        if(v.x < l.x){
+            l.x = v.x;
+        } else if(v.x > u.x){
+            u.x = v.x;
         }
-        if(v.y < aabbmin.y){
-            aabbmin.y = v.y;
-        } else if(v.y > aabbmax.y){
-            aabbmax.y = v.y;
+
+        if(v.y < l.y){
+            l.y = v.y;
+        } else if(v.y > u.y){
+            u.y = v.y;
         }
-        if(v.z < aabbmin.z){
-            aabbmin.z = v.z;
-        } else if(v.z > aabbmax.z){
-            aabbmax.z = v.z;
+
+        if(v.z < l.z){
+            l.z = v.z;
+        } else if(v.z > u.z){
+            u.z = v.z;
         }
     }
 };
@@ -298,4 +302,53 @@ Trimesh.prototype.calculateWorldAABB = function(pos,quat,min,max){
  */
 Trimesh.prototype.volume = function(){
     return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
+};
+
+/**
+ * Create a Trimesh instance, shaped as a torus.
+ * @static
+ * @method createTorus
+ * @param  {number} [radius=1]
+ * @param  {number} [tube=0.5]
+ * @param  {number} [radialSegments=8]
+ * @param  {number} [tubularSegments=6]
+ * @param  {number} [arc=6.283185307179586]
+ * @return {Torus}
+ */
+Trimesh.createTorus = function (radius, tube, radialSegments, tubularSegments, arc) {
+    radius = radius || 1;
+    tube = tube || 0.5;
+    radialSegments = radialSegments || 8;
+    tubularSegments = tubularSegments || 6;
+    arc = arc || Math.PI * 2;
+
+    var vertices = [];
+    var indices = [];
+
+    for ( var j = 0; j <= radialSegments; j ++ ) {
+        for ( var i = 0; i <= tubularSegments; i ++ ) {
+            var u = i / tubularSegments * arc;
+            var v = j / radialSegments * Math.PI * 2;
+
+            var x = ( radius + tube * Math.cos( v ) ) * Math.cos( u );
+            var y = ( radius + tube * Math.cos( v ) ) * Math.sin( u );
+            var z = tube * Math.sin( v );
+
+            vertices.push( x, y, z );
+        }
+    }
+
+    for ( var j = 1; j <= radialSegments; j ++ ) {
+        for ( var i = 1; i <= tubularSegments; i ++ ) {
+            var a = ( tubularSegments + 1 ) * j + i - 1;
+            var b = ( tubularSegments + 1 ) * ( j - 1 ) + i - 1;
+            var c = ( tubularSegments + 1 ) * ( j - 1 ) + i;
+            var d = ( tubularSegments + 1 ) * j + i;
+
+            indices.push(a, b, d);
+            indices.push(b, c, d);
+        }
+    }
+
+    return new Trimesh(vertices, indices);
 };

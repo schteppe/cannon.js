@@ -7,7 +7,7 @@ var Vec3 =     require("../src/math/Vec3")
 
 module.exports = {
     computeNormals: function(test){
-        var mesh = makeTorus();
+        var mesh = Trimesh.createTorus();
         mesh.normals[0] = 1;
         mesh.computeNormals();
         test.ok(mesh.normals[0] !== 1);
@@ -15,7 +15,7 @@ module.exports = {
     },
 
     getVertex: function(test){
-        var mesh = makeTorus();
+        var mesh = Trimesh.createTorus();
         var vertex = new Vec3();
         mesh.getVertex(0, vertex);
         test.deepEqual(vertex, new Vec3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
@@ -23,7 +23,7 @@ module.exports = {
     },
 
     getWorldVertex: function(test){
-        var mesh = makeTorus();
+        var mesh = Trimesh.createTorus();
         var vertex = new Vec3();
         mesh.getWorldVertex(0, new Vec3(), new Quaternion(), vertex);
         test.deepEqual(vertex, new Vec3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
@@ -31,7 +31,7 @@ module.exports = {
     },
 
     getTriangleVertices: function(test){
-        var mesh = makeTorus();
+        var mesh = Trimesh.createTorus();
         var va = new Vec3();
         var vb = new Vec3();
         var vc = new Vec3();
@@ -49,7 +49,7 @@ module.exports = {
     },
 
     getNormal: function(test){
-        var mesh = makeTorus();
+        var mesh = Trimesh.createTorus();
         var normal = new Vec3();
         mesh.getNormal(0, normal);
         test.deepEqual(new Vec3(mesh.normals[0], mesh.normals[1], mesh.normals[2]), normal);
@@ -57,9 +57,9 @@ module.exports = {
     },
 
     calculateLocalInertia: function(test){
-        var mesh = makeTorus();
+        var mesh = Trimesh.createTorus();
         var inertia = new Vec3();
-        mesh.calculateLocalInertia(1,inertia);
+        mesh.calculateLocalInertia(1, inertia);
         test.done();
     },
 
@@ -74,7 +74,7 @@ module.exports = {
     },
 
     calculateWorldAABB : function(test){
-        var poly = makeTorus();
+        var poly = Trimesh.createTorus();
         var min = new Vec3();
         var max = new Vec3();
         poly.calculateWorldAABB(
@@ -89,7 +89,7 @@ module.exports = {
     },
 
     volume: function(test){
-        var mesh = makeTorus();
+        var mesh = Trimesh.createTorus();
         test.ok(mesh.volume() > 0);
         test.done();
     },
@@ -97,7 +97,7 @@ module.exports = {
     narrowphaseAgainstPlane: function(test){
         var world = new World();
 
-        var torusShape = makeTorus();
+        var torusShape = Trimesh.createTorus();
         var torusBody = new Body({
             mass: 1
         });
@@ -115,45 +115,4 @@ module.exports = {
 
         test.done();
     }
-};
-
-/**
- *
- */
-function makeTorus(radius, tube, radialSegments, tubularSegments, arc) {
-    radius = radius || 100;
-    tube = tube || 40;
-    radialSegments = radialSegments || 8;
-    tubularSegments = tubularSegments || 6;
-    arc = arc || Math.PI * 2;
-
-    var vertices = [];
-    var indices = [];
-
-    for ( var j = 0; j <= radialSegments; j ++ ) {
-        for ( var i = 0; i <= tubularSegments; i ++ ) {
-            var u = i / tubularSegments * arc;
-            var v = j / radialSegments * Math.PI * 2;
-
-            var x = ( radius + tube * Math.cos( v ) ) * Math.cos( u );
-            var y = ( radius + tube * Math.cos( v ) ) * Math.sin( u );
-            var z = tube * Math.sin( v );
-
-            vertices.push( x, y, z );
-        }
-    }
-
-    for ( var j = 1; j <= radialSegments; j ++ ) {
-        for ( var i = 1; i <= tubularSegments; i ++ ) {
-            var a = ( tubularSegments + 1 ) * j + i - 1;
-            var b = ( tubularSegments + 1 ) * ( j - 1 ) + i - 1;
-            var c = ( tubularSegments + 1 ) * ( j - 1 ) + i;
-            var d = ( tubularSegments + 1 ) * j + i;
-
-            indices.push(a, b, d);
-            indices.push(b, c, d);
-        }
-    }
-
-    return new Trimesh(vertices, indices);
 };
