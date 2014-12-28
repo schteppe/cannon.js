@@ -1,6 +1,7 @@
 module.exports = Narrowphase;
 
 var Shape = require('../shapes/Shape');
+var Ray = require('../collision/Ray');
 var Vec3 = require('../math/Vec3');
 var Transform = require('../math/Transform');
 var ConvexPolyhedron = require('../shapes/ConvexPolyhedron');
@@ -361,6 +362,39 @@ Narrowphase.prototype.sphereTrimesh = function (
                 result.push(r);
 
             }
+        }
+    }
+
+    // Triangle faces
+    var va = new Vec3();
+    var vb = new Vec3();
+    var vc = new Vec3();
+    var normal = new Vec3();
+    for(var i=0, N = trimeshShape.indices.length / 3; i !== N; i++){
+        trimeshShape.getTriangleVertices(i, va, vb, vc);
+        trimeshShape.getNormal(i, normal);
+        localSpherePos.vsub(va, tmp);
+        var dist = tmp.dot(normal);
+        normal.scale(dist, tmp);
+        localSpherePos.vsub(tmp, tmp);
+
+        // tmp is now the sphere position projected to the triangle plane
+        dist = tmp.distanceTo(localSpherePos);
+        if(Ray.pointInTriangle(tmp, va, vb, vc) && dist < sphereShape.radius){
+            var r = this.makeResult(sphereBody, trimeshBody, sphereShape, trimeshShape);
+
+            tmp.vsub(localSpherePos, r.ni);
+            r.ni.normalize();
+            r.ni.scale(sphereShape.radius, r.ri);
+
+            Transform.pointToWorldFrame(trimeshPos, trimeshQuat, tmp, tmp);
+            tmp.vsub(trimeshBody.position, r.rj);
+
+            Transform.vectorToWorldFrame(trimeshQuat, r.ni, r.ni);
+            Transform.vectorToWorldFrame(trimeshQuat, r.ri, r.ri);
+
+            result.push(r);
+
         }
     }
 };
