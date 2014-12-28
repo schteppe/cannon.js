@@ -129,6 +129,21 @@ Trimesh.prototype.updateEdges = function(){
     }
 };
 
+Trimesh.prototype.getEdgeVertex = function(edgeIndex, firstOrSecond, vertexStore){
+    var vertexIndex = this.edges[edgeIndex * 2 + (firstOrSecond ? 1 : 0)];
+    this.getVertex(vertexIndex, vertexStore);
+};
+
+var getEdgeVector_va = new Vec3();
+var getEdgeVector_vb = new Vec3();
+Trimesh.prototype.getEdgeVector = function(edgeIndex, vectorStore){
+    var va = getEdgeVector_va;
+    var vb = getEdgeVector_vb;
+    this.getEdgeVertex(edgeIndex, 0, va);
+    this.getEdgeVertex(edgeIndex, 1, vb);
+    vb.vsub(va, vectorStore);
+};
+
 /**
  * Get face normal given 3 vertices
  * @static
