@@ -247,14 +247,14 @@ Narrowphase.prototype.planeTrimesh = function(
 /**
  * @method sphereTrimesh
  * @param  {Array}      result
- * @param  {Shape}      si
- * @param  {Shape}      sj
- * @param  {Vec3}       xi
- * @param  {Vec3}       xj
- * @param  {Quaternion} qi
- * @param  {Quaternion} qj
- * @param  {Body}       bi
- * @param  {Body}       bj
+ * @param  {Shape}      sphereShape
+ * @param  {Shape}      trimeshShape
+ * @param  {Vec3}       spherePos
+ * @param  {Vec3}       trimeshPos
+ * @param  {Quaternion} sphereQuat
+ * @param  {Quaternion} trimeshQuat
+ * @param  {Body}       sphereBody
+ * @param  {Body}       trimeshBody
  */
 var sphereTrimesh_normal = new Vec3();
 var sphereTrimesh_relpos = new Vec3();
@@ -272,7 +272,8 @@ Narrowphase.prototype.sphereTrimesh = function (
     sphereBody,
     trimeshBody
 ) {
-    // Make contacts!
+
+    // Vertices
     var v = sphereTrimesh_v;
     var radiusSquared = sphereShape.radius * sphereShape.radius;
     for(var i=0; i<trimeshShape.vertices.length / 3; i++){
@@ -305,6 +306,61 @@ Narrowphase.prototype.sphereTrimesh = function (
 
             // Store result
             result.push(r);
+        }
+    }
+
+    // Edges
+    var edgeVertexA = new Vec3();
+    var edgeVertexB = new Vec3();
+    var edgeVector = new Vec3();
+    var edgeVectorUnit = new Vec3();
+    var localSpherePos = new Vec3();
+    var tmp = new Vec3();
+    // Convert sphere position to local in the trimesh
+    Transform.pointToLocalFrame(trimeshPos, trimeshQuat, spherePos, localSpherePos);
+    // Check all edges
+    for(var i=0, N = trimeshShape.edges.length / 2; i !== N; i++){
+        trimeshShape.getEdgeVertex(i, 0, edgeVertexA);
+        trimeshShape.getEdgeVertex(i, 1, edgeVertexB);
+        trimeshShape.getEdgeVector(i, edgeVector);
+
+        // Project sphere position to the edge
+        localSpherePos.vsub(edgeVertexB, tmp);
+        var positionAlongEdgeB = tmp.dot(edgeVector);
+
+        localSpherePos.vsub(edgeVertexA, tmp);
+        var positionAlongEdgeA = tmp.dot(edgeVector);
+
+        if(positionAlongEdgeA > 0 && positionAlongEdgeB < 0){
+
+            // Now check the orthogonal distance from edge to sphere center
+            localSpherePos.vsub(edgeVertexA, tmp);
+
+            edgeVectorUnit.copy(edgeVector);
+            edgeVectorUnit.normalize();
+            positionAlongEdgeA = tmp.dot(edgeVectorUnit);
+
+            edgeVectorUnit.scale(positionAlongEdgeA, tmp);
+            tmp.vadd(edgeVertexA, tmp);
+
+            // tmp is now the sphere center position projected to the edge, defined locally in the trimesh frame
+            var dist = tmp.distanceTo(localSpherePos);
+            if(dist < sphereShape.radius){
+                var r = this.makeResult(sphereBody, trimeshBody, sphereShape, trimeshShape);
+
+                tmp.vsub(localSpherePos, r.ni);
+                r.ni.normalize();
+                r.ni.scale(sphereShape.radius, r.ri);
+
+                Transform.pointToWorldFrame(trimeshPos, trimeshQuat, tmp, tmp);
+                tmp.vsub(trimeshBody.position, r.rj);
+
+                Transform.vectorToWorldFrame(trimeshQuat, r.ni, r.ni);
+                Transform.vectorToWorldFrame(trimeshQuat, r.ri, r.ri);
+
+                result.push(r);
+
+            }
         }
     }
 };
