@@ -6,11 +6,19 @@ var Vec3 =     require("../src/math/Vec3")
 ,   Body =      require('../src/objects/Body')
 
 module.exports = {
-    computeNormals: function(test){
+    updateNormals: function(test){
         var mesh = Trimesh.createTorus();
         mesh.normals[0] = 1;
-        mesh.computeNormals();
+        mesh.updateNormals();
         test.ok(mesh.normals[0] !== 1);
+        test.done();
+    },
+
+    updateAABB: function(test){
+        var mesh = Trimesh.createTorus();
+        mesh.aabb.lowerBound.set(1,2,3);
+        mesh.updateAABB();
+        test.ok(mesh.aabb.lowerBound.y !== 2);
         test.done();
     },
 

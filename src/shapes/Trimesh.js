@@ -50,7 +50,22 @@ function Trimesh(vertices, indices) {
      */
     this.normals = new Float32Array(indices.length);
 
-    this.computeNormals();
+    /**
+     * The local AABB of the mesh.
+     * @property aabb
+     * @type {Array}
+     */
+    this.aabb = new AABB();
+
+    /**
+     * References to vertex pairs, making up all unique edges in the trimesh.
+     * @property {array} edges
+     */
+    this.edges = null;
+
+    this.updateEdges();
+    this.updateNormals();
+    this.updateAABB();
     this.updateBoundingSphereRadius();
 }
 Trimesh.prototype = new Shape();
@@ -60,9 +75,9 @@ var computeNormals_n = new Vec3();
 
 /**
  * Compute the normals of the faces. Will reuse existing Vec3 objects in the .normals array if they exist.
- * @method computeNormals
+ * @method updateNormals
  */
-Trimesh.prototype.computeNormals = function(){
+Trimesh.prototype.updateNormals = function(){
     var n = computeNormals_n;
 
     // Generate normals
@@ -83,6 +98,34 @@ Trimesh.prototype.computeNormals = function(){
         normals[i3] = n.x;
         normals[i3 + 1] = n.y;
         normals[i3 + 2] = n.z;
+    }
+};
+
+/**
+ * Update the .edges property
+ * @method updateEdges
+ */
+Trimesh.prototype.updateEdges = function(){
+    var edges = {};
+    var add = function(indexA, indexB){
+        var key = a < b ? a + '_' + b : b + '_' + a;
+        edges[key] = true;
+    };
+    for(var i=0; i < this.indices.length / 3; i++){
+        var i3 = i * 3;
+        var a = this.indices[i3],
+            b = this.indices[i3 + 1],
+            c = this.indices[i3 + 2];
+        add(a,b);
+        add(b,c);
+        add(c,a);
+    }
+    var keys = Object.keys(edges);
+    this.edges = new Int16Array(keys.length * 2);
+    for (var i = 0; i < keys.length; i++) {
+        var indices = keys[i].split('_');
+        this.edges[2 * i] = parseInt(indices[0], 10);
+        this.edges[2 * i + 1] = parseInt(indices[1], 10);
     }
 };
 
@@ -205,15 +248,14 @@ Trimesh.prototype.computeLocalAABB = function(aabb){
         u = aabb.upperBound,
         n = this.vertices.length,
         vertices = this.vertices,
-        worldVert = computeLocalAABB_worldVert;
+        v = computeLocalAABB_worldVert;
 
-    var v = new Vec3();
     this.getVertex(0, v);
     l.copy(v);
     u.copy(v);
 
     for(var i=0; i !== n; i++){
-        this.getVertex(0, v);
+        this.getVertex(i, v);
 
         if(v.x < l.x){
             l.x = v.x;
@@ -233,6 +275,15 @@ Trimesh.prototype.computeLocalAABB = function(aabb){
             u.z = v.z;
         }
     }
+};
+
+
+/**
+ * Update the .aabb property
+ * @method updateAABB
+ */
+Trimesh.prototype.updateAABB = function(){
+    this.computeLocalAABB(this.aabb);
 };
 
 /**
@@ -255,6 +306,8 @@ Trimesh.prototype.updateBoundingSphereRadius = function(){
 };
 
 var tempWorldVertex = new Vec3();
+var calculateWorldAABB_frame = new Transform();
+var calculateWorldAABB_aabb = new AABB();
 
 /**
  * @method calculateWorldAABB
@@ -264,6 +317,7 @@ var tempWorldVertex = new Vec3();
  * @param {Vec3}        max
  */
 Trimesh.prototype.calculateWorldAABB = function(pos,quat,min,max){
+    /*
     var n = this.vertices.length / 3,
         verts = this.vertices;
     var minx,miny,minz,maxx,maxy,maxz;
@@ -293,6 +347,16 @@ Trimesh.prototype.calculateWorldAABB = function(pos,quat,min,max){
     }
     min.set(minx,miny,minz);
     max.set(maxx,maxy,maxz);
+    */
+
+    // Faster approximation using local AABB
+    var frame = calculateWorldAABB_frame;
+    var result = calculateWorldAABB_aabb;
+    frame.position = pos;
+    frame.quaternion = quat;
+    this.aabb.toWorldFrame(frame, result);
+    min.copy(result.lowerBound);
+    max.copy(result.upperBound);
 };
 
 /**
