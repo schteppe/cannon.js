@@ -49,6 +49,7 @@ var v1 = new Vec3(),
 /*
  * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
  */
+Ray.pointInTriangle = pointInTriangle;
 function pointInTriangle(p, a, b, c) {
     c.vsub(a,v0);
     b.vsub(a,v1);
