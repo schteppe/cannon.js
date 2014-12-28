@@ -79,6 +79,11 @@ Transform.prototype.vectorToWorldFrame = function(localVector, result){
     return result;
 };
 
+Transform.vectorToWorldFrame = function(quaternion, localVector, result){
+    quaternion.vmult(localVector, result);
+    return result;
+};
+
 Transform.vectorToLocalFrame = function(position, quaternion, worldVector, result){
     var result = result || new Vec3();
     quaternion.w *= -1;
