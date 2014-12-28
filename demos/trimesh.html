@@ -22,7 +22,7 @@
 
       demo.addScene("Trimesh",function(){
 
-        var shape = CANNON.Trimesh.createTorus(1, 0.5, 16, 16);
+        var shape = CANNON.Trimesh.createTorus(4, 3.5, 16, 16);
 
         // Create world
         var world = demo.getWorld();
@@ -45,7 +45,7 @@
         var sphereBody = new CANNON.Body({
           mass: 1,
           shape: sphereShape,
-          position: new CANNON.Vec3(0,0,7)
+          position: new CANNON.Vec3(3,3,11)
         });
         world.add(sphereBody);
         demo.addVisual(sphereBody);
