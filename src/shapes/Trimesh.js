@@ -37,14 +37,14 @@ function Trimesh(vertices, indices) {
     this.vertices = new Float32Array(vertices);
 
     /**
-     * Array of integers, indicating which vertices each triangle consists of
+     * Array of integers, indicating which vertices each triangle consists of. The length of this array is thus 3 times the number of triangles.
      * @property indices
      * @type {Array}
      */
     this.indices = new Int16Array(indices);
 
     /**
-     * Array of numbers
+     * The normals data.
      * @property normals
      * @type {Array}
      */
@@ -129,6 +129,13 @@ Trimesh.prototype.updateEdges = function(){
     }
 };
 
+/**
+ * Get an edge vertex
+ * @method getEdgeVertex
+ * @param  {number} edgeIndex
+ * @param  {number} firstOrSecond 0 or 1, depending on which one of the vertices you need.
+ * @param  {Vec3} vertexStore Where to store the result
+ */
 Trimesh.prototype.getEdgeVertex = function(edgeIndex, firstOrSecond, vertexStore){
     var vertexIndex = this.edges[edgeIndex * 2 + (firstOrSecond ? 1 : 0)];
     this.getVertex(vertexIndex, vertexStore);
@@ -136,6 +143,13 @@ Trimesh.prototype.getEdgeVertex = function(edgeIndex, firstOrSecond, vertexStore
 
 var getEdgeVector_va = new Vec3();
 var getEdgeVector_vb = new Vec3();
+
+/**
+ * Get a vector along an edge.
+ * @method getEdgeVector
+ * @param  {number} edgeIndex
+ * @param  {Vec3} vectorStore
+ */
 Trimesh.prototype.getEdgeVector = function(edgeIndex, vectorStore){
     var va = getEdgeVector_va;
     var vb = getEdgeVector_vb;

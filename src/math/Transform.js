@@ -39,6 +39,7 @@ Transform.pointToLocalFrame = function(position, quaternion, worldPoint, result)
 
 /**
  * Get a global point in local transform coordinates.
+ * @method pointToLocal
  * @param  {Vec3} point
  * @param  {Vec3} result
  * @return {Vec3} The "result" vector object
@@ -64,6 +65,7 @@ Transform.pointToWorldFrame = function(position, quaternion, localPoint, result)
 
 /**
  * Get a local point in global transform coordinates.
+ * @method pointToWorld
  * @param  {Vec3} point
  * @param  {Vec3} result
  * @return {Vec3} The "result" vector object
