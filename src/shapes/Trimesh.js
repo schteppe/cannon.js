@@ -231,6 +231,7 @@ Trimesh.prototype.getTriangleVertices = function(i, a, b, c){
  * @method getNormal
  * @param  {Number} i
  * @param  {Vec3} target
+ * @return {Vec3} The "target" vector object
  */
 Trimesh.prototype.getNormal = function(i, target){
     var i3 = i * 3;
