@@ -28,8 +28,6 @@ function Trimesh(vertices, indices) {
     Shape.call(this);
     this.type = Shape.types.TRIMESH;
 
-    var that = this;
-
     /**
      * @property vertices
      * @type {Array}
@@ -74,7 +72,7 @@ Trimesh.prototype.constructor = Trimesh;
 var computeNormals_n = new Vec3();
 
 /**
- * Compute the normals of the faces. Will reuse existing Vec3 objects in the .normals array if they exist.
+ * Compute the normals of the faces. Will save in the .normals array.
  * @method updateNormals
  */
 Trimesh.prototype.updateNormals = function(){
