@@ -588,7 +588,6 @@ World.prototype.internalStep = function(dt){
         } else {
             cm = this.defaultContactMaterial;
         }
-        var mu = cm.friction;
 
         // g = ( xj + rj - xi - ri ) .dot ( ni )
         var gvec = World_step_gvec;
@@ -602,7 +601,20 @@ World.prototype.internalStep = function(dt){
 
             c.enabled = bi.collisionResponse && bj.collisionResponse && si.collisionResponse && sj.collisionResponse;
 
-			c.restitution = cm.restitution;
+            var mu = cm.friction;
+            c.restitution = cm.restitution;
+
+            // If friction or restitution were specified in the material, use them
+            if(bi.material && bj.material){
+                if(bi.material.friction >= 0 && bj.material.friction >= 0){
+                    mu = bi.material.friction * bj.material.friction;
+                }
+
+                if(bi.material.restitution >= 0 && bj.material.restitution >= 0){
+                    c.restitution = bi.material.restitution * bj.material.restitution;
+                }
+            }
+
 			c.penetration = g;
 			c.setSpookParams(cm.contactEquationStiffness,
                              cm.contactEquationRelaxation,
@@ -614,7 +626,7 @@ World.prototype.internalStep = function(dt){
 			if(mu > 0){
 
 				// Create 2 tangent equations
-				var mug = mu*gnorm;
+				var mug = mu * gnorm;
 				var reducedMass = (bi.invMass + bj.invMass);
 				if(reducedMass > 0){
 					reducedMass = 1/reducedMass;
