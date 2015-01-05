@@ -167,6 +167,17 @@ AABB.prototype.overlaps = function(aabb){
            ((l2.z <= u1.z && u1.z <= u2.z) || (l1.z <= u2.z && u2.z <= u1.z));
 };
 
+/**
+ * @method getCorners
+ * @param {Vec3} a
+ * @param {Vec3} b
+ * @param {Vec3} c
+ * @param {Vec3} d
+ * @param {Vec3} e
+ * @param {Vec3} f
+ * @param {Vec3} g
+ * @param {Vec3} h
+ */
 AABB.prototype.getCorners = function(a, b, c, d, e, f, g, h){
     var l = this.lowerBound,
         u = this.upperBound;
