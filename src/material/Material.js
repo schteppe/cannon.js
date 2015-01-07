@@ -21,13 +21,13 @@ function Material(name){
     this.id = Material.idCounter++;
 
     /**
-     * Friction for this material.
+     * Friction for this material. If non-negative, it will be used instead of the friction given by ContactMaterials. If there's no matching ContactMaterial, the value from .defaultContactMaterial in the World will be used.
      * @property {number} friction
      */
     this.friction = -1;
 
     /**
-     * Restitution for this material.
+     * Restitution for this material. If non-negative, it will be used instead of the restitution given by ContactMaterials. If there's no matching ContactMaterial, the value from .defaultContactMaterial in the World will be used.
      * @property {number} restitution
      */
     this.restitution = -1;
