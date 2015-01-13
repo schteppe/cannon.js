@@ -309,7 +309,7 @@ World.prototype.rayTest = function(from, to, result){
  * @param {Body} body
  * @todo Rename to .removeBody
  */
-World.prototype.remove = function(body){
+World.prototype.remove = World.prototype.removeBody = function(body){
     body.world = null;
     var n = this.bodies.length-1,
         bodies = this.bodies,

@@ -22,7 +22,8 @@ var Box = require('../shapes/Box');
  * @param {number} [options.mass]
  * @param {number} [options.material]
  * @param {number} [options.type]
- * @param {number} [options.linearDamping]
+ * @param {number} [options.linearDamping=0.01]
+ * @param {number} [options.angularDamping=0.01]
  * @param {number} [options.shape]
  * @example
  *     var body = new Body({
@@ -291,7 +292,7 @@ function Body(options){
     /**
      * @property {Number} angularDamping
      */
-    this.angularDamping = 0.01; // Perhaps default should be zero here?
+    this.angularDamping = typeof(options.angularDamping) !== 'undefined' ? options.angularDamping : 0.01;
 
     /**
      * @property aabb
@@ -445,6 +446,19 @@ Body.prototype.updateSolveMassProperties = function(){
 Body.prototype.pointToLocalFrame = function(worldPoint,result){
     var result = result || new Vec3();
     worldPoint.vsub(this.position,result);
+    this.quaternion.conjugate().vmult(result,result);
+    return result;
+};
+
+/**
+ * Convert a world vector to local body frame.
+ * @method vectorToLocalFrame
+ * @param  {Vec3} worldPoint
+ * @param  {Vec3} result
+ * @return {Vec3}
+ */
+Body.prototype.vectorToLocalFrame = function(worldVector, result){
+    var result = result || new Vec3();
     this.quaternion.conjugate().vmult(result,result);
     return result;
 };
