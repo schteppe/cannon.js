@@ -24,6 +24,11 @@ var Box = require('../shapes/Box');
  * @param {number} [options.type]
  * @param {number} [options.linearDamping=0.01]
  * @param {number} [options.angularDamping=0.01]
+ * @param {number} [options.allowSleep=true]
+ * @param {number} [options.sleepSpeedLimit=0.1]
+ * @param {number} [options.sleepTimeLimit=1]
+ * @param {number} [options.collisionFilterGroup=1]
+ * @param {number} [options.collisionFilterMask=1]
  * @param {number} [options.shape]
  * @example
  *     var body = new Body({
@@ -68,12 +73,12 @@ function Body(options){
     /**
      * @property {Number} collisionFilterGroup
      */
-    this.collisionFilterGroup = 1;
+    this.collisionFilterGroup = typeof(options.collisionFilterGroup) === 'number' ? options.collisionFilterGroup : 1;
 
     /**
      * @property {Number} collisionFilterMask
      */
-    this.collisionFilterMask = 1;
+    this.collisionFilterMask = typeof(options.collisionFilterMask) === 'number' ? options.collisionFilterMask : 1;
 
     /**
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.
@@ -167,7 +172,7 @@ function Body(options){
      * @property allowSleep
      * @type {Boolean}
      */
-    this.allowSleep = true;
+    this.allowSleep = typeof(options.allowSleep) !== 'undefined' ? options.allowSleep : true;
 
     /**
      * Current sleep state.
@@ -181,14 +186,14 @@ function Body(options){
      * @property sleepSpeedLimit
      * @type {Number}
      */
-    this.sleepSpeedLimit = 0.1;
+    this.sleepSpeedLimit = typeof(options.sleepSpeedLimit) !== 'undefined' ? options.sleepSpeedLimit : 0.1;
 
     /**
      * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
      * @property sleepTimeLimit
      * @type {Number}
      */
-    this.sleepTimeLimit = 1;
+    this.sleepTimeLimit = typeof(options.sleepTimeLimit) !== 'undefined' ? options.sleepTimeLimit : 1;
 
     this.timeLastSleepy = 0;
 
