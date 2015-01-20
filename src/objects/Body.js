@@ -29,6 +29,7 @@ var Box = require('../shapes/Box');
  * @param {number} [options.sleepTimeLimit=1]
  * @param {number} [options.collisionFilterGroup=1]
  * @param {number} [options.collisionFilterMask=1]
+ * @param {number} [options.fixedRotation=false]
  * @param {number} [options.shape]
  * @example
  *     var body = new Body({
@@ -136,6 +137,7 @@ function Body(options){
     /**
      * @property mass
      * @type {Number}
+     * @default 0
      */
     this.mass = mass;
 
@@ -171,6 +173,7 @@ function Body(options){
      * If true, the body will automatically fall to sleep.
      * @property allowSleep
      * @type {Boolean}
+     * @default true
      */
     this.allowSleep = typeof(options.allowSleep) !== 'undefined' ? options.allowSleep : true;
 
@@ -185,6 +188,7 @@ function Body(options){
      * If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.
      * @property sleepSpeedLimit
      * @type {Number}
+     * @default 0.1
      */
     this.sleepSpeedLimit = typeof(options.sleepSpeedLimit) !== 'undefined' ? options.sleepSpeedLimit : 0.1;
 
@@ -192,6 +196,7 @@ function Body(options){
      * If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.
      * @property sleepTimeLimit
      * @type {Number}
+     * @default 1
      */
     this.sleepTimeLimit = typeof(options.sleepTimeLimit) !== 'undefined' ? options.sleepTimeLimit : 1;
 
@@ -291,8 +296,9 @@ function Body(options){
     /**
      * Set to true if you don't want the body to rotate. Make sure to run .updateMassProperties() after changing this.
      * @property {Boolean} fixedRotation
+     * @default false
      */
-    this.fixedRotation = false;
+    this.fixedRotation = typeof(options.fixedRotation) !== "undefined" ? options.fixedRotation : false;
 
     /**
      * @property {Number} angularDamping
