@@ -10,12 +10,16 @@ var ContactEquation = require('../equations/ContactEquation');
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB
- * @param {Number} distance
- * @param {Number} maxForce
+ * @param {Number} [distance] If undefined, it will be set to the current distance between bodyA and bodyB
+ * @param {Number} [maxForce=1e6]
  * @extends Constraint
  */
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
+
+    if(typeof(distance)==="undefined" ) {
+        distance = bodyA.position.distanceTo(bodyB.position);
+    }
 
     if(typeof(maxForce)==="undefined" ) {
         maxForce = 1e6;
