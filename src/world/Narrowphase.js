@@ -162,7 +162,7 @@ Narrowphase.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     var r = this.makeResult(bi,bj,si,sj);
 
     // Contact normal
-    bj.position.vsub(xi, r.ni);
+    xj.vsub(xi, r.ni);
     r.ni.normalize();
 
     // Contact point locations
@@ -170,6 +170,13 @@ Narrowphase.prototype.sphereSphere = function(result,si,sj,xi,xj,qi,qj,bi,bj){
     r.rj.copy(r.ni);
     r.ri.mult(si.radius, r.ri);
     r.rj.mult(-sj.radius, r.rj);
+
+    r.ri.vadd(xi, r.ri);
+    r.ri.vsub(bi.position, r.ri);
+
+    r.rj.vadd(xj, r.rj);
+    r.rj.vsub(bj.position, r.rj);
+
     result.push(r);
 };
 
