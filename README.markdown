@@ -76,7 +76,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 | Cylinder    | -      | -     | Yes | Yes    | Yes      | Yes         | (todo)  |
 | Convex      | -      | -     | -   | Yes    | Yes      | Yes         | (todo)  |
 | Particle    | -      | -     | -   | -      | -        | (todo)      | (todo)  |
-| Heightfield | -      | -     | -   | -      | -        | -           | -       |
+| Heightfield | -      | -     | -   | -      | -        | -           | (todo)  |
 | Trimesh     | -      | -     | -   | -      | -        | -           | -       |
 
 ### Todo
