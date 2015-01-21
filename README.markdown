@@ -70,14 +70,14 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 
 |             | [Sphere](http://schteppe.github.io/cannon.js/docs/classes/Sphere.html) | [Plane](http://schteppe.github.io/cannon.js/docs/classes/Plane.html) | [Box](http://schteppe.github.io/cannon.js/docs/classes/Box.html) | [Convex](http://schteppe.github.io/cannon.js/docs/classes/ConvexPolyhedron.html) | [Particle](http://schteppe.github.io/cannon.js/docs/classes/Particle.html) | [Heightfield](http://schteppe.github.io/cannon.js/docs/classes/Heightfield.html) | Trimesh |
 | :-----------|:------:|:-----:|:---:|:------:|:--------:|:-----------:|:-------:|
-| Sphere      | Yes    | Yes   | Yes | Yes    | Yes      | Yes         | (todo)  |
+| Sphere      | Yes    | Yes   | Yes | Yes    | Yes      | Yes         | Yes     |
 | Plane       | -      | -     | Yes | Yes    | Yes      | -           | Yes     |
 | Box         | -      | -     | Yes | Yes    | Yes      | Yes         | (todo)  |
 | Cylinder    | -      | -     | Yes | Yes    | Yes      | Yes         | (todo)  |
 | Convex      | -      | -     | -   | Yes    | Yes      | Yes         | (todo)  |
 | Particle    | -      | -     | -   | -      | -        | (todo)      | (todo)  |
 | Heightfield | -      | -     | -   | -      | -        | -           | -       |
-| Trimesh     | -      | -     | -   | -      | -        | -           | (todo)  |
+| Trimesh     | -      | -     | -   | -      | -        | -           | -       |
 
 ### Todo
 The simpler todos are marked with ```@todo``` in the code. Github Issues can and should also be used for todos.
