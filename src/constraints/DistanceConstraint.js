@@ -17,32 +17,40 @@ var ContactEquation = require('../equations/ContactEquation');
 function DistanceConstraint(bodyA,bodyB,distance,maxForce){
     Constraint.call(this,bodyA,bodyB);
 
-    if(typeof(distance)==="undefined" ) {
+    if(typeof(distance)==="undefined") {
         distance = bodyA.position.distanceTo(bodyB.position);
     }
 
-    if(typeof(maxForce)==="undefined" ) {
+    if(typeof(maxForce)==="undefined") {
         maxForce = 1e6;
     }
 
-    // Equations to be fed to the solver
-    var eqs = this.equations = [
-        new ContactEquation(bodyA,bodyB), // Just in the normal direction
-    ];
+    /**
+     * @property {number} distance
+     */
+    this.distance = distance;
 
-    var normal = eqs[0];
+    /**
+     * @property {ContactEquation} distanceEquation
+     */
+    var eq = this.distanceEquation = new ContactEquation(bodyA, bodyB);
+    this.equations.push(eq);
 
-    normal.minForce = -maxForce;
-    normal.maxForce =  maxForce;
-
-    // Update
-    this.update = function(){
-        bodyB.position.vsub(bodyA.position,normal.ni);
-        normal.ni.normalize();
-        /*bodyA.quaternion.vmult(pivotA,normal.ri);
-        bodyB.quaternion.vmult(pivotB,normal.rj);*/
-        normal.ni.mult( distance*0.5,normal.ri);
-        normal.ni.mult( -distance*0.5,normal.rj);
-    };
+    // Make it bidirectional
+    eq.minForce = -maxForce;
+    eq.maxForce =  maxForce;
 }
 DistanceConstraint.prototype = new Constraint();
+
+DistanceConstraint.prototype.update = function(){
+    var bodyA = this.bodyA;
+    var bodyB = this.bodyB;
+    var eq = this.distanceEquation;
+    var halfDist = this.distance * 0.5;
+    var normal = eq.ni;
+
+    bodyB.position.vsub(bodyA.position, normal);
+    normal.normalize();
+    normal.mult(halfDist, eq.ri);
+    normal.mult(-halfDist, eq.rj);
+};
