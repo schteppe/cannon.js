@@ -59,6 +59,7 @@ function Constraint(bodyA, bodyB, options){
 }
 
 /**
+ * Update all the equations with data.
  * @method update
  */
 Constraint.prototype.update = function(){
@@ -66,6 +67,7 @@ Constraint.prototype.update = function(){
 };
 
 /**
+ * Enables all equations in the constraint.
  * @method enable
  */
 Constraint.prototype.enable = function(){
@@ -76,6 +78,7 @@ Constraint.prototype.enable = function(){
 };
 
 /**
+ * Disables all equations in the constraint.
  * @method disable
  */
 Constraint.prototype.disable = function(){

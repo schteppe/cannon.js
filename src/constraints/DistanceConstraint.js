@@ -4,13 +4,13 @@ var Constraint = require('./Constraint');
 var ContactEquation = require('../equations/ContactEquation');
 
 /**
- * Constrains two bodies to be at a constant distance from each other.
+ * Constrains two bodies to be at a constant distance from each others center of mass.
  * @class DistanceConstraint
  * @constructor
  * @author schteppe
  * @param {Body} bodyA
  * @param {Body} bodyB
- * @param {Number} [distance] If undefined, it will be set to the current distance between bodyA and bodyB
+ * @param {Number} [distance] The distance to keep. If undefined, it will be set to the current distance between bodyA and bodyB
  * @param {Number} [maxForce=1e6]
  * @extends Constraint
  */
