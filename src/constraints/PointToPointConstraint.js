@@ -2,6 +2,7 @@ module.exports = PointToPointConstraint;
 
 var Constraint = require('./Constraint');
 var ContactEquation = require('../equations/ContactEquation');
+var Vec3 = require('../math/Vec3');
 
 /**
  * Connects two bodies at given offset points.
@@ -31,17 +32,19 @@ var ContactEquation = require('../equations/ContactEquation');
 function PointToPointConstraint(bodyA,pivotA,bodyB,pivotB,maxForce){
     Constraint.call(this,bodyA,bodyB);
 
+    maxForce = typeof(maxForce) !== 'undefined' ? maxForce : 1e6;
+
     /**
      * Pivot, defined locally in bodyA.
      * @property {Vec3} pivotA
      */
-    this.pivotA = pivotA.clone();
+    this.pivotA = pivotA ? pivotA.clone() : new Vec3();
 
     /**
      * Pivot, defined locally in bodyB.
      * @property {Vec3} pivotB
      */
-    this.pivotB = pivotB.clone();
+    this.pivotB = pivotB ? pivotB.clone() : new Vec3();
 
     /**
      * @property {ContactEquation} equationX
