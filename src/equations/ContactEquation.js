@@ -13,8 +13,9 @@ var Mat3 = require('../math/Mat3');
  * @param {Body} bi
  * @extends Equation
  */
-function ContactEquation(bi,bj){
-    Equation.call(this,bi,bj,0,1e6);
+function ContactEquation(bi,bj,maxForce){
+    maxForce = typeof(maxForce) !== 'undefined' ? maxForce : 1e6;
+    Equation.call(this,bi,bj,0,maxForce);
 
     /**
      * @property restitution

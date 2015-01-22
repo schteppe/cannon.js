@@ -31,11 +31,31 @@ var ContactEquation = require('../equations/ContactEquation');
 function PointToPointConstraint(bodyA,pivotA,bodyB,pivotB,maxForce){
     Constraint.call(this,bodyA,bodyB);
 
+    /**
+     * Pivot, defined locally in bodyA.
+     * @property {Vec3} pivotA
+     */
     this.pivotA = pivotA.clone();
+
+    /**
+     * Pivot, defined locally in bodyB.
+     * @property {Vec3} pivotB
+     */
     this.pivotB = pivotB.clone();
 
+    /**
+     * @property {ContactEquation} equationX
+     */
     var x = this.equationX = new ContactEquation(bodyA,bodyB);
+
+    /**
+     * @property {ContactEquation} equationY
+     */
     var y = this.equationY = new ContactEquation(bodyA,bodyB);
+
+    /**
+     * @property {ContactEquation} equationZ
+     */
     var z = this.equationZ = new ContactEquation(bodyA,bodyB);
 
     // Equations to be fed to the solver

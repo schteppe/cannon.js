@@ -98,8 +98,8 @@
             frontLeftHinge.enableMotor();
             frontRightHinge.enableMotor();
             var v = -14;
-            frontLeftHinge.motorTargetVelocity = v;
-            frontRightHinge.motorTargetVelocity = -v;
+            frontLeftHinge.setMotorSpeed(v);
+            frontRightHinge.setMotorSpeed(-v);
 
         });
 

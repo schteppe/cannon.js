@@ -7,7 +7,7 @@ var ContactEquation = require('../equations/ContactEquation');
 var Vec3 = require('../math/Vec3');
 
 /**
- * Hinge constraint. Tries to keep the local body axes equal.
+ * Hinge constraint. Defines an axis locally in each body, and tries to keep these equal in world space.
  * @class HingeConstraint
  * @constructor
  * @author schteppe
@@ -21,34 +21,64 @@ var Vec3 = require('../math/Vec3');
  * @param {Number} [options.maxForce=1e6]
  * @extends Constraint
  */
-function HingeConstraint(bodyA, bodyB, options){ // bodyA, pivotA, axisA, bodyB, pivotB, axisB, maxForce
+function HingeConstraint(bodyA, bodyB, options){
     Constraint.call(this, bodyA, bodyB, options);
 
     var maxForce = typeof(options.maxForce) !== 'undefined' ? options.maxForce : 1e6;
 
-    // TODO: use a clever default setup... how?
-    var pivotA = this.pivotA = typeof(options.pivotA) !== 'undefined' ? options.pivotA.clone() : new Vec3();
-    var pivotB = this.pivotB = typeof(options.pivotB) !== 'undefined' ? options.pivotB.clone() : new Vec3();
-    var axisA = this.axisA = typeof(options.axisA) !== 'undefined' ? options.axisA.clone() : new Vec3(1,0,0);
-    var axisB = this.axisB = typeof(options.axisB) !== 'undefined' ? options.axisB.clone() : new Vec3(1,0,0);
+    /**
+     * Pivot defined locally in bodyA.
+     * @property {Vec3} pivotA
+     */
+    var pivotA = this.pivotA = options.pivotA ? options.pivotA.clone() : new Vec3();
 
-    var that = this;
+    /**
+     * Pivot, defined locally in bodyB.
+     * @property {Vec3} pivotB
+     */
+    var pivotB = this.pivotB = options.pivotB ? options.pivotB.clone() : new Vec3();
+
+    /**
+     * Rotation axis, defined locally in bodyA.
+     * @property {Vec3} axisA
+     */
+    var axisA = this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1,0,0);
+
+    /**
+     * Rotation axis, defined locally in bodyB.
+     * @property {Vec3} axisB
+     */
+    var axisB = this.axisB = options.axisB ? options.axisB.clone() : new Vec3(1,0,0);
+
+    /**
+     * @property {RotationalEquation} rotationalEquation1
+     */
+    var r1 = this.rotationalEquation1 = new RotationalEquation(bodyA,bodyB);
+
+    /**
+     * @property {RotationalEquation} rotationalEquation2
+     */
+    var r2 = this.rotationalEquation2 = new RotationalEquation(bodyA,bodyB);
+
+    var normal = this.equationX = new ContactEquation(bodyA,bodyB);
+    var t1 = this.equationY = new ContactEquation(bodyA,bodyB);
+    var t2 = this.equationZ = new ContactEquation(bodyA,bodyB);
+
+    /**
+     * @property {RotationalMotorEquation} motorEquation
+     */
+    var motor = this.motorEquation = new RotationalMotorEquation(bodyA,bodyB,maxForce);
+    motor.enabled = false; // Not enabled by default
 
     // Equations to be fed to the solver
-    var eqs = this.equations = [
-        new RotationalEquation(bodyA,bodyB), // rotational1
-        new RotationalEquation(bodyA,bodyB), // rotational2
-        new ContactEquation(bodyA,bodyB),    // p2pNormal
-        new ContactEquation(bodyA,bodyB),    // p2pTangent1
-        new ContactEquation(bodyA,bodyB),    // p2pTangent2
-    ];
-
-    var r1 =        this.getRotationalEquation1();
-    var r2 =        this.getRotationalEquation2();
-    var normal =    this.getPointToPointEquation1();
-    var t1 =        this.getPointToPointEquation2();
-    var t2 =        this.getPointToPointEquation3();
-    var motor; // not activated by default
+    this.equations.push(
+        r1, // rotational1
+        r2, // rotational2
+        t1,
+        t2,
+        normal,
+        motor
+    );
 
     t1.minForce = t2.minForce = normal.minForce = -maxForce;
     t1.maxForce = t2.maxForce = normal.maxForce =  maxForce;
@@ -72,33 +102,39 @@ function HingeConstraint(bodyA, bodyB, options){ // bodyA, pivotA, axisA, bodyB,
     axisA_x_pivotA.normalize();
     axisB_x_pivotB.normalize();
 
-    // Motor stuff
-    this.motorEnabled = false;
-    this.motorTargetVelocity = 0;
-    this.motorMinForce = -maxForce;
-    this.motorMaxForce = maxForce;
-    this.motorEquation = new RotationalMotorEquation(bodyA,bodyB,maxForce);
 }
 HingeConstraint.prototype = new Constraint();
+HingeConstraint.constructor = HingeConstraint;
 
 /**
  * @method enableMotor
  */
 HingeConstraint.prototype.enableMotor = function(){
-    if(!this.motorEnabled){
-        this.equations.push(this.motorEquation);
-        this.motorEnabled = true;
-    }
+    this.motorEquation.enabled = true;
 };
 
 /**
  * @method disableMotor
  */
 HingeConstraint.prototype.disableMotor = function(){
-    if(this.motorEnabled){
-        this.motorEnabled = false;
-        this.equations.pop();
-    }
+    this.motorEquation.enabled = false;
+};
+
+/**
+ * @method setMotorSpeed
+ * @param {number} speed
+ */
+HingeConstraint.prototype.setMotorSpeed = function(speed){
+    this.motorEquation.targetVelocity = speed;
+};
+
+/**
+ * @method setMotorMaxForce
+ * @param {number} maxForce
+ */
+HingeConstraint.prototype.setMotorMaxForce = function(maxForce){
+    this.motorEquation.maxForce = maxForce;
+    this.motorEquation.minForce = -maxForce;
 };
 
 HingeConstraint.prototype.update = function(){
@@ -106,11 +142,12 @@ HingeConstraint.prototype.update = function(){
         bodyB = this.bodyB,
         eqs = this.equations,
         motor = this.motorEquation,
-        r1 = eqs[0],
-        r2 = eqs[1],
-        normal = eqs[2],
-        t1 = eqs[3],
-        t2 = eqs[4];
+        r1 = this.rotationalEquation1,
+        r2 = this.rotationalEquation2,
+        normal = this.equationX,
+        t1 = this.equationY,
+        t2 = this.equationZ;
+
     var axisA_x_pivotA = this.axisA_x_pivotA;
     var axisA = this.axisA;
     var axisB = this.axisB;
@@ -120,17 +157,12 @@ HingeConstraint.prototype.update = function(){
     var axisB_x_pivotB = this.axisB_x_pivotB;
 
     // Update world positions of pivots
-    /*
-    bodyB.position.vsub(bodyA.position,normal.ni);
-    normal.ni.normalize();
-    */
     normal.ni.set(1,0,0);
     t1.ni.set(0,1,0);
     t2.ni.set(0,0,1);
     bodyA.quaternion.vmult(this.pivotA,normal.ri);
     bodyB.quaternion.vmult(this.pivotB,normal.rj);
 
-    //normal.ni.tangents(t1.ni,t2.ni);
     t1.ri.copy(normal.ri);
     t1.rj.copy(normal.rj);
     t2.ri.copy(normal.ri);
@@ -150,22 +182,19 @@ HingeConstraint.prototype.update = function(){
     axisB_x_pivotB.normalize();
 
     // update rotational constraints
-    bodyA.quaternion.vmult(axisA_x_pivotA, r1.ni);
-    bodyB.quaternion.vmult(axisB, r1.nj);
-    bodyA.quaternion.vmult(axisA_x_axisA_x_pivotA, r2.ni);
-    bodyB.quaternion.vmult(axisB, r2.nj);
+    bodyA.quaternion.vmult(axisA_x_pivotA, r1.axisA);
+    bodyB.quaternion.vmult(axisB, r1.axisB);
+    bodyA.quaternion.vmult(axisA_x_axisA_x_pivotA, r2.axisA);
+    bodyB.quaternion.vmult(axisB, r2.axisB);
 
-    if(this.motorEnabled){
+    if(this.motorEquation.enabled){
         bodyA.quaternion.vmult(this.axisA, motor.axisA);
         bodyB.quaternion.vmult(this.axisB, motor.axisB);
-        motor.targetVelocity = this.motorTargetVelocity;
-        motor.maxForce = this.motorMaxForce;
-        motor.minForce = this.motorMinForce;
     }
 };
 
-HingeConstraint.prototype.getRotationalEquation1 =   function(){ return this.equations[0]; };
-HingeConstraint.prototype.getRotationalEquation2 =   function(){ return this.equations[1]; };
-HingeConstraint.prototype.getPointToPointEquation1 = function(){ return this.equations[2]; };
-HingeConstraint.prototype.getPointToPointEquation2 = function(){ return this.equations[3]; };
-HingeConstraint.prototype.getPointToPointEquation3 = function(){ return this.equations[4]; };
+HingeConstraint.prototype.getRotationalEquation1 =   function(){ return this.rotationalEquation1; };
+HingeConstraint.prototype.getRotationalEquation2 =   function(){ return this.rotationalEquation2; };
+HingeConstraint.prototype.getPointToPointEquation1 = function(){ return this.equationX; };
+HingeConstraint.prototype.getPointToPointEquation2 = function(){ return this.equationY; };
+HingeConstraint.prototype.getPointToPointEquation3 = function(){ return this.equationZ; };
