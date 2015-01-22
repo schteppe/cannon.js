@@ -9,8 +9,8 @@ var Equation = require('./Equation');
  * @class RotationalEquation
  * @constructor
  * @author schteppe
- * @param {RigidBody} bodyA
- * @param {RigidBody} bodyB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  * @param {Vec3} [options.axisA]
  * @param {Vec3} [options.axisB]
  * @param {number} [options.maxForce]

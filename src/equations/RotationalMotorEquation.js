@@ -9,8 +9,8 @@ var Equation = require('./Equation');
  * @class RotationalMotorEquation
  * @constructor
  * @author schteppe
- * @param {RigidBody} bodyA
- * @param {RigidBody} bodyB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  * @param {Number} maxForce
  * @extends Equation
  */

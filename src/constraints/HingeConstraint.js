@@ -12,8 +12,8 @@ var Vec3 = require('../math/Vec3');
  * @class HingeConstraint
  * @constructor
  * @author schteppe
- * @param {RigidBody} bodyA
- * @param {RigidBody} bodyB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  * @param {object} [options]
  * @param {Vec3} [options.pivotA] A point defined locally in bodyA. This defines the offset of axisA.
  * @param {Vec3} [options.axisA] an axis that bodyA can rotate around.

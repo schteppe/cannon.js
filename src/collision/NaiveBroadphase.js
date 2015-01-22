@@ -64,7 +64,7 @@ NaiveBroadphase.prototype.aabbQuery = function(world, aabb, result){
             b.computeAABB();
         }
 
-        // Ugly hack until RigidBody gets aabb
+        // Ugly hack until Body gets aabb
         if(b.aabb.overlaps(aabb)){
             result.push(b);
         }
