@@ -65,4 +65,24 @@ Constraint.prototype.update = function(){
     throw new Error("method update() not implmemented in this Constraint subclass!");
 };
 
+/**
+ * @method enable
+ */
+Constraint.prototype.enable = function(){
+    var eqs = this.equations;
+    for(var i=0; i<eqs.length; i++){
+        eqs[i].enabled = true;
+    }
+};
+
+/**
+ * @method disable
+ */
+Constraint.prototype.disable = function(){
+    var eqs = this.equations;
+    for(var i=0; i<eqs.length; i++){
+        eqs[i].enabled = false;
+    }
+};
+
 Constraint.idCounter = 0;
