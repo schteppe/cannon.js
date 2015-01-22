@@ -9,13 +9,13 @@ var Mat3 = require('../math/Mat3');
  * @class ContactEquation
  * @constructor
  * @author schteppe
- * @param {Body} bj
- * @param {Body} bi
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  * @extends Equation
  */
-function ContactEquation(bi,bj,maxForce){
+function ContactEquation(bodyA, bodyB, maxForce){
     maxForce = typeof(maxForce) !== 'undefined' ? maxForce : 1e6;
-    Equation.call(this,bi,bj,0,maxForce);
+    Equation.call(this, bodyA, bodyB, 0, maxForce);
 
     /**
      * @property restitution
@@ -35,23 +35,11 @@ function ContactEquation(bi,bj,maxForce){
      */
     this.rj = new Vec3();
 
-    this.penetrationVec = new Vec3();
-
     /**
      * Contact normal, pointing out of body i.
      * @property {Vec3} ni
      */
     this.ni = new Vec3();
-
-    this.rixn = new Vec3();
-    this.rjxn = new Vec3();
-
-    this.invIi = new Mat3();
-    this.invIj = new Mat3();
-
-    // Cache
-    this.biInvInertiaTimesRixn =  new Vec3();
-    this.bjInvInertiaTimesRjxn =  new Vec3();
 }
 
 ContactEquation.prototype = new Equation();
@@ -59,7 +47,7 @@ ContactEquation.prototype.constructor = ContactEquation;
 
 var ContactEquation_computeB_temp1 = new Vec3(); // Temp vectors
 var ContactEquation_computeB_temp2 = new Vec3();
-var ContactEquation_computeB_zero = new Vec3();
+var ContactEquation_computeB_temp3 = new Vec3();
 ContactEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b,
@@ -67,27 +55,20 @@ ContactEquation.prototype.computeB = function(h){
         bj = this.bj,
         ri = this.ri,
         rj = this.rj,
-        rixn = this.rixn,
-        rjxn = this.rjxn,
-
-        zero = ContactEquation_computeB_zero,
+        rixn = ContactEquation_computeB_temp1,
+        rjxn = ContactEquation_computeB_temp2,
 
         vi = bi.velocity,
-        wi = bi.angularVelocity ? bi.angularVelocity : zero,
+        wi = bi.angularVelocity,
         fi = bi.force,
-        taui = bi.torque ? bi.torque : zero,
+        taui = bi.torque,
 
         vj = bj.velocity,
-        wj = bj.angularVelocity ? bj.angularVelocity : zero,
+        wj = bj.angularVelocity,
         fj = bj.force,
-        tauj = bj.torque ? bj.torque : zero,
+        tauj = bj.torque,
 
-        penetrationVec = this.penetrationVec,
-        invMassi = bi.invMass,
-        invMassj = bj.invMass,
-
-        invIi = this.invIi,
-        invIj = this.invIj,
+        penetrationVec = ContactEquation_computeB_temp3,
 
         GA = this.jacobianElementA,
         GB = this.jacobianElementB,
@@ -106,32 +87,17 @@ ContactEquation.prototype.computeB = function(h){
     GB.rotational.copy(rjxn);
 
     // Calculate the penetration vector
-    var penetrationVec = this.penetrationVec;
-    penetrationVec.set(0,0,0);
-    penetrationVec.vadd(bj.position,penetrationVec);
+    penetrationVec.copy(bj.position);
     penetrationVec.vadd(rj,penetrationVec);
     penetrationVec.vsub(bi.position,penetrationVec);
     penetrationVec.vsub(ri,penetrationVec);
 
     var g = n.dot(penetrationVec);
 
-    var invIi_vmult_taui = ContactEquation_computeB_temp1;
-    var invIj_vmult_tauj = ContactEquation_computeB_temp2;
-    if(bi.invInertiaWorld){
-        bi.invInertiaWorld.vmult(taui,invIi_vmult_taui);
-    } else {
-        invIi_vmult_taui.set(0,0,0);
-    }
-    if(bj.invInertiaWorld){
-        bj.invInertiaWorld.vmult(tauj,invIj_vmult_tauj);
-    } else {
-        invIj_vmult_tauj.set(0,0,0);
-    }
-
     // Compute iteration
-    var ePlusOne = this.restitution+1;
-    var GW = ePlusOne*vj.dot(n) - ePlusOne*vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-    var GiMf = this.computeGiMf();//fj.dot(n)*invMassj - fi.dot(n)*invMassi + rjxn.dot(invIj_vmult_tauj) - rixn.dot(invIi_vmult_taui);
+    var ePlusOne = this.restitution + 1;
+    var GW = ePlusOne * vj.dot(n) - ePlusOne * vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
+    var GiMf = this.computeGiMf();
 
     var B = - g * a - GW * b - h*GiMf;
 
@@ -143,6 +109,11 @@ var ContactEquation_getImpactVelocityAlongNormal_vj = new Vec3();
 var ContactEquation_getImpactVelocityAlongNormal_xi = new Vec3();
 var ContactEquation_getImpactVelocityAlongNormal_xj = new Vec3();
 var ContactEquation_getImpactVelocityAlongNormal_relVel = new Vec3();
+
+/**
+ * Get the current relative velocity in the contact point.
+ * @return {number}
+ */
 ContactEquation.prototype.getImpactVelocityAlongNormal = function(){
     var vi = ContactEquation_getImpactVelocityAlongNormal_vi;
     var vj = ContactEquation_getImpactVelocityAlongNormal_vj;

@@ -5,7 +5,7 @@ var Mat3 = require('../math/Mat3');
 var Equation = require('./Equation');
 
 /**
- * Rotational motor constraint. Works to keep the relative angular velocity of the bodies to a given value
+ * Rotational motor constraint. Tries to keep the relative angular velocity of the bodies to a given value.
  * @class RotationalMotorEquation
  * @constructor
  * @author schteppe
@@ -15,13 +15,20 @@ var Equation = require('./Equation');
  * @extends Equation
  */
 function RotationalMotorEquation(bodyA, bodyB, maxForce){
-    maxForce = maxForce || 1e6;
+    maxForce = typeof(maxForce)!=='undefined' ? maxForce : 1e6;
     Equation.call(this,bodyA,bodyB,-maxForce,maxForce);
-    this.axisA = new Vec3(); // World oriented rotational axis
-    this.axisB = new Vec3(); // World oriented rotational axis
 
-    this.invIi = new Mat3();
-    this.invIj = new Mat3();
+    /**
+     * World oriented rotational axis
+     * @property {Vec3} axisA
+     */
+    this.axisA = new Vec3();
+
+    /**
+     * World oriented rotational axis
+     * @property {Vec3} axisB
+     */
+    this.axisB = new Vec3(); // World oriented rotational axis
 
     /**
      * Motor velocity
@@ -33,8 +40,6 @@ function RotationalMotorEquation(bodyA, bodyB, maxForce){
 RotationalMotorEquation.prototype = new Equation();
 RotationalMotorEquation.prototype.constructor = RotationalMotorEquation;
 
-var zero = new Vec3();
-
 RotationalMotorEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b,
@@ -44,34 +49,22 @@ RotationalMotorEquation.prototype.computeB = function(h){
         axisA = this.axisA,
         axisB = this.axisB,
 
-        vi = bi.velocity,
-        wi = bi.angularVelocity ? bi.angularVelocity : zero,
-        fi = bi.force,
-        taui = bi.torque ? bi.torque : zero,
-
-        vj = bj.velocity,
-        wj = bj.angularVelocity ? bj.angularVelocity : zero,
-        fj = bj.force,
-        tauj = bj.torque ? bj.torque : zero,
-
         GA = this.jacobianElementA,
-        GB = this.jacobianElementB,
-
-        invMassi = bi.invMass,
-        invMassj = bj.invMass;
+        GB = this.jacobianElementB;
 
     // g = 0
     // gdot = axisA * wi - axisB * wj
+    // gdot = G * W = G * [vi wi vj wj]
+    // =>
     // G = [0 axisA 0 -axisB]
-    // W = [vi wi vj wj]
 
     GA.rotational.copy(axisA);
     axisB.negate(GB.rotational);
 
     var GW = this.computeGW() - this.targetVelocity,
-        GiMf = this.computeGiMf();//axis.dot(invIi.vmult(taui)) + axis.dot(invIj.vmult(tauj));
+        GiMf = this.computeGiMf();
 
-    var B = - GW * b - h*GiMf;
+    var B = - GW * b - h * GiMf;
 
     return B;
 };
