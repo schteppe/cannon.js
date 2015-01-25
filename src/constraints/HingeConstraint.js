@@ -23,6 +23,7 @@ var Vec3 = require('../math/Vec3');
  * @extends PointToPointConstraint
  */
 function HingeConstraint(bodyA, bodyB, options){
+    options = options || {};
     var maxForce = typeof(options.maxForce) !== 'undefined' ? options.maxForce : 1e6;
     var pivotA = options.pivotA ? options.pivotA.clone() : new Vec3();
     var pivotB = options.pivotB ? options.pivotB.clone() : new Vec3();

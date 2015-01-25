@@ -25,6 +25,54 @@
 
         var demo = new CANNON.Demo();
 
+        demo.addScene("lock",function(){
+            var world = setupWorld(demo);
+            world.solver.iterations = 50;
+            world.gravity.set(0,0,-10);
+            var size = 0.5;
+            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+            var mass = 1;
+            var space = 0.1*size;
+
+            var N=10, last;
+            for(var i=0; i<N; i++){
+                // Create a box
+                var boxbody = new CANNON.Body({
+                  mass: mass,
+                  shape: boxShape,
+                  position: new CANNON.Vec3((N-i-N/2)*(size*2+2*space), 0, size*6+space)
+                });
+                world.add(boxbody);
+                demo.addVisual(boxbody);
+
+                if(last){
+                  // Connect the current body to the last one
+                  var c = new CANNON.LockConstraint(boxbody, last);
+                  world.addConstraint(c);
+                }
+
+                // To keep track of which body was added last
+                last = boxbody;
+            }
+
+            // Create stands
+            var bodyA = new CANNON.Body({
+              mass: 0,
+              shape: boxShape,
+              position: new CANNON.Vec3((-N/2+1)*(size*2+2*space), 0, size*3)
+            });
+            world.add(bodyA);
+            demo.addVisual(bodyA);
+
+            var bodyB = new CANNON.Body({
+              mass: 0,
+              shape: boxShape,
+              position: new CANNON.Vec3((N/2)*(size*2+2*space), 0, size*3)
+            });
+            world.add(bodyB);
+            demo.addVisual(bodyB);
+        });
+
         // We link together boxes in a chain
         demo.addScene("links",function(){
             var world = setupWorld(demo);
