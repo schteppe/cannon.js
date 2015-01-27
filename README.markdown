@@ -7,9 +7,8 @@ The rigid body physics engine includes simple collision detection, various body 
 [Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/docs) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon)
 
 ### Usage
-Optionally, start by building the library using [Grunt](http://gruntjs.com/).
 
-Include [build/cannon.js](build/cannon.js) in your html:
+Include [cannon.js](build/cannon.js) or [cannon.min.js](build/cannon.min.js) in your html:
 
 ```html
 <script src="cannon.js"></script>
@@ -22,7 +21,7 @@ The sample code below creates a sphere on a plane, steps the simulation, and pri
 ```javascript
 // Setup our world
 var world = new CANNON.World();
-world.gravity.set(0,0,-9.82); // m/s²
+world.gravity.set(0, 0, -9.82); // m/s²
 world.broadphase = new CANNON.NaiveBroadphase();
 
 // Create a sphere
@@ -32,7 +31,7 @@ var sphereBody = new CANNON.Body({
 });
 var sphereShape = new CANNON.Sphere(radius);
 sphereBody.addShape(sphereShape);
-sphereBody.position.set(0,0,10); // m
+sphereBody.position.set(0, 0, 10); // m
 world.add(sphereBody);
 
 // Create a plane
@@ -76,7 +75,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 | Cylinder    | -      | -     | Yes | Yes    | Yes      | Yes         | (todo)  |
 | Convex      | -      | -     | -   | Yes    | Yes      | Yes         | (todo)  |
 | Particle    | -      | -     | -   | -      | -        | (todo)      | (todo)  |
-| Heightfield | -      | -     | -   | -      | -        | -           | -       |
+| Heightfield | -      | -     | -   | -      | -        | -           | (todo)  |
 | Trimesh     | -      | -     | -   | -      | -        | -           | -       |
 
 ### Todo
