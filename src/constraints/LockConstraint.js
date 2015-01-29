@@ -30,22 +30,22 @@ function LockConstraint(bodyA, bodyB, options){
     halfWay.scale(0.5, halfWay);
     bodyB.pointToLocalFrame(halfWay, pivotB);
     bodyA.pointToLocalFrame(halfWay, pivotA);
-    PointToPointConstraint.call(this, bodyA, pivotA, bodyB, pivotB, options);
+    PointToPointConstraint.call(this, bodyA, pivotA, bodyB, pivotB, maxForce);
 
     /**
      * @property {RotationalEquation} rotationalEquation1
      */
-    var r1 = this.rotationalEquation1 = new RotationalEquation(bodyA,bodyB);
+    var r1 = this.rotationalEquation1 = new RotationalEquation(bodyA,bodyB,options);
 
     /**
      * @property {RotationalEquation} rotationalEquation2
      */
-    var r2 = this.rotationalEquation2 = new RotationalEquation(bodyA,bodyB);
+    var r2 = this.rotationalEquation2 = new RotationalEquation(bodyA,bodyB,options);
 
     /**
      * @property {RotationalEquation} rotationalEquation3
      */
-    var r3 = this.rotationalEquation3 = new RotationalEquation(bodyA,bodyB);
+    var r3 = this.rotationalEquation3 = new RotationalEquation(bodyA,bodyB,options);
 
     this.equations.push(r1, r2, r3);
 }
@@ -67,19 +67,13 @@ LockConstraint.prototype.update = function(){
 
     PointToPointConstraint.prototype.update.call(this);
 
-    r1.axisA.set(1, 0, 0);
-    r1.axisB.set(0, 1, 0);
-    bodyA.vectorToWorldFrame(r1.axisA, r1.axisA);
-    bodyB.vectorToWorldFrame(r1.axisB, r1.axisB);
+    bodyA.vectorToWorldFrame(Vec3.UNIT_X, r1.axisA);
+    bodyB.vectorToWorldFrame(Vec3.UNIT_Y, r1.axisB);
 
-    r2.axisA.set(0, 1, 0);
-    r2.axisB.set(0, 0, 1);
-    bodyA.vectorToWorldFrame(r2.axisA, r2.axisA);
-    bodyB.vectorToWorldFrame(r2.axisB, r2.axisB);
+    bodyA.vectorToWorldFrame(Vec3.UNIT_Y, r2.axisA);
+    bodyB.vectorToWorldFrame(Vec3.UNIT_Z, r2.axisB);
 
-    r3.axisA.set(0, 0, 1);
-    r3.axisB.set(1, 0, 0);
-    bodyA.vectorToWorldFrame(r3.axisA, r3.axisA);
-    bodyB.vectorToWorldFrame(r3.axisB, r3.axisB);
+    bodyA.vectorToWorldFrame(Vec3.UNIT_Z, r3.axisA);
+    bodyB.vectorToWorldFrame(Vec3.UNIT_X, r3.axisB);
 };
 

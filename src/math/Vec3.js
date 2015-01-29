@@ -34,7 +34,29 @@ function Vec3(x,y,z){
     this.z = z||0.0;
 }
 
+/**
+ * @static
+ * @property {Vec3} ZERO
+ */
 Vec3.ZERO = new Vec3(0, 0, 0);
+
+/**
+ * @static
+ * @property {Vec3} UNIT_X
+ */
+Vec3.UNIT_X = new Vec3(1, 0, 0);
+
+/**
+ * @static
+ * @property {Vec3} UNIT_Y
+ */
+Vec3.UNIT_Y = new Vec3(0, 1, 0);
+
+/**
+ * @static
+ * @property {Vec3} UNIT_Z
+ */
+Vec3.UNIT_Z = new Vec3(0, 0, 1);
 
 /**
  * Vector cross product

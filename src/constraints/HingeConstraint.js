@@ -28,7 +28,7 @@ function HingeConstraint(bodyA, bodyB, options){
     var pivotA = options.pivotA ? options.pivotA.clone() : new Vec3();
     var pivotB = options.pivotB ? options.pivotB.clone() : new Vec3();
 
-    PointToPointConstraint.call(this, bodyA, pivotA, bodyB, pivotB, options);
+    PointToPointConstraint.call(this, bodyA, pivotA, bodyB, pivotB, maxForce);
 
     /**
      * Rotation axis, defined locally in bodyA.
@@ -47,12 +47,12 @@ function HingeConstraint(bodyA, bodyB, options){
     /**
      * @property {RotationalEquation} rotationalEquation1
      */
-    var r1 = this.rotationalEquation1 = new RotationalEquation(bodyA,bodyB);
+    var r1 = this.rotationalEquation1 = new RotationalEquation(bodyA,bodyB,options);
 
     /**
      * @property {RotationalEquation} rotationalEquation2
      */
-    var r2 = this.rotationalEquation2 = new RotationalEquation(bodyA,bodyB);
+    var r2 = this.rotationalEquation2 = new RotationalEquation(bodyA,bodyB,options);
 
     /**
      * @property {RotationalMotorEquation} motorEquation
