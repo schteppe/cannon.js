@@ -691,7 +691,7 @@ World.prototype.internalStep = function(dt){
             // Now we know that i and j are in contact. Set collision matrix state
 			this.collisionMatrix.set(bi, bj, true);
 
-            if (this.collisionMatrix.get(bi, bj) !== this.collisionMatrixPrevious.get(bi, bj)) {
+            if (!this.collisionMatrixPrevious.get(bi, bj)) {
                 // First contact!
                 // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
                 World_step_collideEvent.body = bj;
@@ -700,11 +700,6 @@ World.prototype.internalStep = function(dt){
 
                 World_step_collideEvent.body = bi;
                 bj.dispatchEvent(World_step_collideEvent);
-
-                /*
-                bi.wakeUp();
-                bj.wakeUp();
-                */
             }
         }
     }
