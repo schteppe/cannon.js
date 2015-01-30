@@ -5,7 +5,7 @@ var Mat3 = require('../math/Mat3');
 var Equation = require('./Equation');
 
 /**
- * Cone equation. Works to keep the local vectors in the bodies within an "angle cone"
+ * Cone equation. Works to keep the given body world vectors aligned, or tilted within a given angle from each other.
  * @class ConeEquation
  * @constructor
  * @author schteppe
@@ -13,7 +13,8 @@ var Equation = require('./Equation');
  * @param {Body} bodyB
  * @param {Vec3} [options.axisA] Local axis in A
  * @param {Vec3} [options.axisB] Local axis in B
- * @param {number} [options.maxForce]
+ * @param {Vec3} [options.angle] The "cone angle" to keep
+ * @param {number} [options.maxForce=1e6]
  * @extends Equation
  */
 function ConeEquation(bodyA, bodyB, options){
@@ -25,7 +26,11 @@ function ConeEquation(bodyA, bodyB, options){
     this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
     this.axisB = options.axisB ? options.axisB.clone() : new Vec3(0, 1, 0);
 
-    this.angle = 0;
+    /**
+     * The cone angle to keep
+     * @property {number} angle
+     */
+    this.angle = typeof(options.angle) !== 'undefined' ? options.angle : 0;
 }
 
 ConeEquation.prototype = new Equation();

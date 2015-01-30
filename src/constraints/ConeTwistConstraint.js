@@ -14,6 +14,10 @@ var Vec3 = require('../math/Vec3');
  * @param {Body} bodyA
  * @param {Body} bodyB
  * @param {object} [options]
+ * @param {Vec3} [options.pivotA]
+ * @param {Vec3} [options.pivotB]
+ * @param {Vec3} [options.axisA]
+ * @param {Vec3} [options.axisB]
  * @param {Number} [options.maxForce=1e6]
  * @extends PointToPointConstraint
  */
@@ -44,9 +48,11 @@ function ConeTwistConstraint(bodyA, bodyB, options){
     var t = this.twistEquation = new RotationalEquation(bodyA,bodyB,options);
     this.twistAngle = typeof(options.twistAngle) !== 'undefined' ? options.twistAngle : 0;
 
+    // Make the cone equation push the bodies toward the cone axis, not outward
     c.maxForce = 0;
     c.minForce = -maxForce;
 
+    // Make the twist equation add torque toward the initial position
     t.maxForce = 0;
     t.minForce = -maxForce;
 
