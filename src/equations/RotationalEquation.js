@@ -24,6 +24,8 @@ function RotationalEquation(bodyA, bodyB, options){
 
     this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
     this.axisB = options.axisB ? options.axisB.clone() : new Vec3(0, 1, 0);
+
+    this.maxAngle = Math.PI / 2;
 }
 
 RotationalEquation.prototype = new Equation();
@@ -56,7 +58,7 @@ RotationalEquation.prototype.computeB = function(h){
     GA.rotational.copy(njxni);
     GB.rotational.copy(nixnj);
 
-    var g = -ni.dot(nj),
+    var g = Math.cos(this.maxAngle) - ni.dot(nj),
         GW = this.computeGW(),
         GiMf = this.computeGiMf();
 

@@ -3,7 +3,7 @@ module.exports = ConeTwistConstraint;
 var Constraint = require('./Constraint');
 var PointToPointConstraint = require('./PointToPointConstraint');
 var ConeEquation = require('../equations/ConeEquation');
-var RotationalMotorEquation = require('../equations/RotationalMotorEquation');
+var RotationalEquation = require('../equations/RotationalEquation');
 var ContactEquation = require('../equations/ContactEquation');
 var Vec3 = require('../math/Vec3');
 
@@ -34,14 +34,23 @@ function ConeTwistConstraint(bodyA, bodyB, options){
     this.angle = typeof(options.angle) !== 'undefined' ? options.angle : 0;
 
     /**
-     * @property {RotationalEquation} coneEquation
+     * @property {ConeEquation} coneEquation
      */
     var c = this.coneEquation = new ConeEquation(bodyA,bodyB,options);
+
+    /**
+     * @property {RotationalEquation} twistEquation
+     */
+    var t = this.twistEquation = new RotationalEquation(bodyA,bodyB,options);
+    this.twistAngle = typeof(options.twistAngle) !== 'undefined' ? options.twistAngle : 0;
 
     c.maxForce = 0;
     c.minForce = -maxForce;
 
-    this.equations.push(c);
+    t.maxForce = 0;
+    t.minForce = -maxForce;
+
+    this.equations.push(c, t);
 }
 ConeTwistConstraint.prototype = new PointToPointConstraint();
 ConeTwistConstraint.constructor = ConeTwistConstraint;
@@ -52,7 +61,8 @@ var ConeTwistConstraint_update_tmpVec2 = new Vec3();
 ConeTwistConstraint.prototype.update = function(){
     var bodyA = this.bodyA,
         bodyB = this.bodyB,
-        cone = this.coneEquation;
+        cone = this.coneEquation,
+        twist = this.twistEquation;
 
     PointToPointConstraint.prototype.update.call(this);
 
@@ -60,6 +70,14 @@ ConeTwistConstraint.prototype.update = function(){
     bodyA.vectorToWorldFrame(this.axisA, cone.axisA);
     bodyB.vectorToWorldFrame(this.axisB, cone.axisB);
 
+    // Update the world axes in the twist constraint
+    this.axisA.tangents(twist.axisA, twist.axisA);
+    bodyA.vectorToWorldFrame(twist.axisA, twist.axisA);
+
+    this.axisB.tangents(twist.axisB, twist.axisB);
+    bodyB.vectorToWorldFrame(twist.axisB, twist.axisB);
+
     cone.angle = this.angle;
+    twist.maxAngle = this.twistAngle;
 };
 
