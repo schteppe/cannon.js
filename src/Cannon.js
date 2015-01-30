@@ -10,6 +10,7 @@ module.exports = {
     Constraint :                    require('./constraints/Constraint'),
     ContactEquation :               require('./equations/ContactEquation'),
     Narrowphase :                   require('./world/Narrowphase'),
+    ConeTwistConstraint :           require('./constraints/ConeTwistConstraint'),
     ContactMaterial :               require('./material/ContactMaterial'),
     ConvexPolyhedron :              require('./shapes/ConvexPolyhedron'),
     Cylinder :                      require('./shapes/Cylinder'),
