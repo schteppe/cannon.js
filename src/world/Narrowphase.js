@@ -268,6 +268,16 @@ var sphereTrimesh_normal = new Vec3();
 var sphereTrimesh_relpos = new Vec3();
 var sphereTrimesh_projected = new Vec3();
 var sphereTrimesh_v = new Vec3();
+var sphereTrimesh_v2 = new Vec3();
+var sphereTrimesh_edgeVertexA = new Vec3();
+var sphereTrimesh_edgeVertexB = new Vec3();
+var sphereTrimesh_edgeVector = new Vec3();
+var sphereTrimesh_edgeVectorUnit = new Vec3();
+var sphereTrimesh_localSpherePos = new Vec3();
+var sphereTrimesh_tmp = new Vec3();
+var sphereTrimesh_va = new Vec3();
+var sphereTrimesh_vb = new Vec3();
+var sphereTrimesh_vc = new Vec3();
 Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] =
 Narrowphase.prototype.sphereTrimesh = function (
     result,
@@ -289,7 +299,7 @@ Narrowphase.prototype.sphereTrimesh = function (
         trimeshShape.getVertex(i, v);
 
         // Safe up
-        var v2 = new Vec3();
+        var v2 = sphereTrimesh_v2;
         v2.copy(v);
         Transform.pointToWorldFrame(trimeshPos, trimeshQuat, v2, v);
 
@@ -318,12 +328,12 @@ Narrowphase.prototype.sphereTrimesh = function (
     }
 
     // Edges
-    var edgeVertexA = new Vec3();
-    var edgeVertexB = new Vec3();
-    var edgeVector = new Vec3();
-    var edgeVectorUnit = new Vec3();
-    var localSpherePos = new Vec3();
-    var tmp = new Vec3();
+    var edgeVertexA = sphereTrimesh_edgeVertexA;
+    var edgeVertexB = sphereTrimesh_edgeVertexB;
+    var edgeVector = sphereTrimesh_edgeVector;
+    var edgeVectorUnit = sphereTrimesh_edgeVectorUnit;
+    var localSpherePos = sphereTrimesh_localSpherePos;
+    var tmp = sphereTrimesh_tmp;
     // Convert sphere position to local in the trimesh
     Transform.pointToLocalFrame(trimeshPos, trimeshQuat, spherePos, localSpherePos);
     // Check all edges
@@ -373,10 +383,10 @@ Narrowphase.prototype.sphereTrimesh = function (
     }
 
     // Triangle faces
-    var va = new Vec3();
-    var vb = new Vec3();
-    var vc = new Vec3();
-    var normal = new Vec3();
+    var va = sphereTrimesh_va;
+    var vb = sphereTrimesh_vb;
+    var vc = sphereTrimesh_vc;
+    var normal = sphereTrimesh_normal;
     for(var i=0, N = trimeshShape.indices.length / 3; i !== N; i++){
         trimeshShape.getTriangleVertices(i, va, vb, vc);
         trimeshShape.getNormal(i, normal);
