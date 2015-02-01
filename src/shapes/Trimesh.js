@@ -5,6 +5,7 @@ var Vec3 = require('../math/Vec3');
 var Quaternion = require('../math/Quaternion');
 var Transform = require('../math/Transform');
 var AABB = require('../collision/AABB');
+var Octree = require('../utils/Octree');
 
 /**
  * @class Trimesh
@@ -61,15 +62,44 @@ function Trimesh(vertices, indices) {
      */
     this.edges = null;
 
+    this.tree = new Octree();
+
     this.updateEdges();
     this.updateNormals();
     this.updateAABB();
     this.updateBoundingSphereRadius();
+    this.updateTree();
 }
 Trimesh.prototype = new Shape();
 Trimesh.prototype.constructor = Trimesh;
 
 var computeNormals_n = new Vec3();
+
+/**
+ * @method updateTree
+ */
+Trimesh.prototype.updateTree = function(){
+    var tree = this.tree;
+
+    tree.reset();
+    tree.aabb.copy(this.aabb);
+
+    // Insert all triangles
+    var triangleAABB = new AABB();
+    var a = new Vec3();
+    var b = new Vec3();
+    var c = new Vec3();
+    var points = [a, b, c];
+    for (var i = 0; i < this.indices.length / 3; i++) {
+        this.getTriangleVertices(i, a, b, c);
+        triangleAABB.setFromPoints(points);
+        tree.insert(triangleAABB, i);
+    }
+};
+
+Trimesh.prototype.getTrianglesInAABB = function(aabb, result){
+    return this.tree.aabbQuery(aabb, result);
+};
 
 /**
  * Compute the normals of the faces. Will save in the .normals array.

@@ -1,9 +1,10 @@
-var Vec3 =     require("../src/math/Vec3")
-,   Quaternion = require("../src/math/Quaternion")
-,   Plane =      require('../src/shapes/Plane')
-,   Trimesh =      require('../src/shapes/Trimesh')
-,   World =      require('../src/world/World')
-,   Body =      require('../src/objects/Body')
+var Vec3 = require("../src/math/Vec3");
+var Quaternion = require("../src/math/Quaternion");
+var Plane = require('../src/shapes/Plane');
+var Trimesh = require('../src/shapes/Trimesh');
+var World = require('../src/world/World');
+var Body = require('../src/objects/Body');
+var AABB = require('../src/collision/AABB');
 
 module.exports = {
     updateNormals: function(test){
@@ -19,6 +20,31 @@ module.exports = {
         mesh.aabb.lowerBound.set(1,2,3);
         mesh.updateAABB();
         test.ok(mesh.aabb.lowerBound.y !== 2);
+        test.done();
+    },
+
+    updateTree: function(test){
+        var mesh = Trimesh.createTorus();
+        mesh.updateTree();
+        test.done();
+    },
+
+    getTrianglesInAABB: function(test){
+        var mesh = Trimesh.createTorus(1,1,16,16);
+        var result = [];
+
+        // Should get all triangles if we use the full AABB
+        var aabb = mesh.aabb.clone();
+        mesh.getTrianglesInAABB(aabb, result);
+        test.equal(result.length, mesh.indices.length / 3);
+
+        // Should get less triangles if we use the half AABB
+        result.length = 0;
+        aabb.lowerBound.scale(0.5, aabb.lowerBound);
+        aabb.upperBound.scale(0.5, aabb.upperBound);
+        mesh.getTrianglesInAABB(aabb, result);
+        test.ok(result.length < mesh.indices.length / 3);
+
         test.done();
     },
 
