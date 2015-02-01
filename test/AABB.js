@@ -17,6 +17,20 @@ module.exports = {
         test.done();
     },
 
+    clone: function(test){
+        var a = new AABB({
+            lowerBound: new Vec3(-1,-2,-3),
+            upperBound: new Vec3(1,2,3)
+        });
+        var b = a.clone();
+
+        test.deepEqual(a,b);
+
+        test.equal(a === b, false);
+
+        test.done();
+    },
+
     extend: function(test){
         // STUB
         test.done();

@@ -96,10 +96,20 @@ AABB.prototype.setFromPoints = function(points, position, quaternion, skinSize){
  * Copy bounds from an AABB to this AABB
  * @method copy
  * @param  {AABB} aabb Source to copy from
+ * @return {AABB} The this object, for chainability
  */
 AABB.prototype.copy = function(aabb){
     this.lowerBound.copy(aabb.lowerBound);
     this.upperBound.copy(aabb.upperBound);
+    return this;
+};
+
+/**
+ * Clone an AABB
+ * @method clone
+ */
+AABB.prototype.clone = function(){
+    return new AABB().copy(this);
 };
 
 /**
