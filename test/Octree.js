@@ -61,6 +61,45 @@ module.exports = {
         test.equal(tree.data.length, 0);
 
         test.done();
+    },
+
+    aabbQuery: function(test){
+        var aabb = new AABB({
+            lowerBound: new Vec3(-1, -1, -1),
+            upperBound: new Vec3(1, 1, 1)
+        });
+        var tree = new Octree(aabb);
+
+        var nodeAABB = new AABB({
+            lowerBound: new Vec3(-1, -1, -1),
+            upperBound: new Vec3(1, 1, 1)
+        });
+        var nodeData = 123;
+
+        tree.insert(nodeAABB, nodeData);
+
+        var result = [];
+        tree.aabbQuery(aabb, result);
+
+        test.deepEqual(result, [123]);
+
+
+        var nodeAABB2 = new AABB({
+            lowerBound: new Vec3(-1, -1, -1),
+            upperBound: new Vec3(-1, -1, -1)
+        });
+        var nodeData2 = 456;
+        tree.insert(nodeAABB2, nodeData2);
+
+        result = [];
+        tree.aabbQuery(aabb, result);
+        test.deepEqual(result, [123, 456]);
+
+        result = [];
+        tree.aabbQuery(new AABB({ lowerBound: new Vec3(0,0,0), upperBound: new Vec3(1,1,1) }), result);
+        test.deepEqual(result, [123]);
+
+        test.done();
     }
 };
 

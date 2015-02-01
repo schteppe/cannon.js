@@ -58,6 +58,10 @@ function Octree(aabb, options){
 }
 Octree.prototype = new OctreeNode();
 
+OctreeNode.prototype.reset = function(aabb, options){
+    this.children.length = this.data.length = 0;
+};
+
 /**
  * Insert data into this node
  * @param  {AABB} aabb
@@ -182,7 +186,7 @@ OctreeNode.prototype.aabbQuery = function(aabb, result) {
     // Add child data
     // @todo unwrap recursion into a queue / loop, that's faster in JS
     var children = this.children;
-    for (var i = 0; i !== 8; i++) {
+    for (var i = 0, N = this.children.length; i !== N; i++) {
         children[i].aabbQuery(aabb, result);
     }
 
