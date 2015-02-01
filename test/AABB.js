@@ -58,6 +58,37 @@ module.exports = {
         test.done();
     },
 
+    contains: function(test){
+        var a = new AABB(),
+            b = new AABB();
+
+        a.lowerBound.set(-1, -1, -1);
+        a.upperBound.set( 1,  1, 1);
+        b.lowerBound.set(-1, -1, -1);
+        b.upperBound.set( 1,  1, 1);
+
+        test.ok(a.contains(b));
+
+        a.lowerBound.set(-2, -2, -2);
+        a.upperBound.set( 2,  2, 2);
+
+        test.ok(a.contains(b));
+
+        b.lowerBound.set(-3, -3, -3);
+        b.upperBound.set( 3,  3, 3);
+
+        test.equal(a.contains(b), false);
+
+        a.lowerBound.set(0, 0, 0);
+        a.upperBound.set( 2,  2, 2);
+        b.lowerBound.set(-1, -1, -1);
+        b.upperBound.set( 1,  1, 1);
+
+        test.equal(a.contains(b), false);
+
+        test.done();
+    },
+
     toLocalFrame: function(test){
         var worldAABB = new AABB();
         var localAABB = new AABB();

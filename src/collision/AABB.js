@@ -168,6 +168,30 @@ AABB.prototype.overlaps = function(aabb){
 };
 
 /**
+ * Returns true if the given AABB is fully contained in this AABB.
+ * @method contains
+ * @param {AABB} aabb
+ * @return {Boolean}
+ */
+AABB.prototype.contains = function(aabb){
+    var l1 = this.lowerBound,
+        u1 = this.upperBound,
+        l2 = aabb.lowerBound,
+        u2 = aabb.upperBound;
+
+    //      l2        u2
+    //      |---------|
+    // |---------------|
+    // l1              u1
+
+    return (
+        (l1.x <= l2.x && u1.x >= u2.x) &&
+        (l1.y <= l2.y && u1.y >= u2.y) &&
+        (l1.z <= l2.z && u1.z >= u2.z)
+    );
+};
+
+/**
  * @method getCorners
  * @param {Vec3} a
  * @param {Vec3} b
