@@ -6,32 +6,45 @@ The rigid body physics engine includes simple collision detection, various body 
 
 [Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/docs) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon)
 
-### Usage
+### Browser install
 
-Include [cannon.js](build/cannon.js) or [cannon.min.js](build/cannon.min.js) in your html:
+Just include [cannon.js](build/cannon.js) or [cannon.min.js](build/cannon.min.js) in your html and you're done:
 
 ```html
 <script src="cannon.js"></script>
 ```
 
-Then you can start experimenting.
+### Node.js install
+
+Install the cannon package via NPM:
+
+```bash
+npm install --save cannon
+```
+
+Alternatively, point to the Github repo directly to get the very latest version:
+
+```bash
+npm install --save schteppe/cannon.js
+```
+
+### Example
 
 The sample code below creates a sphere on a plane, steps the simulation, and prints the sphere simulation to the console. Note that Cannon.js uses [SI units](http://en.wikipedia.org/wiki/International_System_of_Units) (metre, kilogram, second, etc.).
 
 ```javascript
 // Setup our world
-var world = new CANNON.World();
-world.gravity.set(0, 0, -9.82); // m/s²
-world.broadphase = new CANNON.NaiveBroadphase();
+var world = new CANNON.World({
+   gravity: new CANNON.Vec3(0, 0, -9.82) // m/s²
+});
 
 // Create a sphere
 var radius = 1; // m
 var sphereBody = new CANNON.Body({
-   mass: 5 // kg
+   mass: 5, // kg
+   position: new CANNON.Vec3(0, 0, 10), // m
+   shape: new CANNON.Sphere(radius)
 });
-var sphereShape = new CANNON.Sphere(radius);
-sphereBody.addShape(sphereShape);
-sphereBody.position.set(0, 0, 10); // m
 world.add(sphereBody);
 
 // Create a plane
@@ -42,30 +55,39 @@ var groundShape = new CANNON.Plane();
 groundBody.addShape(groundShape);
 world.add(groundBody);
 
-// Step the simulation
-setInterval(function(){
-  var timeStep = 1.0/60.0; // seconds
-  world.step(timeStep);
+var fixedTimeStep = 1.0 / 60.0; // seconds
+var maxSubSteps = 3;
+
+// Start the simulation loop
+var lastTime;
+(function simloop(time){
+  requestAnimationFrame(simloop);
+  if(lastTime !== undefined){
+     var dt = (time - lastTime) / 1000;
+     world.step(fixedTimeStep, dt, maxSubSteps);
+  }
   console.log("Sphere z position: " + sphereBody.position.z);
-}, 1000.0/60.0);
+  lastTime = time;
+})();
 ```
 
 If you want to know how to use cannon.js with a rendering engine, for example Three.js, see the [Examples](examples).
 
 ### Features
-* Rigid body physics
-* Collision detection (no CCD)
-* Contacts with friction and restitution
+* Rigid body dynamics
+* Discrete collision detection
+* Contacts, friction and restitution
 * Constraints
-   * PointToPoint (also called balljoint)
+   * PointToPoint (a.k.a. ball/socket joint)
    * Distance
    * Hinge (with optional motor)
+   * Lock
+   * ConeTwist
 * Gauss-Seidel constraint solver and an island split algorithm
 * Collision filters
-* Body motion states (dynamic, kinematic, static)
 * Body sleeping
 * Experimental SPH / fluid support
-* Various shapes and collisions (see table below)
+* Various shapes and collision algorithms (see table below)
 
 |             | [Sphere](http://schteppe.github.io/cannon.js/docs/classes/Sphere.html) | [Plane](http://schteppe.github.io/cannon.js/docs/classes/Plane.html) | [Box](http://schteppe.github.io/cannon.js/docs/classes/Box.html) | [Convex](http://schteppe.github.io/cannon.js/docs/classes/ConvexPolyhedron.html) | [Particle](http://schteppe.github.io/cannon.js/docs/classes/Particle.html) | [Heightfield](http://schteppe.github.io/cannon.js/docs/classes/Heightfield.html) | Trimesh |
 | :-----------|:------:|:-----:|:---:|:------:|:--------:|:-----------:|:-------:|
@@ -82,4 +104,4 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 The simpler todos are marked with ```@todo``` in the code. Github Issues can and should also be used for todos.
 
 ### Help
-Create an issue on here if you need help.
+Create an [issue](https://github.com/schteppe/cannon.js/issues) if you need help.
