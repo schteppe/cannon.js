@@ -72,20 +72,10 @@ OctreeNode.prototype.insert = function(aabb, elementData, level){
     var nodeData = this.data;
     level = level || 0;
 
-    // if(level > (this.maxDepth || this.root.maxDepth)){
-    //     return false;
-    // }
-
     // Ignore objects that do not belong in this node
     if (!this.aabb.contains(aabb)){
         return false; // object cannot be added
     }
-
-    // // If there is space in this node, add the object here
-    // if (nodeData.length < (this.nodeCapacity || this.root.nodeCapacity)){
-    //     nodeData.push(elementData);
-    //     return true;
-    // }
 
     var children = this.children;
 
@@ -176,18 +166,29 @@ OctreeNode.prototype.aabbQuery = function(aabb, result) {
     var nodeData = this.data;
 
     // abort if the range does not intersect this node
-    if (!this.aabb.overlaps(aabb)){
-        return result;
-    }
+    // if (!this.aabb.overlaps(aabb)){
+    //     return result;
+    // }
 
     // Add objects at this level
-    Array.prototype.push.apply(result, nodeData);
+    // Array.prototype.push.apply(result, nodeData);
 
     // Add child data
     // @todo unwrap recursion into a queue / loop, that's faster in JS
     var children = this.children;
-    for (var i = 0, N = this.children.length; i !== N; i++) {
-        children[i].aabbQuery(aabb, result);
+
+
+    // for (var i = 0, N = this.children.length; i !== N; i++) {
+    //     children[i].aabbQuery(aabb, result);
+    // }
+
+    var queue = [this];
+    while (queue.length) {
+        var node = queue.pop();
+        if (node.aabb.overlaps(aabb)){
+            Array.prototype.push.apply(result, node.data);
+        }
+        Array.prototype.push.apply(queue, node.children);
     }
 
     return result;
@@ -210,4 +211,20 @@ OctreeNode.prototype.rayQuery = function(ray, result) {
     this.aabbQuery(tmpAABB, result);
 
     return result;
+};
+
+/**
+ * @method removeEmptyNodes
+ */
+OctreeNode.prototype.removeEmptyNodes = function() {
+    var queue = [this];
+    while (queue.length) {
+        var node = queue.pop();
+        for (var i = node.children.length - 1; i >= 0; i++) {
+            if(!node.children[i].data.length){
+                node.children.splice(i, 1);
+            }
+        }
+        Array.prototype.push.apply(queue, node.children);
+    }
 };
