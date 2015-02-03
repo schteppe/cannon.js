@@ -95,6 +95,7 @@ Trimesh.prototype.updateTree = function(){
         triangleAABB.setFromPoints(points);
         tree.insert(triangleAABB, i);
     }
+    tree.removeEmptyNodes();
 };
 
 Trimesh.prototype.getTrianglesInAABB = function(aabb, result){

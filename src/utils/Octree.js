@@ -220,7 +220,7 @@ OctreeNode.prototype.removeEmptyNodes = function() {
     var queue = [this];
     while (queue.length) {
         var node = queue.pop();
-        for (var i = node.children.length - 1; i >= 0; i++) {
+        for (var i = node.children.length - 1; i >= 0; i--) {
             if(!node.children[i].data.length){
                 node.children.splice(i, 1);
             }
