@@ -1333,7 +1333,7 @@ Narrowphase.prototype.convexHeightfield = function (
         iMaxY = Math.ceil((localConvexPos.y + radius) / w) + 1;
 
     // Bail out if we are out of the terrain
-    if(iMaxX < 0 || iMaxY < 0 || iMinX > data.length || iMaxY > data[0].length){
+    if(iMaxX < 0 || iMaxY < 0 || iMinX > data.length || iMinY > data[0].length){
         return;
     }
 
