@@ -20,17 +20,17 @@ var Box = require('../shapes/Box');
  * @param {Vec3} [options.angularVelocity]
  * @param {Quaternion} [options.quaternion]
  * @param {number} [options.mass]
- * @param {number} [options.material]
+ * @param {Material} [options.material]
  * @param {number} [options.type]
  * @param {number} [options.linearDamping=0.01]
  * @param {number} [options.angularDamping=0.01]
- * @param {number} [options.allowSleep=true]
+ * @param {boolean} [options.allowSleep=true]
  * @param {number} [options.sleepSpeedLimit=0.1]
  * @param {number} [options.sleepTimeLimit=1]
  * @param {number} [options.collisionFilterGroup=1]
  * @param {number} [options.collisionFilterMask=1]
- * @param {number} [options.fixedRotation=false]
- * @param {number} [options.shape]
+ * @param {boolean} [options.fixedRotation=false]
+ * @param {Body} [options.shape]
  * @example
  *     var body = new Body({
  *         mass: 1

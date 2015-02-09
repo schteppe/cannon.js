@@ -204,16 +204,10 @@ ConvexPolyhedron.prototype.getFaceNormal = function(i,target){
 var cah_WorldNormal = new Vec3();
 ConvexPolyhedron.prototype.clipAgainstHull = function(posA,quatA,hullB,posB,quatB,separatingNormal,minDist,maxDist,result){
     var WorldNormal = cah_WorldNormal;
-    if(!(posA instanceof Vec3)){
-        throw new Error("posA must be Vec3");
-    }
-    if(!(quatA instanceof Quaternion)){
-        throw new Error("quatA must be Quaternion");
-    }
     var hullA = this;
     var curMaxDist = maxDist;
     var closestFaceB = -1;
-    var dmax = -Infinity;
+    var dmax = -Number.MAX_VALUE;
     for(var face=0; face < hullB.faces.length; face++){
         WorldNormal.copy(hullB.faceNormals[face]);
         quatB.vmult(WorldNormal,WorldNormal);
@@ -272,7 +266,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
         worldEdge1 = fsa_worldEdge1,
         Cross = fsa_Cross;
 
-    var dmin = Infinity;
+    var dmin = Number.MAX_VALUE;
     var hullA = this;
     var curPlaneTests=0;
     var numFacesA = faceListA ? faceListA.length : hullA.faces.length;
@@ -440,13 +434,6 @@ var cfah_faceANormalWS = new Vec3(),
     cfah_localPlaneNormal = new Vec3(),
     cfah_planeNormalWS = new Vec3();
 ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist,result){
-    if(!(separatingNormal instanceof Vec3)){
-        throw new Error("sep normal must be vector");
-    }
-    if(!(worldVertsB1 instanceof Array)){
-        throw new Error("world verts must be array");
-    }
-
     var faceANormalWS = cfah_faceANormalWS,
         edge0 = cfah_edge0,
         WorldEdge0 = cfah_WorldEdge0,
@@ -456,15 +443,13 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
         localPlaneNormal = cfah_localPlaneNormal,
         planeNormalWS = cfah_planeNormalWS;
 
-    minDist = Number(minDist);
-    maxDist = Number(maxDist);
     var hullA = this;
     var worldVertsB2 = [];
     var pVtxIn = worldVertsB1;
     var pVtxOut = worldVertsB2;
     // Find the face with normal closest to the separating axis
     var closestFaceA = -1;
-    var dmin = Infinity;
+    var dmin = Number.MAX_VALUE;
     for(var face=0; face<hullA.faces.length; face++){
         faceANormalWS.copy(hullA.faceNormals[face]);
         quatA.vmult(faceANormalWS,faceANormalWS);
@@ -475,8 +460,8 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
             closestFaceA = face;
         }
     }
-    if (closestFaceA<0){
-        console.log("--- did not find any closest face... ---");
+    if (closestFaceA < 0){
+        // console.log("--- did not find any closest face... ---");
         return;
     }
     //console.log("closest A: ",closestFaceA);
@@ -583,15 +568,6 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
  * @param {Number} planeConstant The constant in the mathematical plane equation
  */
 ConvexPolyhedron.prototype.clipFaceAgainstPlane = function(inVertices,outVertices, planeNormal, planeConstant){
-    if(!(planeNormal instanceof Vec3)){
-        throw new Error("planeNormal must be Vec3, "+planeNormal+" given");
-    }
-    if(!(inVertices instanceof Array)) {
-        throw new Error("invertices must be Array, "+inVertices+" given");
-    }
-    if(!(outVertices instanceof Array)){
-        throw new Error("outvertices must be Array, "+outVertices+" given");
-    }
     var n_dot_first, n_dot_last;
     var numVerts = inVertices.length;
 

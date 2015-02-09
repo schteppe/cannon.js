@@ -119,7 +119,7 @@ function World(){
      * @property narrowphase
      * @type {Narrowphase}
      */
-    this.narrowphase = new Narrowphase();
+    this.narrowphase = new Narrowphase(this);
 
     /**
      * @property {ArrayCollisionMatrix} collisionMatrix
@@ -545,11 +545,23 @@ World.prototype.internalStep = function(dt){
     }
     contacts.length = 0;
 
-    this.narrowphase.getContacts(p1,p2,
-                                this,
-                                contacts,
-                                oldcontacts // To be reused
-                                );
+    // Transfer FrictionEquation from current list to the pool for reuse
+    var NoldFrictionEquations = this.frictionEquations.length;
+    for(i=0; i!==NoldFrictionEquations; i++){
+        frictionEquationPool.push(this.frictionEquations[i]);
+    }
+    this.frictionEquations.length = 0;
+
+    this.narrowphase.getContacts(
+        p1,
+        p2,
+        this,
+        contacts,
+        oldcontacts, // To be reused
+        this.frictionEquations,
+        frictionEquationPool
+    );
+
     if(doProfiling){
         profile.narrowphase = performance.now() - profilingStart;
     }
@@ -558,15 +570,13 @@ World.prototype.internalStep = function(dt){
     if(doProfiling){
         profilingStart = performance.now();
     }
-    var ncontacts = contacts.length;
 
-    // Transfer FrictionEquation from current list to the pool for reuse
-    var NoldFrictionEquations = this.frictionEquations.length;
-    for(i=0; i!==NoldFrictionEquations; i++){
-        frictionEquationPool.push(this.frictionEquations[i]);
+    // Add all friction eqs
+    for (var i = 0; i < this.frictionEquations.length; i++) {
+        solver.addEquation(this.frictionEquations[i]);
     }
-    this.frictionEquations.length = 0;
 
+    var ncontacts = contacts.length;
     for(var k=0; k!==ncontacts; k++){
 
         // Current contact
@@ -578,9 +588,6 @@ World.prototype.internalStep = function(dt){
             si = c.si,
             sj = c.sj;
 
-        // Resolve indices
-        var i = bodies.indexOf(bi), j = bodies.indexOf(bj);
-
         // Get collision properties
         var cm;
         if(bi.material && bj.material){
@@ -589,118 +596,107 @@ World.prototype.internalStep = function(dt){
             cm = this.defaultContactMaterial;
         }
 
-        // g = ( xj + rj - xi - ri ) .dot ( ni )
-        var gvec = World_step_gvec;
-        gvec.set(bj.position.x + c.rj.x - bi.position.x - c.ri.x,
-                 bj.position.y + c.rj.y - bi.position.y - c.ri.y,
-                 bj.position.z + c.rj.z - bi.position.z - c.ri.z);
-        var g = gvec.dot(c.ni); // Gap, negative if penetration
+        // c.enabled = bi.collisionResponse && bj.collisionResponse && si.collisionResponse && sj.collisionResponse;
 
-        // Action if penetration
-        if(g < 0.0){
+        var mu = cm.friction;
+        // c.restitution = cm.restitution;
 
-            c.enabled = bi.collisionResponse && bj.collisionResponse && si.collisionResponse && sj.collisionResponse;
-
-            var mu = cm.friction;
-            c.restitution = cm.restitution;
-
-            // If friction or restitution were specified in the material, use them
-            if(bi.material && bj.material){
-                if(bi.material.friction >= 0 && bj.material.friction >= 0){
-                    mu = bi.material.friction * bj.material.friction;
-                }
-
-                if(bi.material.restitution >= 0 && bj.material.restitution >= 0){
-                    c.restitution = bi.material.restitution * bj.material.restitution;
-                }
+        // If friction or restitution were specified in the material, use them
+        if(bi.material && bj.material){
+            if(bi.material.friction >= 0 && bj.material.friction >= 0){
+                mu = bi.material.friction * bj.material.friction;
             }
 
-			c.penetration = g;
-			c.setSpookParams(cm.contactEquationStiffness,
-                             cm.contactEquationRelaxation,
-                             dt);
-
-			solver.addEquation(c);
-
-			// Add friction constraint equation
-			if(mu > 0){
-
-				// Create 2 tangent equations
-				var mug = mu * gnorm;
-				var reducedMass = (bi.invMass + bj.invMass);
-				if(reducedMass > 0){
-					reducedMass = 1/reducedMass;
-				}
-				var pool = frictionEquationPool;
-				var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-				var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-				this.frictionEquations.push(c1);
-				this.frictionEquations.push(c2);
-
-				c1.bi = c2.bi = bi;
-				c1.bj = c2.bj = bj;
-				c1.minForce = c2.minForce = -mug*reducedMass;
-				c1.maxForce = c2.maxForce = mug*reducedMass;
-
-				// Copy over the relative vectors
-				c1.ri.copy(c.ri);
-				c1.rj.copy(c.rj);
-				c2.ri.copy(c.ri);
-				c2.rj.copy(c.rj);
-
-				// Construct tangents
-				c.ni.tangents(c1.t, c2.t);
-
-                // Set spook params
-                c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
-                c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
-
-                c1.enabled = c2.enabled = c.enabled;
-
-				// Add equations to solver
-				solver.addEquation(c1);
-				solver.addEquation(c2);
-			}
-
-            if( bi.allowSleep &&
-                bi.type === Body.DYNAMIC &&
-                bi.sleepState  === Body.SLEEPING &&
-                bj.sleepState  === Body.AWAKE &&
-                bj.type !== Body.STATIC
-            ){
-                var speedSquaredB = bj.velocity.norm2() + bj.angularVelocity.norm2();
-                var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit,2);
-                if(speedSquaredB >= speedLimitSquaredB*2){
-                    bi._wakeUpAfterNarrowphase = true;
-                }
+            if(bi.material.restitution >= 0 && bj.material.restitution >= 0){
+                c.restitution = bi.material.restitution * bj.material.restitution;
             }
+        }
 
-            if( bj.allowSleep &&
-                bj.type === Body.DYNAMIC &&
-                bj.sleepState  === Body.SLEEPING &&
-                bi.sleepState  === Body.AWAKE &&
-                bi.type !== Body.STATIC
-            ){
-                var speedSquaredA = bi.velocity.norm2() + bi.angularVelocity.norm2();
-                var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit,2);
-                if(speedSquaredA >= speedLimitSquaredA*2){
-                    bj._wakeUpAfterNarrowphase = true;
-                }
+		// c.setSpookParams(
+  //           cm.contactEquationStiffness,
+  //           cm.contactEquationRelaxation,
+  //           dt
+  //       );
+
+		solver.addEquation(c);
+
+		// // Add friction constraint equation
+		// if(mu > 0){
+
+		// 	// Create 2 tangent equations
+		// 	var mug = mu * gnorm;
+		// 	var reducedMass = (bi.invMass + bj.invMass);
+		// 	if(reducedMass > 0){
+		// 		reducedMass = 1/reducedMass;
+		// 	}
+		// 	var pool = frictionEquationPool;
+		// 	var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+		// 	var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+		// 	this.frictionEquations.push(c1, c2);
+
+		// 	c1.bi = c2.bi = bi;
+		// 	c1.bj = c2.bj = bj;
+		// 	c1.minForce = c2.minForce = -mug*reducedMass;
+		// 	c1.maxForce = c2.maxForce = mug*reducedMass;
+
+		// 	// Copy over the relative vectors
+		// 	c1.ri.copy(c.ri);
+		// 	c1.rj.copy(c.rj);
+		// 	c2.ri.copy(c.ri);
+		// 	c2.rj.copy(c.rj);
+
+		// 	// Construct tangents
+		// 	c.ni.tangents(c1.t, c2.t);
+
+  //           // Set spook params
+  //           c1.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
+  //           c2.setSpookParams(cm.frictionEquationStiffness, cm.frictionEquationRelaxation, dt);
+
+  //           c1.enabled = c2.enabled = c.enabled;
+
+		// 	// Add equations to solver
+		// 	solver.addEquation(c1);
+		// 	solver.addEquation(c2);
+		// }
+
+        if( bi.allowSleep &&
+            bi.type === Body.DYNAMIC &&
+            bi.sleepState  === Body.SLEEPING &&
+            bj.sleepState  === Body.AWAKE &&
+            bj.type !== Body.STATIC
+        ){
+            var speedSquaredB = bj.velocity.norm2() + bj.angularVelocity.norm2();
+            var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit,2);
+            if(speedSquaredB >= speedLimitSquaredB*2){
+                bi._wakeUpAfterNarrowphase = true;
             }
+        }
 
-            // Now we know that i and j are in contact. Set collision matrix state
-			this.collisionMatrix.set(bi, bj, true);
-
-            if (!this.collisionMatrixPrevious.get(bi, bj)) {
-                // First contact!
-                // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
-                World_step_collideEvent.body = bj;
-                World_step_collideEvent.contact = c;
-                bi.dispatchEvent(World_step_collideEvent);
-
-                World_step_collideEvent.body = bi;
-                bj.dispatchEvent(World_step_collideEvent);
+        if( bj.allowSleep &&
+            bj.type === Body.DYNAMIC &&
+            bj.sleepState  === Body.SLEEPING &&
+            bi.sleepState  === Body.AWAKE &&
+            bi.type !== Body.STATIC
+        ){
+            var speedSquaredA = bi.velocity.norm2() + bi.angularVelocity.norm2();
+            var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit,2);
+            if(speedSquaredA >= speedLimitSquaredA*2){
+                bj._wakeUpAfterNarrowphase = true;
             }
+        }
+
+        // Now we know that i and j are in contact. Set collision matrix state
+		this.collisionMatrix.set(bi, bj, true);
+
+        if (!this.collisionMatrixPrevious.get(bi, bj)) {
+            // First contact!
+            // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
+            World_step_collideEvent.body = bj;
+            World_step_collideEvent.contact = c;
+            bi.dispatchEvent(World_step_collideEvent);
+
+            World_step_collideEvent.body = bi;
+            bj.dispatchEvent(World_step_collideEvent);
         }
     }
     if(doProfiling){
