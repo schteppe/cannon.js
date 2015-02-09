@@ -63,6 +63,101 @@ module.exports = {
         test.done();
     },
 
+    raycastClosest: function(test){
+        var world = new World();
+        var body = new Body({
+            shape: new Sphere(1)
+        });
+        world.addBody(body);
+
+        var from = new Vec3(-10, 0, 0);
+        var to = new Vec3(10, 0, 0);
+
+        var result = new RaycastResult();
+        world.raycastClosest(from, to, {}, result);
+
+        test.equal(result.hasHit, true);
+        test.equal(result.body, body);
+        test.equal(result.shape, body.shapes[0]);
+
+        test.done();
+    },
+
+    raycastAll: {
+        simple: function(test){
+            var world = new World();
+            var body = new Body({ shape: new Sphere(1) });
+            world.addBody(body);
+
+            var from = new Vec3(-10, 0, 0);
+            var to = new Vec3(10, 0, 0);
+
+            var hasHit;
+            var numResults=0;
+            var resultBody;
+            var resultShape;
+
+            world.raycastAll(from, to, {}, function (result){
+                hasHit = result.hasHit;
+                resultShape = result.shape;
+                resultBody = result.body;
+                numResults++;
+            });
+
+            test.equal(hasHit, true);
+            test.equal(resultBody, body);
+            test.equal(numResults, 2);
+            test.equal(resultShape, resultBody.shapes[0]);
+
+            test.done();
+        },
+
+        twoBodies: function(test){
+
+            var world = new World();
+            var body = new Body({ shape: new Sphere(1) });
+            world.addBody(body);
+
+            var body2 = new Body({ shape: new Sphere(1) });
+            world.addBody(body2);
+
+            var from = new Vec3(-10, 0, 0);
+            var to = new Vec3(10, 0, 0);
+
+            var hasHit = false;
+            var numResults = 0;
+            var resultBody;
+            var resultShape;
+
+            world.raycastAll(from, to, {}, function (result){
+                hasHit = result.hasHit;
+                resultShape = result.shape;
+                resultBody = result.body;
+                numResults++;
+            });
+
+            test.equal(hasHit, true);
+            test.equal(numResults, 4);
+
+            test.done();
+        }
+    },
+
+    raycastAny: function(test){
+        var world = new World();
+        world.addBody(new Body({ shape: new Sphere(1) }));
+
+        var from = new Vec3(-10, 0, 0);
+        var to = new Vec3(10, 0, 0);
+
+        var result = new RaycastResult();
+        world.raycastAny(from, to, {}, result);
+
+        test.ok(result.hasHit);
+
+        test.done();
+    },
+
     collisionMatrix : function(test) {
         function testCollisionMatrix(CollisionMatrix) {
             var test_configs = [

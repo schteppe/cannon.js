@@ -47,10 +47,25 @@ function RaycastResult(){
 	this.body = null;
 
 	/**
+	 * The index of the hit triangle, if the hit shape was a trimesh.
+	 * @property {number} hitTriangleIndex
+	 * @default -1
+	 */
+	this.hitTriangleIndex = -1;
+
+	/**
 	 * Distance to the hit. Will be set to -1 if there was no hit.
 	 * @property {number} distance
+	 * @default -1
 	 */
 	this.distance = -1;
+
+	/**
+	 * If the ray should stop traversing the bodies.
+	 * @type {Boolean}
+	 * @default false
+	 */
+	this._shouldStop = false;
 }
 
 /**
@@ -65,7 +80,16 @@ RaycastResult.prototype.reset = function () {
 	this.hasHit = false;
 	this.shape = null;
 	this.body = null;
+	this.hitTriangleIndex = -1;
 	this.distance = -1;
+	this._shouldStop = false;
+};
+
+/**
+ * @method abort
+ */
+RaycastResult.prototype.abort = function(){
+	this._shouldStop = true;
 };
 
 /**

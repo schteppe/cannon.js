@@ -289,10 +289,82 @@ World.prototype.removeConstraint = function(c){
  * @param {Vec3} from
  * @param {Vec3} to
  * @param {Function|RaycastResult} result
+ * @deprecated Use .raycastAll, .raycastClosest or .raycastAny instead.
  */
 World.prototype.rayTest = function(from, to, result){
-    // result = result || new RaycastResult();
+    if(result instanceof RaycastResult){
+        // Do raycastclosest
+        this.raycastClosest(from, to, {
+            skipBackfaces: true
+        }, result);
+    } else {
+        // Do raycastAll
+        this.raycastAll(from, to, {
+            skipBackfaces: true
+        }, result);
+    }
+};
 
+/**
+ * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
+ * @param  {Vec3} from
+ * @param  {Vec3} to
+ * @param  {Object} options
+ * @param  {number} [options.collisionFilterMask=-1]
+ * @param  {number} [options.collisionFilterGroup=-1]
+ * @param  {boolean} [options.skipBackfaces=false]
+ * @param  {boolean} [options.checkCollisionResponse=true]
+ * @param  {Function} callback
+ * @return {boolean} True if any body was hit.
+ */
+World.prototype.raycastAll = function(from, to, options, callback){
+    var result = new RaycastResult();
+    tmpRay.mode = Ray.ALL;
+    tmpRay.callback = callback;
+    tmpRay.intersectBodies(this.bodies, callback);
+};
+
+/**
+ * Ray cast, and stop at the first result. Note that the order is random - but the method is fast.
+ * @param  {Vec3} from
+ * @param  {Vec3} to
+ * @param  {Object} options
+ * @param  {number} [options.collisionFilterMask=-1]
+ * @param  {number} [options.collisionFilterGroup=-1]
+ * @param  {boolean} [options.skipBackfaces=false]
+ * @param  {boolean} [options.checkCollisionResponse=true]
+ * @param  {RaycastResult} result
+ * @return {boolean} True if any body was hit.
+ */
+World.prototype.raycastAny = function(from, to, options, result){
+    tmpRay.mode = Ray.ANY;
+    tmpRay.result = result;
+
+    tmpRay.from.copy(from);
+    tmpRay.to.copy(to);
+    tmpRay.getAABB(tmpAABB1);
+    tmpArray1.length = 0;
+    this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
+
+    tmpRay.intersectBodies(tmpArray1, result);
+
+};
+
+/**
+ * Ray cast, and return information of the closest hit.
+ * @param  {Vec3} from
+ * @param  {Vec3} to
+ * @param  {Object} options
+ * @param  {number} [options.collisionFilterMask=-1]
+ * @param  {number} [options.collisionFilterGroup=-1]
+ * @param  {boolean} [options.skipBackfaces=false]
+ * @param  {boolean} [options.checkCollisionResponse=true]
+ * @param  {RaycastResult} result
+ * @return {boolean} True if any body was hit.
+ */
+World.prototype.raycastClosest = function(from, to, options, result){
+    tmpRay.mode = Ray.CLOSEST;
+    tmpRay.result = result;
     tmpRay.from.copy(from);
     tmpRay.to.copy(to);
     tmpRay.getAABB(tmpAABB1);
@@ -301,15 +373,17 @@ World.prototype.rayTest = function(from, to, result){
     this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
 
     tmpRay.intersectBodies(tmpArray1, result);
+
+    return result.hasHit;
 };
 
 /**
  * Remove a rigid body from the simulation.
  * @method remove
  * @param {Body} body
- * @todo Rename to .removeBody
+ * @deprecated Use .removeBody instead
  */
-World.prototype.remove = World.prototype.removeBody = function(body){
+World.prototype.remove = function(body){
     body.world = null;
     var n = this.bodies.length-1,
         bodies = this.bodies,
@@ -327,6 +401,13 @@ World.prototype.remove = World.prototype.removeBody = function(body){
         this.dispatchEvent(this.removeBodyEvent);
     }
 };
+
+/**
+ * Remove a rigid body from the simulation.
+ * @method removeBody
+ * @param {Body} body
+ */
+World.prototype.removeBody = World.prototype.remove;
 
 /**
  * Adds a material to the World.
