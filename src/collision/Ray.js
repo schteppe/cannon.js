@@ -27,6 +27,10 @@ function Ray(from, to){
      */
     this.to = to ? to.clone() : new Vec3();
 
+    /**
+     * @private
+     * @property {Vec3} _direction
+     */
     this._direction = new Vec3();
 
     /**
@@ -59,6 +63,10 @@ function Ray(from, to){
      */
     this.collisionFilterGroup = -1;
 
+    /**
+     * The intersection mode. Should be Ray.ANY, Ray.ALL or Ray.CLOSEST.
+     * @property {number} mode
+     */
     this.mode = Ray.ANY;
 
     /**
@@ -67,10 +75,14 @@ function Ray(from, to){
      */
     this.result = new RaycastResult();
 
+    /**
+     * Will be set to true during intersectWorld() if the ray hit anything.
+     * @property {Boolean} hasHit
+     */
     this.hasHit = false;
 
     /**
-     * Current, user-provided result callback.
+     * Current, user-provided result callback. Will be used if mode is Ray.ALL.
      * @property {Function} callback
      */
     this.callback = function(result){};
@@ -84,6 +96,13 @@ Ray.ALL = 4;
 var tmpAABB = new AABB();
 var tmpArray = [];
 
+/**
+ * Do itersection against all bodies in the given World.
+ * @method intersectWorld
+ * @param  {World} world
+ * @param  {object} options
+ * @return {Boolean} True if the ray hit anything, otherwise false.
+ */
 Ray.prototype.intersectWorld = function (world, options) {
     this.mode = options.mode || Ray.ANY;
     this.result = options.result || new RaycastResult();
@@ -186,14 +205,16 @@ Ray.prototype.intersectBody = function (body) {
 Ray.prototype.intersectBodies = function (bodies) {
     this._updateDirection();
 
-    for ( var i = 0, l = bodies.length; i < l; i ++ ) {
-        if(this.result._shouldStop){
-            break;
-        }
+    for ( var i = 0, l = bodies.length; !this.result._shouldStop && i < l; i ++ ) {
         this.intersectBody(bodies[i]);
     }
 };
 
+/**
+ * Updates the _direction vector.
+ * @private
+ * @method _updateDirection
+ */
 Ray.prototype._updateDirection = function(){
     this.to.vsub(this.from, this._direction);
     this._direction.normalize();
