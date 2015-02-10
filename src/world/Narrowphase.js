@@ -1210,11 +1210,13 @@ Narrowphase.prototype.planeConvex = function(
 
             this.result.push(r);
             numContacts++;
-            // this.createFrictionEquationsFromContact(r, this.frictionResult);
+            if(!this.enableFrictionReduction){
+                this.createFrictionEquationsFromContact(r, this.frictionResult);
+            }
         }
     }
 
-    if(numContacts){
+    if(this.enableFrictionReduction && numContacts){
         this.createFrictionFromAverage(numContacts);
     }
 };
