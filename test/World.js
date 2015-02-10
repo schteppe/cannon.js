@@ -97,13 +97,14 @@ module.exports = {
             var resultBody;
             var resultShape;
 
-            world.raycastAll(from, to, {}, function (result){
+            var returnVal = world.raycastAll(from, to, {}, function (result){
                 hasHit = result.hasHit;
                 resultShape = result.shape;
                 resultBody = result.body;
                 numResults++;
             });
 
+            test.equal(returnVal, true, 'should return true on hit');
             test.equal(hasHit, true);
             test.equal(resultBody, body);
             test.equal(numResults, 2);
@@ -112,7 +113,7 @@ module.exports = {
             test.done();
         },
 
-        twoBodies: function(test){
+        twoSpheres: function(test){
 
             var world = new World();
             var body = new Body({ shape: new Sphere(1) });
@@ -138,6 +139,63 @@ module.exports = {
 
             test.equal(hasHit, true);
             test.equal(numResults, 4);
+
+            test.done();
+        },
+
+        skipBackFaces: function(test){
+            var world = new World();
+            var body = new Body({ shape: new Sphere(1) });
+            world.addBody(body);
+
+            var hasHit = false;
+            var numResults = 0;
+            var resultBody;
+            var resultShape;
+
+            world.raycastAll(new Vec3(-10, 0, 0), new Vec3(10, 0, 0), { skipBackfaces: true }, function (result){
+                hasHit = result.hasHit;
+                resultShape = result.shape;
+                resultBody = result.body;
+                numResults++;
+            });
+
+            test.equal(hasHit, true);
+            test.equal(numResults, 1);
+
+            test.done();
+        },
+
+        collisionFilters: function(test){
+            var world = new World();
+            var body = new Body({
+                shape: new Sphere(1)
+            });
+            world.addBody(body);
+            body.collisionFilterGroup = 2;
+            body.collisionFilterMask = 2;
+
+            var numResults = 0;
+
+            world.raycastAll(new Vec3(-10, 0, 0), new Vec3(10, 0, 0), {
+                collisionFilterGroup: 2,
+                collisionFilterMask: 2
+            }, function (result){
+                numResults++;
+            });
+
+            test.equal(numResults, 2);
+
+            numResults = 0;
+
+            world.raycastAll(new Vec3(-10, 0, 0), new Vec3(10, 0, 0), {
+                collisionFilterGroup: 1,
+                collisionFilterMask: 1
+            }, function (result){
+                numResults++;
+            });
+
+            test.equal(numResults, 0, 'should use collision groups!');
 
             test.done();
         }

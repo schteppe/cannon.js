@@ -318,10 +318,18 @@ World.prototype.rayTest = function(from, to, result){
  * @return {boolean} True if any body was hit.
  */
 World.prototype.raycastAll = function(from, to, options, callback){
-    var result = new RaycastResult();
-    tmpRay.mode = Ray.ALL;
-    tmpRay.callback = callback;
-    tmpRay.intersectBodies(this.bodies, callback);
+    options.mode = Ray.ALL;
+    options.from = from;
+    options.to = to;
+    options.callback = callback;
+    return tmpRay.intersectWorld(this, options);
+
+    // var result = new RaycastResult();
+    // tmpRay.mode = Ray.ALL;
+    // tmpRay.skipBackfaces = !!options.skipBackfaces;
+    // tmpRay.callback = callback;
+
+    // tmpRay.intersectBodies(this.bodies, callback);
 };
 
 /**
@@ -339,9 +347,10 @@ World.prototype.raycastAll = function(from, to, options, callback){
 World.prototype.raycastAny = function(from, to, options, result){
     tmpRay.mode = Ray.ANY;
     tmpRay.result = result;
-
+    tmpRay.skipBackfaces = !!options.skipBackfaces;
     tmpRay.from.copy(from);
     tmpRay.to.copy(to);
+
     tmpRay.getAABB(tmpAABB1);
     tmpArray1.length = 0;
     this.broadphase.aabbQuery(this, tmpAABB1, tmpArray1);
@@ -365,8 +374,10 @@ World.prototype.raycastAny = function(from, to, options, result){
 World.prototype.raycastClosest = function(from, to, options, result){
     tmpRay.mode = Ray.CLOSEST;
     tmpRay.result = result;
+    tmpRay.skipBackfaces = !!options.skipBackfaces;
     tmpRay.from.copy(from);
     tmpRay.to.copy(to);
+
     tmpRay.getAABB(tmpAABB1);
 
     tmpArray1.length = 0;

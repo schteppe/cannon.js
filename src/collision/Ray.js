@@ -67,6 +67,8 @@ function Ray(from, to){
      */
     this.result = new RaycastResult();
 
+    this.hasHit = false;
+
     /**
      * Current, user-provided result callback.
      * @property {Function} callback
@@ -78,6 +80,32 @@ Ray.prototype.constructor = Ray;
 Ray.CLOSEST = 1;
 Ray.ANY = 2;
 Ray.ALL = 4;
+
+var tmpAABB = new AABB();
+var tmpArray = [];
+
+Ray.prototype.intersectWorld = function (world, options) {
+    this.mode = options.mode || Ray.ANY;
+    this.result = options.result || new RaycastResult();
+    this.skipBackfaces = !!options.skipBackfaces;
+    this.collisionFilterMask = typeof(options.collisionFilterMask) !== 'undefined' ? options.collisionFilterMask : -1;
+    this.collisionFilterGroup = typeof(options.collisionFilterGroup) !== 'undefined' ? options.collisionFilterGroup : -1;
+    if(options.from){
+        this.from.copy(options.from);
+    }
+    if(options.to){
+        this.to.copy(options.to);
+    }
+    this.callback = options.callback || function(){};
+    this.hasHit = false;
+
+    this.getAABB(tmpAABB);
+    tmpArray.length = 0;
+    world.broadphase.aabbQuery(world, tmpAABB, tmpArray);
+    this.intersectBodies(tmpArray);
+
+    return this.hasHit;
+};
 
 var v1 = new Vec3(),
     v2 = new Vec3();
@@ -263,7 +291,7 @@ Ray.prototype.intersectPlane = function(shape, quat, position, body){
     direction.scale(t, dir_scaled_with_t);
     from.vadd(dir_scaled_with_t, hitPointWorld);
 
-    this.reportIntersection(worldNormal, hitPointWorld, shape, body);
+    this.reportIntersection(worldNormal, hitPointWorld, shape, body, -1);
 };
 Ray.prototype[Shape.types.PLANE] = Ray.prototype.intersectPlane;
 
@@ -401,7 +429,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
         intersectionPoint.vsub(position, normal);
         normal.normalize();
 
-        this.reportIntersection(normal, intersectionPoint, shape, body);
+        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
 
     } else {
         var d1 = (- b - Math.sqrt(delta)) / (2 * a);
@@ -410,7 +438,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
         from.lerp(to, d1, intersectionPoint);
         intersectionPoint.vsub(position, normal);
         normal.normalize();
-        this.reportIntersection(normal, intersectionPoint, shape, body);
+        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
 
         if(this.result._shouldStop){
             return;
@@ -419,7 +447,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
         from.lerp(to, d2, intersectionPoint);
         intersectionPoint.vsub(position, normal);
         normal.normalize();
-        this.reportIntersection(normal, intersectionPoint, shape, body);
+        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
     }
 };
 Ray.prototype[Shape.types.SPHERE] = Ray.prototype.intersectSphere;
@@ -531,19 +559,10 @@ Ray.prototype.intersectConvex = function intersectConvex(
                     continue;
                 }
 
-                this.reportIntersection(normal, intersectPoint, shape, body);
-
-                // if(minDist === -1 || distance < minDist){
-                //     minDist = distance;
-                //     minDistNormal.copy(normal);
-                //     minDistIntersect.copy(intersectPoint);
-                // }
+                this.reportIntersection(normal, intersectPoint, shape, body, j);
             }
         }
     }
-    // if(minDist !== -1){
-    //     this.reportIntersection(minDistNormal, minDistIntersect, shape, body);
-    // }
 };
 Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype.intersectConvex;
 
@@ -637,19 +656,9 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
                 continue;
             }
 
-            this.reportIntersection(normal, intersectPoint, mesh, body);
-
-            // if(minDist === -1 || distance < minDist){
-            //     minDist = distance;
-            //     minDistNormal.copy(normal);
-            //     minDistIntersect.copy(intersectPoint);
-            // }
+            this.reportIntersection(normal, intersectPoint, mesh, body, j);
         }
     }
-
-    // if(minDist !== -1){
-    //     this.reportIntersection(minDistNormal, minDistIntersect, mesh, body);
-    // }
 };
 Ray.prototype[Shape.types.TRIMESH] = Ray.prototype.intersectTrimesh;
 
@@ -663,7 +672,7 @@ Ray.prototype[Shape.types.TRIMESH] = Ray.prototype.intersectTrimesh;
  * @param  {Body} body
  * @return {boolean} True if the intersections should continue
  */
-Ray.prototype.reportIntersection = function(normal, hitPointWorld, shape, body){
+Ray.prototype.reportIntersection = function(normal, hitPointWorld, shape, body, hitFaceIndex){
     var from = this.from;
     var to = this.to;
     var distance = from.distanceTo(hitPointWorld);
@@ -674,9 +683,11 @@ Ray.prototype.reportIntersection = function(normal, hitPointWorld, shape, body){
         return;
     }
 
+    result.hitFaceIndex = typeof(hitFaceIndex) !== 'undefined' ? hitFaceIndex : -1;
+
     switch(this.mode){
     case Ray.ALL:
-
+        this.hasHit = true;
         result.set(
             from,
             to,
@@ -694,6 +705,7 @@ Ray.prototype.reportIntersection = function(normal, hitPointWorld, shape, body){
 
         // Store if closer than current closest
         if(distance < result.distance || !result.hasHit){
+            this.hasHit = true;
             result.hasHit = true;
             result.set(
                 from,
@@ -710,6 +722,7 @@ Ray.prototype.reportIntersection = function(normal, hitPointWorld, shape, body){
     case Ray.ANY:
 
         // Report and stop.
+        this.hasHit = true;
         result.hasHit = true;
         result.set(
             from,
@@ -731,7 +744,7 @@ function distanceFromIntersection(from, direction, position) {
 
     // v0 is vector from from to position
     position.vsub(from,v0);
-    var dot = v0.dot( direction );
+    var dot = v0.dot(direction);
 
     // intersect = direction*dot + from
     direction.mult(dot,intersect);
