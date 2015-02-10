@@ -118,6 +118,8 @@ Ray.prototype.intersectWorld = function (world, options) {
     this.callback = options.callback || function(){};
     this.hasHit = false;
 
+    this._updateDirection();
+
     this.getAABB(tmpAABB);
     tmpArray.length = 0;
     world.broadphase.aabbQuery(world, tmpAABB, tmpArray);
@@ -156,10 +158,15 @@ function pointInTriangle(p, a, b, c) {
  * @method intersectBody
  * @private
  * @param {Body} body
+ * @param {RaycastResult} [result] Deprecated.
  */
 var intersectBody_xi = new Vec3();
 var intersectBody_qi = new Quaternion();
-Ray.prototype.intersectBody = function (body) {
+Ray.prototype.intersectBody = function (body, result) {
+    if(result){
+        this.result = result;
+        this._updateDirection();
+    }
     var checkCollisionResponse = this.checkCollisionResponse;
 
     if(checkCollisionResponse && !body.collisionResponse){
@@ -200,10 +207,13 @@ Ray.prototype.intersectBody = function (body) {
 /**
  * @method intersectBodies
  * @param {Array} bodies An array of Body objects.
- * @param {RaycastResult} result
+ * @param {RaycastResult} [result] Deprecated
  */
-Ray.prototype.intersectBodies = function (bodies) {
-    this._updateDirection();
+Ray.prototype.intersectBodies = function (bodies, result) {
+    if(result){
+        this.result = result;
+        this._updateDirection();
+    }
 
     for ( var i = 0, l = bodies.length; !this.result._shouldStop && i < l; i ++ ) {
         this.intersectBody(bodies[i]);
@@ -230,6 +240,7 @@ Ray.prototype._updateDirection = function(){
  */
 Ray.prototype.intersectShape = function(shape, quat, position, body){
     var from = this.from;
+
 
     // Checking boundingSphere
     var distance = distanceFromIntersection(from, this._direction, position);
