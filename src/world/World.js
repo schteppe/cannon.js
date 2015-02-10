@@ -323,13 +323,6 @@ World.prototype.raycastAll = function(from, to, options, callback){
     options.to = to;
     options.callback = callback;
     return tmpRay.intersectWorld(this, options);
-
-    // var result = new RaycastResult();
-    // tmpRay.mode = Ray.ALL;
-    // tmpRay.skipBackfaces = !!options.skipBackfaces;
-    // tmpRay.callback = callback;
-
-    // tmpRay.intersectBodies(this.bodies, callback);
 };
 
 /**
