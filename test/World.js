@@ -63,24 +63,56 @@ module.exports = {
         test.done();
     },
 
-    raycastClosest: function(test){
-        var world = new World();
-        var body = new Body({
-            shape: new Sphere(1)
-        });
-        world.addBody(body);
+    raycastClosest: {
+        single: function(test){
+            var world = new World();
+            var body = new Body({
+                shape: new Sphere(1)
+            });
+            world.addBody(body);
 
-        var from = new Vec3(-10, 0, 0);
-        var to = new Vec3(10, 0, 0);
+            var from = new Vec3(-10, 0, 0);
+            var to = new Vec3(10, 0, 0);
 
-        var result = new RaycastResult();
-        world.raycastClosest(from, to, {}, result);
+            var result = new RaycastResult();
+            world.raycastClosest(from, to, {}, result);
 
-        test.equal(result.hasHit, true);
-        test.equal(result.body, body);
-        test.equal(result.shape, body.shapes[0]);
+            test.equal(result.hasHit, true);
+            test.equal(result.body, body);
+            test.equal(result.shape, body.shapes[0]);
 
-        test.done();
+            test.done();
+        },
+
+        order: function(test){
+            var world = new World();
+            var bodyA = new Body({ shape: new Sphere(1), position: new Vec3(-1,0,0) });
+            var bodyB = new Body({ shape: new Sphere(1), position: new Vec3(1,0,0) });
+            world.addBody(bodyA);
+            world.addBody(bodyB);
+
+            var from = new Vec3(-10, 0, 0);
+            var to = new Vec3(10, 0, 0);
+
+            var result = new RaycastResult();
+            world.raycastClosest(from, to, {}, result);
+
+            test.equal(result.hasHit, true);
+            test.equal(result.body, bodyA);
+            test.equal(result.shape, bodyA.shapes[0]);
+
+            from.set(10, 0, 0);
+            to.set(-10, 0, 0);
+
+            result = new RaycastResult();
+            world.raycastClosest(from, to, {}, result);
+
+            test.equal(result.hasHit, true);
+            test.equal(result.body, bodyB);
+            test.equal(result.shape, bodyB.shapes[0]);
+
+            test.done();
+        }
     },
 
     raycastAll: {

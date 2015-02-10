@@ -372,6 +372,12 @@ World.prototype.raycastAny = function(from, to, options, result){
  * @return {boolean} True if any body was hit.
  */
 World.prototype.raycastClosest = function(from, to, options, result){
+    options.mode = Ray.CLOSEST;
+    options.from = from;
+    options.to = to;
+    options.result = result;
+    return tmpRay.intersectWorld(this, options);
+
     tmpRay.mode = Ray.CLOSEST;
     tmpRay.result = result;
     tmpRay.skipBackfaces = !!options.skipBackfaces;

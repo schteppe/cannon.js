@@ -118,6 +118,7 @@ Ray.prototype.intersectWorld = function (world, options) {
     this.callback = options.callback || function(){};
     this.hasHit = false;
 
+    this.result.reset();
     this._updateDirection();
 
     this.getAABB(tmpAABB);
