@@ -48,12 +48,22 @@ module.exports = {
         test.done();
     },
 
-    getVertex: function(test){
-        var mesh = Trimesh.createTorus();
-        var vertex = new Vec3();
-        mesh.getVertex(0, vertex);
-        test.deepEqual(vertex, new Vec3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
-        test.done();
+    getVertex: {
+        unscaled: function(test){
+            var mesh = Trimesh.createTorus();
+            var vertex = new Vec3();
+            mesh.getVertex(0, vertex);
+            test.deepEqual(vertex, new Vec3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
+            test.done();
+        },
+        scaled: function(test){
+            var mesh = Trimesh.createTorus();
+            mesh.setScale(new Vec3(1,2,3));
+            var vertex = new Vec3();
+            mesh.getVertex(0, vertex);
+            test.deepEqual(vertex, new Vec3(1 * mesh.vertices[0], 2 * mesh.vertices[1], 3 * mesh.vertices[2]));
+            test.done();
+        }
     },
 
     getWorldVertex: function(test){
