@@ -458,6 +458,7 @@ Narrowphase.prototype.sphereTrimesh = function (
     );
 
     trimeshShape.getTrianglesInAABB(localSphereAABB, triangles);
+    //for (var i = 0; i < trimeshShape.indices.length / 3; i++) triangles.push(i); // All
 
     // Vertices
     var v = sphereTrimesh_v;

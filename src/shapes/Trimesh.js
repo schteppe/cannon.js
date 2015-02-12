@@ -93,6 +93,13 @@ Trimesh.prototype.updateTree = function(){
 
     tree.reset();
     tree.aabb.copy(this.aabb);
+    var scale = this.scale; // The local mesh AABB is scaled, but the octree AABB should be unscaled
+    tree.aabb.lowerBound.x *= 1 / scale.x;
+    tree.aabb.lowerBound.y *= 1 / scale.y;
+    tree.aabb.lowerBound.z *= 1 / scale.z;
+    tree.aabb.upperBound.x *= 1 / scale.x;
+    tree.aabb.upperBound.y *= 1 / scale.y;
+    tree.aabb.upperBound.z *= 1 / scale.z;
 
     // Insert all triangles
     var triangleAABB = new AABB();
@@ -115,13 +122,31 @@ Trimesh.prototype.updateTree = function(){
     tree.removeEmptyNodes();
 };
 
+var unscaledAABB = new AABB();
+
 /**
- * Get triangles in a local AABB from the triangle.
+ * Get triangles in a local AABB from the trimesh.
  * @param  {AABB} aabb
  * @param  {array} result An array of integers, referencing the queried triangles.
  */
 Trimesh.prototype.getTrianglesInAABB = function(aabb, result){
-    return this.tree.aabbQuery(aabb, result);
+    unscaledAABB.copy(aabb);
+
+    // Scale it to local
+    var scale = this.scale;
+    var isx = scale.x;
+    var isy = scale.y;
+    var isz = scale.z;
+    var l = unscaledAABB.lowerBound;
+    var u = unscaledAABB.upperBound;
+    l.x /= isx;
+    l.y /= isy;
+    l.z /= isz;
+    u.x /= isx;
+    u.y /= isy;
+    u.z /= isz;
+
+    return this.tree.aabbQuery(unscaledAABB, result);
 };
 
 /**
