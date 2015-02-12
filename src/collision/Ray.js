@@ -647,7 +647,7 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
         // note: this works regardless of the direction of the face normal
 
         // Get plane point in world coordinates...
-        mesh.getWorldVertex(indices[j] * 3, position, quat, vector);
+        mesh.getWorldVertex(indices[j * 3], position, quat, vector);
 
         // ...but make it relative to the ray from. We'll fix this later.
         vector.vsub(from,vector);
@@ -659,9 +659,9 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
         var dot = direction.dot(normal);
 
         // Bail out if ray and plane are parallel
-        if (Math.abs( dot ) < this.precision){
-            continue;
-        }
+        // if (Math.abs( dot ) < this.precision){
+        //     continue;
+        // }
 
         // calc distance to plane
         var scalar = normal.dot(vector) / dot;
@@ -678,10 +678,9 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
             intersectPoint.vadd(from,intersectPoint);
 
             // Get triangle vertices
-            var i3 = indices[j] * 3;
-            mesh.getWorldVertex(i3, position, quat, a);
-            mesh.getWorldVertex(i3 + 1, position, quat, b);
-            mesh.getWorldVertex(i3 + 2, position, quat, c);
+            mesh.getWorldVertex(indices[j * 3 + 0], position, quat, a);
+            mesh.getWorldVertex(indices[j * 3 + 1], position, quat, b);
+            mesh.getWorldVertex(indices[j * 3 + 2], position, quat, c);
 
             var distance = intersectPoint.distanceTo(from);
 
