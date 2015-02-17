@@ -62,9 +62,54 @@
 
         // Change gravity so the boxes will slide along x axis
         world.gravity.set(-3,0,-60);
-      });
+    });
 
-      demo.start();
+    demo.addScene("PerShape", function(){
+
+        // Create world
+        var world = demo.getWorld();
+        world.broadphase = new CANNON.NaiveBroadphase();
+        world.iterations = 10;
+
+        // Materials
+        var groundMaterial = new CANNON.Material();
+        groundMaterial.friction = 0.3;
+
+        // ground plane
+        var groundShape = new CANNON.Plane();
+        groundShape.material = groundMaterial;
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
+        world.add(groundBody);
+        demo.addVisual(groundBody);
+
+        // Create a slippery material (friction coefficient = 0.0)
+        var slipperyMaterial = new CANNON.Material();
+        slipperyMaterial.friction = 0;
+
+        // Create slippery box - will slide on the plane
+        var boxBody = new CANNON.Body({ mass: 1 });
+        var shape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+        shape.material = slipperyMaterial;
+        boxBody.addShape(shape);
+        boxBody.position.set(0,0,5);
+        world.add(boxBody);
+        demo.addVisual(boxBody);
+
+        // Create box made of groundMaterial - will not slide on the plane
+        var boxBody2 = new CANNON.Body({ mass: 10 });
+        var shape2 = new CANNON.Box(new CANNON.Vec3(size,size,size));
+        shape2.material = groundMaterial;
+        boxBody2.addShape(shape2);
+        boxBody2.position.set(size*4,0,5);
+        world.add(boxBody2);
+        demo.addVisual(boxBody2);
+
+        // Change gravity so the boxes will slide along x axis
+        world.gravity.set(-3,0,-60);
+    });
+
+    demo.start();
 
     </script>
   </body>

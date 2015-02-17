@@ -33,6 +33,11 @@ function Shape(){
      * @property {boolean} collisionResponse
      */
     this.collisionResponse = true;
+
+    /**
+     * @property {Material} material
+     */
+    this.material = null;
 }
 Shape.prototype.constructor = Shape;
 

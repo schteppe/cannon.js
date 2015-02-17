@@ -75,8 +75,10 @@ Narrowphase.prototype.createContactEquation = function(bi, bj, si, sj, rsi, rsj)
         this.world.dt
     );
 
-    if(bi.material && bj.material && bi.material.restitution >= 0 && bj.material.restitution >= 0){
-        c.restitution = bi.material.restitution * bj.material.restitution;
+    var matA = si.material || bi.material;
+    var matB = sj.material || bj.material;
+    if(matA && matB && matA.restitution >= 0 && matB.restitution >= 0){
+        c.restitution = matA.restitution * matB.restitution;
     }
 
     c.si = rsi || si;
@@ -88,13 +90,18 @@ Narrowphase.prototype.createContactEquation = function(bi, bj, si, sj, rsi, rsj)
 Narrowphase.prototype.createFrictionEquationsFromContact = function(contactEquation, outArray){
     var bodyA = contactEquation.bi;
     var bodyB = contactEquation.bj;
+    var shapeA = contactEquation.si;
+    var shapeB = contactEquation.sj;
+
     var world = this.world;
     var cm = this.currentContactMaterial;
 
     // If friction or restitution were specified in the material, use them
     var friction = cm.friction;
-    if(bodyA.material && bodyB.material && bodyA.material.friction >= 0 && bodyB.material.friction >= 0){
-        friction = bodyA.material.friction * bodyB.material.friction;
+    var matA = shapeA.material || bodyA.material;
+    var matB = shapeB.material || bodyB.material;
+    if(matA && matB && matA.friction >= 0 && matB.friction >= 0){
+        friction = matA.friction * matB.friction;
     }
 
     if(friction > 0){
@@ -241,6 +248,13 @@ Narrowphase.prototype.getContacts = function(p1, p2, world, result, oldcontacts,
                     continue;
                 }
 
+                // Get collision material
+                if(si.material && sj.material){
+                    this.currentContactMaterial = world.getContactMaterial(si.material,sj.material) || world.defaultContactMaterial;
+                } else {
+                    this.currentContactMaterial = world.defaultContactMaterial;
+                }
+
                 // Get contacts
                 var resolver = this[si.type | sj.type];
                 if(resolver){
@@ -270,16 +284,20 @@ function warn(msg){
 
 Narrowphase.prototype[Shape.types.BOX | Shape.types.BOX] =
 Narrowphase.prototype.boxBox = function(si,sj,xi,xj,qi,qj,bi,bj){
+    si.convexPolyhedronRepresentation.material = si.material;
+    sj.convexPolyhedronRepresentation.material = sj.material;
     this.convexConvex(si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
 Narrowphase.prototype[Shape.types.BOX | Shape.types.CONVEXPOLYHEDRON] =
 Narrowphase.prototype.boxConvex = function(si,sj,xi,xj,qi,qj,bi,bj){
+    si.convexPolyhedronRepresentation.material = si.material;
     this.convexConvex(si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
 Narrowphase.prototype[Shape.types.BOX | Shape.types.PARTICLE] =
 Narrowphase.prototype.boxParticle = function(si,sj,xi,xj,qi,qj,bi,bj){
+    si.convexPolyhedronRepresentation.material = si.material;
     this.convexParticle(si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
@@ -1141,6 +1159,7 @@ var plane_to_corner = new Vec3();
  */
 Narrowphase.prototype[Shape.types.PLANE | Shape.types.BOX] =
 Narrowphase.prototype.planeBox = function(si,sj,xi,xj,qi,qj,bi,bj){
+    sj.convexPolyhedronRepresentation.material = sj.material;
     this.planeConvex(si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
 };
 
@@ -1537,6 +1556,7 @@ Narrowphase.prototype.convexParticle = function(sj,si,xj,xi,qj,qi,bj,bi){
 
 Narrowphase.prototype[Shape.types.BOX | Shape.types.HEIGHTFIELD] =
 Narrowphase.prototype.boxHeightfield = function (si,sj,xi,xj,qi,qj,bi,bj){
+    si.convexPolyhedronRepresentation.material = si.material;
     this.convexHeightfield(si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
 };
 
