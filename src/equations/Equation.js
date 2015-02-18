@@ -62,7 +62,7 @@ function Equation(bi,bj,minForce,maxForce){
     this.jacobianElementA = new JacobianElement();
 
     /**
-     * @property {JacobianElement} jacobianElementA
+     * @property {JacobianElement} jacobianElementB
      */
     this.jacobianElementB = new JacobianElement();
 
