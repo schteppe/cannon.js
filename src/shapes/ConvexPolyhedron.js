@@ -76,6 +76,7 @@ function ConvexPolyhedron(points, faces, uniqueAxes) {
 ConvexPolyhedron.prototype = new Shape();
 ConvexPolyhedron.prototype.constructor = ConvexPolyhedron;
 
+var computeEdges_tmpEdge = new Vec3();
 /**
  * Computes uniqueEdges
  * @method computeEdges
@@ -88,24 +89,17 @@ ConvexPolyhedron.prototype.computeEdges = function(){
 
     edges.length = 0;
 
-    for(var pi=0; pi<nv; pi++){
-        var p = vertices[pi];
-        if(!(p instanceof Vec3)){
-            throw "Argument 1 must be instance of Vec3";
-        }
-        this.uniqueEdges.push(p);
-    }
+    var edge = computeEdges_tmpEdge;
 
-    for(var i=0; i<faces.length; i++){
+    for(var i=0; i !== faces.length; i++){
         var face = faces[i];
         var numVertices = face.length;
-        for(var j = 0; j < numVertices; j++){
+        for(var j = 0; j !== numVertices; j++){
             var k = ( j+1 ) % numVertices;
-            var edge = new Vec3();
             vertices[face[j]].vsub(vertices[face[k]], edge);
             edge.normalize();
             var found = false;
-            for(var p=0; p < edges.length; p++){
+            for(var p=0; p !== edges.length; p++){
                 if (edges[p].almostEquals(edge) || edges[p].almostEquals(edge)){
                     found = true;
                     break;
@@ -113,17 +107,7 @@ ConvexPolyhedron.prototype.computeEdges = function(){
             }
 
             if (!found){
-                edges.push(edge);
-            }
-
-            if (edge) {
-                edge.face1 = i;
-            } else {
-                /*
-                var ed;
-                ed.m_face0 = i;
-                edges.insert(vp,ed);
-                 */
+                edges.push(edge.clone());
             }
         }
     }
@@ -287,8 +271,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
             // Get world face normal
             faceANormalWS3.copy(hullA.faceNormals[fi]);
             quatA.vmult(faceANormalWS3,faceANormalWS3);
-            //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
-            //console.log("face normal:",hullA.faceNormals[fi].toString(),"world face normal:",faceANormalWS3);
+
             var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
             if(d===false){
                 return false;
@@ -330,8 +313,6 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
 
             Worldnormal1.copy(hullB.faceNormals[fi]);
             quatB.vmult(Worldnormal1,Worldnormal1);
-            //posB.vadd(Worldnormal1,Worldnormal1);
-            //console.log("facenormal",hullB.faceNormals[fi].toString(),"world:",Worldnormal1.toString());
             curPlaneTests++;
             var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
             if(d===false){
@@ -362,35 +343,27 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
         }
     }
 
-    if(!hullA.uniqueAxes && !hullB.uniqueAxes){
-        var edgeAstart,edgeAend,edgeBstart,edgeBend;
-        var curEdgeEdge = 0;
-        // Test edges
-        for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
-            // Get world edge
-            worldEdge0.copy(hullA.uniqueEdges[e0]);
-            quatA.vmult(worldEdge0,worldEdge0);
-            //posA.vadd(worldEdge0,worldEdge0); // needed?
+    // Test edges
+    for(var e0=0; e0 !== hullA.uniqueEdges.length; e0++){
 
-            //console.log("edge0:",worldEdge0.toString());
+        // Get world edge
+        quatA.vmult(hullA.uniqueEdges[e0],worldEdge0);
 
-            for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-                worldEdge1.copy(hullB.uniqueEdges[e1]);
-                quatB.vmult(worldEdge1,worldEdge1);
-                //posB.vadd(worldEdge1,worldEdge1); // needed?
-                //console.log("edge1:",worldEdge1.toString());
-                worldEdge0.cross(worldEdge1,Cross);
-                curEdgeEdge++;
-                if(!Cross.almostZero()){
-                    Cross.normalize();
-                    var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
-                    if(dist===false){
-                        return false;
-                    }
-                    if(dist<dmin){
-                        dmin = dist;
-                        target.copy(Cross);
-                    }
+        for(var e1=0; e1 !== hullB.uniqueEdges.length; e1++){
+
+            // Get world edge 2
+            quatB.vmult(hullB.uniqueEdges[e1], worldEdge1);
+            worldEdge0.cross(worldEdge1,Cross);
+
+            if(!Cross.almostZero()){
+                Cross.normalize();
+                var dist = hullA.testSepAxis(Cross, hullB, posA, quatA, posB, quatB);
+                if(dist === false){
+                    return false;
+                }
+                if(dist < dmin){
+                    dmin = dist;
+                    target.copy(Cross);
                 }
             }
         }
@@ -404,6 +377,8 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     return true;
 };
 
+var maxminA=[], maxminB=[];
+
 /**
  * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
  * @method testSepAxis
@@ -416,7 +391,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
  * @return {float} The overlap depth, or FALSE if no penetration.
  */
 ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB, quatB){
-    var maxminA=[], maxminB=[], hullA=this;
+    var hullA=this;
     ConvexPolyhedron.project(hullA, axis, posA, quatA, maxminA);
     ConvexPolyhedron.project(hullB, axis, posB, quatB, maxminB);
     var maxA = maxminA[0];
@@ -424,7 +399,6 @@ ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB
     var maxB = maxminB[0];
     var minB = maxminB[1];
     if(maxA<minB || maxB<minA){
-        //console.log(minA,maxA,minB,maxB);
         return false; // Separated
     }
     var d0 = maxA - minB;

@@ -72,7 +72,7 @@ Box.prototype.updateConvexPolyhedronRepresentation = function(){
         new V(1, 0, 0)
     ];
 
-    var h = new ConvexPolyhedron(vertices, indices, axes);
+    var h = new ConvexPolyhedron(vertices, indices);
     this.convexPolyhedronRepresentation = h;
     h.material = this.material;
 };
