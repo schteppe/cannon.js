@@ -18,7 +18,7 @@ var ConvexPolyhedron = require('./ConvexPolyhedron');
 function Cylinder( radiusTop, radiusBottom, height , numSegments ) {
     var N = numSegments,
         verts = [],
-        normals = [],
+        axes = [],
         faces = [],
         bottomface = [],
         topface = [],
@@ -51,20 +51,20 @@ function Cylinder( radiusTop, radiusBottom, height , numSegments ) {
                                        radiusTop*sin(theta),
                                        height*0.5));
             topface.push(2*i+3);
-            // Normal
-            normals.push(new Vec3(cos(thetaN),
-                                         sin(thetaN),
-                                         0));
+
             // Face
             faces.push([2*i+2, 2*i+3, 2*i+1,2*i]);
         } else {
             faces.push([0,1, 2*i+1, 2*i]); // Connect
-            // Normal
-            normals.push(new Vec3(cos(thetaN),sin(thetaN),0));
+        }
+
+        // Axis: we can cut off half of them if we have even number of segments
+        if(N % 2 === 1 || i < N / 2){
+            axes.push(new Vec3(cos(thetaN), sin(thetaN), 0));
         }
     }
     faces.push(topface);
-    normals.push(new Vec3(0,0,1));
+    axes.push(new Vec3(0,0,1));
 
     // Reorder bottom face
     var temp = [];
@@ -72,10 +72,9 @@ function Cylinder( radiusTop, radiusBottom, height , numSegments ) {
         temp.push(bottomface[bottomface.length - i - 1]);
     }
     faces.push(temp);
-    normals.push(new Vec3(0,0,-1));
 
     this.type = Shape.types.CONVEXPOLYHEDRON;
-    ConvexPolyhedron.call( this, verts, faces, normals );
+    ConvexPolyhedron.call( this, verts, faces, axes );
 }
 
 Cylinder.prototype = new ConvexPolyhedron();
