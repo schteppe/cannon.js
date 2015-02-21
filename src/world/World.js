@@ -307,6 +307,7 @@ World.prototype.rayTest = function(from, to, result){
 
 /**
  * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
+ * @method raycastAll
  * @param  {Vec3} from
  * @param  {Vec3} to
  * @param  {Object} options
@@ -327,6 +328,7 @@ World.prototype.raycastAll = function(from, to, options, callback){
 
 /**
  * Ray cast, and stop at the first result. Note that the order is random - but the method is fast.
+ * @method raycastAny
  * @param  {Vec3} from
  * @param  {Vec3} to
  * @param  {Object} options
@@ -347,6 +349,7 @@ World.prototype.raycastAny = function(from, to, options, result){
 
 /**
  * Ray cast, and return information of the closest hit.
+ * @method raycastClosest
  * @param  {Vec3} from
  * @param  {Vec3} to
  * @param  {Object} options

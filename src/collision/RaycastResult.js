@@ -62,7 +62,8 @@ function RaycastResult(){
 
 	/**
 	 * If the ray should stop traversing the bodies.
-	 * @type {Boolean}
+	 * @private
+	 * @property {Boolean} _shouldStop
 	 * @default false
 	 */
 	this._shouldStop = false;

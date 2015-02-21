@@ -112,6 +112,7 @@ var ContactEquation_getImpactVelocityAlongNormal_relVel = new Vec3();
 
 /**
  * Get the current relative velocity in the contact point.
+ * @method getImpactVelocityAlongNormal
  * @return {number}
  */
 ContactEquation.prototype.getImpactVelocityAlongNormal = function(){

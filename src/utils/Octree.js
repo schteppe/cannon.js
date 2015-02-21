@@ -64,6 +64,7 @@ OctreeNode.prototype.reset = function(aabb, options){
 
 /**
  * Insert data into this node
+ * @method insert
  * @param  {AABB} aabb
  * @param  {object} elementData
  * @return {boolean} True if successful, otherwise false

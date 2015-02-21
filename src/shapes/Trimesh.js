@@ -126,6 +126,7 @@ var unscaledAABB = new AABB();
 
 /**
  * Get triangles in a local AABB from the trimesh.
+ * @method getTrianglesInAABB
  * @param  {AABB} aabb
  * @param  {array} result An array of integers, referencing the queried triangles.
  */

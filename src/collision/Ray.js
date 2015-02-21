@@ -159,7 +159,7 @@ function pointInTriangle(p, a, b, c) {
  * @method intersectBody
  * @private
  * @param {Body} body
- * @param {RaycastResult} [result] Deprecated.
+ * @param {RaycastResult} [result] Deprecated - set the result property of the Ray instead.
  */
 var intersectBody_xi = new Vec3();
 var intersectBody_qi = new Quaternion();
