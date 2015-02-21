@@ -24,7 +24,7 @@ var Transform = require('../math/Transform');
  * @todo Move the clipping functions to ContactGenerator?
  * @todo Automatically merge coplanar polygons in constructor.
  */
-function ConvexPolyhedron(points, faces) {
+function ConvexPolyhedron(points, faces, uniqueAxes) {
     var that = this;
     Shape.call(this);
     this.type = Shape.types.CONVEXPOLYHEDRON;
@@ -63,6 +63,12 @@ function ConvexPolyhedron(points, faces) {
      * @type {Array}
      */
     this.uniqueEdges = [];
+
+    /**
+     * If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.
+     * @property {Array} uniqueAxes
+     */
+    this.uniqueAxes = uniqueAxes ? uniqueAxes.slice() : null;
 
     this.computeEdges();
     this.updateBoundingSphereRadius();
@@ -269,77 +275,122 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     var dmin = Number.MAX_VALUE;
     var hullA = this;
     var curPlaneTests=0;
-    var numFacesA = faceListA ? faceListA.length : hullA.faces.length;
 
-    // Test normals from hullA
-    for(var i=0; i<numFacesA; i++){
-        var fi = faceListA ? faceListA[i] : i;
-        // Get world face normal
-        faceANormalWS3.copy(hullA.faceNormals[fi]);
-        quatA.vmult(faceANormalWS3,faceANormalWS3);
-        //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
-        //console.log("face normal:",hullA.faceNormals[fi].toString(),"world face normal:",faceANormalWS3);
-        var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
-        if(d===false){
-            return false;
+    if(!hullA.uniqueAxes){
+
+        var numFacesA = faceListA ? faceListA.length : hullA.faces.length;
+
+        // Test face normals from hullA
+        for(var i=0; i<numFacesA; i++){
+            var fi = faceListA ? faceListA[i] : i;
+
+            // Get world face normal
+            faceANormalWS3.copy(hullA.faceNormals[fi]);
+            quatA.vmult(faceANormalWS3,faceANormalWS3);
+            //posA.vadd(faceANormalWS3,faceANormalWS3); // Needed?
+            //console.log("face normal:",hullA.faceNormals[fi].toString(),"world face normal:",faceANormalWS3);
+            var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
+            if(d===false){
+                return false;
+            }
+
+            if(d<dmin){
+                dmin = d;
+                target.copy(faceANormalWS3);
+            }
         }
 
-        if(d<dmin){
-            dmin = d;
-            target.copy(faceANormalWS3);
+    } else {
+
+        // Test unique axes
+        for(var i = 0; i !== hullA.uniqueAxes.length; i++){
+
+            // Get world axis
+            quatA.vmult(hullA.uniqueAxes[i],faceANormalWS3);
+
+            var d = hullA.testSepAxis(faceANormalWS3, hullB, posA, quatA, posB, quatB);
+            if(d===false){
+                return false;
+            }
+
+            if(d<dmin){
+                dmin = d;
+                target.copy(faceANormalWS3);
+            }
         }
     }
 
-    // Test normals from hullB
-    var numFacesB = faceListB ? faceListB.length : hullB.faces.length;
-    for(var i=0;i<numFacesB;i++){
+    if(!hullB.uniqueAxes){
 
-        var fi = faceListB ? faceListB[i] : i;
+        // Test face normals from hullB
+        var numFacesB = faceListB ? faceListB.length : hullB.faces.length;
+        for(var i=0;i<numFacesB;i++){
 
-        Worldnormal1.copy(hullB.faceNormals[fi]);
-        quatB.vmult(Worldnormal1,Worldnormal1);
-        //posB.vadd(Worldnormal1,Worldnormal1);
-        //console.log("facenormal",hullB.faceNormals[fi].toString(),"world:",Worldnormal1.toString());
-        curPlaneTests++;
-        var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
-        if(d===false){
-            return false;
+            var fi = faceListB ? faceListB[i] : i;
+
+            Worldnormal1.copy(hullB.faceNormals[fi]);
+            quatB.vmult(Worldnormal1,Worldnormal1);
+            //posB.vadd(Worldnormal1,Worldnormal1);
+            //console.log("facenormal",hullB.faceNormals[fi].toString(),"world:",Worldnormal1.toString());
+            curPlaneTests++;
+            var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
+            if(d===false){
+                return false;
+            }
+
+            if(d<dmin){
+                dmin = d;
+                target.copy(Worldnormal1);
+            }
         }
+    } else {
 
-        if(d<dmin){
-            dmin = d;
-            target.copy(Worldnormal1);
+        // Test unique axes in B
+        for(var i = 0; i !== hullB.uniqueAxes.length; i++){
+            quatB.vmult(hullB.uniqueAxes[i],Worldnormal1);
+
+            curPlaneTests++;
+            var d = hullA.testSepAxis(Worldnormal1, hullB,posA,quatA,posB,quatB);
+            if(d===false){
+                return false;
+            }
+
+            if(d<dmin){
+                dmin = d;
+                target.copy(Worldnormal1);
+            }
         }
     }
 
-    var edgeAstart,edgeAend,edgeBstart,edgeBend;
+    if(!hullA.uniqueAxes && !hullB.uniqueAxes){
+        var edgeAstart,edgeAend,edgeBstart,edgeBend;
+        var curEdgeEdge = 0;
+        // Test edges
+        for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
+            // Get world edge
+            worldEdge0.copy(hullA.uniqueEdges[e0]);
+            quatA.vmult(worldEdge0,worldEdge0);
+            //posA.vadd(worldEdge0,worldEdge0); // needed?
 
-    var curEdgeEdge = 0;
-    // Test edges
-    for(var e0=0; e0<hullA.uniqueEdges.length; e0++){
-        // Get world edge
-        worldEdge0.copy(hullA.uniqueEdges[e0]);
-        quatA.vmult(worldEdge0,worldEdge0);
-        //posA.vadd(worldEdge0,worldEdge0); // needed?
+            //console.log("edge0:",worldEdge0.toString());
 
-        //console.log("edge0:",worldEdge0.toString());
-
-        for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
-            worldEdge1.copy(hullB.uniqueEdges[e1]);
-            quatB.vmult(worldEdge1,worldEdge1);
-            //posB.vadd(worldEdge1,worldEdge1); // needed?
-            //console.log("edge1:",worldEdge1.toString());
-            worldEdge0.cross(worldEdge1,Cross);
-            curEdgeEdge++;
-            if(!Cross.almostZero()){
-                Cross.normalize();
-                var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
-                if(dist===false){
-                    return false;
-                }
-                if(dist<dmin){
-                    dmin = dist;
-                    target.copy(Cross);
+            for(var e1=0; e1<hullB.uniqueEdges.length; e1++){
+                worldEdge1.copy(hullB.uniqueEdges[e1]);
+                quatB.vmult(worldEdge1,worldEdge1);
+                //posB.vadd(worldEdge1,worldEdge1); // needed?
+                //console.log("edge1:",worldEdge1.toString());
+                worldEdge0.cross(worldEdge1,Cross);
+                curEdgeEdge++;
+                if(!Cross.almostZero()){
+                    Cross.normalize();
+                    var dist = hullA.testSepAxis( Cross, hullB, posA,quatA,posB,quatB);
+                    if(dist===false){
+                        return false;
+                    }
+                    if(dist<dmin){
+                        dmin = dist;
+                        target.copy(Cross);
+                    }
                 }
             }
         }
@@ -349,6 +400,7 @@ ConvexPolyhedron.prototype.findSeparatingAxis = function(hullB,posA,quatA,posB,q
     if((deltaC.dot(target))>0.0){
         target.negate(target);
     }
+
     return true;
 };
 

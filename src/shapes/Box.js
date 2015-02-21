@@ -46,27 +46,33 @@ Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sz = this.halfExtents.z;
     var V = Vec3;
 
-    var h = new ConvexPolyhedron([new V(-sx,-sy,-sz),
-                                         new V( sx,-sy,-sz),
-                                         new V( sx, sy,-sz),
-                                         new V(-sx, sy,-sz),
-                                         new V(-sx,-sy, sz),
-                                         new V( sx,-sy, sz),
-                                         new V( sx, sy, sz),
-                                         new V(-sx, sy, sz)],
-                                         [[3,2,1,0], // -z
-                                          [4,5,6,7], // +z
-                                          [5,4,0,1], // -y
-                                          [2,3,7,6], // +y
-                                          [0,4,7,3], // -x
-                                          [1,2,6,5], // +x
-                                          ],
-                                        [new V( 0, 0,-1),
-                                         new V( 0, 0, 1),
-                                         new V( 0,-1, 0),
-                                         new V( 0, 1, 0),
-                                         new V(-1, 0, 0),
-                                         new V( 1, 0, 0)]);
+    var vertices = [
+        new V(-sx,-sy,-sz),
+        new V( sx,-sy,-sz),
+        new V( sx, sy,-sz),
+        new V(-sx, sy,-sz),
+        new V(-sx,-sy, sz),
+        new V( sx,-sy, sz),
+        new V( sx, sy, sz),
+        new V(-sx, sy, sz)
+    ];
+
+    var indices = [
+        [3,2,1,0], // -z
+        [4,5,6,7], // +z
+        [5,4,0,1], // -y
+        [2,3,7,6], // +y
+        [0,4,7,3], // -x
+        [1,2,6,5], // +x
+    ];
+
+    var axes = [
+        new V(0, 0, 1),
+        new V(0, 1, 0),
+        new V(1, 0, 0)
+    ];
+
+    var h = new ConvexPolyhedron(vertices, indices, axes);
     this.convexPolyhedronRepresentation = h;
     h.material = this.material;
 };
