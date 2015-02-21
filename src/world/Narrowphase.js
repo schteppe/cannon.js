@@ -223,11 +223,10 @@ Narrowphase.prototype.getContacts = function(p1, p2, world, result, oldcontacts,
         var bi = p1[k],
             bj = p2[k];
 
-        // Get collision properties
+        // Get contact material
+        var bodyContactMaterial = null;
         if(bi.material && bj.material){
-            this.currentContactMaterial = world.getContactMaterial(bi.material,bj.material) || world.defaultContactMaterial;
-        } else {
-            this.currentContactMaterial = world.defaultContactMaterial;
+            bodyContactMaterial = world.getContactMaterial(bi.material,bj.material) || null;
         }
 
         for (var i = 0; i < bi.shapes.length; i++) {
@@ -249,11 +248,12 @@ Narrowphase.prototype.getContacts = function(p1, p2, world, result, oldcontacts,
                 }
 
                 // Get collision material
+                var shapeContactMaterial = null;
                 if(si.material && sj.material){
-                    this.currentContactMaterial = world.getContactMaterial(si.material,sj.material) || world.defaultContactMaterial;
-                } else {
-                    this.currentContactMaterial = world.defaultContactMaterial;
+                    shapeContactMaterial = world.getContactMaterial(si.material,sj.material) || null;
                 }
+
+                this.currentContactMaterial = shapeContactMaterial || bodyContactMaterial || world.defaultContactMaterial;
 
                 // Get contacts
                 var resolver = this[si.type | sj.type];
