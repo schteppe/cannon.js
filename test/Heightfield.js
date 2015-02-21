@@ -31,7 +31,8 @@ module.exports = {
     getConvexTrianglePillar: function(test){
         var hfShape = createHeightfield({
             elementSize: 1,
-            minValue: 0
+            minValue: 0,
+            size: 2
         });
 
         hfShape.getConvexTrianglePillar(0, 0, false);
@@ -51,6 +52,17 @@ module.exports = {
             new Vec3(0.25, -0.75, 0.5)
         ]);
         test.deepEqual(hfShape.pillarOffset, new Vec3(0.75, 0.75, 0.5));
+
+        // Out of bounds
+        test.throws(function () {
+            hfShape.getConvexTrianglePillar(1, 1, true);
+        }, Error);
+        test.throws(function () {
+            hfShape.getConvexTrianglePillar(1, 1, false);
+        }, Error);
+        test.throws(function () {
+            hfShape.getConvexTrianglePillar(-1, 0, false);
+        }, Error);
 
         test.done();
     },
@@ -109,8 +121,9 @@ module.exports = {
 };
 
 function createHeightfield(options){
+    options = options || {};
     var matrix = [];
-    var size = 20;
+    var size = options.size || 20;
     for (var i = 0; i < size; i++) {
         matrix.push([]);
         for (var j = 0; j < size; j++) {
