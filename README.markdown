@@ -4,14 +4,14 @@
 Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https://github.com/kripken/ammo.js), and driven by the fact that the web lacks a physics engine, here comes cannon.js.
 The rigid body physics engine includes simple collision detection, various body shapes, contacts, friction and constraints.
 
-[Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/docs) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon)
+[Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/docs) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon) - [CDN](https://cdnjs.com/libraries/cannon.js)
 
 ### Browser install
 
-Just include [cannon.js](build/cannon.js) or [cannon.min.js](build/cannon.min.js) in your html and you're done:
+Just include [cannon.js](https://github.com/schteppe/cannon.js/releases/download/v0.6.1/cannon.js) or [cannon.min.js](https://github.com/schteppe/cannon.js/releases/download/v0.6.1/cannon.min.js) in your html and you're done:
 
 ```html
-<script src="cannon.js"></script>
+<script src="cannon.min.js"></script>
 ```
 
 ### Node.js install
