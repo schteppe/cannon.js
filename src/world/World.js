@@ -208,7 +208,7 @@ var tmpRay = new Ray();
  * @method getContactMaterial
  * @param {Material} m1
  * @param {Material} m2
- * @return {Contactmaterial} The contact material if it was found.
+ * @return {ContactMaterial} The contact material if it was found.
  */
 World.prototype.getContactMaterial = function(m1,m2){
     return this.contactMaterialTable.get(m1.id,m2.id); //this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];

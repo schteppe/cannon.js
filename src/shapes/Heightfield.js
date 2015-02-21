@@ -98,8 +98,8 @@ Heightfield.prototype.update = function(){
 };
 
 /**
- * @method updateMinValue
  * Update the .minValue property
+ * @method updateMinValue
  */
 Heightfield.prototype.updateMinValue = function(){
     var data = this.data;

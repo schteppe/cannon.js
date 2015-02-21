@@ -72,7 +72,7 @@ Mat3.prototype.setTrace = function(vec3){
 
 /**
  * Sets the matrix diagonal elements from a Vec3
- * @method setTrace
+ * @method getTrace
  */
 Mat3.prototype.getTrace = function(target){
     var target = target || new Vec3();

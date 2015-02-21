@@ -1565,7 +1565,7 @@ var convexHeightfield_tmp2 = new Vec3();
 var convexHeightfield_faceList = [0];
 
 /**
- * @method sphereHeightfield
+ * @method convexHeightfield
  */
 Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON | Shape.types.HEIGHTFIELD] =
 Narrowphase.prototype.convexHeightfield = function (
