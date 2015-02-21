@@ -8,10 +8,10 @@ The rigid body physics engine includes simple collision detection, various body 
 
 ### Browser install
 
-Just include [cannon.js](build/cannon.js) or [cannon.min.js](build/cannon.min.js) in your html and you're done:
+Just include [cannon.js](https://github.com/schteppe/cannon.js/releases/download/v0.6.1/cannon.js) or [cannon.min.js](https://github.com/schteppe/cannon.js/releases/download/v0.6.1/cannon.min.js) in your html and you're done:
 
 ```html
-<script src="cannon.js"></script>
+<script src="cannon.min.js"></script>
 ```
 
 ### Node.js install
