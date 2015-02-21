@@ -228,7 +228,7 @@ Heightfield.prototype.getHeightAt = function(x, y, edgeClamp){
     var idx = [];
     this.getIndexOfPosition(x, y, idx, edgeClamp);
 
-    // TODO: do it better
+    // TODO: get upper or lower triangle, then use barycentric interpolation to get the height in the triangle.
     var minmax = [];
     this.getRectMinMax(idx[0], idx[1] + 1, idx[0], idx[1] + 1, minmax);
 
