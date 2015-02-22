@@ -16,6 +16,7 @@
 <body>
     <script src="../../libs/Three.js"></script>
     <script src="../../libs/Detector.js"></script>
+    <script src="../../libs/TrackballControls.js"></script>
     <script src="../../build/cannon.js"></script>
     <script src="CannonDebugRenderer.js"></script>
 
@@ -27,7 +28,7 @@
         var mass = 5;
         var lastTime;
 
-        var camera, scene, renderer;
+        var camera, scene, renderer, controls;
         var geometry, material, mesh;
         var container, camera, scene, renderer, cannonDebugRenderer;
 
@@ -44,6 +45,7 @@
         addCylinder();
         addTrimesh();
         addPlane();
+        addHeightfield();
         animate();
 
         function initThree() {
@@ -58,7 +60,7 @@
             // camera
             camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 0.5, 10000 );
             camera.position.set(0, 3, 20);
-            camera.up = new THREE.Vector3(0,1,0);
+            camera.up.set(0,1,0);
             camera.lookAt(new THREE.Vector3(0,0,0));
             scene.add(camera);
 
@@ -79,6 +81,8 @@
 
             window.addEventListener( 'resize', onWindowResize, false );
 
+            controls = new THREE.TrackballControls( camera, renderer.domElement );
+
             cannonDebugRenderer = new THREE.CannonDebugRenderer(scene, world);
         }
 
@@ -86,6 +90,8 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize( window.innerWidth, window.innerHeight );
+            controls.screen.width = window.innerWidth;
+            controls.screen.height = window.innerHeight;
         }
 
         function animate(time) {
@@ -98,6 +104,7 @@
 
             updateMeshPositions();
             cannonDebugRenderer.update();
+            controls.update();
             renderer.render(scene, camera);
             lastTime = time;
         }
@@ -193,6 +200,33 @@
 
             // Graphics
             var geo = new THREE.TorusGeometry(1,0.3,16,100);
+            var mesh = new THREE.Mesh(geo, material);
+            meshes.push(mesh);
+            scene.add(mesh);
+        }
+
+        function addHeightfield(){
+            // Physics
+            var body = new CANNON.Body({ mass: 0 });
+            var matrix = [];
+            var sizeX = 20, sizeY = 20;
+            for (var i = 0; i < sizeX; i++) {
+                matrix.push([]);
+                for (var j = 0; j < sizeY; j++) {
+                    var height = Math.cos(i/sizeX * Math.PI * 2)*Math.cos(j/sizeY * Math.PI * 2);
+                    matrix[i].push(height);
+                }
+            }
+            var shape = new CANNON.Heightfield(matrix, { elementSize: 0.5 });
+            var quat = new CANNON.Quaternion(-0.5, 0, 0, 0.5);
+            quat.normalize();
+            body.addShape(shape, new CANNON.Vec3, quat);
+            body.position.set(6,1,0);
+            world.add(body);
+            bodies.push(body);
+
+            // Graphics: empty for now
+            var geo = new THREE.Geometry();
             var mesh = new THREE.Mesh(geo, material);
             meshes.push(mesh);
             scene.add(mesh);
