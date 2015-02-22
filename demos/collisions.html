@@ -139,7 +139,7 @@
         world.broadphase = new CANNON.NaiveBroadphase();
         world.solver.iterations = 5;
         world.defaultContactMaterial.contactEquationStiffness = 1e6;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 10;
+        world.defaultContactMaterial.contactEquationRelaxation = 10;
         return world;
       }
 

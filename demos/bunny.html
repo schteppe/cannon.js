@@ -28,7 +28,7 @@
             world.broadphase = new CANNON.NaiveBroadphase();
             world.solver.iterations = 20;
             world.defaultContactMaterial.contactEquationStiffness = 1e10;
-            world.defaultContactMaterial.contactEquationRegularizationTime = 10;
+            world.defaultContactMaterial.contactEquationRelaxation = 10;
 
             var bunnyBody = new CANNON.Body({ mass: 1 });
             for(var i=0; i<bunny.length; i++){

@@ -42,7 +42,7 @@
 
         // Tweak contact properties.
         world.defaultContactMaterial.contactEquationStiffness = 1e11; // Contact stiffness - use to make softer/harder contacts
-        world.defaultContactMaterial.contactEquationRegularizationTime = 2; // Stabilization time in number of timesteps
+        world.defaultContactMaterial.contactEquationRelaxation = 2; // Stabilization time in number of timesteps
 
         // Max solver iterations: Use more for better force propagation, but keep in mind that it's not very computationally cheap!
         world.solver.iterations = 10;

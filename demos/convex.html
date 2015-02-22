@@ -137,7 +137,7 @@
         world.solver.iterations = 10;
 
         world.defaultContactMaterial.contactEquationStiffness = 5e6;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 3;
+        world.defaultContactMaterial.contactEquationRelaxation = 3;
 
         // ground plane
         var n = new CANNON.Vec3(0,0,1);

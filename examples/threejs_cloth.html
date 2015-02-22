@@ -87,7 +87,7 @@
                                                                               );
                 // Adjust constraint equation parameters for ground/ground contact
                 clothSphereContactMaterial.contactEquationStiffness = 1e9;
-                clothSphereContactMaterial.contactEquationRegularizationTime = 3;
+                clothSphereContactMaterial.contactEquationRelaxation = 3;
 
                 // Add contact material to the world
                 world.addContactMaterial(clothSphereContactMaterial);

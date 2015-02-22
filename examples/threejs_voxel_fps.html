@@ -192,7 +192,7 @@
                 var solver = new CANNON.GSSolver();
 
                 world.defaultContactMaterial.contactEquationStiffness = 1e9;
-                world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+                world.defaultContactMaterial.contactEquationRelaxation = 4;
 
                 solver.iterations = 7;
                 solver.tolerance = 0.1;

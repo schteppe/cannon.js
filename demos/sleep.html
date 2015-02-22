@@ -34,7 +34,7 @@
         world.broadphase = new CANNON.NaiveBroadphase();
 
         world.defaultContactMaterial.contactEquationStiffness = 1e7;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 5;
+        world.defaultContactMaterial.contactEquationRelaxation = 5;
 
         // Create ground plane
         var groundShape = new CANNON.Plane();
