@@ -210,7 +210,7 @@ CANNON.Demo = function(options){
      * Add a scene to the demo app
      * @method addScene
      * @param {String} title Title of the scene
-     * @param {Function} A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
+     * @param {Function} initfunc A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
      */
     function addScene(title,initfunc){
         if(typeof(title) !== "string"){

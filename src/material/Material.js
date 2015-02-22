@@ -28,6 +28,7 @@ function Material(options){
     /**
      * material id.
      * @property id
+     * @type {number}
      */
     this.id = Material.idCounter++;
 

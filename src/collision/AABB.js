@@ -17,7 +17,7 @@ function AABB(options){
     /**
      * The lower bound of the bounding box.
      * @property lowerBound
-     * @type {Array}
+     * @type {Vec3}
      */
     this.lowerBound = new Vec3();
     if(options.lowerBound){
@@ -27,7 +27,7 @@ function AABB(options){
     /**
      * The upper bound of the bounding box.
      * @property upperBound
-     * @type {Array}
+     * @type {Vec3}
      */
     this.upperBound = new Vec3();
     if(options.upperBound){

@@ -307,7 +307,7 @@ function Body(options){
 
     /**
      * @property aabb
-     * @type {Vec3}
+     * @type {AABB}
      */
     this.aabb = new AABB();
 

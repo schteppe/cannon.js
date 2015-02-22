@@ -28,14 +28,14 @@ module.exports = WheelInfo;
  * @param {number} [options.deltaRotation=0]
  * @param {number} [options.rollInfluence=0.01]
  * @param {number} [options.maxSuspensionForce]
- * @param {number} [options.isFrontWheel=true]
+ * @param {boolean} [options.isFrontWheel=true]
  * @param {number} [options.clippedInvContactDotSuspension=1]
  * @param {number} [options.suspensionRelativeVelocity=0]
  * @param {number} [options.suspensionForce=0]
  * @param {number} [options.skidInfo=0]
  * @param {number} [options.suspensionLength=0]
  * @param {number} [options.maxSuspensionTravel=1]
- * @param {number} [options.useCustomSlidingRotationalSpeed=false]
+ * @param {boolean} [options.useCustomSlidingRotationalSpeed=false]
  * @param {number} [options.customSlidingRotationalSpeed=-0.1]
  */
 function WheelInfo(options){
