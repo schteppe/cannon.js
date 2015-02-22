@@ -3,6 +3,12 @@
 Making a WebGL app using Cannon.js and Three.js? Feeling like you're feeling your way through the physics darkness? Then you've come to the right place. This tool will visualize your Cannon.js physics objects in your Three.js scene.
 
 ## Example usage
+
+To use the tool, you have to do two simple things.
+
+1. Create a ```THREE.CannonDebugRenderer``` instance.
+2. Run ```.update()``` in your render loop.
+
 ```js
 var world = new CANNON.World();
 var scene = new THREE.Scene();
