@@ -27,4 +27,6 @@ render();
 
 ## Before vs after
 
+To the left you see a scene with only Three.js objects in it. To the right, the ```THREE.CannonDebugRenderer``` was added, and you can now see that there's a physics box, sphere and plane in the scene.
+
 ![Before and after](before-after.png)
