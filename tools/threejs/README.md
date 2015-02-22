@@ -18,3 +18,7 @@ function render() {
 }
 render();
 ```
+
+## Before vs after
+
+![Before and after](before-after.png)

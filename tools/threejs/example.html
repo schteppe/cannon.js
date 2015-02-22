@@ -56,6 +56,8 @@
             // camera
             camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 0.5, 10000 );
             camera.position.set(0, 3, 20);
+            camera.up = new THREE.Vector3(0,1,0);
+            camera.lookAt(new THREE.Vector3(0,0,0));
             scene.add(camera);
 
             material = new THREE.MeshLambertMaterial( { color: 0x777777 } );
@@ -64,7 +66,7 @@
             scene.add( new THREE.AmbientLight( 0x111111 ) );
             var light = new THREE.DirectionalLight( 0xffffff, 1.75 );
             var d = 20;
-            light.position.set( 40, 20, 20 );
+            light.position.set( 40, 20, 30 );
             scene.add( light );
 
             renderer = new THREE.WebGLRenderer( { antialias: true } );
