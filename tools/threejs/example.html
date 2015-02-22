@@ -41,6 +41,8 @@
         initThree();
         addSphere();
         addBox();
+        addCylinder();
+        addTrimesh();
         addPlane();
         animate();
 
@@ -115,12 +117,12 @@
 
         function addPlane(){
             // Physics
-            var groundShape = new CANNON.Plane();
-            var groundBody = new CANNON.Body({ mass: 0 });
-            groundBody.addShape(groundShape);
-            groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-            world.add(groundBody);
-            bodies.push(groundBody);
+            var shape = new CANNON.Plane();
+            var body = new CANNON.Body({ mass: 0 });
+            body.addShape(shape);
+            body.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+            world.add(body);
+            bodies.push(body);
 
             // Graphics
             geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
@@ -132,12 +134,12 @@
 
         function addBox(){
             // Physics
-            var boxShape = new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5));
-            var boxBody = new CANNON.Body({ mass: mass });
-            boxBody.addShape(boxShape);
-            boxBody.position.set(2,5,0);
-            world.add(boxBody);
-            bodies.push(boxBody);
+            var shape = new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5));
+            var body = new CANNON.Body({ mass: mass });
+            body.addShape(shape);
+            body.position.set(1,5,0);
+            world.add(body);
+            bodies.push(body);
 
             // Graphics
             var cubeGeo = new THREE.BoxGeometry( 1, 1, 1, 10, 10 );
@@ -148,19 +150,52 @@
 
         function addSphere(){
             // Physics
-            var sphereBody = new CANNON.Body({ mass: mass });
-            sphereShape = new CANNON.Sphere(1);
-            sphereBody.addShape(sphereShape);
-            sphereBody.position.set(-1,5,0);
-            world.add(sphereBody);
-            bodies.push(sphereBody);
+            var body = new CANNON.Body({ mass: mass });
+            var shape = new CANNON.Sphere(1);
+            body.addShape(shape);
+            body.position.set(-1,5,0);
+            world.add(body);
+            bodies.push(body);
 
             // Graphics
-            var sphereGeo = new THREE.SphereGeometry(1);
+            var sphereGeo = new THREE.SphereGeometry(0.95, 20, 20);
             sphereMesh = new THREE.Mesh(sphereGeo, material);
             meshes.push(sphereMesh);
             scene.add(sphereMesh);
+        }
 
+        function addCylinder(){
+            // Physics
+            var body = new CANNON.Body({ mass: mass });
+            var shape = new CANNON.Cylinder(1, 1, 1, 10);
+            var quat = new CANNON.Quaternion(0.5, 0, 0, 0.5);
+            quat.normalize();
+            body.addShape(shape, new CANNON.Vec3, quat);
+            body.position.set(-3,5,0);
+            world.add(body);
+            bodies.push(body);
+
+            // Graphics
+            var geo = new THREE.CylinderGeometry(1,1,1,20,20,false);
+            var mesh = new THREE.Mesh(geo, material);
+            meshes.push(mesh);
+            scene.add(mesh);
+        }
+
+        function addTrimesh(){
+            // Physics
+            var body = new CANNON.Body({ mass: mass });
+            var shape = new CANNON.Trimesh.createTorus(1, 0.3, 16, 16);
+            body.addShape(shape);
+            body.position.set(-6,5,0);
+            world.add(body);
+            bodies.push(body);
+
+            // Graphics
+            var geo = new THREE.TorusGeometry(1,0.3,16,100);
+            var mesh = new THREE.Mesh(geo, material);
+            meshes.push(mesh);
+            scene.add(mesh);
         }
 
     </script>

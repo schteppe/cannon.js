@@ -19,11 +19,14 @@ THREE.CannonDebugRenderer = function(scene, world, options){
     this._sphereGeometry = new THREE.SphereGeometry(1);
     this._boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     this._planeGeometry = new THREE.PlaneGeometry( 10, 10, 10, 10 );
+    this._cylinderGeometry = new THREE.CylinderGeometry( 1, 1, 10, 10 );
 };
 
 THREE.CannonDebugRenderer.prototype = {
 
     tmpVec0: new CANNON.Vec3(),
+    tmpVec1: new CANNON.Vec3(),
+    tmpVec2: new CANNON.Vec3(),
     tmpQuat0: new CANNON.Vec3(),
 
     update: function(){
@@ -76,6 +79,9 @@ THREE.CannonDebugRenderer.prototype = {
     _updateMesh: function(index, body, shape){
         var mesh = this._meshes[index];
         if(!this._typeMatch(mesh, shape)){
+            if(mesh){
+                this.scene.remove(mesh);
+            }
             mesh = this._meshes[index] = this._createMesh(shape);
         }
         this._scaleMesh(mesh, shape);
@@ -89,7 +95,9 @@ THREE.CannonDebugRenderer.prototype = {
         return (
             (geo instanceof THREE.SphereGeometry && shape instanceof CANNON.Sphere) ||
             (geo instanceof THREE.BoxGeometry && shape instanceof CANNON.Box) ||
-            (geo instanceof THREE.PlaneGeometry && shape instanceof CANNON.Plane)
+            (geo instanceof THREE.PlaneGeometry && shape instanceof CANNON.Plane) ||
+            (geo.id === shape.geometryId && shape instanceof CANNON.ConvexPolyhedron) ||
+            (geo.id === shape.geometryId && shape instanceof CANNON.Trimesh)
         );
     },
 
@@ -109,6 +117,55 @@ THREE.CannonDebugRenderer.prototype = {
 
         case CANNON.Shape.types.PLANE:
             mesh = new THREE.Mesh(this._planeGeometry, material);
+            break;
+
+        case CANNON.Shape.types.CONVEXPOLYHEDRON:
+            // Create mesh
+            var geo = new THREE.Geometry();
+
+            // Add vertices
+            for (var i = 0; i < shape.vertices.length; i++) {
+                var v = shape.vertices[i];
+                geo.vertices.push(new THREE.Vector3(v.x, v.y, v.z));
+            }
+
+            for(var i=0; i < shape.faces.length; i++){
+                var face = shape.faces[i];
+
+                // add triangles
+                var a = face[0];
+                for (var j = 1; j < face.length - 1; j++) {
+                    var b = face[j];
+                    var c = face[j + 1];
+                    geo.faces.push(new THREE.Face3(a, b, c));
+                }
+            }
+            geo.computeBoundingSphere();
+            geo.computeFaceNormals();
+
+            mesh = new THREE.Mesh(geo, material);
+            shape.geometryId = geo.id;
+            break;
+
+        case CANNON.Shape.types.TRIMESH:
+            var geometry = new THREE.Geometry();
+            var v0 = this.tmpVec0;
+            var v1 = this.tmpVec1;
+            var v2 = this.tmpVec2;
+            for (var i = 0; i < shape.indices.length / 3; i++) {
+                shape.getTriangleVertices(i, v0, v1, v2);
+                geometry.vertices.push(
+                    new THREE.Vector3(v0.x, v0.y, v0.z),
+                    new THREE.Vector3(v1.x, v1.y, v1.z),
+                    new THREE.Vector3(v2.x, v2.y, v2.z)
+                );
+                var j = geometry.vertices.length - 3;
+                geometry.faces.push(new THREE.Face3(j, j+1, j+2));
+            }
+            geometry.computeBoundingSphere();
+            geometry.computeFaceNormals();
+            mesh = new THREE.Mesh(geometry, material);
+            shape.geometryId = geometry.id;
             break;
         }
 
@@ -130,6 +187,14 @@ THREE.CannonDebugRenderer.prototype = {
         case CANNON.Shape.types.BOX:
             mesh.scale.copy(shape.halfExtents);
             mesh.scale.multiplyScalar(2);
+            break;
+
+        case CANNON.Shape.types.CONVEXPOLYHEDRON:
+            mesh.scale.set(1,1,1);
+            break;
+
+        case CANNON.Shape.types.TRIMESH:
+            mesh.scale.copy(shape.scale);
             break;
 
         }
