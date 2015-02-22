@@ -30,7 +30,7 @@
           var world = demo.getWorld();
 
           world.defaultContactMaterial.contactEquationStiffness = 5e7;
-          world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+          world.defaultContactMaterial.contactEquationRelaxation = 4;
 
           world.gravity.set(0,0,-20);
 

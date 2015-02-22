@@ -135,7 +135,7 @@
         world.solver.iterations = 17;
 
         world.defaultContactMaterial.contactEquationStiffness = 1e6;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 3;
+        world.defaultContactMaterial.contactEquationRelaxation = 3;
 
         // ground plane
         var groundShape = new CANNON.Plane();

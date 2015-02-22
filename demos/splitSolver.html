@@ -59,7 +59,7 @@
         var solver = new CANNON.GSSolver();
         solver.iterations = 50;
         world.defaultContactMaterial.contactEquationStiffness = 1e7;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 5;
+        world.defaultContactMaterial.contactEquationRelaxation = 5;
         solver.tolerance = 0.0001;
         if(split)
             world.solver = new CANNON.SplitSolver(solver);
