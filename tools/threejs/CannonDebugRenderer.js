@@ -2,8 +2,10 @@
 
 /**
  * Adds Three.js primitives into the scene where all the Cannon bodies and shapes are.
+ * @class CannonDebugRenderer
  * @param {THREE.Scene} scene
  * @param {CANNON.World} world
+ * @param {object} [options]
  */
 THREE.CannonDebugRenderer = function(scene, world, options){
     options = options || {};
@@ -13,38 +15,16 @@ THREE.CannonDebugRenderer = function(scene, world, options){
 
     this._meshes = [];
 
-    this._solidMaterial = new THREE.MeshNormalMaterial();
-    this._wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-
-    this._currentMaterial = this._solidMaterial;
+    this._material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
     this._sphereGeometry = new THREE.SphereGeometry(1);
     this._boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-    this._wireframe = false;
-    this.wireframe = options.wireframe !== undefined ? options.wireframe : false;
+    this._planeGeometry = new THREE.PlaneGeometry( 10, 10, 10, 10 );
 };
 
 THREE.CannonDebugRenderer.prototype = {
 
     tmpVec0: new CANNON.Vec3(),
     tmpQuat0: new CANNON.Vec3(),
-
-    get wireframe () {
-        return this._wireframe;
-    },
-
-    set wireframe (wireframe) {
-        this._wireframe = wireframe;
-
-        var material = this._currentMaterial = wireframe ? this._wireframeMaterial : this._solidMaterial;
-
-        // Update all meshes with the new material
-        for (var i = 0; i !== this._meshes.length; i++) {
-            var mesh = this._meshes[i];
-            if(mesh){
-                mesh.material = material;
-            }
-        }
-    },
 
     update: function(){
 
@@ -108,13 +88,14 @@ THREE.CannonDebugRenderer.prototype = {
         var geo = mesh.geometry;
         return (
             (geo instanceof THREE.SphereGeometry && shape instanceof CANNON.Sphere) ||
-            (geo instanceof THREE.BoxGeometry && shape instanceof CANNON.Box)
+            (geo instanceof THREE.BoxGeometry && shape instanceof CANNON.Box) ||
+            (geo instanceof THREE.PlaneGeometry && shape instanceof CANNON.Plane)
         );
     },
 
     _createMesh: function(shape){
         var mesh;
-        var material = this._currentMaterial;
+        var material = this._material;
 
         switch(shape.type){
 
@@ -124,6 +105,10 @@ THREE.CannonDebugRenderer.prototype = {
 
         case CANNON.Shape.types.BOX:
             mesh = new THREE.Mesh(this._boxGeometry, material);
+            break;
+
+        case CANNON.Shape.types.PLANE:
+            mesh = new THREE.Mesh(this._planeGeometry, material);
             break;
         }
 
