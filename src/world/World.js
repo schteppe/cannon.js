@@ -181,7 +181,7 @@ function World(){
     };
 
     /**
-     * @property subystems
+     * @property subsystems
      * @type {Array}
      */
     this.subsystems = [];

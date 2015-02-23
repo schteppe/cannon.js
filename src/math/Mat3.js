@@ -62,6 +62,7 @@ Mat3.prototype.setZero = function(){
 /**
  * Sets the matrix diagonal elements from a Vec3
  * @method setTrace
+ * @param {Vec3} vec3
  */
 Mat3.prototype.setTrace = function(vec3){
     var e = this.elements;
@@ -71,8 +72,9 @@ Mat3.prototype.setTrace = function(vec3){
 };
 
 /**
- * Sets the matrix diagonal elements from a Vec3
+ * Gets the matrix diagonal elements
  * @method getTrace
+ * @return {Vec3}
  */
 Mat3.prototype.getTrace = function(target){
     var target = target || new Vec3();
