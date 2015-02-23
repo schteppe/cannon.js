@@ -157,7 +157,7 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
     var chassisBody = this.chassisBody;
 
     for (var i = 0; i < numWheels; i++) {
-        this.updateWheelTransform(i, false);
+        this.updateWheelTransform(i);
     }
 
     this.currentVehicleSpeedKmHour = 3.6 * chassisBody.velocity.norm();
