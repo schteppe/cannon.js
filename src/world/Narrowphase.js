@@ -392,7 +392,7 @@ Narrowphase.prototype.planeTrimesh = function(
 
             // Get vertex position projected on plane
             var projected = planeTrimesh_projected;
-            normal.mult(v.dot(normal), projected);
+            normal.scale(relpos.dot(normal), projected);
             v.vsub(projected,projected);
 
             // ri is the projected world position minus plane position
