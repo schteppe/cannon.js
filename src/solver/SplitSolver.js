@@ -14,15 +14,60 @@ var Body = require('../objects/Body');
  */
 function SplitSolver(subsolver){
     Solver.call(this);
+    this.iterations = 10;
+    this.tolerance = 1e-7;
     this.subsolver = subsolver;
+    this.nodes = [];
+    this.nodePool = [];
 }
 SplitSolver.prototype = new Solver();
 
 // Returns the number of subsystems
 var SplitSolver_solve_nodes = []; // All allocated node objects
+var SplitSolver_solve_nodePool = []; // All allocated node objects
 var SplitSolver_solve_eqs = [];   // Temp array
 var SplitSolver_solve_bds = [];   // Temp array
-var SplitSolver_solve_dummyWorld = {bodies:null}; // Temp object
+var SplitSolver_solve_dummyWorld = {bodies:[]}; // Temp object
+
+var STATIC = Body.STATIC;
+function getUnvisitedNode(nodes){
+    var Nnodes = nodes.length;
+    for(var i=0; i!==Nnodes; i++){
+        var node = nodes[i];
+        if(!node.visited && !(node.body.type & STATIC)){
+            return node;
+        }
+    }
+    return false;
+}
+
+var queue = [];
+function bfs(root,visitFunc,bds,eqs){
+    queue.push(root);
+    root.visited = true;
+    visitFunc(root,bds,eqs);
+    while(queue.length) {
+        var node = queue.pop();
+        // Loop over unvisited child nodes
+        var child;
+        while((child = getUnvisitedNode(node.children))) {
+            child.visited = true;
+            visitFunc(child,bds,eqs);
+            queue.push(child);
+        }
+    }
+}
+
+function visitFunc(node,bds,eqs){
+    bds.push(node.body);
+    var Neqs = node.eqs.length;
+    for(var i=0; i!==Neqs; i++){
+        var eq = node.eqs[i];
+        if(eqs.indexOf(eq) === -1){
+            eqs.push(eq);
+        }
+    }
+}
 
 /**
  * Solve the subsystems
@@ -32,17 +77,20 @@ var SplitSolver_solve_dummyWorld = {bodies:null}; // Temp object
  */
 SplitSolver.prototype.solve = function(dt,world){
     var nodes=SplitSolver_solve_nodes,
+        nodePool=SplitSolver_solve_nodePool,
         bodies=world.bodies,
         equations=this.equations,
         Neq=equations.length,
         Nbodies=bodies.length,
         subsolver=this.subsolver;
+
     // Create needed nodes, reuse if possible
-    if(nodes.length>Nbodies){
-        nodes.length = Nbodies;
+    while(nodePool.length < Nbodies){
+        nodePool.push({ body:null, children:[], eqs:[], visited:false });
     }
-    while(nodes.length<Nbodies){
-        nodes.push({ body:null, children:[], eqs:[], visited:false });
+    nodes.length = Nbodies;
+    for (var i = 0; i < Nbodies; i++) {
+        nodes[i] = nodePool[i];
     }
 
     // Reset node values
@@ -65,58 +113,25 @@ SplitSolver.prototype.solve = function(dt,world){
         nj.eqs.push(eq);
     }
 
-    var STATIC = Body.STATIC;
-    function getUnvisitedNode(nodes){
-        var Nnodes = nodes.length;
-        for(var i=0; i!==Nnodes; i++){
-            var node = nodes[i];
-            if(!node.visited && !(node.body.type & STATIC)){
-                return node;
-            }
-        }
-        return false;
-    }
+    var child, n=0, eqs=SplitSolver_solve_eqs;
 
-    function bfs(root,visitFunc){
-        var queue = [];
-        queue.push(root);
-        root.visited = true;
-        visitFunc(root);
-        while(queue.length) {
-            var node = queue.pop();
-            // Loop over unvisited child nodes
-            var child;
-            while((child = getUnvisitedNode(node.children))) {
-                child.visited = true;
-                visitFunc(child);
-                queue.push(child);
-            }
-        }
-    }
+    subsolver.tolerance = this.tolerance;
+    subsolver.iterations = this.iterations;
 
-    var child, n=0, eqs=SplitSolver_solve_eqs, bds=SplitSolver_solve_bds;
-    function visitFunc(node){
-        bds.push(node.body);
-        var Neqs = node.eqs.length;
-        for(var i=0; i!==Neqs; i++){
-            var eq = node.eqs[i];
-            if(eqs.indexOf(eq) === -1){
-                eqs.push(eq);
-            }
-        }
-    }
     var dummyWorld = SplitSolver_solve_dummyWorld;
     while((child = getUnvisitedNode(nodes))){
         eqs.length = 0;
-        bds.length = 0;
-        bfs(child,visitFunc);
+        dummyWorld.bodies.length = 0;
+        bfs(child, visitFunc, dummyWorld.bodies, eqs);
 
         var Neqs = eqs.length;
+
+        eqs = eqs.sort(sortById);
+
         for(var i=0; i!==Neqs; i++){
             subsolver.addEquation(eqs[i]);
         }
 
-        dummyWorld.bodies = bds;
         var iter = subsolver.solve(dt,dummyWorld);
         subsolver.removeAllEquations();
         n++;
@@ -124,3 +139,7 @@ SplitSolver.prototype.solve = function(dt,world){
 
     return n;
 };
+
+function sortById(a, b){
+    return b.id - a.id;
+}

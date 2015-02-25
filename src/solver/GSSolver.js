@@ -29,7 +29,7 @@ function GSSolver(){
      * @property tolerance
      * @type {Number}
      */
-    this.tolerance = 0;
+    this.tolerance = 1e-7;
 }
 GSSolver.prototype = new Solver();
 
