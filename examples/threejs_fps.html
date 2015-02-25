@@ -371,9 +371,7 @@
                 targetVec.set(0,0,1);
                 projector.unprojectVector(vector, camera);
                 var ray = new THREE.Ray(sphereBody.position, vector.sub(sphereBody.position).normalize() );
-                targetVec.x = ray.direction.x;
-                targetVec.y = ray.direction.y;
-                targetVec.z = ray.direction.z;
+                targetVec.copy(ray.direction);
             }
 
             window.addEventListener("click",function(e){
