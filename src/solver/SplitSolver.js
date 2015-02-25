@@ -19,6 +19,11 @@ function SplitSolver(subsolver){
     this.subsolver = subsolver;
     this.nodes = [];
     this.nodePool = [];
+
+    // Create needed nodes, reuse if possible
+    while(this.nodePool.length < 128){
+        this.nodePool.push(this.createNode());
+    }
 }
 SplitSolver.prototype = new Solver();
 
@@ -69,6 +74,10 @@ function visitFunc(node,bds,eqs){
     }
 }
 
+SplitSolver.prototype.createNode = function(){
+    return { body:null, children:[], eqs:[], visited:false };
+};
+
 /**
  * Solve the subsystems
  * @method solve
@@ -77,7 +86,7 @@ function visitFunc(node,bds,eqs){
  */
 SplitSolver.prototype.solve = function(dt,world){
     var nodes=SplitSolver_solve_nodes,
-        nodePool=SplitSolver_solve_nodePool,
+        nodePool=this.nodePool,
         bodies=world.bodies,
         equations=this.equations,
         Neq=equations.length,
@@ -86,7 +95,7 @@ SplitSolver.prototype.solve = function(dt,world){
 
     // Create needed nodes, reuse if possible
     while(nodePool.length < Nbodies){
-        nodePool.push({ body:null, children:[], eqs:[], visited:false });
+        nodePool.push(this.createNode());
     }
     nodes.length = Nbodies;
     for (var i = 0; i < Nbodies; i++) {
