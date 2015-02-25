@@ -97,6 +97,7 @@
             // Update wheels
             world.addEventListener('postStep', function(){
                 for (var i = 0; i < vehicle.wheelInfos.length; i++) {
+                    vehicle.updateWheelTransform(i);
                     var t = vehicle.wheelInfos[i].worldTransform;
                     wheelBodies[i].position.copy(t.position);
                     wheelBodies[i].quaternion.copy(t.quaternion);
