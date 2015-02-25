@@ -14,7 +14,7 @@ var JacobianElement = require('../math/JacobianElement'),
  * @param {Number} maxForce Maximum (read: positive max) force to be applied by the constraint.
  */
 function Equation(bi,bj,minForce,maxForce){
-    this.id = -1;
+    this.id = Equation.id++;
 
     /**
      * @property {number} minForce
@@ -76,6 +76,8 @@ function Equation(bi,bj,minForce,maxForce){
     this.setSpookParams(1e7,4,1/60);
 }
 Equation.prototype.constructor = Equation;
+
+Equation.id = 0;
 
 /**
  * Recalculates a,b,eps.
