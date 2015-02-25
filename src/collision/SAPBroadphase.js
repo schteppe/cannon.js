@@ -211,14 +211,21 @@ SAPBroadphase.prototype.sortList = function(){
  * @return {Boolean}
  */
 SAPBroadphase.checkBounds = function(bi, bj, axisIndex){
-    var axis;
-    if(axisIndex === 0){ axis = 'x'; }
-    if(axisIndex === 1){ axis = 'y'; }
-    if(axisIndex === 2){ axis = 'z'; }
+    var biPos;
+    var bjPos;
 
-    var biPos = bi.position[axis],
-        ri = bi.boundingRadius,
-        bjPos = bj.position[axis],
+    if(axisIndex === 0){
+        biPos = bi.position.x;
+        bjPos = bj.position.x;
+    } else if(axisIndex === 1){
+        biPos = bi.position.y;
+        bjPos = bj.position.y;
+    } else if(axisIndex === 2){
+        biPos = bi.position.z;
+        bjPos = bj.position.z;
+    }
+
+    var ri = bi.boundingRadius,
         rj = bj.boundingRadius,
         boundA1 = biPos - ri,
         boundA2 = biPos + ri,
