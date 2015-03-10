@@ -417,6 +417,10 @@ Ray.prototype.intersectHeightfield = function(shape, quat, position, body){
             Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
             this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, intersectConvexOptions);
 
+            if(this.result._shouldStop){
+                return;
+            }
+
             // Upper triangle
             shape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
@@ -566,7 +570,7 @@ Ray.prototype.intersectConvex = function intersectConvex(
             continue;
         }
 
-        if (dot < 0) {
+        // if (dot < 0) {
 
             // Intersection point is from + direction * scalar
             direction.mult(scalar,intersectPoint);
@@ -588,13 +592,13 @@ Ray.prototype.intersectConvex = function intersectConvex(
 
                 var distance = intersectPoint.distanceTo(from);
 
-                if(!pointInTriangle(intersectPoint, a, b, c) || distance > fromToDistance){
+                if(!(pointInTriangle(intersectPoint, a, b, c) || pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance){
                     continue;
                 }
 
-                this.reportIntersection(normal, intersectPoint, shape, body, j);
+                this.reportIntersection(normal, intersectPoint, shape, body, fi);
             }
-        }
+        // }
     }
 };
 Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype.intersectConvex;
@@ -671,7 +675,7 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
             continue;
         }
 
-        if (dot < 0) {
+        // if (dot < 0) {
 
             // Intersection point is from + direction * scalar
             direction.mult(scalar,intersectPoint);
@@ -684,12 +688,12 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
 
             var distance = intersectPoint.distanceTo(from);
 
-            if(!pointInTriangle(intersectPoint, b, a, c) || distance > fromToDistance){
+            if(!(pointInTriangle(intersectPoint, b, a, c) || pointInTriangle(intersectPoint, a, b, c)) || distance > fromToDistance){
                 continue;
             }
 
             this.reportIntersection(normal, intersectPoint, mesh, body, j);
-        }
+        // }
     }
 };
 Ray.prototype[Shape.types.TRIMESH] = Ray.prototype.intersectTrimesh;

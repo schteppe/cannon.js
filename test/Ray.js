@@ -20,6 +20,7 @@ module.exports = {
 
     intersectBody : function(test) {
         var r = new Ray(new Vec3(5,0,0), new Vec3(-5, 0, 0));
+        r.skipBackfaces = true;
         var shape = createPolyhedron(0.5);
         var body = new Body({ mass: 1 });
         body.addShape(shape);
@@ -56,6 +57,7 @@ module.exports = {
 
     intersectBodies : function(test) {
         var r = new Ray(new Vec3(5,0,0), new Vec3(-5,0,0));
+        r.skipBackfaces = true;
         var shape = createPolyhedron(0.5);
         var body1 = new Body({ mass: 1 });
         body1.addShape(shape);
@@ -72,6 +74,7 @@ module.exports = {
 
     box: function(test){
         var r = new Ray(new Vec3(5,0,0),new Vec3(-5, 0, 0));
+        r.skipBackfaces = true;
         var shape = new Box(new Vec3(0.5,0.5,0.5));
         var body = new Body({ mass: 1 });
         body.addShape(shape);
@@ -104,6 +107,7 @@ module.exports = {
 
     sphere: function(test){
         var r = new Ray(new Vec3(5,0,0), new Vec3(-5, 0, 0));
+        r.skipBackfaces = true;
         var shape = new Sphere(1);
         var body = new Body({ mass: 1 });
         body.addShape(shape);
@@ -137,6 +141,7 @@ module.exports = {
 
     heightfield: function(test){
         var r = new Ray(new Vec3(0, 0, 10), new Vec3(0, 0, -10));
+        r.skipBackfaces = true;
         var data = [
             [1, 1, 1],
             [1, 1, 1],
@@ -186,6 +191,7 @@ module.exports = {
 
     plane: function(test){
         var r = new Ray(new Vec3(0,0,5), new Vec3(0, 0, -5));
+        r.skipBackfaces = true;
         var shape = new Plane();
         var body = new Body({ mass: 1 });
         body.addShape(shape);
@@ -245,6 +251,7 @@ module.exports = {
 
     trimesh: function(test){
         var r = new Ray(new Vec3(0.5, 0.5, 10), new Vec3(0.5, 0.5, -10));
+        r.skipBackfaces = true;
 
         var vertices = [
             0, 0, 0,
