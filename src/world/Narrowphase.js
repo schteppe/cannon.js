@@ -286,18 +286,22 @@ Narrowphase.prototype[Shape.types.BOX | Shape.types.BOX] =
 Narrowphase.prototype.boxBox = function(si,sj,xi,xj,qi,qj,bi,bj){
     si.convexPolyhedronRepresentation.material = si.material;
     sj.convexPolyhedronRepresentation.material = sj.material;
+    si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
+    sj.convexPolyhedronRepresentation.collisionResponse = sj.collisionResponse;
     this.convexConvex(si.convexPolyhedronRepresentation,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
 Narrowphase.prototype[Shape.types.BOX | Shape.types.CONVEXPOLYHEDRON] =
 Narrowphase.prototype.boxConvex = function(si,sj,xi,xj,qi,qj,bi,bj){
     si.convexPolyhedronRepresentation.material = si.material;
+    si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
     this.convexConvex(si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
 Narrowphase.prototype[Shape.types.BOX | Shape.types.PARTICLE] =
 Narrowphase.prototype.boxParticle = function(si,sj,xi,xj,qi,qj,bi,bj){
     si.convexPolyhedronRepresentation.material = si.material;
+    si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
     this.convexParticle(si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
@@ -1160,6 +1164,7 @@ var plane_to_corner = new Vec3();
 Narrowphase.prototype[Shape.types.PLANE | Shape.types.BOX] =
 Narrowphase.prototype.planeBox = function(si,sj,xi,xj,qi,qj,bi,bj){
     sj.convexPolyhedronRepresentation.material = sj.material;
+    sj.convexPolyhedronRepresentation.collisionResponse = sj.collisionResponse;
     this.planeConvex(si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
 };
 
@@ -1557,6 +1562,7 @@ Narrowphase.prototype.convexParticle = function(sj,si,xj,xi,qj,qi,bj,bi){
 Narrowphase.prototype[Shape.types.BOX | Shape.types.HEIGHTFIELD] =
 Narrowphase.prototype.boxHeightfield = function (si,sj,xi,xj,qi,qj,bi,bj){
     si.convexPolyhedronRepresentation.material = si.material;
+    si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
     this.convexHeightfield(si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
 };
 
