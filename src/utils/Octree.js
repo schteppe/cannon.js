@@ -201,14 +201,16 @@ var tmpAABB = new AABB();
  * Get all data, potentially intersected by a ray.
  * @method rayQuery
  * @param  {Ray} ray
+ * @param  {Transform} treeTransform
  * @param  {array} result
  * @return {array} The "result" object
  */
-OctreeNode.prototype.rayQuery = function(ray, result) {
+OctreeNode.prototype.rayQuery = function(ray, treeTransform, result) {
 
     // Use aabb query for now.
     // @todo implement real ray query which needs less lookups
     ray.getAABB(tmpAABB);
+    tmpAABB.toLocalFrame(treeTransform, tmpAABB);
     this.aabbQuery(tmpAABB, result);
 
     return result;

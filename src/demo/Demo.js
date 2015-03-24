@@ -815,6 +815,7 @@ CANNON.Demo = function(options){
 
 
     function changeScene(n){
+        that.dispatchEvent({ type: 'destroy' });
         settings.paused = false;
         updategui();
         buildScene(n);
@@ -880,6 +881,8 @@ CANNON.Demo = function(options){
         };
     }
 };
+CANNON.Demo.prototype = new CANNON.EventTarget();
+CANNON.Demo.constructor = CANNON.Demo;
 
 CANNON.Demo.prototype.setGlobalSpookParams = function(k,d,h){
     var world = this.world;

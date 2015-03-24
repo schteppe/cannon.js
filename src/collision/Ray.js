@@ -249,7 +249,10 @@ Ray.prototype.intersectShape = function(shape, quat, position, body){
         return;
     }
 
-    this[shape.type](shape, quat, position, body);
+    var intersectMethod = this[shape.type];
+    if(intersectMethod){
+        intersectMethod.call(this, shape, quat, position, body);
+    }
 };
 
 var vector = new Vec3();
@@ -329,7 +332,7 @@ Ray.prototype.intersectPlane = function(shape, quat, position, body){
 Ray.prototype[Shape.types.PLANE] = Ray.prototype.intersectPlane;
 
 /**
- * Get the AABB of the ray.
+ * Get the world AABB of the ray.
  * @method getAABB
  * @param  {AABB} aabb
  */
@@ -604,6 +607,9 @@ Ray.prototype.intersectConvex = function intersectConvex(
 Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype.intersectConvex;
 
 var intersectTrimesh_normal = new Vec3();
+var intersectTrimesh_localAABB = new AABB();
+var intersectTrimesh_triangles = [];
+var intersectTrimesh_treeTransform = new Transform();
 
 /**
  * @method intersectTrimesh
@@ -627,6 +633,7 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
     var normal = intersectConvex_normal;
     var vector = intersectConvex_vector;
     var minDistIntersect = intersectConvex_minDistIntersect;
+    var localAABB = intersectTrimesh_localAABB;
     var faceList = (options && options.faceList) || null;
 
     // Checking faces
@@ -643,15 +650,26 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
 
     var direction = this._direction;
 
+    var triangles = intersectTrimesh_triangles;
+    var treeTransform = intersectTrimesh_treeTransform;
+    treeTransform.position.copy(position);
+    treeTransform.quaternion.copy(quat);
+
+    // TODO: temporarily transform ray to local space!
+
+    mesh.tree.rayQuery(this, treeTransform, triangles);
+
     // Naive lookup!
-    for (var j = 0, N = indices.length / 3; !this.result._shouldStop && j !== N; j++) {
-        mesh.getNormal(j, normal);
+    for (var i = 0, N = triangles.length; !this.result._shouldStop && i !== N; i++) {
+        var trianglesIndex = triangles[i];
+
+        mesh.getNormal(trianglesIndex, normal);
 
         // determine if ray intersects the plane of the face
         // note: this works regardless of the direction of the face normal
 
         // Get plane point in world coordinates...
-        mesh.getWorldVertex(indices[j * 3], position, quat, vector);
+        mesh.getWorldVertex(indices[trianglesIndex * 3], position, quat, vector);
 
         // ...but make it relative to the ray from. We'll fix this later.
         vector.vsub(from,vector);
@@ -675,26 +693,24 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
             continue;
         }
 
-        // if (dot < 0) {
+        // Intersection point is from + direction * scalar
+        direction.mult(scalar,intersectPoint);
+        intersectPoint.vadd(from,intersectPoint);
 
-            // Intersection point is from + direction * scalar
-            direction.mult(scalar,intersectPoint);
-            intersectPoint.vadd(from,intersectPoint);
+        // Get triangle vertices
+        mesh.getWorldVertex(indices[trianglesIndex * 3 + 0], position, quat, a);
+        mesh.getWorldVertex(indices[trianglesIndex * 3 + 1], position, quat, b);
+        mesh.getWorldVertex(indices[trianglesIndex * 3 + 2], position, quat, c);
 
-            // Get triangle vertices
-            mesh.getWorldVertex(indices[j * 3 + 0], position, quat, a);
-            mesh.getWorldVertex(indices[j * 3 + 1], position, quat, b);
-            mesh.getWorldVertex(indices[j * 3 + 2], position, quat, c);
+        var distance = intersectPoint.distanceTo(from);
 
-            var distance = intersectPoint.distanceTo(from);
+        if(!(pointInTriangle(intersectPoint, b, a, c) || pointInTriangle(intersectPoint, a, b, c)) || distance > fromToDistance){
+            continue;
+        }
 
-            if(!(pointInTriangle(intersectPoint, b, a, c) || pointInTriangle(intersectPoint, a, b, c)) || distance > fromToDistance){
-                continue;
-            }
-
-            this.reportIntersection(normal, intersectPoint, mesh, body, j);
-        // }
+        this.reportIntersection(normal, intersectPoint, mesh, body, trianglesIndex);
     }
+    triangles.length = 0;
 };
 Ray.prototype[Shape.types.TRIMESH] = Ray.prototype.intersectTrimesh;
 

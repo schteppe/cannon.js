@@ -7,16 +7,24 @@ module.exports = Transform;
  * @class Transform
  * @constructor
  */
-function Transform() {
+function Transform(options) {
+    options = options || {};
+
 	/**
 	 * @property {Vec3} position
 	 */
 	this.position = new Vec3();
+    if(options.position){
+        this.position.copy(options.position);
+    }
 
 	/**
 	 * @property {Quaternion} quaternion
 	 */
 	this.quaternion = new Quaternion();
+    if(options.quaternion){
+        this.quaternion.copy(options.quaternion);
+    }
 }
 
 var tmpQuat = new Quaternion();
