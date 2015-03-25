@@ -662,9 +662,12 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
     treeTransform.quaternion.copy(quat);
 
     // Transform ray to local space!
-    body.vectorToLocalFrame(direction, localDirection);
-    body.pointToLocalFrame(from, localFrom);
-    body.pointToLocalFrame(to, localTo);
+    Transform.vectorToLocalFrame(position, quat, direction, localDirection);
+    //body.vectorToLocalFrame(direction, localDirection);
+    Transform.pointToLocalFrame(position, quat, from, localFrom);
+    //body.pointToLocalFrame(from, localFrom);
+    Transform.pointToLocalFrame(position, quat, to, localTo);
+    //body.pointToLocalFrame(to, localTo);
     var fromToDistanceSquared = localFrom.distanceSquared(localTo);
 
     mesh.tree.rayQuery(this, treeTransform, triangles);
@@ -717,8 +720,10 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
         }
 
         // transform intersectpoint and normal to world
-        body.vectorToWorldFrame(normal, worldNormal);
-        body.pointToWorldFrame(intersectPoint, worldIntersectPoint);
+        Transform.vectorToWorldFrame(quat, normal, worldNormal);
+        //body.vectorToWorldFrame(normal, worldNormal);
+        Transform.pointToWorldFrame(position, quat, intersectPoint, worldIntersectPoint);
+        //body.pointToWorldFrame(intersectPoint, worldIntersectPoint);
         this.reportIntersection(worldNormal, worldIntersectPoint, mesh, body, trianglesIndex);
     }
     triangles.length = 0;
