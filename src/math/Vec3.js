@@ -244,6 +244,18 @@ Vec3.prototype.distanceTo = function(p){
 };
 
 /**
+ * Get squared distance from this point to another point
+ * @method distanceSquared
+ * @param  {Vec3} p
+ * @return {Number}
+ */
+Vec3.prototype.distanceSquared = function(p){
+    var x=this.x, y=this.y, z=this.z;
+    var px=p.x, py=p.y, pz=p.z;
+    return (px-x)*(px-x) + (py-y)*(py-y) + (pz-z)*(pz-z);
+};
+
+/**
  * Multiply all the components of the vector with a scalar.
  * @deprecated Use .scale instead
  * @method mult
