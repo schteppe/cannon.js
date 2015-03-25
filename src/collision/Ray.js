@@ -575,38 +575,43 @@ Ray.prototype.intersectConvex = function intersectConvex(
 
         // if (dot < 0) {
 
-            // Intersection point is from + direction * scalar
-            direction.mult(scalar,intersectPoint);
-            intersectPoint.vadd(from,intersectPoint);
+        // Intersection point is from + direction * scalar
+        direction.mult(scalar,intersectPoint);
+        intersectPoint.vadd(from,intersectPoint);
 
-            // a is the point we compare points b and c with.
-            a.copy(vertices[face[0]]);
-            q.vmult(a,a);
-            x.vadd(a,a);
+        // a is the point we compare points b and c with.
+        a.copy(vertices[face[0]]);
+        q.vmult(a,a);
+        x.vadd(a,a);
 
-            for(var i = 1; !result._shouldStop && i < face.length - 1; i++){
-                // Transform 3 vertices to world coords
-                b.copy(vertices[face[i]]);
-                c.copy(vertices[face[i+1]]);
-                q.vmult(b,b);
-                q.vmult(c,c);
-                x.vadd(b,b);
-                x.vadd(c,c);
+        for(var i = 1; !result._shouldStop && i < face.length - 1; i++){
+            // Transform 3 vertices to world coords
+            b.copy(vertices[face[i]]);
+            c.copy(vertices[face[i+1]]);
+            q.vmult(b,b);
+            q.vmult(c,c);
+            x.vadd(b,b);
+            x.vadd(c,c);
 
-                var distance = intersectPoint.distanceTo(from);
+            var distance = intersectPoint.distanceTo(from);
 
-                if(!(pointInTriangle(intersectPoint, a, b, c) || pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance){
-                    continue;
-                }
-
-                this.reportIntersection(normal, intersectPoint, shape, body, fi);
+            if(!(pointInTriangle(intersectPoint, a, b, c) || pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance){
+                continue;
             }
+
+            this.reportIntersection(normal, intersectPoint, shape, body, fi);
+        }
         // }
     }
 };
 Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype.intersectConvex;
 
 var intersectTrimesh_normal = new Vec3();
+var intersectTrimesh_localDirection = new Vec3();
+var intersectTrimesh_localFrom = new Vec3();
+var intersectTrimesh_localTo = new Vec3();
+var intersectTrimesh_worldNormal = new Vec3();
+var intersectTrimesh_worldIntersectPoint = new Vec3();
 var intersectTrimesh_localAABB = new AABB();
 var intersectTrimesh_triangles = [];
 var intersectTrimesh_treeTransform = new Transform();
@@ -629,11 +634,18 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
     body,
     options
 ){
+    var normal = intersectTrimesh_normal;
+    var triangles = intersectTrimesh_triangles;
+    var treeTransform = intersectTrimesh_treeTransform;
     var minDistNormal = intersectConvex_minDistNormal;
-    var normal = intersectConvex_normal;
     var vector = intersectConvex_vector;
     var minDistIntersect = intersectConvex_minDistIntersect;
     var localAABB = intersectTrimesh_localAABB;
+    var localDirection = intersectTrimesh_localDirection;
+    var localFrom = intersectTrimesh_localFrom;
+    var localTo = intersectTrimesh_localTo;
+    var worldIntersectPoint = intersectTrimesh_worldIntersectPoint;
+    var worldNormal = intersectTrimesh_worldNormal;
     var faceList = (options && options.faceList) || null;
 
     // Checking faces
@@ -643,23 +655,20 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
 
     var from = this.from;
     var to = this.to;
-    var fromToDistance = from.distanceTo(to);
-
-    var minDist = -1;
-    var normal = intersectTrimesh_normal;
-
     var direction = this._direction;
 
-    var triangles = intersectTrimesh_triangles;
-    var treeTransform = intersectTrimesh_treeTransform;
+    var minDist = -1;
     treeTransform.position.copy(position);
     treeTransform.quaternion.copy(quat);
 
-    // TODO: temporarily transform ray to local space!
+    // Transform ray to local space!
+    body.vectorToLocalFrame(direction, localDirection);
+    body.pointToLocalFrame(from, localFrom);
+    body.pointToLocalFrame(to, localTo);
+    var fromToDistanceSquared = localFrom.distanceSquared(localTo);
 
     mesh.tree.rayQuery(this, treeTransform, triangles);
 
-    // Naive lookup!
     for (var i = 0, N = triangles.length; !this.result._shouldStop && i !== N; i++) {
         var trianglesIndex = triangles[i];
 
@@ -669,16 +678,16 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
         // note: this works regardless of the direction of the face normal
 
         // Get plane point in world coordinates...
-        mesh.getWorldVertex(indices[trianglesIndex * 3], position, quat, vector);
+        mesh.getVertex(indices[trianglesIndex * 3], a);
 
         // ...but make it relative to the ray from. We'll fix this later.
-        vector.vsub(from,vector);
+        a.vsub(localFrom,vector);
 
         // Get plane normal
-        quat.vmult(normal, normal);
+        // quat.vmult(normal, normal);
 
         // If this dot product is negative, we have something interesting
-        var dot = direction.dot(normal);
+        var dot = localDirection.dot(normal);
 
         // Bail out if ray and plane are parallel
         // if (Math.abs( dot ) < this.precision){
@@ -694,21 +703,23 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
         }
 
         // Intersection point is from + direction * scalar
-        direction.mult(scalar,intersectPoint);
-        intersectPoint.vadd(from,intersectPoint);
+        localDirection.scale(scalar,intersectPoint);
+        intersectPoint.vadd(localFrom,intersectPoint);
 
         // Get triangle vertices
-        mesh.getWorldVertex(indices[trianglesIndex * 3 + 0], position, quat, a);
-        mesh.getWorldVertex(indices[trianglesIndex * 3 + 1], position, quat, b);
-        mesh.getWorldVertex(indices[trianglesIndex * 3 + 2], position, quat, c);
+        mesh.getVertex(indices[trianglesIndex * 3 + 1], b);
+        mesh.getVertex(indices[trianglesIndex * 3 + 2], c);
 
-        var distance = intersectPoint.distanceTo(from);
+        var squaredDistance = intersectPoint.distanceSquared(localFrom);
 
-        if(!(pointInTriangle(intersectPoint, b, a, c) || pointInTriangle(intersectPoint, a, b, c)) || distance > fromToDistance){
+        if(!(pointInTriangle(intersectPoint, b, a, c) || pointInTriangle(intersectPoint, a, b, c)) || squaredDistance > fromToDistanceSquared){
             continue;
         }
 
-        this.reportIntersection(normal, intersectPoint, mesh, body, trianglesIndex);
+        // transform intersectpoint and normal to world
+        body.vectorToWorldFrame(normal, worldNormal);
+        body.pointToWorldFrame(intersectPoint, worldIntersectPoint);
+        this.reportIntersection(worldNormal, worldIntersectPoint, mesh, body, trianglesIndex);
     }
     triangles.length = 0;
 };
