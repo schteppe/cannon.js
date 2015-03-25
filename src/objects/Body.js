@@ -470,7 +470,7 @@ Body.prototype.pointToLocalFrame = function(worldPoint,result){
  */
 Body.prototype.vectorToLocalFrame = function(worldVector, result){
     var result = result || new Vec3();
-    this.quaternion.conjugate().vmult(result,result);
+    this.quaternion.conjugate().vmult(worldVector,result);
     return result;
 };
 
