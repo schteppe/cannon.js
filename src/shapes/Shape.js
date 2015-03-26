@@ -15,6 +15,12 @@ var Material = require('../material/Material');
 function Shape(){
 
     /**
+     * Identifyer of the Shape.
+     * @property {number} id
+     */
+    this.id = Shape.idCounter++;
+
+    /**
      * The type of this shape. Must be set to an int > 0 by subclasses.
      * @property type
      * @type {Number}
@@ -68,6 +74,8 @@ Shape.prototype.volume = function(){
 Shape.prototype.calculateLocalInertia = function(mass,target){
     throw "calculateLocalInertia() not implemented for shape type "+this.type;
 };
+
+Shape.idCounter = 0;
 
 /**
  * The available shape types.
