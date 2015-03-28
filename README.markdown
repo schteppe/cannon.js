@@ -45,7 +45,7 @@ var sphereBody = new CANNON.Body({
    position: new CANNON.Vec3(0, 0, 10), // m
    shape: new CANNON.Sphere(radius)
 });
-world.add(sphereBody);
+world.addBody(sphereBody);
 
 // Create a plane
 var groundBody = new CANNON.Body({
@@ -53,7 +53,7 @@ var groundBody = new CANNON.Body({
 });
 var groundShape = new CANNON.Plane();
 groundBody.addShape(groundShape);
-world.add(groundBody);
+world.addBody(groundBody);
 
 var fixedTimeStep = 1.0 / 60.0; // seconds
 var maxSubSteps = 3;
