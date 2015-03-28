@@ -210,7 +210,7 @@ CANNON.Demo = function(options){
      * Add a scene to the demo app
      * @method addScene
      * @param {String} title Title of the scene
-     * @param {Function} A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
+     * @param {Function} initfunc A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
      */
     function addScene(title,initfunc){
         if(typeof(title) !== "string"){
@@ -815,6 +815,7 @@ CANNON.Demo = function(options){
 
 
     function changeScene(n){
+        that.dispatchEvent({ type: 'destroy' });
         settings.paused = false;
         updategui();
         buildScene(n);
@@ -880,6 +881,8 @@ CANNON.Demo = function(options){
         };
     }
 };
+CANNON.Demo.prototype = new CANNON.EventTarget();
+CANNON.Demo.constructor = CANNON.Demo;
 
 CANNON.Demo.prototype.setGlobalSpookParams = function(k,d,h){
     var world = this.world;
@@ -1064,6 +1067,27 @@ CANNON.Demo.prototype.shape2mesh = function(body){
                         geometry.faces.push(new THREE.Face3(i, i+1, i+2));
                     }
                 }
+            }
+            geometry.computeBoundingSphere();
+            geometry.computeFaceNormals();
+            mesh = new THREE.Mesh(geometry, this.currentMaterial);
+            break;
+
+        case CANNON.Shape.types.TRIMESH:
+            var geometry = new THREE.Geometry();
+
+            var v0 = new CANNON.Vec3();
+            var v1 = new CANNON.Vec3();
+            var v2 = new CANNON.Vec3();
+            for (var i = 0; i < shape.indices.length / 3; i++) {
+                shape.getTriangleVertices(i, v0, v1, v2);
+                geometry.vertices.push(
+                    new THREE.Vector3(v0.x, v0.y, v0.z),
+                    new THREE.Vector3(v1.x, v1.y, v1.z),
+                    new THREE.Vector3(v2.x, v2.y, v2.z)
+                );
+                var j = geometry.vertices.length - 3;
+                geometry.faces.push(new THREE.Face3(j, j+1, j+2));
             }
             geometry.computeBoundingSphere();
             geometry.computeFaceNormals();
