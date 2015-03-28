@@ -475,19 +475,23 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
         var d1 = (- b - Math.sqrt(delta)) / (2 * a);
         var d2 = (- b + Math.sqrt(delta)) / (2 * a);
 
-        from.lerp(to, d1, intersectionPoint);
-        intersectionPoint.vsub(position, normal);
-        normal.normalize();
-        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+        if(d1 >= 0 && d1 <= 1){
+            from.lerp(to, d1, intersectionPoint);
+            intersectionPoint.vsub(position, normal);
+            normal.normalize();
+            this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+        }
 
         if(this.result._shouldStop){
             return;
         }
 
-        from.lerp(to, d2, intersectionPoint);
-        intersectionPoint.vsub(position, normal);
-        normal.normalize();
-        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+        if(d2 >= 0 && d2 <= 1){
+            from.lerp(to, d2, intersectionPoint);
+            intersectionPoint.vsub(position, normal);
+            normal.normalize();
+            this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+        }
     }
 };
 Ray.prototype[Shape.types.SPHERE] = Ray.prototype.intersectSphere;
