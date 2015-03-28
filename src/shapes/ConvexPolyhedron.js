@@ -388,7 +388,7 @@ var maxminA=[], maxminB=[];
  * @param {Quaternion} quatA
  * @param {Vec3} posB
  * @param {Quaternion} quatB
- * @return {float} The overlap depth, or FALSE if no penetration.
+ * @return {number} The overlap depth, or FALSE if no penetration.
  */
 ConvexPolyhedron.prototype.testSepAxis = function(axis, hullB, posA, quatA, posB, quatB){
     var hullA=this;

@@ -199,9 +199,10 @@ Broadphase.boundingSphereCheck = function(bodyA,bodyB){
  * @method aabbQuery
  * @param  {World} world
  * @param  {AABB} aabb
+ * @param  {array} result An array to store resulting bodies in.
  * @return {array}
  */
-Broadphase.prototype.aabbQuery = function(world, aabb){
+Broadphase.prototype.aabbQuery = function(world, aabb, result){
     console.warn('.aabbQuery is not implemented in this Broadphase subclass.');
     return [];
 };

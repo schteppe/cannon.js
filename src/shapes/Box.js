@@ -99,8 +99,8 @@ Box.calculateInertia = function(halfExtents,mass,target){
 /**
  * Get the box 6 side normals
  * @method getSideNormals
- * @param {Boolean}     includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
- * @param {Quaternion}  quat            Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
+ * @param {array}      sixTargetVectors An array of 6 vectors, to store the resulting side normals in.
+ * @param {Quaternion} quat             Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
  * @return {array}
  */
 Box.prototype.getSideNormals = function(sixTargetVectors,quat){

@@ -519,7 +519,7 @@ Trimesh.prototype.volume = function(){
  * @param  {number} [radialSegments=8]
  * @param  {number} [tubularSegments=6]
  * @param  {number} [arc=6.283185307179586]
- * @return {Torus}
+ * @return {Trimesh} A torus
  */
 Trimesh.createTorus = function (radius, tube, radialSegments, tubularSegments, arc) {
     radius = radius || 1;

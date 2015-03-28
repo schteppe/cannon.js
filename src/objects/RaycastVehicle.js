@@ -157,7 +157,7 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
     var chassisBody = this.chassisBody;
 
     for (var i = 0; i < numWheels; i++) {
-        this.updateWheelTransform(i, false);
+        this.updateWheelTransform(i);
     }
 
     this.currentVehicleSpeedKmHour = 3.6 * chassisBody.velocity.norm();
@@ -376,6 +376,13 @@ RaycastVehicle.prototype.updateWheelTransformWorld = function(wheel){
     chassisBody.vectorToWorldFrame(wheel.axleLocal, wheel.axleWorld);
 };
 
+
+/**
+ * Update one of the wheel transform.
+ * Note when rendering wheels: during each step, wheel transforms are updated BEFORE the chassis; ie. their position becomes invalid after the step. Thus when you render wheels, you must update wheel transforms before rendering them. See raycastVehicle demo for an example.
+ * @method updateWheelTransform
+ * @param {integer} wheelIndex The wheel index to update.
+ */
 RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
     var up = tmpVec4;
     var right = tmpVec5;
