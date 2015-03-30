@@ -41,7 +41,7 @@ module.exports = {
 
     getTrianglesInAABB: {
         unscaled: function(test){
-            var mesh = Trimesh.createTorus(1,1,16,16);
+            var mesh = Trimesh.createTorus(1,1,32,32);
             var result = [];
 
             // Should get all triangles if we use the full AABB
@@ -51,9 +51,12 @@ module.exports = {
 
             // Should get less triangles if we use the half AABB
             result.length = 0;
-            aabb.lowerBound.scale(0.5, aabb.lowerBound);
-            aabb.upperBound.scale(0.5, aabb.upperBound);
+            aabb.lowerBound.scale(0.1, aabb.lowerBound);
+            aabb.upperBound.scale(0.1, aabb.upperBound);
             mesh.getTrianglesInAABB(aabb, result);
+
+            console.log(result.length, mesh.indices.length / 3)
+
             test.ok(result.length < mesh.indices.length / 3);
 
             test.done();

@@ -6,24 +6,47 @@ var Sphere =      require('../src/shapes/Sphere');
 var Body =      require('../src/objects/Body');
 
 module.exports = {
-    computeAABB : function(test){
-        var body = new Body({ mass: 1 });
-        body.addShape(new Box(new Vec3(1,1,1)));
-        body.computeAABB();
-        test.equal(body.aabb.lowerBound.x,-1);
-        test.equal(body.aabb.lowerBound.y,-1);
-        test.equal(body.aabb.lowerBound.z,-1);
-        test.equal(body.aabb.upperBound.x,1);
-        test.equal(body.aabb.upperBound.y,1);
-        test.equal(body.aabb.upperBound.z,1);
+    computeAABB : {
+        box: function(test){
+            var body = new Body({ mass: 1 });
+            body.addShape(new Box(new Vec3(1,1,1)));
+            body.computeAABB();
+            test.equal(body.aabb.lowerBound.x,-1);
+            test.equal(body.aabb.lowerBound.y,-1);
+            test.equal(body.aabb.lowerBound.z,-1);
+            test.equal(body.aabb.upperBound.x,1);
+            test.equal(body.aabb.upperBound.y,1);
+            test.equal(body.aabb.upperBound.z,1);
 
-        body.position.x = 1;
-        body.computeAABB();
+            body.position.x = 1;
+            body.computeAABB();
 
-        test.equal(body.aabb.lowerBound.x,0);
-        test.equal(body.aabb.upperBound.x,2);
+            test.equal(body.aabb.lowerBound.x,0);
+            test.equal(body.aabb.upperBound.x,2);
 
-        test.done();
+            test.done();
+        },
+        boxOffset: function(test){
+            var quaternion = new Quaternion();
+            quaternion.setFromAxisAngle(new Vec3(0,0,1), Math.PI / 2);
+            var body = new Body({ mass: 1 });
+            body.addShape(new Box(new Vec3(1,1,1)), new Vec3(1,1,1));
+            body.computeAABB();
+            test.equal(body.aabb.lowerBound.x,0);
+            test.equal(body.aabb.lowerBound.y,0);
+            test.equal(body.aabb.lowerBound.z,0);
+            test.equal(body.aabb.upperBound.x,2);
+            test.equal(body.aabb.upperBound.y,2);
+            test.equal(body.aabb.upperBound.z,2);
+
+            body.position.x = 1;
+            body.computeAABB();
+
+            test.equal(body.aabb.lowerBound.x,1);
+            test.equal(body.aabb.upperBound.x,3);
+
+            test.done();
+        }
     },
 
     updateInertiaWorld : function(test){
