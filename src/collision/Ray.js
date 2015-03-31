@@ -669,6 +669,17 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
     Transform.vectorToLocalFrame(position, quat, direction, localDirection);
     Transform.pointToLocalFrame(position, quat, from, localFrom);
     Transform.pointToLocalFrame(position, quat, to, localTo);
+
+    localTo.x *= mesh.scale.x;
+    localTo.y *= mesh.scale.y;
+    localTo.z *= mesh.scale.z;
+    localFrom.x *= mesh.scale.x;
+    localFrom.y *= mesh.scale.y;
+    localFrom.z *= mesh.scale.z;
+
+    localTo.vsub(localFrom, localDirection);
+    localDirection.normalize();
+
     var fromToDistanceSquared = localFrom.distanceSquared(localTo);
 
     mesh.tree.rayQuery(this, treeTransform, triangles);
