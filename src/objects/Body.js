@@ -508,8 +508,8 @@ var tmpQuat = new Quaternion();
  * Add a shape to the body with a local offset and orientation.
  * @method addShape
  * @param {Shape} shape
- * @param {Vec3} offset
- * @param {Quaternion} quaternion
+ * @param {Vec3} [_offset]
+ * @param {Quaternion} [_orientation]
  * @return {Body} The body object, for chainability.
  */
 Body.prototype.addShape = function(shape, _offset, _orientation){
