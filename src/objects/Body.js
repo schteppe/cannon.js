@@ -330,6 +330,15 @@ Body.prototype = new EventTarget();
 Body.prototype.constructor = Body;
 
 /**
+ * Dispatched after two bodies collide. This event is dispatched on each
+ * of the two bodies involved in the collision.
+ * @event collide
+ * @param {Body} body The body that was involved in the collision.
+ * @param {ContactEquation} contact The details of the collision.
+ */
+Body.COLLIDE_EVENT_NAME = "collide";
+
+/**
  * A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
  * @static
  * @property DYNAMIC
@@ -379,6 +388,14 @@ Body.SLEEPING = 2;
 Body.idCounter = 0;
 
 /**
+ * Dispatched after a sleeping body has woken up.
+ * @event wakeup
+ */
+Body.wakeupEvent = {
+    type: "wakeup"
+};
+
+/**
  * Wake the body up.
  * @method wakeUp
  */
@@ -386,7 +403,7 @@ Body.prototype.wakeUp = function(){
     var s = this.sleepState;
     this.sleepState = 0;
     if(s === Body.SLEEPING){
-        this.dispatchEvent({type:"wakeup"});
+        this.dispatchEvent(Body.wakeupEvent);
     }
 };
 
@@ -400,10 +417,18 @@ Body.prototype.sleep = function(){
     this.angularVelocity.set(0,0,0);
 };
 
+/**
+ * Dispatched after a body has gone in to the sleepy state.
+ * @event sleepy
+ */
 Body.sleepyEvent = {
     type: "sleepy"
 };
 
+/**
+ * Dispatched after a body has fallen asleep.
+ * @event sleep
+ */
 Body.sleepEvent = {
     type: "sleep"
 };

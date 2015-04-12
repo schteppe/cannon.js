@@ -186,11 +186,21 @@ function World(){
      */
     this.subsystems = [];
 
+    /**
+     * Dispatched after a body has been added to the world.
+     * @event addBody
+     * @param {Body} body The body that has been added to the world.
+     */
     this.addBodyEvent = {
         type:"addBody",
         body : null,
     };
 
+    /**
+     * Dispatched after a body has been removed from the world.
+     * @event removeBody
+     * @param {Body} body The body that has been removed from the world.
+     */
     this.removeBodyEvent = {
         type:"removeBody",
         body : null,
@@ -514,14 +524,18 @@ World.prototype.step = function(dt, timeSinceLastCalled, maxSubSteps){
     }
 };
 
-/**
- * Step the simulation
- * @method step
- * @param {Number} dt
- */
-var World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
+var
+    /**
+     * Dispatched after the world has stepped forward in time.
+     * @event postStep
+     */
+    World_step_postStepEvent = {type:"postStep"}, // Reusable event objects to save memory
+    /**
+     * Dispatched before the world steps forward in time.
+     * @event preStep
+     */
     World_step_preStepEvent = {type:"preStep"},
-    World_step_collideEvent = {type:"collide", body:null, contact:null },
+    World_step_collideEvent = {type:Body.COLLIDE_EVENT_NAME, body:null, contact:null },
     World_step_oldContacts = [], // Pools for unused objects
     World_step_frictionEquationPool = [],
     World_step_p1 = [], // Reusable arrays for collision pairs
