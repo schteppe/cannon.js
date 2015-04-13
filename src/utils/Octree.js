@@ -205,12 +205,18 @@ var tmpAABB = new AABB();
  * @param  {array} result
  * @return {array} The "result" object
  */
-OctreeNode.prototype.rayQuery = function(ray, treeTransform, result) {
+OctreeNode.prototype.rayQuery = function(ray, treeTransform, scale, result) {
 
     // Use aabb query for now.
     // @todo implement real ray query which needs less lookups
     ray.getAABB(tmpAABB);
     tmpAABB.toLocalFrame(treeTransform, tmpAABB);
+    tmpAABB.lowerBound.x *= scale.x;
+    tmpAABB.lowerBound.y *= scale.y;
+    tmpAABB.lowerBound.z *= scale.z;
+    tmpAABB.upperBound.x *= scale.x;
+    tmpAABB.upperBound.y *= scale.y;
+    tmpAABB.upperBound.z *= scale.z;
     this.aabbQuery(tmpAABB, result);
 
     return result;

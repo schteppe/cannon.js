@@ -277,7 +277,7 @@ CANNON.Demo = function(options){
                 for(var ij=0; ij < 2; ij++){
                     var  mesh = contactMeshCache.request(),
                     c = world.contacts[ci],
-                    b = ij===0 ? c.bi : c.bj,
+                    b = ij===0 ? c.bodyA : c.bodyB,
                     r = ij===0 ? c.ri : c.rj;
                     mesh.position.set( b.position.x + r.x , b.position.y + r.y , b.position.z + r.z );
                 }
@@ -292,7 +292,7 @@ CANNON.Demo = function(options){
                 for(var ij=0; ij < 2; ij++){
                     var line = cm2contactMeshCache.request(),
                         c = world.contacts[ci],
-                        b = ij===0 ? c.bi : c.bj,
+                        b = ij===0 ? c.bodyA : c.bodyB,
                         r = ij===0 ? c.ri : c.rj;
                     line.scale.set( r.x, r.y, r.z);
                     makeSureNotZero(line.scale);
@@ -314,7 +314,7 @@ CANNON.Demo = function(options){
 
                 var nc = c.equations.normal;
 
-                var bi=nc.bi, bj=nc.bj, line = distanceConstraintMeshCache.request();
+                var bi=nc.bodyA, bj=nc.bodyB, line = distanceConstraintMeshCache.request();
                 var i=bi.id, j=bj.id;
 
                 // Remember, bj is either a Vec3 or a Body.
@@ -339,7 +339,7 @@ CANNON.Demo = function(options){
                     continue;
                 }
                 var n = c.equations.normal;
-                var bi=n.bi, bj=n.bj, relLine1 = p2pConstraintMeshCache.request(), relLine2 = p2pConstraintMeshCache.request(), diffLine = p2pConstraintMeshCache.request();
+                var bi=n.bodyA, bj=n.bodyB, relLine1 = p2pConstraintMeshCache.request(), relLine2 = p2pConstraintMeshCache.request(), diffLine = p2pConstraintMeshCache.request();
                 var i=bi.id, j=bj.id;
 
                 relLine1.scale.set( n.ri.x, n.ri.y, n.ri.z );
@@ -350,7 +350,7 @@ CANNON.Demo = function(options){
                 makeSureNotZero(diffLine.scale);
                 relLine1.position.copy(bi.position);
                 relLine2.position.copy(bj.position);
-                n.bj.position.vadd(n.rj,diffLine.position);
+                n.bodyB.position.vadd(n.rj,diffLine.position);
             }
         }
         p2pConstraintMeshCache.hideCached();
@@ -361,7 +361,7 @@ CANNON.Demo = function(options){
         if(settings.normals){
             for(var ci=0; ci<world.contacts.length; ci++){
                 var c = world.contacts[ci];
-                var bi=c.bi, bj=c.bj, line=normalMeshCache.request();
+                var bi=c.bodyA, bj=c.bodyB, line=normalMeshCache.request();
                 var i=bi.id, j=bj.id;
                 var n = c.ni;
                 var b = bi;

@@ -51,8 +51,8 @@ var ContactEquation_computeB_temp3 = new Vec3();
 ContactEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         ri = this.ri,
         rj = this.rj,
         rixn = ContactEquation_computeB_temp1,
@@ -122,11 +122,11 @@ ContactEquation.prototype.getImpactVelocityAlongNormal = function(){
     var xj = ContactEquation_getImpactVelocityAlongNormal_xj;
     var relVel = ContactEquation_getImpactVelocityAlongNormal_relVel;
 
-    this.bi.position.vadd(this.ri, xi);
-    this.bj.position.vadd(this.rj, xj);
+    this.bodyA.position.vadd(this.ri, xi);
+    this.bodyB.position.vadd(this.rj, xj);
 
-    this.bi.getVelocityAtWorldPoint(xi, vi);
-    this.bj.getVelocityAtWorldPoint(xj, vj);
+    this.bodyA.getVelocityAtWorldPoint(xi, vi);
+    this.bodyB.getVelocityAtWorldPoint(xj, vj);
 
     vi.vsub(vj, relVel);
 

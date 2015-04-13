@@ -112,8 +112,8 @@ SplitSolver.prototype.solve = function(dt,world){
     }
     for(var k=0; k!==Neq; k++){
         var eq=equations[k],
-            i=bodies.indexOf(eq.bi),
-            j=bodies.indexOf(eq.bj),
+            i=bodies.indexOf(eq.bodyA),
+            j=bodies.indexOf(eq.bodyB),
             ni=nodes[i],
             nj=nodes[j];
         ni.children.push(nj);

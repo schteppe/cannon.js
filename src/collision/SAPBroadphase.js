@@ -160,20 +160,20 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
 
     // Look through the list
     for(i=0; i !== N; i++){
-        var bi = bodies[i];
+        var bodyA = bodies[i];
 
         for(j=i+1; j < N; j++){
-            var bj = bodies[j];
+            var bodyB = bodies[j];
 
-            if(!this.needBroadphaseCollision(bi,bj)){
+            if(!this.needBroadphaseCollision(bodyA,bodyB)){
                 continue;
             }
 
-            if(!SAPBroadphase.checkBounds(bi,bj,axisIndex)){
+            if(!SAPBroadphase.checkBounds(bodyA,bodyB,axisIndex)){
                 break;
             }
 
-            this.intersectionTest(bi,bj,p1,p2);
+            this.intersectionTest(bodyA,bodyB,p1,p2);
         }
     }
 };
@@ -185,9 +185,9 @@ SAPBroadphase.prototype.sortList = function(){
 
     // Update AABBs
     for(var i = 0; i!==N; i++){
-        var bi = axisList[i];
-        if(bi.aabbNeedsUpdate){
-            bi.computeAABB();
+        var bodyA = axisList[i];
+        if(bodyA.aabbNeedsUpdate){
+            bodyA.computeAABB();
         }
     }
 
@@ -205,32 +205,32 @@ SAPBroadphase.prototype.sortList = function(){
  * Check if the bounds of two bodies overlap, along the given SAP axis.
  * @static
  * @method checkBounds
- * @param  {Body} bi
- * @param  {Body} bj
+ * @param  {Body} bodyA
+ * @param  {Body} bodyB
  * @param  {Number} axisIndex
  * @return {Boolean}
  */
-SAPBroadphase.checkBounds = function(bi, bj, axisIndex){
-    var biPos;
-    var bjPos;
+SAPBroadphase.checkBounds = function(bodyA, bodyB, axisIndex){
+    var bodyAPos;
+    var bodyBPos;
 
     if(axisIndex === 0){
-        biPos = bi.position.x;
-        bjPos = bj.position.x;
+        bodyAPos = bodyA.position.x;
+        bodyBPos = bodyB.position.x;
     } else if(axisIndex === 1){
-        biPos = bi.position.y;
-        bjPos = bj.position.y;
+        bodyAPos = bodyA.position.y;
+        bodyBPos = bodyB.position.y;
     } else if(axisIndex === 2){
-        biPos = bi.position.z;
-        bjPos = bj.position.z;
+        bodyAPos = bodyA.position.z;
+        bodyBPos = bodyB.position.z;
     }
 
-    var ri = bi.boundingRadius,
-        rj = bj.boundingRadius,
-        boundA1 = biPos - ri,
-        boundA2 = biPos + ri,
-        boundB1 = bjPos - rj,
-        boundB2 = bjPos + rj;
+    var ri = bodyA.boundingRadius,
+        rj = bodyB.boundingRadius,
+        boundA1 = bodyAPos - ri,
+        boundA2 = bodyAPos + ri,
+        boundB1 = bodyBPos - rj,
+        boundB2 = bodyBPos + rj;
 
     return boundB1 < boundA2;
 };

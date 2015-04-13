@@ -43,8 +43,8 @@ RotationalMotorEquation.prototype.constructor = RotationalMotorEquation;
 RotationalMotorEquation.prototype.computeB = function(h){
     var a = this.a,
         b = this.b,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
 
         axisA = this.axisA,
         axisB = this.axisB,

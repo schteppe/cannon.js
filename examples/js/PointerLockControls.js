@@ -30,9 +30,9 @@
     cannonBody.addEventListener("collide",function(e){
         var contact = e.contact;
 
-        // contact.bi and contact.bj are the colliding bodies, and contact.ni is the collision normal.
+        // contact.bodyA and contact.bodyB are the colliding bodies, and contact.ni is the collision normal.
         // We do not yet know which one is which! Let's check.
-        if(contact.bi.id == cannonBody.id)  // bi is the player body, flip the contact normal
+        if(contact.bodyA.id == cannonBody.id)  // bi is the player body, flip the contact normal
             contact.ni.negate(contactNormal);
         else
             contactNormal.copy(contact.ni); // bi is something else. Keep the normal as it is

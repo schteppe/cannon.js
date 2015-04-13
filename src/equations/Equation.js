@@ -19,24 +19,24 @@ function Equation(bi,bj,minForce,maxForce){
     /**
      * @property {number} minForce
      */
-    this.minForce = typeof(minForce)==="undefined" ? -1e6 : minForce;
+    this.minForce = minForce===undefined ? -1e6 : minForce;
 
     /**
      * @property {number} maxForce
      */
-    this.maxForce = typeof(maxForce)==="undefined" ? 1e6 : maxForce;
+    this.maxForce = maxForce===undefined ? 1e6 : maxForce;
 
     /**
-     * @property bi
+     * @property bodyA
      * @type {Body}
      */
-    this.bi = bi;
+    this.bodyA = bi;
 
     /**
-     * @property bj
+     * @property bodyB
      * @type {Body}
      */
-    this.bj = bj;
+    this.bodyB = bj;
 
     /**
      * SPOOK parameter
@@ -112,8 +112,8 @@ Equation.prototype.computeB = function(a,b,h){
 Equation.prototype.computeGq = function(){
     var GA = this.jacobianElementA,
         GB = this.jacobianElementB,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         xi = bi.position,
         xj = bj.position;
     return GA.spatial.dot(xi) + GB.spatial.dot(xj);
@@ -129,8 +129,8 @@ var zero = new Vec3();
 Equation.prototype.computeGW = function(){
     var GA = this.jacobianElementA,
         GB = this.jacobianElementB,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         vi = bi.velocity,
         vj = bj.velocity,
         wi = bi.angularVelocity || zero,
@@ -147,8 +147,8 @@ Equation.prototype.computeGW = function(){
 Equation.prototype.computeGWlambda = function(){
     var GA = this.jacobianElementA,
         GB = this.jacobianElementB,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         vi = bi.vlambda,
         vj = bj.vlambda,
         wi = bi.wlambda || zero,
@@ -168,8 +168,8 @@ var iMfi = new Vec3(),
 Equation.prototype.computeGiMf = function(){
     var GA = this.jacobianElementA,
         GB = this.jacobianElementB,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         fi = bi.force,
         ti = bi.torque,
         fj = bj.force,
@@ -197,8 +197,8 @@ var tmp = new Vec3();
 Equation.prototype.computeGiMGt = function(){
     var GA = this.jacobianElementA,
         GB = this.jacobianElementB,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         invMassi = bi.invMassSolve,
         invMassj = bj.invMassSolve,
         invIi = bi.invInertiaWorldSolve,
@@ -233,8 +233,8 @@ var addToWlambda_temp = new Vec3(),
 Equation.prototype.addToWlambda = function(deltalambda){
     var GA = this.jacobianElementA,
         GB = this.jacobianElementB,
-        bi = this.bi,
-        bj = this.bj,
+        bi = this.bodyA,
+        bj = this.bodyB,
         temp = addToWlambda_temp;
 
     // Add to linear velocity

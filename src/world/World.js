@@ -27,7 +27,9 @@ var NaiveBroadphase = require('../collision/NaiveBroadphase');
  * @constructor
  * @extends EventTarget
  */
-function World(){
+function World(options){
+    options = options || {};
+
     EventTarget.apply(this);
 
     /**
@@ -85,6 +87,7 @@ function World(){
     this.default_dt = 1/60;
 
     this.nextId = 0;
+
     /**
      * @property gravity
      * @type {Vec3}
@@ -95,7 +98,7 @@ function World(){
      * @property broadphase
      * @type {Broadphase}
      */
-    this.broadphase = new NaiveBroadphase();
+    this.broadphase = options.broadphase !== undefined ? options.broadphase : new NaiveBroadphase();
 
     /**
      * @property bodies
@@ -655,10 +658,10 @@ World.prototype.internalStep = function(dt){
         var c = contacts[k];
 
         // Get current collision indeces
-        var bi = c.bi,
-            bj = c.bj,
-            si = c.si,
-            sj = c.sj;
+        var bi = c.bodyA,
+            bj = c.bodyB,
+            si = c.shapeA,
+            sj = c.shapeB;
 
         // Get collision properties
         var cm;
@@ -706,8 +709,8 @@ World.prototype.internalStep = function(dt){
 		// 	var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
 		// 	this.frictionEquations.push(c1, c2);
 
-		// 	c1.bi = c2.bi = bi;
-		// 	c1.bj = c2.bj = bj;
+		// 	c1.bodyA = c2.bodyA = bi;
+		// 	c1.bodyB = c2.bodyB = bj;
 		// 	c1.minForce = c2.minForce = -mug*reducedMass;
 		// 	c1.maxForce = c2.maxForce = mug*reducedMass;
 

@@ -57,8 +57,8 @@ Narrowphase.prototype.createContactEquation = function(bi, bj, si, sj, rsi, rsj)
     var c;
     if(this.contactPointPool.length){
         c = this.contactPointPool.pop();
-        c.bi = bi;
-        c.bj = bj;
+        c.bodyA = bi;
+        c.bodyB = bj;
     } else {
         c = new ContactEquation(bi, bj);
     }
@@ -81,17 +81,17 @@ Narrowphase.prototype.createContactEquation = function(bi, bj, si, sj, rsi, rsj)
         c.restitution = matA.restitution * matB.restitution;
     }
 
-    c.si = rsi || si;
-    c.sj = rsj || sj;
+    c.shapeA = rsi || si;
+    c.shapeB = rsj || sj;
 
     return c;
 };
 
 Narrowphase.prototype.createFrictionEquationsFromContact = function(contactEquation, outArray){
-    var bodyA = contactEquation.bi;
-    var bodyB = contactEquation.bj;
-    var shapeA = contactEquation.si;
-    var shapeB = contactEquation.sj;
+    var bodyA = contactEquation.bodyA;
+    var bodyB = contactEquation.bodyB;
+    var shapeA = contactEquation.shapeA;
+    var shapeB = contactEquation.shapeB;
 
     var world = this.world;
     var cm = this.currentContactMaterial;
@@ -116,8 +116,8 @@ Narrowphase.prototype.createFrictionEquationsFromContact = function(contactEquat
         var c1 = pool.length ? pool.pop() : new FrictionEquation(bodyA,bodyB,mug*reducedMass);
         var c2 = pool.length ? pool.pop() : new FrictionEquation(bodyA,bodyB,mug*reducedMass);
 
-        c1.bi = c2.bi = bodyA;
-        c1.bj = c2.bj = bodyB;
+        c1.bodyA = c2.bodyA = bodyA;
+        c1.bodyB = c2.bodyB = bodyB;
         c1.minForce = c2.minForce = -mug*reducedMass;
         c1.maxForce = c2.maxForce = mug*reducedMass;
 
@@ -165,8 +165,8 @@ Narrowphase.prototype.createFrictionFromAverage = function(numContacts){
     averageContactPointA.setZero();
     averageContactPointB.setZero();
 
-    var bodyA = c.bi;
-    var bodyB = c.bj;
+    var bodyA = c.bodyA;
+    var bodyB = c.bodyB;
     for(var i=0; i!==numContacts; i++){
         c = this.result[this.result.length - 1 - i];
         if(c.bodyA !== bodyA){
