@@ -60,8 +60,18 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.registerTask('default', ['concat', 'browserify', 'uglify', 'addLicense', 'requireJsFix']);
+    grunt.registerTask('default', ['test', 'concat', 'browserify', 'uglify', 'addLicense', 'addDate', 'requireJsFix']);
     grunt.registerTask('test', ['nodeunit']);
+
+    grunt.registerTask('addDate','Adds the current date to the top of the built files',function(){
+        var text = '// ' + new Date().toUTCString() + '\n';
+
+        var dev = fs.readFileSync(bundlePath).toString();
+        var min = fs.readFileSync(minifiedBundlePath).toString();
+
+        fs.writeFileSync(bundlePath,text+"\n"+dev);
+        fs.writeFileSync(minifiedBundlePath,text+"\n"+min);
+    });
 
     grunt.registerTask('addLicense','Adds the LICENSE to the top of the built files',function(){
         var text = fs.readFileSync("LICENSE").toString();
