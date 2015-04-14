@@ -51,9 +51,15 @@ function Narrowphase(world){
 /**
  * Make a contact object, by using the internal pool or creating a new one.
  * @method createContactEquation
+ * @param {Body} bi
+ * @param {Body} bj
+ * @param {Shape} si
+ * @param {Shape} sj
+ * @param {Shape} overrideShapeA
+ * @param {Shape} overrideShapeB
  * @return {ContactEquation}
  */
-Narrowphase.prototype.createContactEquation = function(bi, bj, si, sj, rsi, rsj){
+Narrowphase.prototype.createContactEquation = function(bi, bj, si, sj, overrideShapeA, overrideShapeB){
     var c;
     if(this.contactPointPool.length){
         c = this.contactPointPool.pop();
@@ -81,8 +87,8 @@ Narrowphase.prototype.createContactEquation = function(bi, bj, si, sj, rsi, rsj)
         c.restitution = matA.restitution * matB.restitution;
     }
 
-    c.si = rsi || si;
-    c.sj = rsj || sj;
+    c.si = overrideShapeA || si;
+    c.sj = overrideShapeB || sj;
 
     return c;
 };
@@ -317,9 +323,9 @@ Narrowphase.prototype.boxParticle = function(si,sj,xi,xj,qi,qj,bi,bj){
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.SPHERE] =
-Narrowphase.prototype.sphereSphere = function(si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.sphereSphere = function(si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
     // We will have only one contact in this case
-    var r = this.createContactEquation(bi,bj,si,sj);
+    var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
 
     // Contact normal
     xj.vsub(xi, r.ni);
@@ -365,7 +371,9 @@ Narrowphase.prototype.planeTrimesh = function(
     planeQuat,
     trimeshQuat,
     planeBody,
-    trimeshBody
+    trimeshBody,
+    rsi,
+    rsj
 ){
     // Make contacts!
     var v = new Vec3();
@@ -390,7 +398,7 @@ Narrowphase.prototype.planeTrimesh = function(
         var dot = normal.dot(relpos);
 
         if(dot <= 0.0){
-            var r = this.createContactEquation(planeBody,trimeshBody,planeShape,trimeshShape);
+            var r = this.createContactEquation(planeBody,trimeshBody,planeShape,trimeshShape,rsi,rsj);
 
             r.ni.copy(normal); // Contact normal is the plane normal
 
@@ -449,7 +457,9 @@ Narrowphase.prototype.sphereTrimesh = function (
     sphereQuat,
     trimeshQuat,
     sphereBody,
-    trimeshBody
+    trimeshBody,
+    rsi,
+    rsj
 ) {
 
     var edgeVertexA = sphereTrimesh_edgeVertexA;
@@ -501,7 +511,7 @@ Narrowphase.prototype.sphereTrimesh = function (
 
                 v.vsub(spherePos, relpos);
 
-                var r = this.createContactEquation(sphereBody,trimeshBody,sphereShape,trimeshShape);
+                var r = this.createContactEquation(sphereBody,trimeshBody,sphereShape,trimeshShape,rsi,rsj);
                 r.ni.copy(relpos);
                 r.ni.normalize();
 
@@ -551,7 +561,7 @@ Narrowphase.prototype.sphereTrimesh = function (
                 // tmp is now the sphere center position projected to the edge, defined locally in the trimesh frame
                 var dist = tmp.distanceTo(localSpherePos);
                 if(dist < sphereShape.radius){
-                    var r = this.createContactEquation(sphereBody, trimeshBody, sphereShape, trimeshShape);
+                    var r = this.createContactEquation(sphereBody, trimeshBody, sphereShape, trimeshShape,rsi,rsj);
 
                     tmp.vsub(localSpherePos, r.ni);
                     r.ni.normalize();
@@ -586,7 +596,7 @@ Narrowphase.prototype.sphereTrimesh = function (
         // tmp is now the sphere position projected to the triangle plane
         dist = tmp.distanceTo(localSpherePos);
         if(Ray.pointInTriangle(tmp, va, vb, vc) && dist < sphereShape.radius){
-            var r = this.createContactEquation(sphereBody, trimeshBody, sphereShape, trimeshShape);
+            var r = this.createContactEquation(sphereBody, trimeshBody, sphereShape, trimeshShape,rsi,rsj);
 
             tmp.vsub(localSpherePos, r.ni);
             r.ni.normalize();
@@ -621,9 +631,9 @@ var plane_to_sphere_ortho = new Vec3();
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.SPHERE | Shape.types.PLANE] =
-Narrowphase.prototype.spherePlane = function(si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.spherePlane = function(si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
     // We will have one contact in this case
-    var r = this.createContactEquation(bi,bj,si,sj);
+    var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
 
     // Contact normal
     r.ni.set(0,0,1);
@@ -717,7 +727,7 @@ var sphereBox_side_ns2 = new Vec3();
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.SPHERE | Shape.types.BOX] =
-Narrowphase.prototype.sphereBox = function(si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.sphereBox = function(si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
     var v3pool = this.v3pool;
 
     // we refer to the box as body j
@@ -779,7 +789,7 @@ Narrowphase.prototype.sphereBox = function(si,sj,xi,xj,qi,qj,bi,bj){
     }
     if(side_penetrations){
         found = true;
-        var r = this.createContactEquation(bi,bj,si,sj);
+        var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
         side_ns.mult(-R,r.ri); // Sphere r
         r.ni.copy(side_ns);
         r.ni.negate(r.ni); // Normal should be out of sphere
@@ -828,7 +838,7 @@ Narrowphase.prototype.sphereBox = function(si,sj,xi,xj,qi,qj,bi,bj){
 
                 if(sphere_to_corner.norm2() < R*R){
                     found = true;
-                    var r = this.createContactEquation(bi,bj,si,sj);
+                    var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
                     r.ri.copy(sphere_to_corner);
                     r.ri.normalize();
                     r.ni.copy(r.ri);
@@ -888,7 +898,7 @@ Narrowphase.prototype.sphereBox = function(si,sj,xi,xj,qi,qj,bi,bj){
 
                 if(tdist < sides[l].norm() && ndist<R){
                     found = true;
-                    var res = this.createContactEquation(bi,bj,si,sj);
+                    var res = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
                     edgeCenter.vadd(orthogonal,res.rj); // box rj
                     res.rj.copy(res.rj);
                     dist.negate(res.ni);
@@ -938,7 +948,7 @@ var sphereConvex_sphereToWorldPoint = new Vec3();
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.SPHERE | Shape.types.CONVEXPOLYHEDRON] =
-Narrowphase.prototype.sphereConvex = function(si,sj,xi,xj,qi,qj,bi,bj){
+Narrowphase.prototype.sphereConvex = function(si,sj,xi,xj,qi,qj,bi,bj,rsi,rsj){
     var v3pool = this.v3pool;
     xi.vsub(xj,convex_to_sphere);
     var normals = sj.faceNormals;
@@ -963,7 +973,7 @@ Narrowphase.prototype.sphereConvex = function(si,sj,xi,xj,qi,qj,bi,bj){
         worldCorner.vsub(xi, sphere_to_corner);
         if(sphere_to_corner.norm2() < R * R){
             found = true;
-            var r = this.createContactEquation(bi,bj,si,sj);
+            var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
             r.ri.copy(sphere_to_corner);
             r.ri.normalize();
             r.ni.copy(r.ri);
@@ -1026,7 +1036,7 @@ Narrowphase.prototype.sphereConvex = function(si,sj,xi,xj,qi,qj,bi,bj){
 
             if(pointInPolygon(faceVerts,worldNormal,xi)){ // Is the sphere center in the face polygon?
                 found = true;
-                var r = this.createContactEquation(bi,bj,si,sj);
+                var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
 
                 worldNormal.mult(-R, r.ri); // Contact offset, from sphere center to contact
                 worldNormal.negate(r.ni); // Normal pointing out of sphere
@@ -1097,7 +1107,7 @@ Narrowphase.prototype.sphereConvex = function(si,sj,xi,xj,qi,qj,bi,bj){
                     // AND if p is in between v1 and v2
                     if(dot > 0 && dot*dot<edge.norm2() && xi_to_p.norm2() < R*R){ // Collision if the edge-sphere distance is less than the radius
                         // Edge contact!
-                        var r = this.createContactEquation(bi,bj,si,sj);
+                        var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
                         p.vsub(xj,r.rj);
 
                         p.vsub(xi,r.ni);
@@ -1165,7 +1175,8 @@ Narrowphase.prototype[Shape.types.PLANE | Shape.types.BOX] =
 Narrowphase.prototype.planeBox = function(si,sj,xi,xj,qi,qj,bi,bj){
     sj.convexPolyhedronRepresentation.material = sj.material;
     sj.convexPolyhedronRepresentation.collisionResponse = sj.collisionResponse;
-    this.planeConvex(si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj);
+    sj.convexPolyhedronRepresentation.id = sj.id;
+    this.planeConvex(si,sj.convexPolyhedronRepresentation,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
 var planeConvex_v = new Vec3();
@@ -1193,7 +1204,9 @@ Narrowphase.prototype.planeConvex = function(
     planeQuat,
     convexQuat,
     planeBody,
-    convexBody
+    convexBody,
+    si,
+    sj
 ){
     // Simply return the points behind the plane.
     var worldVertex = planeConvex_v,
@@ -1214,7 +1227,7 @@ Narrowphase.prototype.planeConvex = function(
         var dot = worldNormal.dot(relpos);
         if(dot <= 0.0){
 
-            var r = this.createContactEquation(planeBody, convexBody, planeShape, convexShape);
+            var r = this.createContactEquation(planeBody, convexBody, planeShape, convexShape, si, sj);
 
             // Get vertex position projected on plane
             var projected = planeConvex_projected;
@@ -1403,7 +1416,7 @@ var particlePlane_projected = new Vec3();
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.PLANE | Shape.types.PARTICLE] =
-Narrowphase.prototype.planeParticle = function(sj,si,xj,xi,qj,qi,bj,bi){
+Narrowphase.prototype.planeParticle = function(sj,si,xj,xi,qj,qi,bj,bi,rsi,rsj){
     var normal = particlePlane_normal;
     normal.set(0,0,1);
     bj.quaternion.vmult(normal,normal); // Turn normal according to plane orientation
@@ -1411,7 +1424,7 @@ Narrowphase.prototype.planeParticle = function(sj,si,xj,xi,qj,qi,bj,bi){
     xi.vsub(bj.position,relpos);
     var dot = normal.dot(relpos);
     if(dot <= 0.0){
-        var r = this.createContactEquation(bi,bj,si,sj);
+        var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
         r.ni.copy(normal); // Contact normal is the plane normal
         r.ni.negate(r.ni);
         r.ri.set(0,0,0); // Center of particle
@@ -1444,7 +1457,7 @@ var particleSphere_normal = new Vec3();
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.PARTICLE | Shape.types.SPHERE] =
-Narrowphase.prototype.sphereParticle = function(sj,si,xj,xi,qj,qi,bj,bi){
+Narrowphase.prototype.sphereParticle = function(sj,si,xj,xi,qj,qi,bj,bi,rsi,rsj){
     // The normal is the unit vector from sphere center to particle center
     var normal = particleSphere_normal;
     normal.set(0,0,1);
@@ -1452,7 +1465,7 @@ Narrowphase.prototype.sphereParticle = function(sj,si,xj,xi,qj,qi,bj,bi){
     var lengthSquared = normal.norm2();
 
     if(lengthSquared <= sj.radius * sj.radius){
-        var r = this.createContactEquation(bi,bj,si,sj);
+        var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
         normal.normalize();
         r.rj.copy(normal);
         r.rj.mult(sj.radius,r.rj);
@@ -1485,7 +1498,7 @@ var convexParticle_worldPenetrationVec = new Vec3();
  * @param  {Body}       bj
  */
 Narrowphase.prototype[Shape.types.PARTICLE | Shape.types.CONVEXPOLYHEDRON] =
-Narrowphase.prototype.convexParticle = function(sj,si,xj,xi,qj,qi,bj,bi){
+Narrowphase.prototype.convexParticle = function(sj,si,xj,xi,qj,qi,bj,bi,rsi,rsj){
     var penetratedFaceIndex = -1;
     var penetratedFaceNormal = convexParticle_penetratedFaceNormal;
     var worldPenetrationVec = convexParticle_worldPenetrationVec;
@@ -1528,7 +1541,7 @@ Narrowphase.prototype.convexParticle = function(sj,si,xj,xi,qj,qi,bj,bi){
 
         if(penetratedFaceIndex!==-1){
             // Setup contact
-            var r = this.createContactEquation(bi,bj,si,sj);
+            var r = this.createContactEquation(bi,bj,si,sj,rsi,rsj);
             penetratedFaceNormal.mult(minPenetration, worldPenetrationVec);
 
             // rj is the particle position projected to the face
@@ -1563,7 +1576,7 @@ Narrowphase.prototype[Shape.types.BOX | Shape.types.HEIGHTFIELD] =
 Narrowphase.prototype.boxHeightfield = function (si,sj,xi,xj,qi,qj,bi,bj){
     si.convexPolyhedronRepresentation.material = si.material;
     si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
-    this.convexHeightfield(si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj);
+    this.convexHeightfield(si.convexPolyhedronRepresentation,sj,xi,xj,qi,qj,bi,bj,si,sj);
 };
 
 var convexHeightfield_tmp1 = new Vec3();
