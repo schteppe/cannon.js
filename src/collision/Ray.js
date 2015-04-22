@@ -251,7 +251,7 @@ Ray.prototype.intersectShape = function(shape, quat, position, body){
 
     var intersectMethod = this[shape.type];
     if(intersectMethod){
-        intersectMethod.call(this, shape, quat, position, body);
+        intersectMethod.call(this, shape, quat, position, body, shape);
     }
 };
 
@@ -274,8 +274,8 @@ var tmpRaycastResult = new RaycastResult();
  * @param  {Vec3} position
  * @param  {Body} body
  */
-Ray.prototype.intersectBox = function(shape, quat, position, body){
-    return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body);
+Ray.prototype.intersectBox = function(shape, quat, position, body, reportedShape){
+    return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body, reportedShape);
 };
 Ray.prototype[Shape.types.BOX] = Ray.prototype.intersectBox;
 
@@ -287,7 +287,7 @@ Ray.prototype[Shape.types.BOX] = Ray.prototype.intersectBox;
  * @param  {Vec3} position
  * @param  {Body} body
  */
-Ray.prototype.intersectPlane = function(shape, quat, position, body){
+Ray.prototype.intersectPlane = function(shape, quat, position, body, reportedShape){
     var from = this.from;
     var to = this.to;
     var direction = this._direction;
@@ -327,7 +327,7 @@ Ray.prototype.intersectPlane = function(shape, quat, position, body){
     direction.scale(t, dir_scaled_with_t);
     from.vadd(dir_scaled_with_t, hitPointWorld);
 
-    this.reportIntersection(worldNormal, hitPointWorld, shape, body, -1);
+    this.reportIntersection(worldNormal, hitPointWorld, reportedShape, body, -1);
 };
 Ray.prototype[Shape.types.PLANE] = Ray.prototype.intersectPlane;
 
@@ -359,7 +359,7 @@ var intersectConvexOptions = {
  * @param  {Vec3} position
  * @param  {Body} body
  */
-Ray.prototype.intersectHeightfield = function(shape, quat, position, body){
+Ray.prototype.intersectHeightfield = function(shape, quat, position, body, reportedShape){
     var data = shape.data,
         w = shape.elementSize,
         worldPillarOffset = new Vec3();
@@ -418,7 +418,7 @@ Ray.prototype.intersectHeightfield = function(shape, quat, position, body){
             // Lower triangle
             shape.getConvexTrianglePillar(i, j, false);
             Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
-            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, intersectConvexOptions);
+            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, reportedShape, intersectConvexOptions);
 
             if(this.result._shouldStop){
                 return;
@@ -427,7 +427,7 @@ Ray.prototype.intersectHeightfield = function(shape, quat, position, body){
             // Upper triangle
             shape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
-            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, intersectConvexOptions);
+            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, reportedShape, intersectConvexOptions);
         }
     }
 };
@@ -444,7 +444,7 @@ var Ray_intersectSphere_normal = new Vec3();
  * @param  {Vec3} position
  * @param  {Body} body
  */
-Ray.prototype.intersectSphere = function(shape, quat, position, body){
+Ray.prototype.intersectSphere = function(shape, quat, position, body, reportedShape){
     var from = this.from,
         to = this.to,
         r = shape.radius;
@@ -469,7 +469,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
         intersectionPoint.vsub(position, normal);
         normal.normalize();
 
-        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+        this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
 
     } else {
         var d1 = (- b - Math.sqrt(delta)) / (2 * a);
@@ -479,7 +479,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
             from.lerp(to, d1, intersectionPoint);
             intersectionPoint.vsub(position, normal);
             normal.normalize();
-            this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+            this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
         }
 
         if(this.result._shouldStop){
@@ -490,7 +490,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
             from.lerp(to, d2, intersectionPoint);
             intersectionPoint.vsub(position, normal);
             normal.normalize();
-            this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+            this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
         }
     }
 };
@@ -517,6 +517,7 @@ Ray.prototype.intersectConvex = function intersectConvex(
     quat,
     position,
     body,
+    reportedShape,
     options
 ){
     var minDistNormal = intersectConvex_minDistNormal;
@@ -603,7 +604,7 @@ Ray.prototype.intersectConvex = function intersectConvex(
                 continue;
             }
 
-            this.reportIntersection(normal, intersectPoint, shape, body, fi);
+            this.reportIntersection(normal, intersectPoint, reportedShape, body, fi);
         }
         // }
     }
@@ -636,6 +637,7 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
     quat,
     position,
     body,
+    reportedShape,
     options
 ){
     var normal = intersectTrimesh_normal;
@@ -731,7 +733,7 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
         // transform intersectpoint and normal to world
         Transform.vectorToWorldFrame(quat, normal, worldNormal);
         Transform.pointToWorldFrame(position, quat, intersectPoint, worldIntersectPoint);
-        this.reportIntersection(worldNormal, worldIntersectPoint, mesh, body, trianglesIndex);
+        this.reportIntersection(worldNormal, worldIntersectPoint, reportedShape, body, trianglesIndex);
     }
     triangles.length = 0;
 };
