@@ -34,9 +34,8 @@ The sample code below creates a sphere on a plane, steps the simulation, and pri
 
 ```javascript
 // Setup our world
-var world = new CANNON.World({
-   gravity: new CANNON.Vec3(0, 0, -9.82) // m/s²
-});
+var world = new CANNON.World();
+world.gravity.set(0, 0, -9.82); // m/s²
 
 // Create a sphere
 var radius = 1; // m
