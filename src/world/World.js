@@ -298,7 +298,7 @@ World.prototype.removeConstraint = function(c){
  * @method rayTest
  * @param {Vec3} from
  * @param {Vec3} to
- * @param {Function|RaycastResult} result
+ * @param {RaycastResult} result
  * @deprecated Use .raycastAll, .raycastClosest or .raycastAny instead.
  */
 World.prototype.rayTest = function(from, to, result){

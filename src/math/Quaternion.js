@@ -85,8 +85,8 @@ Quaternion.prototype.setFromAxisAngle = function(axis,angle){
 /**
  * Converts the quaternion to axis/angle representation.
  * @method toAxisAngle
- * @param {Vec3} targetAxis Optional. A vector object to reuse for storing the axis.
- * @return Array An array, first elemnt is the axis and the second is the angle in radians.
+ * @param {Vec3} [targetAxis] A vector object to reuse for storing the axis.
+ * @return {Array} An array, first elemnt is the axis and the second is the angle in radians.
  */
 Quaternion.prototype.toAxisAngle = function(targetAxis){
     targetAxis = targetAxis || new Vec3();
