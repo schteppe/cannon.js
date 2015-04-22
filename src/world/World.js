@@ -26,8 +26,16 @@ var NaiveBroadphase = require('../collision/NaiveBroadphase');
  * @class World
  * @constructor
  * @extends EventTarget
+ * @param {object} [options]
+ * @param {Vec3} [options.gravity]
+ * @param {boolean} [options.allowSleep]
+ * @param {Broadphase} [options.broadphase]
+ * @param {Solver} [options.solver]
+ * @param {boolean} [options.quatNormalizeFast]
+ * @param {number} [options.quatNormalizeSkip]
  */
-function World(){
+function World(options){
+    options = options || {};
     EventTarget.apply(this);
 
     /**
@@ -40,8 +48,9 @@ function World(){
      * Makes bodies go to sleep when they've been inactive
      * @property allowSleep
      * @type {Boolean}
+     * @default false
      */
-    this.allowSleep = false;
+    this.allowSleep = !!options.allowSleep;
 
     /**
      * All the current contacts (instances of ContactEquation) in the world.
@@ -55,8 +64,9 @@ function World(){
      * How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).
      * @property quatNormalizeSkip
      * @type {Number}
+     * @default 0
      */
-    this.quatNormalizeSkip = 0;
+    this.quatNormalizeSkip = options.quatNormalizeSkip !== undefined ? options.quatNormalizeSkip : 0;
 
     /**
      * Set to true to use fast quaternion normalization. It is often enough accurate to use. If bodies tend to explode, set to false.
@@ -64,8 +74,9 @@ function World(){
      * @type {Boolean}
      * @see Quaternion.normalizeFast
      * @see Quaternion.normalize
+     * @default false
      */
-    this.quatNormalizeFast = false;
+    this.quatNormalizeFast = options.quatNormalizeFast !== undefined ? options.quatNormalizeFast : false;
 
     /**
      * The wall-clock time since simulation start
@@ -90,12 +101,16 @@ function World(){
      * @type {Vec3}
      */
     this.gravity = new Vec3();
+    if(options.gravity){
+        this.gravity.copy(options.gravity);
+    }
 
     /**
+     * The broadphase algorithm to use. Default is NaiveBroadphase
      * @property broadphase
      * @type {Broadphase}
      */
-    this.broadphase = new NaiveBroadphase();
+    this.broadphase = options.broadphase !== undefined ? options.broadphase : new NaiveBroadphase();
 
     /**
      * @property bodies
@@ -104,10 +119,11 @@ function World(){
     this.bodies = [];
 
     /**
+     * The solver algorithm to use. Default is GSSolver
      * @property solver
      * @type {Solver}
      */
-    this.solver = new GSSolver();
+    this.solver = options.solver !== undefined ? options.solver : new GSSolver();
 
     /**
      * @property constraints
