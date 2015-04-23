@@ -111,6 +111,7 @@ function World(options){
      * @type {Broadphase}
      */
     this.broadphase = options.broadphase !== undefined ? options.broadphase : new NaiveBroadphase();
+    this.broadphase.setWorld(this);
 
     /**
      * @property bodies
