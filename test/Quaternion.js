@@ -73,4 +73,18 @@ module.exports = {
 
         test.done();
     },
+
+    slerp: function(test){
+        var qa = new Quaternion();
+        var qb = new Quaternion();
+        qa.slerp(qb, 0.5, qb);
+        test.deepEqual(qa, qb);
+
+        qa.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 4);
+        qb.setFromAxisAngle(new Vec3(0, 0, 1), -Math.PI / 4);
+        qa.slerp(qb, 0.5, qb);
+        test.deepEqual(qb, new Quaternion());
+
+        test.done();
+    }
 };
