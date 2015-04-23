@@ -27,7 +27,7 @@
 
         demo.addScene("lock",function(){
             var world = setupWorld(demo);
-            world.solver.iterations = 50;
+            world.solver.iterations = 20;
             world.gravity.set(0,0,-10);
             var size = 0.5;
             var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
