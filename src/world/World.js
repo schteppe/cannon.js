@@ -197,6 +197,12 @@ function World(options){
     };
 
     /**
+     * Time accumulator for interpolation. See http://gafferongames.com/game-physics/fix-your-timestep/
+     * @property {Number} accumulator
+     */
+    this.accumulator = 0;
+
+    /**
      * @property subsystems
      * @type {Array}
      */
@@ -495,48 +501,23 @@ World.prototype.step = function(dt, timeSinceLastCalled, maxSubSteps){
 
     } else {
 
-        // Compute the number of fixed steps we should have taken since the last step
-        var internalSteps = Math.floor((this.time + timeSinceLastCalled) / dt) - Math.floor(this.time / dt);
-        internalSteps = Math.min(internalSteps,maxSubSteps);
-
-        // Do some fixed steps to catch up
-        var t0 = performance.now();
-        for(var i=0; i!==internalSteps; i++){
+        this.accumulator += timeSinceLastCalled;
+        var substeps = 0;
+        while (this.accumulator >= dt && substeps < maxSubSteps) {
+            // Do fixed steps to catch up
             this.internalStep(dt);
-            if(performance.now() - t0 > dt * 1000){
-                // We are slower than real-time. Better bail out.
-                break;
-            }
+            this.accumulator -= dt;
+            substeps++;
         }
 
-        // Increment internal clock
+        var t = (this.accumulator % dt) / dt;
+        for(var j=0; j !== this.bodies.length; j++){
+            var b = this.bodies[j];
+            b.previousPosition.lerp(b.position, t, b.interpolatedPosition);
+            b.previousQuaternion.slerp(b.quaternion, t, b.interpolatedQuaternion);
+            b.previousQuaternion.normalize();
+        }
         this.time += timeSinceLastCalled;
-
-        // Compute "Left over" time step
-        var h = this.time % dt;
-        var h_div_dt = h / dt;
-        var interpvelo = step_tmp1;
-        var bodies = this.bodies;
-
-        for(var j=0; j !== bodies.length; j++){
-            var b = bodies[j];
-            if(b.type !== Body.STATIC && b.sleepState !== Body.SLEEPING){
-
-                // Interpolate
-                b.position.vsub(b.previousPosition, interpvelo);
-                interpvelo.scale(h_div_dt, interpvelo);
-                b.position.vadd(interpvelo, b.interpolatedPosition);
-
-                // TODO: interpolate quaternion
-                // b.interpolatedAngle = b.angle + (b.angle - b.previousAngle) * h_div_dt;
-
-            } else {
-
-                // For static bodies, just copy. Who else will do it?
-                b.interpolatedPosition.copy(b.position);
-                b.interpolatedQuaternion.copy(b.quaternion);
-            }
-        }
     }
 };
 
@@ -883,6 +864,11 @@ World.prototype.internalStep = function(dt){
         var b = bodies[i],
             force = b.force,
             tau = b.torque;
+
+        // Save previous position
+        b.previousPosition.copy(b.position);
+        b.previousQuaternion.copy(b.quaternion);
+
         if((b.type & DYNAMIC_OR_KINEMATIC) && b.sleepState !== Body.SLEEPING){ // Only for dynamic
             var velo = b.velocity,
                 angularVelo = b.angularVelocity,

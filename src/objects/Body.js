@@ -101,6 +101,14 @@ function Body(options){
      * @property {Vec3} previousPosition
      */
     this.previousPosition = new Vec3();
+    if(options.position){
+        this.previousPosition.copy(options.position);
+    }
+
+    /**
+     * @property {Quaternion} previousQuaternion
+     */
+    this.previousQuaternion = new Quaternion();
 
     /**
      * Initial position of the body
@@ -244,7 +252,16 @@ function Body(options){
      */
     this.initAngularVelocity = new Vec3();
 
+    /**
+     * Interpolated position of the body.
+     * @property {Vec3} interpolatedPosition
+     */
     this.interpolatedPosition = new Vec3();
+
+    /**
+     * Interpolated orientation of the body.
+     * @property {Quaternion} interpolatedQuaternion
+     */
     this.interpolatedQuaternion = new Quaternion();
 
     /**
