@@ -111,7 +111,6 @@ function World(options){
      * @type {Broadphase}
      */
     this.broadphase = options.broadphase !== undefined ? options.broadphase : new NaiveBroadphase();
-    this.broadphase.setWorld(this);
 
     /**
      * @property bodies
@@ -228,6 +227,8 @@ function World(options){
         type:"removeBody",
         body : null,
     };
+
+    this.broadphase.setWorld(this);
 }
 World.prototype = new EventTarget();
 
