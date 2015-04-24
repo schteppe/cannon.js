@@ -48,6 +48,7 @@ Quaternion.prototype.set = function(x,y,z,w){
     this.y = y;
     this.z = z;
     this.w = w;
+    return this;
 };
 
 /**
@@ -80,6 +81,7 @@ Quaternion.prototype.setFromAxisAngle = function(axis,angle){
     this.y = axis.y * s;
     this.z = axis.z * s;
     this.w = Math.cos(angle*0.5);
+    return this;
 };
 
 /**
@@ -130,6 +132,7 @@ Quaternion.prototype.setFromVectors = function(u,v){
         this.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + u.dot(v);
         this.normalize();
     }
+    return this;
 };
 
 /**
@@ -216,6 +219,7 @@ Quaternion.prototype.normalize = function(){
         this.z *= l;
         this.w *= l;
     }
+    return this;
 };
 
 /**
@@ -237,6 +241,7 @@ Quaternion.prototype.normalizeFast = function () {
         this.z *= f;
         this.w *= f;
     }
+    return this;
 };
 
 /**
@@ -391,7 +396,6 @@ Quaternion.prototype.setFromEuler = function ( x, y, z, order ) {
     }
 
     return this;
-
 };
 
 /**
