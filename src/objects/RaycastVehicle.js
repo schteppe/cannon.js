@@ -188,7 +188,7 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
         wheel.raycastResult.hitNormalWorld.scale(suspensionForce * timeStep, impulse);
 
         wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, relpos);
-        chassisBody.applyImpulse(impulse, wheel.raycastResult.hitPointWorld/*relpos*/);
+        chassisBody.applyImpulse(impulse, relpos);
     }
 
     this.updateFriction(timeStep);
@@ -578,9 +578,9 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
         var wheel = wheelInfos[i];
 
         var rel_pos = new Vec3();
-        //wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, rel_pos);
+        wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, rel_pos);
         // cannons applyimpulse is using world coord for the position
-        rel_pos.copy(wheel.raycastResult.hitPointWorld);
+        //rel_pos.copy(wheel.raycastResult.hitPointWorld);
 
         if (wheel.forwardImpulse !== 0) {
             var impulse = new Vec3();
@@ -592,16 +592,16 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
             var groundObject = wheel.raycastResult.body;
 
             var rel_pos2 = new Vec3();
-            //wheel.raycastResult.hitPointWorld.vsub(groundObject.position, rel_pos2);
-            rel_pos2.copy(wheel.raycastResult.hitPointWorld);
+            wheel.raycastResult.hitPointWorld.vsub(groundObject.position, rel_pos2);
+            //rel_pos2.copy(wheel.raycastResult.hitPointWorld);
             var sideImp = new Vec3();
             axle[i].scale(wheel.sideImpulse, sideImp);
 
             // Scale the relative position in the up direction with rollInfluence.
             // If rollInfluence is 1, the impulse will be applied on the hitPoint (easy to roll over), if it is zero it will be applied in the same plane as the center of mass (not easy to roll over).
-            chassisBody.pointToLocalFrame(rel_pos, rel_pos);
+            chassisBody.vectorToLocalFrame(rel_pos, rel_pos);
             rel_pos['xyz'[this.indexUpAxis]] *= wheel.rollInfluence;
-            chassisBody.pointToWorldFrame(rel_pos, rel_pos);
+            chassisBody.vectorToWorldFrame(rel_pos, rel_pos);
             chassisBody.applyImpulse(sideImp, rel_pos);
 
             //apply friction impulse on the ground
