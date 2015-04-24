@@ -33,7 +33,7 @@
             var groundShape = new CANNON.Plane();
             var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial });
             groundBody.addShape(groundShape);
-            world.add(groundBody);
+            world.addBody(groundBody);
             demo.addVisual(groundBody);
 
             var mass = 10;
@@ -45,7 +45,7 @@
             shapeBody1.addShape(sphereShape);
             shapeBody1.position.set(3*size, size, height);
             shapeBody1.linearDamping = damping;
-            world.add(shapeBody1);
+            world.addBody(shapeBody1);
             demo.addVisual(shapeBody1);
 
             var mat2 = new CANNON.Material();
@@ -53,7 +53,7 @@
             shapeBody2.addShape(sphereShape);
             shapeBody2.position.set(0 , size , height);
             shapeBody2.linearDamping = damping;
-            world.add(shapeBody2);
+            world.addBody(shapeBody2);
             demo.addVisual(shapeBody2);
 
             var mat3 = new CANNON.Material();
@@ -61,7 +61,7 @@
             shapeBody3.addShape(sphereShape);
             shapeBody3.position.set(-3*size , size , height);
             shapeBody3.linearDamping = damping;
-            world.add(shapeBody3);
+            world.addBody(shapeBody3);
             demo.addVisual(shapeBody3);
 
             // Create contact material behaviour

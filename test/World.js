@@ -311,7 +311,7 @@ module.exports = {
                     var body = new Body({ mass: 1 });
                     body.addShape(new Sphere(1.1));
                     body.position.set.apply(body.position, test_config.positions[position_idx]);
-                    world.add(body);
+                    world.addBody(body);
                 }
 
                 for (var step_idx = 0; step_idx < 2; step_idx++) {

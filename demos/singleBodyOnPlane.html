@@ -47,7 +47,7 @@
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.Body({ mass: 0 });
         groundBody.addShape(groundShape);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         // Shape on plane
@@ -57,7 +57,7 @@
         shapeBody.position.set(0,size,size*2);
         shapeBody.velocity.set(0,0,0);
         shapeBody.angularVelocity.set(0,0,0);
-        world.add(shapeBody);
+        world.addBody(shapeBody);
         demo.addVisual(shapeBody);
       }
 

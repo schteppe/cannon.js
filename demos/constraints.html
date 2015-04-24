@@ -42,7 +42,7 @@
                   shape: boxShape,
                   position: new CANNON.Vec3((N-i-N/2)*(size*2+2*space), 0, size*6+space)
                 });
-                world.add(boxbody);
+                world.addBody(boxbody);
                 demo.addVisual(boxbody);
 
                 if(last){
@@ -61,7 +61,7 @@
               shape: boxShape,
               position: new CANNON.Vec3((-N/2+1)*(size*2+2*space), 0, size*3)
             });
-            world.add(bodyA);
+            world.addBody(bodyA);
             demo.addVisual(bodyA);
 
             var bodyB = new CANNON.Body({
@@ -69,7 +69,7 @@
               shape: boxShape,
               position: new CANNON.Vec3((N/2)*(size*2+2*space), 0, size*3)
             });
-            world.add(bodyB);
+            world.addBody(bodyB);
             demo.addVisual(bodyB);
         });
 
@@ -90,7 +90,7 @@
                 boxbody.position.set(0,0,(N-i)*(size*2+2*space) + size*2+space);
                 boxbody.linearDamping=0.01; // Damping makes the movement slow down with time
                 boxbody.angularDamping=0.01;
-                world.add(boxbody);
+                world.addBody(boxbody);
                 demo.addVisual(boxbody);
 
                 if(i!=0){
@@ -127,7 +127,7 @@
               body.addShape(new CANNON.Particle());
               body.position.set((i-Ncols*0.5)*dist,(j-Nrows*0.5)*dist,5);
               bodies[i+" "+j] = body;
-              world.add(body);
+              world.addBody(body);
               demo.addVisual(body);
             }
           }
@@ -148,7 +148,7 @@
           var body = new CANNON.Body({ mass: 0 });
           body.addShape(sphere);
           body.position.set(0,0,3.5);
-          world.add(body);
+          world.addBody(body);
           demo.addVisual(body);
         });
 
@@ -165,13 +165,13 @@
             spherebody.velocity.set(5,0,0);
             spherebody.linearDamping=0;
             spherebody.angularDamping=0;
-            world.add(spherebody);
+            world.addBody(spherebody);
             demo.addVisual(spherebody);
 
             var spherebody2 = new CANNON.Body({ mass: 0 });
             spherebody2.addShape(sphereShape);
             spherebody2.position.set(0,0,size*7);
-            world.add(spherebody2);
+            world.addBody(spherebody2);
             demo.addVisual(spherebody2);
 
             // Connect this body to the last one
@@ -196,7 +196,7 @@
             spherebody.addShape(sphereShape);
             spherebody.position.set(0,0,(N-i)*dist);
             spherebody.velocity.x = i;
-            world.add(spherebody);
+            world.addBody(spherebody);
             demo.addVisual(spherebody);
 
             // Connect this body to the last one added
@@ -229,7 +229,7 @@
               body.position.set(i*dist,0,j*dist+5);
               body.velocity.set(0, 3*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
               bodies[i+" "+j] = body;
-              world.add(body);
+              world.addBody(body);
               demo.addVisual(body);
             }
           }
@@ -262,7 +262,7 @@
                 body.position.set(i*dist,j*dist, k*dist + Nz*dist*0.3+1);
                 body.velocity.set(0, 30*(Math.sin(i*0.1)+Math.sin(j*0.1)),0);
                 bodies[i+" "+j+" "+k] = body;
-                world.add(body);
+                world.addBody(body);
                 demo.addVisual(body);
               }
             }
@@ -319,7 +319,7 @@
         var groundBody = new CANNON.Body({ mass: 0 });
         groundBody.addShape(groundShape);
         groundBody.position.set(0,0,1);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         world.quatNormalizeFast = false;

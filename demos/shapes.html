@@ -50,7 +50,7 @@
             var sphereBody = new CANNON.Body({ mass: mass });
             sphereBody.addShape(sphereShape);
             sphereBody.position.set(size*2,size*2,size+1);
-            world.add(sphereBody);
+            world.addBody(sphereBody);
             demo.addVisual(sphereBody);
 
 
@@ -59,7 +59,7 @@
             var cylinderBody = new CANNON.Body({ mass: mass });
             cylinderBody.addShape(cylinderShape);
             cylinderBody.position.set(-size*2,size*2,size+1);
-            world.add(cylinderBody);
+            world.addBody(cylinderBody);
             demo.addVisual(cylinderBody);
 
             // Cylinder shape 2
@@ -70,7 +70,7 @@
             var cylinderBody2 = new CANNON.Body({ mass: mass });
             cylinderBody2.addShape(cylinderShape2);
             cylinderBody2.position.set(-size*2,size*2,4*size+1);
-            world.add(cylinderBody2);
+            world.addBody(cylinderBody2);
             demo.addVisual(cylinderBody2);
 
 
@@ -79,7 +79,7 @@
             var boxBody = new CANNON.Body({ mass: mass });
             boxBody.addShape(boxShape);
             boxBody.position.set(-size*2,-size*2,size+1);
-            world.add(boxBody);
+            world.addBody(boxBody);
             demo.addVisual(boxBody);
 
 
@@ -89,7 +89,7 @@
             var particle = new CANNON.Body({ mass: mass });
             particle.addShape(new CANNON.Particle());
             particle.position.set(-size*2,size*4,size+1);
-            world.add(particle);
+            world.addBody(particle);
             demo.addVisual(particle);
 
 
@@ -104,7 +104,7 @@
             compoundBody.addShape(shape, new CANNON.Vec3( 0, 0,-s));
             compoundBody.addShape(shape, new CANNON.Vec3(-s, 0,-s));
             compoundBody.position.set(-size*4,size*4,size+1);
-            world.add(compoundBody);
+            world.addBody(compoundBody);
             demo.addVisual(compoundBody);
 
 
@@ -124,7 +124,7 @@
             var polyhedronBody = new CANNON.Body({ mass: mass });
             polyhedronBody.addShape(polyhedronShape);
             polyhedronBody.position.set(size*2,-size*2,size+1);
-            world.add(polyhedronBody);
+            world.addBody(polyhedronBody);
             demo.addVisual(polyhedronBody);
         });
 
@@ -142,7 +142,7 @@
         var groundBody = new CANNON.Body({ mass: 0 });
         groundBody.addShape(groundShape);
         groundBody.position.set(-10,0,0);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
         return world;
       };

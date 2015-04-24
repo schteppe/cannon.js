@@ -32,7 +32,7 @@
           b1.position.set(5,0,0);
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
-          world.add(b1);
+          world.addBody(b1);
           demo.addVisual(b1);
 
           // Sphere 2
@@ -41,7 +41,7 @@
           b2.linearDamping = 0;
           b2.position.set(-5,0,0);
           b2.velocity.set(5,0,0);
-          world.add(b2);
+          world.addBody(b2);
           demo.addVisual(b2);
         });
 
@@ -58,7 +58,7 @@
           b1.position.set(5,0,0);
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
-          world.add(b1);
+          world.addBody(b1);
           demo.addVisual(b1);
 
           // Sphere
@@ -67,7 +67,7 @@
           b2.position.set(-5,0,0);
           b2.velocity.set(5,0,0);
           b2.linearDamping = 0;
-          world.add(b2);
+          world.addBody(b2);
           demo.addVisual(b2);
         });
 
@@ -86,7 +86,7 @@
           var q = new CANNON.Quaternion();
           q.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI*0.25);
           b1.quaternion.set(q.x,q.y,q.z,q.w);
-          world.add(b1);
+          world.addBody(b1);
           demo.addVisual(b1);
 
           // Sphere
@@ -95,7 +95,7 @@
           b2.position.set(-5,0,0);
           b2.velocity.set(5,0,0);
           b2.linearDamping = 0;
-          world.add(b2);
+          world.addBody(b2);
           demo.addVisual(b2);
         });
 
@@ -117,7 +117,7 @@
           q2.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI*0.25);
           var q = q1.mult(q2);
           b1.quaternion.set(q.x,q.y,q.z,q.w);
-          world.add(b1);
+          world.addBody(b1);
           demo.addVisual(b1);
 
           // Sphere
@@ -126,7 +126,7 @@
           b2.position.set(-5,0,0);
           b2.velocity.set(5,0,0);
           b2.linearDamping = 0;
-          world.add(b2);
+          world.addBody(b2);
           demo.addVisual(b2);
         });
 

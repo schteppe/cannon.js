@@ -65,7 +65,7 @@
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.Body({ mass: 0, material: stone });
         groundBody.addShape(groundShape);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         // plane -x
@@ -74,7 +74,7 @@
         planeXmin.addShape(planeShapeXmin);
         planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
         planeXmin.position.set(-5,0,0);
-        world.add(planeXmin);
+        world.addBody(planeXmin);
 
         // Plane +x
         var planeShapeXmax = new CANNON.Plane();
@@ -82,7 +82,7 @@
         planeXmax.addShape(planeShapeXmax);
         planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
         planeXmax.position.set(5,0,0);
-        world.add(planeXmax);
+        world.addBody(planeXmax);
 
         // Plane -y
         var planeShapeYmin = new CANNON.Plane();
@@ -90,7 +90,7 @@
         planeYmin.addShape(planeShapeYmin);
         planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
         planeYmin.position.set(0,-5,0);
-        world.add(planeYmin);
+        world.addBody(planeYmin);
 
         // Plane +y
         var planeShapeYmax = new CANNON.Plane();
@@ -98,7 +98,7 @@
         planeYmax.addShape(planeShapeYmax);
         planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
         planeYmax.position.set(0,5,0);
-        world.add(planeYmax);
+        world.addBody(planeYmax);
 
         // Create spheres
         var rand = 0.1;
@@ -119,7 +119,7 @@
               sphereBody.sleepSpeedLimit = 1;
               sphereBody.sleepTimeLimit = 5;
 
-              world.add(sphereBody);
+              world.addBody(sphereBody);
               demo.addVisual(sphereBody);
             }
           }

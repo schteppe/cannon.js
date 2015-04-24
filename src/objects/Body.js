@@ -37,7 +37,7 @@ var Box = require('../shapes/Box');
  *     });
  *     var shape = new Sphere(1);
  *     body.addShape(shape);
- *     world.add(body);
+ *     world.addBody(body);
  */
 function Body(options){
     options = options || {};

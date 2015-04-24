@@ -59,7 +59,7 @@
           var boxbody = new CANNON.Body({ mass: mass });
           boxbody.addShape(convexShape);
           boxbody.position.set(1,0,size+1);
-          world.add(boxbody);
+          world.addBody(boxbody);
           demo.addVisual(boxbody);
 
           // ConvexPolyhedron tetra shape
@@ -67,7 +67,7 @@
           var tetraBody = new CANNON.Body({ mass: mass });
           tetraBody.addShape(tetraShape);
           tetraBody.position.set(5,-3,size+1);
-          world.add(tetraBody);
+          world.addBody(tetraBody);
           demo.addVisual(tetraBody);
 
           // ConvexPolyhedron cylinder shape
@@ -83,7 +83,7 @@
           cylinderBody.addShape(cylinderShape);
           cylinderBody.position.set(0,0,size*4+1);
           cylinderBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/3);
-          world.add(cylinderBody);
+          world.addBody(cylinderBody);
           demo.addVisual(cylinderBody);
 
         });
@@ -102,8 +102,8 @@
           boxbody2.addShape(convexShape);
           boxbody1.position.set(0,0,size+1);
           boxbody2.position.set(1.5,0,4*size+1);
-          world.add(boxbody1);
-          world.add(boxbody2);
+          world.addBody(boxbody1);
+          world.addBody(boxbody2);
           demo.addVisual(boxbody1);
           demo.addVisual(boxbody2);
         });
@@ -120,7 +120,7 @@
               var boxbody = new CANNON.Body({ mass: mass });
               boxbody.addShape(convexShape);
               boxbody.position.set(2*size*i+0.01,0,2*size*j + size*1.2);
-              world.add(boxbody);
+              world.addBody(boxbody);
               demo.addVisual(boxbody);
           }
           }
@@ -142,7 +142,7 @@
         var groundBody = new CANNON.Body({ mass: 0 });
         groundBody.addShape(groundShape);
         groundBody.position.set(-10,0,0);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         return world;

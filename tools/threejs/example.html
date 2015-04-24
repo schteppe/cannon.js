@@ -128,7 +128,7 @@
             var body = new CANNON.Body({ mass: 0 });
             body.addShape(shape);
             body.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-            world.add(body);
+            world.addBody(body);
             bodies.push(body);
 
             // Graphics
@@ -145,7 +145,7 @@
             var body = new CANNON.Body({ mass: mass });
             body.addShape(shape);
             body.position.set(1,5,0);
-            world.add(body);
+            world.addBody(body);
             bodies.push(body);
 
             // Graphics
@@ -161,7 +161,7 @@
             var shape = new CANNON.Sphere(1);
             body.addShape(shape);
             body.position.set(-1,5,0);
-            world.add(body);
+            world.addBody(body);
             bodies.push(body);
 
             // Graphics
@@ -179,7 +179,7 @@
             quat.normalize();
             body.addShape(shape, new CANNON.Vec3, quat);
             body.position.set(-3,5,0);
-            world.add(body);
+            world.addBody(body);
             bodies.push(body);
 
             // Graphics
@@ -195,7 +195,7 @@
             var shape = new CANNON.Trimesh.createTorus(1, 0.3, 16, 16);
             body.addShape(shape);
             body.position.set(-6,5,0);
-            world.add(body);
+            world.addBody(body);
             bodies.push(body);
 
             // Graphics
@@ -222,7 +222,7 @@
             quat.normalize();
             body.addShape(shape, new CANNON.Vec3, quat);
             body.position.set(6,1,0);
-            world.add(body);
+            world.addBody(body);
             bodies.push(body);
 
             // Graphics: empty for now

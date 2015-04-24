@@ -66,7 +66,7 @@
             var z180 = new CANNON.Quaternion();
             z180.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI);
             bunnyBody.quaternion = z180.mult(bunnyBody.quaternion);
-            world.add(bunnyBody);
+            world.addBody(bunnyBody);
             demo.addVisual(bunnyBody);
 
             // ground plane
@@ -74,7 +74,7 @@
             var groundBody = new CANNON.Body({ mass: 0 });
             groundBody.addShape(groundShape);
             groundBody.position.set(0,0,-5);
-            world.add(groundBody);
+            world.addBody(groundBody);
             demo.addVisual(groundBody);
 
         });

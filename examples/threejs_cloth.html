@@ -99,7 +99,7 @@
                 });
                 sphereBody.addShape(sphereShape);
                 sphereBody.position.set(0,0,0);
-                world.add(sphereBody);
+                world.addBody(sphereBody);
 
                 // Create cannon particles
                 for ( var i = 0, il = Nx+1; i !== il; i++ ) {
@@ -118,7 +118,7 @@
                             p.z
                         );
                         particles[i].push(particle);
-                        world.add(particle);
+                        world.addBody(particle);
                         particle.velocity.set(0,0,-0.1*(Ny-j));
                     }
                 }

@@ -37,7 +37,7 @@
 				});
 				groundBody.addShape(groundShape);
 				groundBody.position.set(-10,0,0);
-				world.add(groundBody);
+				world.addBody(groundBody);
 				demo.addVisual(groundBody);
 
 				var size = 0.5;
@@ -63,7 +63,7 @@
 							2 * (size + gap) * (i + 1)
 						);
 
-						world.add(body);
+						world.addBody(body);
 						demo.addVisual(body);
 					}
 				}

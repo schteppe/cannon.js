@@ -66,9 +66,9 @@
             cylinderBody.collisionFilterMask =  GROUP1;           // It can only collide with group 1 (the sphere)
 
             // Add everything to the world and demo
-            world.add(sphereBody);
-            world.add(boxBody);
-            world.add(cylinderBody);
+            world.addBody(sphereBody);
+            world.addBody(boxBody);
+            world.addBody(cylinderBody);
             demo.addVisual(sphereBody);
             demo.addVisual(boxBody);
             demo.addVisual(cylinderBody);

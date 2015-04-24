@@ -30,7 +30,7 @@
             var groundShape = new CANNON.Plane();
             var groundBody = new CANNON.Body({ mass: 0 });
             groundBody.addShape(groundShape);
-            world.add(groundBody);
+            world.addBody(groundBody);
             demo.addVisual(groundBody);
 
             // Create a box with fixed rotation
@@ -40,7 +40,7 @@
             boxBody.position.set(0,0,size);
             boxBody.fixedRotation = true;
             boxBody.updateMassProperties();
-            world.add(boxBody);
+            world.addBody(boxBody);
             demo.addVisual(boxBody);
 
             // Another one
@@ -50,7 +50,7 @@
             boxBody2.position.set(size*3/2, 0, size*4);
             boxBody2.fixedRotation = true;
             boxBody2.updateMassProperties();
-            world.add(boxBody2);
+            world.addBody(boxBody2);
             demo.addVisual(boxBody2);
 
             // Change gravity so the boxes will slide along x axis

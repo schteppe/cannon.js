@@ -130,7 +130,7 @@
             var hfBody = new CANNON.Body({ mass: 0 });
             hfBody.addShape(hfShape);
             hfBody.position.set(-sizeX * hfShape.elementSize / 2, -sizeY * hfShape.elementSize / 2, -1);
-            world.add(hfBody);
+            world.addBody(hfBody);
             demo.addVisual(hfBody);
         });
 

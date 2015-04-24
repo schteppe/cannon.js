@@ -80,7 +80,7 @@
 
             var bodies = [chassis,leftFrontWheel,rightFrontWheel,leftRearWheel,rightRearWheel];
             for(var i=0; i<bodies.length; i++){
-                world.add(bodies[i]);
+                world.addBody(bodies[i]);
                 demo.addVisual(bodies[i]);
             }
 
@@ -89,7 +89,7 @@
             var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
             ground.addShape(groundShape);
             ground.position.z = -3;
-            world.add(ground);
+            world.addBody(ground);
             demo.addVisual(ground);
 
             // Enable motors and set their velocities
@@ -125,8 +125,8 @@
             });
             world.addConstraint(c);
 
-            world.add(body);
-            world.add(staticBody);
+            world.addBody(body);
+            world.addBody(staticBody);
             demo.addVisual(body);
             demo.addVisual(staticBody);
         });

@@ -169,7 +169,7 @@ RigidVehicle.prototype.addToWorld = function(world){
     var bodies = this.wheelBodies.concat([this.chassisBody]);
 
     for (var i = 0; i < bodies.length; i++) {
-        world.add(bodies[i]);
+        world.addBody(bodies[i]);
     }
 
     for (var i = 0; i < constraints.length; i++) {

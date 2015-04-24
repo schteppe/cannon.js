@@ -38,7 +38,7 @@
           var groundShape = new CANNON.Plane();
           var groundBody = new CANNON.Body({ mass: 0 });
           groundBody.addShape(groundShape);
-          world.add(groundBody);
+          world.addBody(groundBody);
           demo.addVisual(groundBody);
 
           // Sphere
@@ -47,7 +47,7 @@
           sphereBody.addShape(sphere);
           var pos = new CANNON.Vec3(0,0,size);
           sphereBody.position.set(0,0,size*6);
-          world.add(sphereBody);
+          world.addBody(sphereBody);
           demo.addVisual(sphereBody);
 
           // When a body collides with another body, they both dispatch the "collide" event.

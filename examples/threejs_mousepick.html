@@ -278,7 +278,7 @@
                 boxBody = new CANNON.Body({ mass: mass });
                 boxBody.addShape(boxShape);
                 boxBody.position.set(0,5,0);
-                world.add(boxBody);
+                world.addBody(boxBody);
                 bodies.push(boxBody);
             }
 
@@ -287,7 +287,7 @@
             var groundBody = new CANNON.Body({ mass: 0 });
             groundBody.addShape(groundShape);
             groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-            world.add(groundBody);
+            world.addBody(groundBody);
 
             // Joint body
             var shape = new CANNON.Sphere(0.1);
@@ -295,7 +295,7 @@
             jointBody.addShape(shape);
             jointBody.collisionFilterGroup = 0;
             jointBody.collisionFilterMask = 0;
-            world.add(jointBody)
+            world.addBody(jointBody)
         }
 
         function addMouseConstraint(x,y,z,body) {

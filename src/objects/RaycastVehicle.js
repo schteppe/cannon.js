@@ -126,7 +126,7 @@ RaycastVehicle.prototype.setBrake = function(brake, wheelIndex){
  */
 RaycastVehicle.prototype.addToWorld = function(world){
     var constraints = this.constraints;
-    world.add(this.chassisBody);
+    world.addBody(this.chassisBody);
     var that = this;
     this.preStepCallback = function(){
         that.updateVehicle(world.dt);

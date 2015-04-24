@@ -35,7 +35,7 @@
           position: startPosition
         });
         body.addShape(new CANNON.Box(new CANNON.Vec3(1,1,1)));
-        world.add(body);
+        world.addBody(body);
         demo.addVisual(body);
 
         if(postStepHandler){

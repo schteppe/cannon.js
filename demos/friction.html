@@ -51,7 +51,7 @@
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.Body({ mass: 0, material: groundMaterial });
         groundBody.addShape(groundShape);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         // Create a slippery material (friction coefficient = 0.0)
@@ -73,14 +73,14 @@
         var boxBody = new CANNON.Body({ mass: 1, material: slipperyMaterial });
         boxBody.addShape(shape);
         boxBody.position.set(0,0,5);
-        world.add(boxBody);
+        world.addBody(boxBody);
         demo.addVisual(boxBody);
 
         // Create box made of groundMaterial
         var boxBody2 = new CANNON.Body({ mass: 10, material: groundMaterial });
         boxBody2.addShape(shape);
         boxBody2.position.set(size*4,0,5);
-        world.add(boxBody2);
+        world.addBody(boxBody2);
         demo.addVisual(boxBody2);
 
         // Change gravity so the boxes will slide along x axis

@@ -112,7 +112,7 @@
                 var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
                 ground.addShape(groundShape);
                 ground.position.z = -3;
-                world.add(ground);
+                world.addBody(ground);
                 demo.addVisual(ground);
             } else {
                 var mock = false;
@@ -146,7 +146,7 @@
                 hfBody.quaternion.copy(quat);
 
                 if(!mock){
-                    world.add(hfBody);
+                    world.addBody(hfBody);
                     demo.addVisual(hfBody);
                 }
 
@@ -158,7 +158,7 @@
                                 var convexBody = new CANNON.Body({ mass: 0, material: groundMaterial });
                                 convexBody.addShape(hfShape.pillarConvex);
                                 hfBody.pointToWorldFrame(hfShape.pillarOffset, convexBody.position);
-                                world.add(convexBody);
+                                world.addBody(convexBody);
                                 demo.addVisual(convexBody);
                             }
                         }

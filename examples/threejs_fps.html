@@ -208,14 +208,14 @@
                 sphereBody.addShape(sphereShape);
                 sphereBody.position.set(0,5,0);
                 sphereBody.linearDamping = 0.9;
-                world.add(sphereBody);
+                world.addBody(sphereBody);
 
                 // Create a plane
                 var groundShape = new CANNON.Plane();
                 var groundBody = new CANNON.Body({ mass: 0 });
                 groundBody.addShape(groundShape);
                 groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-                world.add(groundBody);
+                world.addBody(groundBody);
             }
 
             function init() {
@@ -284,7 +284,7 @@
                     var boxBody = new CANNON.Body({ mass: 5 });
                     boxBody.addShape(boxShape);
                     var boxMesh = new THREE.Mesh( boxGeometry, material );
-                    world.add(boxBody);
+                    world.addBody(boxBody);
                     scene.add(boxMesh);
                     boxBody.position.set(x,y,z);
                     boxMesh.position.set(x,y,z);
@@ -312,7 +312,7 @@
                     boxbody.angularDamping = 0.01;
                     // boxMesh.castShadow = true;
                     boxMesh.receiveShadow = true;
-                    world.add(boxbody);
+                    world.addBody(boxbody);
                     scene.add(boxMesh);
                     boxes.push(boxbody);
                     boxMeshes.push(boxMesh);
@@ -382,7 +382,7 @@
                     var ballBody = new CANNON.Body({ mass: 1 });
                     ballBody.addShape(ballShape);
                     var ballMesh = new THREE.Mesh( ballGeometry, material );
-                    world.add(ballBody);
+                    world.addBody(ballBody);
                     scene.add(ballMesh);
                     ballMesh.castShadow = true;
                     ballMesh.receiveShadow = true;

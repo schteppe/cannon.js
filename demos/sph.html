@@ -57,7 +57,7 @@
             material: material
         });
         groundBody.addShape(groundShape);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         if(walls){
@@ -71,7 +71,7 @@
             planeXmin.addShape(planeShapeXmin);
             planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
             planeXmin.position.set(-w*0.5,0,0);
-            world.add(planeXmin);
+            world.addBody(planeXmin);
 
             // Plane +x
             var planeShapeXmax = new CANNON.Plane();
@@ -79,7 +79,7 @@
             planeXmax.addShape(planeShapeXmax);
             planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
             planeXmax.position.set(w*0.5,0,0);
-            world.add(planeXmax);
+            world.addBody(planeXmax);
 
             // Plane -y
             var planeShapeYmin = new CANNON.Plane();
@@ -87,7 +87,7 @@
             planeYmin.addShape(planeShapeYmin);
             planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
             planeYmin.position.set(0,-h*0.5,0);
-            world.add(planeYmin);
+            world.addBody(planeYmin);
 
             // Plane +y
             var planeShapeYmax = new CANNON.Plane();
@@ -95,7 +95,7 @@
             planeYmax.addShape(planeShapeYmax);
             planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI/2);
             planeYmax.position.set(0,h*0.5,0);
-            world.add(planeYmax);
+            world.addBody(planeYmax);
         }
 
         // Create particles
@@ -111,7 +111,7 @@
               particle.position.set((i + (Math.random()-0.5)*rand + 0.5)*w/nx - w*0.5,
                                     (j + (Math.random()-0.5)*rand + 0.5)*h/ny - h*0.5,
                                     k*h/ny);
-              world.add(particle);
+              world.addBody(particle);
               sph.add(particle);
               demo.addVisual(particle);
             }

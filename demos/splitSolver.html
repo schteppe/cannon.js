@@ -70,7 +70,7 @@
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.Body({ mass: 0 });
         groundBody.addShape(groundShape);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         // Shape on plane
@@ -82,7 +82,7 @@
                 shapeBody.position.set( (i-N*0.5)*size*2*1.1,
                                         (j-N*0.5)*size*2*1.1,
                                         size*1.05);
-                world.add(shapeBody);
+                world.addBody(shapeBody);
                 demo.addVisual(shapeBody);
             }
         }
@@ -92,7 +92,7 @@
         shapeBody.addShape(shape);
         shapeBody.position.set( size,size,
                                 size*5);
-        world.add(shapeBody);
+        world.addBody(shapeBody);
         demo.addVisual(shapeBody);
       }
 

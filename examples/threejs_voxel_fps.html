@@ -230,7 +230,7 @@
                 sphereBody.addShape(sphereShape);
                 sphereBody.position.set(nx*sx*0.5,ny*sy+radius*2,nz*sz*0.5);
                 sphereBody.linearDamping = 0.9;
-                world.add(sphereBody);
+                world.addBody(sphereBody);
 
                 // Create a plane
                 var groundShape = new CANNON.Plane();
@@ -238,7 +238,7 @@
                 groundBody.addShape(groundShape);
                 groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
                 groundBody.position.set(0,0,0);
-                world.add(groundBody);
+                world.addBody(groundBody);
 
                 voxels = new VoxelLandscape(world,nx,ny,nz,sx,sy,sz);
 
@@ -383,7 +383,7 @@
                     var ballBody = new CANNON.Body({ mass: 1 });
                     ballBody.addShape(ballShape);
                     var ballMesh = new THREE.Mesh( ballGeometry, material );
-                    world.add(ballBody);
+                    world.addBody(ballBody);
                     scene.add(ballMesh);
                     ballMesh.castShadow = true;
                     ballMesh.receiveShadow = true;

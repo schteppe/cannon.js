@@ -31,7 +31,7 @@
         var sphereShape = new CANNON.Sphere(0.1),
             sphereBody = new CANNON.Body({ mass: 0 });
         sphereBody.addShape(sphereShape);
-        world.add(sphereBody);
+        world.addBody(sphereBody);
         demo.addVisual(sphereBody);
 
         // Create a box body
@@ -40,7 +40,7 @@
             boxBody = new CANNON.Body({ mass: 5 });
         boxBody.addShape(boxShape);
         boxBody.position.set(-size,0,-size);
-        world.add(boxBody);
+        world.addBody(boxBody);
         demo.addVisual(boxBody);
 
         var spring = new CANNON.Spring(boxBody,sphereBody,{
