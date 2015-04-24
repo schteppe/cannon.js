@@ -122,8 +122,10 @@ GSSolver.prototype.solve = function(dt,world){
             var b=bodies[i],
                 v=b.velocity,
                 w=b.angularVelocity;
+            b.vlambda.vmul(b.linearFactor, b.vlambda);
             v.vadd(b.vlambda, v);
             if(w){
+                b.wlambda.vmul(b.angularFactor, b.wlambda);
                 w.vadd(b.wlambda, w);
             }
         }

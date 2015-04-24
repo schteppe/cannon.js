@@ -877,11 +877,12 @@ World.prototype.internalStep = function(dt){
                 pos = b.position,
                 quat = b.quaternion,
                 invMass = b.invMass,
-                invInertia = b.invInertiaWorld;
+                invInertia = b.invInertiaWorld,
+                linearFactor = b.linearFactor;
 
-            velo.x += force.x * invMass * dt;
-            velo.y += force.y * invMass * dt;
-            velo.z += force.z * invMass * dt;
+            velo.x += force.x * invMass * dt * linearFactor.x;
+            velo.y += force.y * invMass * dt * linearFactor.y;
+            velo.z += force.z * invMass * dt * linearFactor.z;
 
             if(b.angularVelocity){
                 invInertia.vmult(tau,invI_tau_dt);
@@ -895,7 +896,13 @@ World.prototype.internalStep = function(dt){
             pos.z += velo.z * dt;
 
             if(b.angularVelocity){
-                w.set(angularVelo.x, angularVelo.y, angularVelo.z, 0);
+                var angularFactor = b.angularFactor;
+                w.set(
+                    angularVelo.x * angularFactor.x,
+                    angularVelo.y * angularFactor.y,
+                    angularVelo.z * angularFactor.z,
+                    0
+                );
                 w.mult(quat,wq);
                 quat.x += half_dt * wq.x;
                 quat.y += half_dt * wq.y;

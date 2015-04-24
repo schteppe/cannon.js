@@ -323,6 +323,16 @@ function Body(options){
     this.angularDamping = typeof(options.angularDamping) !== 'undefined' ? options.angularDamping : 0.01;
 
     /**
+     * @property {Vec3} linearFactor
+     */
+    this.linearFactor = new Vec3(1,1,1);
+
+    /**
+     * @property {Vec3} angularFactor
+     */
+    this.angularFactor = new Vec3(1,1,1);
+
+    /**
      * @property aabb
      * @type {AABB}
      */
