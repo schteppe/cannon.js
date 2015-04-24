@@ -276,6 +276,21 @@ Vec3.prototype.mult = function(scalar,target){
 };
 
 /**
+ * Multiply the vector with an other vector, component-wise.
+ * @method mult
+ * @param {Number} vector
+ * @param {Vec3} target The vector to save the result in.
+ * @return {Vec3}
+ */
+Vec3.prototype.vmul = function(vector, target){
+    target = target || new Vec3();
+    target.x = vector.x * this.x;
+    target.y = vector.y * this.y;
+    target.z = vector.z * this.z;
+    return target;
+};
+
+/**
  * Multiply the vector with a scalar.
  * @method scale
  * @param {Number} scalar
