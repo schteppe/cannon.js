@@ -671,22 +671,18 @@ Body.prototype.updateInertiaWorld = function(force){
  * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.torque.
  * @method applyForce
  * @param  {Vec3} force The amount of force to add.
- * @param  {Vec3} worldPoint A world point to apply the force on.
+ * @param  {Vec3} relativePoint A point relative to the center of mass to apply the force on.
  */
 var Body_applyForce_r = new Vec3();
 var Body_applyForce_rotForce = new Vec3();
-Body.prototype.applyForce = function(force,worldPoint){
-    if(this.type !== Body.DYNAMIC){
+Body.prototype.applyForce = function(force,relativePoint){
+    if(this.type !== Body.DYNAMIC){ // Needed?
         return;
     }
 
-    // Compute point position relative to the body center
-    var r = Body_applyForce_r;
-    worldPoint.vsub(this.position,r);
-
     // Compute produced rotational force
     var rotForce = Body_applyForce_rotForce;
-    r.cross(force,rotForce);
+    relativePoint.cross(force,rotForce);
 
     // Add linear force
     this.force.vadd(force,this.force);
@@ -702,39 +698,38 @@ Body.prototype.applyForce = function(force,worldPoint){
  * @param  {Vec3} localPoint A local point in the body to apply the force on.
  */
 var Body_applyLocalForce_worldForce = new Vec3();
-var Body_applyLocalForce_worldPoint = new Vec3();
+var Body_applyLocalForce_relativePointWorld = new Vec3();
 Body.prototype.applyLocalForce = function(localForce, localPoint){
     if(this.type !== Body.DYNAMIC){
         return;
     }
 
     var worldForce = Body_applyLocalForce_worldForce;
-    var worldPoint = Body_applyLocalForce_worldPoint;
+    var relativePointWorld = Body_applyLocalForce_relativePointWorld;
 
     // Transform the force vector to world space
     this.vectorToWorldFrame(localForce, worldForce);
-    this.pointToWorldFrame(localPoint, worldPoint);
+    this.vectorToWorldFrame(localPoint, relativePointWorld);
 
-    this.applyForce(worldForce, worldPoint);
+    this.applyForce(worldForce, relativePointWorld);
 };
 
 /**
  * Apply impulse to a world point. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
  * @method applyImpulse
  * @param  {Vec3} impulse The amount of impulse to add.
- * @param  {Vec3} worldPoint A world point to apply the force on.
+ * @param  {Vec3} relativePoint A point relative to the center of mass to apply the force on.
  */
 var Body_applyImpulse_r = new Vec3();
 var Body_applyImpulse_velo = new Vec3();
 var Body_applyImpulse_rotVelo = new Vec3();
-Body.prototype.applyImpulse = function(impulse, worldPoint){
+Body.prototype.applyImpulse = function(impulse, relativePoint){
     if(this.type !== Body.DYNAMIC){
         return;
     }
 
     // Compute point position relative to the body center
-    var r = Body_applyImpulse_r;
-    worldPoint.vsub(this.position,r);
+    var r = relativePoint;
 
     // Compute produced central impulse velocity
     var velo = Body_applyImpulse_velo;
@@ -766,20 +761,20 @@ Body.prototype.applyImpulse = function(impulse, worldPoint){
  * @param  {Vec3} localPoint A local point in the body to apply the force on.
  */
 var Body_applyLocalImpulse_worldImpulse = new Vec3();
-var Body_applyLocalImpulse_worldPoint = new Vec3();
+var Body_applyLocalImpulse_relativePoint = new Vec3();
 Body.prototype.applyLocalImpulse = function(localImpulse, localPoint){
     if(this.type !== Body.DYNAMIC){
         return;
     }
 
     var worldImpulse = Body_applyLocalImpulse_worldImpulse;
-    var worldPoint = Body_applyLocalImpulse_worldPoint;
+    var relativePointWorld = Body_applyLocalImpulse_relativePoint;
 
     // Transform the force vector to world space
     this.vectorToWorldFrame(localImpulse, worldImpulse);
-    this.pointToWorldFrame(localPoint, worldPoint);
+    this.vectorToWorldFrame(localPoint, relativePointWorld);
 
-    this.applyImpulse(worldImpulse, worldPoint);
+    this.applyImpulse(worldImpulse, relativePointWorld);
 };
 
 var Body_updateMassProperties_halfExtents = new Vec3();
