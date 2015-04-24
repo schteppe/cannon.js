@@ -32,7 +32,10 @@
         demo.addScene("center impulse",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
-            var body = new CANNON.Body({ mass: mass });
+            var body = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(0,0,1)
+            });
             body.addShape(shape);
             body.linearDamping = body.angularDamping = damping;
             world.add(body);
@@ -48,7 +51,10 @@
         demo.addScene("top impulse",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
-            var body = new CANNON.Body({ mass: mass });
+            var body = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(0,0,1)
+            });
             body.addShape(shape);
             body.linearDamping = body.angularDamping = damping;
             world.add(body);
@@ -65,7 +71,10 @@
         demo.addScene("center force",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
-            var body = new CANNON.Body({ mass: mass });
+            var body = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(0,0,1)
+            });
             body.addShape(shape);
             body.linearDamping = body.angularDamping = damping;
             world.add(body);
@@ -81,7 +90,10 @@
         demo.addScene("top force",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
-            var body = new CANNON.Body({ mass: mass });
+            var body = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(0,0,1)
+            });
             body.addShape(shape);
             body.linearDamping = body.angularDamping = damping;
             world.add(body);
