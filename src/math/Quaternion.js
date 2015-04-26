@@ -147,19 +147,14 @@ var Quaternion_mult_vb = new Vec3();
 var Quaternion_mult_vaxvb = new Vec3();
 Quaternion.prototype.mult = function(q,target){
     target = target || new Quaternion();
-    var w = this.w,
-        va = Quaternion_mult_va,
-        vb = Quaternion_mult_vb,
-        vaxvb = Quaternion_mult_vaxvb;
 
-    va.set(this.x,this.y,this.z);
-    vb.set(q.x,q.y,q.z);
-    target.w = w*q.w - va.dot(vb);
-    va.cross(vb,vaxvb);
+    var ax = this.x, ay = this.y, az = this.z, aw = this.w,
+        bx = q.x, by = q.y, bz = q.z, bw = q.w;
 
-    target.x = w * vb.x + q.w*va.x + vaxvb.x;
-    target.y = w * vb.y + q.w*va.y + vaxvb.y;
-    target.z = w * vb.z + q.w*va.z + vaxvb.z;
+    target.x = ax * bw + aw * bx + ay * bz - az * by;
+    target.y = ay * bw + aw * by + az * bx - ax * bz;
+    target.z = az * bw + aw * bz + ax * by - ay * bx;
+    target.w = aw * bw - ax * bx - ay * by - az * bz;
 
     return target;
 };
