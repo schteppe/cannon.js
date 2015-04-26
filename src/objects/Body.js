@@ -93,22 +93,16 @@ function Body(options){
      */
     this.position = new Vec3();
 
-    if(options.position){
-        this.position.copy(options.position);
-    }
-
     /**
      * @property {Vec3} previousPosition
      */
     this.previousPosition = new Vec3();
-    if(options.position){
-        this.previousPosition.copy(options.position);
-    }
 
     /**
-     * @property {Quaternion} previousQuaternion
+     * Interpolated position of the body.
+     * @property {Vec3} interpolatedPosition
      */
-    this.previousQuaternion = new Quaternion();
+    this.interpolatedPosition = new Vec3();
 
     /**
      * Initial position of the body
@@ -116,6 +110,13 @@ function Body(options){
      * @type {Vec3}
      */
     this.initPosition = new Vec3();
+
+    if(options.position){
+        this.position.copy(options.position);
+        this.previousPosition.copy(options.position);
+        this.interpolatedPosition.copy(options.position);
+        this.initPosition.copy(options.position);
+    }
 
     /**
      * @property velocity
@@ -226,15 +227,29 @@ function Body(options){
      */
     this.quaternion = new Quaternion();
 
-    if(options.quaternion){
-        this.quaternion.copy(options.quaternion);
-    }
-
     /**
      * @property initQuaternion
      * @type {Quaternion}
      */
     this.initQuaternion = new Quaternion();
+
+    /**
+     * @property {Quaternion} previousQuaternion
+     */
+    this.previousQuaternion = new Quaternion();
+
+    /**
+     * Interpolated orientation of the body.
+     * @property {Quaternion} interpolatedQuaternion
+     */
+    this.interpolatedQuaternion = new Quaternion();
+
+    if(options.quaternion){
+        this.quaternion.copy(options.quaternion);
+        this.initQuaternion.copy(options.quaternion);
+        this.previousQuaternion.copy(options.quaternion);
+        this.interpolatedQuaternion.copy(options.quaternion);
+    }
 
     /**
      * @property angularVelocity
@@ -251,18 +266,6 @@ function Body(options){
      * @type {Vec3}
      */
     this.initAngularVelocity = new Vec3();
-
-    /**
-     * Interpolated position of the body.
-     * @property {Vec3} interpolatedPosition
-     */
-    this.interpolatedPosition = new Vec3();
-
-    /**
-     * Interpolated orientation of the body.
-     * @property {Quaternion} interpolatedQuaternion
-     */
-    this.interpolatedQuaternion = new Quaternion();
 
     /**
      * @property shapes
