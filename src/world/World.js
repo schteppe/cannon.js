@@ -6,7 +6,6 @@ var Shape = require('../shapes/Shape');
 var Vec3 = require('../math/Vec3');
 var Quaternion = require('../math/Quaternion');
 var GSSolver = require('../solver/GSSolver');
-var Vec3Pool = require('../utils/Vec3Pool');
 var ContactEquation = require('../equations/ContactEquation');
 var FrictionEquation = require('../equations/FrictionEquation');
 var Narrowphase = require('./Narrowphase');
