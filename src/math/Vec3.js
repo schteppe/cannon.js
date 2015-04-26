@@ -300,6 +300,22 @@ Vec3.prototype.vmul = function(vector, target){
 Vec3.prototype.scale = Vec3.prototype.mult;
 
 /**
+ * Scale a vector and add it to this vector. Save the result in "target". (target = this + vector * scalar)
+ * @method addScaledVector
+ * @param {Number} scalar
+ * @param {Vec3} vector
+ * @param {Vec3} target The vector to save the result in.
+ * @return {Vec3}
+ */
+Vec3.prototype.addScaledVector = function(scalar, vector, target){
+    target = target || new Vec3();
+    target.x = this.x + scalar * vector.x;
+    target.y = this.y + scalar * vector.y;
+    target.z = this.z + scalar * vector.z;
+    return target;
+};
+
+/**
  * Calculate dot product
  * @method dot
  * @param {Vec3} v
