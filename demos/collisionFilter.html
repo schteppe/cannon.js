@@ -43,27 +43,32 @@
 
             // Sphere
             var sphereShape = new CANNON.Sphere(size);
-            var sphereBody = new CANNON.Body({ mass: mass });
-            sphereBody.addShape(sphereShape);
-            sphereBody.position.set(5,0,0);
-            sphereBody.velocity.set(-5,0,0);
-            sphereBody.collisionFilterGroup = GROUP1;             // Put the sphere in group 1
-            sphereBody.collisionFilterMask =  GROUP2 | GROUP3;    // It can only collide with group 2 and 3
+            var sphereBody = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(5,0,0),
+                velocity: new CANNON.Vec3(-5,0,0),
+                collisionFilterGroup: GROUP1, // Put the sphere in group 1
+                collisionFilterMask: GROUP2 | GROUP3, // It can only collide with group 2 and 3
+                shape: sphereShape
+            });
 
             // Box
-            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
-            var boxBody = new CANNON.Body({ mass: mass });
-            boxBody.addShape(boxShape);
-            boxBody.collisionFilterGroup = GROUP2;                // Put the box in group 2
-            boxBody.collisionFilterMask =  GROUP1;                // It can only collide with group 1 (the sphere)
+            var boxBody = new CANNON.Body({
+                mass: mass,
+                shape: new CANNON.Box(new CANNON.Vec3(size,size,size)),
+                collisionFilterGroup: GROUP2, // Put the box in group 2
+                collisionFilterMask:  GROUP1 // It can only collide with group 1 (the sphere)
+            });
 
             // Cylinder
             var cylinderShape = new CANNON.Cylinder(size,size,size*2.2,10);
-            var cylinderBody = new CANNON.Body({ mass: mass });
-            cylinderBody.addShape(cylinderShape);
-            cylinderBody.position.set(-5,0,0);
-            cylinderBody.collisionFilterGroup = GROUP3;           // Put the cylinder in group 3
-            cylinderBody.collisionFilterMask =  GROUP1;           // It can only collide with group 1 (the sphere)
+            var cylinderBody = new CANNON.Body({
+                mass: mass,
+                shape: cylinderShape,
+                position: new CANNON.Vec3(-5,0,0),
+                collisionFilterGroup: GROUP3, // Put the cylinder in group 3
+                collisionFilterMask:  GROUP1 // It can only collide with group 1 (the sphere)
+            });
 
             // Add everything to the world and demo
             world.addBody(sphereBody);

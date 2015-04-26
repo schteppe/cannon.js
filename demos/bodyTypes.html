@@ -56,9 +56,9 @@
           // Dynamic bodies can collide with bodies of all other types.
           var b2 = new CANNON.Body({
             mass: mass,
+            position: new CANNON.Vec3(0,0,3*size)
           });
           b2.addShape(sphereShape);
-          b2.position.set(0,0,3*size);
           world.addBody(b2);
           demo.addVisual(b2);
         });

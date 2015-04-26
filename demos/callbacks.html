@@ -30,12 +30,14 @@
           var mass = 5;
           var moonShape = new CANNON.Sphere(0.5);
           var planetShape = new CANNON.Sphere(3.5);
-          var moon = new CANNON.Body({ mass: mass });
+          var moon = new CANNON.Body({
+            mass: mass,
+            position: new CANNON.Vec3(5,0,0)
+          });
           moon.addShape(moonShape);
           var planet = new CANNON.Body({ mass: 0 });
           planet.addShape(planetShape);
 
-          moon.position.set(5,0,0);
           moon.velocity.set(0,0,8);
           moon.linearDamping = 0.0;
 
