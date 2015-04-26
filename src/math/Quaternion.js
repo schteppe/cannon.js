@@ -458,3 +458,32 @@ Quaternion.prototype.slerp = function (toQuat, t, target) {
 
     return target;
 };
+
+/**
+ * Rotate an absolute orientation quaternion given an angular velocity and a time step.
+ * @param  {Vec3} angularVelocity
+ * @param  {number} dt
+ * @param  {Vec3} angularFactor
+ * @param  {Quaternion} target
+ * @return {Quaternion} The "target" object
+ */
+Quaternion.prototype.integrate = function(angularVelocity, dt, angularFactor, target){
+    target = target || new Quaternion();
+
+    var ax = angularVelocity.x * angularFactor.x,
+        ay = angularVelocity.y * angularFactor.y,
+        az = angularVelocity.z * angularFactor.z,
+        bx = this.x,
+        by = this.y,
+        bz = this.z,
+        bw = this.w;
+
+    var half_dt = dt * 0.5;
+
+    target.x += half_dt * (ax * bw + ay * bz - az * by);
+    target.y += half_dt * (ay * bw + az * bx - ax * bz);
+    target.z += half_dt * (az * bw + ax * by - ay * bx);
+    target.w += half_dt * (- ax * bx - ay * by - az * bz);
+
+    return target;
+};
