@@ -239,24 +239,15 @@ Equation.prototype.addToWlambda = function(deltalambda){
 
     // Add to linear velocity
     // v_lambda += inv(M) * delta_lamba * G
-    GA.spatial.mult(bi.invMassSolve * deltalambda,temp);
-    bi.vlambda.vadd(temp, bi.vlambda);
-
-    GB.spatial.mult(bj.invMassSolve * deltalambda,temp);
-    bj.vlambda.vadd(temp, bj.vlambda);
+    bi.vlambda.addScaledVector(bi.invMassSolve * deltalambda, GA.spatial, bi.vlambda);
+    bj.vlambda.addScaledVector(bj.invMassSolve * deltalambda, GB.spatial, bj.vlambda);
 
     // Add to angular velocity
-    if(bi.invInertiaWorldSolve){
-        bi.invInertiaWorldSolve.vmult(GA.rotational,temp);
-        temp.mult(deltalambda,temp);
-        bi.wlambda.vadd(temp,bi.wlambda);
-    }
+    bi.invInertiaWorldSolve.vmult(GA.rotational,temp);
+    bi.wlambda.addScaledVector(deltalambda, temp, bi.wlambda);
 
-    if(bj.invInertiaWorldSolve){
-        bj.invInertiaWorldSolve.vmult(GB.rotational,temp);
-        temp.mult(deltalambda,temp);
-        bj.wlambda.vadd(temp,bj.wlambda);
-    }
+    bj.invInertiaWorldSolve.vmult(GB.rotational,temp);
+    bj.wlambda.addScaledVector(deltalambda, temp, bj.wlambda);
 };
 
 /**

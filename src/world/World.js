@@ -410,7 +410,7 @@ World.prototype.raycastClosest = function(from, to, options, result){
  */
 World.prototype.remove = function(body){
     body.world = null;
-    var n = this.bodies.length-1,
+    var n = this.bodies.length - 1,
         bodies = this.bodies,
         idx = bodies.indexOf(body);
     if(idx !== -1){
@@ -583,7 +583,7 @@ World.prototype.internalStep = function(dt){
     // Add gravity to all objects
     for(i=0; i!==N; i++){
         var bi = bodies[i];
-        if(bi.type & DYNAMIC){ // Only for dynamic bodies
+        if(bi.type === DYNAMIC){ // Only for dynamic bodies
             var f = bi.force, m = bi.mass;
             f.x += m*gx;
             f.y += m*gy;
