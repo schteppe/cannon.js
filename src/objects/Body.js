@@ -831,3 +831,64 @@ Body.prototype.getVelocityAtWorldPoint = function(worldPoint, result){
     this.velocity.vadd(result, result);
     return result;
 };
+
+var torque = new Vec3();
+var invI_tau_dt = new Vec3();
+var w = new Quaternion();
+var wq = new Quaternion();
+
+/**
+ * Move the body forward in time.
+ * @param {number} dt Time step
+ * @param {boolean} quatNormalize Set to true to normalize the body quaternion
+ * @param {boolean} quatNormalizeFast If the quaternion should be normalized using "fast" quaternion normalization
+ */
+Body.prototype.integrate = function(dt, quatNormalize, quatNormalizeFast){
+
+    // Save previous position
+    this.previousPosition.copy(this.position);
+    this.previousQuaternion.copy(this.quaternion);
+
+    if(!(this.type === Body.DYNAMIC || this.type === Body.KINEMATIC) || this.sleepState === Body.SLEEPING){ // Only for dynamic
+        return;
+    }
+
+    var velo = this.velocity,
+        angularVelo = this.angularVelocity,
+        pos = this.position,
+        force = this.force,
+        torque = this.torque,
+        quat = this.quaternion,
+        invMass = this.invMass,
+        invInertia = this.invInertiaWorld,
+        linearFactor = this.linearFactor;
+
+    velo.x += force.x * invMass * dt * linearFactor.x;
+    velo.y += force.y * invMass * dt * linearFactor.y;
+    velo.z += force.z * invMass * dt * linearFactor.z;
+
+    var e = invInertia.elements;
+    angularVelo.x += dt * (e[0] * torque.x + e[1] * torque.y + e[2] * torque.z);
+    angularVelo.y += dt * (e[3] * torque.x + e[4] * torque.y + e[5] * torque.z);
+    angularVelo.z += dt * (e[6] * torque.x + e[7] * torque.y + e[8] * torque.z);
+
+    // Use new velocity  - leap frog
+    pos.x += velo.x * dt;
+    pos.y += velo.y * dt;
+    pos.z += velo.z * dt;
+
+    quat.integrate(this.angularVelocity, dt, this.angularFactor, quat);
+
+    if(quatNormalize){
+        if(quatNormalizeFast){
+            quat.normalizeFast();
+        } else {
+            quat.normalize();
+        }
+    }
+
+    this.aabbNeedsUpdate = true;
+
+    // Update world inertia
+    this.updateInertiaWorld();
+};
