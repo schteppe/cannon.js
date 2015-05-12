@@ -30,6 +30,8 @@ var Box = require('../shapes/Box');
  * @param {number} [options.collisionFilterGroup=1]
  * @param {number} [options.collisionFilterMask=1]
  * @param {boolean} [options.fixedRotation=false]
+ * @param {Vec3} [options.linearFactor]
+ * @param {Vec3} [options.angularFactor]
  * @param {Body} [options.shape]
  * @example
  *     var body = new Body({
@@ -329,11 +331,17 @@ function Body(options){
      * @property {Vec3} linearFactor
      */
     this.linearFactor = new Vec3(1,1,1);
+    if(options.linearFactor){
+        this.linearFactor.copy(options.linearFactor);
+    }
 
     /**
      * @property {Vec3} angularFactor
      */
     this.angularFactor = new Vec3(1,1,1);
+    if(options.angularFactor){
+        this.angularFactor.copy(options.angularFactor);
+    }
 
     /**
      * @property aabb
