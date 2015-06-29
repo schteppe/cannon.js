@@ -45,6 +45,7 @@ module.exports = {
     Sphere :                        require('./shapes/Sphere'),
     SplitSolver :                   require('./solver/SplitSolver'),
     Spring :                        require('./objects/Spring'),
+    Transform :                     require('./math/Transform'),
     Trimesh :                       require('./shapes/Trimesh'),
     Vec3 :                          require('./math/Vec3'),
     Vec3Pool :                      require('./utils/Vec3Pool'),
