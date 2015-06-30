@@ -279,3 +279,44 @@ AABB.prototype.toWorldFrame = function(frame, target){
 
     return target.setFromPoints(corners);
 };
+
+/**
+ * Check if the AABB is hit by a ray.
+ * @param  {Ray} ray
+ * @return {number}
+ */
+AABB.prototype.overlapsRay = function(ray){
+    var t = 0;
+
+    // ray.direction is unit direction vector of ray
+    var dirFracX = 1 / ray._direction.x;
+    var dirFracY = 1 / ray._direction.y;
+    var dirFracZ = 1 / ray._direction.z;
+
+    // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+    var t1 = (this.lowerBound.x - ray.from.x) * dirFracX;
+    var t2 = (this.upperBound.x - ray.from.x) * dirFracX;
+    var t3 = (this.lowerBound.y - ray.from.y) * dirFracY;
+    var t4 = (this.upperBound.y - ray.from.y) * dirFracY;
+    var t5 = (this.lowerBound.z - ray.from.z) * dirFracZ;
+    var t6 = (this.upperBound.z - ray.from.z) * dirFracZ;
+
+    // var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
+    // var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
+    var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+    var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
+
+    // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
+    if (tmax < 0){
+        //t = tmax;
+        return false;
+    }
+
+    // if tmin > tmax, ray doesn't intersect AABB
+    if (tmin > tmax){
+        //t = tmax;
+        return false;
+    }
+
+    return true;
+};
