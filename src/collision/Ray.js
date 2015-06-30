@@ -350,6 +350,10 @@ Ray.prototype.getAABB = function(result){
 var intersectConvexOptions = {
     faceList: [0]
 };
+var worldPillarOffset = new Vec3();
+var intersectHeightfield_localRay = new Ray();
+var intersectHeightfield_index = [];
+var intersectHeightfield_minMax = [];
 
 /**
  * @method intersectHeightfield
@@ -361,58 +365,44 @@ var intersectConvexOptions = {
  */
 Ray.prototype.intersectHeightfield = function(shape, quat, position, body, reportedShape){
     var data = shape.data,
-        w = shape.elementSize,
-        worldPillarOffset = new Vec3();
+        w = shape.elementSize;
 
     // Convert the ray to local heightfield coordinates
-    var localRay = new Ray(this.from, this.to);
+    var localRay = intersectHeightfield_localRay; //new Ray(this.from, this.to);
+    localRay.from.copy(this.from);
+    localRay.to.copy(this.to);
     Transform.pointToLocalFrame(position, quat, localRay.from, localRay.from);
     Transform.pointToLocalFrame(position, quat, localRay.to, localRay.to);
+    localRay._updateDirection();
 
     // Get the index of the data points to test against
-    var index = [];
-    var iMinX = null;
-    var iMinY = null;
-    var iMaxX = null;
-    var iMaxY = null;
+    var index = intersectHeightfield_index;
+    var iMinX, iMinY, iMaxX, iMaxY;
 
-    var inside = shape.getIndexOfPosition(localRay.from.x, localRay.from.y, index, false);
-    if(inside){
-        iMinX = index[0];
-        iMinY = index[1];
-        iMaxX = index[0];
-        iMaxY = index[1];
-    }
-    inside = shape.getIndexOfPosition(localRay.to.x, localRay.to.y, index, false);
-    if(inside){
-        if (iMinX === null || index[0] < iMinX) { iMinX = index[0]; }
-        if (iMaxX === null || index[0] > iMaxX) { iMaxX = index[0]; }
-        if (iMinY === null || index[1] < iMinY) { iMinY = index[1]; }
-        if (iMaxY === null || index[1] > iMaxY) { iMaxY = index[1]; }
-    }
+    // Set to max
+    iMinX = iMinY = 0;
+    iMaxX = iMaxY = shape.data.length - 1;
 
-    if(iMinX === null){
-        return;
-    }
+    var aabb = new AABB();
+    localRay.getAABB(aabb);
 
-    var minMax = [];
-    shape.getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, minMax);
-    var min = minMax[0];
-    var max = minMax[1];
+    shape.getIndexOfPosition(aabb.lowerBound.x, aabb.lowerBound.y, index, true);
+    iMinX = Math.max(iMinX, index[0]);
+    iMinY = Math.max(iMinY, index[1]);
+    shape.getIndexOfPosition(aabb.upperBound.x, aabb.upperBound.y, index, true);
+    iMaxX = Math.min(iMaxX, index[0] + 1);
+    iMaxY = Math.min(iMaxY, index[1] + 1);
 
-    // // Bail out if the ray can't touch the bounding box
-    // // TODO
-    // var aabb = new AABB();
-    // this.getAABB(aabb);
-    // if(aabb.intersects()){
-    //     return;
-    // }
-
-    for(var i = iMinX; i <= iMaxX; i++){
-        for(var j = iMinY; j <= iMaxY; j++){
+    for(var i = iMinX; i < iMaxX; i++){
+        for(var j = iMinY; j < iMaxY; j++){
 
             if(this.result._shouldStop){
                 return;
+            }
+
+            shape.getAabbAtIndex(i, j, aabb);
+            if(!aabb.overlapsRay(localRay)){
+                continue;
             }
 
             // Lower triangle
