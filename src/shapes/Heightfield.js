@@ -188,6 +188,8 @@ Heightfield.prototype.getRectMinMax = function (iMinX, iMinY, iMaxX, iMaxY, resu
     result[1] = max;
 };
 
+
+
 /**
  * Get the index of a local position on the heightfield. The indexes indicate the rectangles, so if your terrain is made of N x N height data points, you will have rectangle indexes ranging from 0 to N-1.
  * @method getIndexOfPosition
@@ -224,16 +226,119 @@ Heightfield.prototype.getIndexOfPosition = function (x, y, result, clamp) {
     return true;
 };
 
-Heightfield.prototype.getHeightAt = function(x, y, edgeClamp){
-    var idx = [];
+
+var getHeightAt_idx = [];
+var getHeightAt_weights = new Vec3();
+var getHeightAt_a = new Vec3();
+var getHeightAt_b = new Vec3();
+var getHeightAt_c = new Vec3();
+
+Heightfield.prototype.getTriangleAt = function(x, y, edgeClamp, a, b, c){
+    var idx = getHeightAt_idx;
     this.getIndexOfPosition(x, y, idx, edgeClamp);
+    var xi = idx[0];
+    var yi = idx[1];
 
-    // TODO: get upper or lower triangle, then use barycentric interpolation to get the height in the triangle.
-    var minmax = [];
-    this.getRectMinMax(idx[0], idx[1] + 1, idx[0], idx[1] + 1, minmax);
+    var data = this.data;
+    if(edgeClamp){
+        xi = Math.min(data.length - 2, Math.max(0, xi));
+        yi = Math.min(data[0].length - 2, Math.max(0, yi));
+    }
 
-    return (minmax[0] + minmax[1]) / 2; // average
+    var elementSize = this.elementSize;
+    var lowerDist2 = Math.pow(x / elementSize - xi, 2) + Math.pow(y / elementSize - yi, 2);
+    var upperDist2 = Math.pow(x / elementSize - (xi + 1), 2) + Math.pow(y / elementSize - (yi + 1), 2);
+    var upper = lowerDist2 > upperDist2;
+    this.getTriangle(xi, yi, upper, a, b, c);
+    return upper;
 };
+
+var getNormalAt_a = new Vec3();
+var getNormalAt_b = new Vec3();
+var getNormalAt_c = new Vec3();
+var getNormalAt_e0 = new Vec3();
+var getNormalAt_e1 = new Vec3();
+Heightfield.prototype.getNormalAt = function(x, y, edgeClamp, result){
+    var a = getNormalAt_a;
+    var b = getNormalAt_b;
+    var c = getNormalAt_c;
+    var e0 = getNormalAt_e0;
+    var e1 = getNormalAt_e1;
+    this.getTriangleAt(x, y, edgeClamp, a, b, c);
+    b.vsub(a, e0);
+    c.vsub(a, e1);
+    e0.cross(e1, result);
+    result.normalize();
+};
+
+
+/**
+ * Get an AABB of a square in the heightfield
+ * @param  {number} xi
+ * @param  {number} yi
+ * @param  {AABB} result
+ */
+Heightfield.prototype.getAabbAtIndex = function(xi, yi, result){
+    var data = this.data;
+    var elementSize = this.elementSize;
+
+    result.lowerBound.set(
+        xi * elementSize,
+        yi * elementSize,
+        data[xi][yi]
+    );
+    result.upperBound.set(
+        (xi + 1) * elementSize,
+        (yi + 1) * elementSize,
+        data[xi + 1][yi + 1]
+    );
+};
+
+
+/**
+ * Get the height in the heightfield at a given position
+ * @param  {number} x
+ * @param  {number} y
+ * @param  {boolean} edgeClamp
+ * @return {number}
+ */
+Heightfield.prototype.getHeightAt = function(x, y, edgeClamp){
+    var data = this.data;
+    var a = getHeightAt_a;
+    var b = getHeightAt_b;
+    var c = getHeightAt_c;
+    var idx = getHeightAt_idx;
+
+    this.getIndexOfPosition(x, y, idx, edgeClamp);
+    var xi = idx[0];
+    var yi = idx[1];
+    if(edgeClamp){
+        xi = Math.min(data.length - 2, Math.max(0, xi));
+        yi = Math.min(data[0].length - 2, Math.max(0, yi));
+    }
+    var upper = this.getTriangleAt(x, y, edgeClamp, a, b, c);
+    barycentricWeights(x, y, a.x, a.y, b.x, b.y, c.x, c.y, getHeightAt_weights);
+
+    var w = getHeightAt_weights;
+
+    if(upper){
+
+        // Top triangle verts
+        return data[xi + 1][yi + 1] * w.x + data[xi][yi + 1] * w.y + data[xi + 1][yi] * w.z;
+
+    } else {
+
+        // Top triangle verts
+        return data[xi][yi] * w.x + data[xi + 1][yi] * w.y + data[xi][yi + 1] * w.z;
+    }
+};
+
+// from https://en.wikipedia.org/wiki/Barycentric_coordinate_system
+function barycentricWeights(x, y, ax, ay, bx, by, cx, cy, result){
+    result.x = ((by - cy) * (x - cx) + (cx - bx) * (y - cy)) / ((by - cy) * (ax - cx) + (cx - bx) * (ay - cy));
+    result.y = ((cy - ay) * (x - cx) + (ax - cx) * (y - cy)) / ((by - cy) * (ax - cx) + (cx - bx) * (ay - cy));
+    result.z = 1 - result.x - result.y;
+}
 
 Heightfield.prototype.getCacheConvexTrianglePillarKey = function(xi, yi, getUpperTriangle){
     return xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0);
@@ -252,6 +357,59 @@ Heightfield.prototype.setCachedConvexTrianglePillar = function(xi, yi, getUpperT
 
 Heightfield.prototype.clearCachedConvexTrianglePillar = function(xi, yi, getUpperTriangle){
     delete this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)];
+};
+
+/**
+ * Get a triangle from the heightfield
+ * @param  {number} xi
+ * @param  {number} yi
+ * @param  {boolean} upper
+ * @param  {Vec3} a
+ * @param  {Vec3} b
+ * @param  {Vec3} c
+ */
+Heightfield.prototype.getTriangle = function(xi, yi, upper, a, b, c){
+    var data = this.data;
+    var elementSize = this.elementSize;
+
+    if(upper){
+
+        // Top triangle verts
+        a.set(
+            (xi + 1) * elementSize,
+            (yi + 1) * elementSize,
+            data[xi + 1][yi + 1]
+        );
+        b.set(
+            xi * elementSize,
+            (yi + 1) * elementSize,
+            data[xi][yi + 1]
+        );
+        c.set(
+            (xi + 1) * elementSize,
+            yi * elementSize,
+            data[xi + 1][yi]
+        );
+
+    } else {
+
+        // Top triangle verts
+        a.set(
+            xi * elementSize,
+            yi * elementSize,
+            data[xi][yi]
+        );
+        b.set(
+            (xi + 1) * elementSize,
+            yi * elementSize,
+            data[xi + 1][yi]
+        );
+        c.set(
+            xi * elementSize,
+            (yi + 1) * elementSize,
+            data[xi][yi + 1]
+        );
+    }
 };
 
 /**
