@@ -640,3 +640,44 @@ Heightfield.prototype.updateBoundingSphereRadius = function(){
         s = this.elementSize;
     this.boundingSphereRadius = new Vec3(data.length * s, data[0].length * s, Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))).norm();
 };
+
+/**
+ * Sets the height values from an image. Currently only supported in browser.
+ * @method setHeightsFromImage
+ * @param {Image} image
+ * @param {Vec3} scale
+ */
+Heightfield.prototype.setHeightsFromImage = function(image, scale){
+    var canvas = document.createElement('canvas');
+    canvas.width = image.width;
+    canvas.height = image.height;
+    var context = canvas.getContext('2d');
+    context.drawImage(image, 0, 0);
+    var imageData = context.getImageData(0, 0, image.width, image.height);
+
+    var matrix = this.data;
+    matrix.length = 0;
+    this.elementSize = Math.abs(scale.x) / imageData.width;
+    for(var i=0; i<imageData.height; i++){
+        var row = [];
+        for(var j=0; j<imageData.width; j++){
+            var a = imageData.data[(i*imageData.height + j) * 4];
+            var b = imageData.data[(i*imageData.height + j) * 4 + 1];
+            var c = imageData.data[(i*imageData.height + j) * 4 + 2];
+            var height = (a + b + c) / 4 / 255 * scale.z;
+            if(scale.x < 0){
+                row.push(height);
+            } else {
+                row.unshift(height);
+            }
+        }
+        if(scale.y < 0){
+            matrix.unshift(row);
+        } else {
+            matrix.push(row);
+        }
+    }
+    this.updateMaxValue();
+    this.updateMinValue();
+    this.update();
+};
