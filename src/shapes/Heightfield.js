@@ -16,6 +16,7 @@ module.exports = Heightfield;
  * @param {Number} [options.maxValue] Maximum value.
  * @param {Number} [options.elementSize=0.1] World spacing between the data points in X direction.
  * @todo Should be possible to use along all axes, not just y
+ * @todo should be possible to scale along all axes
  *
  * @example
  *     // Generate some height data (y-values).
