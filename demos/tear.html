@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - constraints demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+      var demo = new CANNON.Demo();
+
+      // Sphere chain
+      demo.addScene("Sphere chain",function(){
+        var size = 0.45;
+        var dist = size*2+0.12;
+        var world = setupWorld(demo);
+        //world.solver.setSpookParams(1e20,3);
+        var sphereShape = new CANNON.Sphere(size);
+        var mass = 1;
+        var lastBody = null;
+        var N = 15;
+        world.solver.iterations = N; // To be able to propagate force throw the chain of N spheres, we need at least N solver iterations.
+        var constraints = [];
+        for(var i=0; i<N; i++){
+          // Create a new body
+          var spherebody = new CANNON.Body({ mass: i===0 ? 0 : mass });
+          spherebody.addShape(sphereShape);
+          spherebody.position.set(0,0,(N-i)*dist - 9);
+          world.addBody(spherebody);
+          demo.addVisual(spherebody);
+
+          // Connect this body to the last one added
+          var c;
+          if(lastBody!==null){
+            world.addConstraint(c = new CANNON.DistanceConstraint(spherebody,lastBody,dist));
+            constraints.push(c);
+          }
+
+          // Keep track of the lastly added body
+          lastBody = spherebody;
+        }
+
+        world.addEventListener('postStep', function(){
+          for(var i=constraints.length-1; i>=0; i--){
+            // The multiplier is proportional to how much force that is added to the bodies by the constraint.
+            // If this exceeds a limit we remove the constraint.
+            var m = Math.abs(constraints[i].equations[0].multiplier);
+            if(m > 1000){
+              world.removeConstraint(constraints[i]);
+            }
+          }
+        });
+
+        // Throw a body on the chain to break it!
+        var spherebody = new CANNON.Body({ mass: mass*2 });
+        spherebody.addShape(sphereShape);
+        spherebody.position.set(20,0,3);
+        spherebody.velocity.x = -30;
+        world.addBody(spherebody);
+        demo.addVisual(spherebody);
+      });
+
+      function setupWorld(demo){
+        // Create world
+        var world = demo.getWorld();
+        world.gravity.set(0,0,-10);
+        world.broadphase = new CANNON.NaiveBroadphase();
+
+        /*
+        // ground plane
+        var groundShape = new CANNON.Plane();
+        var groundBody = new CANNON.Body({ mass: 0 });
+        groundBody.addShape(groundShape);
+        groundBody.position.set(0,0,-15);
+        world.addBody(groundBody);
+        demo.addVisual(groundBody);
+        */
+
+        return world;
+      };
+
+      demo.start();
+
+    </script>
+  </body>
+</html>

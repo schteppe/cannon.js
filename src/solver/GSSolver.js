@@ -127,6 +127,13 @@ GSSolver.prototype.solve = function(dt,world){
             b.wlambda.vmul(b.angularFactor, b.wlambda);
             w.vadd(b.wlambda, w);
         }
+
+        // Set the .multiplier property of each equation
+        var l = equations.length;
+        var invDt = 1 / h;
+        while(l--){
+            equations[l].multiplier = lambda[l] * invDt;
+        }
     }
 
     return iter;

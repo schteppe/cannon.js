@@ -72,6 +72,13 @@ function Equation(bi,bj,minForce,maxForce){
      */
     this.enabled = true;
 
+    /**
+     * A number, proportional to the force added to the bodies.
+     * @property {number} multiplier
+     * @readonly
+     */
+    this.multiplier = 0;
+
     // Set typical spook params
     this.setSpookParams(1e7,4,1/60);
 }
