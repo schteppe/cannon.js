@@ -32,7 +32,7 @@ var Box = require('../shapes/Box');
  * @param {boolean} [options.fixedRotation=false]
  * @param {Vec3} [options.linearFactor]
  * @param {Vec3} [options.angularFactor]
- * @param {Body} [options.shape]
+ * @param {Shape} [options.shape]
  * @example
  *     var body = new Body({
  *         mass: 1
