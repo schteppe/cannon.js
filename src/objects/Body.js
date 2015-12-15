@@ -596,6 +596,8 @@ Body.prototype.addShape = function(shape, _offset, _orientation){
 
     this.aabbNeedsUpdate = true;
 
+    shape.body = this;
+
     return this;
 };
 

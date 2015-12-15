@@ -44,6 +44,11 @@ function Shape(){
      * @property {Material} material
      */
     this.material = null;
+
+    /**
+     * @property {Body} body
+     */
+    this.body = null;
 }
 Shape.prototype.constructor = Shape;
 
