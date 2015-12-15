@@ -48,10 +48,17 @@ module.exports = {
 		test.equal(additions.length, 0);
 		test.equal(removals.length, 4);
 
-		/*
 		keeper.tick();
 
 		keeper.set(1, 2);
+		keeper.set(1, 2);
+
+		additions = [];
+		removals = [];
+		keeper.getDiff(additions, removals);
+		test.equal(additions.length, 0, 'should handle duplicate entries');
+		test.equal(removals.length, 0, 'should handle duplicate entries');
+		/*
 		keeper.set(3, 2);
 		keeper.set(3, 1);
 		keeper.getAdditions(additions);
