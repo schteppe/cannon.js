@@ -12,7 +12,7 @@ function ArrayCollisionMatrix() {
      * @property matrix
      * @type {Array}
      */
-	this.matrix = [];
+    this.matrix = [];
 }
 
 /**
@@ -23,14 +23,14 @@ function ArrayCollisionMatrix() {
  * @return {Number}
  */
 ArrayCollisionMatrix.prototype.get = function(i, j) {
-	i = i.index;
-	j = j.index;
+    i = i.index;
+    j = j.index;
     if (j > i) {
         var temp = j;
         j = i;
         i = temp;
     }
-	return this.matrix[(i*(i + 1)>>1) + j-1];
+    return this.matrix[(i*(i + 1)>>1) + j-1];
 };
 
 /**
@@ -41,14 +41,14 @@ ArrayCollisionMatrix.prototype.get = function(i, j) {
  * @param {Number} value
  */
 ArrayCollisionMatrix.prototype.set = function(i, j, value) {
-	i = i.index;
-	j = j.index;
+    i = i.index;
+    j = j.index;
     if (j > i) {
         var temp = j;
         j = i;
         i = temp;
     }
-	this.matrix[(i*(i + 1)>>1) + j-1] = value ? 1 : 0;
+    this.matrix[(i*(i + 1)>>1) + j-1] = value ? 1 : 0;
 };
 
 /**
@@ -56,9 +56,9 @@ ArrayCollisionMatrix.prototype.set = function(i, j, value) {
  * @method reset
  */
 ArrayCollisionMatrix.prototype.reset = function() {
-	for (var i=0, l=this.matrix.length; i!==l; i++) {
-		this.matrix[i]=0;
-	}
+    for (var i=0, l=this.matrix.length; i!==l; i++) {
+        this.matrix[i]=0;
+    }
 };
 
 /**
@@ -67,5 +67,5 @@ ArrayCollisionMatrix.prototype.reset = function() {
  * @param {Number} n
  */
 ArrayCollisionMatrix.prototype.setNumObjects = function(n) {
-	this.matrix.length = n*(n-1)>>1;
+    this.matrix.length = n*(n-1)>>1;
 };
