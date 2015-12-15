@@ -440,6 +440,7 @@ Body.wakeupEvent = {
 Body.prototype.wakeUp = function(){
     var s = this.sleepState;
     this.sleepState = 0;
+    this._wakeUpAfterNarrowphase = false;
     if(s === Body.SLEEPING){
         this.dispatchEvent(Body.wakeupEvent);
     }
@@ -453,6 +454,7 @@ Body.prototype.sleep = function(){
     this.sleepState = Body.SLEEPING;
     this.velocity.set(0,0,0);
     this.angularVelocity.set(0,0,0);
+    this._wakeUpAfterNarrowphase = false;
 };
 
 /**
