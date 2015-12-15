@@ -9,21 +9,6 @@ function OverlapKeeper() {
     this.previous = [];
 }
 
-/**
- * Get the current state
- * @method get
- * @param  {Number} i
- * @param  {Number} j
- * @return {boolean}
- */
-OverlapKeeper.prototype.get = function(i, j) {
-    return this.current.indexOf(this.getKey(i, j)) !== -1;
-};
-
-OverlapKeeper.prototype.getPrevious = function(i, j) {
-    return this.previous.indexOf(this.getKey(i, j)) !== -1;
-};
-
 OverlapKeeper.prototype.getKey = function(i, j) {
     if (j < i) {
         var temp = j;
@@ -84,27 +69,27 @@ OverlapKeeper.prototype.getDiff = function(additions, removals) {
     var j=0;
     for (var i = 0; i < al; i++) {
         var found = false;
-
-        while(a[i] > b[j]){
+        var keyA = a[i];
+        while(keyA > b[j]){
             j++;
         }
-        found = a[i] === b[j];
+        found = keyA === b[j];
 
         if(!found){
-            unpackAndPush(additions, a[i]);
+            unpackAndPush(additions, keyA);
         }
     }
     j = 0;
     for (var i = 0; i < bl; i++) {
         var found = false;
-
-        while(b[i] > a[j]){
+        var keyB = b[i];
+        while(keyB > a[j]){
             j++;
         }
-        found = a[j] === b[i];
+        found = a[j] === keyB;
 
         if(!found){
-            unpackAndPush(removals, b[i]);
+            unpackAndPush(removals, keyB);
         }
     }
 };
