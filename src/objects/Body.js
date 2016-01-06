@@ -90,6 +90,7 @@ function Body(options){
 	this.collisionResponse = true;
 
     /**
+     * World space position of the body.
      * @property position
      * @type {Vec3}
      */
@@ -121,6 +122,7 @@ function Body(options){
     }
 
     /**
+     * World space velocity of the body.
      * @property velocity
      * @type {Vec3}
      */
@@ -137,7 +139,7 @@ function Body(options){
     this.initVelocity = new Vec3();
 
     /**
-     * Linear force on the body
+     * Linear force on the body in world space.
      * @property force
      * @type {Vec3}
      */
@@ -215,15 +217,14 @@ function Body(options){
 
     this._wakeUpAfterNarrowphase = false;
 
-
     /**
-     * Rotational force on the body, around center of mass
+     * World space rotational force on the body, around center of mass.
      * @property {Vec3} torque
      */
     this.torque = new Vec3();
 
     /**
-     * Orientation of the body
+     * World space orientation of the body.
      * @property quaternion
      * @type {Quaternion}
      */
@@ -254,6 +255,7 @@ function Body(options){
     }
 
     /**
+     * Angular velocity of the body, in world space. Think of the angular velocity as a vector, which the body rotates around. The length of this vector determines how fast (in radians per second) the body rotates.
      * @property angularVelocity
      * @type {Vec3}
      */
@@ -276,12 +278,14 @@ function Body(options){
     this.shapes = [];
 
     /**
+     * Position of each Shape in the body, given in local Body space.
      * @property shapeOffsets
      * @type {array}
      */
     this.shapeOffsets = [];
 
     /**
+     * Orientation of each Shape, given in local Body space.
      * @property shapeOrientations
      * @type {array}
      */
@@ -328,6 +332,7 @@ function Body(options){
     this.angularDamping = typeof(options.angularDamping) !== 'undefined' ? options.angularDamping : 0.01;
 
     /**
+     * Use this property to limit the motion along any world axis. (1,1,1) will allow motion along all axes while (0,0,0) allows none.
      * @property {Vec3} linearFactor
      */
     this.linearFactor = new Vec3(1,1,1);
@@ -336,6 +341,7 @@ function Body(options){
     }
 
     /**
+     * Use this property to limit the rotational motion along any world axis. (1,1,1) will allow rotation along all axes while (0,0,0) allows none.
      * @property {Vec3} angularFactor
      */
     this.angularFactor = new Vec3(1,1,1);
@@ -344,6 +350,7 @@ function Body(options){
     }
 
     /**
+     * World space bounding box of the body and its shapes.
      * @property aabb
      * @type {AABB}
      */
