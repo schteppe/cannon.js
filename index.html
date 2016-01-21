@@ -28,10 +28,16 @@
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:10px; font-style: italic; }
+    #examples a {
+      display:inline-block;
+      max-width:150px;
+      margin:10px;
+      text-align:center;
+    }
     #examples img {
       max-height:150px;
       box-shadow:0px 0px 10px rgba(0,0,0,1);
-      margin:10px;
+      margin:0 0 5px;
     }
     .twitter-share-button {
         float:right;
@@ -70,43 +76,150 @@
       Click on an image to show the corresponding example.
     </p>
     <div id="examples">
-      <a href="examples/threejs_cloth.html"><img src="images/threejs_cloth.png" alt="Cloth"></a>
-      <a href="examples/threejs_fps.html"><img src="images/fps.png" alt="Shooter"></a>
-      <a href="examples/threejs_mousepick.html"><img src="images/threejs_mousepick.png" alt="Mousepick"></a>
-      <a href="examples/threejs_voxel_fps.html"><img src="images/threejs_voxel_fps.png" alt="Voxel landscape"></a>
-      <a href="examples/worker.html"><img src="images/worker.png" alt="Worker"></a>
-
-      <a href="demos/bodyTypes.html"><img src="images/motionstates.png" alt="Body types"></a>
-      <a href="demos/bounce.html"><img src="images/bounce.png" alt="Bounce"></a>
-      <a href="demos/bunny.html"><img src="images/bunny.png" alt="Bunny"></a>
-      <a href="demos/callbacks.html"><img src="images/callbacks.png" alt="Callbacks"></a>
-      <a href="demos/collisionFilter.html"><img src="images/collisionFilter.png" alt="Collision filters"></a>
-      <a href="demos/collisions.html"><img src="images/collisions.png" alt="Pair collisions"></a>
-      <a href="demos/compound.html"><img src="images/compound.png" alt="Compound shapes"></a>
-      <a href="demos/constraints.html"><img src="images/constraints.png" alt="Constraints"></a>
-      <a href="demos/container.html"><img src="images/container2.png" alt="Container"></a>
-      <a href="demos/convex.html"><img src="images/convexhull.png" alt="Convex"></a>
-      <a href="demos/events.html"><img src="images/events.png" alt="Events"></a>
-      <a href="demos/fixedRotation.html"><img src="images/fixedRotation.png" alt="Fixed rotation"></a>
-      <a href="demos/friction.html"><img src="images/friction.png" alt="Friction"></a>
-      <a href="demos/heightfield.html"><img src="images/heightfield.png" alt="Hinge"></a>
-      <a href="demos/hinge.html"><img src="images/hinge.png" alt="Hinge"></a>
-      <a href="demos/impulses.html"><img src="images/impulses.png" alt="Impulses"></a>
-      <a href="demos/jenga.html"><img src="images/jenga.png" alt="Jenga"></a>
-      <a href="demos/pile.html"><img src="images/pile.png" alt="Pile"></a>
-      <a href="demos/ragdoll.html"><img src="images/ragdoll.png" alt="Ragdoll"></a>
-      <a href="demos/raycastVehicle.html"><img src="images/raycastVehicle.png" alt="RaycastVehicle"></a>
-      <a href="demos/rigidVehicle.html"><img src="images/rigidVehicle.png" alt="RigidVehicle"></a>
-      <a href="demos/shapes.html"><img src="images/shapes.png" alt="Shapes"></a>
-      <a href="demos/simpleFriction.html"><img src="images/simpleFriction.png" alt="Set friction per body or shape."></a>
-      <a href="demos/singleBodyOnPlane.html"><img src="images/single.png" alt="Single shape on a plane."></a>
-      <a href="demos/sleep.html"><img src="images/sleep.png" alt="Sleep"></a>
-      <a href="demos/sph.html"><img src="images/sph.png" alt="SPH fluid simulation"></a>
-      <a href="demos/splitSolver.html"><img src="images/splitSolver.png" alt="SplitSolver"></a>
-      <a href="demos/spring.html"><img src="images/spring.png" alt="Spring"></a>
-      <a href="demos/stacks.html"><img src="images/stack.png" alt="Different types of stacks"></a>
-      <a href="demos/trimesh.html"><img src="images/trimesh.png" alt="Trimesh"></a>
-      <a href="demos/tween.html"><img src="images/tween.png" alt="Tween"></a>
+      <a href="examples/threejs_cloth.html">
+        <img src="images/threejs_cloth.png" alt="Cloth">
+        Cloth
+      </a>
+      <a href="examples/threejs_fps.html">
+        <img src="images/fps.png" alt="Shooter">
+        Shooter
+      </a>
+      <a href="examples/threejs_mousepick.html">
+        <img src="images/threejs_mousepick.png" alt="Mousepick">
+        Mousepick
+      </a>
+      <a href="examples/threejs_voxel_fps.html">
+        <img src="images/threejs_voxel_fps.png" alt="Voxel landscape">
+        Voxel landscape
+      </a>
+      <a href="examples/worker.html">
+        <img src="images/worker.png" alt="Worker">
+        Worker
+      </a>
+      <a href="demos/bodyTypes.html">
+        <img src="images/motionstates.png" alt="Body types">
+        Body types
+      </a>
+      <a href="demos/bounce.html">
+        <img src="images/bounce.png" alt="Bounce">
+        Bounce
+      </a>
+      <a href="demos/bunny.html">
+        <img src="images/bunny.png" alt="Bunny">
+        Bunny
+      </a>
+      <a href="demos/callbacks.html">
+        <img src="images/callbacks.png" alt="Callbacks">
+        Callbacks
+      </a>
+      <a href="demos/collisionFilter.html">
+        <img src="images/collisionFilter.png" alt="Collision filters">
+        Collision filters
+      </a>
+      <a href="demos/collisions.html">
+        <img src="images/collisions.png" alt="Pair collisions">
+        Pair collisions
+      </a>
+      <a href="demos/compound.html">
+        <img src="images/compound.png" alt="Compound shapes">
+        Compound shapes
+      </a>
+      <a href="demos/constraints.html">
+        <img src="images/constraints.png" alt="Constraints">
+        Constraints
+      </a>
+      <a href="demos/container.html">
+        <img src="images/container2.png" alt="Container">
+        Container
+      </a>
+      <a href="demos/convex.html">
+        <img src="images/convexhull.png" alt="Convex">
+        Convex
+      </a>
+      <a href="demos/events.html">
+        <img src="images/events.png" alt="Events">
+        Events
+      </a>
+      <a href="demos/fixedRotation.html">
+        <img src="images/fixedRotation.png" alt="Fixed rotation">
+        Fixed rotation
+      </a>
+      <a href="demos/friction.html">
+        <img src="images/friction.png" alt="Friction">
+        Friction
+      </a>
+      <a href="demos/heightfield.html">
+        <img src="images/heightfield.png" alt="Hinge">
+        Hinge
+      </a>
+      <a href="demos/hinge.html">
+        <img src="images/hinge.png" alt="Hinge">
+        Hinge
+      </a>
+      <a href="demos/impulses.html">
+        <img src="images/impulses.png" alt="Impulses">
+        Impulses
+      </a>
+      <a href="demos/jenga.html">
+        <img src="images/jenga.png" alt="Jenga">
+        Jenga
+      </a>
+      <a href="demos/pile.html">
+        <img src="images/pile.png" alt="Pile">
+        Pile
+      </a>
+      <a href="demos/ragdoll.html">
+        <img src="images/ragdoll.png" alt="Ragdoll">
+        Ragdoll
+      </a>
+      <a href="demos/raycastVehicle.html">
+        <img src="images/raycastVehicle.png" alt="RaycastVehicle">
+        RaycastVehicle
+      </a>
+      <a href="demos/rigidVehicle.html">
+        <img src="images/rigidVehicle.png" alt="RigidVehicle">
+        RigidVehicle
+      </a>
+      <a href="demos/shapes.html">
+        <img src="images/shapes.png" alt="Shapes">
+        Shapes
+      </a>
+      <a href="demos/simpleFriction.html">
+        <img src="images/simpleFriction.png" alt="Set friction per body or shape.">
+        Friction per body
+      </a>
+      <a href="demos/singleBodyOnPlane.html">
+        <img src="images/single.png" alt="Single shape on a plane.">
+        Shape on a plane
+      </a>
+      <a href="demos/sleep.html">
+        <img src="images/sleep.png" alt="Sleep">
+        Sleep
+      </a>
+      <a href="demos/sph.html">
+        <img src="images/sph.png" alt="SPH fluid simulation">
+        SPH fluid simulation
+      </a>
+      <a href="demos/splitSolver.html">
+        <img src="images/splitSolver.png" alt="SplitSolver">
+        SplitSolver
+      </a>
+      <a href="demos/spring.html">
+        <img src="images/spring.png" alt="Spring">
+        Spring
+      </a>
+      <a href="demos/stacks.html">
+        <img src="images/stack.png" alt="Different types of stacks">
+        Types of stacks
+      </a>
+      <a href="demos/trimesh.html">
+        <img src="images/trimesh.png" alt="Trimesh">
+        Trimesh
+      </a>
+      <a href="demos/tween.html">
+        <img src="images/tween.png" alt="Tween">
+        Tween
+      </a>
     </div>
 
     <div class="footer">
