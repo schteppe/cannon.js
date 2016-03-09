@@ -28,7 +28,7 @@ var Box = require('../shapes/Box');
  * @param {number} [options.sleepSpeedLimit=0.1]
  * @param {number} [options.sleepTimeLimit=1]
  * @param {number} [options.collisionFilterGroup=1]
- * @param {number} [options.collisionFilterMask=1]
+ * @param {number} [options.collisionFilterMask=-1]
  * @param {boolean} [options.fixedRotation=false]
  * @param {Vec3} [options.linearFactor]
  * @param {Vec3} [options.angularFactor]
@@ -81,7 +81,7 @@ function Body(options){
     /**
      * @property {Number} collisionFilterMask
      */
-    this.collisionFilterMask = typeof(options.collisionFilterMask) === 'number' ? options.collisionFilterMask : 1;
+    this.collisionFilterMask = typeof(options.collisionFilterMask) === 'number' ? options.collisionFilterMask : -1;
 
     /**
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.
