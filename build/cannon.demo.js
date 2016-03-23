@@ -44,7 +44,7 @@ CANNON.Demo = function(options){
         shadows: false,
         aabbs: false,
         profiling: false,
-        maxSubSteps:3
+        maxSubSteps: 20
     };
 
     // Extend settings with options
@@ -262,10 +262,20 @@ CANNON.Demo = function(options){
 
         // Read position data into visuals
         for(var i=0; i<N; i++){
-            var b = bodies[i], visual = visuals[i];
-            visual.position.copy(b.position);
+            var b = bodies[i],
+                visual = visuals[i];
+
+            // Interpolated or not?
+            var bodyPos = b.interpolatedPosition;
+            var bodyQuat = b.interpolatedQuaternion;
+            if(settings.paused){
+                bodyPos = b.position;
+                bodyQuat = b.quaternion;
+            }
+
+            visual.position.copy(bodyPos);
             if(b.quaternion){
-                visual.quaternion.copy(b.quaternion);
+                visual.quaternion.copy(bodyQuat);
             }
         }
 
@@ -468,14 +478,13 @@ CANNON.Demo = function(options){
 
         light.castShadow = true;
 
-        light.shadowCameraNear = 10;
-        light.shadowCameraFar = 100;//camera.far;
-        light.shadowCameraFov = 30;
+        light.shadow.camera.near = 10;
+        light.shadow.camera.far = 100;//camera.far;
+        light.shadow.camera.fov = 30;
 
-        light.shadowMapBias = 0.0039;
-        light.shadowMapDarkness = 0.5;
-        light.shadowMapWidth = SHADOW_MAP_WIDTH;
-        light.shadowMapHeight = SHADOW_MAP_HEIGHT;
+        //light.shadow.bias = 0.0039;
+        light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+        light.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
         //light.shadowCameraVisible = true;
 
@@ -504,8 +513,7 @@ CANNON.Demo = function(options){
         renderer.setClearColor( scene.fog.color, 1 );
         renderer.autoClear = false;
 
-        renderer.shadowMapEnabled = true;
-        renderer.shadowMapSoft = true;
+        renderer.shadowMap.enabled = true;
 
         // Smoothie
         smoothieCanvas = document.createElement("canvas");
@@ -626,8 +634,10 @@ CANNON.Demo = function(options){
                 } else {
                     smoothie.start();
                 }*/
+                resetCallTime = true;
             });
-            wf.add(settings, 'stepFrequency',60,60*10).step(60);
+            wf.add(settings, 'stepFrequency',10,60*10).step(10);
+            wf.add(settings, 'maxSubSteps',1,50).step(1);
             var maxg = 100;
             wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){
                 if(!isNaN(gx)){
@@ -701,11 +711,12 @@ CANNON.Demo = function(options){
     }
 
     var lastCallTime = 0;
+    var resetCallTime = false;
     function updatePhysics(){
         // Step world
         var timeStep = 1 / settings.stepFrequency;
 
-        var now = Date.now() / 1000;
+        var now = performance.now() / 1000;
 
         if(!lastCallTime){
             // last call time not saved, cant guess elapsed time. Take a simple step.
@@ -715,6 +726,10 @@ CANNON.Demo = function(options){
         }
 
         var timeSinceLastCall = now - lastCallTime;
+        if(resetCallTime){
+            timeSinceLastCall = 0;
+            resetCallTime = false;
+        }
 
         world.step(timeStep, timeSinceLastCall, settings.maxSubSteps);
 
@@ -777,6 +792,7 @@ CANNON.Demo = function(options){
 
             case 112: // p
                 settings.paused = !settings.paused;
+                resetCallTime = true;
                 updategui();
                 break;
 

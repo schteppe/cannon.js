@@ -195,17 +195,16 @@
             light.castShadow = true;
             //light.shadowCameraVisible = true;
 
-            light.shadowMapWidth = 1024;
-            light.shadowMapHeight = 1024;
+            light.shadow.mapSize.width = 1024;
+            light.shadow.mapSize.Height = 1024;
 
-            light.shadowCameraLeft = -d;
-            light.shadowCameraRight = d;
-            light.shadowCameraTop = d;
-            light.shadowCameraBottom = -d;
+            light.shadow.camera.left = -d;
+            light.shadow.camera.right = d;
+            light.shadow.camera.top = d;
+            light.shadow.camera.bottom = -d;
 
-            light.shadowCameraFar = 3*d;
-            light.shadowCameraNear = d;
-            light.shadowDarkness = 0.5;
+            light.shadow.camera.far = 3*d;
+            light.shadow.camera.near = d;
 
             scene.add( light );
 
@@ -238,7 +237,7 @@
 
             renderer.gammaInput = true;
             renderer.gammaOutput = true;
-            renderer.shadowMapEnabled = true;
+            renderer.shadowMap.enabled = true;
 
             window.addEventListener( 'resize', onWindowResize, false );
         }

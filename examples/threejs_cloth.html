@@ -183,17 +183,16 @@
                 light.castShadow = true;
                 //light.shadowCameraVisible = true;
 
-                light.shadowMapWidth = 1024*2;
-                light.shadowMapHeight = 1024*2;
+                light.shadow.mapSize.width = 1024*2;
+                light.shadow.mapSize.height = 1024*2;
 
-                light.shadowCameraLeft = -d;
-                light.shadowCameraRight = d;
-                light.shadowCameraTop = d;
-                light.shadowCameraBottom = -d;
+                light.shadow.camera.left = -d;
+                light.shadow.camera.right = d;
+                light.shadow.camera.top = d;
+                light.shadow.camera.bottom = -d;
 
-                light.shadowCameraFar = 3*d;
-                light.shadowCameraNear = d;
-                light.shadowDarkness = 0.5;
+                light.shadow.camera.far = 3*d;
+                light.shadow.camera.near = d;
 
                 scene.add( light );
 
@@ -205,15 +204,14 @@
                 */
 
                 // cloth material
-
-                var clothTexture = THREE.ImageUtils.loadTexture( 'sunflower.jpg' ); // circuit_pattern.png
+                var loader = new THREE.TextureLoader();
+                var clothTexture = loader.load( 'sunflower.jpg' ); // circuit_pattern.png
                 clothTexture.wrapS = clothTexture.wrapT = THREE.RepeatWrapping;
                 clothTexture.anisotropy = 16;
 
 
                 var clothMaterial = new THREE.MeshPhongMaterial( {
                     alphaTest: 0.5,
-                    ambient: 0x000000,
                     color: 0xffffff,
                     specular: 0x333333,
                     emissive: 0x222222,
@@ -254,7 +252,7 @@
                 renderer.gammaOutput = true;
                 renderer.physicallyBasedShading = true;
 
-                renderer.shadowMapEnabled = true;
+                renderer.shadowMap.enabled = true;
 
                 window.addEventListener( 'resize', onWindowResize, false );
 

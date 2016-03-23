@@ -32,7 +32,7 @@
 
         var N = 1;
 
-        var container, camera, scene, renderer, projector;
+        var container, camera, scene, renderer;
 
         // To be synced
         var meshes=[], bodies=[];
@@ -46,7 +46,6 @@
 
         function init() {
 
-            projector = new THREE.Projector();
 
             container = document.createElement( 'div' );
             document.body.appendChild( container );
@@ -73,17 +72,16 @@
             light.castShadow = true;
             //light.shadowCameraVisible = true;
 
-            light.shadowMapWidth = 1024;
-            light.shadowMapHeight = 1024;
+            light.shadow.mapSize.width = 1024;
+            light.shadow.mapSize.height = 1024;
 
-            light.shadowCameraLeft = -d;
-            light.shadowCameraRight = d;
-            light.shadowCameraTop = d;
-            light.shadowCameraBottom = -d;
+            light.shadow.camera.left = -d;
+            light.shadow.camera.right = d;
+            light.shadow.camera.top = d;
+            light.shadow.camera.bottom = -d;
 
-            light.shadowCameraFar = 3*d;
-            light.shadowCameraNear = d;
-            light.shadowDarkness = 0.5;
+            light.shadow.camera.far = 3*d;
+            light.shadow.camera.near = d;
 
             scene.add( light );
 
@@ -117,7 +115,7 @@
 
             renderer.gammaInput = true;
             renderer.gammaOutput = true;
-            renderer.shadowMapEnabled = true;
+            renderer.shadowMap.enabled = true;
 
             window.addEventListener( 'resize', onWindowResize, false );
 
@@ -143,7 +141,11 @@
         function onMouseMove(e){
             // Move and project on the plane
             if (gplane && mouseConstraint) {
+                // ray only intersects 'visible' object
+                var orig = gplane.visible;
+                gplane.visible = true;
                 var pos = projectOntoPlane(e.clientX,e.clientY,gplane,camera);
+                gplane.visible = orig;
                 if(pos){
                     setClickMarker(pos.x,pos.y,pos.z,scene);
                     moveJointToPoint(pos.x,pos.y,pos.z);
@@ -212,7 +214,7 @@
         }
         function findNearestIntersectingObject(clientX,clientY,camera,objects) {
             // Get the picking ray from the point
-            var raycaster = getRayCasterFromScreenCoord(clientX, clientY, camera, projector);
+            var raycaster = getRayCasterFromScreenCoord(clientX, clientY, camera);
 
             // Find the closest intersecting object
             // Now, cast the ray all render objects in the scene to see if they collide. Take the closest one.
@@ -226,14 +228,15 @@
         }
 
         // Function that returns a raycaster to use to find intersecting objects
-        // in a scene given screen pos and a camera, and a projector
-        function getRayCasterFromScreenCoord (screenX, screenY, camera, projector) {
-            var mouse3D = new THREE.Vector3();
-            // Get 3D point form the client x y
-            mouse3D.x = (screenX / window.innerWidth) * 2 - 1;
-            mouse3D.y = -(screenY / window.innerHeight) * 2 + 1;
-            mouse3D.z = 0.5;
-            return projector.pickingRay(mouse3D, camera);
+        // in a scene given screen pos and a camera
+        function getRayCasterFromScreenCoord (screenX, screenY, camera) {
+            var mouse2D = new THREE.Vector2();
+            // Get 2D point form the client x y
+            mouse2D.x = (screenX / window.innerWidth) * 2 - 1;
+            mouse2D.y = -(screenY / window.innerHeight) * 2 + 1;
+            var raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse2D, camera);
+            return raycaster;
         }
 
         function onWindowResize() {
