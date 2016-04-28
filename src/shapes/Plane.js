@@ -11,8 +11,9 @@ var Vec3 = require('../math/Vec3');
  * @author schteppe
  */
 function Plane(){
-    Shape.call(this);
-    this.type = Shape.types.PLANE;
+    Shape.call(this, {
+        type: Shape.types.PLANE
+    });
 
     // World oriented normal
     this.worldNormal = new Vec3();

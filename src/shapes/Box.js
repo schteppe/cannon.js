@@ -13,9 +13,9 @@ var ConvexPolyhedron = require('./ConvexPolyhedron');
  * @extends Shape
  */
 function Box(halfExtents){
-    Shape.call(this);
-
-    this.type = Shape.types.BOX;
+    Shape.call(this, {
+        type: Shape.types.BOX
+    });
 
     /**
      * @property halfExtents

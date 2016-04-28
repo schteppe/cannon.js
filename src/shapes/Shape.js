@@ -9,10 +9,15 @@ var Material = require('../material/Material');
  * Base class for shapes
  * @class Shape
  * @constructor
+ * @param {object} [options]
+ * @param {number} [options.collisionFilterGroup=1]
+ * @param {number} [options.collisionFilterMask=-1]
+ * @param {number} [options.collisionResponse=true]
+ * @param {number} [options.material=null]
  * @author schteppe
- * @todo Should have a mechanism for caching bounding sphere radius instead of calculating it each time
  */
-function Shape(){
+function Shape(options){
+    options = options || {};
 
     /**
      * Identifyer of the Shape.
@@ -26,7 +31,7 @@ function Shape(){
      * @type {Number}
      * @see Shape.types
      */
-    this.type = 0;
+    this.type = options.type || 0;
 
     /**
      * The local bounding sphere radius of this shape.
@@ -38,12 +43,22 @@ function Shape(){
      * Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.
      * @property {boolean} collisionResponse
      */
-    this.collisionResponse = true;
+    this.collisionResponse = options.collisionResponse ? options.collisionResponse : true;
+
+    /**
+     * @property {Number} collisionFilterGroup
+     */
+    this.collisionFilterGroup = options.collisionFilterGroup !== undefined ? options.collisionFilterGroup : 1;
+
+    /**
+     * @property {Number} collisionFilterMask
+     */
+    this.collisionFilterMask = options.collisionFilterMask !== undefined ? options.collisionFilterMask : -1;
 
     /**
      * @property {Material} material
      */
-    this.material = null;
+    this.material = options.material ? options.material : null;
 
     /**
      * @property {Body} body

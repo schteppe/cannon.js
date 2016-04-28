@@ -26,8 +26,9 @@ var Octree = require('../utils/Octree');
  *     var trimeshShape = new Trimesh(vertices, indices);
  */
 function Trimesh(vertices, indices) {
-    Shape.call(this);
-    this.type = Shape.types.TRIMESH;
+    Shape.call(this, {
+        type: Shape.types.TRIMESH
+    });
 
     /**
      * @property vertices

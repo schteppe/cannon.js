@@ -12,13 +12,14 @@ var Vec3 = require('../math/Vec3');
  * @author schteppe / http://github.com/schteppe
  */
 function Sphere(radius){
-    Shape.call(this);
+    Shape.call(this, {
+        type: Shape.types.SPHERE
+    });
 
     /**
      * @property {Number} radius
      */
-    this.radius = radius!==undefined ? Number(radius) : 1.0;
-    this.type = Shape.types.SPHERE;
+    this.radius = radius !== undefined ? radius : 1.0;
 
     if(this.radius < 0){
         throw new Error('The sphere radius cannot be negative.');

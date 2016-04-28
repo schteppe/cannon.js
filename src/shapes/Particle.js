@@ -11,9 +11,9 @@ var Vec3 = require('../math/Vec3');
  * @extends Shape
  */
 function Particle(){
-    Shape.call(this);
-
-    this.type = Shape.types.PARTICLE;
+    Shape.call(this, {
+        type: Shape.types.PARTICLE
+    });
 }
 Particle.prototype = new Shape();
 Particle.prototype.constructor = Particle;

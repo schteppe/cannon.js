@@ -75,12 +75,13 @@ function Heightfield(data, options){
 
     this.cacheEnabled = true;
 
-    Shape.call(this);
+    Shape.call(this, {
+        type: Shape.types.HEIGHTFIELD
+    });
 
     this.pillarConvex = new ConvexPolyhedron();
     this.pillarOffset = new Vec3();
 
-    this.type = Shape.types.HEIGHTFIELD;
     this.updateBoundingSphereRadius();
 
     // "i_j_isUpper" => { convex: ..., offset: ... }
