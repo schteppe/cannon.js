@@ -363,6 +363,13 @@ function Body(options){
      */
     this.aabbNeedsUpdate = true;
 
+    /**
+     * Total bounding radius of the Body including its shapes, relative to body.position.
+     * @property boundingRadius
+     * @type {Number}
+     */
+    this.boundingRadius = 0;
+
     this.wlambda = new Vec3();
 
     if(options.shape){
