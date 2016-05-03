@@ -434,10 +434,23 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         }
 
         result = new ConvexPolyhedron();
+        // Add shape to shape map. This is a special case for
+        // heightfields. Normally this happens in
+        // addShape/addBody. world may be null for some tests.
+        var world = this.body && this.body.world
+        if(world){
+            world.idToShapeMap[result.id] = result;
+        }
         offsetResult = new Vec3();
 
         this.pillarConvex = result;
         this.pillarOffset = offsetResult;
+    } else {
+        // If the cache is not used, make the pillar map to our shape.
+        if(!result.body){
+            this.body.world.idToShapeMap[result.id] = this;
+            result.body = this.body;
+        }
     }
 
     var data = this.data;

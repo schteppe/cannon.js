@@ -231,7 +231,17 @@ function World(options){
         body : null
     };
 
+    /**
+     * @property idToBodyMap
+     * @type {Object} Map of ids to bodies for bodyOverlapKeeper.
+     */
     this.idToBodyMap = {};
+
+    /**
+     * @property idToShapeMap
+     * @type {Object} Map of ids to shapes for shapeOverlapKeeper.
+     */
+    this.idToShapeMap = {};
 
     this.broadphase.setWorld(this);
 }
@@ -302,6 +312,18 @@ World.prototype.add = World.prototype.addBody = function(body){
 	this.collisionMatrix.setNumObjects(this.bodies.length);
     this.addBodyEvent.body = body;
     this.idToBodyMap[body.id] = body;
+    // Add all shapes to the shape map.
+    var shapes = body.shapes,
+        n = shapes.length;
+    for(var i=0;i!==n; i++){
+        var s = shapes[i];
+        this.idToShapeMap[s.id] = s;
+        // Special case for Box. Use the creating shape.
+        var c = s.convexPolyhedronRepresentation;
+        if (c) {
+            this.idToShapeMap[c.id] = s;
+        }
+    }
     this.dispatchEvent(this.addBodyEvent);
 };
 
@@ -433,6 +455,11 @@ World.prototype.remove = function(body){
         this.collisionMatrix.setNumObjects(n);
         this.removeBodyEvent.body = body;
         delete this.idToBodyMap[body.id];
+        var shapes = this.shapes,
+            sn = shapes && shapes.length || 0;
+        for(i=0; i!==sn; i++){
+            delete this.idToShapeMap[shapes[i].id];
+        }
         this.dispatchEvent(this.removeBodyEvent);
     }
 };
@@ -448,18 +475,8 @@ World.prototype.getBodyById = function(id){
     return this.idToBodyMap[id];
 };
 
-// TODO Make a faster map
 World.prototype.getShapeById = function(id){
-    var bodies = this.bodies;
-    for(var i=0, bl = bodies.length; i<bl; i++){
-        var shapes = bodies[i].shapes;
-        for (var j = 0, sl = shapes.length; j < sl; j++) {
-            var shape = shapes[j];
-            if(shape.id === id){
-                return shape;
-            }
-        }
-    }
+    return this.idToShapeMap[id];
 };
 
 /**
