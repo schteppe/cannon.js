@@ -234,14 +234,12 @@
                 if(true){
                     light.castShadow = true;
 
-                    light.shadowCameraNear = 20;
-                    light.shadowCameraFar = 50;//camera.far;
-                    light.shadowCameraFov = 40;
+                    light.shadow.camera.near = 20;
+                    light.shadow.camera.far = 50;//camera.far;
+                    light.shadow.camera.fov = 40;
 
-                    light.shadowMapBias = 0.1;
-                    light.shadowMapDarkness = 0.7;
-                    light.shadowMapWidth = 2*512;
-                    light.shadowMapHeight = 2*512;
+                    light.shadow.mapSize.width = 2*512;
+                    light.shadow.mapSize.height = 2*512;
 
                     //light.shadowCameraVisible = true;
                 }
@@ -264,8 +262,7 @@
                 scene.add( mesh );
 
                 renderer = new THREE.WebGLRenderer();
-                renderer.shadowMapEnabled = true;
-                renderer.shadowMapSoft = true;
+                renderer.shadowMap.enabled = true;
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 renderer.setClearColor( scene.fog.color, 1 );
 
@@ -365,11 +362,10 @@
             var ballGeometry = new THREE.SphereGeometry(ballShape.radius, 32, 32);
             var shootDirection = new THREE.Vector3();
             var shootVelo = 15;
-            var projector = new THREE.Projector();
             function getShootDir(targetVec){
                 var vector = targetVec;
                 targetVec.set(0,0,1);
-                projector.unprojectVector(vector, camera);
+                vector.unproject(camera);
                 var ray = new THREE.Ray(sphereBody.position, vector.sub(sphereBody.position).normalize() );
                 targetVec.copy(ray.direction);
             }

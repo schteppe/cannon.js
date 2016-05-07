@@ -478,14 +478,13 @@ CANNON.Demo = function(options){
 
         light.castShadow = true;
 
-        light.shadowCameraNear = 10;
-        light.shadowCameraFar = 100;//camera.far;
-        light.shadowCameraFov = 30;
+        light.shadow.camera.near = 10;
+        light.shadow.camera.far = 100;//camera.far;
+        light.shadow.camera.fov = 30;
 
-        light.shadowMapBias = 0.0039;
-        light.shadowMapDarkness = 0.5;
-        light.shadowMapWidth = SHADOW_MAP_WIDTH;
-        light.shadowMapHeight = SHADOW_MAP_HEIGHT;
+        //light.shadow.bias = 0.0039;
+        light.shadow.mapSize.width = SHADOW_MAP_WIDTH;
+        light.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
         //light.shadowCameraVisible = true;
 
@@ -514,8 +513,7 @@ CANNON.Demo = function(options){
         renderer.setClearColor( scene.fog.color, 1 );
         renderer.autoClear = false;
 
-        renderer.shadowMapEnabled = true;
-        renderer.shadowMapSoft = true;
+        renderer.shadowMap.enabled = true;
 
         // Smoothie
         smoothieCanvas = document.createElement("canvas");
