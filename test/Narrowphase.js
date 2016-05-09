@@ -1,7 +1,7 @@
 var Vec3 = require("../src/math/Vec3");
 var Quaternion = require("../src/math/Quaternion");
 var Box = require('../src/shapes/Box');
-var Heightfield = require('../src/shapes/heightfield');
+var Heightfield = require('../src/shapes/Heightfield');
 var Narrowphase = require('../src/world/Narrowphase');
 var Sphere = require('../src/shapes/Sphere');
 var Body = require('../src/objects/Body');
@@ -39,31 +39,55 @@ module.exports = {
         test.done();
     },
 
-    sphereHeightfield : function(test){
-        var world = new World();
-        var cg = new Narrowphase(world);
-        var result = [];
-        var hfShape = createHeightfield();
-        var sphereShape = new Sphere(0.1);
-        cg.currentContactMaterial = new ContactMaterial();
-        cg.result = result;
-        cg.sphereHeightfield(
-            sphereShape,
-            hfShape,
-            new Vec3(0.25, 0.25, 0.05), // hit the first triangle in the field
-            new Vec3(0, 0, 0),
-            new Quaternion(),
-            new Quaternion(),
-            new Body(1, sphereShape),
-            new Body(1, hfShape)
-        );
+    sphereHeightfield : {
+        setUp : function (cb) {
+            var world = new World();
+            this.cg = new Narrowphase(world);
+            this.cg.currentContactMaterial = new ContactMaterial();
+            cb();
+        },
 
-        test.equal(result.length, 1);
+        test1 : function(test){
+            var hfShape = createHeightfield();
+            var sphereShape = new Sphere(0.1);
+            var cg = this.cg;
+            cg.sphereHeightfield(
+                sphereShape,
+                hfShape,
+                new Vec3(0.25, 0.25, 0.05), // hit the first triangle in the field
+                new Vec3(0, 0, 0),
+                new Quaternion(),
+                new Quaternion(),
+                new Body(1, sphereShape),
+                new Body(1, hfShape)
+            );
 
-        test.done();
+            test.equal(cg.result.length, 1);
+
+            test.done();
+        },
+
+        // Make sure the early iMinY bail works.
+        test2 : function(test){
+            var hfShape = createHeightfield();
+            var sphereShape = new Sphere(0.1);
+            var cg = this.cg;
+            cg.sphereHeightfield(
+                sphereShape,
+                hfShape,
+                new Vec3(18.75, 18.95, 0.05), // hit the last triangle in the field
+                new Vec3(0, 0, 0),
+                new Quaternion(),
+                new Quaternion(),
+                new Body(1, sphereShape),
+                new Body(1, hfShape)
+            );
+
+            test.equal(cg.result.length, 1);
+
+            test.done();
+        },
     },
-
-
 };
 
 function createHeightfield(){
