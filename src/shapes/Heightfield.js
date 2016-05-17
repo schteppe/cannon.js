@@ -441,6 +441,8 @@ Heightfield.prototype.getConvexTrianglePillar = function(xi, yi, getUpperTriangl
         if(world){
             world.idToShapeMap[result.id] = result;
         }
+        // Assign body so the shape overlap events will have it.
+        result.body = this.body;
         offsetResult = new Vec3();
 
         this.pillarConvex = result;
