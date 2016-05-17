@@ -612,6 +612,11 @@ Body.prototype.addShape = function(shape, _offset, _orientation){
 
     shape.body = this;
 
+    // If the body is already in the world, add the shape to the map now.
+    if(this.world){
+        this.world.idToShapeMap[shape.id] = shape;
+    }
+
     return this;
 };
 
