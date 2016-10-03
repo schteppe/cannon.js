@@ -17,6 +17,7 @@ CANNON.Demo = function(options){
     this.restartCurrentScene = restartCurrentScene;
     this.changeScene = changeScene;
     this.start = start;
+    this.gui = null;
 
     var sceneFolder;
 
@@ -44,7 +45,7 @@ CANNON.Demo = function(options){
         shadows: false,
         aabbs: false,
         profiling: false,
-        maxSubSteps:3
+        maxSubSteps: 20
     };
 
     // Extend settings with options
@@ -62,7 +63,6 @@ CANNON.Demo = function(options){
     var bodies = this.bodies = [];
     var visuals = this.visuals = [];
     var scenes = [];
-    var gui = null;
     var smoothie = null;
     var smoothieCanvas = null;
     var scenePicker = {};
@@ -157,16 +157,16 @@ CANNON.Demo = function(options){
     var renderModes = ["solid","wireframe"];
 
     function updategui(){
-        if(gui){
+        if(that.gui){
             // First level
-            for (var i in gui.__controllers){
-                gui.__controllers[i].updateDisplay();
+            for (var i in that.gui.__controllers){
+                that.gui.__controllers[i].updateDisplay();
             }
 
             // Second level
-            for (var f in gui.__folders){
-                for (var i in gui.__folders[f].__controllers){
-                    gui.__folders[f].__controllers[i].updateDisplay();
+            for (var f in that.gui.__folders){
+                for (var i in that.gui.__folders[f].__controllers){
+                    that.gui.__folders[f].__controllers[i].updateDisplay();
                 }
             }
         }
@@ -262,10 +262,20 @@ CANNON.Demo = function(options){
 
         // Read position data into visuals
         for(var i=0; i<N; i++){
-            var b = bodies[i], visual = visuals[i];
-            visual.position.copy(b.position);
+            var b = bodies[i],
+                visual = visuals[i];
+
+            // Interpolated or not?
+            var bodyPos = b.interpolatedPosition;
+            var bodyQuat = b.interpolatedQuaternion;
+            if(settings.paused){
+                bodyPos = b.position;
+                bodyQuat = b.quaternion;
+            }
+
+            visual.position.copy(bodyPos);
             if(b.quaternion){
-                visual.quaternion.copy(b.quaternion);
+                visual.quaternion.copy(bodyQuat);
             }
         }
 
@@ -575,12 +585,12 @@ CANNON.Demo = function(options){
         container.appendChild( stats.domElement );
 
         if(window.dat!=undefined){
-            gui = new dat.GUI();
+            that.gui = new dat.GUI();
 
-            gui.domElement.parentNode.style.zIndex=120;
+            that.gui.domElement.parentNode.style.zIndex=120;
 
             // Render mode
-            var rf = gui.addFolder('Rendering');
+            var rf = that.gui.addFolder('Rendering');
             rf.add(settings,'rendermode',{Solid:"solid",Wireframe:"wireframe"}).onChange(function(mode){
                 setRenderMode(mode);
             });
@@ -618,7 +628,7 @@ CANNON.Demo = function(options){
             });
 
             // World folder
-            var wf = gui.addFolder('World');
+            var wf = that.gui.addFolder('World');
             // Pause
             wf.add(settings, 'paused').onChange(function(p){
                 /*if(p){
@@ -626,8 +636,10 @@ CANNON.Demo = function(options){
                 } else {
                     smoothie.start();
                 }*/
+                resetCallTime = true;
             });
-            wf.add(settings, 'stepFrequency',60,60*10).step(60);
+            wf.add(settings, 'stepFrequency',10,60*10).step(10);
+            wf.add(settings, 'maxSubSteps',1,50).step(1);
             var maxg = 100;
             wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){
                 if(!isNaN(gx)){
@@ -652,7 +664,7 @@ CANNON.Demo = function(options){
             });
 
             // Solver folder
-            var sf = gui.addFolder('Solver');
+            var sf = that.gui.addFolder('Solver');
             sf.add(settings, 'iterations',1,50).step(1).onChange(function(it){
                 world.solver.iterations = it;
             });
@@ -667,7 +679,7 @@ CANNON.Demo = function(options){
             });
 
             // Scene picker
-            sceneFolder = gui.addFolder('Scenes');
+            sceneFolder = that.gui.addFolder('Scenes');
             sceneFolder.open();
         }
 
@@ -701,11 +713,12 @@ CANNON.Demo = function(options){
     }
 
     var lastCallTime = 0;
+    var resetCallTime = false;
     function updatePhysics(){
         // Step world
         var timeStep = 1 / settings.stepFrequency;
 
-        var now = Date.now() / 1000;
+        var now = performance.now() / 1000;
 
         if(!lastCallTime){
             // last call time not saved, cant guess elapsed time. Take a simple step.
@@ -715,6 +728,10 @@ CANNON.Demo = function(options){
         }
 
         var timeSinceLastCall = now - lastCallTime;
+        if(resetCallTime){
+            timeSinceLastCall = 0;
+            resetCallTime = false;
+        }
 
         world.step(timeStep, timeSinceLastCall, settings.maxSubSteps);
 
@@ -777,6 +794,7 @@ CANNON.Demo = function(options){
 
             case 112: // p
                 settings.paused = !settings.paused;
+                resetCallTime = true;
                 updategui();
                 break;
 

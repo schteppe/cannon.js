@@ -119,6 +119,20 @@ function World(options){
     this.bodies = [];
 
     /**
+     * @property Array dirtyBodies
+     * @brief Container for bodies to be removed from simulation
+     * @memberof CANNON.World
+     */
+    this.dirtyBodies = [];
+
+    /**
+     * @property bool bodiesIsDirty
+     * @brief When true, dirtyBodies will be removed at the end of this step
+     * @memberof CANNON.World
+     */
+    this.bodiesIsDirty = false;
+
+    /**
      * The solver algorithm to use. Default is GSSolver
      * @property solver
      * @type {Solver}
@@ -413,11 +427,10 @@ World.prototype.raycastClosest = function(from, to, options, result){
 
 /**
  * Remove a rigid body from the simulation.
- * @method remove
+ * @method removeImmediate
  * @param {Body} body
- * @deprecated Use .removeBody instead
  */
-World.prototype.remove = function(body){
+World.prototype.removeImmediate = function(body){
     body.world = null;
     var n = this.bodies.length - 1,
         bodies = this.bodies,
@@ -438,11 +451,36 @@ World.prototype.remove = function(body){
 };
 
 /**
+ * @method remove
+ * @brief Remove a rigid body from the simulation.
+ * @param {Body} body
+ * @deprecated Use .removeBody instead
+ */
+World.prototype.remove = function(body){
+    this.dirtyBodies.push(body);
+    this.bodiesIsDirty = true;
+};
+
+/**
  * Remove a rigid body from the simulation.
  * @method removeBody
  * @param {Body} body
  */
 World.prototype.removeBody = World.prototype.remove;
+
+/**
+ * @method cleanup
+ * @brief Removes flagged rigid bodies from the simulation.
+ * @param {Body} body
+ */
+World.prototype.cleanup = function(body){
+    var body = this.dirtyBodies.pop();
+    while(body != undefined){
+        this.removeImmediate(body);
+        body = this.dirtyBodies.pop();
+    }
+    this.bodiesIsDirty = false;
+};
 
 World.prototype.getBodyById = function(id){
     return this.idToBodyMap[id];
@@ -920,6 +958,11 @@ World.prototype.internalStep = function(dt){
         for(i=0; i!==N; i++){
             bodies[i].sleepTick(this.time);
         }
+    }
+
+    //Remove bodies flagged for deletion
+    if(this.bodiesIsDirty){
+        this.cleanup();
     }
 };
 

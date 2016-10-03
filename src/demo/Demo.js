@@ -17,6 +17,7 @@ CANNON.Demo = function(options){
     this.restartCurrentScene = restartCurrentScene;
     this.changeScene = changeScene;
     this.start = start;
+    this.gui = null;
 
     var sceneFolder;
 
@@ -62,7 +63,6 @@ CANNON.Demo = function(options){
     var bodies = this.bodies = [];
     var visuals = this.visuals = [];
     var scenes = [];
-    var gui = null;
     var smoothie = null;
     var smoothieCanvas = null;
     var scenePicker = {};
@@ -157,16 +157,16 @@ CANNON.Demo = function(options){
     var renderModes = ["solid","wireframe"];
 
     function updategui(){
-        if(gui){
+        if(that.gui){
             // First level
-            for (var i in gui.__controllers){
-                gui.__controllers[i].updateDisplay();
+            for (var i in that.gui.__controllers){
+                that.gui.__controllers[i].updateDisplay();
             }
 
             // Second level
-            for (var f in gui.__folders){
-                for (var i in gui.__folders[f].__controllers){
-                    gui.__folders[f].__controllers[i].updateDisplay();
+            for (var f in that.gui.__folders){
+                for (var i in that.gui.__folders[f].__controllers){
+                    that.gui.__folders[f].__controllers[i].updateDisplay();
                 }
             }
         }
@@ -585,12 +585,12 @@ CANNON.Demo = function(options){
         container.appendChild( stats.domElement );
 
         if(window.dat!=undefined){
-            gui = new dat.GUI();
+            that.gui = new dat.GUI();
 
-            gui.domElement.parentNode.style.zIndex=120;
+            that.gui.domElement.parentNode.style.zIndex=120;
 
             // Render mode
-            var rf = gui.addFolder('Rendering');
+            var rf = that.gui.addFolder('Rendering');
             rf.add(settings,'rendermode',{Solid:"solid",Wireframe:"wireframe"}).onChange(function(mode){
                 setRenderMode(mode);
             });
@@ -628,7 +628,7 @@ CANNON.Demo = function(options){
             });
 
             // World folder
-            var wf = gui.addFolder('World');
+            var wf = that.gui.addFolder('World');
             // Pause
             wf.add(settings, 'paused').onChange(function(p){
                 /*if(p){
@@ -664,7 +664,7 @@ CANNON.Demo = function(options){
             });
 
             // Solver folder
-            var sf = gui.addFolder('Solver');
+            var sf = that.gui.addFolder('Solver');
             sf.add(settings, 'iterations',1,50).step(1).onChange(function(it){
                 world.solver.iterations = it;
             });
@@ -679,7 +679,7 @@ CANNON.Demo = function(options){
             });
 
             // Scene picker
-            sceneFolder = gui.addFolder('Scenes');
+            sceneFolder = that.gui.addFolder('Scenes');
             sceneFolder.open();
         }
 
