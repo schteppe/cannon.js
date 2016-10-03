@@ -283,7 +283,7 @@ RaycastVehicle.prototype.updateSuspension = function(deltaTime) {
  */
 RaycastVehicle.prototype.removeFromWorld = function(world){
     var constraints = this.constraints;
-    world.remove(this.chassisBody);
+    world.removeImmediate(this.chassisBody);
     world.removeEventListener('preStep', this.preStepCallback);
     this.world = null;
 };
