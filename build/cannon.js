@@ -9561,7 +9561,7 @@ Sphere.prototype.calculateLocalInertia = function(mass,target){
 };
 
 Sphere.prototype.volume = function(){
-    return 4.0 * Math.PI * this.radius / 3.0;
+    return 4.0 * Math.PI * Math.pow(this.radius, 3) / 3.0;
 };
 
 Sphere.prototype.updateBoundingSphereRadius = function(){
