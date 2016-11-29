@@ -28,17 +28,17 @@
     }
   ],
   "devDependencies": {
-    "jshint": "latest",
-    "uglify-js": "latest",
-    "nodeunit": "^0.9.0",
+    "browserify": "*",
     "grunt": "~0.4.0",
+    "grunt-browserify": "^2.1.4",
+    "grunt-contrib-concat": "~0.1.3",
     "grunt-contrib-jshint": "~0.1.1",
     "grunt-contrib-nodeunit": "^0.4.1",
-    "grunt-contrib-concat": "~0.1.3",
     "grunt-contrib-uglify": "^0.5.1",
-    "grunt-browserify": "^2.1.4",
-    "grunt-contrib-yuidoc": "^0.5.2",
-    "browserify": "*"
+    "grunt-contrib-yuidoc": "^1.0.0",
+    "jshint": "latest",
+    "nodeunit": "^0.9.0",
+    "uglify-js": "latest"
   },
   "dependencies": {}
 }
