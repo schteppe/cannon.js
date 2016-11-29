@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>AABB - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -134,7 +136,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_collision_AABB.js.html#l6"><code>src&#x2F;collision&#x2F;AABB.js:6</code></a>
+            Defined in: <a href="../files/src_collision_AABB.js.html#l6"><code>src\collision\AABB.js:6</code></a>
         </div>
 
 
@@ -148,81 +150,81 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_AABB" class="method item">
-            <h3 class="name"><code>AABB</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_collision_AABB.js.html#l6"><code>src&#x2F;collision&#x2F;AABB.js:6</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[upperBound]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[lowerBound]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_AABB" class="method item">
+    <h3 class="name"><code>AABB</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_AABB.js.html#l6"><code>src\collision\AABB.js:6</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[upperBound]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[lowerBound]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -316,7 +318,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l107"><code>src&#x2F;collision&#x2F;AABB.js:107</code></a>
+        <a href="../files/src_collision_AABB.js.html#l107"><code>src\collision\AABB.js:107</code></a>
         </p>
 
 
@@ -356,7 +358,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l180"><code>src&#x2F;collision&#x2F;AABB.js:180</code></a>
+        <a href="../files/src_collision_AABB.js.html#l161"><code>src\collision\AABB.js:161</code></a>
         </p>
 
 
@@ -419,7 +421,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l95"><code>src&#x2F;collision&#x2F;AABB.js:95</code></a>
+        <a href="../files/src_collision_AABB.js.html#l95"><code>src\collision\AABB.js:95</code></a>
         </p>
 
 
@@ -482,7 +484,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l115"><code>src&#x2F;collision&#x2F;AABB.js:115</code></a>
+        <a href="../files/src_collision_AABB.js.html#l115"><code>src\collision\AABB.js:115</code></a>
         </p>
 
 
@@ -556,7 +558,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l204"><code>src&#x2F;collision&#x2F;AABB.js:204</code></a>
+        <a href="../files/src_collision_AABB.js.html#l185"><code>src\collision\AABB.js:185</code></a>
         </p>
 
 
@@ -681,7 +683,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l158"><code>src&#x2F;collision&#x2F;AABB.js:158</code></a>
+        <a href="../files/src_collision_AABB.js.html#l129"><code>src\collision\AABB.js:129</code></a>
         </p>
 
 
@@ -753,7 +755,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l40"><code>src&#x2F;collision&#x2F;AABB.js:40</code></a>
+        <a href="../files/src_collision_AABB.js.html#l40"><code>src\collision\AABB.js:40</code></a>
         </p>
 
 
@@ -775,7 +777,7 @@
 
 
                     <div class="param-description">
-                        <p>An array of Vec3&#39;s.</p>
+                        <p>An array of Vec3's.</p>
 
                     </div>
 
@@ -852,7 +854,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l240"><code>src&#x2F;collision&#x2F;AABB.js:240</code></a>
+        <a href="../files/src_collision_AABB.js.html#l221"><code>src\collision\AABB.js:221</code></a>
         </p>
 
 
@@ -930,7 +932,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collision_AABB.js.html#l271"><code>src&#x2F;collision&#x2F;AABB.js:271</code></a>
+        <a href="../files/src_collision_AABB.js.html#l252"><code>src\collision\AABB.js:252</code></a>
         </p>
 
 
@@ -986,56 +988,56 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_lowerBound" class="property item">
-                        <h3 class="name"><code>lowerBound</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_AABB.js.html#l17"><code>src&#x2F;collision&#x2F;AABB.js:17</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The lower bound of the bounding box.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_upperBound" class="property item">
-                        <h3 class="name"><code>upperBound</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_collision_AABB.js.html#l27"><code>src&#x2F;collision&#x2F;AABB.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The upper bound of the bounding box.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_lowerBound" class="property item">
+    <h3 class="name"><code>lowerBound</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_AABB.js.html#l17"><code>src\collision\AABB.js:17</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The lower bound of the bounding box.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_upperBound" class="property item">
+    <h3 class="name"><code>upperBound</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_AABB.js.html#l27"><code>src\collision\AABB.js:27</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The upper bound of the bounding box.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

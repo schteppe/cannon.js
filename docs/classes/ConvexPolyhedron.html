@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>ConvexPolyhedron - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -137,7 +139,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_shapes_ConvexPolyhedron.js.html#l8"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:8</code></a>
+            Defined in: <a href="../files/src_shapes_ConvexPolyhedron.js.html#l8"><code>src\shapes\ConvexPolyhedron.js:8</code></a>
         </div>
 
 
@@ -151,73 +153,73 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_ConvexPolyhedron" class="method item">
-            <h3 class="name"><code>ConvexPolyhedron</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>points</code>
-                        </li>
-                        <li class="arg">
-                                <code>faces</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_shapes_ConvexPolyhedron.js.html#l8"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:8</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">points</code>
-                                <span class="type">Array</span>
-        
-        
-                            <div class="param-description">
-                                <p>An array of Vec3&#39;s</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">faces</code>
-                                <span class="type">Array</span>
-        
-        
-                            <div class="param-description">
-                                <p>Array of integer arrays, describing which vertices that is included in each face.</p>
-        
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_ConvexPolyhedron" class="method item">
+    <h3 class="name"><code>ConvexPolyhedron</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>points</code>
+                </li>
+                <li class="arg">
+                        <code>faces</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l8"><code>src\shapes\ConvexPolyhedron.js:8</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">points</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>An array of Vec3's</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">faces</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>Array of integer arrays, describing which vertices that is included in each face.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -322,7 +324,19 @@
 
                     <ul class="index-list properties extends">
                             <li class="index-item property inherited">
+                                <a href="#property_body">body</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_boundingSphereRadius">boundingSphereRadius</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_collisionFilterGroup">collisionFilterGroup</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_collisionFilterMask">collisionFilterMask</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -397,7 +411,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l413"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:413</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l413"><code>src\shapes\ConvexPolyhedron.js:413</code></a>
         </p>
 
 
@@ -468,7 +482,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l727"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:727</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l727"><code>src\shapes\ConvexPolyhedron.js:727</code></a>
         </p>
 
 
@@ -574,7 +588,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l181"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:181</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l181"><code>src\shapes\ConvexPolyhedron.js:181</code></a>
         </p>
 
 
@@ -726,7 +740,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l443"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:443</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l443"><code>src\shapes\ConvexPolyhedron.js:443</code></a>
         </p>
 
 
@@ -851,7 +865,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l588"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:588</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l588"><code>src\shapes\ConvexPolyhedron.js:588</code></a>
         </p>
 
 
@@ -929,7 +943,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l80"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:80</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l80"><code>src\shapes\ConvexPolyhedron.js:80</code></a>
         </p>
 
 
@@ -960,7 +974,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l116"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:116</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l116"><code>src\shapes\ConvexPolyhedron.js:116</code></a>
         </p>
 
 
@@ -997,7 +1011,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l689"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:689</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l689"><code>src\shapes\ConvexPolyhedron.js:689</code></a>
         </p>
 
 
@@ -1068,7 +1082,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l234"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:234</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l234"><code>src\shapes\ConvexPolyhedron.js:234</code></a>
         </p>
 
 
@@ -1184,7 +1198,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l773"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:773</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l773"><code>src\shapes\ConvexPolyhedron.js:773</code></a>
         </p>
 
 
@@ -1247,7 +1261,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l167"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:167</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l167"><code>src\shapes\ConvexPolyhedron.js:167</code></a>
         </p>
 
 
@@ -1320,7 +1334,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l147"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:147</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l147"><code>src\shapes\ConvexPolyhedron.js:147</code></a>
         </p>
 
 
@@ -1406,7 +1420,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l430"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:430</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l430"><code>src\shapes\ConvexPolyhedron.js:430</code></a>
         </p>
 
 
@@ -1469,7 +1483,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l829"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:829</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l829"><code>src\shapes\ConvexPolyhedron.js:829</code></a>
         </p>
 
 
@@ -1543,7 +1557,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l871"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:871</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l871"><code>src\shapes\ConvexPolyhedron.js:871</code></a>
         </p>
 
 
@@ -1655,7 +1669,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l382"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:382</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l382"><code>src\shapes\ConvexPolyhedron.js:382</code></a>
         </p>
 
 
@@ -1770,7 +1784,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l790"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:790</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l790"><code>src\shapes\ConvexPolyhedron.js:790</code></a>
         </p>
 
 
@@ -1830,7 +1844,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l709"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:709</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l709"><code>src\shapes\ConvexPolyhedron.js:709</code></a>
         </p>
 
 
@@ -1866,7 +1880,7 @@
                 Shape
             </a>
             but overwritten in
-        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l764"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:764</code></a>
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l764"><code>src\shapes\ConvexPolyhedron.js:764</code></a>
         </p>
 
 
@@ -1894,255 +1908,323 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_boundingSphereRadius" class="property item inherited">
-                        <h3 class="name"><code>boundingSphereRadius</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_boundingSphereRadius">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l31"><code>src&#x2F;shapes&#x2F;Shape.js:31</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The local bounding sphere radius of this shape.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionResponse" class="property item inherited">
-                        <h3 class="name"><code>collisionResponse</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l37"><code>src&#x2F;shapes&#x2F;Shape.js:37</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_faceNormals" class="property item">
-                        <h3 class="name"><code>faceNormals</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_ConvexPolyhedron.js.html#l49"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:49</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Array of Vec3</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_faces" class="property item">
-                        <h3 class="name"><code>faces</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_ConvexPolyhedron.js.html#l42"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:42</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Array of integer arrays, indicating which vertices each face consists of</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_id" class="property item inherited">
-                        <h3 class="name"><code>id</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_id">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l17"><code>src&#x2F;shapes&#x2F;Shape.js:17</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Identifyer of the Shape.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_material" class="property item inherited">
-                        <h3 class="name"><code>material</code></h3>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_material">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l43"><code>src&#x2F;shapes&#x2F;Shape.js:43</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_type" class="property item inherited">
-                        <h3 class="name"><code>type</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Shape.html#property_type">Shape</a>:
-                            <a href="../files/src_shapes_Shape.js.html#l23"><code>src&#x2F;shapes&#x2F;Shape.js:23</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The type of this shape. Must be set to an int &gt; 0 by subclasses.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_uniqueAxes" class="property item">
-                        <h3 class="name"><code>uniqueAxes</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_ConvexPolyhedron.js.html#l67"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:67</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_uniqueEdges" class="property item">
-                        <h3 class="name"><code>uniqueEdges</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_ConvexPolyhedron.js.html#l60"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:60</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Array of Vec3</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_vertices" class="property item">
-                        <h3 class="name"><code>vertices</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_ConvexPolyhedron.js.html#l32"><code>src&#x2F;shapes&#x2F;ConvexPolyhedron.js:32</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Array of Vec3</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_body" class="property item inherited">
+    <h3 class="name"><code>body</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_body">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l63"><code>src\shapes\Shape.js:63</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_boundingSphereRadius" class="property item inherited">
+    <h3 class="name"><code>boundingSphereRadius</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_boundingSphereRadius">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l36"><code>src\shapes\Shape.js:36</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        The local bounding sphere radius of this shape.
+    </div>
+
+
+
+</div>
+<div id="property_collisionFilterGroup" class="property item inherited">
+    <h3 class="name"><code>collisionFilterGroup</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionFilterGroup">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l48"><code>src\shapes\Shape.js:48</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_collisionFilterMask" class="property item inherited">
+    <h3 class="name"><code>collisionFilterMask</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionFilterMask">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l53"><code>src\shapes\Shape.js:53</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_collisionResponse" class="property item inherited">
+    <h3 class="name"><code>collisionResponse</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l42"><code>src\shapes\Shape.js:42</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.
+    </div>
+
+
+
+</div>
+<div id="property_faceNormals" class="property item">
+    <h3 class="name"><code>faceNormals</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l49"><code>src\shapes\ConvexPolyhedron.js:49</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Array of Vec3</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_faces" class="property item">
+    <h3 class="name"><code>faces</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l42"><code>src\shapes\ConvexPolyhedron.js:42</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Array of integer arrays, indicating which vertices each face consists of</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_id" class="property item inherited">
+    <h3 class="name"><code>id</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_id">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l22"><code>src\shapes\Shape.js:22</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        Identifyer of the Shape.
+    </div>
+
+
+
+</div>
+<div id="property_material" class="property item inherited">
+    <h3 class="name"><code>material</code></h3>
+    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_material">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l58"><code>src\shapes\Shape.js:58</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_type" class="property item inherited">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Shape.html#property_type">Shape</a>:
+        <a href="../files/src_shapes_Shape.js.html#l28"><code>src\shapes\Shape.js:28</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        The type of this shape. Must be set to an int > 0 by subclasses.
+    </div>
+
+
+
+</div>
+<div id="property_uniqueAxes" class="property item">
+    <h3 class="name"><code>uniqueAxes</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l67"><code>src\shapes\ConvexPolyhedron.js:67</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_uniqueEdges" class="property item">
+    <h3 class="name"><code>uniqueEdges</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l60"><code>src\shapes\ConvexPolyhedron.js:60</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Array of Vec3</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_vertices" class="property item">
+    <h3 class="name"><code>vertices</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_ConvexPolyhedron.js.html#l32"><code>src\shapes\ConvexPolyhedron.js:32</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Array of Vec3</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

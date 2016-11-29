@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Vec3 - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -134,7 +136,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_math_Vec3.js.html#l5"><code>src&#x2F;math&#x2F;Vec3.js:5</code></a>
+            Defined in: <a href="../files/src_math_Vec3.js.html#l5"><code>src\math\Vec3.js:5</code></a>
         </div>
 
 
@@ -148,93 +150,93 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Vec3" class="method item">
-            <h3 class="name"><code>Vec3</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>x</code>
-                        </li>
-                        <li class="arg">
-                                <code>y</code>
-                        </li>
-                        <li class="arg">
-                                <code>z</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_math_Vec3.js.html#l5"><code>src&#x2F;math&#x2F;Vec3.js:5</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">x</code>
-                                <span class="type">Number</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">y</code>
-                                <span class="type">Number</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">z</code>
-                                <span class="type">Number</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
-                <div class="example">
-                    <h4>Example:</h4>
-        
-                    <div class="example-content">
-                        <pre class="code prettyprint"><code>var v = new Vec3(1, 2, 3);
-        console.log(&#39;x=&#39; + v.x); // x=1
-        </code></pre>
-                    </div>
-                </div>
+<div id="method_Vec3" class="method item">
+    <h3 class="name"><code>Vec3</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>x</code>
+                </li>
+                <li class="arg">
+                        <code>y</code>
+                </li>
+                <li class="arg">
+                        <code>z</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l5"><code>src\math\Vec3.js:5</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">z</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var v = new Vec3(1, 2, 3);
+console.log('x=' + v.x); // x=1</code></pre>
+
+            </div>
+        </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -253,6 +255,10 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
+                            <li class="index-item method">
+                                <a href="#method_addScaledVector">addScaledVector</a>
+
+                            </li>
                             <li class="index-item method">
                                 <a href="#method_almostEquals">almostEquals</a>
 
@@ -307,6 +313,10 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_lerp">lerp</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_mult">mult</a>
 
                             </li>
                             <li class="index-item method deprecated">
@@ -416,6 +426,96 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_addScaledVector" class="method item">
+    <h3 class="name"><code>addScaledVector</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>scalar</code>
+                </li>
+                <li class="arg">
+                        <code>vector</code>
+                </li>
+                <li class="arg">
+                        <code>target</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l302"><code>src\math\Vec3.js:302</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Scale a vector and add it to this vector. Save the result in &quot;target&quot;. (target = this + vector * scalar)</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">scalar</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">vector</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                        <p>The vector to save the result in.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+            </div>
+        </div>
+
+
+</div>
 <div id="method_almostEquals" class="method item">
     <h3 class="name"><code>almostEquals</code></h3>
 
@@ -443,7 +543,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l395"><code>src&#x2F;math&#x2F;Vec3.js:395</code></a>
+        <a href="../files/src_math_Vec3.js.html#l426"><code>src\math\Vec3.js:426</code></a>
         </p>
 
 
@@ -514,7 +614,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l414"><code>src&#x2F;math&#x2F;Vec3.js:414</code></a>
+        <a href="../files/src_math_Vec3.js.html#l445"><code>src\math\Vec3.js:445</code></a>
         </p>
 
 
@@ -564,7 +664,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l445"><code>src&#x2F;math&#x2F;Vec3.js:445</code></a>
+        <a href="../files/src_math_Vec3.js.html#l476"><code>src\math\Vec3.js:476</code></a>
         </p>
 
 
@@ -611,7 +711,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l367"><code>src&#x2F;math&#x2F;Vec3.js:367</code></a>
+        <a href="../files/src_math_Vec3.js.html#l398"><code>src\math\Vec3.js:398</code></a>
         </p>
 
 
@@ -679,7 +779,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l61"><code>src&#x2F;math&#x2F;Vec3.js:61</code></a>
+        <a href="../files/src_math_Vec3.js.html#l61"><code>src\math\Vec3.js:61</code></a>
         </p>
 
 
@@ -747,7 +847,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l140"><code>src&#x2F;math&#x2F;Vec3.js:140</code></a>
+        <a href="../files/src_math_Vec3.js.html#l140"><code>src\math\Vec3.js:140</code></a>
         </p>
 
 
@@ -794,7 +894,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l246"><code>src&#x2F;math&#x2F;Vec3.js:246</code></a>
+        <a href="../files/src_math_Vec3.js.html#l246"><code>src\math\Vec3.js:246</code></a>
         </p>
 
 
@@ -857,7 +957,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l232"><code>src&#x2F;math&#x2F;Vec3.js:232</code></a>
+        <a href="../files/src_math_Vec3.js.html#l232"><code>src\math\Vec3.js:232</code></a>
         </p>
 
 
@@ -920,7 +1020,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l287"><code>src&#x2F;math&#x2F;Vec3.js:287</code></a>
+        <a href="../files/src_math_Vec3.js.html#l318"><code>src\math\Vec3.js:318</code></a>
         </p>
 
 
@@ -986,7 +1086,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l433"><code>src&#x2F;math&#x2F;Vec3.js:433</code></a>
+        <a href="../files/src_math_Vec3.js.html#l464"><code>src\math\Vec3.js:464</code></a>
         </p>
 
 
@@ -1054,7 +1154,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l297"><code>src&#x2F;math&#x2F;Vec3.js:297</code></a>
+        <a href="../files/src_math_Vec3.js.html#l328"><code>src\math\Vec3.js:328</code></a>
         </p>
 
 
@@ -1095,7 +1195,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l208"><code>src&#x2F;math&#x2F;Vec3.js:208</code></a>
+        <a href="../files/src_math_Vec3.js.html#l208"><code>src\math\Vec3.js:208</code></a>
         </p>
 
 
@@ -1136,7 +1236,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l225"><code>src&#x2F;math&#x2F;Vec3.js:225</code></a>
+        <a href="../files/src_math_Vec3.js.html#l225"><code>src\math\Vec3.js:225</code></a>
         </p>
 
 
@@ -1186,7 +1286,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l381"><code>src&#x2F;math&#x2F;Vec3.js:381</code></a>
+        <a href="../files/src_math_Vec3.js.html#l412"><code>src\math\Vec3.js:412</code></a>
         </p>
 
 
@@ -1239,6 +1339,83 @@
 
 
 </div>
+<div id="method_mult" class="method item">
+    <h3 class="name"><code>mult</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>vector</code>
+                </li>
+                <li class="arg">
+                        <code>target</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l278"><code>src\math\Vec3.js:278</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Multiply the vector with an other vector, component-wise.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">vector</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                        <p>The vector to save the result in.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+            </div>
+        </div>
+
+
+</div>
 <div id="method_mult" class="method item deprecated">
     <h3 class="name"><code>mult</code></h3>
 
@@ -1267,7 +1444,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l258"><code>src&#x2F;math&#x2F;Vec3.js:258</code></a>
+        <a href="../files/src_math_Vec3.js.html#l258"><code>src\math\Vec3.js:258</code></a>
         </p>
 
 
@@ -1342,7 +1519,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l305"><code>src&#x2F;math&#x2F;Vec3.js:305</code></a>
+        <a href="../files/src_math_Vec3.js.html#l336"><code>src\math\Vec3.js:336</code></a>
         </p>
 
 
@@ -1401,7 +1578,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l197"><code>src&#x2F;math&#x2F;Vec3.js:197</code></a>
+        <a href="../files/src_math_Vec3.js.html#l197"><code>src\math\Vec3.js:197</code></a>
         </p>
 
 
@@ -1444,7 +1621,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l215"><code>src&#x2F;math&#x2F;Vec3.js:215</code></a>
+        <a href="../files/src_math_Vec3.js.html#l215"><code>src\math\Vec3.js:215</code></a>
         </p>
 
 
@@ -1486,7 +1663,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l152"><code>src&#x2F;math&#x2F;Vec3.js:152</code></a>
+        <a href="../files/src_math_Vec3.js.html#l152"><code>src\math\Vec3.js:152</code></a>
         </p>
 
 
@@ -1538,7 +1715,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l278"><code>src&#x2F;math&#x2F;Vec3.js:278</code></a>
+        <a href="../files/src_math_Vec3.js.html#l293"><code>src\math\Vec3.js:293</code></a>
         </p>
 
 
@@ -1617,7 +1794,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l79"><code>src&#x2F;math&#x2F;Vec3.js:79</code></a>
+        <a href="../files/src_math_Vec3.js.html#l79"><code>src\math\Vec3.js:79</code></a>
         </p>
 
 
@@ -1625,7 +1802,7 @@
     </div>
 
     <div class="description">
-        <p>Set the vectors&#39; 3 elements</p>
+        <p>Set the vectors' 3 elements</p>
 
     </div>
 
@@ -1692,7 +1869,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l94"><code>src&#x2F;math&#x2F;Vec3.js:94</code></a>
+        <a href="../files/src_math_Vec3.js.html#l94"><code>src\math\Vec3.js:94</code></a>
         </p>
 
 
@@ -1732,7 +1909,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l319"><code>src&#x2F;math&#x2F;Vec3.js:319</code></a>
+        <a href="../files/src_math_Vec3.js.html#l350"><code>src\math\Vec3.js:350</code></a>
         </p>
 
 
@@ -1794,7 +1971,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l358"><code>src&#x2F;math&#x2F;Vec3.js:358</code></a>
+        <a href="../files/src_math_Vec3.js.html#l389"><code>src\math\Vec3.js:389</code></a>
         </p>
 
 
@@ -1836,7 +2013,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l349"><code>src&#x2F;math&#x2F;Vec3.js:349</code></a>
+        <a href="../files/src_math_Vec3.js.html#l380"><code>src\math\Vec3.js:380</code></a>
         </p>
 
 
@@ -1884,7 +2061,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l174"><code>src&#x2F;math&#x2F;Vec3.js:174</code></a>
+        <a href="../files/src_math_Vec3.js.html#l174"><code>src\math\Vec3.js:174</code></a>
         </p>
 
 
@@ -1953,7 +2130,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l102"><code>src&#x2F;math&#x2F;Vec3.js:102</code></a>
+        <a href="../files/src_math_Vec3.js.html#l102"><code>src\math\Vec3.js:102</code></a>
         </p>
 
 
@@ -2030,7 +2207,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Vec3.js.html#l121"><code>src&#x2F;math&#x2F;Vec3.js:121</code></a>
+        <a href="../files/src_math_Vec3.js.html#l121"><code>src\math\Vec3.js:121</code></a>
         </p>
 
 
@@ -2085,178 +2262,178 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_UNIT_X" class="property item">
-                        <h3 class="name"><code>UNIT_X</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Vec3.js.html#l43"><code>src&#x2F;math&#x2F;Vec3.js:43</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_UNIT_Y" class="property item">
-                        <h3 class="name"><code>UNIT_Y</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Vec3.js.html#l49"><code>src&#x2F;math&#x2F;Vec3.js:49</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_UNIT_Z" class="property item">
-                        <h3 class="name"><code>UNIT_Z</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Vec3.js.html#l55"><code>src&#x2F;math&#x2F;Vec3.js:55</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_x" class="property item">
-                        <h3 class="name"><code>x</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Vec3.js.html#l18"><code>src&#x2F;math&#x2F;Vec3.js:18</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_y" class="property item">
-                        <h3 class="name"><code>y</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Vec3.js.html#l24"><code>src&#x2F;math&#x2F;Vec3.js:24</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_z" class="property item">
-                        <h3 class="name"><code>z</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Vec3.js.html#l30"><code>src&#x2F;math&#x2F;Vec3.js:30</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_ZERO" class="property item">
-                        <h3 class="name"><code>ZERO</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Vec3.js.html#l37"><code>src&#x2F;math&#x2F;Vec3.js:37</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_UNIT_X" class="property item">
+    <h3 class="name"><code>UNIT_X</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l43"><code>src\math\Vec3.js:43</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_UNIT_Y" class="property item">
+    <h3 class="name"><code>UNIT_Y</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l49"><code>src\math\Vec3.js:49</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_UNIT_Z" class="property item">
+    <h3 class="name"><code>UNIT_Z</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l55"><code>src\math\Vec3.js:55</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_x" class="property item">
+    <h3 class="name"><code>x</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l18"><code>src\math\Vec3.js:18</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_y" class="property item">
+    <h3 class="name"><code>y</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l24"><code>src\math\Vec3.js:24</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_z" class="property item">
+    <h3 class="name"><code>z</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l30"><code>src\math\Vec3.js:30</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_ZERO" class="property item">
+    <h3 class="name"><code>ZERO</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Vec3.js.html#l37"><code>src\math\Vec3.js:37</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
             </div>
 
 

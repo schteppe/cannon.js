@@ -31,6 +31,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "ObjectCollisionMatrix",
         "Octree",
         "OctreeNode",
+        "OverlapKeeper",
         "Particle",
         "Plane",
         "PointToPointConstraint",
@@ -58,6 +59,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "World"
     ],
     "modules": [],
-    "allModules": []
+    "allModules": [],
+    "elements": []
 } };
 });

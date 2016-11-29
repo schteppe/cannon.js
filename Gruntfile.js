@@ -46,6 +46,7 @@ module.exports = function(grunt) {
                 options: {
                     outdir : "docs",
                     paths : ["./src/"],
+                    themedir: './yuidocTheme'
                 },
             }
         },

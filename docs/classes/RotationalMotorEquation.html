@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>RotationalMotorEquation - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -137,7 +139,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_equations_RotationalMotorEquation.js.html#l7"><code>src&#x2F;equations&#x2F;RotationalMotorEquation.js:7</code></a>
+            Defined in: <a href="../files/src_equations_RotationalMotorEquation.js.html#l7"><code>src\equations\RotationalMotorEquation.js:7</code></a>
         </div>
 
 
@@ -151,84 +153,84 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_RotationalMotorEquation" class="method item">
-            <h3 class="name"><code>RotationalMotorEquation</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>bodyA</code>
-                        </li>
-                        <li class="arg">
-                                <code>bodyB</code>
-                        </li>
-                        <li class="arg">
-                                <code>maxForce</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_equations_RotationalMotorEquation.js.html#l7"><code>src&#x2F;equations&#x2F;RotationalMotorEquation.js:7</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">bodyA</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">bodyB</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">maxForce</code>
-                                <span class="type">Number</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_RotationalMotorEquation" class="method item">
+    <h3 class="name"><code>RotationalMotorEquation</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>bodyA</code>
+                </li>
+                <li class="arg">
+                        <code>bodyB</code>
+                </li>
+                <li class="arg">
+                        <code>maxForce</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_equations_RotationalMotorEquation.js.html#l7"><code>src\equations\RotationalMotorEquation.js:7</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">maxForce</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -338,6 +340,10 @@
                                 <a href="#property_minForce">minForce</a>
 
                             </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_multiplier">multiplier</a>
+
+                            </li>
                             <li class="index-item property">
                                 <a href="#property_targetVelocity">targetVelocity</a>
 
@@ -372,7 +378,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_addToWlambda">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l228"><code>src&#x2F;equations&#x2F;Equation.js:228</code></a>
+        <a href="../files/src_equations_Equation.js.html#l229"><code>src\equations\Equation.js:229</code></a>
         </p>
 
 
@@ -394,7 +400,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -422,7 +428,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeB">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l95"><code>src&#x2F;equations&#x2F;Equation.js:95</code></a>
+        <a href="../files/src_equations_Equation.js.html#l102"><code>src\equations\Equation.js:102</code></a>
         </p>
 
 
@@ -463,7 +469,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGiMf">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l159"><code>src&#x2F;equations&#x2F;Equation.js:159</code></a>
+        <a href="../files/src_equations_Equation.js.html#l166"><code>src\equations\Equation.js:166</code></a>
         </p>
 
 
@@ -471,7 +477,7 @@
     </div>
 
     <div class="description">
-        <p>Computes G<em>inv(M)</em>f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.</p>
+        <p>Computes G*inv(M)*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.</p>
 
     </div>
 
@@ -504,7 +510,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGiMGt">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l191"><code>src&#x2F;equations&#x2F;Equation.js:191</code></a>
+        <a href="../files/src_equations_Equation.js.html#l196"><code>src\equations\Equation.js:196</code></a>
         </p>
 
 
@@ -512,7 +518,7 @@
     </div>
 
     <div class="description">
-        <p>Computes G<em>inv(M)</em>G&#39;</p>
+        <p>Computes G*inv(M)*G'</p>
 
     </div>
 
@@ -545,7 +551,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGq">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l107"><code>src&#x2F;equations&#x2F;Equation.js:107</code></a>
+        <a href="../files/src_equations_Equation.js.html#l114"><code>src\equations\Equation.js:114</code></a>
         </p>
 
 
@@ -586,7 +592,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGW">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l124"><code>src&#x2F;equations&#x2F;Equation.js:124</code></a>
+        <a href="../files/src_equations_Equation.js.html#l131"><code>src\equations\Equation.js:131</code></a>
         </p>
 
 
@@ -627,7 +633,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeGWlambda">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l142"><code>src&#x2F;equations&#x2F;Equation.js:142</code></a>
+        <a href="../files/src_equations_Equation.js.html#l149"><code>src\equations\Equation.js:149</code></a>
         </p>
 
 
@@ -674,7 +680,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_computeInvC">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l262"><code>src&#x2F;equations&#x2F;Equation.js:262</code></a>
+        <a href="../files/src_equations_Equation.js.html#l254"><code>src\equations\Equation.js:254</code></a>
         </p>
 
 
@@ -682,7 +688,7 @@
     </div>
 
     <div class="description">
-        <p>Compute the denominator part of the SPOOK equation: C = G<em>inv(M)</em>G&#39; + eps</p>
+        <p>Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps</p>
 
     </div>
 
@@ -696,7 +702,7 @@
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -728,7 +734,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Equation.html#method_setSpookParams">Equation</a>:
-        <a href="../files/src_equations_Equation.js.html#l82"><code>src&#x2F;equations&#x2F;Equation.js:82</code></a>
+        <a href="../files/src_equations_Equation.js.html#l89"><code>src\equations\Equation.js:89</code></a>
         </p>
 
 
@@ -749,325 +755,350 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_a" class="property item inherited">
-                        <h3 class="name"><code>a</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_a">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l41"><code>src&#x2F;equations&#x2F;Equation.js:41</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>SPOOK parameter</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_axisA" class="property item">
-                        <h3 class="name"><code>axisA</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_equations_RotationalMotorEquation.js.html#l21"><code>src&#x2F;equations&#x2F;RotationalMotorEquation.js:21</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>World oriented rotational axis</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_axisB" class="property item">
-                        <h3 class="name"><code>axisB</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_equations_RotationalMotorEquation.js.html#l27"><code>src&#x2F;equations&#x2F;RotationalMotorEquation.js:27</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>World oriented rotational axis</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_b" class="property item inherited">
-                        <h3 class="name"><code>b</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_b">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l47"><code>src&#x2F;equations&#x2F;Equation.js:47</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>SPOOK parameter</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_bi" class="property item inherited">
-                        <h3 class="name"><code>bi</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_bi">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l29"><code>src&#x2F;equations&#x2F;Equation.js:29</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_bj" class="property item inherited">
-                        <h3 class="name"><code>bj</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_bj">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l35"><code>src&#x2F;equations&#x2F;Equation.js:35</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_enabled" class="property item inherited">
-                        <h3 class="name"><code>enabled</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_enabled">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l69"><code>src&#x2F;equations&#x2F;Equation.js:69</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_eps" class="property item inherited">
-                        <h3 class="name"><code>eps</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_eps">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l53"><code>src&#x2F;equations&#x2F;Equation.js:53</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>SPOOK parameter</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_jacobianElementA" class="property item inherited">
-                        <h3 class="name"><code>jacobianElementA</code></h3>
-                        <span class="type"><a href="../classes/JacobianElement.html" class="crosslink">JacobianElement</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_jacobianElementA">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l59"><code>src&#x2F;equations&#x2F;Equation.js:59</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_jacobianElementB" class="property item inherited">
-                        <h3 class="name"><code>jacobianElementB</code></h3>
-                        <span class="type"><a href="../classes/JacobianElement.html" class="crosslink">JacobianElement</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_jacobianElementB">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l64"><code>src&#x2F;equations&#x2F;Equation.js:64</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_maxForce" class="property item inherited">
-                        <h3 class="name"><code>maxForce</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_maxForce">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l24"><code>src&#x2F;equations&#x2F;Equation.js:24</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_minForce" class="property item inherited">
-                        <h3 class="name"><code>minForce</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Equation.html#property_minForce">Equation</a>:
-                            <a href="../files/src_equations_Equation.js.html#l19"><code>src&#x2F;equations&#x2F;Equation.js:19</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_targetVelocity" class="property item">
-                        <h3 class="name"><code>targetVelocity</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_equations_RotationalMotorEquation.js.html#l33"><code>src&#x2F;equations&#x2F;RotationalMotorEquation.js:33</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Motor velocity</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_a" class="property item inherited">
+    <h3 class="name"><code>a</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_a">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l41"><code>src\equations\Equation.js:41</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>SPOOK parameter</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_axisA" class="property item">
+    <h3 class="name"><code>axisA</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_equations_RotationalMotorEquation.js.html#l21"><code>src\equations\RotationalMotorEquation.js:21</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>World oriented rotational axis</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_axisB" class="property item">
+    <h3 class="name"><code>axisB</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_equations_RotationalMotorEquation.js.html#l27"><code>src\equations\RotationalMotorEquation.js:27</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>World oriented rotational axis</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_b" class="property item inherited">
+    <h3 class="name"><code>b</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_b">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l47"><code>src\equations\Equation.js:47</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>SPOOK parameter</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_bi" class="property item inherited">
+    <h3 class="name"><code>bi</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_bi">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l29"><code>src\equations\Equation.js:29</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_bj" class="property item inherited">
+    <h3 class="name"><code>bj</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_bj">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l35"><code>src\equations\Equation.js:35</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_enabled" class="property item inherited">
+    <h3 class="name"><code>enabled</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_enabled">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l69"><code>src\equations\Equation.js:69</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <p><strong>Default:</strong> true</p>
+
+
+</div>
+<div id="property_eps" class="property item inherited">
+    <h3 class="name"><code>eps</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_eps">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l53"><code>src\equations\Equation.js:53</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>SPOOK parameter</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_jacobianElementA" class="property item inherited">
+    <h3 class="name"><code>jacobianElementA</code></h3>
+    <span class="type"><a href="../classes/JacobianElement.html" class="crosslink">JacobianElement</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_jacobianElementA">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l59"><code>src\equations\Equation.js:59</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_jacobianElementB" class="property item inherited">
+    <h3 class="name"><code>jacobianElementB</code></h3>
+    <span class="type"><a href="../classes/JacobianElement.html" class="crosslink">JacobianElement</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_jacobianElementB">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l64"><code>src\equations\Equation.js:64</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_maxForce" class="property item inherited">
+    <h3 class="name"><code>maxForce</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_maxForce">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l24"><code>src\equations\Equation.js:24</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_minForce" class="property item inherited">
+    <h3 class="name"><code>minForce</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_minForce">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l19"><code>src\equations\Equation.js:19</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_multiplier" class="property item inherited">
+    <h3 class="name"><code>multiplier</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Equation.html#property_multiplier">Equation</a>:
+        <a href="../files/src_equations_Equation.js.html#l75"><code>src\equations\Equation.js:75</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>A number, proportional to the force added to the bodies.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_targetVelocity" class="property item">
+    <h3 class="name"><code>targetVelocity</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_equations_RotationalMotorEquation.js.html#l33"><code>src\equations\RotationalMotorEquation.js:33</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Motor velocity</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

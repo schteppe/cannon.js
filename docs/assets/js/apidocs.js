@@ -43,6 +43,12 @@ pjax = new Y.Pjax({
             callbacks: defaultRoute
         },
 
+        // -- /elements/* -------------------------------------------------------
+        {
+            path     : '/elements/:element.html*',
+            callbacks: defaultRoute
+        },
+
         // -- /classes/* -------------------------------------------------------
         {
             path     : '/classes/:class.html*',
@@ -167,7 +173,7 @@ pjax.initLineNumbers = function () {
 };
 
 pjax.initRoot = function () {
-    var terminators = /^(?:classes|files|modules)$/,
+    var terminators = /^(?:classes|files|elements|modules)$/,
         parts       = pjax._getPathRoot().split('/'),
         root        = [],
         i, len, part;

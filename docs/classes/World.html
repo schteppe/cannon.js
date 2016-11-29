@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>World - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -137,7 +139,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_world_World.js.html#l24"><code>src&#x2F;world&#x2F;World.js:24</code></a>
+            Defined in: <a href="../files/src_world_World.js.html#l24"><code>src\world\World.js:24</code></a>
         </div>
 
 
@@ -151,36 +153,121 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_World" class="method item">
-            <h3 class="name"><code>World</code></h3>
-        
-                <span class="paren">()</span>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_world_World.js.html#l24"><code>src&#x2F;world&#x2F;World.js:24</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-        
-        
-        
+<div id="method_World" class="method item">
+    <h3 class="name"><code>World</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l24"><code>src\world\World.js:24</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[gravity]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[allowSleep]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[broadphase]</code>
+                                    <span class="type"><a href="../classes/Broadphase.html" class="crosslink">Broadphase</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[solver]</code>
+                                    <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[quatNormalizeFast]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[quatNormalizeSkip]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -189,6 +276,7 @@
 
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
     </ul>
 
     <div>
@@ -234,6 +322,10 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_getContactMaterial">getContactMaterial</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_hasAnyEventListener">hasAnyEventListener</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -283,10 +375,6 @@
                                 <a href="#method_step">step</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_step">step</a>
-
-                            </li>
                     </ul>
                 </div>
 
@@ -294,6 +382,10 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_accumulator">accumulator</a>
+
+                            </li>
                             <li class="index-item property">
                                 <a href="#property_allowSleep">allowSleep</a>
 
@@ -386,6 +478,28 @@
                 </div>
 
 
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_addBody">addBody</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_postStep">postStep</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_preStep">preStep</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_removeBody">removeBody</a>
+
+                            </li>
+                    </ul>
+                </div>
         </div>
 
             <div id="methods" class="api-class-tabpanel">
@@ -413,7 +527,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l238"><code>src&#x2F;world&#x2F;World.js:238</code></a>
+        <a href="../files/src_world_World.js.html#l280"><code>src\world\World.js:280</code></a>
         </p>
 
 
@@ -467,7 +581,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l265"><code>src&#x2F;world&#x2F;World.js:265</code></a>
+        <a href="../files/src_world_World.js.html#l308"><code>src\world\World.js:308</code></a>
         </p>
 
 
@@ -520,7 +634,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l413"><code>src&#x2F;world&#x2F;World.js:413</code></a>
+        <a href="../files/src_world_World.js.html#l475"><code>src\world\World.js:475</code></a>
         </p>
 
 
@@ -579,7 +693,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventTarget.html#method_addEventListener">EventTarget</a>:
-        <a href="../files/src_utils_EventTarget.js.html#l15"><code>src&#x2F;utils&#x2F;EventTarget.js:15</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l15"><code>src\utils\EventTarget.js:15</code></a>
         </p>
 
 
@@ -651,7 +765,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l403"><code>src&#x2F;world&#x2F;World.js:403</code></a>
+        <a href="../files/src_world_World.js.html#l465"><code>src\world\World.js:465</code></a>
         </p>
 
 
@@ -698,7 +812,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l936"><code>src&#x2F;world&#x2F;World.js:936</code></a>
+        <a href="../files/src_world_World.js.html#l1017"><code>src\world\World.js:1017</code></a>
         </p>
 
 
@@ -729,7 +843,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l227"><code>src&#x2F;world&#x2F;World.js:227</code></a>
+        <a href="../files/src_world_World.js.html#l266"><code>src\world\World.js:266</code></a>
         </p>
 
 
@@ -769,7 +883,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventTarget.html#method_dispatchEvent">EventTarget</a>:
-        <a href="../files/src_utils_EventTarget.js.html#l68"><code>src&#x2F;utils&#x2F;EventTarget.js:68</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l80"><code>src\utils\EventTarget.js:80</code></a>
         </p>
 
 
@@ -848,7 +962,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l206"><code>src&#x2F;world&#x2F;World.js:206</code></a>
+        <a href="../files/src_world_World.js.html#l245"><code>src\world\World.js:245</code></a>
         </p>
 
 
@@ -899,6 +1013,69 @@
 
 
 </div>
+<div id="method_hasAnyEventListener" class="method item inherited">
+    <h3 class="name"><code>hasAnyEventListener</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_hasAnyEventListener">EventTarget</a>:
+        <a href="../files/src_utils_EventTarget.js.html#l50"><code>src\utils\EventTarget.js:50</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Check if any event listener of the given type is added</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+            </div>
+        </div>
+
+
+</div>
 <div id="method_hasEventListener" class="method item inherited">
     <h3 class="name"><code>hasEventListener</code></h3>
 
@@ -926,7 +1103,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventTarget.html#method_hasEventListener">EventTarget</a>:
-        <a href="../files/src_utils_EventTarget.js.html#l34"><code>src&#x2F;utils&#x2F;EventTarget.js:34</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l34"><code>src\utils\EventTarget.js:34</code></a>
         </p>
 
 
@@ -994,7 +1171,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l217"><code>src&#x2F;world&#x2F;World.js:217</code></a>
+        <a href="../files/src_world_World.js.html#l256"><code>src\world\World.js:256</code></a>
         </p>
 
 
@@ -1050,7 +1227,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l308"><code>src&#x2F;world&#x2F;World.js:308</code></a>
+        <a href="../files/src_world_World.js.html#l351"><code>src\world\World.js:351</code></a>
         </p>
 
 
@@ -1196,7 +1373,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l329"><code>src&#x2F;world&#x2F;World.js:329</code></a>
+        <a href="../files/src_world_World.js.html#l372"><code>src\world\World.js:372</code></a>
         </p>
 
 
@@ -1342,7 +1519,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l350"><code>src&#x2F;world&#x2F;World.js:350</code></a>
+        <a href="../files/src_world_World.js.html#l393"><code>src\world\World.js:393</code></a>
         </p>
 
 
@@ -1483,7 +1660,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l286"><code>src&#x2F;world&#x2F;World.js:286</code></a>
+        <a href="../files/src_world_World.js.html#l329"><code>src\world\World.js:329</code></a>
         </p>
 
 
@@ -1522,7 +1699,7 @@
                 </li>
                 <li class="param">
                         <code class="param-name">result</code>
-                        <span class="type">Function | <a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
+                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
 
 
                     <div class="param-description">
@@ -1558,7 +1735,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l371"><code>src&#x2F;world&#x2F;World.js:371</code></a>
+        <a href="../files/src_world_World.js.html#l414"><code>src\world\World.js:414</code></a>
         </p>
 
 
@@ -1612,7 +1789,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l396"><code>src&#x2F;world&#x2F;World.js:396</code></a>
+        <a href="../files/src_world_World.js.html#l440"><code>src\world\World.js:440</code></a>
         </p>
 
 
@@ -1665,7 +1842,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l274"><code>src&#x2F;world&#x2F;World.js:274</code></a>
+        <a href="../files/src_world_World.js.html#l317"><code>src\world\World.js:317</code></a>
         </p>
 
 
@@ -1724,7 +1901,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventTarget.html#method_removeEventListener">EventTarget</a>:
-        <a href="../files/src_utils_EventTarget.js.html#l50"><code>src&#x2F;utils&#x2F;EventTarget.js:50</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l62"><code>src\utils\EventTarget.js:62</code></a>
         </p>
 
 
@@ -1802,7 +1979,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l443"><code>src&#x2F;world&#x2F;World.js:443</code></a>
+        <a href="../files/src_world_World.js.html#l505"><code>src\world\World.js:505</code></a>
         </p>
 
 
@@ -1864,24 +2041,19 @@
 
             <div class="example-content">
                 <pre class="code prettyprint"><code>// fixed timestepping without interpolation
-world.step(1/60);
-</code></pre>
+world.step(1/60);</code></pre>
+
             </div>
         </div>
 </div>
-<div id="method_step" class="method item">
-    <h3 class="name"><code>step</code></h3>
+            </div>
 
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>dt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
 
-
-
+<div id="property_accumulator" class="property item">
+    <h3 class="name"><code>accumulator</code></h3>
+    <span class="type">Number</span>
 
 
 
@@ -1890,46 +2062,573 @@ world.step(1/60);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_World.js.html#l517"><code>src&#x2F;world&#x2F;World.js:517</code></a>
+        <a href="../files/src_world_World.js.html#l202"><code>src\world\World.js:202</code></a>
         </p>
-
 
 
     </div>
 
     <div class="description">
-        <p>Step the simulation</p>
+        <p>Time accumulator for interpolation. See <a href="http://gafferongames.com/game-physics/fix-your-timestep/">http://gafferongames.com/game-physics/fix-your-timestep/</a></p>
 
     </div>
 
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">dt</code>
-                        <span class="type">Number</span>
 
 
-                    <div class="param-description">
-                         
-                    </div>
+</div>
+<div id="property_allowSleep" class="property item">
+    <h3 class="name"><code>allowSleep</code></h3>
+    <span class="type">Boolean</span>
 
-                </li>
-            </ul>
-        </div>
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l47"><code>src\world\World.js:47</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Makes bodies go to sleep when they've been inactive</p>
+
+    </div>
+
+        <p><strong>Default:</strong> false</p>
+
+
+</div>
+<div id="property_bodies" class="property item">
+    <h3 class="name"><code>bodies</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l115"><code>src\world\World.js:115</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_broadphase" class="property item">
+    <h3 class="name"><code>broadphase</code></h3>
+    <span class="type"><a href="../classes/Broadphase.html" class="crosslink">Broadphase</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l108"><code>src\world\World.js:108</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The broadphase algorithm to use. Default is NaiveBroadphase</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_collisionMatrix" class="property item">
+    <h3 class="name"><code>collisionMatrix</code></h3>
+    <span class="type"><a href="../classes/ArrayCollisionMatrix.html" class="crosslink">ArrayCollisionMatrix</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l140"><code>src\world\World.js:140</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_collisionMatrixPrevious" class="property item">
+    <h3 class="name"><code>collisionMatrixPrevious</code></h3>
+    <span class="type"><a href="../classes/ArrayCollisionMatrix.html" class="crosslink">ArrayCollisionMatrix</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l146"><code>src\world\World.js:146</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>CollisionMatrix from the previous step.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_constraints" class="property item">
+    <h3 class="name"><code>constraints</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l128"><code>src\world\World.js:128</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_contactmaterials" class="property item">
+    <h3 class="name"><code>contactmaterials</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l163"><code>src\world\World.js:163</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_contactMaterialTable" class="property item">
+    <h3 class="name"><code>contactMaterialTable</code></h3>
+    <span class="type"><a href="../classes/TupleDictionary.html" class="crosslink">TupleDictionary</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l169"><code>src\world\World.js:169</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Used to look up a ContactMaterial given two instances of Material.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_contacts" class="property item">
+    <h3 class="name"><code>contacts</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l55"><code>src\world\World.js:55</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>All the current contacts (instances of ContactEquation) in the world.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_defaultContactMaterial" class="property item">
+    <h3 class="name"><code>defaultContactMaterial</code></h3>
+    <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l177"><code>src\world\World.js:177</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>This contact material is used if no suitable contactmaterial is found for a contact.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_doProfiling" class="property item">
+    <h3 class="name"><code>doProfiling</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l184"><code>src\world\World.js:184</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_dt" class="property item">
+    <h3 class="name"><code>dt</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l41"><code>src\world\World.js:41</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is &quot;fresh&quot; inside event callbacks.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_gravity" class="property item">
+    <h3 class="name"><code>gravity</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l99"><code>src\world\World.js:99</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_materials" class="property item">
+    <h3 class="name"><code>materials</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l156"><code>src\world\World.js:156</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>All added materials</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_narrowphase" class="property item">
+    <h3 class="name"><code>narrowphase</code></h3>
+    <span class="type"><a href="../classes/Narrowphase.html" class="crosslink">Narrowphase</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l134"><code>src\world\World.js:134</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_profile" class="property item">
+    <h3 class="name"><code>profile</code></h3>
+    <span class="type">Object</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l190"><code>src\world\World.js:190</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_quatNormalizeFast" class="property item">
+    <h3 class="name"><code>quatNormalizeFast</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l71"><code>src\world\World.js:71</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set to true to use fast quaternion normalization. It is often enough accurate to use. If bodies tend to explode, set to false.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> false</p>
+
+
+</div>
+<div id="property_quatNormalizeSkip" class="property item">
+    <h3 class="name"><code>quatNormalizeSkip</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l63"><code>src\world\World.js:63</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 0</p>
+
+
+</div>
+<div id="property_solver" class="property item">
+    <h3 class="name"><code>solver</code></h3>
+    <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l121"><code>src\world\World.js:121</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The solver algorithm to use. Default is GSSolver</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_stepnumber" class="property item">
+    <h3 class="name"><code>stepnumber</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l88"><code>src\world\World.js:88</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Number of timesteps taken since start</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_subsystems" class="property item">
+    <h3 class="name"><code>subsystems</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l208"><code>src\world\World.js:208</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_time" class="property item">
+    <h3 class="name"><code>time</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_World.js.html#l81"><code>src\world\World.js:81</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The wall-clock time since simulation start</p>
+
+    </div>
 
 
 
 </div>
             </div>
 
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
 
-                    <div id="property_allowSleep" class="property item">
-                        <h3 class="name"><code>allowSleep</code></h3>
-                        <span class="type">Boolean</span>
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                    <div id="event_addBody" class="events item">
+                        <h3 class="name"><code>addBody</code></h3>
+                        <span class="type"></span>
                     
                     
                     
@@ -1938,23 +2637,65 @@ world.step(1/60);
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_world_World.js.html#l39"><code>src&#x2F;world&#x2F;World.js:39</code></a>
+                            <a href="../files/src_world_World.js.html#l214"><code>src\world\World.js:214</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Makes bodies go to sleep when they&#39;ve been inactive</p>
+                            <p>Dispatched after a body has been added to the world.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">body</code>
+                                            <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The body that has been added to the world.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_postStep" class="events item">
+                        <h3 class="name"><code>postStep</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_world_World.js.html#l555"><code>src\world\World.js:555</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Dispatched after the world has stepped forward in time.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_bodies" class="property item">
-                        <h3 class="name"><code>bodies</code></h3>
-                        <span class="type">Array</span>
+                    <div id="event_preStep" class="events item">
+                        <h3 class="name"><code>preStep</code></h3>
+                        <span class="type"></span>
                     
                     
                     
@@ -1963,95 +2704,23 @@ world.step(1/60);
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_world_World.js.html#l100"><code>src&#x2F;world&#x2F;World.js:100</code></a>
+                            <a href="../files/src_world_World.js.html#l560"><code>src\world\World.js:560</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_broadphase" class="property item">
-                        <h3 class="name"><code>broadphase</code></h3>
-                        <span class="type"><a href="../classes/Broadphase.html" class="crosslink">Broadphase</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l94"><code>src&#x2F;world&#x2F;World.js:94</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionMatrix" class="property item">
-                        <h3 class="name"><code>collisionMatrix</code></h3>
-                        <span class="type"><a href="../classes/ArrayCollisionMatrix.html" class="crosslink">ArrayCollisionMatrix</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l124"><code>src&#x2F;world&#x2F;World.js:124</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionMatrixPrevious" class="property item">
-                        <h3 class="name"><code>collisionMatrixPrevious</code></h3>
-                        <span class="type"><a href="../classes/ArrayCollisionMatrix.html" class="crosslink">ArrayCollisionMatrix</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l130"><code>src&#x2F;world&#x2F;World.js:130</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>CollisionMatrix from the previous step.</p>
+                            <p>Dispatched before the world steps forward in time.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_constraints" class="property item">
-                        <h3 class="name"><code>constraints</code></h3>
-                        <span class="type">Array</span>
+                    <div id="event_removeBody" class="events item">
+                        <h3 class="name"><code>removeBody</code></h3>
+                        <span class="type"></span>
                     
                     
                     
@@ -2060,415 +2729,38 @@ world.step(1/60);
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_world_World.js.html#l112"><code>src&#x2F;world&#x2F;World.js:112</code></a>
+                            <a href="../files/src_world_World.js.html#l224"><code>src\world\World.js:224</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_contactmaterials" class="property item">
-                        <h3 class="name"><code>contactmaterials</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l144"><code>src&#x2F;world&#x2F;World.js:144</code></a>
-                            </p>
-                    
+                            <p>Dispatched after a body has been removed from the world.</p>
                     
                         </div>
                     
-                        <div class="description">
-                            
-                        </div>
+                            <div class="params">
+                                <h4>Event Payload:</h4>
                     
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">body</code>
+                                            <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
                     
                     
-                    </div>
-                    <div id="property_contactMaterialTable" class="property item">
-                        <h3 class="name"><code>contactMaterialTable</code></h3>
-                        <span class="type"><a href="../classes/TupleDictionary.html" class="crosslink">TupleDictionary</a></span>
+                                        <div class="param-description">
+                                            <p>The body that has been removed from the world.</p>
                     
+                                        </div>
                     
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l150"><code>src&#x2F;world&#x2F;World.js:150</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Used to look up a ContactMaterial given two instances of Material.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_contacts" class="property item">
-                        <h3 class="name"><code>contacts</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l46"><code>src&#x2F;world&#x2F;World.js:46</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>All the current contacts (instances of ContactEquation) in the world.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_defaultContactMaterial" class="property item">
-                        <h3 class="name"><code>defaultContactMaterial</code></h3>
-                        <span class="type"><a href="../classes/ContactMaterial.html" class="crosslink">ContactMaterial</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l158"><code>src&#x2F;world&#x2F;World.js:158</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>This contact material is used if no suitable contactmaterial is found for a contact.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_doProfiling" class="property item">
-                        <h3 class="name"><code>doProfiling</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l165"><code>src&#x2F;world&#x2F;World.js:165</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_dt" class="property item">
-                        <h3 class="name"><code>dt</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l33"><code>src&#x2F;world&#x2F;World.js:33</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is &quot;fresh&quot; inside event callbacks.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_gravity" class="property item">
-                        <h3 class="name"><code>gravity</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l88"><code>src&#x2F;world&#x2F;World.js:88</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_materials" class="property item">
-                        <h3 class="name"><code>materials</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l137"><code>src&#x2F;world&#x2F;World.js:137</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>All added materials</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_narrowphase" class="property item">
-                        <h3 class="name"><code>narrowphase</code></h3>
-                        <span class="type"><a href="../classes/Narrowphase.html" class="crosslink">Narrowphase</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l118"><code>src&#x2F;world&#x2F;World.js:118</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_profile" class="property item">
-                        <h3 class="name"><code>profile</code></h3>
-                        <span class="type">Object</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l171"><code>src&#x2F;world&#x2F;World.js:171</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_quatNormalizeFast" class="property item">
-                        <h3 class="name"><code>quatNormalizeFast</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l61"><code>src&#x2F;world&#x2F;World.js:61</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true to use fast quaternion normalization. It is often enough accurate to use. If bodies tend to explode, set to false.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_quatNormalizeSkip" class="property item">
-                        <h3 class="name"><code>quatNormalizeSkip</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l54"><code>src&#x2F;world&#x2F;World.js:54</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_solver" class="property item">
-                        <h3 class="name"><code>solver</code></h3>
-                        <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l106"><code>src&#x2F;world&#x2F;World.js:106</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_stepnumber" class="property item">
-                        <h3 class="name"><code>stepnumber</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l77"><code>src&#x2F;world&#x2F;World.js:77</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Number of timesteps taken since start</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_subsystems" class="property item">
-                        <h3 class="name"><code>subsystems</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l183"><code>src&#x2F;world&#x2F;World.js:183</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_time" class="property item">
-                        <h3 class="name"><code>time</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_World.js.html#l70"><code>src&#x2F;world&#x2F;World.js:70</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The wall-clock time since simulation start</p>
-                    
-                        </div>
-                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>
             </div>
-
-
     </div>
 </div>
                     </div>

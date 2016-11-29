@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>WheelInfo - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -134,7 +136,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_WheelInfo.js.html#l8"><code>src&#x2F;objects&#x2F;WheelInfo.js:8</code></a>
+            Defined in: <a href="../files/src_objects_WheelInfo.js.html#l8"><code>src\objects\WheelInfo.js:8</code></a>
         </div>
 
 
@@ -147,331 +149,331 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_WheelInfo" class="method item">
-            <h3 class="name"><code>WheelInfo</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_objects_WheelInfo.js.html#l8"><code>src&#x2F;objects&#x2F;WheelInfo.js:8</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[chassisConnectionPointLocal]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[chassisConnectionPointWorld]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[directionLocal]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[directionWorld]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[axleLocal]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[axleWorld]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[suspensionRestLength=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[suspensionMaxLength=2]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[radius=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[suspensionStiffness=100]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[dampingCompression=10]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[dampingRelaxation=10]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[frictionSlip=10000]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[steering=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[rotation=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[deltaRotation=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[rollInfluence=0.01]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[maxSuspensionForce]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[isFrontWheel=true]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[clippedInvContactDotSuspension=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[suspensionRelativeVelocity=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[suspensionForce=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[skidInfo=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[suspensionLength=0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[maxSuspensionTravel=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[useCustomSlidingRotationalSpeed=false]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[customSlidingRotationalSpeed=-0.1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_WheelInfo" class="method item">
+    <h3 class="name"><code>WheelInfo</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l8"><code>src\objects\WheelInfo.js:8</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[chassisConnectionPointLocal]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[chassisConnectionPointWorld]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[directionLocal]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[directionWorld]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[axleLocal]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[axleWorld]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[suspensionRestLength=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[suspensionMaxLength=2]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[radius=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[suspensionStiffness=100]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[dampingCompression=10]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[dampingRelaxation=10]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[frictionSlip=10000]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[steering=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[rotation=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[deltaRotation=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[rollInfluence=0.01]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[maxSuspensionForce]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[isFrontWheel=true]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[clippedInvContactDotSuspension=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[suspensionRelativeVelocity=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[suspensionForce=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[skidInfo=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[suspensionLength=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[maxSuspensionTravel=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[useCustomSlidingRotationalSpeed=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[customSlidingRotationalSpeed=-0.1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -640,853 +642,853 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_axleLocal" class="property item">
-                        <h3 class="name"><code>axleLocal</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l116"><code>src&#x2F;objects&#x2F;WheelInfo.js:116</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_axleWorld" class="property item">
-                        <h3 class="name"><code>axleWorld</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l121"><code>src&#x2F;objects&#x2F;WheelInfo.js:121</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_brake" class="property item">
-                        <h3 class="name"><code>brake</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l192"><code>src&#x2F;objects&#x2F;WheelInfo.js:192</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_chassisConnectionPointLocal" class="property item">
-                        <h3 class="name"><code>chassisConnectionPointLocal</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l95"><code>src&#x2F;objects&#x2F;WheelInfo.js:95</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Connection point, defined locally in the chassis body frame.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_chassisConnectionPointWorld" class="property item">
-                        <h3 class="name"><code>chassisConnectionPointWorld</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l101"><code>src&#x2F;objects&#x2F;WheelInfo.js:101</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_clippedInvContactDotSuspension" class="property item">
-                        <h3 class="name"><code>clippedInvContactDotSuspension</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l202"><code>src&#x2F;objects&#x2F;WheelInfo.js:202</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_customSlidingRotationalSpeed" class="property item">
-                        <h3 class="name"><code>customSlidingRotationalSpeed</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l78"><code>src&#x2F;objects&#x2F;WheelInfo.js:78</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Speed to apply to the wheel rotation when the wheel is sliding.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_dampingCompression" class="property item">
-                        <h3 class="name"><code>dampingCompression</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l146"><code>src&#x2F;objects&#x2F;WheelInfo.js:146</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_dampingRelaxation" class="property item">
-                        <h3 class="name"><code>dampingRelaxation</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l151"><code>src&#x2F;objects&#x2F;WheelInfo.js:151</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_deltaRotation" class="property item">
-                        <h3 class="name"><code>deltaRotation</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l172"><code>src&#x2F;objects&#x2F;WheelInfo.js:172</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_directionLocal" class="property item">
-                        <h3 class="name"><code>directionLocal</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l106"><code>src&#x2F;objects&#x2F;WheelInfo.js:106</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_directionWorld" class="property item">
-                        <h3 class="name"><code>directionWorld</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l111"><code>src&#x2F;objects&#x2F;WheelInfo.js:111</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_engineForce" class="property item">
-                        <h3 class="name"><code>engineForce</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l187"><code>src&#x2F;objects&#x2F;WheelInfo.js:187</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_forwardImpulse" class="property item">
-                        <h3 class="name"><code>forwardImpulse</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l232"><code>src&#x2F;objects&#x2F;WheelInfo.js:232</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_frictionSlip" class="property item">
-                        <h3 class="name"><code>frictionSlip</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l156"><code>src&#x2F;objects&#x2F;WheelInfo.js:156</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_isFrontWheel" class="property item">
-                        <h3 class="name"><code>isFrontWheel</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l197"><code>src&#x2F;objects&#x2F;WheelInfo.js:197</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_isInContact" class="property item">
-                        <h3 class="name"><code>isInContact</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l249"><code>src&#x2F;objects&#x2F;WheelInfo.js:249</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_maxSuspensionForce" class="property item">
-                        <h3 class="name"><code>maxSuspensionForce</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l182"><code>src&#x2F;objects&#x2F;WheelInfo.js:182</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_maxSuspensionTravel" class="property item">
-                        <h3 class="name"><code>maxSuspensionTravel</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l72"><code>src&#x2F;objects&#x2F;WheelInfo.js:72</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Max travel distance of the suspension, in meters.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_radius" class="property item">
-                        <h3 class="name"><code>radius</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l136"><code>src&#x2F;objects&#x2F;WheelInfo.js:136</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_raycastResult" class="property item">
-                        <h3 class="name"><code>raycastResult</code></h3>
-                        <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l237"><code>src&#x2F;objects&#x2F;WheelInfo.js:237</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The result from raycasting</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_rollInfluence" class="property item">
-                        <h3 class="name"><code>rollInfluence</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l177"><code>src&#x2F;objects&#x2F;WheelInfo.js:177</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_rotation" class="property item">
-                        <h3 class="name"><code>rotation</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l166"><code>src&#x2F;objects&#x2F;WheelInfo.js:166</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Rotation value, in radians.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_sideImpulse" class="property item">
-                        <h3 class="name"><code>sideImpulse</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l227"><code>src&#x2F;objects&#x2F;WheelInfo.js:227</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_skidInfo" class="property item">
-                        <h3 class="name"><code>skidInfo</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l217"><code>src&#x2F;objects&#x2F;WheelInfo.js:217</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_sliding" class="property item">
-                        <h3 class="name"><code>sliding</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l90"><code>src&#x2F;objects&#x2F;WheelInfo.js:90</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_steering" class="property item">
-                        <h3 class="name"><code>steering</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l161"><code>src&#x2F;objects&#x2F;WheelInfo.js:161</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_suspensionForce" class="property item">
-                        <h3 class="name"><code>suspensionForce</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l212"><code>src&#x2F;objects&#x2F;WheelInfo.js:212</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_suspensionLength" class="property item">
-                        <h3 class="name"><code>suspensionLength</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l222"><code>src&#x2F;objects&#x2F;WheelInfo.js:222</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_suspensionMaxLength" class="property item">
-                        <h3 class="name"><code>suspensionMaxLength</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l131"><code>src&#x2F;objects&#x2F;WheelInfo.js:131</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_suspensionRelativeVelocity" class="property item">
-                        <h3 class="name"><code>suspensionRelativeVelocity</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l207"><code>src&#x2F;objects&#x2F;WheelInfo.js:207</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_suspensionRestLength" class="property item">
-                        <h3 class="name"><code>suspensionRestLength</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l126"><code>src&#x2F;objects&#x2F;WheelInfo.js:126</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_suspensionStiffness" class="property item">
-                        <h3 class="name"><code>suspensionStiffness</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l141"><code>src&#x2F;objects&#x2F;WheelInfo.js:141</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_useCustomSlidingRotationalSpeed" class="property item">
-                        <h3 class="name"><code>useCustomSlidingRotationalSpeed</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l84"><code>src&#x2F;objects&#x2F;WheelInfo.js:84</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If the customSlidingRotationalSpeed should be used.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_worldTransform" class="property item">
-                        <h3 class="name"><code>worldTransform</code></h3>
-                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_WheelInfo.js.html#l243"><code>src&#x2F;objects&#x2F;WheelInfo.js:243</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Wheel world transform</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_axleLocal" class="property item">
+    <h3 class="name"><code>axleLocal</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l116"><code>src\objects\WheelInfo.js:116</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_axleWorld" class="property item">
+    <h3 class="name"><code>axleWorld</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l121"><code>src\objects\WheelInfo.js:121</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_brake" class="property item">
+    <h3 class="name"><code>brake</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l192"><code>src\objects\WheelInfo.js:192</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_chassisConnectionPointLocal" class="property item">
+    <h3 class="name"><code>chassisConnectionPointLocal</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l95"><code>src\objects\WheelInfo.js:95</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Connection point, defined locally in the chassis body frame.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_chassisConnectionPointWorld" class="property item">
+    <h3 class="name"><code>chassisConnectionPointWorld</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l101"><code>src\objects\WheelInfo.js:101</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_clippedInvContactDotSuspension" class="property item">
+    <h3 class="name"><code>clippedInvContactDotSuspension</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l202"><code>src\objects\WheelInfo.js:202</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_customSlidingRotationalSpeed" class="property item">
+    <h3 class="name"><code>customSlidingRotationalSpeed</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l78"><code>src\objects\WheelInfo.js:78</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Speed to apply to the wheel rotation when the wheel is sliding.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_dampingCompression" class="property item">
+    <h3 class="name"><code>dampingCompression</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l146"><code>src\objects\WheelInfo.js:146</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_dampingRelaxation" class="property item">
+    <h3 class="name"><code>dampingRelaxation</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l151"><code>src\objects\WheelInfo.js:151</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_deltaRotation" class="property item">
+    <h3 class="name"><code>deltaRotation</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l172"><code>src\objects\WheelInfo.js:172</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_directionLocal" class="property item">
+    <h3 class="name"><code>directionLocal</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l106"><code>src\objects\WheelInfo.js:106</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_directionWorld" class="property item">
+    <h3 class="name"><code>directionWorld</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l111"><code>src\objects\WheelInfo.js:111</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_engineForce" class="property item">
+    <h3 class="name"><code>engineForce</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l187"><code>src\objects\WheelInfo.js:187</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_forwardImpulse" class="property item">
+    <h3 class="name"><code>forwardImpulse</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l232"><code>src\objects\WheelInfo.js:232</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_frictionSlip" class="property item">
+    <h3 class="name"><code>frictionSlip</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l156"><code>src\objects\WheelInfo.js:156</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_isFrontWheel" class="property item">
+    <h3 class="name"><code>isFrontWheel</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l197"><code>src\objects\WheelInfo.js:197</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_isInContact" class="property item">
+    <h3 class="name"><code>isInContact</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l249"><code>src\objects\WheelInfo.js:249</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_maxSuspensionForce" class="property item">
+    <h3 class="name"><code>maxSuspensionForce</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l182"><code>src\objects\WheelInfo.js:182</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_maxSuspensionTravel" class="property item">
+    <h3 class="name"><code>maxSuspensionTravel</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l72"><code>src\objects\WheelInfo.js:72</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Max travel distance of the suspension, in meters.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_radius" class="property item">
+    <h3 class="name"><code>radius</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l136"><code>src\objects\WheelInfo.js:136</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_raycastResult" class="property item">
+    <h3 class="name"><code>raycastResult</code></h3>
+    <span class="type"><a href="../classes/RaycastResult.html" class="crosslink">RaycastResult</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l237"><code>src\objects\WheelInfo.js:237</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The result from raycasting</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_rollInfluence" class="property item">
+    <h3 class="name"><code>rollInfluence</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l177"><code>src\objects\WheelInfo.js:177</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_rotation" class="property item">
+    <h3 class="name"><code>rotation</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l166"><code>src\objects\WheelInfo.js:166</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Rotation value, in radians.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_sideImpulse" class="property item">
+    <h3 class="name"><code>sideImpulse</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l227"><code>src\objects\WheelInfo.js:227</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_skidInfo" class="property item">
+    <h3 class="name"><code>skidInfo</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l217"><code>src\objects\WheelInfo.js:217</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_sliding" class="property item">
+    <h3 class="name"><code>sliding</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l90"><code>src\objects\WheelInfo.js:90</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_steering" class="property item">
+    <h3 class="name"><code>steering</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l161"><code>src\objects\WheelInfo.js:161</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_suspensionForce" class="property item">
+    <h3 class="name"><code>suspensionForce</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l212"><code>src\objects\WheelInfo.js:212</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_suspensionLength" class="property item">
+    <h3 class="name"><code>suspensionLength</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l222"><code>src\objects\WheelInfo.js:222</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_suspensionMaxLength" class="property item">
+    <h3 class="name"><code>suspensionMaxLength</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l131"><code>src\objects\WheelInfo.js:131</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_suspensionRelativeVelocity" class="property item">
+    <h3 class="name"><code>suspensionRelativeVelocity</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l207"><code>src\objects\WheelInfo.js:207</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_suspensionRestLength" class="property item">
+    <h3 class="name"><code>suspensionRestLength</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l126"><code>src\objects\WheelInfo.js:126</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_suspensionStiffness" class="property item">
+    <h3 class="name"><code>suspensionStiffness</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l141"><code>src\objects\WheelInfo.js:141</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_useCustomSlidingRotationalSpeed" class="property item">
+    <h3 class="name"><code>useCustomSlidingRotationalSpeed</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l84"><code>src\objects\WheelInfo.js:84</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If the customSlidingRotationalSpeed should be used.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_worldTransform" class="property item">
+    <h3 class="name"><code>worldTransform</code></h3>
+    <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_WheelInfo.js.html#l243"><code>src\objects\WheelInfo.js:243</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Wheel world transform</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

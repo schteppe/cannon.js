@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/Ray.js - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <title>src\collision\Ray.js - cannon</title>
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -129,7 +131,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/collision/Ray.js</h1>
+<h1 class="file-heading">File: src\collision\Ray.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -386,7 +388,7 @@ Ray.prototype.intersectShape = function(shape, quat, position, body){
 
     var intersectMethod = this[shape.type];
     if(intersectMethod){
-        intersectMethod.call(this, shape, quat, position, body);
+        intersectMethod.call(this, shape, quat, position, body, shape);
     }
 };
 
@@ -409,8 +411,8 @@ var tmpRaycastResult = new RaycastResult();
  * @param  {Vec3} position
  * @param  {Body} body
  */
-Ray.prototype.intersectBox = function(shape, quat, position, body){
-    return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body);
+Ray.prototype.intersectBox = function(shape, quat, position, body, reportedShape){
+    return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body, reportedShape);
 };
 Ray.prototype[Shape.types.BOX] = Ray.prototype.intersectBox;
 
@@ -422,7 +424,7 @@ Ray.prototype[Shape.types.BOX] = Ray.prototype.intersectBox;
  * @param  {Vec3} position
  * @param  {Body} body
  */
-Ray.prototype.intersectPlane = function(shape, quat, position, body){
+Ray.prototype.intersectPlane = function(shape, quat, position, body, reportedShape){
     var from = this.from;
     var to = this.to;
     var direction = this._direction;
@@ -462,7 +464,7 @@ Ray.prototype.intersectPlane = function(shape, quat, position, body){
     direction.scale(t, dir_scaled_with_t);
     from.vadd(dir_scaled_with_t, hitPointWorld);
 
-    this.reportIntersection(worldNormal, hitPointWorld, shape, body, -1);
+    this.reportIntersection(worldNormal, hitPointWorld, reportedShape, body, -1);
 };
 Ray.prototype[Shape.types.PLANE] = Ray.prototype.intersectPlane;
 
@@ -485,6 +487,10 @@ Ray.prototype.getAABB = function(result){
 var intersectConvexOptions = {
     faceList: [0]
 };
+var worldPillarOffset = new Vec3();
+var intersectHeightfield_localRay = new Ray();
+var intersectHeightfield_index = [];
+var intersectHeightfield_minMax = [];
 
 /**
  * @method intersectHeightfield
@@ -494,66 +500,52 @@ var intersectConvexOptions = {
  * @param  {Vec3} position
  * @param  {Body} body
  */
-Ray.prototype.intersectHeightfield = function(shape, quat, position, body){
+Ray.prototype.intersectHeightfield = function(shape, quat, position, body, reportedShape){
     var data = shape.data,
-        w = shape.elementSize,
-        worldPillarOffset = new Vec3();
+        w = shape.elementSize;
 
     // Convert the ray to local heightfield coordinates
-    var localRay = new Ray(this.from, this.to);
+    var localRay = intersectHeightfield_localRay; //new Ray(this.from, this.to);
+    localRay.from.copy(this.from);
+    localRay.to.copy(this.to);
     Transform.pointToLocalFrame(position, quat, localRay.from, localRay.from);
     Transform.pointToLocalFrame(position, quat, localRay.to, localRay.to);
+    localRay._updateDirection();
 
     // Get the index of the data points to test against
-    var index = [];
-    var iMinX = null;
-    var iMinY = null;
-    var iMaxX = null;
-    var iMaxY = null;
+    var index = intersectHeightfield_index;
+    var iMinX, iMinY, iMaxX, iMaxY;
 
-    var inside = shape.getIndexOfPosition(localRay.from.x, localRay.from.y, index, false);
-    if(inside){
-        iMinX = index[0];
-        iMinY = index[1];
-        iMaxX = index[0];
-        iMaxY = index[1];
-    }
-    inside = shape.getIndexOfPosition(localRay.to.x, localRay.to.y, index, false);
-    if(inside){
-        if (iMinX === null || index[0] &lt; iMinX) { iMinX = index[0]; }
-        if (iMaxX === null || index[0] &gt; iMaxX) { iMaxX = index[0]; }
-        if (iMinY === null || index[1] &lt; iMinY) { iMinY = index[1]; }
-        if (iMaxY === null || index[1] &gt; iMaxY) { iMaxY = index[1]; }
-    }
+    // Set to max
+    iMinX = iMinY = 0;
+    iMaxX = iMaxY = shape.data.length - 1;
 
-    if(iMinX === null){
-        return;
-    }
+    var aabb = new AABB();
+    localRay.getAABB(aabb);
 
-    var minMax = [];
-    shape.getRectMinMax(iMinX, iMinY, iMaxX, iMaxY, minMax);
-    var min = minMax[0];
-    var max = minMax[1];
+    shape.getIndexOfPosition(aabb.lowerBound.x, aabb.lowerBound.y, index, true);
+    iMinX = Math.max(iMinX, index[0]);
+    iMinY = Math.max(iMinY, index[1]);
+    shape.getIndexOfPosition(aabb.upperBound.x, aabb.upperBound.y, index, true);
+    iMaxX = Math.min(iMaxX, index[0] + 1);
+    iMaxY = Math.min(iMaxY, index[1] + 1);
 
-    // // Bail out if the ray can&#x27;t touch the bounding box
-    // // TODO
-    // var aabb = new AABB();
-    // this.getAABB(aabb);
-    // if(aabb.intersects()){
-    //     return;
-    // }
-
-    for(var i = iMinX; i &lt;= iMaxX; i++){
-        for(var j = iMinY; j &lt;= iMaxY; j++){
+    for(var i = iMinX; i &lt; iMaxX; i++){
+        for(var j = iMinY; j &lt; iMaxY; j++){
 
             if(this.result._shouldStop){
                 return;
             }
 
+            shape.getAabbAtIndex(i, j, aabb);
+            if(!aabb.overlapsRay(localRay)){
+                continue;
+            }
+
             // Lower triangle
             shape.getConvexTrianglePillar(i, j, false);
             Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
-            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, intersectConvexOptions);
+            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, reportedShape, intersectConvexOptions);
 
             if(this.result._shouldStop){
                 return;
@@ -562,7 +554,7 @@ Ray.prototype.intersectHeightfield = function(shape, quat, position, body){
             // Upper triangle
             shape.getConvexTrianglePillar(i, j, true);
             Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
-            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, intersectConvexOptions);
+            this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, reportedShape, intersectConvexOptions);
         }
     }
 };
@@ -579,7 +571,7 @@ var Ray_intersectSphere_normal = new Vec3();
  * @param  {Vec3} position
  * @param  {Body} body
  */
-Ray.prototype.intersectSphere = function(shape, quat, position, body){
+Ray.prototype.intersectSphere = function(shape, quat, position, body, reportedShape){
     var from = this.from,
         to = this.to,
         r = shape.radius;
@@ -604,7 +596,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
         intersectionPoint.vsub(position, normal);
         normal.normalize();
 
-        this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+        this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
 
     } else {
         var d1 = (- b - Math.sqrt(delta)) / (2 * a);
@@ -614,7 +606,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
             from.lerp(to, d1, intersectionPoint);
             intersectionPoint.vsub(position, normal);
             normal.normalize();
-            this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+            this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
         }
 
         if(this.result._shouldStop){
@@ -625,7 +617,7 @@ Ray.prototype.intersectSphere = function(shape, quat, position, body){
             from.lerp(to, d2, intersectionPoint);
             intersectionPoint.vsub(position, normal);
             normal.normalize();
-            this.reportIntersection(normal, intersectionPoint, shape, body, -1);
+            this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
         }
     }
 };
@@ -652,6 +644,7 @@ Ray.prototype.intersectConvex = function intersectConvex(
     quat,
     position,
     body,
+    reportedShape,
     options
 ){
     var minDistNormal = intersectConvex_minDistNormal;
@@ -738,7 +731,7 @@ Ray.prototype.intersectConvex = function intersectConvex(
                 continue;
             }
 
-            this.reportIntersection(normal, intersectPoint, shape, body, fi);
+            this.reportIntersection(normal, intersectPoint, reportedShape, body, fi);
         }
         // }
     }
@@ -771,6 +764,7 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
     quat,
     position,
     body,
+    reportedShape,
     options
 ){
     var normal = intersectTrimesh_normal;
@@ -802,11 +796,19 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
 
     // Transform ray to local space!
     Transform.vectorToLocalFrame(position, quat, direction, localDirection);
-    //body.vectorToLocalFrame(direction, localDirection);
     Transform.pointToLocalFrame(position, quat, from, localFrom);
-    //body.pointToLocalFrame(from, localFrom);
     Transform.pointToLocalFrame(position, quat, to, localTo);
-    //body.pointToLocalFrame(to, localTo);
+
+    localTo.x *= mesh.scale.x;
+    localTo.y *= mesh.scale.y;
+    localTo.z *= mesh.scale.z;
+    localFrom.x *= mesh.scale.x;
+    localFrom.y *= mesh.scale.y;
+    localFrom.z *= mesh.scale.z;
+
+    localTo.vsub(localFrom, localDirection);
+    localDirection.normalize();
+
     var fromToDistanceSquared = localFrom.distanceSquared(localTo);
 
     mesh.tree.rayQuery(this, treeTransform, triangles);
@@ -824,9 +826,6 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
 
         // ...but make it relative to the ray from. We&#x27;ll fix this later.
         a.vsub(localFrom,vector);
-
-        // Get plane normal
-        // quat.vmult(normal, normal);
 
         // If this dot product is negative, we have something interesting
         var dot = localDirection.dot(normal);
@@ -860,10 +859,8 @@ Ray.prototype.intersectTrimesh = function intersectTrimesh(
 
         // transform intersectpoint and normal to world
         Transform.vectorToWorldFrame(quat, normal, worldNormal);
-        //body.vectorToWorldFrame(normal, worldNormal);
         Transform.pointToWorldFrame(position, quat, intersectPoint, worldIntersectPoint);
-        //body.pointToWorldFrame(intersectPoint, worldIntersectPoint);
-        this.reportIntersection(worldNormal, worldIntersectPoint, mesh, body, trianglesIndex);
+        this.reportIntersection(worldNormal, worldIntersectPoint, reportedShape, body, trianglesIndex);
     }
     triangles.length = 0;
 };
