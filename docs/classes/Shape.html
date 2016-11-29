@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Shape - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -134,7 +136,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_shapes_Shape.js.html#l8"><code>src&#x2F;shapes&#x2F;Shape.js:8</code></a>
+            Defined in: <a href="../files/src_shapes_Shape.js.html#l8"><code>src\shapes\Shape.js:8</code></a>
         </div>
 
 
@@ -148,36 +150,101 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Shape" class="method item">
-            <h3 class="name"><code>Shape</code></h3>
-        
-                <span class="paren">()</span>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_shapes_Shape.js.html#l8"><code>src&#x2F;shapes&#x2F;Shape.js:8</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-        
-        
-        
+<div id="method_Shape" class="method item">
+    <h3 class="name"><code>Shape</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l8"><code>src\shapes\Shape.js:8</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[collisionFilterGroup=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[collisionFilterMask=-1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[collisionResponse=true]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[material=null]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -216,7 +283,19 @@
 
                     <ul class="index-list properties">
                             <li class="index-item property">
+                                <a href="#property_body">body</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_boundingSphereRadius">boundingSphereRadius</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_collisionFilterGroup">collisionFilterGroup</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_collisionFilterMask">collisionFilterMask</a>
 
                             </li>
                             <li class="index-item property">
@@ -252,11 +331,17 @@
 <div id="method_calculateLocalInertia" class="method item">
     <h3 class="name"><code>calculateLocalInertia</code></h3>
 
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>mass</code>
+                </li>
+                <li class="arg">
+                        <code>target</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
 
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-        </span>
 
 
 
@@ -267,7 +352,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Shape.js.html#l68"><code>src&#x2F;shapes&#x2F;Shape.js:68</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l87"><code>src\shapes\Shape.js:87</code></a>
         </p>
 
 
@@ -279,14 +364,33 @@
 
     </div>
 
+        <div class="params">
+            <h4>Parameters:</h4>
 
-        <div class="returns">
-            <h4>Returns:</h4>
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">mass</code>
+                        <span class="type">Number</span>
 
-            <div class="returns-description">
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
-            </div>
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                </li>
+            </ul>
         </div>
+
 
 
 </div>
@@ -295,9 +399,6 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type">Number</span>
-        </span>
 
 
 
@@ -308,7 +409,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Shape.js.html#l50"><code>src&#x2F;shapes&#x2F;Shape.js:50</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l70"><code>src\shapes\Shape.js:70</code></a>
         </p>
 
 
@@ -321,13 +422,6 @@
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Number</span>:
-            </div>
-        </div>
 
 
 </div>
@@ -349,7 +443,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shapes_Shape.js.html#l59"><code>src&#x2F;shapes&#x2F;Shape.js:59</code></a>
+        <a href="../files/src_shapes_Shape.js.html#l78"><code>src\shapes\Shape.js:78</code></a>
         </p>
 
 
@@ -377,156 +471,228 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_boundingSphereRadius" class="property item">
-                        <h3 class="name"><code>boundingSphereRadius</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_Shape.js.html#l31"><code>src&#x2F;shapes&#x2F;Shape.js:31</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The local bounding sphere radius of this shape.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionResponse" class="property item">
-                        <h3 class="name"><code>collisionResponse</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_Shape.js.html#l37"><code>src&#x2F;shapes&#x2F;Shape.js:37</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_id" class="property item">
-                        <h3 class="name"><code>id</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_Shape.js.html#l17"><code>src&#x2F;shapes&#x2F;Shape.js:17</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Identifyer of the Shape.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_material" class="property item">
-                        <h3 class="name"><code>material</code></h3>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_Shape.js.html#l43"><code>src&#x2F;shapes&#x2F;Shape.js:43</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_type" class="property item">
-                        <h3 class="name"><code>type</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_Shape.js.html#l23"><code>src&#x2F;shapes&#x2F;Shape.js:23</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The type of this shape. Must be set to an int &gt; 0 by subclasses.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_types" class="property item">
-                        <h3 class="name"><code>types</code></h3>
-                        <span class="type">Object</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_shapes_Shape.js.html#l80"><code>src&#x2F;shapes&#x2F;Shape.js:80</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The available shape types.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_body" class="property item">
+    <h3 class="name"><code>body</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l63"><code>src\shapes\Shape.js:63</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_boundingSphereRadius" class="property item">
+    <h3 class="name"><code>boundingSphereRadius</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l36"><code>src\shapes\Shape.js:36</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The local bounding sphere radius of this shape.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_collisionFilterGroup" class="property item">
+    <h3 class="name"><code>collisionFilterGroup</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l48"><code>src\shapes\Shape.js:48</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_collisionFilterMask" class="property item">
+    <h3 class="name"><code>collisionFilterMask</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l53"><code>src\shapes\Shape.js:53</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_collisionResponse" class="property item">
+    <h3 class="name"><code>collisionResponse</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l42"><code>src\shapes\Shape.js:42</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_id" class="property item">
+    <h3 class="name"><code>id</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l22"><code>src\shapes\Shape.js:22</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Identifyer of the Shape.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_material" class="property item">
+    <h3 class="name"><code>material</code></h3>
+    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l58"><code>src\shapes\Shape.js:58</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_type" class="property item">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l28"><code>src\shapes\Shape.js:28</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The type of this shape. Must be set to an int &gt; 0 by subclasses.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_types" class="property item">
+    <h3 class="name"><code>types</code></h3>
+    <span class="type">Object</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Shape.js.html#l100"><code>src\shapes\Shape.js:100</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The available shape types.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

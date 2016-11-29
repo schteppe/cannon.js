@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Body - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -137,7 +139,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Body.js.html#l12"><code>src&#x2F;objects&#x2F;Body.js:12</code></a>
+            Defined in: <a href="../files/src_objects_Body.js.html#l12"><code>src\objects\Body.js:12</code></a>
         </div>
 
 
@@ -151,234 +153,254 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Body" class="method item">
-            <h3 class="name"><code>Body</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_objects_Body.js.html#l12"><code>src&#x2F;objects&#x2F;Body.js:12</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[position]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[velocity]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[angularVelocity]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[quaternion]</code>
-                                            <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[mass]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[material]</code>
-                                            <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[type]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[linearDamping=0.01]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[angularDamping=0.01]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[allowSleep=true]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sleepSpeedLimit=0.1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sleepTimeLimit=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[collisionFilterGroup=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[collisionFilterMask=1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[fixedRotation=false]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[shape]</code>
-                                            <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
-                <div class="example">
-                    <h4>Example:</h4>
-        
-                    <div class="example-content">
-                        <pre class="code prettyprint"><code>var body = new Body({
-            mass: 1
-        });
-        var shape = new Sphere(1);
-        body.addShape(shape);
-        world.add(body);
-        </code></pre>
-                    </div>
-                </div>
+<div id="method_Body" class="method item">
+    <h3 class="name"><code>Body</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l12"><code>src\objects\Body.js:12</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[position]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[velocity]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[angularVelocity]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[quaternion]</code>
+                                    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[mass]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[material]</code>
+                                    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[type]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[linearDamping=0.01]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[angularDamping=0.01]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[allowSleep=true]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[sleepSpeedLimit=0.1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[sleepTimeLimit=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[collisionFilterGroup=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[collisionFilterMask=-1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fixedRotation=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[linearFactor]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[angularFactor]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[shape]</code>
+                                    <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre class="code prettyprint"><code>var body = new Body({
+    mass: 1
+});
+var shape = new Sphere(1);
+body.addShape(shape);
+world.addBody(body);</code></pre>
+
+            </div>
+        </div>
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -387,6 +409,7 @@
 
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
     </ul>
 
     <div>
@@ -431,6 +454,10 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_getVelocityAtWorldPoint">getVelocityAtWorldPoint</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_hasAnyEventListener">hasAnyEventListener</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -509,6 +536,10 @@
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_angularFactor">angularFactor</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_angularVelocity">angularVelocity</a>
 
                             </li>
@@ -516,6 +547,10 @@
                                 <a href="#property_AWAKE">AWAKE</a>
 
                                     <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_boundingRadius">boundingRadius</a>
+
                             </li>
                             <li class="index-item property">
                                 <a href="#property_collisionFilterGroup">collisionFilterGroup</a>
@@ -563,6 +598,14 @@
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_interpolatedPosition">interpolatedPosition</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_interpolatedQuaternion">interpolatedQuaternion</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_invInertia">invInertia</a>
 
                             </li>
@@ -592,6 +635,10 @@
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_linearFactor">linearFactor</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_mass">mass</a>
 
                             </li>
@@ -615,6 +662,10 @@
                             </li>
                             <li class="index-item property">
                                 <a href="#property_previousPosition">previousPosition</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_previousQuaternion">previousQuaternion</a>
 
                             </li>
                             <li class="index-item property">
@@ -680,6 +731,28 @@
                 </div>
 
 
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_collide">collide</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_sleep">sleep</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_sleepy">sleepy</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_wakeup">wakeup</a>
+
+                            </li>
+                    </ul>
+                </div>
         </div>
 
             <div id="methods" class="api-class-tabpanel">
@@ -712,7 +785,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventTarget.html#method_addEventListener">EventTarget</a>:
-        <a href="../files/src_utils_EventTarget.js.html#l15"><code>src&#x2F;utils&#x2F;EventTarget.js:15</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l15"><code>src\utils\EventTarget.js:15</code></a>
         </p>
 
 
@@ -720,8 +793,7 @@
     </div>
 
     <div class="description">
-        <p>Add an event listener</p>
-
+        Add an event listener
     </div>
 
         <div class="params">
@@ -756,8 +828,7 @@
 
             <div class="returns-description">
                         <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
-                    <p>The self object, for chainability.</p>
-
+                    The self object, for chainability.
             </div>
         </div>
 
@@ -772,10 +843,10 @@
                         <code>shape</code>
                 </li>
                 <li class="arg">
-                        <code>offset</code>
+                        <code class="optional">[_offset]</code>
                 </li>
                 <li class="arg">
-                        <code>quaternion</code>
+                        <code class="optional">[_orientation]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -793,7 +864,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l507"><code>src&#x2F;objects&#x2F;Body.js:507</code></a>
+        <a href="../files/src_objects_Body.js.html#l586"><code>src\objects\Body.js:586</code></a>
         </p>
 
 
@@ -820,8 +891,9 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">offset</code>
+                        <code class="param-name optional">[_offset]</code>
                         <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
@@ -830,8 +902,9 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">quaternion</code>
+                        <code class="param-name optional">[_orientation]</code>
                         <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
@@ -863,7 +936,7 @@
                         <code>force</code>
                 </li>
                 <li class="arg">
-                        <code>worldPoint</code>
+                        <code>relativePoint</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -878,7 +951,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l637"><code>src&#x2F;objects&#x2F;Body.js:637</code></a>
+        <a href="../files/src_objects_Body.js.html#l709"><code>src\objects\Body.js:709</code></a>
         </p>
 
 
@@ -906,12 +979,12 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">worldPoint</code>
+                        <code class="param-name">relativePoint</code>
                         <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
 
 
                     <div class="param-description">
-                        <p>A world point to apply the force on.</p>
+                        <p>A point relative to the center of mass to apply the force on.</p>
 
                     </div>
 
@@ -931,7 +1004,7 @@
                         <code>impulse</code>
                 </li>
                 <li class="arg">
-                        <code>worldPoint</code>
+                        <code>relativePoint</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -946,7 +1019,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l688"><code>src&#x2F;objects&#x2F;Body.js:688</code></a>
+        <a href="../files/src_objects_Body.js.html#l756"><code>src\objects\Body.js:756</code></a>
         </p>
 
 
@@ -974,12 +1047,12 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">worldPoint</code>
+                        <code class="param-name">relativePoint</code>
                         <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
 
 
                     <div class="param-description">
-                        <p>A world point to apply the force on.</p>
+                        <p>A point relative to the center of mass to apply the force on.</p>
 
                     </div>
 
@@ -1014,7 +1087,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l665"><code>src&#x2F;objects&#x2F;Body.js:665</code></a>
+        <a href="../files/src_objects_Body.js.html#l733"><code>src\objects\Body.js:733</code></a>
         </p>
 
 
@@ -1082,7 +1155,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l729"><code>src&#x2F;objects&#x2F;Body.js:729</code></a>
+        <a href="../files/src_objects_Body.js.html#l796"><code>src\objects\Body.js:796</code></a>
         </p>
 
 
@@ -1141,7 +1214,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l562"><code>src&#x2F;objects&#x2F;Body.js:562</code></a>
+        <a href="../files/src_objects_Body.js.html#l643"><code>src\objects\Body.js:643</code></a>
         </p>
 
 
@@ -1181,7 +1254,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventTarget.html#method_dispatchEvent">EventTarget</a>:
-        <a href="../files/src_utils_EventTarget.js.html#l68"><code>src&#x2F;utils&#x2F;EventTarget.js:68</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l80"><code>src\utils\EventTarget.js:80</code></a>
         </p>
 
 
@@ -1189,8 +1262,7 @@
     </div>
 
     <div class="description">
-        <p>Emit an event.</p>
-
+        Emit an event.
     </div>
 
         <div class="params">
@@ -1226,8 +1298,7 @@
 
             <div class="returns-description">
                         <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
-                    <p>The self object, for chainability.</p>
-
+                    The self object, for chainability.
             </div>
         </div>
 
@@ -1260,7 +1331,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l782"><code>src&#x2F;objects&#x2F;Body.js:782</code></a>
+        <a href="../files/src_objects_Body.js.html#l849"><code>src\objects\Body.js:849</code></a>
         </p>
 
 
@@ -1311,6 +1382,68 @@
 
 
 </div>
+<div id="method_hasAnyEventListener" class="method item inherited">
+    <h3 class="name"><code>hasAnyEventListener</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_hasAnyEventListener">EventTarget</a>:
+        <a href="../files/src_utils_EventTarget.js.html#l50"><code>src\utils\EventTarget.js:50</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        Check if any event listener of the given type is added
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+            </div>
+        </div>
+
+
+</div>
 <div id="method_hasEventListener" class="method item inherited">
     <h3 class="name"><code>hasEventListener</code></h3>
 
@@ -1338,7 +1471,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventTarget.html#method_hasEventListener">EventTarget</a>:
-        <a href="../files/src_utils_EventTarget.js.html#l34"><code>src&#x2F;utils&#x2F;EventTarget.js:34</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l34"><code>src\utils\EventTarget.js:34</code></a>
         </p>
 
 
@@ -1346,8 +1479,7 @@
     </div>
 
     <div class="description">
-        <p>Check if an event listener is added</p>
-
+        Check if an event listener is added
     </div>
 
         <div class="params">
@@ -1414,7 +1546,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l450"><code>src&#x2F;objects&#x2F;Body.js:450</code></a>
+        <a href="../files/src_objects_Body.js.html#l529"><code>src\objects\Body.js:529</code></a>
         </p>
 
 
@@ -1490,7 +1622,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l477"><code>src&#x2F;objects&#x2F;Body.js:477</code></a>
+        <a href="../files/src_objects_Body.js.html#l556"><code>src\objects\Body.js:556</code></a>
         </p>
 
 
@@ -1566,7 +1698,7 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/EventTarget.html#method_removeEventListener">EventTarget</a>:
-        <a href="../files/src_utils_EventTarget.js.html#l50"><code>src&#x2F;utils&#x2F;EventTarget.js:50</code></a>
+        <a href="../files/src_utils_EventTarget.js.html#l62"><code>src\utils\EventTarget.js:62</code></a>
         </p>
 
 
@@ -1574,8 +1706,7 @@
     </div>
 
     <div class="description">
-        <p>Remove an event listener</p>
-
+        Remove an event listener
     </div>
 
         <div class="params">
@@ -1610,8 +1741,7 @@
 
             <div class="returns-description">
                         <span class="type"><a href="../classes/EventTarget.html" class="crosslink">EventTarget</a></span>:
-                    <p>The self object, for chainability.</p>
-
+                    The self object, for chainability.
             </div>
         </div>
 
@@ -1632,7 +1762,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l393"><code>src&#x2F;objects&#x2F;Body.js:393</code></a>
+        <a href="../files/src_objects_Body.js.html#l463"><code>src\objects\Body.js:463</code></a>
         </p>
 
 
@@ -1669,7 +1799,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l411"><code>src&#x2F;objects&#x2F;Body.js:411</code></a>
+        <a href="../files/src_objects_Body.js.html#l490"><code>src\objects\Body.js:490</code></a>
         </p>
 
 
@@ -1717,7 +1847,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l537"><code>src&#x2F;objects&#x2F;Body.js:537</code></a>
+        <a href="../files/src_objects_Body.js.html#l618"><code>src\objects\Body.js:618</code></a>
         </p>
 
 
@@ -1748,7 +1878,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l608"><code>src&#x2F;objects&#x2F;Body.js:608</code></a>
+        <a href="../files/src_objects_Body.js.html#l686"><code>src\objects\Body.js:686</code></a>
         </p>
 
 
@@ -1779,7 +1909,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l754"><code>src&#x2F;objects&#x2F;Body.js:754</code></a>
+        <a href="../files/src_objects_Body.js.html#l821"><code>src\objects\Body.js:821</code></a>
         </p>
 
 
@@ -1810,7 +1940,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l434"><code>src&#x2F;objects&#x2F;Body.js:434</code></a>
+        <a href="../files/src_objects_Body.js.html#l513"><code>src\objects\Body.js:513</code></a>
         </p>
 
 
@@ -1853,7 +1983,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l464"><code>src&#x2F;objects&#x2F;Body.js:464</code></a>
+        <a href="../files/src_objects_Body.js.html#l543"><code>src\objects\Body.js:543</code></a>
         </p>
 
 
@@ -1929,7 +2059,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l491"><code>src&#x2F;objects&#x2F;Body.js:491</code></a>
+        <a href="../files/src_objects_Body.js.html#l570"><code>src\objects\Body.js:570</code></a>
         </p>
 
 
@@ -1993,7 +2123,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Body.js.html#l381"><code>src&#x2F;objects&#x2F;Body.js:381</code></a>
+        <a href="../files/src_objects_Body.js.html#l450"><code>src\objects\Body.js:450</code></a>
         </p>
 
 
@@ -2014,9 +2144,1259 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_aabb" class="property item">
-                        <h3 class="name"><code>aabb</code></h3>
-                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+<div id="property_aabb" class="property item">
+    <h3 class="name"><code>aabb</code></h3>
+    <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l352"><code>src\objects\Body.js:352</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>World space bounding box of the body and its shapes.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_aabbNeedsUpdate" class="property item">
+    <h3 class="name"><code>aabbNeedsUpdate</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l359"><code>src\objects\Body.js:359</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Indicates if the AABB needs to be updated before use.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_allowSleep" class="property item">
+    <h3 class="name"><code>allowSleep</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l185"><code>src\objects\Body.js:185</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If true, the body will automatically fall to sleep.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> true</p>
+
+
+</div>
+<div id="property_angularDamping" class="property item">
+    <h3 class="name"><code>angularDamping</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l329"><code>src\objects\Body.js:329</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_angularFactor" class="property item">
+    <h3 class="name"><code>angularFactor</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l343"><code>src\objects\Body.js:343</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Use this property to limit the rotational motion along any world axis. (1,1,1) will allow rotation along all axes while (0,0,0) allows none.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_angularVelocity" class="property item">
+    <h3 class="name"><code>angularVelocity</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l257"><code>src\objects\Body.js:257</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Angular velocity of the body, in world space. Think of the angular velocity as a vector, which the body rotates around. The length of this vector determines how fast (in radians per second) the body rotates.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_AWAKE" class="property item">
+    <h3 class="name"><code>AWAKE</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l419"><code>src\objects\Body.js:419</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_boundingRadius" class="property item">
+    <h3 class="name"><code>boundingRadius</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l366"><code>src\objects\Body.js:366</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Total bounding radius of the Body including its shapes, relative to body.position.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_collisionFilterGroup" class="property item">
+    <h3 class="name"><code>collisionFilterGroup</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l76"><code>src\objects\Body.js:76</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_collisionFilterMask" class="property item">
+    <h3 class="name"><code>collisionFilterMask</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l81"><code>src\objects\Body.js:81</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_collisionResponse" class="property item">
+    <h3 class="name"><code>collisionResponse</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l86"><code>src\objects\Body.js:86</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_DYNAMIC" class="property item">
+    <h3 class="name"><code>DYNAMIC</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l393"><code>src\objects\Body.js:393</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_fixedRotation" class="property item">
+    <h3 class="name"><code>fixedRotation</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l322"><code>src\objects\Body.js:322</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Set to true if you don't want the body to rotate. Make sure to run .updateMassProperties() after changing this.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> false</p>
+
+
+</div>
+<div id="property_force" class="property item">
+    <h3 class="name"><code>force</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l141"><code>src\objects\Body.js:141</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Linear force on the body in world space.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_inertia" class="property item">
+    <h3 class="name"><code>inertia</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l294"><code>src\objects\Body.js:294</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_initAngularVelocity" class="property item">
+    <h3 class="name"><code>initAngularVelocity</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l268"><code>src\objects\Body.js:268</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_initPosition" class="property item">
+    <h3 class="name"><code>initPosition</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l110"><code>src\objects\Body.js:110</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Initial position of the body</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_initQuaternion" class="property item">
+    <h3 class="name"><code>initQuaternion</code></h3>
+    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l233"><code>src\objects\Body.js:233</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_initVelocity" class="property item">
+    <h3 class="name"><code>initVelocity</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l135"><code>src\objects\Body.js:135</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_interpolatedPosition" class="property item">
+    <h3 class="name"><code>interpolatedPosition</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l104"><code>src\objects\Body.js:104</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Interpolated position of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_interpolatedQuaternion" class="property item">
+    <h3 class="name"><code>interpolatedQuaternion</code></h3>
+    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l244"><code>src\objects\Body.js:244</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Interpolated orientation of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_invInertia" class="property item">
+    <h3 class="name"><code>invInertia</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l300"><code>src\objects\Body.js:300</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_invInertiaSolve" class="property item">
+    <h3 class="name"><code>invInertiaSolve</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l312"><code>src\objects\Body.js:312</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_invInertiaWorld" class="property item">
+    <h3 class="name"><code>invInertiaWorld</code></h3>
+    <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l305"><code>src\objects\Body.js:305</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_invInertiaWorldSolve" class="property item">
+    <h3 class="name"><code>invInertiaWorldSolve</code></h3>
+    <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l317"><code>src\objects\Body.js:317</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_invMass" class="property item">
+    <h3 class="name"><code>invMass</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l157"><code>src\objects\Body.js:157</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_KINEMATIC" class="property item">
+    <h3 class="name"><code>KINEMATIC</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l409"><code>src\objects\Body.js:409</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_linearDamping" class="property item">
+    <h3 class="name"><code>linearDamping</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l169"><code>src\objects\Body.js:169</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_linearFactor" class="property item">
+    <h3 class="name"><code>linearFactor</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l334"><code>src\objects\Body.js:334</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Use this property to limit the motion along any world axis. (1,1,1) will allow motion along all axes while (0,0,0) allows none.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_mass" class="property item">
+    <h3 class="name"><code>mass</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l150"><code>src\objects\Body.js:150</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <p><strong>Default:</strong> 0</p>
+
+
+</div>
+<div id="property_material" class="property item">
+    <h3 class="name"><code>material</code></h3>
+    <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l163"><code>src\objects\Body.js:163</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_position" class="property item">
+    <h3 class="name"><code>position</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l92"><code>src\objects\Body.js:92</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>World space position of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_postStep" class="property item deprecated">
+    <h3 class="name"><code>postStep</code></h3>
+    <span class="type">Function</span>
+
+        <span class="flag deprecated" title="Use World events instead">deprecated</span>
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l66"><code>src\objects\Body.js:66</code></a>
+        </p>
+
+            <p>Deprecated: Use World events instead</p>
+
+    </div>
+
+    <div class="description">
+        <p>Callback function that is used AFTER stepping the system. Inside the function, &quot;this&quot; will refer to this Body object.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_preStep" class="property item deprecated">
+    <h3 class="name"><code>preStep</code></h3>
+    <span class="type">Function</span>
+
+        <span class="flag deprecated" title="Use World events instead">deprecated</span>
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l58"><code>src\objects\Body.js:58</code></a>
+        </p>
+
+            <p>Deprecated: Use World events instead</p>
+
+    </div>
+
+    <div class="description">
+        <p>Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, &quot;this&quot; will refer to this Body object.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_previousPosition" class="property item">
+    <h3 class="name"><code>previousPosition</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l99"><code>src\objects\Body.js:99</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_previousQuaternion" class="property item">
+    <h3 class="name"><code>previousQuaternion</code></h3>
+    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l239"><code>src\objects\Body.js:239</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_quaternion" class="property item">
+    <h3 class="name"><code>quaternion</code></h3>
+    <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l226"><code>src\objects\Body.js:226</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>World space orientation of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_shapeOffsets" class="property item">
+    <h3 class="name"><code>shapeOffsets</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l280"><code>src\objects\Body.js:280</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Position of each Shape in the body, given in local Body space.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_shapeOrientations" class="property item">
+    <h3 class="name"><code>shapeOrientations</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l287"><code>src\objects\Body.js:287</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Orientation of each Shape, given in local Body space.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_shapes" class="property item">
+    <h3 class="name"><code>shapes</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l274"><code>src\objects\Body.js:274</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_SLEEPING" class="property item">
+    <h3 class="name"><code>SLEEPING</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l433"><code>src\objects\Body.js:433</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_sleepSpeedLimit" class="property item">
+    <h3 class="name"><code>sleepSpeedLimit</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l200"><code>src\objects\Body.js:200</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 0.1</p>
+
+
+</div>
+<div id="property_sleepState" class="property item">
+    <h3 class="name"><code>sleepState</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l193"><code>src\objects\Body.js:193</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Current sleep state.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_sleepTimeLimit" class="property item">
+    <h3 class="name"><code>sleepTimeLimit</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l208"><code>src\objects\Body.js:208</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.</p>
+
+    </div>
+
+        <p><strong>Default:</strong> 1</p>
+
+
+</div>
+<div id="property_SLEEPY" class="property item">
+    <h3 class="name"><code>SLEEPY</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l426"><code>src\objects\Body.js:426</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_STATIC" class="property item">
+    <h3 class="name"><code>STATIC</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+        <span class="flag static">static</span>
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l401"><code>src\objects\Body.js:401</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_torque" class="property item">
+    <h3 class="name"><code>torque</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l220"><code>src\objects\Body.js:220</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>World space rotational force on the body, around center of mass.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_type" class="property item">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l175"><code>src\objects\Body.js:175</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>One of: Body.DYNAMIC, Body.STATIC and Body.KINEMATIC.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_velocity" class="property item">
+    <h3 class="name"><code>velocity</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l124"><code>src\objects\Body.js:124</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>World space velocity of the body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_world" class="property item">
+    <h3 class="name"><code>world</code></h3>
+    <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Body.js.html#l51"><code>src\objects\Body.js:51</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Reference to the world the body is living in</p>
+
+    </div>
+
+
+
+</div>
+            </div>
+
+
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                    <div id="event_collide" class="events item">
+                        <h3 class="name"><code>collide</code></h3>
+                        <span class="type"></span>
                     
                     
                     
@@ -2025,22 +3405,77 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l308"><code>src&#x2F;objects&#x2F;Body.js:308</code></a>
+                            <a href="../files/src_objects_Body.js.html#l384"><code>src\objects\Body.js:384</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            
+                            <p>Dispatched after two bodies collide. This event is dispatched on each
+                    of the two bodies involved in the collision.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">body</code>
+                                            <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The body that was involved in the collision.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">contact</code>
+                                            <span class="type"><a href="../classes/ContactEquation.html" class="crosslink">ContactEquation</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The details of the collision.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_sleep" class="events item">
+                        <h3 class="name"><code>sleep</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_objects_Body.js.html#l482"><code>src\objects\Body.js:482</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Dispatched after a body has fallen asleep.</p>
+                    
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_aabbNeedsUpdate" class="property item">
-                        <h3 class="name"><code>aabbNeedsUpdate</code></h3>
-                        <span class="type">Boolean</span>
+                    <div id="event_sleepy" class="events item">
+                        <h3 class="name"><code>sleepy</code></h3>
+                        <span class="type"></span>
                     
                     
                     
@@ -2049,23 +3484,23 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l314"><code>src&#x2F;objects&#x2F;Body.js:314</code></a>
+                            <a href="../files/src_objects_Body.js.html#l474"><code>src\objects\Body.js:474</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Indicates if the AABB needs to be updated before use.</p>
+                            <p>Dispatched after a body has gone in to the sleepy state.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_allowSleep" class="property item">
-                        <h3 class="name"><code>allowSleep</code></h3>
-                        <span class="type">Boolean</span>
+                    <div id="event_wakeup" class="events item">
+                        <h3 class="name"><code>wakeup</code></h3>
+                        <span class="type"></span>
                     
                     
                     
@@ -2074,1029 +3509,14 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_objects_Body.js.html#l172"><code>src&#x2F;objects&#x2F;Body.js:172</code></a>
+                            <a href="../files/src_objects_Body.js.html#l442"><code>src\objects\Body.js:442</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>If true, the body will automatically fall to sleep.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_angularDamping" class="property item">
-                        <h3 class="name"><code>angularDamping</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l303"><code>src&#x2F;objects&#x2F;Body.js:303</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_angularVelocity" class="property item">
-                        <h3 class="name"><code>angularVelocity</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l231"><code>src&#x2F;objects&#x2F;Body.js:231</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_AWAKE" class="property item">
-                        <h3 class="name"><code>AWAKE</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l358"><code>src&#x2F;objects&#x2F;Body.js:358</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionFilterGroup" class="property item">
-                        <h3 class="name"><code>collisionFilterGroup</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l74"><code>src&#x2F;objects&#x2F;Body.js:74</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionFilterMask" class="property item">
-                        <h3 class="name"><code>collisionFilterMask</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l79"><code>src&#x2F;objects&#x2F;Body.js:79</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_collisionResponse" class="property item">
-                        <h3 class="name"><code>collisionResponse</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l84"><code>src&#x2F;objects&#x2F;Body.js:84</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_DYNAMIC" class="property item">
-                        <h3 class="name"><code>DYNAMIC</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l332"><code>src&#x2F;objects&#x2F;Body.js:332</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_fixedRotation" class="property item">
-                        <h3 class="name"><code>fixedRotation</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l296"><code>src&#x2F;objects&#x2F;Body.js:296</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set to true if you don&#39;t want the body to rotate. Make sure to run .updateMassProperties() after changing this.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
-                    
-                    
-                    </div>
-                    <div id="property_force" class="property item">
-                        <h3 class="name"><code>force</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l128"><code>src&#x2F;objects&#x2F;Body.js:128</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Linear force on the body</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_inertia" class="property item">
-                        <h3 class="name"><code>inertia</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l268"><code>src&#x2F;objects&#x2F;Body.js:268</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_initAngularVelocity" class="property item">
-                        <h3 class="name"><code>initAngularVelocity</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l241"><code>src&#x2F;objects&#x2F;Body.js:241</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_initPosition" class="property item">
-                        <h3 class="name"><code>initPosition</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l105"><code>src&#x2F;objects&#x2F;Body.js:105</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Initial position of the body</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_initQuaternion" class="property item">
-                        <h3 class="name"><code>initQuaternion</code></h3>
-                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l225"><code>src&#x2F;objects&#x2F;Body.js:225</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_initVelocity" class="property item">
-                        <h3 class="name"><code>initVelocity</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l122"><code>src&#x2F;objects&#x2F;Body.js:122</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_invInertia" class="property item">
-                        <h3 class="name"><code>invInertia</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l274"><code>src&#x2F;objects&#x2F;Body.js:274</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_invInertiaSolve" class="property item">
-                        <h3 class="name"><code>invInertiaSolve</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l286"><code>src&#x2F;objects&#x2F;Body.js:286</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_invInertiaWorld" class="property item">
-                        <h3 class="name"><code>invInertiaWorld</code></h3>
-                        <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l279"><code>src&#x2F;objects&#x2F;Body.js:279</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_invInertiaWorldSolve" class="property item">
-                        <h3 class="name"><code>invInertiaWorldSolve</code></h3>
-                        <span class="type"><a href="../classes/Mat3.html" class="crosslink">Mat3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l291"><code>src&#x2F;objects&#x2F;Body.js:291</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_invMass" class="property item">
-                        <h3 class="name"><code>invMass</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l144"><code>src&#x2F;objects&#x2F;Body.js:144</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_KINEMATIC" class="property item">
-                        <h3 class="name"><code>KINEMATIC</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l348"><code>src&#x2F;objects&#x2F;Body.js:348</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_linearDamping" class="property item">
-                        <h3 class="name"><code>linearDamping</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l156"><code>src&#x2F;objects&#x2F;Body.js:156</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_mass" class="property item">
-                        <h3 class="name"><code>mass</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l137"><code>src&#x2F;objects&#x2F;Body.js:137</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0</p>
-                    
-                    
-                    </div>
-                    <div id="property_material" class="property item">
-                        <h3 class="name"><code>material</code></h3>
-                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l150"><code>src&#x2F;objects&#x2F;Body.js:150</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_position" class="property item">
-                        <h3 class="name"><code>position</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l90"><code>src&#x2F;objects&#x2F;Body.js:90</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_postStep" class="property item deprecated">
-                        <h3 class="name"><code>postStep</code></h3>
-                        <span class="type">Function</span>
-                    
-                            <span class="flag deprecated" title="Use World events instead">deprecated</span>
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l64"><code>src&#x2F;objects&#x2F;Body.js:64</code></a>
-                            </p>
-                    
-                                <p>Deprecated: Use World events instead</p>
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Callback function that is used AFTER stepping the system. Inside the function, &quot;this&quot; will refer to this Body object.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_preStep" class="property item deprecated">
-                        <h3 class="name"><code>preStep</code></h3>
-                        <span class="type">Function</span>
-                    
-                            <span class="flag deprecated" title="Use World events instead">deprecated</span>
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l56"><code>src&#x2F;objects&#x2F;Body.js:56</code></a>
-                            </p>
-                    
-                                <p>Deprecated: Use World events instead</p>
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, &quot;this&quot; will refer to this Body object.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_previousPosition" class="property item">
-                        <h3 class="name"><code>previousPosition</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l100"><code>src&#x2F;objects&#x2F;Body.js:100</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_quaternion" class="property item">
-                        <h3 class="name"><code>quaternion</code></h3>
-                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l214"><code>src&#x2F;objects&#x2F;Body.js:214</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Orientation of the body</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_shapeOffsets" class="property item">
-                        <h3 class="name"><code>shapeOffsets</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l256"><code>src&#x2F;objects&#x2F;Body.js:256</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_shapeOrientations" class="property item">
-                        <h3 class="name"><code>shapeOrientations</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l262"><code>src&#x2F;objects&#x2F;Body.js:262</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_shapes" class="property item">
-                        <h3 class="name"><code>shapes</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l250"><code>src&#x2F;objects&#x2F;Body.js:250</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_SLEEPING" class="property item">
-                        <h3 class="name"><code>SLEEPING</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l372"><code>src&#x2F;objects&#x2F;Body.js:372</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_sleepSpeedLimit" class="property item">
-                        <h3 class="name"><code>sleepSpeedLimit</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l187"><code>src&#x2F;objects&#x2F;Body.js:187</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If the speed (the norm of the velocity) is smaller than this value, the body is considered sleepy.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.1</p>
-                    
-                    
-                    </div>
-                    <div id="property_sleepState" class="property item">
-                        <h3 class="name"><code>sleepState</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l180"><code>src&#x2F;objects&#x2F;Body.js:180</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Current sleep state.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_sleepTimeLimit" class="property item">
-                        <h3 class="name"><code>sleepTimeLimit</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l195"><code>src&#x2F;objects&#x2F;Body.js:195</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>If the body has been sleepy for this sleepTimeLimit seconds, it is considered sleeping.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1</p>
-                    
-                    
-                    </div>
-                    <div id="property_SLEEPY" class="property item">
-                        <h3 class="name"><code>SLEEPY</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l365"><code>src&#x2F;objects&#x2F;Body.js:365</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_STATIC" class="property item">
-                        <h3 class="name"><code>STATIC</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                            <span class="flag static">static</span>
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l340"><code>src&#x2F;objects&#x2F;Body.js:340</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_torque" class="property item">
-                        <h3 class="name"><code>torque</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l208"><code>src&#x2F;objects&#x2F;Body.js:208</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Rotational force on the body, around center of mass</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_type" class="property item">
-                        <h3 class="name"><code>type</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l162"><code>src&#x2F;objects&#x2F;Body.js:162</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>One of: Body.DYNAMIC, Body.STATIC and Body.KINEMATIC.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_velocity" class="property item">
-                        <h3 class="name"><code>velocity</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l112"><code>src&#x2F;objects&#x2F;Body.js:112</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_world" class="property item">
-                        <h3 class="name"><code>world</code></h3>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Body.js.html#l49"><code>src&#x2F;objects&#x2F;Body.js:49</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Reference to the world the body is living in</p>
+                            <p>Dispatched after a sleeping body has woken up.</p>
                     
                         </div>
                     
@@ -3104,8 +3524,6 @@
                     
                     </div>
             </div>
-
-
     </div>
 </div>
                     </div>

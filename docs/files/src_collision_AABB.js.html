@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/collision/AABB.js - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <title>src\collision\AABB.js - cannon</title>
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -129,7 +131,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/collision/AABB.js</h1>
+<h1 class="file-heading">File: src\collision\AABB.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -253,41 +255,12 @@ AABB.prototype.clone = function(){
  * @param  {AABB} aabb
  */
 AABB.prototype.extend = function(aabb){
-    // Extend lower bound
-    var l = aabb.lowerBound.x;
-    if(this.lowerBound.x &gt; l){
-        this.lowerBound.x = l;
-    }
-
-    // Upper
-    var u = aabb.upperBound.x;
-    if(this.upperBound.x &lt; u){
-        this.upperBound.x = u;
-    }
-
-    // Extend lower bound
-    var l = aabb.lowerBound.y;
-    if(this.lowerBound.y &gt; l){
-        this.lowerBound.y = l;
-    }
-
-    // Upper
-    var u = aabb.upperBound.y;
-    if(this.upperBound.y &lt; u){
-        this.upperBound.y = u;
-    }
-
-    // Extend lower bound
-    var l = aabb.lowerBound.z;
-    if(this.lowerBound.z &gt; l){
-        this.lowerBound.z = l;
-    }
-
-    // Upper
-    var u = aabb.upperBound.z;
-    if(this.upperBound.z &lt; u){
-        this.upperBound.z = u;
-    }
+    this.lowerBound.x = Math.min(this.lowerBound.x, aabb.lowerBound.x);
+    this.upperBound.x = Math.max(this.upperBound.x, aabb.upperBound.x);
+    this.lowerBound.y = Math.min(this.lowerBound.y, aabb.lowerBound.y);
+    this.upperBound.y = Math.max(this.upperBound.y, aabb.upperBound.y);
+    this.lowerBound.z = Math.min(this.lowerBound.z, aabb.lowerBound.z);
+    this.upperBound.z = Math.max(this.upperBound.z, aabb.upperBound.z);
 };
 
 /**
@@ -307,10 +280,20 @@ AABB.prototype.overlaps = function(aabb){
     // |--------|
     // l1       u1
 
-    return ((l2.x &lt;= u1.x &amp;&amp; u1.x &lt;= u2.x) || (l1.x &lt;= u2.x &amp;&amp; u2.x &lt;= u1.x)) &amp;&amp;
-           ((l2.y &lt;= u1.y &amp;&amp; u1.y &lt;= u2.y) || (l1.y &lt;= u2.y &amp;&amp; u2.y &lt;= u1.y)) &amp;&amp;
-           ((l2.z &lt;= u1.z &amp;&amp; u1.z &lt;= u2.z) || (l1.z &lt;= u2.z &amp;&amp; u2.z &lt;= u1.z));
+    var overlapsX = ((l2.x &lt;= u1.x &amp;&amp; u1.x &lt;= u2.x) || (l1.x &lt;= u2.x &amp;&amp; u2.x &lt;= u1.x));
+    var overlapsY = ((l2.y &lt;= u1.y &amp;&amp; u1.y &lt;= u2.y) || (l1.y &lt;= u2.y &amp;&amp; u2.y &lt;= u1.y));
+    var overlapsZ = ((l2.z &lt;= u1.z &amp;&amp; u1.z &lt;= u2.z) || (l1.z &lt;= u2.z &amp;&amp; u2.z &lt;= u1.z));
+
+    return overlapsX &amp;&amp; overlapsY &amp;&amp; overlapsZ;
 };
+
+// Mostly for debugging
+AABB.prototype.volume = function(){
+    var l = this.lowerBound,
+        u = this.upperBound;
+    return (u.x - l.x) * (u.y - l.y) * (u.z - l.z);
+};
+
 
 /**
  * Returns true if the given AABB is fully contained in this AABB.
@@ -434,6 +417,46 @@ AABB.prototype.toWorldFrame = function(frame, target){
     return target.setFromPoints(corners);
 };
 
+/**
+ * Check if the AABB is hit by a ray.
+ * @param  {Ray} ray
+ * @return {number}
+ */
+AABB.prototype.overlapsRay = function(ray){
+    var t = 0;
+
+    // ray.direction is unit direction vector of ray
+    var dirFracX = 1 / ray._direction.x;
+    var dirFracY = 1 / ray._direction.y;
+    var dirFracZ = 1 / ray._direction.z;
+
+    // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+    var t1 = (this.lowerBound.x - ray.from.x) * dirFracX;
+    var t2 = (this.upperBound.x - ray.from.x) * dirFracX;
+    var t3 = (this.lowerBound.y - ray.from.y) * dirFracY;
+    var t4 = (this.upperBound.y - ray.from.y) * dirFracY;
+    var t5 = (this.lowerBound.z - ray.from.z) * dirFracZ;
+    var t6 = (this.upperBound.z - ray.from.z) * dirFracZ;
+
+    // var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
+    // var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
+    var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+    var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
+
+    // if tmax &lt; 0, ray (line) is intersecting AABB, but whole AABB is behing us
+    if (tmax &lt; 0){
+        //t = tmax;
+        return false;
+    }
+
+    // if tmin &gt; tmax, ray doesn&#x27;t intersect AABB
+    if (tmin &gt; tmax){
+        //t = tmax;
+        return false;
+    }
+
+    return true;
+};
     </pre>
 </div>
                     </div>

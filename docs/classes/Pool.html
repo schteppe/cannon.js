@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Pool - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -134,7 +136,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_utils_Pool.js.html#l3"><code>src&#x2F;utils&#x2F;Pool.js:3</code></a>
+            Defined in: <a href="../files/src_utils_Pool.js.html#l3"><code>src\utils\Pool.js:3</code></a>
         </div>
 
 
@@ -148,36 +150,36 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Pool" class="method item">
-            <h3 class="name"><code>Pool</code></h3>
+<div id="method_Pool" class="method item">
+    <h3 class="name"><code>Pool</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_Pool.js.html#l3"><code>src\utils\Pool.js:3</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
         
-                <span class="paren">()</span>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_utils_Pool.js.html#l3"><code>src&#x2F;utils&#x2F;Pool.js:3</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-        
-        
-        
-        </div>
+    </div>
+
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -206,6 +208,10 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_release">release</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_resize">resize</a>
 
                             </li>
                     </ul>
@@ -250,7 +256,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_Pool.js.html#l47"><code>src&#x2F;utils&#x2F;Pool.js:47</code></a>
+        <a href="../files/src_utils_Pool.js.html#l48"><code>src\utils\Pool.js:48</code></a>
         </p>
 
 
@@ -291,7 +297,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_Pool.js.html#l34"><code>src&#x2F;utils&#x2F;Pool.js:34</code></a>
+        <a href="../files/src_utils_Pool.js.html#l35"><code>src\utils\Pool.js:35</code></a>
         </p>
 
 
@@ -335,7 +341,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_utils_Pool.js.html#l22"><code>src&#x2F;utils&#x2F;Pool.js:22</code></a>
+        <a href="../files/src_utils_Pool.js.html#l22"><code>src\utils\Pool.js:22</code></a>
         </p>
 
 
@@ -367,61 +373,125 @@
 
 
 </div>
+<div id="method_resize" class="method item">
+    <h3 class="name"><code>resize</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>size</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Pool.html" class="crosslink">Pool</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_Pool.js.html#l57"><code>src\utils\Pool.js:57</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">size</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Pool.html" class="crosslink">Pool</a></span>:
+                    <p>Self, for chaining</p>
+
+            </div>
+        </div>
+
+
+</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_objects" class="property item">
-                        <h3 class="name"><code>objects</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_utils_Pool.js.html#l9"><code>src&#x2F;utils&#x2F;Pool.js:9</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The pooled objects</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_type" class="property item">
-                        <h3 class="name"><code>type</code></h3>
-                        <span class="type">Mixed</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_utils_Pool.js.html#l15"><code>src&#x2F;utils&#x2F;Pool.js:15</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Constructor of the objects</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_objects" class="property item">
+    <h3 class="name"><code>objects</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_Pool.js.html#l9"><code>src\utils\Pool.js:9</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The pooled objects</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_type" class="property item">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">Mixed</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_utils_Pool.js.html#l15"><code>src\utils\Pool.js:15</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Constructor of the objects</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

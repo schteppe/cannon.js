@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Spring - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -134,7 +136,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_objects_Spring.js.html#l5"><code>src&#x2F;objects&#x2F;Spring.js:5</code></a>
+            Defined in: <a href="../files/src_objects_Spring.js.html#l5"><code>src\objects\Spring.js:5</code></a>
         </div>
 
 
@@ -148,162 +150,162 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Spring" class="method item">
-            <h3 class="name"><code>Spring</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>bodyA</code>
-                        </li>
-                        <li class="arg">
-                                <code>bodyB</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[options]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_objects_Spring.js.html#l5"><code>src&#x2F;objects&#x2F;Spring.js:5</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">bodyA</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">bodyB</code>
-                                <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[options]</code>
-                                <span class="type">Object</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                 
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[restLength]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A number &gt; 0. Default: 1</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[stiffness]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A number &gt;= 0. Default: 100</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[damping]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>A number &gt;= 0. Default: 1</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[worldAnchorA]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Where to hook the spring to body A, in world coordinates.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[worldAnchorB]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[localAnchorA]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Where to hook the spring to body A, in local body coordinates.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[localAnchorB]</code>
-                                            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_Spring" class="method item">
+    <h3 class="name"><code>Spring</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>bodyA</code>
+                </li>
+                <li class="arg">
+                        <code>bodyB</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[options]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Spring.js.html#l5"><code>src\objects\Spring.js:5</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">bodyA</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bodyB</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[restLength]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>A number &gt; 0. Default: 1</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[stiffness]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>A number &gt;= 0. Default: 100</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[damping]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>A number &gt;= 0. Default: 1</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[worldAnchorA]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Where to hook the spring to body A, in world coordinates.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[worldAnchorB]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[localAnchorA]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Where to hook the spring to body A, in local body coordinates.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[localAnchorB]</code>
+                                    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -401,7 +403,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Spring.js.html#l135"><code>src&#x2F;objects&#x2F;Spring.js:135</code></a>
+        <a href="../files/src_objects_Spring.js.html#l135"><code>src\objects\Spring.js:135</code></a>
         </p>
 
 
@@ -438,7 +440,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Spring.js.html#l105"><code>src&#x2F;objects&#x2F;Spring.js:105</code></a>
+        <a href="../files/src_objects_Spring.js.html#l105"><code>src\objects\Spring.js:105</code></a>
         </p>
 
 
@@ -492,7 +494,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Spring.js.html#l114"><code>src&#x2F;objects&#x2F;Spring.js:114</code></a>
+        <a href="../files/src_objects_Spring.js.html#l114"><code>src\objects\Spring.js:114</code></a>
         </p>
 
 
@@ -546,7 +548,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Spring.js.html#l87"><code>src&#x2F;objects&#x2F;Spring.js:87</code></a>
+        <a href="../files/src_objects_Spring.js.html#l87"><code>src\objects\Spring.js:87</code></a>
         </p>
 
 
@@ -599,7 +601,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_objects_Spring.js.html#l96"><code>src&#x2F;objects&#x2F;Spring.js:96</code></a>
+        <a href="../files/src_objects_Spring.js.html#l96"><code>src\objects\Spring.js:96</code></a>
         </p>
 
 
@@ -636,181 +638,181 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_bodyA" class="property item">
-                        <h3 class="name"><code>bodyA</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Spring.js.html#l45"><code>src&#x2F;objects&#x2F;Spring.js:45</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>First connected body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_bodyB" class="property item">
-                        <h3 class="name"><code>bodyB</code></h3>
-                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Spring.js.html#l52"><code>src&#x2F;objects&#x2F;Spring.js:52</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Second connected body.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_damping" class="property item">
-                        <h3 class="name"><code>damping</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Spring.js.html#l38"><code>src&#x2F;objects&#x2F;Spring.js:38</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Damping of the spring.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_localAnchorA" class="property item">
-                        <h3 class="name"><code>localAnchorA</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Spring.js.html#l59"><code>src&#x2F;objects&#x2F;Spring.js:59</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Anchor for bodyA in local bodyA coordinates.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_localAnchorB" class="property item">
-                        <h3 class="name"><code>localAnchorB</code></h3>
-                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Spring.js.html#l66"><code>src&#x2F;objects&#x2F;Spring.js:66</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Anchor for bodyB in local bodyB coordinates.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_restLength" class="property item">
-                        <h3 class="name"><code>restLength</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Spring.js.html#l24"><code>src&#x2F;objects&#x2F;Spring.js:24</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Rest length of the spring.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_stiffness" class="property item">
-                        <h3 class="name"><code>stiffness</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_objects_Spring.js.html#l31"><code>src&#x2F;objects&#x2F;Spring.js:31</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Stiffness of the spring.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_bodyA" class="property item">
+    <h3 class="name"><code>bodyA</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Spring.js.html#l45"><code>src\objects\Spring.js:45</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>First connected body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_bodyB" class="property item">
+    <h3 class="name"><code>bodyB</code></h3>
+    <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Spring.js.html#l52"><code>src\objects\Spring.js:52</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Second connected body.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_damping" class="property item">
+    <h3 class="name"><code>damping</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Spring.js.html#l38"><code>src\objects\Spring.js:38</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Damping of the spring.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_localAnchorA" class="property item">
+    <h3 class="name"><code>localAnchorA</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Spring.js.html#l59"><code>src\objects\Spring.js:59</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Anchor for bodyA in local bodyA coordinates.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_localAnchorB" class="property item">
+    <h3 class="name"><code>localAnchorB</code></h3>
+    <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Spring.js.html#l66"><code>src\objects\Spring.js:66</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Anchor for bodyB in local bodyB coordinates.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_restLength" class="property item">
+    <h3 class="name"><code>restLength</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Spring.js.html#l24"><code>src\objects\Spring.js:24</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Rest length of the spring.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_stiffness" class="property item">
+    <h3 class="name"><code>stiffness</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_objects_Spring.js.html#l31"><code>src\objects\Spring.js:31</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Stiffness of the spring.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

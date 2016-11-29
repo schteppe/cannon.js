@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Quaternion - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -134,7 +136,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_math_Quaternion.js.html#l5"><code>src&#x2F;math&#x2F;Quaternion.js:5</code></a>
+            Defined in: <a href="../files/src_math_Quaternion.js.html#l5"><code>src\math\Quaternion.js:5</code></a>
         </div>
 
 
@@ -148,101 +150,101 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Quaternion" class="method item">
-            <h3 class="name"><code>Quaternion</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>x</code>
-                        </li>
-                        <li class="arg">
-                                <code>y</code>
-                        </li>
-                        <li class="arg">
-                                <code>z</code>
-                        </li>
-                        <li class="arg">
-                                <code>w</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_math_Quaternion.js.html#l5"><code>src&#x2F;math&#x2F;Quaternion.js:5</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">x</code>
-                                <span class="type">Number</span>
-        
-        
-                            <div class="param-description">
-                                <p>Multiplier of the imaginary basis vector i.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">y</code>
-                                <span class="type">Number</span>
-        
-        
-                            <div class="param-description">
-                                <p>Multiplier of the imaginary basis vector j.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">z</code>
-                                <span class="type">Number</span>
-        
-        
-                            <div class="param-description">
-                                <p>Multiplier of the imaginary basis vector k.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name">w</code>
-                                <span class="type">Number</span>
-        
-        
-                            <div class="param-description">
-                                <p>Multiplier of the real part.</p>
-        
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
+<div id="method_Quaternion" class="method item">
+    <h3 class="name"><code>Quaternion</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>x</code>
+                </li>
+                <li class="arg">
+                        <code>y</code>
+                </li>
+                <li class="arg">
+                        <code>z</code>
+                </li>
+                <li class="arg">
+                        <code>w</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Quaternion.js.html#l5"><code>src\math\Quaternion.js:5</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>Multiplier of the imaginary basis vector i.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>Multiplier of the imaginary basis vector j.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">z</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>Multiplier of the imaginary basis vector k.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">w</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>Multiplier of the real part.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -261,6 +263,10 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
+                            <li class="index-item method">
+                                <a href="#method_clone">clone</a>
+
+                            </li>
                             <li class="index-item method">
                                 <a href="#method_conjugate">conjugate</a>
 
@@ -299,6 +305,10 @@
                             </li>
                             <li class="index-item method">
                                 <a href="#method_setFromVectors">setFromVectors</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_slerp">slerp</a>
 
                             </li>
                             <li class="index-item method">
@@ -353,6 +363,46 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_clone" class="method item">
+    <h3 class="name"><code>clone</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Quaternion.js.html#l396"><code>src\math\Quaternion.js:396</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>:
+            </div>
+        </div>
+
+
+</div>
 <div id="method_conjugate" class="method item">
     <h3 class="name"><code>conjugate</code></h3>
 
@@ -377,7 +427,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l184"><code>src&#x2F;math&#x2F;Quaternion.js:184</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l182"><code>src\math\Quaternion.js:182</code></a>
         </p>
 
 
@@ -440,7 +490,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l274"><code>src&#x2F;math&#x2F;Quaternion.js:274</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l274"><code>src\math\Quaternion.js:274</code></a>
         </p>
 
 
@@ -505,7 +555,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l164"><code>src&#x2F;math&#x2F;Quaternion.js:164</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l162"><code>src\math\Quaternion.js:162</code></a>
         </p>
 
 
@@ -571,7 +621,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l135"><code>src&#x2F;math&#x2F;Quaternion.js:135</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l138"><code>src\math\Quaternion.js:138</code></a>
         </p>
 
 
@@ -636,7 +686,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l201"><code>src&#x2F;math&#x2F;Quaternion.js:201</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l199"><code>src\math\Quaternion.js:199</code></a>
         </p>
 
 
@@ -667,7 +717,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l221"><code>src&#x2F;math&#x2F;Quaternion.js:221</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l220"><code>src\math\Quaternion.js:220</code></a>
         </p>
 
 
@@ -713,7 +763,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l38"><code>src&#x2F;math&#x2F;Quaternion.js:38</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l38"><code>src\math\Quaternion.js:38</code></a>
         </p>
 
 
@@ -799,7 +849,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l71"><code>src&#x2F;math&#x2F;Quaternion.js:71</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l72"><code>src\math\Quaternion.js:72</code></a>
         </p>
 
 
@@ -872,7 +922,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l331"><code>src&#x2F;math&#x2F;Quaternion.js:331</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l331"><code>src\math\Quaternion.js:331</code></a>
         </p>
 
 
@@ -924,7 +974,7 @@
 
 
                     <div class="param-description">
-                        <p>The order to apply angles: &#39;XYZ&#39; or &#39;YXZ&#39; or any other combination</p>
+                        <p>The order to apply angles: 'XYZ' or 'YXZ' or any other combination</p>
 
                     </div>
 
@@ -959,7 +1009,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l112"><code>src&#x2F;math&#x2F;Quaternion.js:112</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l114"><code>src\math\Quaternion.js:114</code></a>
         </p>
 
 
@@ -1001,6 +1051,101 @@
 
 
 </div>
+<div id="method_slerp" class="method item">
+    <h3 class="name"><code>slerp</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>toQuat</code>
+                </li>
+                <li class="arg">
+                        <code>t</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[target]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Quaternion.js.html#l404"><code>src\math\Quaternion.js:404</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Performs a spherical linear interpolation between two quat</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">toQuat</code>
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+
+
+                    <div class="param-description">
+                        <p>second operand</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">t</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>interpolation amount between the self quaternion and toQuat</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[target]</code>
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>A quaternion to store the result in. If not provided, a new one will be created.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>:
+                    <p>The &quot;target&quot; object</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_toArray" class="method item">
     <h3 class="name"><code>toArray</code></h3>
 
@@ -1019,7 +1164,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l62"><code>src&#x2F;math&#x2F;Quaternion.js:62</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l63"><code>src\math\Quaternion.js:63</code></a>
         </p>
 
 
@@ -1049,13 +1194,13 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>targetAxis</code>
+                        <code class="optional">[targetAxis]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Array</span>
         </span>
 
 
@@ -1067,7 +1212,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l85"><code>src&#x2F;math&#x2F;Quaternion.js:85</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l87"><code>src\math\Quaternion.js:87</code></a>
         </p>
 
 
@@ -1084,12 +1229,13 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">targetAxis</code>
+                        <code class="param-name optional">[targetAxis]</code>
                         <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        <p>Optional. A vector object to reuse for storing the axis.</p>
+                        <p>A vector object to reuse for storing the axis.</p>
 
                     </div>
 
@@ -1101,7 +1247,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>Array An array, first elemnt is the axis and the second is the angle in radians.</p>
+                        <span class="type">Array</span>:
+                    <p>An array, first elemnt is the axis and the second is the angle in radians.</p>
 
             </div>
         </div>
@@ -1132,7 +1279,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l288"><code>src&#x2F;math&#x2F;Quaternion.js:288</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l288"><code>src\math\Quaternion.js:288</code></a>
         </p>
 
 
@@ -1193,7 +1340,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l53"><code>src&#x2F;math&#x2F;Quaternion.js:53</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l54"><code>src\math\Quaternion.js:54</code></a>
         </p>
 
 
@@ -1244,7 +1391,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_Quaternion.js.html#l242"><code>src&#x2F;math&#x2F;Quaternion.js:242</code></a>
+        <a href="../files/src_math_Quaternion.js.html#l242"><code>src\math\Quaternion.js:242</code></a>
         </p>
 
 
@@ -1299,103 +1446,103 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_w" class="property item">
-                        <h3 class="name"><code>w</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Quaternion.js.html#l31"><code>src&#x2F;math&#x2F;Quaternion.js:31</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The multiplier of the real quaternion basis vector.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_x" class="property item">
-                        <h3 class="name"><code>x</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Quaternion.js.html#l16"><code>src&#x2F;math&#x2F;Quaternion.js:16</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_y" class="property item">
-                        <h3 class="name"><code>y</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Quaternion.js.html#l21"><code>src&#x2F;math&#x2F;Quaternion.js:21</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_z" class="property item">
-                        <h3 class="name"><code>z</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_math_Quaternion.js.html#l26"><code>src&#x2F;math&#x2F;Quaternion.js:26</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_w" class="property item">
+    <h3 class="name"><code>w</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Quaternion.js.html#l31"><code>src\math\Quaternion.js:31</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>The multiplier of the real quaternion basis vector.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_x" class="property item">
+    <h3 class="name"><code>x</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Quaternion.js.html#l16"><code>src\math\Quaternion.js:16</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_y" class="property item">
+    <h3 class="name"><code>y</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Quaternion.js.html#l21"><code>src\math\Quaternion.js:21</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_z" class="property item">
+    <h3 class="name"><code>z</code></h3>
+    <span class="type">Number</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_Quaternion.js.html#l26"><code>src\math\Quaternion.js:26</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
             </div>
 
 

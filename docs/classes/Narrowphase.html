@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Narrowphase - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -134,7 +136,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_world_Narrowphase.js.html#l15"><code>src&#x2F;world&#x2F;Narrowphase.js:15</code></a>
+            Defined in: <a href="../files/src_world_Narrowphase.js.html#l16"><code>src\world\Narrowphase.js:16</code></a>
         </div>
 
 
@@ -148,36 +150,36 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Narrowphase" class="method item">
-            <h3 class="name"><code>Narrowphase</code></h3>
+<div id="method_Narrowphase" class="method item">
+    <h3 class="name"><code>Narrowphase</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_Narrowphase.js.html#l16"><code>src\world\Narrowphase.js:16</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
         
-                <span class="paren">()</span>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_world_Narrowphase.js.html#l15"><code>src&#x2F;world&#x2F;Narrowphase.js:15</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-        
-        
-        
-        </div>
+    </div>
+
+
+
+
+</div>
     </div>
 
 <div id="classdocs" class="tabview">
@@ -334,7 +336,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1252"><code>src&#x2F;world&#x2F;Narrowphase.js:1252</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1336"><code>src\world\Narrowphase.js:1336</code></a>
         </p>
 
 
@@ -450,7 +452,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1573"><code>src&#x2F;world&#x2F;Narrowphase.js:1573</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1673"><code>src\world\Narrowphase.js:1673</code></a>
         </p>
 
 
@@ -510,7 +512,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1475"><code>src&#x2F;world&#x2F;Narrowphase.js:1475</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1570"><code>src\world\Narrowphase.js:1570</code></a>
         </p>
 
 
@@ -666,7 +668,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1309"><code>src&#x2F;world&#x2F;Narrowphase.js:1309</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1396"><code>src\world\Narrowphase.js:1396</code></a>
         </p>
 
 
@@ -780,7 +782,28 @@
 <div id="method_createContactEquation" class="method item">
     <h3 class="name"><code>createContactEquation</code></h3>
 
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>bi</code>
+                </li>
+                <li class="arg">
+                        <code>bj</code>
+                </li>
+                <li class="arg">
+                        <code>si</code>
+                </li>
+                <li class="arg">
+                        <code>sj</code>
+                </li>
+                <li class="arg">
+                        <code>overrideShapeA</code>
+                </li>
+                <li class="arg">
+                        <code>overrideShapeB</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
 
         <span class="returns-inline">
             <span class="type"><a href="../classes/ContactEquation.html" class="crosslink">ContactEquation</a></span>
@@ -795,7 +818,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l51"><code>src&#x2F;world&#x2F;Narrowphase.js:51</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l52"><code>src\world\Narrowphase.js:52</code></a>
         </p>
 
 
@@ -807,6 +830,72 @@
 
     </div>
 
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">bi</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bj</code>
+                        <span class="type"><a href="../classes/Body.html" class="crosslink">Body</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">si</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">sj</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">overrideShapeA</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">overrideShapeB</code>
+                        <span class="type"><a href="../classes/Shape.html" class="crosslink">Shape</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
 
         <div class="returns">
             <h4>Returns:</h4>
@@ -851,7 +940,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l199"><code>src&#x2F;world&#x2F;Narrowphase.js:199</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l206"><code>src\world\Narrowphase.js:206</code></a>
         </p>
 
 
@@ -972,7 +1061,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1393"><code>src&#x2F;world&#x2F;Narrowphase.js:1393</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1480"><code>src\world\Narrowphase.js:1480</code></a>
         </p>
 
 
@@ -1128,7 +1217,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1434"><code>src&#x2F;world&#x2F;Narrowphase.js:1434</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1526"><code>src\world\Narrowphase.js:1526</code></a>
         </p>
 
 
@@ -1284,7 +1373,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1152"><code>src&#x2F;world&#x2F;Narrowphase.js:1152</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1229"><code>src\world\Narrowphase.js:1229</code></a>
         </p>
 
 
@@ -1437,7 +1526,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1176"><code>src&#x2F;world&#x2F;Narrowphase.js:1176</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1254"><code>src\world\Narrowphase.js:1254</code></a>
         </p>
 
 
@@ -1580,7 +1669,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l345"><code>src&#x2F;world&#x2F;Narrowphase.js:345</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l377"><code>src\world\Narrowphase.js:377</code></a>
         </p>
 
 
@@ -1723,7 +1812,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l708"><code>src&#x2F;world&#x2F;Narrowphase.js:708</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l766"><code>src\world\Narrowphase.js:766</code></a>
         </p>
 
 
@@ -1866,7 +1955,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l929"><code>src&#x2F;world&#x2F;Narrowphase.js:929</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l997"><code>src\world\Narrowphase.js:997</code></a>
         </p>
 
 
@@ -1982,7 +2071,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l1651"><code>src&#x2F;world&#x2F;Narrowphase.js:1651</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l1764"><code>src\world\Narrowphase.js:1764</code></a>
         </p>
 
 
@@ -2039,7 +2128,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l612"><code>src&#x2F;world&#x2F;Narrowphase.js:612</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l666"><code>src\world\Narrowphase.js:666</code></a>
         </p>
 
 
@@ -2182,7 +2271,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l308"><code>src&#x2F;world&#x2F;Narrowphase.js:308</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l336"><code>src\world\Narrowphase.js:336</code></a>
         </p>
 
 
@@ -2325,7 +2414,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_world_Narrowphase.js.html#l416"><code>src&#x2F;world&#x2F;Narrowphase.js:416</code></a>
+        <a href="../files/src_world_Narrowphase.js.html#l455"><code>src\world\Narrowphase.js:455</code></a>
         </p>
 
 
@@ -2431,80 +2520,80 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_contactPointPool" class="property item">
-                        <h3 class="name"><code>contactPointPool</code></h3>
-                        <span class="type">Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_Narrowphase.js.html#l25"><code>src&#x2F;world&#x2F;Narrowphase.js:25</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Internal storage of pooled contact points.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_enableFrictionReduction" class="property item">
-                        <h3 class="name"><code>enableFrictionReduction</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_Narrowphase.js.html#l45"><code>src&#x2F;world&#x2F;Narrowphase.js:45</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_v3pool" class="property item">
-                        <h3 class="name"><code>v3pool</code></h3>
-                        <span class="type"><a href="../classes/Vec3Pool.html" class="crosslink">Vec3Pool</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_world_Narrowphase.js.html#l36"><code>src&#x2F;world&#x2F;Narrowphase.js:36</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Pooled vectors.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
+<div id="property_contactPointPool" class="property item">
+    <h3 class="name"><code>contactPointPool</code></h3>
+    <span class="type">Array</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_Narrowphase.js.html#l26"><code>src\world\Narrowphase.js:26</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Internal storage of pooled contact points.</p>
+
+    </div>
+
+
+
+</div>
+<div id="property_enableFrictionReduction" class="property item">
+    <h3 class="name"><code>enableFrictionReduction</code></h3>
+    <span class="type">Boolean</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_Narrowphase.js.html#l46"><code>src\world\Narrowphase.js:46</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+</div>
+<div id="property_v3pool" class="property item">
+    <h3 class="name"><code>v3pool</code></h3>
+    <span class="type"><a href="../classes/Vec3Pool.html" class="crosslink">Vec3Pool</a></span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_world_Narrowphase.js.html#l37"><code>src\world\Narrowphase.js:37</code></a>
+        </p>
+
+
+    </div>
+
+    <div class="description">
+        <p>Pooled vectors.</p>
+
+    </div>
+
+
+
+</div>
             </div>
 
 

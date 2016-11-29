@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SplitSolver - cannon</title>
+    <title>OverlapKeeper - cannon</title>
     <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -131,15 +131,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>SplitSolver Class</h1>
+<h1>OverlapKeeper Class</h1>
 <div class="box meta">
 
-        <div class="extends">
-            Extends <a href="../classes/Solver.html" class="crosslink">Solver</a>
-        </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_solver_SplitSolver.js.html#l8"><code>src\solver\SplitSolver.js:8</code></a>
+            Defined in: <a href="../files/src_collision_OverlapKeeper.js.html#l3"><code>src\collision\OverlapKeeper.js:3</code></a>
         </div>
 
 
@@ -147,19 +144,90 @@
 
 
 <div class="box intro">
-    <p>Splits the equations into islands and solves them independently. Can improve performance.</p>
-
+    
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-<div id="method_SplitSolver" class="method item">
-    <h3 class="name"><code>SplitSolver</code></h3>
+<div id="method_OverlapKeeper" class="method item">
+    <h3 class="name"><code>OverlapKeeper</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_collision_OverlapKeeper.js.html#l3"><code>src\collision\OverlapKeeper.js:3</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+
+</div>
+    </div>
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods">
+                            <li class="index-item method">
+                                <a href="#method_getDiff">getDiff</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_set">set</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_tick">tick</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+
+
+        </div>
+
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+<div id="method_getDiff" class="method item">
+    <h3 class="name"><code>getDiff</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>subsolver</code>
+                        <code>additions</code>
+                </li>
+                <li class="arg">
+                        <code>removals</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -174,7 +242,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_solver_SplitSolver.js.html#l8"><code>src\solver\SplitSolver.js:8</code></a>
+        <a href="../files/src_collision_OverlapKeeper.js.html#l58"><code>src\collision\OverlapKeeper.js:58</code></a>
         </p>
 
 
@@ -190,8 +258,18 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">subsolver</code>
-                        <span class="type"><a href="../classes/Solver.html" class="crosslink">Solver</a></span>
+                        <code class="param-name">additions</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">removals</code>
+                        <span class="type">Array</span>
 
 
                     <div class="param-description">
@@ -205,67 +283,16 @@
 
 
 </div>
-    </div>
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods extends">
-                            <li class="index-item method inherited">
-                                <a href="#method_addEquation">addEquation</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_removeAllEquations">removeAllEquations</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_removeEquation">removeEquation</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_solve">solve</a>
-
-                            </li>
-                    </ul>
-                </div>
-
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-
-                    <ul class="index-list properties extends">
-                            <li class="index-item property inherited">
-                                <a href="#property_equations">equations</a>
-
-                            </li>
-                    </ul>
-                </div>
-
-
-        </div>
-
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-<div id="method_addEquation" class="method item inherited">
-    <h3 class="name"><code>addEquation</code></h3>
+<div id="method_set" class="method item">
+    <h3 class="name"><code>set</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>eq</code>
+                        <code>i</code>
+                </li>
+                <li class="arg">
+                        <code>j</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -278,9 +305,9 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_addEquation">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l28"><code>src\solver\Solver.js:28</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_collision_OverlapKeeper.js.html#l22"><code>src\collision\OverlapKeeper.js:22</code></a>
         </p>
 
 
@@ -288,8 +315,7 @@
     </div>
 
     <div class="description">
-        <p>Add an equation</p>
-
+        
     </div>
 
         <div class="params">
@@ -297,8 +323,18 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">eq</code>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
+                        <code class="param-name">i</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">j</code>
+                        <span class="type">Number</span>
 
 
                     <div class="param-description">
@@ -312,8 +348,8 @@
 
 
 </div>
-<div id="method_removeAllEquations" class="method item inherited">
-    <h3 class="name"><code>removeAllEquations</code></h3>
+<div id="method_tick" class="method item">
+    <h3 class="name"><code>tick</code></h3>
 
         <span class="paren">()</span>
 
@@ -325,9 +361,9 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_removeAllEquations">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l52"><code>src\solver\Solver.js:52</code></a>
+                <p>
+                Defined in
+        <a href="../files/src_collision_OverlapKeeper.js.html#l44"><code>src\collision\OverlapKeeper.js:44</code></a>
         </p>
 
 
@@ -335,167 +371,15 @@
     </div>
 
     <div class="description">
-        <p>Add all equations</p>
-
+        
     </div>
 
-
-
-
-</div>
-<div id="method_removeEquation" class="method item inherited">
-    <h3 class="name"><code>removeEquation</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>eq</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Solver.html#method_removeEquation">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l39"><code>src\solver\Solver.js:39</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Remove an equation</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">eq</code>
-                        <span class="type"><a href="../classes/Equation.html" class="crosslink">Equation</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_solve" class="method item">
-    <h3 class="name"><code>solve</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>dt</code>
-                </li>
-                <li class="arg">
-                        <code>world</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Solver.html#method_solve">
-                Solver
-            </a>
-            but overwritten in
-        <a href="../files/src_solver_SplitSolver.js.html#l81"><code>src\solver\SplitSolver.js:81</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Solve the subsystems</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">dt</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">world</code>
-                        <span class="type"><a href="../classes/World.html" class="crosslink">World</a></span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
 
 
 
 </div>
             </div>
 
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
-
-<div id="property_equations" class="property item inherited">
-    <h3 class="name"><code>equations</code></h3>
-    <span class="type">Array</span>
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Solver.html#property_equations">Solver</a>:
-        <a href="../files/src_solver_Solver.js.html#l10"><code>src\solver\Solver.js:10</code></a>
-        </p>
-
-
-    </div>
-
-    <div class="description">
-        <p>All equations to be solved</p>
-
-    </div>
-
-
-
-</div>
-            </div>
 
 
     </div>

@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/demo/Demo.js - cannon</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <title>src\demo\Demo.js - cannon</title>
+    <link rel="stylesheet" href="https://yui-s.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="https://yui-s.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.6.1</em>
+            <em>API Docs for: 0.6.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -68,6 +68,7 @@
                                 <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
                                 <li><a href="../classes/Octree.html">Octree</a></li>
                                 <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/OverlapKeeper.html">OverlapKeeper</a></li>
                                 <li><a href="../classes/Particle.html">Particle</a></li>
                                 <li><a href="../classes/Plane.html">Plane</a></li>
                                 <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
@@ -94,6 +95,7 @@
                                 <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
                                 <li><a href="../classes/World.html">World</a></li>
                             </ul>
+                
                 
                             <ul id="api-modules" class="apis modules">
                             </ul>
@@ -129,7 +131,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/demo/Demo.js</h1>
+<h1 class="file-heading">File: src\demo\Demo.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -179,7 +181,7 @@ CANNON.Demo = function(options){
         shadows: false,
         aabbs: false,
         profiling: false,
-        maxSubSteps:3
+        maxSubSteps: 20
     };
 
     // Extend settings with options
@@ -397,10 +399,20 @@ CANNON.Demo = function(options){
 
         // Read position data into visuals
         for(var i=0; i&lt;N; i++){
-            var b = bodies[i], visual = visuals[i];
-            visual.position.copy(b.position);
+            var b = bodies[i],
+                visual = visuals[i];
+
+            // Interpolated or not?
+            var bodyPos = b.interpolatedPosition;
+            var bodyQuat = b.interpolatedQuaternion;
+            if(settings.paused){
+                bodyPos = b.position;
+                bodyQuat = b.quaternion;
+            }
+
+            visual.position.copy(bodyPos);
             if(b.quaternion){
-                visual.quaternion.copy(b.quaternion);
+                visual.quaternion.copy(bodyQuat);
             }
         }
 
@@ -761,8 +773,10 @@ CANNON.Demo = function(options){
                 } else {
                     smoothie.start();
                 }*/
+                resetCallTime = true;
             });
-            wf.add(settings, &#x27;stepFrequency&#x27;,60,60*10).step(60);
+            wf.add(settings, &#x27;stepFrequency&#x27;,10,60*10).step(10);
+            wf.add(settings, &#x27;maxSubSteps&#x27;,1,50).step(1);
             var maxg = 100;
             wf.add(settings, &#x27;gx&#x27;,-maxg,maxg).onChange(function(gx){
                 if(!isNaN(gx)){
@@ -836,11 +850,12 @@ CANNON.Demo = function(options){
     }
 
     var lastCallTime = 0;
+    var resetCallTime = false;
     function updatePhysics(){
         // Step world
         var timeStep = 1 / settings.stepFrequency;
 
-        var now = Date.now() / 1000;
+        var now = performance.now() / 1000;
 
         if(!lastCallTime){
             // last call time not saved, cant guess elapsed time. Take a simple step.
@@ -850,6 +865,10 @@ CANNON.Demo = function(options){
         }
 
         var timeSinceLastCall = now - lastCallTime;
+        if(resetCallTime){
+            timeSinceLastCall = 0;
+            resetCallTime = false;
+        }
 
         world.step(timeStep, timeSinceLastCall, settings.maxSubSteps);
 
@@ -912,6 +931,7 @@ CANNON.Demo = function(options){
 
             case 112: // p
                 settings.paused = !settings.paused;
+                resetCallTime = true;
                 updategui();
                 break;
 
