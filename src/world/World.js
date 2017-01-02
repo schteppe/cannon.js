@@ -488,7 +488,12 @@ World.prototype.addContactMaterial = function(cmat) {
 
 // performance.now()
 if(typeof performance === 'undefined'){
-    performance = {};
+    if (typeof global !== undefined) {
+        global.performance = {};
+    }
+    if (typeof self !== 'undefined') {
+        self.performance = {};
+    }
 }
 if(!performance.now){
     var nowOffset = Date.now();
