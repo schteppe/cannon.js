@@ -1,6 +1,5 @@
 module.exports = Shape;
 
-var Shape = require('./Shape');
 var Vec3 = require('../math/Vec3');
 var Quaternion = require('../math/Quaternion');
 var Material = require('../material/Material');
