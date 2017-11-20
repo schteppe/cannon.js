@@ -865,6 +865,7 @@ var torque = new Vec3();
 var invI_tau_dt = new Vec3();
 var w = new Quaternion();
 var wq = new Quaternion();
+var tmpVel = new Vec3();
 
 /**
  * Move the body forward in time.
@@ -893,6 +894,7 @@ Body.prototype.integrate = function(dt, quatNormalize, quatNormalizeFast){
         linearFactor = this.linearFactor;
 
     var iMdt = invMass * dt;
+    tmpVel.copy( velo );
     velo.x += force.x * iMdt * linearFactor.x;
     velo.y += force.y * iMdt * linearFactor.y;
     velo.z += force.z * iMdt * linearFactor.z;
@@ -907,9 +909,9 @@ Body.prototype.integrate = function(dt, quatNormalize, quatNormalizeFast){
     angularVelo.z += dt * (e[6] * tx + e[7] * ty + e[8] * tz);
 
     // Use new velocity  - leap frog
-    pos.x += velo.x * dt;
-    pos.y += velo.y * dt;
-    pos.z += velo.z * dt;
+    pos.x += (tmpVel.x + velo.x) * 0.5 * dt;
+    pos.y += (tmpVel.y + velo.y) * 0.5 * dt;
+    pos.z += (tmpVel.z + velo.z) * 0.5 * dt;
 
     quat.integrate(this.angularVelocity, dt, this.angularFactor, quat);
 
