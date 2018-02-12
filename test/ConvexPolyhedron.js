@@ -26,6 +26,41 @@ module.exports = {
         test.done();
     },
 
+    calculateWorldAABBAlwaysDecreasingVertsNoUndefined: function(test) {
+        var vertices = [
+            new Vec3( 4, 4, 4),
+            new Vec3( 3, 3, 3),
+            new Vec3( 2, 2, 2),
+            new Vec3( 1, 1, 1),
+            new Vec3( 0, 0, 0),
+            new Vec3(-1,-1,-1),
+            new Vec3(-2,-2,-2),
+            new Vec3(-3,-3,-3)
+        ];
+    
+        var indices = [
+            [3,2,1,0],
+            [4,5,6,7],
+            [5,4,0,1],
+            [2,3,7,6],
+            [0,4,7,3],
+            [1,2,6,5],
+        ];
+
+        var poly = new ConvexPolyhedron(vertices, indices);
+        var min = new Vec3();
+        var max = new Vec3();
+        poly.calculateWorldAABB(new Vec3(0, 0, 0), new Quaternion(0, 0, 0, 1), min, max); 
+
+        test.notEqual(min.x, undefined);
+        test.notEqual(max.x, undefined);
+        test.notEqual(min.y, undefined);
+        test.notEqual(max.y, undefined);
+        test.notEqual(min.z, undefined);
+        test.notEqual(max.z, undefined);
+        test.done();
+    },
+
     clipFaceAgainstPlane : function(test){
         var h = createBoxHull();
 
