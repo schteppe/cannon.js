@@ -2,8 +2,8 @@ var fs = require('fs')
 
 module.exports = function(grunt) {
 
-    var bundlePath = "build/cannon.js",
-        minifiedBundlePath = "build/cannon.min.js";
+    var bundlePath = "dist/cannon.js",
+        minifiedBundlePath = "dist/cannon.min.js";
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 
             demo : {
                 src: ['src/demo/Demo.js'],
-                dest: 'build/cannon.demo.js'
+                dest: 'dist/cannon.demo.js'
             },
         },
 

@@ -486,11 +486,7 @@ World.prototype.addContactMaterial = function(cmat) {
     this.contactMaterialTable.set(cmat.materials[0].id,cmat.materials[1].id,cmat);
 };
 
-// performance.now()
-if(typeof performance === 'undefined'){
-    performance = {};
-}
-if(!performance.now){
+if(performance == null || !performance.now){
     var nowOffset = Date.now();
     if (performance.timing && performance.timing.navigationStart){
         nowOffset = performance.timing.navigationStart;

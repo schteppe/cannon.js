@@ -1,11 +1,7 @@
-src/wrapper
-src/objects/sph.js
 src/demo
-build
+dist
 examples
 demos
 libs
 node_modules
-test
-utils
 Gruntfile.js
