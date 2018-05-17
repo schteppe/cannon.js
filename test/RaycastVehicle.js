@@ -92,6 +92,23 @@ module.exports = {
 
         test.done();
     },
+
+    removeFromWorld: function(test){
+        var world = new World();
+        var vehicle = new RaycastVehicle({
+            chassisBody: new Body({ mass: 1 })
+        });
+
+        vehicle.addToWorld(world);
+        test.ok(world.bodies.indexOf(vehicle.chassisBody) !== -1);
+        test.ok(world.hasEventListener('preStep', vehicle.preStepCallback));
+
+        vehicle.removeFromWorld(world);
+        test.ok(world.bodies.indexOf(vehicle.chassisBody) === -1);
+        test.ok(!world.hasEventListener('preStep', vehicle.preStepCallback));
+
+        test.done();
+    }
 };
 
 

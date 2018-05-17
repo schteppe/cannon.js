@@ -10,7 +10,7 @@ module.exports = RigidVehicle;
  * Simple vehicle helper class with spherical rigid body wheels.
  * @class RigidVehicle
  * @constructor
- * @param {object} [options.chassisBody]
+ * @param {Body} [options.chassisBody]
  */
 function RigidVehicle(options){
     this.wheelBodies = [];
@@ -46,7 +46,7 @@ function RigidVehicle(options){
  * Add a wheel
  * @method addWheel
  * @param {object} options
- * @param {object} [options.isFrontWheel]
+ * @param {boolean} [options.isFrontWheel]
  * @param {Vec3} [options.position] Position of the wheel, locally in the chassis body.
  * @param {Vec3} [options.direction] Slide direction of the wheel along the suspension.
  * @param {Vec3} [options.axis] Axis of rotation of the wheel, locally defined in the chassis.
@@ -152,7 +152,7 @@ RigidVehicle.prototype.setWheelForce = function(value, wheelIndex){
 RigidVehicle.prototype.applyWheelForce = function(value, wheelIndex){
     var axis = this.wheelAxes[wheelIndex];
     var wheelBody = this.wheelBodies[wheelIndex];
-    var bodyTorque = wheelBody.tau;
+    var bodyTorque = wheelBody.torque;
 
     axis.scale(value, torque);
     wheelBody.vectorToWorldFrame(torque, torque);
@@ -169,7 +169,7 @@ RigidVehicle.prototype.addToWorld = function(world){
     var bodies = this.wheelBodies.concat([this.chassisBody]);
 
     for (var i = 0; i < bodies.length; i++) {
-        world.add(bodies[i]);
+        world.addBody(bodies[i]);
     }
 
     for (var i = 0; i < constraints.length; i++) {

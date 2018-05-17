@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cannon.js - tween demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  </head>
+  <body>
+    <script src="../build/cannon.js"></script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script>
+
+      var demo = new CANNON.Demo();
+
+      var postStepHandler;
+
+      demo.addScene("Tween box",function(){
+        var world = demo.getWorld();
+
+        // Inputs
+        var startPosition = new CANNON.Vec3(5, 0, 2);
+        var endPosition = new CANNON.Vec3(-5, 0, 2);
+        var tweenTime = 3; // seconds
+
+        var body = new CANNON.Body({
+          mass: 0,
+          type: CANNON.Body.KINEMATIC,
+          position: startPosition
+        });
+        body.addShape(new CANNON.Box(new CANNON.Vec3(1,1,1)));
+        world.addBody(body);
+        demo.addVisual(body);
+
+        if(postStepHandler){
+          world.removeEventListener('postStep', postStepHandler);
+        }
+
+        // Compute direction vector and get total length of the path
+        var direction = new CANNON.Vec3();
+        endPosition.vsub(startPosition, direction);
+        var totalLength = direction.length();
+        direction.normalize();
+
+        var speed = totalLength / tweenTime;
+        direction.scale(speed, body.velocity);
+
+        // Save the start time
+        var startTime = world.time;
+
+        var offset = new CANNON.Vec3();
+
+        postStepHandler = function(){
+
+          // Progress is a number where 0 is at start position and 1 is at end position
+          var progress = (world.time - startTime) / tweenTime;
+
+          if(progress < 1){
+            direction.scale(progress * totalLength, offset);
+            startPosition.vadd(offset, body.position);
+          } else {
+            body.velocity.set(0,0,0);
+            body.position.copy(endPosition);
+            world.removeEventListener('postStep', postStepHandler);
+            postStepHandler = null;
+          }
+        }
+
+        world.addEventListener('postStep', postStepHandler);
+      });
+
+      demo.start();
+
+    </script>
+  </body>
+</html>

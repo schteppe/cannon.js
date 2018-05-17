@@ -4,6 +4,7 @@
     <title>cannon.js - events demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -29,7 +30,7 @@
           var world = demo.getWorld();
 
           world.defaultContactMaterial.contactEquationStiffness = 5e7;
-          world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+          world.defaultContactMaterial.contactEquationRelaxation = 4;
 
           world.gravity.set(0,0,-20);
 
@@ -37,7 +38,7 @@
           var groundShape = new CANNON.Plane();
           var groundBody = new CANNON.Body({ mass: 0 });
           groundBody.addShape(groundShape);
-          world.add(groundBody);
+          world.addBody(groundBody);
           demo.addVisual(groundBody);
 
           // Sphere
@@ -46,7 +47,7 @@
           sphereBody.addShape(sphere);
           var pos = new CANNON.Vec3(0,0,size);
           sphereBody.position.set(0,0,size*6);
-          world.add(sphereBody);
+          world.addBody(sphereBody);
           demo.addVisual(sphereBody);
 
           // When a body collides with another body, they both dispatch the "collide" event.

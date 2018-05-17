@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Trimesh - cannon</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="cannon" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.6.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABB.html">AABB</a></li>
+                                <li><a href="../classes/ArrayCollisionMatrix.html">ArrayCollisionMatrix</a></li>
+                                <li><a href="../classes/Body.html">Body</a></li>
+                                <li><a href="../classes/Box.html">Box</a></li>
+                                <li><a href="../classes/Broadphase.html">Broadphase</a></li>
+                                <li><a href="../classes/ConeEquation.html">ConeEquation</a></li>
+                                <li><a href="../classes/ConeTwistConstraint.html">ConeTwistConstraint</a></li>
+                                <li><a href="../classes/Constraint.html">Constraint</a></li>
+                                <li><a href="../classes/ContactEquation.html">ContactEquation</a></li>
+                                <li><a href="../classes/ContactMaterial.html">ContactMaterial</a></li>
+                                <li><a href="../classes/ConvexPolyhedron.html">ConvexPolyhedron</a></li>
+                                <li><a href="../classes/Cylinder.html">Cylinder</a></li>
+                                <li><a href="../classes/Demo.html">Demo</a></li>
+                                <li><a href="../classes/DistanceConstraint.html">DistanceConstraint</a></li>
+                                <li><a href="../classes/Equation.html">Equation</a></li>
+                                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+                                <li><a href="../classes/FrictionEquation.html">FrictionEquation</a></li>
+                                <li><a href="../classes/GridBroadphase.html">GridBroadphase</a></li>
+                                <li><a href="../classes/GSSolver.html">GSSolver</a></li>
+                                <li><a href="../classes/Heightfield.html">Heightfield</a></li>
+                                <li><a href="../classes/HingeConstraint.html">HingeConstraint</a></li>
+                                <li><a href="../classes/JacobianElement.html">JacobianElement</a></li>
+                                <li><a href="../classes/LockConstraint.html">LockConstraint</a></li>
+                                <li><a href="../classes/Mat3.html">Mat3</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/NaiveBroadphase.html">NaiveBroadphase</a></li>
+                                <li><a href="../classes/Narrowphase.html">Narrowphase</a></li>
+                                <li><a href="../classes/ObjectCollisionMatrix.html">ObjectCollisionMatrix</a></li>
+                                <li><a href="../classes/Octree.html">Octree</a></li>
+                                <li><a href="../classes/OctreeNode.html">OctreeNode</a></li>
+                                <li><a href="../classes/Particle.html">Particle</a></li>
+                                <li><a href="../classes/Plane.html">Plane</a></li>
+                                <li><a href="../classes/PointToPointConstraint.html">PointToPointConstraint</a></li>
+                                <li><a href="../classes/Pool.html">Pool</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Ray.html">Ray</a></li>
+                                <li><a href="../classes/RaycastResult.html">RaycastResult</a></li>
+                                <li><a href="../classes/RaycastVehicle.html">RaycastVehicle</a></li>
+                                <li><a href="../classes/RigidVehicle.html">RigidVehicle</a></li>
+                                <li><a href="../classes/RotationalEquation.html">RotationalEquation</a></li>
+                                <li><a href="../classes/RotationalMotorEquation.html">RotationalMotorEquation</a></li>
+                                <li><a href="../classes/SAPBroadphase.html">SAPBroadphase</a></li>
+                                <li><a href="../classes/Shape.html">Shape</a></li>
+                                <li><a href="../classes/Solver.html">Solver</a></li>
+                                <li><a href="../classes/Sphere.html">Sphere</a></li>
+                                <li><a href="../classes/SPHSystem.html">SPHSystem</a></li>
+                                <li><a href="../classes/SplitSolver.html">SplitSolver</a></li>
+                                <li><a href="../classes/Spring.html">Spring</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Trimesh.html">Trimesh</a></li>
+                                <li><a href="../classes/TupleDictionary.html">TupleDictionary</a></li>
+                                <li><a href="../classes/Vec3.html">Vec3</a></li>
+                                <li><a href="../classes/Vec3Pool.html">Vec3Pool</a></li>
+                                <li><a href="../classes/WheelInfo.html">WheelInfo</a></li>
+                                <li><a href="../classes/World.html">World</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1>Trimesh Class</h1>
+<div class="box meta">
+
+        <div class="extends">
+            Extends <a href="../classes/Shape.html" class="crosslink">Shape</a>
+        </div>
+
+        <div class="foundat">
+            Defined in: <a href="../files/src_shapes_Trimesh.js.html#l10"><code>src&#x2F;shapes&#x2F;Trimesh.js:10</code></a>
+        </div>
+
+
+</div>
+
+
+<div class="box intro">
+    
+</div>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Trimesh" class="method item">
+            <h3 class="name"><code>Trimesh</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code>vertices</code>
+                        </li>
+                        <li class="arg">
+                                <code>indices</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_shapes_Trimesh.js.html#l10"><code>src&#x2F;shapes&#x2F;Trimesh.js:10</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name">vertices</code>
+                                <span class="type">Array</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name">indices</code>
+                                <span class="type">Array</span>
+        
+        
+                            <div class="param-description">
+                                 
+                            </div>
+        
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+                <div class="example">
+                    <h4>Example:</h4>
+        
+                    <div class="example-content">
+                        <pre class="code prettyprint"><code>// How to make a mesh with a single triangle
+        var vertices = [
+            0, 0, 0, // vertex 0
+            1, 0, 0, // vertex 1
+            0, 1, 0  // vertex 2
+        ];
+        var indices = [
+            0, 1, 2  // triangle 0
+        ];
+        var trimeshShape = new Trimesh(vertices, indices);
+        </code></pre>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                            <li class="index-item method private">
+                                <a href="#method__getUnscaledVertex">_getUnscaledVertex</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_calculateLocalInertia">calculateLocalInertia</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_calculateWorldAABB">calculateWorldAABB</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_computeLocalAABB">computeLocalAABB</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_computeNormal">computeNormal</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_createTorus">createTorus</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getEdgeVector">getEdgeVector</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getEdgeVertex">getEdgeVertex</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getNormal">getNormal</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getTrianglesInAABB">getTrianglesInAABB</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getTriangleVertices">getTriangleVertices</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getVertex">getVertex</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getWorldVertex">getWorldVertex</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_setScale">setScale</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_updateAABB">updateAABB</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_updateBoundingSphereRadius">updateBoundingSphereRadius</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_updateEdges">updateEdges</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_updateNormals">updateNormals</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_updateTree">updateTree</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_volume">volume</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_aabb">aabb</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_boundingSphereRadius">boundingSphereRadius</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_collisionResponse">collisionResponse</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_edges">edges</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_indices">indices</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_material">material</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_normals">normals</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_scale">scale</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_tree">tree</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_vertices">vertices</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+
+        </div>
+
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+<div id="method__getUnscaledVertex" class="method item private">
+    <h3 class="name"><code>_getUnscaledVertex</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>i</code>
+                </li>
+                <li class="arg">
+                        <code>out</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l295"><code>src&#x2F;shapes&#x2F;Trimesh.js:295</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get raw vertex i</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">i</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+                    <p>The &quot;out&quot; vector object</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_calculateLocalInertia" class="method item">
+    <h3 class="name"><code>calculateLocalInertia</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>mass</code>
+                </li>
+                <li class="arg">
+                        <code>target</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+            <p>Inherited from
+            <a href="../classes/Shape.html#method_calculateLocalInertia">
+                Shape
+            </a>
+            but overwritten in
+        <a href="../files/src_shapes_Trimesh.js.html#l361"><code>src&#x2F;shapes&#x2F;Trimesh.js:361</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">mass</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+                    <p>The &quot;target&quot; vector object</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_calculateWorldAABB" class="method item">
+    <h3 class="name"><code>calculateWorldAABB</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>pos</code>
+                </li>
+                <li class="arg">
+                        <code>quat</code>
+                </li>
+                <li class="arg">
+                        <code>min</code>
+                </li>
+                <li class="arg">
+                        <code>max</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l454"><code>src&#x2F;shapes&#x2F;Trimesh.js:454</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">pos</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">quat</code>
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">min</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">max</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_computeLocalAABB" class="method item">
+    <h3 class="name"><code>computeLocalAABB</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>aabb</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l383"><code>src&#x2F;shapes&#x2F;Trimesh.js:383</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Compute the local AABB for the trimesh</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">aabb</code>
+                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_computeNormal" class="method item">
+    <h3 class="name"><code>computeNormal</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>va</code>
+                </li>
+                <li class="arg">
+                        <code>vb</code>
+                </li>
+                <li class="arg">
+                        <code>vc</code>
+                </li>
+                <li class="arg">
+                        <code>target</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l255"><code>src&#x2F;shapes&#x2F;Trimesh.js:255</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get face normal given 3 vertices</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">va</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">vb</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">vc</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_createTorus" class="method item">
+    <h3 class="name"><code>createTorus</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[radius=1]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[tube=0.5]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[radialSegments=8]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[tubularSegments=6]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[arc=6.283185307179586]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Trimesh.html" class="crosslink">Trimesh</a></span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l513"><code>src&#x2F;shapes&#x2F;Trimesh.js:513</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Create a Trimesh instance, shaped as a torus.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[radius=1]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[tube=0.5]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[radialSegments=8]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[tubularSegments=6]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[arc=6.283185307179586]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Trimesh.html" class="crosslink">Trimesh</a></span>:
+                    <p>A torus</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getEdgeVector" class="method item">
+    <h3 class="name"><code>getEdgeVector</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>edgeIndex</code>
+                </li>
+                <li class="arg">
+                        <code>vectorStore</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l241"><code>src&#x2F;shapes&#x2F;Trimesh.js:241</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get a vector along an edge.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">edgeIndex</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">vectorStore</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_getEdgeVertex" class="method item">
+    <h3 class="name"><code>getEdgeVertex</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>edgeIndex</code>
+                </li>
+                <li class="arg">
+                        <code>firstOrSecond</code>
+                </li>
+                <li class="arg">
+                        <code>vertexStore</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l226"><code>src&#x2F;shapes&#x2F;Trimesh.js:226</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get an edge vertex</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">edgeIndex</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">firstOrSecond</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>0 or 1, depending on which one of the vertices you need.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">vertexStore</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                        <p>Where to store the result</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_getNormal" class="method item">
+    <h3 class="name"><code>getNormal</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>i</code>
+                </li>
+                <li class="arg">
+                        <code>target</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l343"><code>src&#x2F;shapes&#x2F;Trimesh.js:343</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Compute the normal of triangle i.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">i</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">target</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+                    <p>The &quot;target&quot; vector object</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getTrianglesInAABB" class="method item">
+    <h3 class="name"><code>getTrianglesInAABB</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>aabb</code>
+                </li>
+                <li class="arg">
+                        <code>result</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l127"><code>src&#x2F;shapes&#x2F;Trimesh.js:127</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get triangles in a local AABB from the trimesh.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">aabb</code>
+                        <span class="type"><a href="../classes/AABB.html" class="crosslink">AABB</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">result</code>
+                        <span class="type">Array</span>
+
+
+                    <div class="param-description">
+                        <p>An array of integers, referencing the queried triangles.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_getTriangleVertices" class="method item">
+    <h3 class="name"><code>getTriangleVertices</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>i</code>
+                </li>
+                <li class="arg">
+                        <code>a</code>
+                </li>
+                <li class="arg">
+                        <code>b</code>
+                </li>
+                <li class="arg">
+                        <code>c</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l328"><code>src&#x2F;shapes&#x2F;Trimesh.js:328</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the three vertices for triangle i.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">i</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">a</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">b</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">c</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_getVertex" class="method item">
+    <h3 class="name"><code>getVertex</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>i</code>
+                </li>
+                <li class="arg">
+                        <code>out</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l279"><code>src&#x2F;shapes&#x2F;Trimesh.js:279</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get vertex i.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">i</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+                    <p>The &quot;out&quot; vector object</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getWorldVertex" class="method item">
+    <h3 class="name"><code>getWorldVertex</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>i</code>
+                </li>
+                <li class="arg">
+                        <code>pos</code>
+                </li>
+                <li class="arg">
+                        <code>quat</code>
+                </li>
+                <li class="arg">
+                        <code>out</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l313"><code>src&#x2F;shapes&#x2F;Trimesh.js:313</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get a vertex from the trimesh,transformed by the given position and quaternion.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">i</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">pos</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">quat</code>
+                        <span class="type"><a href="../classes/Quaternion.html" class="crosslink">Quaternion</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">out</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>:
+                    <p>The &quot;out&quot; vector object</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_setScale" class="method item">
+    <h3 class="name"><code>setScale</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>scale</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l153"><code>src&#x2F;shapes&#x2F;Trimesh.js:153</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">scale</code>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_updateAABB" class="method item">
+    <h3 class="name"><code>updateAABB</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l423"><code>src&#x2F;shapes&#x2F;Trimesh.js:423</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Update the .aabb property</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_updateBoundingSphereRadius" class="method item">
+    <h3 class="name"><code>updateBoundingSphereRadius</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+            <p>Inherited from
+            <a href="../classes/Shape.html#method_updateBoundingSphereRadius">
+                Shape
+            </a>
+            but overwritten in
+        <a href="../files/src_shapes_Trimesh.js.html#l431"><code>src&#x2F;shapes&#x2F;Trimesh.js:431</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Will update the .boundingSphereRadius property</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_updateEdges" class="method item">
+    <h3 class="name"><code>updateEdges</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l198"><code>src&#x2F;shapes&#x2F;Trimesh.js:198</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Update the .edges property</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_updateNormals" class="method item">
+    <h3 class="name"><code>updateNormals</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l170"><code>src&#x2F;shapes&#x2F;Trimesh.js:170</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Compute the normals of the faces. Will save in the .normals array.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_updateTree" class="method item">
+    <h3 class="name"><code>updateTree</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_shapes_Trimesh.js.html#l88"><code>src&#x2F;shapes&#x2F;Trimesh.js:88</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+
+
+
+</div>
+<div id="method_volume" class="method item">
+    <h3 class="name"><code>volume</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+            <p>Inherited from
+            <a href="../classes/Shape.html#method_volume">
+                Shape
+            </a>
+            but overwritten in
+        <a href="../files/src_shapes_Trimesh.js.html#l504"><code>src&#x2F;shapes&#x2F;Trimesh.js:504</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get approximate volume</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Number</span>:
+            </div>
+        </div>
+
+
+</div>
+            </div>
+
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                    <div id="property_aabb" class="property item">
+                        <h3 class="name"><code>aabb</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Trimesh.js.html#l52"><code>src&#x2F;shapes&#x2F;Trimesh.js:52</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The local AABB of the mesh.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_boundingSphereRadius" class="property item inherited">
+                        <h3 class="name"><code>boundingSphereRadius</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_boundingSphereRadius">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l31"><code>src&#x2F;shapes&#x2F;Shape.js:31</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The local bounding sphere radius of this shape.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_collisionResponse" class="property item inherited">
+                        <h3 class="name"><code>collisionResponse</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_collisionResponse">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l37"><code>src&#x2F;shapes&#x2F;Shape.js:37</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether to produce contact forces when in contact with other bodies. Note that contacts will be generated, but they will be disabled.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_edges" class="property item">
+                        <h3 class="name"><code>edges</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Trimesh.js.html#l59"><code>src&#x2F;shapes&#x2F;Trimesh.js:59</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>References to vertex pairs, making up all unique edges in the trimesh.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_id" class="property item inherited">
+                        <h3 class="name"><code>id</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_id">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l17"><code>src&#x2F;shapes&#x2F;Shape.js:17</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Identifyer of the Shape.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_indices" class="property item">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Trimesh.js.html#l38"><code>src&#x2F;shapes&#x2F;Trimesh.js:38</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Array of integers, indicating which vertices each triangle consists of. The length of this array is thus 3 times the number of triangles.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_material" class="property item inherited">
+                        <h3 class="name"><code>material</code></h3>
+                        <span class="type"><a href="../classes/Material.html" class="crosslink">Material</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_material">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l43"><code>src&#x2F;shapes&#x2F;Shape.js:43</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_normals" class="property item">
+                        <h3 class="name"><code>normals</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Trimesh.js.html#l45"><code>src&#x2F;shapes&#x2F;Trimesh.js:45</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The normals data.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_scale" class="property item">
+                        <h3 class="name"><code>scale</code></h3>
+                        <span class="type"><a href="../classes/Vec3.html" class="crosslink">Vec3</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Trimesh.js.html#l65"><code>src&#x2F;shapes&#x2F;Trimesh.js:65</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Local scaling of the mesh. Use .setScale() to set it.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_tree" class="property item">
+                        <h3 class="name"><code>tree</code></h3>
+                        <span class="type"><a href="../classes/Octree.html" class="crosslink">Octree</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Trimesh.js.html#l71"><code>src&#x2F;shapes&#x2F;Trimesh.js:71</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The indexed triangles. Use .updateTree() to update it.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item inherited">
+                        <h3 class="name"><code>type</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Shape.html#property_type">Shape</a>:
+                            <a href="../files/src_shapes_Shape.js.html#l23"><code>src&#x2F;shapes&#x2F;Shape.js:23</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The type of this shape. Must be set to an int &gt; 0 by subclasses.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_vertices" class="property item">
+                        <h3 class="name"><code>vertices</code></h3>
+                        <span class="type">Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_shapes_Trimesh.js.html#l32"><code>src&#x2F;shapes&#x2F;Trimesh.js:32</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+
+
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

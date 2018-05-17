@@ -13,9 +13,9 @@ var ConvexPolyhedron = require('./ConvexPolyhedron');
  * @extends Shape
  */
 function Box(halfExtents){
-    Shape.call(this);
-
-    this.type = Shape.types.BOX;
+    Shape.call(this, {
+        type: Shape.types.BOX
+    });
 
     /**
      * @property halfExtents
@@ -46,28 +46,35 @@ Box.prototype.updateConvexPolyhedronRepresentation = function(){
     var sz = this.halfExtents.z;
     var V = Vec3;
 
-    var h = new ConvexPolyhedron([new V(-sx,-sy,-sz),
-                                         new V( sx,-sy,-sz),
-                                         new V( sx, sy,-sz),
-                                         new V(-sx, sy,-sz),
-                                         new V(-sx,-sy, sz),
-                                         new V( sx,-sy, sz),
-                                         new V( sx, sy, sz),
-                                         new V(-sx, sy, sz)],
-                                         [[3,2,1,0], // -z
-                                          [4,5,6,7], // +z
-                                          [5,4,0,1], // -y
-                                          [2,3,7,6], // +y
-                                          [0,4,7,3], // -x
-                                          [1,2,6,5], // +x
-                                          ],
-                                        [new V( 0, 0,-1),
-                                         new V( 0, 0, 1),
-                                         new V( 0,-1, 0),
-                                         new V( 0, 1, 0),
-                                         new V(-1, 0, 0),
-                                         new V( 1, 0, 0)]);
+    var vertices = [
+        new V(-sx,-sy,-sz),
+        new V( sx,-sy,-sz),
+        new V( sx, sy,-sz),
+        new V(-sx, sy,-sz),
+        new V(-sx,-sy, sz),
+        new V( sx,-sy, sz),
+        new V( sx, sy, sz),
+        new V(-sx, sy, sz)
+    ];
+
+    var indices = [
+        [3,2,1,0], // -z
+        [4,5,6,7], // +z
+        [5,4,0,1], // -y
+        [2,3,7,6], // +y
+        [0,4,7,3], // -x
+        [1,2,6,5], // +x
+    ];
+
+    var axes = [
+        new V(0, 0, 1),
+        new V(0, 1, 0),
+        new V(1, 0, 0)
+    ];
+
+    var h = new ConvexPolyhedron(vertices, indices);
     this.convexPolyhedronRepresentation = h;
+    h.material = this.material;
 };
 
 /**
@@ -92,8 +99,8 @@ Box.calculateInertia = function(halfExtents,mass,target){
 /**
  * Get the box 6 side normals
  * @method getSideNormals
- * @param {Boolean}     includeNegative If true, this function returns 6 vectors. If false, it only returns 3 (but you get 6 by reversing those 3)
- * @param {Quaternion}  quat            Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
+ * @param {array}      sixTargetVectors An array of 6 vectors, to store the resulting side normals in.
+ * @param {Quaternion} quat             Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
  * @return {array}
  */
 Box.prototype.getSideNormals = function(sixTargetVectors,quat){
@@ -146,11 +153,40 @@ Box.prototype.forEachWorldCorner = function(pos,quat,callback){
     }
 };
 
+var worldCornersTemp = [
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3(),
+    new Vec3()
+];
 Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
-    // Get each axis max
-    min.set(Infinity,Infinity,Infinity);
-    max.set(-Infinity,-Infinity,-Infinity);
-    this.forEachWorldCorner(pos,quat,function(x,y,z){
+
+    var e = this.halfExtents;
+    worldCornersTemp[0].set(e.x, e.y, e.z);
+    worldCornersTemp[1].set(-e.x,  e.y, e.z);
+    worldCornersTemp[2].set(-e.x, -e.y, e.z);
+    worldCornersTemp[3].set(-e.x, -e.y, -e.z);
+    worldCornersTemp[4].set(e.x, -e.y, -e.z);
+    worldCornersTemp[5].set(e.x,  e.y, -e.z);
+    worldCornersTemp[6].set(-e.x,  e.y, -e.z);
+    worldCornersTemp[7].set(e.x, -e.y,  e.z);
+
+    var wc = worldCornersTemp[0];
+    quat.vmult(wc, wc);
+    pos.vadd(wc, wc);
+    max.copy(wc);
+    min.copy(wc);
+    for(var i=1; i<8; i++){
+        var wc = worldCornersTemp[i];
+        quat.vmult(wc, wc);
+        pos.vadd(wc, wc);
+        var x = wc.x;
+        var y = wc.y;
+        var z = wc.z;
         if(x > max.x){
             max.x = x;
         }
@@ -170,5 +206,30 @@ Box.prototype.calculateWorldAABB = function(pos,quat,min,max){
         if(z < min.z){
             min.z = z;
         }
-    });
+    }
+
+    // Get each axis max
+    // min.set(Infinity,Infinity,Infinity);
+    // max.set(-Infinity,-Infinity,-Infinity);
+    // this.forEachWorldCorner(pos,quat,function(x,y,z){
+    //     if(x > max.x){
+    //         max.x = x;
+    //     }
+    //     if(y > max.y){
+    //         max.y = y;
+    //     }
+    //     if(z > max.z){
+    //         max.z = z;
+    //     }
+
+    //     if(x < min.x){
+    //         min.x = x;
+    //     }
+    //     if(y < min.y){
+    //         min.y = y;
+    //     }
+    //     if(z < min.z){
+    //         min.z = z;
+    //     }
+    // });
 };

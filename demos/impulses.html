@@ -4,6 +4,7 @@
     <title>cannon.js - impulse demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -18,7 +19,7 @@
 
     /**
      * Demonstrates how to add impulses and forces to a body. You can add the impulses and forces to any point on the body.
-     * Adding a force to the body will add to Body.force and Body.tau.
+     * Adding a force to the body will add to Body.force and Body.torque.
      * An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
      */
 
@@ -31,10 +32,13 @@
         demo.addScene("center impulse",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
-            var body = new CANNON.Body({ mass: mass });
+            var body = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(0,0,1)
+            });
             body.addShape(shape);
             body.linearDamping = body.angularDamping = damping;
-            world.add(body);
+            world.addBody(body);
             demo.addVisual(body);
 
             // Add an impulse to the center
@@ -47,10 +51,13 @@
         demo.addScene("top impulse",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
-            var body = new CANNON.Body({ mass: mass });
+            var body = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(0,0,1)
+            });
             body.addShape(shape);
             body.linearDamping = body.angularDamping = damping;
-            world.add(body);
+            world.addBody(body);
             demo.addVisual(body);
 
             // Add an impulse to the center
@@ -64,10 +71,13 @@
         demo.addScene("center force",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
-            var body = new CANNON.Body({ mass: mass });
+            var body = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(0,0,1)
+            });
             body.addShape(shape);
             body.linearDamping = body.angularDamping = damping;
-            world.add(body);
+            world.addBody(body);
             demo.addVisual(body);
 
             // Add an force to the center
@@ -80,10 +90,13 @@
         demo.addScene("top force",function(){
             var world = setupWorld(demo);
             var shape = new CANNON.Sphere(radius);
-            var body = new CANNON.Body({ mass: mass });
+            var body = new CANNON.Body({
+                mass: mass,
+                position: new CANNON.Vec3(0,0,1)
+            });
             body.addShape(shape);
             body.linearDamping = body.angularDamping = damping;
-            world.add(body);
+            world.addBody(body);
             demo.addVisual(body);
 
             // Add an force to the center

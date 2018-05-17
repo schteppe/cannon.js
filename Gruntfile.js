@@ -2,8 +2,8 @@ var fs = require('fs')
 
 module.exports = function(grunt) {
 
-    var bundlePath = "build/cannon.js",
-        minifiedBundlePath = "build/cannon.min.js";
+    var bundlePath = "dist/cannon.js",
+        minifiedBundlePath = "dist/cannon.min.js";
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 
             demo : {
                 src: ['src/demo/Demo.js'],
-                dest: 'build/cannon.demo.js'
+                dest: 'dist/cannon.demo.js'
             },
         },
 
@@ -60,8 +60,18 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.registerTask('default', ['concat', 'browserify', 'uglify', 'addLicense']);
+    grunt.registerTask('default', ['test', 'concat', 'browserify', 'uglify', 'addLicense', 'addDate', 'requireJsFix']);
     grunt.registerTask('test', ['nodeunit']);
+
+    grunt.registerTask('addDate','Adds the current date to the top of the built files',function(){
+        var text = '// ' + new Date().toUTCString() + '\n';
+
+        var dev = fs.readFileSync(bundlePath).toString();
+        var min = fs.readFileSync(minifiedBundlePath).toString();
+
+        fs.writeFileSync(bundlePath,text+"\n"+dev);
+        fs.writeFileSync(minifiedBundlePath,text+"\n"+min);
+    });
 
     grunt.registerTask('addLicense','Adds the LICENSE to the top of the built files',function(){
         var text = fs.readFileSync("LICENSE").toString();
@@ -71,5 +81,14 @@ module.exports = function(grunt) {
 
         fs.writeFileSync(bundlePath,text+"\n"+dev);
         fs.writeFileSync(minifiedBundlePath,text+"\n"+min);
+    });
+
+    // Not sure what flag Browserify needs to do this. Fixing it manually for now.
+    grunt.registerTask('requireJsFix','Modifies the browserify bundle so it works with RequireJS',function(){
+        [bundlePath, minifiedBundlePath].forEach(function(path){
+            var text = fs.readFileSync(path).toString();
+            text = text.replace('define.amd', 'false'); // This makes the bundle skip using define() from RequireJS
+            fs.writeFileSync(path, text);
+        });
     });
 };

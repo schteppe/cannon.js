@@ -4,6 +4,7 @@
     <title>cannon.js - RaycastVehicle</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -85,12 +86,17 @@
             for(var i=0; i<vehicle.wheelInfos.length; i++){
                 var wheel = vehicle.wheelInfos[i];
                 var cylinderShape = new CANNON.Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20);
-                var wheelBody = new CANNON.Body({ mass: 1 });
+                var wheelBody = new CANNON.Body({
+                    mass: 0
+                });
+                wheelBody.type = CANNON.Body.KINEMATIC;
+                wheelBody.collisionFilterGroup = 0; // turn off collisions
                 var q = new CANNON.Quaternion();
                 q.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
                 wheelBody.addShape(cylinderShape, new CANNON.Vec3(), q);
                 wheelBodies.push(wheelBody);
                 demo.addVisual(wheelBody);
+                world.addBody(wheelBody);
             }
 
             // Update wheels
@@ -98,8 +104,9 @@
                 for (var i = 0; i < vehicle.wheelInfos.length; i++) {
                     vehicle.updateWheelTransform(i);
                     var t = vehicle.wheelInfos[i].worldTransform;
-                    wheelBodies[i].position.copy(t.position);
-                    wheelBodies[i].quaternion.copy(t.quaternion);
+                    var wheelBody = wheelBodies[i];
+                    wheelBody.position.copy(t.position);
+                    wheelBody.quaternion.copy(t.quaternion);
                 }
             });
 
@@ -123,7 +130,7 @@
             var hfBody = new CANNON.Body({ mass: 0 });
             hfBody.addShape(hfShape);
             hfBody.position.set(-sizeX * hfShape.elementSize / 2, -sizeY * hfShape.elementSize / 2, -1);
-            world.add(hfBody);
+            world.addBody(hfBody);
             demo.addVisual(hfBody);
         });
 

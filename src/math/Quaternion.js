@@ -48,6 +48,7 @@ Quaternion.prototype.set = function(x,y,z,w){
     this.y = y;
     this.z = z;
     this.w = w;
+    return this;
 };
 
 /**
@@ -80,13 +81,14 @@ Quaternion.prototype.setFromAxisAngle = function(axis,angle){
     this.y = axis.y * s;
     this.z = axis.z * s;
     this.w = Math.cos(angle*0.5);
+    return this;
 };
 
 /**
  * Converts the quaternion to axis/angle representation.
- * @method setFromAxisAngle
- * @param {Vec3} targetAxis Optional. A vector object to reuse for storing the axis.
- * @return Array An array, first elemnt is the axis and the second is the angle in radians.
+ * @method toAxisAngle
+ * @param {Vec3} [targetAxis] A vector object to reuse for storing the axis.
+ * @return {Array} An array, first elemnt is the axis and the second is the angle in radians.
  */
 Quaternion.prototype.toAxisAngle = function(targetAxis){
     targetAxis = targetAxis || new Vec3();
@@ -130,6 +132,7 @@ Quaternion.prototype.setFromVectors = function(u,v){
         this.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + u.dot(v);
         this.normalize();
     }
+    return this;
 };
 
 /**
@@ -144,19 +147,14 @@ var Quaternion_mult_vb = new Vec3();
 var Quaternion_mult_vaxvb = new Vec3();
 Quaternion.prototype.mult = function(q,target){
     target = target || new Quaternion();
-    var w = this.w,
-        va = Quaternion_mult_va,
-        vb = Quaternion_mult_vb,
-        vaxvb = Quaternion_mult_vaxvb;
 
-    va.set(this.x,this.y,this.z);
-    vb.set(q.x,q.y,q.z);
-    target.w = w*q.w - va.dot(vb);
-    va.cross(vb,vaxvb);
+    var ax = this.x, ay = this.y, az = this.z, aw = this.w,
+        bx = q.x, by = q.y, bz = q.z, bw = q.w;
 
-    target.x = w * vb.x + q.w*va.x + vaxvb.x;
-    target.y = w * vb.y + q.w*va.y + vaxvb.y;
-    target.z = w * vb.z + q.w*va.z + vaxvb.z;
+    target.x = ax * bw + aw * bx + ay * bz - az * by;
+    target.y = ay * bw + aw * by + az * bx - ax * bz;
+    target.z = az * bw + aw * bz + ax * by - ay * bx;
+    target.w = aw * bw - ax * bx - ay * by - az * bz;
 
     return target;
 };
@@ -216,6 +214,7 @@ Quaternion.prototype.normalize = function(){
         this.z *= l;
         this.w *= l;
     }
+    return this;
 };
 
 /**
@@ -237,6 +236,7 @@ Quaternion.prototype.normalizeFast = function () {
         this.z *= f;
         this.w *= f;
     }
+    return this;
 };
 
 /**
@@ -391,9 +391,99 @@ Quaternion.prototype.setFromEuler = function ( x, y, z, order ) {
     }
 
     return this;
-
 };
 
+/**
+ * @method clone
+ * @return {Quaternion}
+ */
 Quaternion.prototype.clone = function(){
     return new Quaternion(this.x, this.y, this.z, this.w);
+};
+
+/**
+ * Performs a spherical linear interpolation between two quat
+ *
+ * @method slerp
+ * @param {Quaternion} toQuat second operand
+ * @param {Number} t interpolation amount between the self quaternion and toQuat
+ * @param {Quaternion} [target] A quaternion to store the result in. If not provided, a new one will be created.
+ * @returns {Quaternion} The "target" object
+ */
+Quaternion.prototype.slerp = function (toQuat, t, target) {
+    target = target || new Quaternion();
+
+    var ax = this.x,
+        ay = this.y,
+        az = this.z,
+        aw = this.w,
+        bx = toQuat.x,
+        by = toQuat.y,
+        bz = toQuat.z,
+        bw = toQuat.w;
+
+    var omega, cosom, sinom, scale0, scale1;
+
+    // calc cosine
+    cosom = ax * bx + ay * by + az * bz + aw * bw;
+
+    // adjust signs (if necessary)
+    if ( cosom < 0.0 ) {
+        cosom = -cosom;
+        bx = - bx;
+        by = - by;
+        bz = - bz;
+        bw = - bw;
+    }
+
+    // calculate coefficients
+    if ( (1.0 - cosom) > 0.000001 ) {
+        // standard case (slerp)
+        omega  = Math.acos(cosom);
+        sinom  = Math.sin(omega);
+        scale0 = Math.sin((1.0 - t) * omega) / sinom;
+        scale1 = Math.sin(t * omega) / sinom;
+    } else {
+        // "from" and "to" quaternions are very close
+        //  ... so we can do a linear interpolation
+        scale0 = 1.0 - t;
+        scale1 = t;
+    }
+
+    // calculate final values
+    target.x = scale0 * ax + scale1 * bx;
+    target.y = scale0 * ay + scale1 * by;
+    target.z = scale0 * az + scale1 * bz;
+    target.w = scale0 * aw + scale1 * bw;
+
+    return target;
+};
+
+/**
+ * Rotate an absolute orientation quaternion given an angular velocity and a time step.
+ * @param  {Vec3} angularVelocity
+ * @param  {number} dt
+ * @param  {Vec3} angularFactor
+ * @param  {Quaternion} target
+ * @return {Quaternion} The "target" object
+ */
+Quaternion.prototype.integrate = function(angularVelocity, dt, angularFactor, target){
+    target = target || new Quaternion();
+
+    var ax = angularVelocity.x * angularFactor.x,
+        ay = angularVelocity.y * angularFactor.y,
+        az = angularVelocity.z * angularFactor.z,
+        bx = this.x,
+        by = this.y,
+        bz = this.z,
+        bw = this.w;
+
+    var half_dt = dt * 0.5;
+
+    target.x += half_dt * (ax * bw + ay * bz - az * by);
+    target.y += half_dt * (ay * bw + az * bx - ax * bz);
+    target.z += half_dt * (az * bw + ax * by - ay * bx);
+    target.w += half_dt * (- ax * bx - ay * by - az * bz);
+
+    return target;
 };

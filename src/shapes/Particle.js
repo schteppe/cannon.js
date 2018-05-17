@@ -4,16 +4,16 @@ var Shape = require('./Shape');
 var Vec3 = require('../math/Vec3');
 
 /**
- * A 3d box shape.
+ * Particle shape.
  * @class Particle
  * @constructor
  * @author schteppe
  * @extends Shape
  */
 function Particle(){
-    Shape.call(this);
-
-    this.type = Shape.types.PARTICLE;
+    Shape.call(this, {
+        type: Shape.types.PARTICLE
+    });
 }
 Particle.prototype = new Shape();
 Particle.prototype.constructor = Particle;

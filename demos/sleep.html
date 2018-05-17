@@ -4,6 +4,7 @@
     <title>cannon.js - sleep demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -33,7 +34,7 @@
         world.broadphase = new CANNON.NaiveBroadphase();
 
         world.defaultContactMaterial.contactEquationStiffness = 1e7;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 5;
+        world.defaultContactMaterial.contactEquationRelaxation = 5;
 
         // Create ground plane
         var groundShape = new CANNON.Plane();
@@ -64,8 +65,8 @@
         });
 
         // Add bodies to the world
-        world.add(sphereBody);
-        world.add(groundBody);
+        world.addBody(sphereBody);
+        world.addBody(groundBody);
 
         // Add visuals
         demo.addVisual(sphereBody);
@@ -115,9 +116,9 @@
         });
 
         // Add bodies to the world
-        world.add(sphereBody);
-        world.add(sphereBody2);
-        world.add(groundBody);
+        world.addBody(sphereBody);
+        world.addBody(sphereBody2);
+        world.addBody(groundBody);
 
         // Add visuals
         demo.addVisual(sphereBody);

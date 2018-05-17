@@ -4,6 +4,7 @@
     <title>cannon.js - single body on plane demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -40,13 +41,13 @@
         world.solver.iterations = 10;
 
         world.defaultContactMaterial.contactEquationStiffness = 1e7;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+        world.defaultContactMaterial.contactEquationRelaxation = 4;
 
         // ground plane
         var groundShape = new CANNON.Plane();
         var groundBody = new CANNON.Body({ mass: 0 });
         groundBody.addShape(groundShape);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         // Shape on plane
@@ -56,7 +57,7 @@
         shapeBody.position.set(0,size,size*2);
         shapeBody.velocity.set(0,0,0);
         shapeBody.angularVelocity.set(0,0,0);
-        world.add(shapeBody);
+        world.addBody(shapeBody);
         demo.addVisual(shapeBody);
       }
 

@@ -11,10 +11,11 @@ module.exports = RaycastVehicle;
  * Vehicle helper class that casts rays from the wheel positions towards the ground and applies forces.
  * @class RaycastVehicle
  * @constructor
- * @param {object} [options.chassisBody]
- * @param {object} [options.indexRightAxis]
- * @param {object} [options.indexLeftAxis]
- * @param {object} [options.indexUpAxis]
+ * @param {object} [options]
+ * @param {Body} [options.chassisBody] The car chassis body.
+ * @param {integer} [options.indexRightAxis] Axis to use for right. x=0, y=1, z=2
+ * @param {integer} [options.indexLeftAxis]
+ * @param {integer} [options.indexUpAxis]
  */
 function RaycastVehicle(options){
 
@@ -24,7 +25,8 @@ function RaycastVehicle(options){
     this.chassisBody = options.chassisBody;
 
     /**
-     * @property {array} wheelInfos An array of WheelInfo objects.
+     * An array of WheelInfo objects.
+     * @property {array} wheelInfos
      */
     this.wheelInfos = [];
 
@@ -71,8 +73,8 @@ var tmpRay = new Ray();
 
 /**
  * Add a wheel. For information about the options, see WheelInfo.
- * @param {object} [options]
  * @method addWheel
+ * @param {object} [options]
  */
 RaycastVehicle.prototype.addWheel = function(options){
     options = options || {};
@@ -124,14 +126,22 @@ RaycastVehicle.prototype.setBrake = function(brake, wheelIndex){
  */
 RaycastVehicle.prototype.addToWorld = function(world){
     var constraints = this.constraints;
-    world.add(this.chassisBody);
+    world.addBody(this.chassisBody);
     var that = this;
-    world.addEventListener('preStep', function(){
+    this.preStepCallback = function(){
         that.updateVehicle(world.dt);
-    });
+    };
+    world.addEventListener('preStep', this.preStepCallback);
     this.world = world;
 };
 
+/**
+ * Get one of the wheel axles, world-oriented.
+ * @private
+ * @method getVehicleAxisWorld
+ * @param  {integer} axisIndex
+ * @param  {Vec3} result
+ */
 RaycastVehicle.prototype.getVehicleAxisWorld = function(axisIndex, result){
     result.set(
         axisIndex === 0 ? 1 : 0,
@@ -147,7 +157,7 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
     var chassisBody = this.chassisBody;
 
     for (var i = 0; i < numWheels; i++) {
-        this.updateWheelTransform(i, false);
+        this.updateWheelTransform(i);
     }
 
     this.currentVehicleSpeedKmHour = 3.6 * chassisBody.velocity.norm();
@@ -178,7 +188,7 @@ RaycastVehicle.prototype.updateVehicle = function(timeStep){
         wheel.raycastResult.hitNormalWorld.scale(suspensionForce * timeStep, impulse);
 
         wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, relpos);
-        chassisBody.applyImpulse(impulse, wheel.raycastResult.hitPointWorld/*relpos*/);
+        chassisBody.applyImpulse(impulse, relpos);
     }
 
     this.updateFriction(timeStep);
@@ -274,12 +284,10 @@ RaycastVehicle.prototype.updateSuspension = function(deltaTime) {
 RaycastVehicle.prototype.removeFromWorld = function(world){
     var constraints = this.constraints;
     world.remove(this.chassisBody);
-    world.removeEventListener('preStep', this.updateVehicle);
+    world.removeEventListener('preStep', this.preStepCallback);
     this.world = null;
 };
 
-// var from = new Vec3();
-// var to = new Vec3();
 var castRay_rayvector = new Vec3();
 var castRay_target = new Vec3();
 RaycastVehicle.prototype.castRay = function(wheel) {
@@ -301,7 +309,14 @@ RaycastVehicle.prototype.castRay = function(wheel) {
     var param = 0;
 
     raycastResult.reset();
+    // Turn off ray collision with the chassis temporarily
+    var oldState = chassisBody.collisionResponse;
+    chassisBody.collisionResponse = false;
+
+    // Cast ray against world
     this.world.rayTest(source, target, raycastResult);
+    chassisBody.collisionResponse = oldState;
+
     var object = raycastResult.body;
 
     wheel.raycastResult.groundObject = 0;
@@ -361,6 +376,13 @@ RaycastVehicle.prototype.updateWheelTransformWorld = function(wheel){
     chassisBody.vectorToWorldFrame(wheel.axleLocal, wheel.axleWorld);
 };
 
+
+/**
+ * Update one of the wheel transform.
+ * Note when rendering wheels: during each step, wheel transforms are updated BEFORE the chassis; ie. their position becomes invalid after the step. Thus when you render wheels, you must update wheel transforms before rendering them. See raycastVehicle demo for an example.
+ * @method updateWheelTransform
+ * @param {integer} wheelIndex The wheel index to update.
+ */
 RaycastVehicle.prototype.updateWheelTransform = function(wheelIndex){
     var up = tmpVec4;
     var right = tmpVec5;
@@ -403,7 +425,12 @@ var directions = [
     new Vec3(0, 0, 1)
 ];
 
-
+/**
+ * Get the world transform of one of the wheels
+ * @method getWheelTransformWorld
+ * @param  {integer} wheelIndex
+ * @return {Transform}
+ */
 RaycastVehicle.prototype.getWheelTransformWorld = function(wheelIndex) {
     return this.wheelInfos[wheelIndex].worldTransform;
 };
@@ -551,9 +578,9 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
         var wheel = wheelInfos[i];
 
         var rel_pos = new Vec3();
-        //wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, rel_pos);
+        wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, rel_pos);
         // cannons applyimpulse is using world coord for the position
-        rel_pos.copy(wheel.raycastResult.hitPointWorld);
+        //rel_pos.copy(wheel.raycastResult.hitPointWorld);
 
         if (wheel.forwardImpulse !== 0) {
             var impulse = new Vec3();
@@ -565,16 +592,16 @@ RaycastVehicle.prototype.updateFriction = function(timeStep) {
             var groundObject = wheel.raycastResult.body;
 
             var rel_pos2 = new Vec3();
-            //wheel.raycastResult.hitPointWorld.vsub(groundObject.position, rel_pos2);
-            rel_pos2.copy(wheel.raycastResult.hitPointWorld);
+            wheel.raycastResult.hitPointWorld.vsub(groundObject.position, rel_pos2);
+            //rel_pos2.copy(wheel.raycastResult.hitPointWorld);
             var sideImp = new Vec3();
             axle[i].scale(wheel.sideImpulse, sideImp);
 
             // Scale the relative position in the up direction with rollInfluence.
             // If rollInfluence is 1, the impulse will be applied on the hitPoint (easy to roll over), if it is zero it will be applied in the same plane as the center of mass (not easy to roll over).
-            chassisBody.pointToLocalFrame(rel_pos, rel_pos);
+            chassisBody.vectorToLocalFrame(rel_pos, rel_pos);
             rel_pos['xyz'[this.indexUpAxis]] *= wheel.rollInfluence;
-            chassisBody.pointToWorldFrame(rel_pos, rel_pos);
+            chassisBody.vectorToWorldFrame(rel_pos, rel_pos);
             chassisBody.applyImpulse(sideImp, rel_pos);
 
             //apply friction impulse on the ground

@@ -8,7 +8,7 @@ module.exports = SAPBroadphase;
  *
  * @class SAPBroadphase
  * @constructor
- * @param {World} world
+ * @param {World} [world]
  * @extends Broadphase
  */
 function SAPBroadphase(world){
@@ -173,7 +173,7 @@ SAPBroadphase.prototype.collisionPairs = function(world,p1,p2){
                 break;
             }
 
-            this.doBoundingSphereBroadphase(bi,bj,p1,p2);
+            this.intersectionTest(bi,bj,p1,p2);
         }
     }
 };
@@ -211,14 +211,21 @@ SAPBroadphase.prototype.sortList = function(){
  * @return {Boolean}
  */
 SAPBroadphase.checkBounds = function(bi, bj, axisIndex){
-    var axis;
-    if(axisIndex === 0){ axis = 'x'; }
-    if(axisIndex === 1){ axis = 'y'; }
-    if(axisIndex === 2){ axis = 'z'; }
+    var biPos;
+    var bjPos;
 
-    var biPos = bi.position[axis],
-        ri = bi.boundingRadius,
-        bjPos = bj.position[axis],
+    if(axisIndex === 0){
+        biPos = bi.position.x;
+        bjPos = bj.position.x;
+    } else if(axisIndex === 1){
+        biPos = bi.position.y;
+        bjPos = bj.position.y;
+    } else if(axisIndex === 2){
+        biPos = bi.position.z;
+        bjPos = bj.position.z;
+    }
+
+    var ri = bi.boundingRadius,
         rj = bj.boundingRadius,
         boundA1 = biPos - ri,
         boundA2 = biPos + ri,
@@ -303,7 +310,11 @@ SAPBroadphase.prototype.aabbQuery = function(world, aabb, result){
     for(var i = 0; i < axisList.length; i++){
         var b = axisList[i];
 
-        if(b.aabb.upperBound[axis] > lower && b.aabb.lowerBound[axis] < upper && b.aabb.overlaps(aabb)){
+        if(b.aabbNeedsUpdate){
+            b.computeAABB();
+        }
+
+        if(b.aabb.overlaps(aabb)){
             result.push(b);
         }
     }

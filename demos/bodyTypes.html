@@ -4,6 +4,7 @@
     <title>cannon.js - body types demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -39,7 +40,7 @@
             position: new CANNON.Vec3(0, 0, 0.5*size)
           });
           b1.addShape(boxShape);
-          world.add(b1);
+          world.addBody(b1);
           demo.addVisual(b1);
 
           // To control the box movement we must set its velocity
@@ -55,10 +56,10 @@
           // Dynamic bodies can collide with bodies of all other types.
           var b2 = new CANNON.Body({
             mass: mass,
+            position: new CANNON.Vec3(0,0,3*size)
           });
           b2.addShape(sphereShape);
-          b2.position.set(0,0,3*size);
-          world.add(b2);
+          world.addBody(b2);
           demo.addVisual(b2);
         });
 
@@ -71,7 +72,7 @@
         world.solver.iterations = 10;
 
         world.defaultContactMaterial.contactEquationStiffness = 1e8;
-        world.defaultContactMaterial.contactEquationRegularizationTime = 10;
+        world.defaultContactMaterial.contactEquationRelaxation = 10;
 
         // Static ground plane
         // Static bodies only interacts with dynamic bodies. Velocity is always zero.
@@ -81,7 +82,7 @@
           mass: mass,
         });
         groundBody.addShape(groundShape);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         return world;

@@ -44,7 +44,7 @@ CANNON.Demo = function(options){
         shadows: false,
         aabbs: false,
         profiling: false,
-        maxSubSteps:3
+        maxSubSteps: 20
     };
 
     // Extend settings with options
@@ -210,7 +210,7 @@ CANNON.Demo = function(options){
      * Add a scene to the demo app
      * @method addScene
      * @param {String} title Title of the scene
-     * @param {Function} A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
+     * @param {Function} initfunc A function that takes one argument, app, and initializes a physics scene. The function runs app.setWorld(body), app.addVisual(body), app.removeVisual(body) etc.
      */
     function addScene(title,initfunc){
         if(typeof(title) !== "string"){
@@ -262,10 +262,20 @@ CANNON.Demo = function(options){
 
         // Read position data into visuals
         for(var i=0; i<N; i++){
-            var b = bodies[i], visual = visuals[i];
-            visual.position.copy(b.position);
+            var b = bodies[i],
+                visual = visuals[i];
+
+            // Interpolated or not?
+            var bodyPos = b.interpolatedPosition;
+            var bodyQuat = b.interpolatedQuaternion;
+            if(settings.paused){
+                bodyPos = b.position;
+                bodyQuat = b.quaternion;
+            }
+
+            visual.position.copy(bodyPos);
             if(b.quaternion){
-                visual.quaternion.copy(b.quaternion);
+                visual.quaternion.copy(bodyQuat);
             }
         }
 
@@ -626,8 +636,10 @@ CANNON.Demo = function(options){
                 } else {
                     smoothie.start();
                 }*/
+                resetCallTime = true;
             });
-            wf.add(settings, 'stepFrequency',60,60*10).step(60);
+            wf.add(settings, 'stepFrequency',10,60*10).step(10);
+            wf.add(settings, 'maxSubSteps',1,50).step(1);
             var maxg = 100;
             wf.add(settings, 'gx',-maxg,maxg).onChange(function(gx){
                 if(!isNaN(gx)){
@@ -701,11 +713,12 @@ CANNON.Demo = function(options){
     }
 
     var lastCallTime = 0;
+    var resetCallTime = false;
     function updatePhysics(){
         // Step world
         var timeStep = 1 / settings.stepFrequency;
 
-        var now = Date.now() / 1000;
+        var now = performance.now() / 1000;
 
         if(!lastCallTime){
             // last call time not saved, cant guess elapsed time. Take a simple step.
@@ -715,6 +728,10 @@ CANNON.Demo = function(options){
         }
 
         var timeSinceLastCall = now - lastCallTime;
+        if(resetCallTime){
+            timeSinceLastCall = 0;
+            resetCallTime = false;
+        }
 
         world.step(timeStep, timeSinceLastCall, settings.maxSubSteps);
 
@@ -777,6 +794,7 @@ CANNON.Demo = function(options){
 
             case 112: // p
                 settings.paused = !settings.paused;
+                resetCallTime = true;
                 updategui();
                 break;
 
@@ -815,6 +833,7 @@ CANNON.Demo = function(options){
 
 
     function changeScene(n){
+        that.dispatchEvent({ type: 'destroy' });
         settings.paused = false;
         updategui();
         buildScene(n);
@@ -880,6 +899,8 @@ CANNON.Demo = function(options){
         };
     }
 };
+CANNON.Demo.prototype = new CANNON.EventTarget();
+CANNON.Demo.constructor = CANNON.Demo;
 
 CANNON.Demo.prototype.setGlobalSpookParams = function(k,d,h){
     var world = this.world;
@@ -930,6 +951,12 @@ CANNON.Demo.prototype.addVisual = function(body){
     }
 };
 
+CANNON.Demo.prototype.addVisuals = function(bodies){
+    for (var i = 0; i < bodies.length; i++) {
+        this.addVisual(bodies[i]);
+    }
+};
+
 CANNON.Demo.prototype.removeVisual = function(body){
     if(body.visualref){
         var bodies = this.bodies,
@@ -954,8 +981,14 @@ CANNON.Demo.prototype.removeVisual = function(body){
             }
         }
         body.visualref.visualId = null;
-        this. scene.remove(body.visualref);
+        this.scene.remove(body.visualref);
         body.visualref = null;
+    }
+};
+
+CANNON.Demo.prototype.removeAllVisuals = function(){
+    while(this.bodies.length) {
+        this.removeVisual(this.bodies[0]);
     }
 };
 
@@ -1052,6 +1085,27 @@ CANNON.Demo.prototype.shape2mesh = function(body){
                         geometry.faces.push(new THREE.Face3(i, i+1, i+2));
                     }
                 }
+            }
+            geometry.computeBoundingSphere();
+            geometry.computeFaceNormals();
+            mesh = new THREE.Mesh(geometry, this.currentMaterial);
+            break;
+
+        case CANNON.Shape.types.TRIMESH:
+            var geometry = new THREE.Geometry();
+
+            var v0 = new CANNON.Vec3();
+            var v1 = new CANNON.Vec3();
+            var v2 = new CANNON.Vec3();
+            for (var i = 0; i < shape.indices.length / 3; i++) {
+                shape.getTriangleVertices(i, v0, v1, v2);
+                geometry.vertices.push(
+                    new THREE.Vector3(v0.x, v0.y, v0.z),
+                    new THREE.Vector3(v1.x, v1.y, v1.z),
+                    new THREE.Vector3(v2.x, v2.y, v2.z)
+                );
+                var j = geometry.vertices.length - 3;
+                geometry.faces.push(new THREE.Face3(j, j+1, j+2));
             }
             geometry.computeBoundingSphere();
             geometry.computeFaceNormals();

@@ -4,6 +4,7 @@
     <title>cannon.js - callbacks demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -29,12 +30,14 @@
           var mass = 5;
           var moonShape = new CANNON.Sphere(0.5);
           var planetShape = new CANNON.Sphere(3.5);
-          var moon = new CANNON.Body({ mass: mass });
+          var moon = new CANNON.Body({
+            mass: mass,
+            position: new CANNON.Vec3(5,0,0)
+          });
           moon.addShape(moonShape);
           var planet = new CANNON.Body({ mass: 0 });
           planet.addShape(planetShape);
 
-          moon.position.set(5,0,0);
           moon.velocity.set(0,0,8);
           moon.linearDamping = 0.0;
 
@@ -57,8 +60,8 @@
           }
 
           // We add the objects to the world to simulate them
-          world.add(moon);
-          world.add(planet);
+          world.addBody(moon);
+          world.addBody(planet);
 
           // And we add them to the demo to make them visible
           demo.addVisual(moon);

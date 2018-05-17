@@ -4,6 +4,7 @@
     <title>cannon.js - sph demo</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
     <script src="../build/cannon.js"></script>
@@ -34,7 +35,7 @@
 
         // Tweak contact properties.
         world.defaultContactMaterial.contactEquationStiffness = 1e11; // Contact stiffness - use to make softer/harder contacts
-        world.defaultContactMaterial.contactEquationRegularizationTime = 2; // Stabilization time in number of timesteps
+        world.defaultContactMaterial.contactEquationRelaxation = 2; // Stabilization time in number of timesteps
 
         // Max solver iterations: Use more for better force propagation, but keep in mind that it's not very computationally cheap!
         world.solver.iterations = 10;
@@ -45,7 +46,7 @@
         var material = new CANNON.Material();
         var material_material = new CANNON.ContactMaterial(material, material, {
             friction: 0.06,
-            resitution: 0.0
+            restitution: 0.0
         });
         world.addContactMaterial(material_material);
 
@@ -56,7 +57,7 @@
             material: material
         });
         groundBody.addShape(groundShape);
-        world.add(groundBody);
+        world.addBody(groundBody);
         demo.addVisual(groundBody);
 
         if(walls){
@@ -70,7 +71,7 @@
             planeXmin.addShape(planeShapeXmin);
             planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
             planeXmin.position.set(-w*0.5,0,0);
-            world.add(planeXmin);
+            world.addBody(planeXmin);
 
             // Plane +x
             var planeShapeXmax = new CANNON.Plane();
@@ -78,7 +79,7 @@
             planeXmax.addShape(planeShapeXmax);
             planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
             planeXmax.position.set(w*0.5,0,0);
-            world.add(planeXmax);
+            world.addBody(planeXmax);
 
             // Plane -y
             var planeShapeYmin = new CANNON.Plane();
@@ -86,7 +87,7 @@
             planeYmin.addShape(planeShapeYmin);
             planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
             planeYmin.position.set(0,-h*0.5,0);
-            world.add(planeYmin);
+            world.addBody(planeYmin);
 
             // Plane +y
             var planeShapeYmax = new CANNON.Plane();
@@ -94,7 +95,7 @@
             planeYmax.addShape(planeShapeYmax);
             planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0), Math.PI/2);
             planeYmax.position.set(0,h*0.5,0);
-            world.add(planeYmax);
+            world.addBody(planeYmax);
         }
 
         // Create particles
@@ -110,7 +111,7 @@
               particle.position.set((i + (Math.random()-0.5)*rand + 0.5)*w/nx - w*0.5,
                                     (j + (Math.random()-0.5)*rand + 0.5)*h/ny - h*0.5,
                                     k*h/ny);
-              world.add(particle);
+              world.addBody(particle);
               sph.add(particle);
               demo.addVisual(particle);
             }

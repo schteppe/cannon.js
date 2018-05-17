@@ -3,6 +3,7 @@ var Mat3 = require("../src/math/Mat3");
 var Quaternion = require("../src/math/Quaternion");
 var Box = require('../src/shapes/Box');
 var Sphere = require('../src/shapes/Sphere');
+var Trimesh = require('../src/shapes/Trimesh');
 var Plane = require('../src/shapes/Plane');
 var Ray = require('../src/collision/Ray');
 var Body = require('../src/objects/Body');
@@ -19,6 +20,7 @@ module.exports = {
 
     intersectBody : function(test) {
         var r = new Ray(new Vec3(5,0,0), new Vec3(-5, 0, 0));
+        r.skipBackfaces = true;
         var shape = createPolyhedron(0.5);
         var body = new Body({ mass: 1 });
         body.addShape(shape);
@@ -55,6 +57,7 @@ module.exports = {
 
     intersectBodies : function(test) {
         var r = new Ray(new Vec3(5,0,0), new Vec3(-5,0,0));
+        r.skipBackfaces = true;
         var shape = createPolyhedron(0.5);
         var body1 = new Body({ mass: 1 });
         body1.addShape(shape);
@@ -71,18 +74,40 @@ module.exports = {
 
     box: function(test){
         var r = new Ray(new Vec3(5,0,0),new Vec3(-5, 0, 0));
+        r.skipBackfaces = true;
         var shape = new Box(new Vec3(0.5,0.5,0.5));
         var body = new Body({ mass: 1 });
         body.addShape(shape);
         var result = new RaycastResult();
+
         r.intersectBody(body, result);
         test.equals(result.hasHit, true);
         test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
+
+        result.reset();
+        body.quaternion.setFromAxisAngle(new Vec3(1,0,0), Math.PI / 2);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
+
+        result.reset();
+        body.quaternion.setFromAxisAngle(new Vec3(1,0,0), Math.PI);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
+
+        result.reset();
+        body.quaternion.setFromAxisAngle(new Vec3(1,0,0), 3 * Math.PI / 2);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5,0,0)));
+
         test.done();
     },
 
     sphere: function(test){
         var r = new Ray(new Vec3(5,0,0), new Vec3(-5, 0, 0));
+        r.skipBackfaces = true;
         var shape = new Sphere(1);
         var body = new Body({ mass: 1 });
         body.addShape(shape);
@@ -116,6 +141,7 @@ module.exports = {
 
     heightfield: function(test){
         var r = new Ray(new Vec3(0, 0, 10), new Vec3(0, 0, -10));
+        r.skipBackfaces = true;
         var data = [
             [1, 1, 1],
             [1, 1, 1],
@@ -124,7 +150,7 @@ module.exports = {
         var shape = new Heightfield(data, {
             elementSize: 1
         });
-        var body = new Body({ mass: 1 }, new Vec3(-1.5, -1.5, 0));
+        var body = new Body({ mass: 1 }, new Vec3(-1, -1, 0));
         body.addShape(shape);
 
         // Hit
@@ -165,6 +191,7 @@ module.exports = {
 
     plane: function(test){
         var r = new Ray(new Vec3(0,0,5), new Vec3(0, 0, -5));
+        r.skipBackfaces = true;
         var shape = new Plane();
         var body = new Body({ mass: 1 });
         body.addShape(shape);
@@ -217,6 +244,41 @@ module.exports = {
         test.equals(result.hasHit, true);
         test.ok(result.hitPointWorld.almostEquals(new Vec3(0,-5,0)));
         test.equal(distance1, distance2);
+
+        test.done();
+    },
+
+
+    trimesh: function(test){
+        var r = new Ray(new Vec3(0.5, 0.5, 10), new Vec3(0.5, 0.5, -10));
+        r.skipBackfaces = true;
+
+        var vertices = [
+            0, 0, 0,
+            1, 0, 0,
+            0, 1, 0
+        ];
+        var indices = [
+            0, 1, 2
+        ];
+
+        var body = new Body({
+            mass: 1,
+            shape: new Trimesh(vertices, indices)
+        });
+
+        // Hit
+        var result = new RaycastResult();
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, true);
+        test.deepEqual(result.hitPointWorld, new Vec3(0.5, 0.5, 0));
+
+        // Miss
+        result = new RaycastResult();
+        r.from.set(-100, -100, 10);
+        r.to.set(-100, -100, -10);
+        r.intersectBody(body, result);
+        test.equals(result.hasHit, false);
 
         test.done();
     },

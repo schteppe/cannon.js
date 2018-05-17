@@ -14,9 +14,25 @@ var Material = require('../material/Material');
  */
 function SPHSystem(){
     this.particles = [];
-    this.density = 1; // kg/m3
-    this.smoothingRadius = 1; // Adjust so there are about 15-20 neighbor particles within this radius
+	
+    /**
+     * Density of the system (kg/m3).
+     * @property {number} density
+     */
+    this.density = 1;
+	
+    /**
+     * Distance below which two particles are considered to be neighbors.
+     * It should be adjusted so there are about 15-20 neighbor particles within this radius.
+     * @property {number} smoothingRadius
+     */
+    this.smoothingRadius = 1;
     this.speedOfSound = 1;
+	
+    /**
+     * Viscosity of the system.
+     * @property {number} viscosity
+     */
     this.viscosity = 0.01;
     this.eps = 0.000001;
 
@@ -26,6 +42,11 @@ function SPHSystem(){
     this.neighbors = [];
 }
 
+/**
+ * Add a particle to the system.
+ * @method add
+ * @param {Body} particle
+ */
 SPHSystem.prototype.add = function(particle){
     this.particles.push(particle);
     if(this.neighbors.length < this.particles.length){
@@ -33,6 +54,11 @@ SPHSystem.prototype.add = function(particle){
     }
 };
 
+/**
+ * Remove a particle from the system.
+ * @method remove
+ * @param {Body} particle
+ */
 SPHSystem.prototype.remove = function(particle){
     var idx = this.particles.indexOf(particle);
     if(idx !== -1){

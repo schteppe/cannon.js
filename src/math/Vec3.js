@@ -34,7 +34,29 @@ function Vec3(x,y,z){
     this.z = z||0.0;
 }
 
+/**
+ * @static
+ * @property {Vec3} ZERO
+ */
 Vec3.ZERO = new Vec3(0, 0, 0);
+
+/**
+ * @static
+ * @property {Vec3} UNIT_X
+ */
+Vec3.UNIT_X = new Vec3(1, 0, 0);
+
+/**
+ * @static
+ * @property {Vec3} UNIT_Y
+ */
+Vec3.UNIT_Y = new Vec3(0, 1, 0);
+
+/**
+ * @static
+ * @property {Vec3} UNIT_Z
+ */
+Vec3.UNIT_Z = new Vec3(0, 0, 1);
 
 /**
  * Vector cross product
@@ -173,9 +195,10 @@ Vec3.prototype.unit = function(target){
 };
 
 /**
- * Get the 2-norm (length) of the vector
+ * Get the length of the vector
  * @method norm
  * @return {Number}
+ * @deprecated Use .length() instead
  */
 Vec3.prototype.norm = function(){
     var x=this.x, y=this.y, z=this.z;
@@ -183,13 +206,28 @@ Vec3.prototype.norm = function(){
 };
 
 /**
+ * Get the length of the vector
+ * @method length
+ * @return {Number}
+ */
+Vec3.prototype.length = Vec3.prototype.norm;
+
+/**
  * Get the squared length of the vector
  * @method norm2
  * @return {Number}
+ * @deprecated Use .lengthSquared() instead.
  */
 Vec3.prototype.norm2 = function(){
     return this.dot(this);
 };
+
+/**
+ * Get the squared length of the vector.
+ * @method lengthSquared
+ * @return {Number}
+ */
+Vec3.prototype.lengthSquared = Vec3.prototype.norm2;
 
 /**
  * Get distance from this point to another point
@@ -206,12 +244,25 @@ Vec3.prototype.distanceTo = function(p){
 };
 
 /**
- * Multiply the vector with a scalar
+ * Get squared distance from this point to another point
+ * @method distanceSquared
+ * @param  {Vec3} p
+ * @return {Number}
+ */
+Vec3.prototype.distanceSquared = function(p){
+    var x=this.x, y=this.y, z=this.z;
+    var px=p.x, py=p.y, pz=p.z;
+    return (px-x)*(px-x) + (py-y)*(py-y) + (pz-z)*(pz-z);
+};
+
+/**
+ * Multiply all the components of the vector with a scalar.
  * @deprecated Use .scale instead
  * @method mult
  * @param {Number} scalar
- * @param {Vec3} target
+ * @param {Vec3} target The vector to save the result in.
  * @return {Vec3}
+ * @deprecated Use .scale() instead
  */
 Vec3.prototype.mult = function(scalar,target){
     target = target || new Vec3();
@@ -225,6 +276,21 @@ Vec3.prototype.mult = function(scalar,target){
 };
 
 /**
+ * Multiply the vector with an other vector, component-wise.
+ * @method mult
+ * @param {Number} vector
+ * @param {Vec3} target The vector to save the result in.
+ * @return {Vec3}
+ */
+Vec3.prototype.vmul = function(vector, target){
+    target = target || new Vec3();
+    target.x = vector.x * this.x;
+    target.y = vector.y * this.y;
+    target.z = vector.z * this.z;
+    return target;
+};
+
+/**
  * Multiply the vector with a scalar.
  * @method scale
  * @param {Number} scalar
@@ -232,6 +298,22 @@ Vec3.prototype.mult = function(scalar,target){
  * @return {Vec3}
  */
 Vec3.prototype.scale = Vec3.prototype.mult;
+
+/**
+ * Scale a vector and add it to this vector. Save the result in "target". (target = this + vector * scalar)
+ * @method addScaledVector
+ * @param {Number} scalar
+ * @param {Vec3} vector
+ * @param {Vec3} target The vector to save the result in.
+ * @return {Vec3}
+ */
+Vec3.prototype.addScaledVector = function(scalar, vector, target){
+    target = target || new Vec3();
+    target.x = this.x + scalar * vector.x;
+    target.y = this.y + scalar * vector.y;
+    target.z = this.z + scalar * vector.z;
+    return target;
+};
 
 /**
  * Calculate dot product
@@ -290,8 +372,8 @@ Vec3.prototype.tangents = function(t1,t2){
         n.cross(t1,t2);
     } else {
         // The normal length is zero, make something up
-        t1.set(1,0,0).normalize();
-        t2.set(0,1,0).normalize();
+        t1.set(1, 0, 0);
+        t2.set(0, 1, 0);
     }
 };
 

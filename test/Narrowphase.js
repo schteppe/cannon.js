@@ -5,11 +5,14 @@ var Heightfield = require('../src/shapes/heightfield');
 var Narrowphase = require('../src/world/Narrowphase');
 var Sphere = require('../src/shapes/Sphere');
 var Body = require('../src/objects/Body');
+var ContactMaterial = require('../src/material/ContactMaterial');
+var World = require('../src/world/World');
 
 module.exports = {
 
     sphereSphere : function(test){
-        var cg = new Narrowphase();
+        var world = new World();
+        var cg = new Narrowphase(world);
         var result = [];
         var sphereShape = new Sphere(1);
 
@@ -18,8 +21,9 @@ module.exports = {
         var bodyB = new Body({ mass: 1 });
         bodyB.addShape(sphereShape);
 
+        cg.currentContactMaterial = new ContactMaterial();
+        cg.result = result;
         cg.sphereSphere(
-            result,
             sphereShape,
             sphereShape,
             new Vec3(0.5, 0, 0),
@@ -36,12 +40,14 @@ module.exports = {
     },
 
     sphereHeightfield : function(test){
-        var cg = new Narrowphase();
+        var world = new World();
+        var cg = new Narrowphase(world);
         var result = [];
         var hfShape = createHeightfield();
         var sphereShape = new Sphere(0.1);
+        cg.currentContactMaterial = new ContactMaterial();
+        cg.result = result;
         cg.sphereHeightfield(
-            result,
             sphereShape,
             hfShape,
             new Vec3(0.25, 0.25, 0.05), // hit the first triangle in the field
