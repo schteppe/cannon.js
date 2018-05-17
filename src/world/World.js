@@ -487,6 +487,7 @@ World.prototype.addContactMaterial = function(cmat) {
 };
 
 if(performance == null || !performance.now){
+    var performance = {};
     var nowOffset = Date.now();
     if (performance.timing && performance.timing.navigationStart){
         nowOffset = performance.timing.navigationStart;

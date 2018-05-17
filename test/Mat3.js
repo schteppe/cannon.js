@@ -228,7 +228,7 @@ module.exports = {
         try{
             m1.reverse();
         }catch(e){
-            error = true
+            error = true;
         }
 
         test.ok( error ,  "should rise an error if the matrix is not inersible");
@@ -272,8 +272,8 @@ module.exports = {
         // Test rotation along x axis
         q.setFromEuler(0.222,0.123,1.234);
         M.setRotationFromQuaternion(q);
-        Mv = M.vmult(original);
-        qv = q.vmult(original);
+        var Mv = M.vmult(original);
+        var qv = q.vmult(original);
 
         test.ok(Mv.almostEquals(qv));
 

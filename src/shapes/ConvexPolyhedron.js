@@ -532,7 +532,7 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
         var planeEqWS;
         
         var otherFace = polyA.connectedFaces[e0];
-        if(otherFace != undefined){
+        if(otherFace != null){
             localPlaneNormal.copy(this.faceNormals[otherFace]);
             var localPlaneEq = this.getPlaneConstantOfFace(otherFace);
 
