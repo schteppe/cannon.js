@@ -496,12 +496,20 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
     polyA.connectedFaces = [];
     for(var i=0; i<hullA.faces.length; i++){
         for(var j=0; j<hullA.faces[i].length; j++){
-            if(polyA.indexOf(hullA.faces[i][j])!==-1 /* Sharing a vertex*/ && i!==closestFaceA /* Not the one we are looking for connections from */ && polyA.connectedFaces.indexOf(i)===-1 /* Not already added */ ){
+            if(
+                /* Sharing a vertex*/
+                polyA.indexOf(hullA.faces[i][j])!==-1 && 
+                /* Not the one we are looking for connections from */
+                i!==closestFaceA && 
+                /* Not already added */ 
+                polyA.connectedFaces.indexOf(i)===-1 ){
                 polyA.connectedFaces.push(i);
             }
         }
     }
-    // Clip the polygon to the back of the planes of all faces of hull A, that are adjacent to the witness face
+
+    // Clip the polygon to the back of the planes of all faces of hull A, that are 
+    // adjacent to the witness face
     var numContacts = pVtxIn.length;
     var numVerticesA = polyA.length;
     var res = [];
@@ -522,8 +530,9 @@ ConvexPolyhedron.prototype.clipFaceAgainstHull = function(separatingNormal, posA
         posA.vadd(worldA1,worldA1);
         var planeEqWS1 = -worldA1.dot(planeNormalWS1);
         var planeEqWS;
-        if(true){
-            var otherFace = polyA.connectedFaces[e0];
+        
+        var otherFace = polyA.connectedFaces[e0];
+        if(otherFace != undefined){
             localPlaneNormal.copy(this.faceNormals[otherFace]);
             var localPlaneEq = this.getPlaneConstantOfFace(otherFace);
 
