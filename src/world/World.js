@@ -539,8 +539,10 @@ World.prototype.step = function(dt, timeSinceLastCalled, maxSubSteps){
             this.accumulator -= dt;
             substeps++;
         }
+        // Get rid of excess simulation time
+        this.accumulator %= dt;
 
-        var t = (this.accumulator % dt) / dt;
+        var t = this.accumulator / dt;
         for(var j=0; j !== this.bodies.length; j++){
             var b = this.bodies[j];
             b.previousPosition.lerp(b.position, t, b.interpolatedPosition);
