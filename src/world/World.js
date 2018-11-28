@@ -1002,11 +1002,14 @@ World.prototype.emitContactEvents = (function(){
             for (var i = 0, l = removals.length; i < l; i += 2) {
                 var shapeA = this.getShapeById(removals[i]);
                 var shapeB = this.getShapeById(removals[i+1]);
-                endShapeContactEvent.shapeA = shapeA;
-                endShapeContactEvent.shapeB = shapeB;
-                endShapeContactEvent.bodyA = shapeA.body;
-                endShapeContactEvent.bodyB = shapeB.body;
-                this.dispatchEvent(endShapeContactEvent);
+
+                if (shapeA && shapeB) {
+                    endShapeContactEvent.shapeA = shapeA;
+                    endShapeContactEvent.shapeB = shapeB;
+                    endShapeContactEvent.bodyA = shapeA.body;
+                    endShapeContactEvent.bodyB = shapeB.body;
+                    this.dispatchEvent(endShapeContactEvent);
+                }
             }
             endShapeContactEvent.bodyA = endShapeContactEvent.bodyB = endShapeContactEvent.shapeA = endShapeContactEvent.shapeB = null;
         }
