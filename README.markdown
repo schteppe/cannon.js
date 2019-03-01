@@ -19,13 +19,7 @@ Just include [cannon.js](https://github.com/schteppe/cannon.js/releases/download
 Install the cannon package via NPM:
 
 ```bash
-npm install --save cannon
-```
-
-Alternatively, point to the Github repo directly to get the very latest version:
-
-```bash
-npm install --save schteppe/cannon.js
+npm install --save cannon-dtysky
 ```
 
 ### Example

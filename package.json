@@ -1,9 +1,21 @@
 {
-  "name": "cannon",
-  "version": "0.6.2",
+  "name": "cannon-dtysky",
+  "version": "0.6.4",
   "description": "A lightweight 3D physics engine written in JavaScript.",
   "homepage": "https://github.com/schteppe/cannon.js",
-  "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
+  "authors": [
+    "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
+    "dtysky <dtysky@outlook.com> (http://dtysky.moe)"
+  ],
+  "scripts": {
+    "build": "grunt",
+    "prepublish": "npm run build" 
+  },
+  "files": [
+    "build",
+    "README.markdown",
+    "LICENSE"
+  ],
   "keywords": [
     "cannon.js",
     "cannon",
@@ -11,16 +23,16 @@
     "engine",
     "3d"
   ],
-  "main": "./src/Cannon.js",
+  "main": "./build/cannon.js",
   "engines": {
     "node": "*"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/schteppe/cannon.js.git"
+    "url": "https://github.com/dtysky/cannon.js.git"
   },
   "bugs": {
-    "url": "https://github.com/schteppe/cannon.js/issues"
+    "url": "https://github.com/dtysky/cannon.js/issues"
   },
   "licenses": [
     {
