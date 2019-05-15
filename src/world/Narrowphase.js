@@ -607,6 +607,8 @@ Narrowphase.prototype.sphereTrimesh = function (
                     tmp.vsub(localSpherePos, r.ni);
                     r.ni.normalize();
                     r.ni.scale(sphereShape.radius, r.ri);
+                    r.ri.vadd(spherePos, r.ri);
+                    r.ri.vsub(sphereBody.position, r.ri);
 
                     Transform.pointToWorldFrame(trimeshPos, trimeshQuat, tmp, tmp);
                     tmp.vsub(trimeshBody.position, r.rj);
@@ -645,6 +647,8 @@ Narrowphase.prototype.sphereTrimesh = function (
             tmp.vsub(localSpherePos, r.ni);
             r.ni.normalize();
             r.ni.scale(sphereShape.radius, r.ri);
+            r.ri.vadd(spherePos, r.ri);
+            r.ri.vsub(sphereBody.position, r.ri);
 
             Transform.pointToWorldFrame(trimeshPos, trimeshQuat, tmp, tmp);
             tmp.vsub(trimeshBody.position, r.rj);
