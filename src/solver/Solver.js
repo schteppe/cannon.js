@@ -32,7 +32,9 @@ Solver.prototype.solve = function(dt,world){
  */
 Solver.prototype.addEquation = function(eq){
     if (eq.enabled) {
-        this.equations.push(eq);
+		if (!(eq.bi.sensor || eq.bj.sensor)) {
+			this.equations.push(eq);
+		}
     }
 };
 
