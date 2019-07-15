@@ -368,7 +368,17 @@ function Body(options){
      * @property boundingRadius
      * @type {Number}
      */
-    this.boundingRadius = 0;
+	this.boundingRadius = 0;
+	
+	/**
+	 * Determines if bodies do interact. "collide" event is still triggered.
+	 * @property sensor
+	 * @type {Boolean}
+	 */
+	this.sensor = false;
+	if (options.sensor) {
+		this.sensor = options.sensor;
+	}
 
     this.wlambda = new Vec3();
 
