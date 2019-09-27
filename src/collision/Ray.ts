@@ -74,12 +74,14 @@ namespace cannon
 
         /**
          * Do itersection against all bodies in the given World.
-         * @method intersectWorld
-         * @param  {World} world
-         * @param  {object} options
-         * @return {Boolean} True if the ray hit anything, otherwise false.
+         * @param world
+         * @param options
+         * @return True if the ray hit anything, otherwise false.
          */
-        intersectWorld(world, options)
+        intersectWorld(world: World, options: {
+            mode?: number, result?: RaycastResult, skipBackfaces?: boolean, collisionFilterMask?: number,
+            collisionFilterGroup?: number, from?: Vec3, to?: Vec3, callback?: Function
+        })
         {
             this.mode = options.mode || Ray.ANY;
             this.result = options.result || new RaycastResult();
@@ -106,39 +108,14 @@ namespace cannon
             this.intersectBodies(tmpArray);
 
             return this.hasHit;
-        };
-
-
-        /*
-         * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
-         */
-        static pointInTriangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3)
-        {
-            c.vsub(a, v0);
-            b.vsub(a, v1);
-            p.vsub(a, v2);
-
-            var dot00 = v0.dot(v0);
-            var dot01 = v0.dot(v1);
-            var dot02 = v0.dot(v2);
-            var dot11 = v1.dot(v1);
-            var dot12 = v1.dot(v2);
-
-            var u: number, v: number;
-
-            return ((u = dot11 * dot02 - dot01 * dot12) >= 0) &&
-                ((v = dot00 * dot12 - dot01 * dot02) >= 0) &&
-                (u + v < (dot00 * dot11 - dot01 * dot01));
         }
 
         /**
          * Shoot a ray at a body, get back information about the hit.
-         * @method intersectBody
-         * @private
-         * @param {Body} body
-         * @param {RaycastResult} [result] Deprecated - set the result property of the Ray instead.
+         * @param body
+         * @param result Deprecated - set the result property of the Ray instead.
          */
-        intersectBody(body: Body, result?: RaycastResult)
+        private intersectBody(body: Body, result?: RaycastResult)
         {
             if (result)
             {
@@ -180,7 +157,7 @@ namespace cannon
                     body
                 );
 
-                if (this.result._shouldStop)
+                if (this.result["_shouldStop"])
                 {
                     break;
                 }
@@ -188,9 +165,8 @@ namespace cannon
         };
 
         /**
-         * @method intersectBodies
-         * @param {Array} bodies An array of Body objects.
-         * @param {RaycastResult} [result] Deprecated
+         * @param bodies An array of Body objects.
+         * @param result Deprecated
          */
         intersectBodies(bodies: Body[], result?: RaycastResult)
         {
@@ -208,8 +184,6 @@ namespace cannon
 
         /**
          * Updates the _direction vector.
-         * @private
-         * @method _updateDirection
          */
         private _updateDirection()
         {
@@ -217,18 +191,9 @@ namespace cannon
             this._direction.normalize();
         };
 
-        /**
-         * @method intersectShape
-         * @private
-         * @param {Shape} shape
-         * @param {Quaternion} quat
-         * @param {Vec3} position
-         * @param {Body} body
-         */
-        intersectShape(shape, quat, position, body)
+        private intersectShape(shape: Shape, quat: Quaternion, position: Vec3, body: Body)
         {
             var from = this.from;
-
 
             // Checking boundingSphere
             var distance = distanceFromIntersection(from, this._direction, position);
@@ -242,31 +207,14 @@ namespace cannon
             {
                 intersectMethod.call(this, shape, quat, position, body, shape);
             }
-        };
+        }
 
-        /**
-         * @method intersectBox
-         * @private
-         * @param  {Shape} shape
-         * @param  {Quaternion} quat
-         * @param  {Vec3} position
-         * @param  {Body} body
-         */
-        intersectBox(shape, quat, position, body, reportedShape)
+        private intersectBox(shape: Shape, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
             return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body, reportedShape);
         };
 
-
-        /**
-         * @method intersectPlane
-         * @private
-         * @param  {Shape} shape
-         * @param  {Quaternion} quat
-         * @param  {Vec3} position
-         * @param  {Body} body
-         */
-        intersectPlane(shape, quat, position, body, reportedShape)
+        private intersectPlane(shape: Shape, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
             var from = this.from;
             var to = this.to;
@@ -315,10 +263,8 @@ namespace cannon
 
         /**
          * Get the world AABB of the ray.
-         * @method getAABB
-         * @param  {AABB} aabb
          */
-        getAABB(result)
+        getAABB(result: AABB)
         {
             var to = this.to;
             var from = this.from;
@@ -330,16 +276,7 @@ namespace cannon
             result.upperBound.z = Math.max(to.z, from.z);
         };
 
-
-        /**
-         * @method intersectHeightfield
-         * @private
-         * @param  {Shape} shape
-         * @param  {Quaternion} quat
-         * @param  {Vec3} position
-         * @param  {Body} body
-         */
-        intersectHeightfield(shape, quat, position, body, reportedShape)
+        private intersectHeightfield(shape: any, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
             var data = shape.data,
                 w = shape.elementSize;
@@ -375,7 +312,7 @@ namespace cannon
                 for (var j = iMinY; j < iMaxY; j++)
                 {
 
-                    if (this.result._shouldStop)
+                    if (this.result["_shouldStop"])
                     {
                         return;
                     }
@@ -391,7 +328,7 @@ namespace cannon
                     Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
                     this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, reportedShape, intersectConvexOptions);
 
-                    if (this.result._shouldStop)
+                    if (this.result["_shouldStop"])
                     {
                         return;
                     }
@@ -402,17 +339,9 @@ namespace cannon
                     this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, reportedShape, intersectConvexOptions);
                 }
             }
-        };
+        }
 
-        /**
-         * @method intersectSphere
-         * @private
-         * @param  {Shape} shape
-         * @param  {Quaternion} quat
-         * @param  {Vec3} position
-         * @param  {Body} body
-         */
-        intersectSphere(shape, quat, position, body, reportedShape)
+        private intersectSphere(shape: any, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
             var from = this.from,
                 to = this.to,
@@ -455,7 +384,7 @@ namespace cannon
                     this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
                 }
 
-                if (this.result._shouldStop)
+                if (this.result["_shouldStop"])
                 {
                     return;
                 }
@@ -470,23 +399,13 @@ namespace cannon
             }
         };
 
-        /**
-         * @method intersectConvex
-         * @private
-         * @param  {Shape} shape
-         * @param  {Quaternion} quat
-         * @param  {Vec3} position
-         * @param  {Body} body
-         * @param {object} [options]
-         * @param {array} [options.faceList]
-         */
-        intersectConvex(
-            shape,
-            quat,
-            position,
-            body,
-            reportedShape,
-            options
+        private intersectConvex(
+            shape: Shape,
+            quat: Quaternion,
+            position: Vec3,
+            body: Body,
+            reportedShape: Shape,
+            options?
         )
         {
             var minDistNormal = intersectConvex_minDistNormal;
@@ -509,7 +428,7 @@ namespace cannon
             var Nfaces = faceList ? faceList.length : faces.length;
             var result = this.result;
 
-            for (var j = 0; !result._shouldStop && j < Nfaces; j++)
+            for (var j = 0; !result["_shouldStop"] && j < Nfaces; j++)
             {
                 var fi = faceList ? faceList[j] : j;
 
@@ -561,7 +480,7 @@ namespace cannon
                 q.vmult(a, a);
                 x.vadd(a, a);
 
-                for (var i = 1; !result._shouldStop && i < face.length - 1; i++)
+                for (var i = 1; !result["_shouldStop"] && i < face.length - 1; i++)
                 {
                     // Transform 3 vertices to world coords
                     b.copy(vertices[face[i]]);
@@ -592,15 +511,25 @@ namespace cannon
          * @param  {Vec3} position
          * @param  {Body} body
          * @param {object} [options]
+         */
+        /**
+         * 
+         * @param mesh 
+         * @param quat 
+         * @param position 
+         * @param body 
+         * @param reportedShape 
+         * @param options 
+         * 
          * @todo Optimize by transforming the world to local space first.
          * @todo Use Octree lookup
          */
-        intersectTrimesh(
-            mesh,
-            quat,
-            position,
-            body,
-            reportedShape,
+        private intersectTrimesh(
+            mesh: any,
+            quat: Quaternion,
+            position: Vec3,
+            body: Body,
+            reportedShape: Shape,
             options
         )
         {
@@ -650,7 +579,7 @@ namespace cannon
 
             mesh.tree.rayQuery(this, treeTransform, triangles);
 
-            for (var i = 0, N = triangles.length; !this.result._shouldStop && i !== N; i++)
+            for (var i = 0, N = triangles.length; !this.result["_shouldStop"] && i !== N; i++)
             {
                 var trianglesIndex = triangles[i];
 
@@ -706,16 +635,7 @@ namespace cannon
         };
 
 
-        /**
-         * @method reportIntersection
-         * @private
-         * @param  {Vec3} normal
-         * @param  {Vec3} hitPointWorld
-         * @param  {Shape} shape
-         * @param  {Body} body
-         * @return {boolean} True if the intersections should continue
-         */
-        reportIntersection(normal, hitPointWorld, shape, body, hitFaceIndex)
+        private reportIntersection(normal: Vec3, hitPointWorld: Vec3, shape: Shape, body: Body, hitFaceIndex?: number)
         {
             var from = this.from;
             var to = this.to;
@@ -780,16 +700,12 @@ namespace cannon
                         body,
                         distance
                     );
-                    result._shouldStop = true;
+                    result["_shouldStop"] = true;
                     break;
             }
         };
 
-
-
-
     }
-
 
     var tmpAABB = new AABB();
     var tmpArray = [];
@@ -843,15 +759,14 @@ namespace cannon
     var intersectConvex_minDistIntersect = new Vec3();
     var intersectConvex_vector = new Vec3();
 
-    Ray.prototype[Shape.types.BOX] = Ray.prototype.intersectBox;
-    Ray.prototype[Shape.types.PLANE] = Ray.prototype.intersectPlane;
+    Ray.prototype[Shape.types.BOX] = Ray.prototype["intersectBox"];
+    Ray.prototype[Shape.types.PLANE] = Ray.prototype["intersectPlane"];
 
-    Ray.prototype[Shape.types.HEIGHTFIELD] = Ray.prototype.intersectHeightfield;
-    Ray.prototype[Shape.types.SPHERE] = Ray.prototype.intersectSphere;
+    Ray.prototype[Shape.types.HEIGHTFIELD] = Ray.prototype["intersectHeightfield"];
+    Ray.prototype[Shape.types.SPHERE] = Ray.prototype["intersectSphere"];
 
-
-    Ray.prototype[Shape.types.TRIMESH] = Ray.prototype.intersectTrimesh;
-    Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype.intersectConvex;
+    Ray.prototype[Shape.types.TRIMESH] = Ray.prototype["intersectTrimesh"];
+    Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype["intersectConvex"];
 
     function distanceFromIntersection(from, direction, position)
     {
@@ -867,5 +782,27 @@ namespace cannon
         var distance = position.distanceTo(intersect);
 
         return distance;
+    }
+
+    /*
+     * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
+     */
+    function pointInTriangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3)
+    {
+        c.vsub(a, v0);
+        b.vsub(a, v1);
+        p.vsub(a, v2);
+
+        var dot00 = v0.dot(v0);
+        var dot01 = v0.dot(v1);
+        var dot02 = v0.dot(v2);
+        var dot11 = v1.dot(v1);
+        var dot12 = v1.dot(v2);
+
+        var u: number, v: number;
+
+        return ((u = dot11 * dot02 - dot01 * dot12) >= 0) &&
+            ((v = dot00 * dot12 - dot01 * dot02) >= 0) &&
+            (u + v < (dot00 * dot11 - dot01 * dot01));
     }
 }

@@ -30,6 +30,13 @@ namespace cannon
 
         body: Body;
 
+        faces: number[][];
+        indices: number[];
+        vertices: Vec3[];
+        faceNormals: Vec3[];
+
+        convexPolyhedronRepresentation: Shape;
+
         /**
          * Base class for shapes
          * 
