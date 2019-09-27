@@ -42,6 +42,7 @@
         "src/objects/WheelInfo.ts",
         "src/objects/RaycastVehicle.ts",
         "src/equations/Equation.ts",
+        "src/equations/ConeEquation.ts",
         "src/solver/Solver.ts",
         "src/solver/GSSolver.ts"
     ]
