@@ -5,19 +5,24 @@ window.onload = function ()
 
     var engine = new feng3d.Engine();
 
-    // init
-    engine.camera.gameObject.transform.x = 10;
-    engine.camera.gameObject.transform.y = 10;
-    engine.camera.gameObject.transform.z = 10;
+    var scene = feng3d.serialization.setValue(new feng3d.GameObject(), { name: "Untitled" }).addComponent(feng3d.Scene3D)
+    scene.background.setTo(0.408, 0.38, 0.357);
+    scene.ambientColor.setTo(0.4, 0.4, 0.4);
 
-    engine.camera.gameObject.transform.lookAt(new feng3d.Vector3());
-    engine.camera.gameObject.addComponent(feng3d.FPSController);
+    var camera = feng3d.gameObjectFactory.createCamera("Main Camera");
+    camera.addComponent(feng3d.AudioListener);
+    camera.addComponent(feng3d.FPSController);
+    camera.transform.position = new feng3d.Vector3(0, 1, -10);
+    scene.gameObject.addChild(camera);
 
-    var light = new feng3d.GameObject();
-    var directionalLight = light.addComponent(feng3d.DirectionalLight);
-    directionalLight.color = new feng3d.Color3(1);
-    light.transform.rx = 30;
-    engine.scene.gameObject.addChild(light);
+    var directionalLight = feng3d.serialization.setValue(new feng3d.GameObject(), { name: "DirectionalLight" });
+    directionalLight.addComponent(feng3d.DirectionalLight).shadowType = feng3d.ShadowType.Hard_Shadows;
+    directionalLight.transform.rx = 50;
+    directionalLight.transform.ry = -30;
+    directionalLight.transform.y = 3;
+    scene.gameObject.addChild(directionalLight);
+
+    engine.scene = scene;
 
     var plane = feng3d.gameObjectFactory.createPlane();
     engine.scene.gameObject.addChild(plane);
