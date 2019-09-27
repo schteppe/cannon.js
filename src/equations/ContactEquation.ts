@@ -22,14 +22,13 @@ namespace cannon
 
         /**
          * Contact/non-penetration constraint equation
-         * @class ContactEquation
-         * @constructor
+         * 
+         * @param bodyA
+         * @param bodyB
+         * 
          * @author schteppe
-         * @param {Body} bodyA
-         * @param {Body} bodyB
-         * @extends Equation
          */
-        constructor(bodyA: Body, bodyB: Body, maxForce: number)
+        constructor(bodyA: Body, bodyB: Body, maxForce?: number)
         {
             super(bodyA, bodyB, 0, typeof (maxForce) !== 'undefined' ? maxForce : 1e6);
 

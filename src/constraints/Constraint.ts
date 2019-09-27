@@ -12,20 +12,18 @@ namespace cannon
          * Set to true if you want the bodies to collide when they are connected.
          */
         collideConnected: boolean;
-
+        bodyB: Body;
 
         /**
          * Constraint base class
-         * @class Constraint
+         * 
+         * @param bodyA 
+         * @param bodyB 
+         * @param options 
+         * 
          * @author schteppe
-         * @constructor
-         * @param {Body} bodyA
-         * @param {Body} bodyB
-         * @param {object} [options]
-         * @param {boolean} [options.collideConnected=true]
-         * @param {boolean} [options.wakeUpBodies=true]
          */
-        constructor(bodyA, bodyB, options)
+        constructor(bodyA: Body, bodyB: Body, options: { collideConnected?: boolean, wakeUpBodies?: boolean } = {})
         {
             options = Utils.defaults(options, {
                 collideConnected: true,
@@ -36,7 +34,8 @@ namespace cannon
 
             this.bodyA = bodyA;
 
-            this.bodyA = bodyB;//?
+            this.bodyA = bodyB;//这里错误，应该是下面的代码？
+            // this.bodyB = bodyB;
 
             this.id = Constraint.idCounter++;
 
@@ -58,7 +57,7 @@ namespace cannon
         /**
          * Update all the equations with data.
          */
-        update = function ()
+        update()
         {
             throw new Error("method update() not implmemented in this Constraint subclass!");
         };
