@@ -21,6 +21,7 @@
         "src/math/Quaternion.ts",
         "src/math/Transform.ts",
         "src/math/JacobianElement.ts",
-        "src/utils/EventTarget.ts"
+        "src/utils/EventTarget.ts",
+        "src/utils/Pool.ts"
     ]
 }
