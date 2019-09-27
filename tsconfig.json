@@ -22,6 +22,7 @@
         "src/math/Transform.ts",
         "src/math/JacobianElement.ts",
         "src/utils/EventTarget.ts",
-        "src/utils/Pool.ts"
+        "src/utils/Pool.ts",
+        "src/utils/Utils.ts"
     ]
 }
