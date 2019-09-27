@@ -20,6 +20,7 @@
         "src/math/Mat3.ts",
         "src/math/Quaternion.ts",
         "src/math/Transform.ts",
-        "src/math/JacobianElement.ts"
+        "src/math/JacobianElement.ts",
+        "src/utils/EventTarget.ts"
     ]
 }
