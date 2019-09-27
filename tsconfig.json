@@ -37,6 +37,7 @@
         "src/shapes/Box.ts",
         "src/material/Material.ts",
         "src/material/ContactMaterial.ts",
-        "src/objects/Body.ts"
+        "src/objects/Body.ts",
+        "src/objects/Spring.ts"
     ]
 }
