@@ -38,6 +38,7 @@
         "src/material/Material.ts",
         "src/material/ContactMaterial.ts",
         "src/objects/Body.ts",
-        "src/objects/Spring.ts"
+        "src/objects/Spring.ts",
+        "src/objects/WheelInfo.ts"
     ]
 }

@@ -26,6 +26,9 @@ namespace cannon
 		 */
 		distance = -1;
 
+		suspensionLength: number;
+		directionWorld:Vec3;
+
 		/**
 		 * If the ray should stop traversing the bodies.
 		 */
