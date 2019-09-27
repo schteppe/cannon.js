@@ -5,7 +5,7 @@ namespace cannon
      */
     export class EventTarget
     {
-        _listeners: { [s: string]: Function[] }
+        private _listeners: { [s: string]: Function[] }
 
         /**
          * Add an event listener
@@ -79,7 +79,7 @@ namespace cannon
          * @param event
          * @return The self object, for chainability.
          */
-        dispatchEvent(event: { type: string, target: EventTarget })
+        dispatchEvent(event: { type: string, target?: EventTarget })
         {
             if (this._listeners === undefined) { return this; }
             var listeners = this._listeners;

@@ -176,10 +176,8 @@ namespace cannon
          * Get the quaternion conjugate
          * @param target
          */
-        conjugate(target: Quaternion)
+        conjugate(target = new Quaternion())
         {
-            target = target || new Quaternion();
-
             target.x = -this.x;
             target.y = -this.y;
             target.z = -this.z;
@@ -467,7 +465,7 @@ namespace cannon
          * @param  target
          * @return The "target" object
          */
-        integrate(angularVelocity: Vec3, dt: number, angularFactor: Quaternion, target: Quaternion)
+        integrate(angularVelocity: Vec3, dt: number, angularFactor: Vec3, target: Quaternion)
         {
             target = target || new Quaternion();
 

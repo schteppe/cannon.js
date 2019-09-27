@@ -35,5 +35,6 @@
         "src/shapes/Shape.ts",
         "src/material/Material.ts",
         "src/material/ContactMaterial.ts"
+        "src/objects/Body.ts"
     ]
 }
