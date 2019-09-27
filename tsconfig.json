@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "declarationMap": true,
+        "declaration": true,
+        // "strict": true,
+        "experimentalDecorators": true,
+        "lib": [
+            "es2015",
+            "dom"
+        ],
+        "outFile": "out/cannon.js"
+        // "outDir": "debug"
+    },
+    "files": [ //注：如果有继承关系的，父类必须排在子类前面
+        //
+        "src/math/Vec3.ts",
+        "src/math/Mat3.ts"
+    ]
+}
