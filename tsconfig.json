@@ -26,6 +26,7 @@
         "src/utils/Utils.ts",
         "src/utils/Vec3Pool.ts",
         "src/utils/TupleDictionary.ts",
+        "src/constraints/Constraint.ts",
         "src/shapes/Shape.ts",
         "src/shapes/ConvexPolyhedron.ts",
         "src/shapes/Box.ts",
