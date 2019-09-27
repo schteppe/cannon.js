@@ -41,6 +41,7 @@
         "src/objects/Spring.ts",
         "src/objects/WheelInfo.ts",
         "src/objects/RaycastVehicle.ts",
+        "src/equations/Equation.ts",
         "src/solver/Solver.ts",
         "src/solver/GSSolver.ts"
     ]
