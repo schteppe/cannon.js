@@ -52,7 +52,7 @@ namespace cannon
          * @param from
          * @param to
          */
-        constructor(from: Vec3, to: Vec3)
+        constructor(from?: Vec3, to?: Vec3)
         {
             this.from = from ? from.clone() : new Vec3();
             this.to = to ? to.clone() : new Vec3();

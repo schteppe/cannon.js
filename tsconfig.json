@@ -39,6 +39,7 @@
         "src/material/ContactMaterial.ts",
         "src/objects/Body.ts",
         "src/objects/Spring.ts",
-        "src/objects/WheelInfo.ts"
+        "src/objects/WheelInfo.ts",
+        "src/objects/RaycastVehicle.ts"
     ]
 }

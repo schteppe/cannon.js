@@ -94,6 +94,8 @@ namespace cannon
 
         isInContact: boolean;
 
+        slipInfo: number;
+
         /**
          * @param {Object} [options]
          *

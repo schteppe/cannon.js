@@ -12,9 +12,9 @@ namespace cannon
 
 		hasHit = false;
 
-		shape = null;
+		shape: Shape = null;
 
-		body = null;
+		body: Body = null;
 
 		/**
 		 * The index of the hit triangle, if the hit shape was a trimesh.
@@ -27,7 +27,7 @@ namespace cannon
 		distance = -1;
 
 		suspensionLength: number;
-		directionWorld:Vec3;
+		directionWorld: Vec3;
 
 		/**
 		 * If the ray should stop traversing the bodies.
