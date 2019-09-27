@@ -25,6 +25,7 @@
         "src/utils/Pool.ts",
         "src/utils/Utils.ts",
         "src/utils/Vec3Pool.ts",
-        "src/utils/TupleDictionary.ts"
+        "src/utils/TupleDictionary.ts",
+        "src/collision/AABB.ts"
     ]
 }
