@@ -393,12 +393,8 @@ namespace cannon
          * @param v
          * @param  precision
          */
-        almostEquals(v: Vec3, precision: number)
+        almostEquals(v: Vec3, precision = 1e-6)
         {
-            if (precision === undefined)
-            {
-                precision = 1e-6;
-            }
             if (Math.abs(this.x - v.x) > precision ||
                 Math.abs(this.y - v.y) > precision ||
                 Math.abs(this.z - v.z) > precision)
@@ -432,7 +428,7 @@ namespace cannon
          * @param  v
          * @param  precision Set to zero for exact comparisons
          */
-        isAntiparallelTo(v: Vec3, precision: number)
+        isAntiparallelTo(v: Vec3, precision = 1e-6)
         {
             this.negate(antip_neg);
             return antip_neg.almostEquals(v, precision);
