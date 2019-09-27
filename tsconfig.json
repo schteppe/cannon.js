@@ -46,6 +46,7 @@
         "src/equations/ContactEquation.ts",
         "src/equations/FrictionEquation.ts",
         "src/equations/RotationalEquation.ts",
+        "src/equations/RotationalMotorEquation.ts",
         "src/solver/Solver.ts",
         "src/solver/GSSolver.ts"
     ]
