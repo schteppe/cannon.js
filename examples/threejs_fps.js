@@ -6,7 +6,6 @@ var scene = engine.scene;
 
 var sphereShape, sphereBody, world, physicsMaterial, walls = [], balls = [], ballMeshes = [], boxes = [], boxMeshes = [];
 
-var renderer;
 var geometry, material, mesh;
 var controls, time = Date.now();
 
@@ -15,19 +14,23 @@ var instructions = document.getElementById('instructions');
 
 var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
-if (havePointerLock) {
+if (havePointerLock)
+{
 
     var element = document.body;
 
-    var pointerlockchange = function (event) {
+    var pointerlockchange = function (event)
+    {
 
-        if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
+        if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element)
+        {
 
             controls.enabled = true;
 
             blocker.style.display = 'none';
 
-        } else {
+        } else
+        {
 
             controls.enabled = false;
 
@@ -41,7 +44,8 @@ if (havePointerLock) {
 
     }
 
-    var pointerlockerror = function (event) {
+    var pointerlockerror = function (event)
+    {
         instructions.style.display = '';
     }
 
@@ -54,17 +58,21 @@ if (havePointerLock) {
     document.addEventListener('mozpointerlockerror', pointerlockerror, false);
     document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
 
-    instructions.addEventListener('click', function (event) {
+    instructions.addEventListener('click', function (event)
+    {
         instructions.style.display = 'none';
 
         // Ask the browser to lock the pointer
         element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
 
-        if (/Firefox/i.test(navigator.userAgent)) {
+        if (/Firefox/i.test(navigator.userAgent))
+        {
 
-            var fullscreenchange = function (event) {
+            var fullscreenchange = function (event)
+            {
 
-                if (document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element) {
+                if (document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element)
+                {
 
                     document.removeEventListener('fullscreenchange', fullscreenchange);
                     document.removeEventListener('mozfullscreenchange', fullscreenchange);
@@ -81,7 +89,8 @@ if (havePointerLock) {
 
             element.requestFullscreen();
 
-        } else {
+        } else
+        {
 
             element.requestPointerLock();
 
@@ -89,7 +98,8 @@ if (havePointerLock) {
 
     }, false);
 
-} else {
+} else
+{
 
     instructions.innerHTML = 'Your browser doesn\'t seem to support Pointer Lock API';
 
@@ -99,7 +109,8 @@ initCannon();
 init();
 animate();
 
-function initCannon() {
+function initCannon()
+{
     // Setup our world
     world = new CANNON.World();
     world.quatNormalizeSkip = 0;
@@ -148,7 +159,8 @@ function initCannon() {
     world.addBody(groundBody);
 }
 
-function init() {
+function init()
+{
 
     camera.lens = new feng3d.PerspectiveLens(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -166,43 +178,49 @@ function init() {
     scene.gameObject.addChild(controls.getObject());
 
     // floor
-    geometry = new THREE.PlaneGeometry(300, 300, 50, 50);
-    geometry.applyMatrix(new THREE.Matrix4().makeRotationX(- Math.PI / 2));
+    geometry = new feng3d.PlaneGeometry();
+    geometry.width = 300;
+    geometry.height = 300;
+    geometry.segmentsW = 50;
+    geometry.segmentsH = 50;
+    geometry.applyTransformation(feng3d.Matrix4x4.fromAxisRotate(feng3d.Vector3.X_AXIS, - Math.PI / 2));
 
-    material = new THREE.MeshLambertMaterial({ color: 0xdddddd });
+    material = new feng3d.Material();
+    material.uniforms.u_diffuse = feng3d.Color4.fromUnit24(0xdddddd);
 
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.shadowMapEnabled = true;
-    renderer.shadowMapSoft = true;
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(scene.fog.color, 1);
-
-    document.body.appendChild(renderer.domElement);
-
-    window.addEventListener('resize', onWindowResize, false);
+    mesh = new feng3d.GameObject();
+    var meshModel = mesh.addComponent(feng3d.MeshModel);
+    meshModel.geometry = geometry;
+    meshModel.material = material;
+    scene.gameObject.addChild(mesh);
 
     // Add boxes
     var halfExtents = new CANNON.Vec3(1, 1, 1);
     var boxShape = new CANNON.Box(halfExtents);
-    var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
-    for (var i = 0; i < 7; i++) {
+    var boxGeometry = new feng3d.CubeGeometry();
+    boxGeometry.width = halfExtents.x * 2;
+    boxGeometry.height = halfExtents.y * 2;
+    boxGeometry.depth = halfExtents.z * 2;
+
+    for (var i = 0; i < 7; i++)
+    {
         var x = (Math.random() - 0.5) * 20;
         var y = 1 + (Math.random() - 0.5) * 1;
         var z = (Math.random() - 0.5) * 20;
         var boxBody = new CANNON.Body({ mass: 5 });
         boxBody.addShape(boxShape);
-        var boxMesh = new THREE.Mesh(boxGeometry, material);
+        var boxMesh = new feng3d.GameObject();
+        var boxMeshModel = boxMesh.addComponent(feng3d.MeshModel);
+        boxMeshModel.gameObject = boxGeometry;
+        boxMeshModel.material = material;
+        scene.gameObject.addChild(boxMesh);
         world.addBody(boxBody);
-        scene.add(boxMesh);
+
         boxBody.position.set(x, y, z);
-        boxMesh.position.set(x, y, z);
-        boxMesh.castShadow = true;
-        boxMesh.receiveShadow = true;
+        boxMesh.transform.x = x;
+        boxMesh.transform.y = y;
+        boxMesh.transform.z = z;
+
         boxes.push(boxBody);
         boxMeshes.push(boxMesh);
     }
@@ -215,93 +233,103 @@ function init() {
     var mass = 0;
     var space = 0.1 * size;
     var N = 5, last;
-    var boxGeometry = new THREE.BoxGeometry(he.x * 2, he.y * 2, he.z * 2);
-    for (var i = 0; i < N; i++) {
+    var boxGeometry = new feng3d.CubeGeometry();
+    boxGeometry.width = he.x * 2;
+    boxGeometry.height = he.y * 2;
+    boxGeometry.depth = he.z * 2;
+
+    for (var i = 0; i < N; i++)
+    {
         var boxbody = new CANNON.Body({ mass: mass });
         boxbody.addShape(boxShape);
-        var boxMesh = new THREE.Mesh(boxGeometry, material);
+
+        var boxMesh = new feng3d.GameObject();
+        var boxMeshModel = boxMesh.addComponent(feng3d.MeshModel);
+        boxMeshModel.geometry = boxGeometry;
+        boxMeshModel.material = material;
+
         boxbody.position.set(5, (N - i) * (size * 2 + 2 * space) + size * 2 + space, 0);
         boxbody.linearDamping = 0.01;
         boxbody.angularDamping = 0.01;
-        // boxMesh.castShadow = true;
-        boxMesh.receiveShadow = true;
         world.addBody(boxbody);
-        scene.add(boxMesh);
+        scene.gameObject.addChild(boxMesh);
         boxes.push(boxbody);
         boxMeshes.push(boxMesh);
 
-        if (i != 0) {
+        if (i != 0)
+        {
             // Connect this body to the last one
             var c1 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(-size, size + space, 0), last, new CANNON.Vec3(-size, -size - space, 0));
             var c2 = new CANNON.PointToPointConstraint(boxbody, new CANNON.Vec3(size, size + space, 0), last, new CANNON.Vec3(size, -size - space, 0));
             world.addConstraint(c1);
             world.addConstraint(c2);
-        } else {
+        } else
+        {
             mass = 0.3;
         }
         last = boxbody;
     }
 }
 
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
 var dt = 1 / 60;
-function animate() {
+function animate()
+{
     requestAnimationFrame(animate);
-    if (controls.enabled) {
+    if (controls.enabled)
+    {
         world.step(dt);
 
         // Update ball positions
-        for (var i = 0; i < balls.length; i++) {
+        for (var i = 0; i < balls.length; i++)
+        {
             ballMeshes[i].position.copy(balls[i].position);
             ballMeshes[i].quaternion.copy(balls[i].quaternion);
         }
 
         // Update box positions
-        for (var i = 0; i < boxes.length; i++) {
+        for (var i = 0; i < boxes.length; i++)
+        {
             boxMeshes[i].position.copy(boxes[i].position);
             boxMeshes[i].quaternion.copy(boxes[i].quaternion);
         }
     }
 
     controls.update(Date.now() - time);
-    renderer.render(scene, camera);
     time = Date.now();
 
 }
 
 var ballShape = new CANNON.Sphere(0.2);
-var ballGeometry = new THREE.SphereGeometry(ballShape.radius, 32, 32);
-var shootDirection = new THREE.Vector3();
-var shootVelo = 15;
-var projector = new THREE.Projector();
-function getShootDir(targetVec) {
-    var vector = targetVec;
-    targetVec.set(0, 0, 1);
-    projector.unprojectVector(vector, camera);
-    var ray = new THREE.Ray(sphereBody.position, vector.sub(sphereBody.position).normalize());
-    targetVec.copy(ray.direction);
-}
+var ballGeometry = new feng3d.SphereGeometry();
+ballGeometry.radius = ballShape.radius;
+ballGeometry.segmentsW = 32;
+ballGeometry.segmentsH = 32;
 
-window.addEventListener("click", function (e) {
-    if (controls.enabled == true) {
+var shootDirection = new feng3d.Vector3();
+var shootVelo = 15;
+
+window.addEventListener("click", function (e)
+{
+    if (controls.enabled == true)
+    {
         var x = sphereBody.position.x;
         var y = sphereBody.position.y;
         var z = sphereBody.position.z;
         var ballBody = new CANNON.Body({ mass: 1 });
         ballBody.addShape(ballShape);
-        var ballMesh = new THREE.Mesh(ballGeometry, material);
+
+        var ballMesh = new feng3d.GameObject();
+        var ballMeshModel = ballMesh.addComponent(feng3d.MeshModel);
+        ballMeshModel.geometry = ballGeometry;
+        ballMeshModel.material = material;
+
         world.addBody(ballBody);
-        scene.add(ballMesh);
-        ballMesh.castShadow = true;
-        ballMesh.receiveShadow = true;
+        scene.gameObject.addChild(ballMesh);
         balls.push(ballBody);
         ballMeshes.push(ballMesh);
-        getShootDir(shootDirection);
+
+        shootDirection = engine.getMouseRay3D().direction;
+
         ballBody.velocity.set(shootDirection.x * shootVelo,
             shootDirection.y * shootVelo,
             shootDirection.z * shootVelo);
@@ -311,6 +339,8 @@ window.addEventListener("click", function (e) {
         y += shootDirection.y * (sphereShape.radius * 1.02 + ballShape.radius);
         z += shootDirection.z * (sphereShape.radius * 1.02 + ballShape.radius);
         ballBody.position.set(x, y, z);
-        ballMesh.position.set(x, y, z);
+        ballMesh.transform.x = x;
+        ballMesh.transform.y = y;
+        ballMesh.transform.z = z;
     }
 });
