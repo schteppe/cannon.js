@@ -38,7 +38,7 @@ namespace cannon
          * @param j0 
          * @param value 
          */
-        set(i0: { index: number }, j0: { index: number }, value: number)
+        set(i0: { index: number }, j0: { index: number }, value: boolean)
         {
             var i = i0.index;
             var j = j0.index;

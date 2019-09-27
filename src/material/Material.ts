@@ -26,7 +26,7 @@ namespace cannon
          * @param options 
          * @author schteppe
          */
-        constructor(options: { friction?: number, restitution?: number } = {})
+        constructor(options: { friction?: number, restitution?: number } | string = {})
         {
             var name = '';
 

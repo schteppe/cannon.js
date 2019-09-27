@@ -35,7 +35,7 @@ namespace cannon
          * @param p1 Empty array to be filled with body objects
          * @param p2 Empty array to be filled with body objects
          */
-        collisionPairs(world: World, p1: [], p2: [])
+        collisionPairs(world: World, p1: any[], p2: any[])
         {
             throw new Error("collisionPairs not implemented for this BroadPhase class!");
         };

@@ -185,7 +185,9 @@ namespace cannon
 
         wlambda: Vec3;
 
-        shape:Shape;
+        shape: Shape;
+
+        index: number;
 
         /**
          * Base class for all body types.

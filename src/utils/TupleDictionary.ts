@@ -24,7 +24,7 @@ namespace cannon
             return this.data[i + '-' + j];
         }
 
-        set(i: number, j: number, value: number)
+        set(i: number, j: number, value: any)
         {
             if (i > j)
             {
