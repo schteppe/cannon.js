@@ -29,6 +29,8 @@
         "src/collision/AABB.ts",
         "src/collision/ArrayCollisionMatrix.ts",
         "src/collision/ObjectCollisionMatrix.ts",
-        "src/collision/OverlapKeeper.ts"
+        "src/collision/OverlapKeeper.ts",
+        "src/collision/RaycastResult.ts",
+        "src/shapes/Shape.ts"
     ]
 }
