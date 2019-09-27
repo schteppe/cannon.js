@@ -31,6 +31,7 @@
         "src/collision/ObjectCollisionMatrix.ts",
         "src/collision/OverlapKeeper.ts",
         "src/collision/RaycastResult.ts",
+        "src/collision/Broadphase.ts",
         "src/shapes/Shape.ts",
         "src/collision/Ray.ts",
         "src/shapes/ConvexPolyhedron.ts",
