@@ -77,7 +77,7 @@ namespace cannon
 
                 if (!found)
                 {
-                    unpackAndPush(additions, keyA);
+                    this.unpackAndPush(additions, keyA);
                 }
             }
             j = 0;
@@ -93,7 +93,7 @@ namespace cannon
 
                 if (!found)
                 {
-                    unpackAndPush(removals, keyB);
+                    this.unpackAndPush(removals, keyB);
                 }
             }
         };
