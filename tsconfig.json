@@ -37,6 +37,7 @@
         "src/collision/Broadphase.ts",
         "src/collision/GridBroadphase.ts",
         "src/collision/NaiveBroadphase.ts",
+        "src/collision/SAPBroadphase.ts",
         "src/collision/Ray.ts",
         "src/material/Material.ts",
         "src/material/ContactMaterial.ts",
