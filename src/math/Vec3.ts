@@ -408,12 +408,8 @@ namespace cannon
          * Check if a vector is almost zero
          * @param precision
          */
-        almostZero(precision: number)
+        almostZero(precision = 1e-6)
         {
-            if (precision === undefined)
-            {
-                precision = 1e-6;
-            }
             if (Math.abs(this.x) > precision ||
                 Math.abs(this.y) > precision ||
                 Math.abs(this.z) > precision)

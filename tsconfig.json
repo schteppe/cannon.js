@@ -33,6 +33,7 @@
         "src/collision/RaycastResult.ts",
         "src/collision/Ray.ts",
         "src/shapes/Shape.ts",
+        "src/shapes/ConvexPolyhedron.ts",
         "src/material/Material.ts",
         "src/material/ContactMaterial.ts"
         "src/objects/Body.ts"
