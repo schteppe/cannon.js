@@ -72,7 +72,7 @@ namespace cannon
           * @param pairs1 
           * @param pairs2 
           */
-        intersectionTest(bodyA: Body, bodyB: Body, pairs1: [], pairs2: [])
+        intersectionTest(bodyA: Body, bodyB: Body, pairs1: any[], pairs2: any[])
         {
             if (this.useBoundingBoxes)
             {
