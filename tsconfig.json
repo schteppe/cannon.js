@@ -43,6 +43,7 @@
         "src/objects/RaycastVehicle.ts",
         "src/equations/Equation.ts",
         "src/equations/ConeEquation.ts",
+        "src/equations/ContactEquation.ts",
         "src/solver/Solver.ts",
         "src/solver/GSSolver.ts"
     ]
