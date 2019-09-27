@@ -28,6 +28,7 @@
         "src/utils/TupleDictionary.ts",
         "src/collision/AABB.ts",
         "src/collision/ArrayCollisionMatrix.ts",
-        "src/collision/ObjectCollisionMatrix.ts"
+        "src/collision/ObjectCollisionMatrix.ts",
+        "src/collision/OverlapKeeper.ts"
     ]
 }
