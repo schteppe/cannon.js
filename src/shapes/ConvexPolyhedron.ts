@@ -44,51 +44,27 @@ namespace cannon
          * @todo Move the clipping functions to ContactGenerator?
          * @todo Automatically merge coplanar polygons in constructor.
          */
-        constructor(points, faces, uniqueAxes)
+        constructor(points, faces?, uniqueAxes?)
         {
             super({
                 type: Shape.types.CONVEXPOLYHEDRON
             });
 
-            /**
-             * Array of Vec3
-             * @property vertices
-             * @type {Array}
-             */
             this.vertices = points || [];
 
             this.worldVertices = []; // World transformed version of .vertices
             this.worldVerticesNeedsUpdate = true;
 
-            /**
-             * Array of integer arrays, indicating which vertices each face consists of
-             * @property faces
-             * @type {Array}
-             */
             this.faces = faces || [];
 
-            /**
-             * Array of Vec3
-             * @property faceNormals
-             * @type {Array}
-             */
             this.faceNormals = [];
             this.computeNormals();
 
             this.worldFaceNormalsNeedsUpdate = true;
             this.worldFaceNormals = []; // World transformed version of .faceNormals
 
-            /**
-             * Array of Vec3
-             * @property uniqueEdges
-             * @type {Array}
-             */
             this.uniqueEdges = [];
 
-            /**
-             * If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.
-             * @property {Array} uniqueAxes
-             */
             this.uniqueAxes = uniqueAxes ? uniqueAxes.slice() : null;
 
             this.computeEdges();
