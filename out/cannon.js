@@ -1521,8 +1521,7 @@ var CANNON;
             });
             this.equations = [];
             this.bodyA = bodyA;
-            this.bodyA = bodyB; //这里错误，应该是下面的代码？
-            // this.bodyB = bodyB;
+            this.bodyB = bodyB;
             this.id = Constraint.idCounter++;
             this.collideConnected = options.collideConnected;
             if (options.wakeUpBodies) {
@@ -1646,7 +1645,7 @@ var CANNON;
             var _this = _super.call(this, bodyA, bodyB) || this;
             maxForce = typeof (maxForce) !== 'undefined' ? maxForce : 1e6;
             _this.pivotA = pivotA ? pivotA.clone() : new CANNON.Vec3();
-            _this.pivotA = pivotB ? pivotB.clone() : new CANNON.Vec3(); //?
+            _this.pivotB = pivotB ? pivotB.clone() : new CANNON.Vec3();
             var x = _this.equationX = new CANNON.ContactEquation(bodyA, bodyB);
             var y = _this.equationY = new CANNON.ContactEquation(bodyA, bodyB);
             var z = _this.equationZ = new CANNON.ContactEquation(bodyA, bodyB);
@@ -4409,27 +4408,7 @@ var CANNON;
             this.data = [];
             this.children = [];
         }
-        return OctreeNode;
-    }());
-    CANNON.OctreeNode = OctreeNode;
-    var Octree = /** @class */ (function (_super) {
-        __extends(Octree, _super);
-        /**
-         * @class Octree
-         * @param {AABB} aabb The total AABB of the tree
-         * @param {object} [options]
-         * @param {number} [options.maxDepth=8]
-         * @extends OctreeNode
-         */
-        function Octree(aabb, options) {
-            if (options === void 0) { options = {}; }
-            var _this = _super.call(this, options) || this;
-            options.root = null;
-            options.aabb = aabb;
-            _this.maxDepth = typeof (options.maxDepth) !== 'undefined' ? options.maxDepth : 8;
-            return _this;
-        }
-        Octree.prototype.reset = function (aabb, options) {
+        OctreeNode.prototype.reset = function (aabb, options) {
             this.children.length = this.data.length = 0;
         };
         ;
@@ -4440,7 +4419,7 @@ var CANNON;
          * @param  {object} elementData
          * @return {boolean} True if successful, otherwise false
          */
-        Octree.prototype.insert = function (aabb, elementData, level) {
+        OctreeNode.prototype.insert = function (aabb, elementData, level) {
             if (level === void 0) { level = 0; }
             var nodeData = this.data;
             // Ignore objects that do not belong in this node
@@ -4474,7 +4453,7 @@ var CANNON;
         /**
          * Create 8 equally sized children nodes and put them in the .children array.
          */
-        Octree.prototype.subdivide = function () {
+        OctreeNode.prototype.subdivide = function () {
             var aabb = this.aabb;
             var l = aabb.lowerBound;
             var u = aabb.upperBound;
@@ -4505,7 +4484,7 @@ var CANNON;
          * @param  {array} result
          * @return {array} The "result" object
          */
-        Octree.prototype.aabbQuery = function (aabb, result) {
+        OctreeNode.prototype.aabbQuery = function (aabb, result) {
             var nodeData = this.data;
             // abort if the range does not intersect this node
             // if (!this.aabb.overlaps(aabb)){
@@ -4538,7 +4517,7 @@ var CANNON;
          * @param  {array} result
          * @return {array} The "result" object
          */
-        Octree.prototype.rayQuery = function (ray, treeTransform, result) {
+        OctreeNode.prototype.rayQuery = function (ray, treeTransform, result) {
             // Use aabb query for now.
             // @todo implement real ray query which needs less lookups
             ray.getAABB(tmpAABB);
@@ -4547,7 +4526,7 @@ var CANNON;
             return result;
         };
         ;
-        Octree.prototype.removeEmptyNodes = function () {
+        OctreeNode.prototype.removeEmptyNodes = function () {
             var queue = [this];
             while (queue.length) {
                 var node = queue.pop();
@@ -4560,6 +4539,26 @@ var CANNON;
             }
         };
         ;
+        return OctreeNode;
+    }());
+    CANNON.OctreeNode = OctreeNode;
+    var Octree = /** @class */ (function (_super) {
+        __extends(Octree, _super);
+        /**
+         * @class Octree
+         * @param {AABB} aabb The total AABB of the tree
+         * @param {object} [options]
+         * @param {number} [options.maxDepth=8]
+         * @extends OctreeNode
+         */
+        function Octree(aabb, options) {
+            if (options === void 0) { options = {}; }
+            var _this = _super.call(this, options) || this;
+            options.root = null;
+            options.aabb = aabb;
+            _this.maxDepth = typeof (options.maxDepth) !== 'undefined' ? options.maxDepth : 8;
+            return _this;
+        }
         return Octree;
     }(OctreeNode));
     CANNON.Octree = Octree;

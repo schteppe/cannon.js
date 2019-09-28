@@ -45,7 +45,7 @@ namespace CANNON
 
             this.pivotA = pivotA ? pivotA.clone() : new Vec3();
 
-            this.pivotA = pivotB ? pivotB.clone() : new Vec3();//?
+            this.pivotB = pivotB ? pivotB.clone() : new Vec3();
 
             var x = this.equationX = new ContactEquation(bodyA, bodyB);
 

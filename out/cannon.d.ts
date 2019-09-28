@@ -1569,7 +1569,7 @@ declare namespace CANNON {
         /**
          * Children to this node
          */
-        children: any[];
+        children: OctreeNode[];
         maxDepth: number;
         /**
          * @class OctreeNode
@@ -1578,24 +1578,6 @@ declare namespace CANNON {
          * @param {AABB} [options.aabb]
          */
         constructor(options: any);
-    }
-    class Octree extends OctreeNode {
-        /**
-         * Maximum subdivision depth
-         */
-        maxDepth: number;
-        /**
-         * @class Octree
-         * @param {AABB} aabb The total AABB of the tree
-         * @param {object} [options]
-         * @param {number} [options.maxDepth=8]
-         * @extends OctreeNode
-         */
-        constructor(aabb?: AABB, options?: {
-            root?: any;
-            aabb?: AABB;
-            maxDepth?: number;
-        });
         reset(aabb?: any, options?: any): void;
         /**
          * Insert data into this node
@@ -1627,6 +1609,24 @@ declare namespace CANNON {
          */
         rayQuery(ray: any, treeTransform: any, result: any): any;
         removeEmptyNodes(): void;
+    }
+    class Octree extends OctreeNode {
+        /**
+         * Maximum subdivision depth
+         */
+        maxDepth: number;
+        /**
+         * @class Octree
+         * @param {AABB} aabb The total AABB of the tree
+         * @param {object} [options]
+         * @param {number} [options.maxDepth=8]
+         * @extends OctreeNode
+         */
+        constructor(aabb?: AABB, options?: {
+            root?: any;
+            aabb?: AABB;
+            maxDepth?: number;
+        });
     }
 }
 declare namespace CANNON {

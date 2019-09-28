@@ -20,7 +20,7 @@ namespace CANNON
         /**
          * Children to this node
          */
-        children: any[];
+        children: OctreeNode[];
         maxDepth: number;
 
         /**
@@ -37,32 +37,6 @@ namespace CANNON
             this.aabb = options.aabb ? options.aabb.clone() : new AABB();
             this.data = [];
             this.children = [];
-        }
-
-    }
-
-    export class Octree extends OctreeNode
-    {
-        /**
-         * Maximum subdivision depth
-         */
-        maxDepth: number;
-
-
-        /**
-         * @class Octree
-         * @param {AABB} aabb The total AABB of the tree
-         * @param {object} [options]
-         * @param {number} [options.maxDepth=8]
-         * @extends OctreeNode
-         */
-        constructor(aabb?: AABB, options: { root?: any, aabb?: AABB, maxDepth?: number } = {})
-        {
-            super(options);
-            options.root = null;
-            options.aabb = aabb;
-
-            this.maxDepth = typeof (options.maxDepth) !== 'undefined' ? options.maxDepth : 8;
         }
 
         reset(aabb?, options?)
@@ -246,6 +220,31 @@ namespace CANNON
                 Array.prototype.push.apply(queue, node.children);
             }
         };
+    }
+
+    export class Octree extends OctreeNode
+    {
+        /**
+         * Maximum subdivision depth
+         */
+        maxDepth: number;
+
+
+        /**
+         * @class Octree
+         * @param {AABB} aabb The total AABB of the tree
+         * @param {object} [options]
+         * @param {number} [options.maxDepth=8]
+         * @extends OctreeNode
+         */
+        constructor(aabb?: AABB, options: { root?: any, aabb?: AABB, maxDepth?: number } = {})
+        {
+            super(options);
+            options.root = null;
+            options.aabb = aabb;
+
+            this.maxDepth = typeof (options.maxDepth) !== 'undefined' ? options.maxDepth : 8;
+        }
     }
 
     var halfDiagonal = new Vec3();

@@ -34,8 +34,7 @@ namespace CANNON
 
             this.bodyA = bodyA;
 
-            this.bodyA = bodyB;//这里错误，应该是下面的代码？
-            // this.bodyB = bodyB;
+            this.bodyB = bodyB;
 
             this.id = Constraint.idCounter++;
 

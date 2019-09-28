@@ -140,7 +140,7 @@
             worker.postMessage({
                 N : N,
                 dt : dt,
-                cannonUrl : document.location.href.replace(/\/[^/]*$/,"/") + "../build/cannon.js",
+                cannonUrl : document.location.href.replace(/\/[^/]*$/,"/") + "../out/cannon.js",
                 positions : positions,
                 quaternions : quaternions
             },[positions.buffer, quaternions.buffer]);
