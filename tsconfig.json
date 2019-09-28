@@ -26,6 +26,7 @@
         "src/utils/Utils.ts",
         "src/utils/Vec3Pool.ts",
         "src/utils/TupleDictionary.ts",
+        "src/utils/Octree.ts",
         "src/constraints/Constraint.ts",
         "src/constraints/DistanceConstraint.ts",
         "src/constraints/PointToPointConstraint.ts",
