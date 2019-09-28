@@ -1396,7 +1396,7 @@ var CANNON;
          * @return The modified options object.
          */
         Utils.defaults = function (options, defaults) {
-            if (defaults === void 0) { defaults = {}; }
+            options = options || {};
             for (var key in defaults) {
                 if (!(key in options)) {
                     options[key] = defaults[key];

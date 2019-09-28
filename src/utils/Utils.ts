@@ -9,8 +9,9 @@ namespace CANNON
          * @param  defaults An object containing default values.
          * @return The modified options object.
          */
-        static defaults(options: Object, defaults: Object = {})
+        static defaults(options: Object, defaults: Object)
         {
+            options = options || {};
             for (var key in defaults)
             {
                 if (!(key in options))
