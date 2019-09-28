@@ -1855,14 +1855,12 @@ var CANNON;
         Shape.prototype.updateBoundingSphereRadius = function () {
             throw "computeBoundingSphereRadius() not implemented for shape type " + this.type;
         };
-        ;
         /**
          * Get the volume of this shape
          */
         Shape.prototype.volume = function () {
             throw "volume() not implemented for shape type " + this.type;
         };
-        ;
         /**
          * Calculates the inertia in the local frame for this shape.
          * @param mass
@@ -1872,7 +1870,6 @@ var CANNON;
         Shape.prototype.calculateLocalInertia = function (mass, target) {
             throw "calculateLocalInertia() not implemented for shape type " + this.type;
         };
-        ;
         Shape.prototype.calculateWorldAABB = function (pos, quat, min, max) {
             throw "未实现";
         };
@@ -3435,11 +3432,9 @@ var CANNON;
             target.set(0, 0, 0);
             return target;
         };
-        ;
         Particle.prototype.volume = function () {
             return 0;
         };
-        ;
         Particle.prototype.updateBoundingSphereRadius = function () {
             this.boundingSphereRadius = 0;
         };
@@ -3448,7 +3443,6 @@ var CANNON;
             min.copy(pos);
             max.copy(pos);
         };
-        ;
         return Particle;
     }(CANNON.Shape));
     CANNON.Particle = Particle;
@@ -3478,16 +3472,13 @@ var CANNON;
             quat.vmult(n, n);
             this.worldNormalNeedsUpdate = false;
         };
-        ;
         Plane.prototype.calculateLocalInertia = function (mass, target) {
-            target = target || new CANNON.Vec3();
+            if (target === void 0) { target = new CANNON.Vec3(); }
             return target;
         };
-        ;
         Plane.prototype.volume = function () {
             return Number.MAX_VALUE; // The plane is infinite...
         };
-        ;
         Plane.prototype.calculateWorldAABB = function (pos, quat, min, max) {
             // The plane AABB is infinite, except if the normal is pointing along any axis
             tempNormal.set(0, 0, 1); // Default plane normal is z
@@ -3514,11 +3505,9 @@ var CANNON;
                 min.z = pos.z;
             }
         };
-        ;
         Plane.prototype.updateBoundingSphereRadius = function () {
             this.boundingSphereRadius = Number.MAX_VALUE;
         };
-        ;
         return Plane;
     }(CANNON.Shape));
     CANNON.Plane = Plane;
@@ -3546,22 +3535,19 @@ var CANNON;
             return _this;
         }
         Sphere.prototype.calculateLocalInertia = function (mass, target) {
-            target = target || new CANNON.Vec3();
+            if (target === void 0) { target = new CANNON.Vec3(); }
             var I = 2.0 * mass * this.radius * this.radius / 5.0;
             target.x = I;
             target.y = I;
             target.z = I;
             return target;
         };
-        ;
         Sphere.prototype.volume = function () {
             return 4.0 * Math.PI * this.radius / 3.0;
         };
-        ;
         Sphere.prototype.updateBoundingSphereRadius = function () {
             this.boundingSphereRadius = this.radius;
         };
-        ;
         Sphere.prototype.calculateWorldAABB = function (pos, quat, min, max) {
             var r = this.radius;
             var axes = ['x', 'y', 'z'];
@@ -3571,7 +3557,6 @@ var CANNON;
                 max[ax] = pos[ax] + r;
             }
         };
-        ;
         return Sphere;
     }(CANNON.Shape));
     CANNON.Sphere = Sphere;
@@ -3829,11 +3814,9 @@ var CANNON;
     var Trimesh = /** @class */ (function (_super) {
         __extends(Trimesh, _super);
         /**
-         * @class Trimesh
-         * @constructor
-         * @param {array} vertices
-         * @param {array} indices
-         * @extends Shape
+         * @param vertices
+         * @param indices
+         *
          * @example
          *     // How to make a mesh with a single triangle
          *     var vertices = [
@@ -3896,7 +3879,6 @@ var CANNON;
             }
             tree.removeEmptyNodes();
         };
-        ;
         /**
          * Get triangles in a local AABB from the trimesh.
          *
@@ -3920,10 +3902,8 @@ var CANNON;
             u.z /= isz;
             return this.tree.aabbQuery(unscaledAABB, result);
         };
-        ;
         /**
-         * @method setScale
-         * @param {Vec3} scale
+         * @param scale
          */
         Trimesh.prototype.setScale = function (scale) {
             // var wasUniform = this.scale.x === this.scale.y === this.scale.z;// 等价下面代码?
@@ -3938,7 +3918,6 @@ var CANNON;
             this.updateAABB();
             this.updateBoundingSphereRadius();
         };
-        ;
         /**
          * Compute the normals of the faces. Will save in the .normals array.
          */
@@ -3958,7 +3937,6 @@ var CANNON;
                 normals[i3 + 2] = n.z;
             }
         };
-        ;
         /**
          * Update the .edges property
          */
@@ -3983,24 +3961,22 @@ var CANNON;
                 this.edges[2 * i + 1] = parseInt(indices[1], 10);
             }
         };
-        ;
         /**
          * Get an edge vertex
-         * @method getEdgeVertex
-         * @param  {number} edgeIndex
-         * @param  {number} firstOrSecond 0 or 1, depending on which one of the vertices you need.
-         * @param  {Vec3} vertexStore Where to store the result
+         *
+         * @param edgeIndex
+         * @param firstOrSecond 0 or 1, depending on which one of the vertices you need.
+         * @param vertexStore Where to store the result
          */
         Trimesh.prototype.getEdgeVertex = function (edgeIndex, firstOrSecond, vertexStore) {
             var vertexIndex = this.edges[edgeIndex * 2 + (firstOrSecond ? 1 : 0)];
             this.getVertex(vertexIndex, vertexStore);
         };
-        ;
         /**
          * Get a vector along an edge.
-         * @method getEdgeVector
-         * @param  {number} edgeIndex
-         * @param  {Vec3} vectorStore
+         *
+         * @param edgeIndex
+         * @param vectorStore
          */
         Trimesh.prototype.getEdgeVector = function (edgeIndex, vectorStore) {
             var va = getEdgeVector_va;
@@ -4009,15 +3985,13 @@ var CANNON;
             this.getEdgeVertex(edgeIndex, 1, vb);
             vb.vsub(va, vectorStore);
         };
-        ;
         /**
          * Get face normal given 3 vertices
-         * @static
-         * @method computeNormal
-         * @param {Vec3} va
-         * @param {Vec3} vb
-         * @param {Vec3} vc
-         * @param {Vec3} target
+         *
+         * @param va
+         * @param vb
+         * @param vc
+         * @param target
          */
         Trimesh.computeNormal = function (va, vb, vc, target) {
             vb.vsub(va, ab);
@@ -4027,13 +4001,12 @@ var CANNON;
                 target.normalize();
             }
         };
-        ;
         /**
          * Get vertex i.
-         * @method getVertex
-         * @param  {number} i
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         *
+         * @param i
+         * @param out
+         * @return The "out" vector object
          */
         Trimesh.prototype.getVertex = function (i, out) {
             var scale = this.scale;
@@ -4043,43 +4016,39 @@ var CANNON;
             out.z *= scale.z;
             return out;
         };
-        ;
         /**
          * Get raw vertex i
-         * @private
-         * @method _getUnscaledVertex
-         * @param  {number} i
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         *
+         * @param i
+         * @param out
+         * @return The "out" vector object
          */
         Trimesh.prototype._getUnscaledVertex = function (i, out) {
             var i3 = i * 3;
             var vertices = this.vertices;
             return out.set(vertices[i3], vertices[i3 + 1], vertices[i3 + 2]);
         };
-        ;
         /**
          * Get a vertex from the trimesh,transformed by the given position and quaternion.
-         * @method getWorldVertex
-         * @param  {number} i
-         * @param  {Vec3} pos
-         * @param  {Quaternion} quat
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         *
+         * @param i
+         * @param pos
+         * @param quat
+         * @param out
+         * @return The "out" vector object
          */
         Trimesh.prototype.getWorldVertex = function (i, pos, quat, out) {
             this.getVertex(i, out);
             CANNON.Transform.pointToWorldFrame(pos, quat, out, out);
             return out;
         };
-        ;
         /**
          * Get the three vertices for triangle i.
-         * @method getTriangleVertices
-         * @param  {number} i
-         * @param  {Vec3} a
-         * @param  {Vec3} b
-         * @param  {Vec3} c
+         *
+         * @param i
+         * @param a
+         * @param b
+         * @param c
          */
         Trimesh.prototype.getTriangleVertices = function (i, a, b, c) {
             var i3 = i * 3;
@@ -4087,24 +4056,22 @@ var CANNON;
             this.getVertex(this.indices[i3 + 1], b);
             this.getVertex(this.indices[i3 + 2], c);
         };
-        ;
         /**
          * Compute the normal of triangle i.
-         * @method getNormal
-         * @param  {Number} i
-         * @param  {Vec3} target
-         * @return {Vec3} The "target" vector object
+         *
+         * @param i
+         * @param target
+         * @return The "target" vector object
          */
         Trimesh.prototype.getNormal = function (i, target) {
             var i3 = i * 3;
             return target.set(this.normals[i3], this.normals[i3 + 1], this.normals[i3 + 2]);
         };
-        ;
         /**
-         * @method calculateLocalInertia
-         * @param  {Number} mass
-         * @param  {Vec3} target
-         * @return {Vec3} The "target" vector object
+         *
+         * @param mass
+         * @param target
+         * @return The "target" vector object
          */
         Trimesh.prototype.calculateLocalInertia = function (mass, target) {
             // Approximate with box inertia
@@ -4113,11 +4080,10 @@ var CANNON;
             var x = cli_aabb.upperBound.x - cli_aabb.lowerBound.x, y = cli_aabb.upperBound.y - cli_aabb.lowerBound.y, z = cli_aabb.upperBound.z - cli_aabb.lowerBound.z;
             return target.set(1.0 / 12.0 * mass * (2 * y * 2 * y + 2 * z * 2 * z), 1.0 / 12.0 * mass * (2 * x * 2 * x + 2 * z * 2 * z), 1.0 / 12.0 * mass * (2 * y * 2 * y + 2 * x * 2 * x));
         };
-        ;
         /**
          * Compute the local AABB for the trimesh
-         * @method computeLocalAABB
-         * @param  {AABB} aabb
+         *
+         * @param aabb
          */
         Trimesh.prototype.computeLocalAABB = function (aabb) {
             var l = aabb.lowerBound, u = aabb.upperBound, n = this.vertices.length, vertices = this.vertices, v = computeLocalAABB_worldVert;
@@ -4146,18 +4112,14 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Update the .aabb property
-         * @method updateAABB
          */
         Trimesh.prototype.updateAABB = function () {
             this.computeLocalAABB(this.aabb);
         };
-        ;
         /**
          * Will update the .boundingSphereRadius property
-         * @method updateBoundingSphereRadius
          */
         Trimesh.prototype.updateBoundingSphereRadius = function () {
             // Assume points are distributed with local (0,0,0) as center
@@ -4173,14 +4135,6 @@ var CANNON;
             }
             this.boundingSphereRadius = Math.sqrt(max2);
         };
-        ;
-        /**
-         * @method calculateWorldAABB
-         * @param {Vec3}        pos
-         * @param {Quaternion}  quat
-         * @param {Vec3}        min
-         * @param {Vec3}        max
-         */
         Trimesh.prototype.calculateWorldAABB = function (pos, quat, min, max) {
             /*
             var n = this.vertices.length / 3,
@@ -4225,23 +4179,20 @@ var CANNON;
         ;
         /**
          * Get approximate volume
-         * @method volume
-         * @return {Number}
          */
         Trimesh.prototype.volume = function () {
             return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
         };
-        ;
         /**
          * Create a Trimesh instance, shaped as a torus.
-         * @static
-         * @method createTorus
-         * @param  {number} [radius=1]
-         * @param  {number} [tube=0.5]
-         * @param  {number} [radialSegments=8]
-         * @param  {number} [tubularSegments=6]
-         * @param  {number} [arc=6.283185307179586]
-         * @return {Trimesh} A torus
+         *
+         * @param radius
+         * @param tube
+         * @param radialSegments
+         * @param tubularSegments
+         * @param arc
+         *
+         * @return A torus
          */
         Trimesh.createTorus = function (radius, tube, radialSegments, tubularSegments, arc) {
             radius = radius || 1;
@@ -4296,13 +4247,11 @@ var CANNON;
 (function (CANNON) {
     var OctreeNode = /** @class */ (function () {
         /**
-         * @class OctreeNode
-         * @param {object} [options]
-         * @param {Octree} [options.root]
-         * @param {AABB} [options.aabb]
+         *
+         * @param options
          */
         function OctreeNode(options) {
-            options = options || {};
+            if (options === void 0) { options = {}; }
             this.root = options.root || null;
             this.aabb = options.aabb ? options.aabb.clone() : new CANNON.AABB();
             this.data = [];
@@ -4311,13 +4260,12 @@ var CANNON;
         OctreeNode.prototype.reset = function (aabb, options) {
             this.children.length = this.data.length = 0;
         };
-        ;
         /**
          * Insert data into this node
-         * @method insert
-         * @param  {AABB} aabb
-         * @param  {object} elementData
-         * @return {boolean} True if successful, otherwise false
+         *
+         * @param aabb
+         * @param elementData
+         * @return True if successful, otherwise false
          */
         OctreeNode.prototype.insert = function (aabb, elementData, level) {
             if (level === void 0) { level = 0; }
@@ -4349,7 +4297,6 @@ var CANNON;
             nodeData.push(elementData);
             return true;
         };
-        ;
         /**
          * Create 8 equally sized children nodes and put them in the .children array.
          */
@@ -4376,13 +4323,12 @@ var CANNON;
                 lowerBound.vadd(halfDiagonal, child.aabb.upperBound);
             }
         };
-        ;
         /**
          * Get all data, potentially within an AABB
-         * @method aabbQuery
-         * @param  {AABB} aabb
-         * @param  {array} result
-         * @return {array} The "result" object
+         *
+         * @param aabb
+         * @param result
+         * @return The "result" object
          */
         OctreeNode.prototype.aabbQuery = function (aabb, result) {
             var nodeData = this.data;
@@ -4408,14 +4354,13 @@ var CANNON;
             }
             return result;
         };
-        ;
         /**
          * Get all data, potentially intersected by a ray.
-         * @method rayQuery
-         * @param  {Ray} ray
-         * @param  {Transform} treeTransform
-         * @param  {array} result
-         * @return {array} The "result" object
+         *
+         * @param ray
+         * @param treeTransform
+         * @param result
+         * @return The "result" object
          */
         OctreeNode.prototype.rayQuery = function (ray, treeTransform, result) {
             // Use aabb query for now.
@@ -4425,7 +4370,6 @@ var CANNON;
             this.aabbQuery(tmpAABB, result);
             return result;
         };
-        ;
         OctreeNode.prototype.removeEmptyNodes = function () {
             var queue = [this];
             while (queue.length) {
@@ -4438,7 +4382,6 @@ var CANNON;
                 Array.prototype.push.apply(queue, node.children);
             }
         };
-        ;
         return OctreeNode;
     }());
     CANNON.OctreeNode = OctreeNode;
@@ -8022,7 +7965,6 @@ var CANNON;
             }
             return iter;
         };
-        ;
         return GSSolver;
     }(CANNON.Solver));
     CANNON.GSSolver = GSSolver;
@@ -8036,10 +7978,8 @@ var CANNON;
         __extends(SplitSolver, _super);
         /**
          * Splits the equations into islands and solves them independently. Can improve performance.
-         * @class SplitSolver
-         * @constructor
-         * @extends Solver
-         * @param {Solver} subsolver
+         *
+         * @param subsolver
          */
         function SplitSolver(subsolver) {
             var _this = _super.call(this) || this;
@@ -8057,7 +7997,6 @@ var CANNON;
         SplitSolver.prototype.createNode = function () {
             return { body: null, children: [], eqs: [], visited: false };
         };
-        ;
         /**
          * Solve the subsystems
          * @method solve
@@ -8108,7 +8047,6 @@ var CANNON;
             }
             return n;
         };
-        ;
         return SplitSolver;
     }(CANNON.Solver));
     CANNON.SplitSolver = SplitSolver;
@@ -8983,14 +8921,13 @@ var CANNON;
         }
         /**
          * Make a contact object, by using the internal pool or creating a new one.
-         * @method createContactEquation
-         * @param {Body} bi
-         * @param {Body} bj
-         * @param {Shape} si
-         * @param {Shape} sj
-         * @param {Shape} overrideShapeA
-         * @param {Shape} overrideShapeB
-         * @return {ContactEquation}
+         *
+         * @param bi
+         * @param bj
+         * @param si
+         * @param sj
+         * @param overrideShapeA
+         * @param overrideShapeB
          */
         Narrowphase.prototype.createContactEquation = function (bi, bj, si, sj, overrideShapeA, overrideShapeB) {
             var c;
@@ -9060,7 +8997,6 @@ var CANNON;
             }
             return false;
         };
-        ;
         // Take the average N latest contact point on the plane.
         Narrowphase.prototype.createFrictionFromAverage = function (numContacts) {
             // The last contactEquation
@@ -9098,7 +9034,6 @@ var CANNON;
             averageNormal.tangents(f1.t, f2.t);
             // return eq;
         };
-        ;
         /**
          * Generate all contacts between a list of body pairs
          * @method getContacts
@@ -9170,7 +9105,6 @@ var CANNON;
                 }
             }
         };
-        ;
         Narrowphase.prototype.boxBox = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
             si.convexPolyhedronRepresentation.material = si.material;
             sj.convexPolyhedronRepresentation.material = sj.material;
@@ -9183,24 +9117,11 @@ var CANNON;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexConvex(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         };
-        ;
         Narrowphase.prototype.boxParticle = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexParticle(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         };
-        ;
-        /**
-         * @method sphereSphere
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.sphereSphere = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
             if (justTest) {
                 return xi.distanceSquared(xj) < Math.pow(si.radius + sj.radius, 2);
@@ -9272,18 +9193,6 @@ var CANNON;
                 }
             }
         };
-        ;
-        /**
-         * @method sphereTrimesh
-         * @param  {Shape}      sphereShape
-         * @param  {Shape}      trimeshShape
-         * @param  {Vec3}       spherePos
-         * @param  {Vec3}       trimeshPos
-         * @param  {Quaternion} sphereQuat
-         * @param  {Quaternion} trimeshQuat
-         * @param  {Body}       sphereBody
-         * @param  {Body}       trimeshBody
-         */
         Narrowphase.prototype.sphereTrimesh = function (sphereShape, trimeshShape, spherePos, trimeshPos, sphereQuat, trimeshQuat, sphereBody, trimeshBody, rsi, rsj, justTest) {
             var edgeVertexA = sphereTrimesh_edgeVertexA;
             var edgeVertexB = sphereTrimesh_edgeVertexB;
@@ -9406,18 +9315,6 @@ var CANNON;
             }
             triangles.length = 0;
         };
-        ;
-        /**
-         * @method spherePlane
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.spherePlane = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
             // We will have one contact in this case
             var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
@@ -9447,18 +9344,6 @@ var CANNON;
                 this.createFrictionEquationsFromContact(r, this.frictionResult);
             }
         };
-        ;
-        /**
-         * @method sphereBox
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.sphereBox = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
             var v3pool = this.v3pool;
             // we refer to the box as body j
@@ -9647,18 +9532,6 @@ var CANNON;
             }
             v3pool.release(edgeTangent, edgeCenter, r, orthogonal, dist1);
         };
-        ;
-        /**
-         * @method sphereConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.sphereConvex = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
             var v3pool = this.v3pool;
             xi.vsub(xj, convex_to_sphere);
@@ -9836,37 +9709,12 @@ var CANNON;
                 }
             }
         };
-        ;
-        /**
-         * @method planeBox
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.planeBox = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
             sj.convexPolyhedronRepresentation.material = sj.material;
             sj.convexPolyhedronRepresentation.collisionResponse = sj.collisionResponse;
             sj.convexPolyhedronRepresentation.id = sj.id;
             return this.planeConvex(si, sj.convexPolyhedronRepresentation, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         };
-        ;
-        /**
-         * @method planeConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.planeConvex = function (planeShape, convexShape, planePosition, convexPosition, planeQuat, convexQuat, planeBody, convexBody, si, sj, justTest) {
             // Simply return the points behind the plane.
             var worldVertex = planeConvex_v, worldNormal = planeConvex_normal;
@@ -9910,18 +9758,6 @@ var CANNON;
                 this.createFrictionFromAverage(numContacts);
             }
         };
-        ;
-        /**
-         * @method convexConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.convexConvex = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest, faceListA, faceListB) {
             var sepAxis = convexConvex_sepAxis;
             if (xi.distanceTo(xj) > si.boundingSphereRadius + sj.boundingSphereRadius) {
@@ -9961,7 +9797,6 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * @method convexTrimesh
          * @param  {Array}      result
@@ -10029,18 +9864,6 @@ var CANNON;
         //         }
         //     }
         // };
-        /**
-         * @method particlePlane
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.planeParticle = function (sj, si, xj, xi, qj, qi, bj, bi, rsi, rsj, justTest) {
             var normal = particlePlane_normal;
             normal.set(0, 0, 1);
@@ -10067,19 +9890,6 @@ var CANNON;
                 this.createFrictionEquationsFromContact(r, this.frictionResult);
             }
         };
-        ;
-        /**
-         * @method particleSphere
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.sphereParticle = function (sj, si, xj, xi, qj, qi, bj, bi, rsi, rsj, justTest) {
             // The normal is the unit vector from sphere center to particle center
             var normal = particleSphere_normal;
@@ -10101,19 +9911,6 @@ var CANNON;
                 this.createFrictionEquationsFromContact(r, this.frictionResult);
             }
         };
-        ;
-        /**
-         * @method convexParticle
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
         Narrowphase.prototype.convexParticle = function (sj, si, xj, xi, qj, qi, bj, bi, rsi, rsj, justTest) {
             var penetratedFaceIndex = -1;
             var penetratedFaceNormal = convexParticle_penetratedFaceNormal;
@@ -10178,16 +9975,11 @@ var CANNON;
                 }
             }
         };
-        ;
         Narrowphase.prototype.boxHeightfield = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexHeightfield(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         };
-        ;
-        /**
-         * @method convexHeightfield
-         */
         Narrowphase.prototype.convexHeightfield = function (convexShape, hfShape, convexPos, hfPos, convexQuat, hfQuat, convexBody, hfBody, rsi, rsj, justTest) {
             var data = hfShape.data, w = hfShape.elementSize, radius = convexShape.boundingSphereRadius, worldPillarOffset = convexHeightfield_tmp2, faceList = convexHeightfield_faceList;
             // Get sphere position to heightfield local!
@@ -10257,9 +10049,6 @@ var CANNON;
             }
         };
         ;
-        /**
-         * @method sphereHeightfield
-         */
         Narrowphase.prototype.sphereHeightfield = function (sphereShape, hfShape, spherePos, hfPos, sphereQuat, hfQuat, sphereBody, hfBody, rsi, rsj, justTest) {
             var data = hfShape.data, radius = sphereShape.radius, w = hfShape.elementSize, worldPillarOffset = sphereHeightfield_tmp2;
             // Get sphere position to heightfield local!
@@ -10340,7 +10129,6 @@ var CANNON;
                 }
             }
         };
-        ;
         return Narrowphase;
     }());
     CANNON.Narrowphase = Narrowphase;

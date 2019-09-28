@@ -32,10 +32,11 @@ namespace CANNON
 
         faces: number[][];
         indices: number[];
-        vertices: Vec3[];
+        vertices: Vec3[] | number[];
         faceNormals: Vec3[];
 
         convexPolyhedronRepresentation: Shape;
+        radius: number;
 
         /**
          * Base class for shapes
@@ -65,7 +66,7 @@ namespace CANNON
         updateBoundingSphereRadius()
         {
             throw "computeBoundingSphereRadius() not implemented for shape type " + this.type;
-        };
+        }
 
         /**
          * Get the volume of this shape
@@ -73,7 +74,7 @@ namespace CANNON
         volume()
         {
             throw "volume() not implemented for shape type " + this.type;
-        };
+        }
 
         /**
          * Calculates the inertia in the local frame for this shape.
@@ -84,9 +85,9 @@ namespace CANNON
         calculateLocalInertia(mass: number, target: Vec3)
         {
             throw "calculateLocalInertia() not implemented for shape type " + this.type;
-        };
+        }
 
-        calculateWorldAABB(pos, quat, min, max)
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
         {
             throw "未实现";
         }

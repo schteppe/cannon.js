@@ -24,34 +24,30 @@ namespace CANNON
         maxDepth: number;
 
         /**
-         * @class OctreeNode
-         * @param {object} [options]
-         * @param {Octree} [options.root]
-         * @param {AABB} [options.aabb]
+         * 
+         * @param options 
          */
-        constructor(options)
+        constructor(options: { root?: Octree, aabb?: AABB } = {})
         {
-            options = options || {};
-
             this.root = options.root || null;
             this.aabb = options.aabb ? options.aabb.clone() : new AABB();
             this.data = [];
             this.children = [];
         }
 
-        reset(aabb?, options?)
+        reset(aabb?: AABB, options?: any)
         {
             this.children.length = this.data.length = 0;
-        };
+        }
 
         /**
          * Insert data into this node
-         * @method insert
-         * @param  {AABB} aabb
-         * @param  {object} elementData
-         * @return {boolean} True if successful, otherwise false
+         * 
+         * @param aabb
+         * @param elementData
+         * @return True if successful, otherwise false
          */
-        insert(aabb, elementData, level = 0)
+        insert(aabb: AABB, elementData: any, level = 0)
         {
             var nodeData = this.data;
 
@@ -93,7 +89,7 @@ namespace CANNON
             nodeData.push(elementData);
 
             return true;
-        };
+        }
 
         /**
          * Create 8 equally sized children nodes and put them in the .children array.
@@ -140,16 +136,16 @@ namespace CANNON
                 // Upper bound is always lower bound + halfDiagonal
                 lowerBound.vadd(halfDiagonal, child.aabb.upperBound);
             }
-        };
+        }
 
         /**
          * Get all data, potentially within an AABB
-         * @method aabbQuery
-         * @param  {AABB} aabb
-         * @param  {array} result
-         * @return {array} The "result" object
+         * 
+         * @param aabb
+         * @param result
+         * @return The "result" object
          */
-        aabbQuery(aabb, result)
+        aabbQuery(aabb: AABB, result: any[])
         {
             var nodeData = this.data;
 
@@ -182,17 +178,17 @@ namespace CANNON
             }
 
             return result;
-        };
+        }
 
         /**
          * Get all data, potentially intersected by a ray.
-         * @method rayQuery
-         * @param  {Ray} ray
-         * @param  {Transform} treeTransform
-         * @param  {array} result
-         * @return {array} The "result" object
+         * 
+         * @param ray
+         * @param treeTransform
+         * @param result
+         * @return The "result" object
          */
-        rayQuery(ray, treeTransform, result)
+        rayQuery(ray: Ray, treeTransform: Transform, result: any[])
         {
 
             // Use aabb query for now.
@@ -202,7 +198,7 @@ namespace CANNON
             this.aabbQuery(tmpAABB, result);
 
             return result;
-        };
+        }
 
         removeEmptyNodes()
         {
@@ -219,7 +215,7 @@ namespace CANNON
                 }
                 Array.prototype.push.apply(queue, node.children);
             }
-        };
+        }
     }
 
     export class Octree extends OctreeNode
@@ -228,7 +224,6 @@ namespace CANNON
          * Maximum subdivision depth
          */
         maxDepth: number;
-
 
         /**
          * @class Octree

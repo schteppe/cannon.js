@@ -44,18 +44,17 @@ namespace CANNON
 
         /**
          * Make a contact object, by using the internal pool or creating a new one.
-         * @method createContactEquation
-         * @param {Body} bi
-         * @param {Body} bj
-         * @param {Shape} si
-         * @param {Shape} sj
-         * @param {Shape} overrideShapeA
-         * @param {Shape} overrideShapeB
-         * @return {ContactEquation}
+         * 
+         * @param bi 
+         * @param bj 
+         * @param si 
+         * @param sj 
+         * @param overrideShapeA 
+         * @param overrideShapeB 
          */
-        createContactEquation(bi, bj, si, sj, overrideShapeA, overrideShapeB)
+        createContactEquation(bi: Body, bj: Body, si: Shape, sj: Shape, overrideShapeA: Shape, overrideShapeB: Shape)
         {
-            var c;
+            var c: any;
             if (this.contactPointPool.length)
             {
                 c = this.contactPointPool.pop();
@@ -91,7 +90,7 @@ namespace CANNON
             return c;
         };
 
-        createFrictionEquationsFromContact(contactEquation, outArray)
+        createFrictionEquationsFromContact(contactEquation: any, outArray: FrictionEquation[])
         {
             var bodyA = contactEquation.bi;
             var bodyB = contactEquation.bj;
@@ -120,8 +119,8 @@ namespace CANNON
                     reducedMass = 1 / reducedMass;
                 }
                 var pool = this.frictionEquationPool;
-                var c1 = pool.length ? pool.pop() : new FrictionEquation(bodyA, bodyB, mug * reducedMass);
-                var c2 = pool.length ? pool.pop() : new FrictionEquation(bodyA, bodyB, mug * reducedMass);
+                var c1: FrictionEquation = pool.length ? pool.pop() : new FrictionEquation(bodyA, bodyB, mug * reducedMass);
+                var c2: FrictionEquation = pool.length ? pool.pop() : new FrictionEquation(bodyA, bodyB, mug * reducedMass);
 
                 c1.bi = c2.bi = bodyA;
                 c1.bj = c2.bj = bodyB;
@@ -149,10 +148,10 @@ namespace CANNON
             }
 
             return false;
-        };
+        }
 
         // Take the average N latest contact point on the plane.
-        createFrictionFromAverage(numContacts)
+        createFrictionFromAverage(numContacts: number)
         {
             // The last contactEquation
             var c = this.result[this.result.length - 1];
@@ -196,7 +195,7 @@ namespace CANNON
             averageNormal.normalize();
             averageNormal.tangents(f1.t, f2.t);
             // return eq;
-        };
+        }
 
         /**
          * Generate all contacts between a list of body pairs
@@ -207,7 +206,7 @@ namespace CANNON
          * @param {array} result Array to store generated contacts
          * @param {array} oldcontacts Optional. Array of reusable contact objects
          */
-        getContacts(p1, p2, world, result, oldcontacts, frictionResult, frictionPool)
+        getContacts(p1: Body[], p2: Body[], world: World, result: any[], oldcontacts: any[], frictionResult: any[], frictionPool: any[])
         {
             // Save old contact objects
             this.contactPointPool = oldcontacts;
@@ -302,7 +301,7 @@ namespace CANNON
                     }
                 }
             }
-        };
+        }
 
         boxBox(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
         {
@@ -318,27 +317,16 @@ namespace CANNON
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexConvex(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
-        };
+        }
 
         boxParticle(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexParticle(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
-        };
+        }
 
-        /**
-         * @method sphereSphere
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        sphereSphere(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             if (justTest)
             {
@@ -381,17 +369,17 @@ namespace CANNON
          * @param  {Body}       bj
          */
         planeTrimesh(
-            planeShape,
-            trimeshShape,
-            planePos,
-            trimeshPos,
-            planeQuat,
-            trimeshQuat,
-            planeBody,
-            trimeshBody,
-            rsi,
-            rsj,
-            justTest
+            planeShape: Shape,
+            trimeshShape: any,
+            planePos: Vec3,
+            trimeshPos: Vec3,
+            planeQuat: Quaternion,
+            trimeshQuat: Quaternion,
+            planeBody: Body,
+            trimeshBody: Body,
+            rsi: Shape,
+            rsj: Shape,
+            justTest: boolean
         )
         {
             // Make contacts!
@@ -445,34 +433,22 @@ namespace CANNON
                     this.createFrictionEquationsFromContact(r, this.frictionResult);
                 }
             }
-        };
+        }
 
-        /**
-         * @method sphereTrimesh
-         * @param  {Shape}      sphereShape
-         * @param  {Shape}      trimeshShape
-         * @param  {Vec3}       spherePos
-         * @param  {Vec3}       trimeshPos
-         * @param  {Quaternion} sphereQuat
-         * @param  {Quaternion} trimeshQuat
-         * @param  {Body}       sphereBody
-         * @param  {Body}       trimeshBody
-         */
         sphereTrimesh(
-            sphereShape,
-            trimeshShape,
-            spherePos,
-            trimeshPos,
-            sphereQuat,
-            trimeshQuat,
-            sphereBody,
-            trimeshBody,
-            rsi,
-            rsj,
-            justTest
+            sphereShape: Shape,
+            trimeshShape: any,
+            spherePos: Vec3,
+            trimeshPos: Vec3,
+            sphereQuat: Quaternion,
+            trimeshQuat: Quaternion,
+            sphereBody: Body,
+            trimeshBody: Body,
+            rsi: Shape,
+            rsj: Shape,
+            justTest: boolean
         )
         {
-
             var edgeVertexA = sphereTrimesh_edgeVertexA;
             var edgeVertexB = sphereTrimesh_edgeVertexB;
             var edgeVector = sphereTrimesh_edgeVector;
@@ -649,20 +625,9 @@ namespace CANNON
             }
 
             triangles.length = 0;
-        };
+        }
 
-        /**
-         * @method spherePlane
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        spherePlane(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        spherePlane(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             // We will have one contact in this case
             var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
@@ -700,20 +665,9 @@ namespace CANNON
                 this.result.push(r);
                 this.createFrictionEquationsFromContact(r, this.frictionResult);
             }
-        };
+        }
 
-        /**
-         * @method sphereBox
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        sphereBox(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        sphereBox(si: Shape, sj: any, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var v3pool = this.v3pool;
 
@@ -943,20 +897,9 @@ namespace CANNON
                 }
             }
             v3pool.release(edgeTangent, edgeCenter, r, orthogonal, dist1);
-        };
+        }
 
-        /**
-         * @method sphereConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        sphereConvex(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        sphereConvex(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var v3pool = this.v3pool;
             xi.vsub(xj, convex_to_sphere);
@@ -973,7 +916,7 @@ namespace CANNON
             // Check corners
             for (var i = 0; i !== verts.length; i++)
             {
-                var v = verts[i];
+                var v = <Vec3>verts[i];
 
                 // World position of corner
                 var worldCorner = sphereConvex_worldCorner;
@@ -1022,7 +965,7 @@ namespace CANNON
 
                 // Get a world vertex from the face
                 var worldPoint = sphereConvex_worldPoint;
-                qj.vmult(verts[face[0]], worldPoint);
+                qj.vmult(<Vec3>verts[face[0]], worldPoint);
                 worldPoint.vadd(xj, worldPoint);
 
                 // Get a point on the sphere, closest to the face normal
@@ -1047,7 +990,7 @@ namespace CANNON
                     for (var j = 0, Nverts = face.length; j !== Nverts; j++)
                     {
                         var worldVertex = v3pool.get();
-                        qj.vmult(verts[face[j]], worldVertex);
+                        qj.vmult(<Vec3>verts[face[j]], worldVertex);
                         xj.vadd(worldVertex, worldVertex);
                         faceVerts.push(worldVertex);
                     }
@@ -1104,8 +1047,8 @@ namespace CANNON
                             // Get two world transformed vertices
                             var v1 = v3pool.get();
                             var v2 = v3pool.get();
-                            qj.vmult(verts[face[(j + 1) % face.length]], v1);
-                            qj.vmult(verts[face[(j + 2) % face.length]], v2);
+                            qj.vmult(<Vec3>verts[face[(j + 1) % face.length]], v1);
+                            qj.vmult(<Vec3>verts[face[(j + 2) % face.length]], v2);
                             xj.vadd(v1, v1);
                             xj.vadd(v2, v2);
 
@@ -1187,50 +1130,28 @@ namespace CANNON
                     }
                 }
             }
-        };
+        }
 
-        /**
-         * @method planeBox
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        planeBox(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        planeBox(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             sj.convexPolyhedronRepresentation.material = sj.material;
             sj.convexPolyhedronRepresentation.collisionResponse = sj.collisionResponse;
             sj.convexPolyhedronRepresentation.id = sj.id;
             return this.planeConvex(si, sj.convexPolyhedronRepresentation, xi, xj, qi, qj, bi, bj, si, sj, justTest);
-        };
-        /**
-         * @method planeConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
+        }
+
         planeConvex(
-            planeShape,
-            convexShape,
-            planePosition,
-            convexPosition,
-            planeQuat,
-            convexQuat,
-            planeBody,
-            convexBody,
-            si,
-            sj,
-            justTest
+            planeShape: Shape,
+            convexShape: any,
+            planePosition: Vec3,
+            convexPosition: Vec3,
+            planeQuat: Quaternion,
+            convexQuat: Quaternion,
+            planeBody: Body,
+            convexBody: Body,
+            si: Shape,
+            sj: Shape,
+            justTest: boolean
         )
         {
             // Simply return the points behind the plane.
@@ -1290,20 +1211,9 @@ namespace CANNON
             {
                 this.createFrictionFromAverage(numContacts);
             }
-        };
+        }
 
-        /**
-         * @method convexConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        convexConvex(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest, faceListA?, faceListB?)
+        convexConvex(si: any, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: any[], faceListB?: any[])
         {
             var sepAxis = convexConvex_sepAxis;
 
@@ -1355,8 +1265,7 @@ namespace CANNON
                     this.createFrictionFromAverage(numContacts);
                 }
             }
-        };
-
+        }
 
         /**
          * @method convexTrimesh
@@ -1438,19 +1347,7 @@ namespace CANNON
         //     }
         // };
 
-        /**
-         * @method particlePlane
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        planeParticle(sj, si, xj, xi, qj, qi, bj, bi, rsi, rsj, justTest)
+        planeParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var normal = particlePlane_normal;
             normal.set(0, 0, 1);
@@ -1482,21 +1379,9 @@ namespace CANNON
                 this.result.push(r);
                 this.createFrictionEquationsFromContact(r, this.frictionResult);
             }
-        };
+        }
 
-        /**
-         * @method particleSphere
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        sphereParticle(sj, si, xj, xi, qj, qi, bj, bi, rsi, rsj, justTest)
+        sphereParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             // The normal is the unit vector from sphere center to particle center
             var normal = particleSphere_normal;
@@ -1520,21 +1405,9 @@ namespace CANNON
                 this.result.push(r);
                 this.createFrictionEquationsFromContact(r, this.frictionResult);
             }
-        };
+        }
 
-        /**
-         * @method convexParticle
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        convexParticle(sj, si, xj, xi, qj, qi, bj, bi, rsi, rsj, justTest)
+        convexParticle(sj: any, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var penetratedFaceIndex = -1;
             var penetratedFaceNormal = convexParticle_penetratedFaceNormal;
@@ -1620,30 +1493,27 @@ namespace CANNON
                     console.warn("Point found inside convex, but did not find penetrating face!");
                 }
             }
-        };
+        }
 
-        boxHeightfield(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        boxHeightfield(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexHeightfield(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
-        };
+        }
 
-        /**
-         * @method convexHeightfield
-         */
         convexHeightfield(
-            convexShape,
-            hfShape,
-            convexPos,
-            hfPos,
-            convexQuat,
-            hfQuat,
-            convexBody,
-            hfBody,
-            rsi,
-            rsj,
-            justTest
+            convexShape: Shape,
+            hfShape: any,
+            convexPos: Vec3,
+            hfPos: Vec3,
+            convexQuat: Quaternion,
+            hfQuat: Quaternion,
+            convexBody: Body,
+            hfBody: Body,
+            rsi: Shape,
+            rsj: Shape,
+            justTest: boolean
         )
         {
             var data = hfShape.data,
@@ -1725,21 +1595,18 @@ namespace CANNON
             }
         };
 
-        /**
-         * @method sphereHeightfield
-         */
         sphereHeightfield(
-            sphereShape,
-            hfShape,
-            spherePos,
-            hfPos,
-            sphereQuat,
-            hfQuat,
-            sphereBody,
-            hfBody,
-            rsi,
-            rsj,
-            justTest
+            sphereShape: Shape,
+            hfShape: any,
+            spherePos: Vec3,
+            hfPos: Vec3,
+            sphereQuat: Quaternion,
+            hfQuat: Quaternion,
+            sphereBody: Body,
+            hfBody: Body,
+            rsi: Shape,
+            rsj: Shape,
+            justTest: boolean
         )
         {
             var data = hfShape.data,
@@ -1834,7 +1701,7 @@ namespace CANNON
                     */
                 }
             }
-        };
+        }
 
     }
 

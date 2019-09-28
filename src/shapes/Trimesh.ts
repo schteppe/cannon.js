@@ -2,6 +2,7 @@ namespace CANNON
 {
     export class Trimesh extends Shape
     {
+        vertices: number[];
         /**
          * The normals data.
          */
@@ -25,11 +26,9 @@ namespace CANNON
         tree: Octree;
 
         /**
-         * @class Trimesh
-         * @constructor
-         * @param {array} vertices
-         * @param {array} indices
-         * @extends Shape
+         * @param vertices
+         * @param indices
+         * 
          * @example
          *     // How to make a mesh with a single triangle
          *     var vertices = [
@@ -42,7 +41,7 @@ namespace CANNON
          *     ];
          *     var trimeshShape = new Trimesh(vertices, indices);
          */
-        constructor(vertices: Float32Array, indices)
+        constructor(vertices: number[], indices: number[])
         {
             super({
                 type: Shape.types.TRIMESH
@@ -106,8 +105,7 @@ namespace CANNON
                 tree.insert(triangleAABB, i);
             }
             tree.removeEmptyNodes();
-        };
-
+        }
 
         /**
          * Get triangles in a local AABB from the trimesh.
@@ -115,7 +113,7 @@ namespace CANNON
          * @param aabb
          * @param result An array of integers, referencing the queried triangles.
          */
-        getTrianglesInAABB(aabb: AABB, result: any[])
+        getTrianglesInAABB(aabb: AABB, result: number[])
         {
             unscaledAABB.copy(aabb);
 
@@ -134,11 +132,10 @@ namespace CANNON
             u.z /= isz;
 
             return this.tree.aabbQuery(unscaledAABB, result);
-        };
+        }
 
         /**
-         * @method setScale
-         * @param {Vec3} scale
+         * @param scale
          */
         setScale(scale: Vec3)
         {
@@ -156,7 +153,7 @@ namespace CANNON
             this.scale.copy(scale);
             this.updateAABB();
             this.updateBoundingSphereRadius();
-        };
+        }
 
         /**
          * Compute the normals of the faces. Will save in the .normals array.
@@ -185,7 +182,7 @@ namespace CANNON
                 normals[i3 + 1] = n.y;
                 normals[i3 + 2] = n.z;
             }
-        };
+        }
 
         /**
          * Update the .edges property
@@ -216,46 +213,45 @@ namespace CANNON
                 this.edges[2 * i] = parseInt(indices[0], 10);
                 this.edges[2 * i + 1] = parseInt(indices[1], 10);
             }
-        };
+        }
 
         /**
          * Get an edge vertex
-         * @method getEdgeVertex
-         * @param  {number} edgeIndex
-         * @param  {number} firstOrSecond 0 or 1, depending on which one of the vertices you need.
-         * @param  {Vec3} vertexStore Where to store the result
+         * 
+         * @param edgeIndex
+         * @param firstOrSecond 0 or 1, depending on which one of the vertices you need.
+         * @param vertexStore Where to store the result
          */
-        getEdgeVertex(edgeIndex, firstOrSecond, vertexStore)
+        getEdgeVertex(edgeIndex: number, firstOrSecond: number, vertexStore: Vec3)
         {
             var vertexIndex = this.edges[edgeIndex * 2 + (firstOrSecond ? 1 : 0)];
             this.getVertex(vertexIndex, vertexStore);
-        };
+        }
 
         /**
          * Get a vector along an edge.
-         * @method getEdgeVector
-         * @param  {number} edgeIndex
-         * @param  {Vec3} vectorStore
+         * 
+         * @param edgeIndex
+         * @param vectorStore
          */
-        getEdgeVector(edgeIndex, vectorStore)
+        getEdgeVector(edgeIndex: number, vectorStore: Vec3)
         {
             var va = getEdgeVector_va;
             var vb = getEdgeVector_vb;
             this.getEdgeVertex(edgeIndex, 0, va);
             this.getEdgeVertex(edgeIndex, 1, vb);
             vb.vsub(va, vectorStore);
-        };
+        }
 
         /**
          * Get face normal given 3 vertices
-         * @static
-         * @method computeNormal
-         * @param {Vec3} va
-         * @param {Vec3} vb
-         * @param {Vec3} vc
-         * @param {Vec3} target
+         * 
+         * @param va
+         * @param vb
+         * @param vc
+         * @param target
          */
-        static computeNormal(va, vb, vc, target)
+        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3)
         {
             vb.vsub(va, ab);
             vc.vsub(vb, cb);
@@ -264,16 +260,16 @@ namespace CANNON
             {
                 target.normalize();
             }
-        };
+        }
 
         /**
          * Get vertex i.
-         * @method getVertex
-         * @param  {number} i
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         * 
+         * @param i
+         * @param out
+         * @return The "out" vector object
          */
-        getVertex(i, out)
+        getVertex(i: number, out: Vec3)
         {
             var scale = this.scale;
             this._getUnscaledVertex(i, out);
@@ -281,17 +277,16 @@ namespace CANNON
             out.y *= scale.y;
             out.z *= scale.z;
             return out;
-        };
+        }
 
         /**
          * Get raw vertex i
-         * @private
-         * @method _getUnscaledVertex
-         * @param  {number} i
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         * 
+         * @param i
+         * @param out
+         * @return The "out" vector object
          */
-        private _getUnscaledVertex(i, out)
+        private _getUnscaledVertex(i: number, out: Vec3)
         {
             var i3 = i * 3;
             var vertices = this.vertices;
@@ -300,48 +295,48 @@ namespace CANNON
                 vertices[i3 + 1],
                 vertices[i3 + 2]
             );
-        };
+        }
 
         /**
          * Get a vertex from the trimesh,transformed by the given position and quaternion.
-         * @method getWorldVertex
-         * @param  {number} i
-         * @param  {Vec3} pos
-         * @param  {Quaternion} quat
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         * 
+         * @param i
+         * @param pos
+         * @param quat
+         * @param out
+         * @return The "out" vector object
          */
-        getWorldVertex(i, pos, quat, out)
+        getWorldVertex(i: number, pos: Vec3, quat: Quaternion, out: Vec3)
         {
             this.getVertex(i, out);
             Transform.pointToWorldFrame(pos, quat, out, out);
             return out;
-        };
+        }
 
         /**
          * Get the three vertices for triangle i.
-         * @method getTriangleVertices
-         * @param  {number} i
-         * @param  {Vec3} a
-         * @param  {Vec3} b
-         * @param  {Vec3} c
+         * 
+         * @param i
+         * @param a
+         * @param b
+         * @param c
          */
-        getTriangleVertices(i, a, b, c)
+        getTriangleVertices(i: number, a: Vec3, b: Vec3, c: Vec3)
         {
             var i3 = i * 3;
             this.getVertex(this.indices[i3], a);
             this.getVertex(this.indices[i3 + 1], b);
             this.getVertex(this.indices[i3 + 2], c);
-        };
+        }
 
         /**
          * Compute the normal of triangle i.
-         * @method getNormal
-         * @param  {Number} i
-         * @param  {Vec3} target
-         * @return {Vec3} The "target" vector object
+         * 
+         * @param i
+         * @param target
+         * @return The "target" vector object
          */
-        getNormal(i, target)
+        getNormal(i: number, target: Vec3)
         {
             var i3 = i * 3;
             return target.set(
@@ -349,15 +344,15 @@ namespace CANNON
                 this.normals[i3 + 1],
                 this.normals[i3 + 2]
             );
-        };
+        }
 
         /**
-         * @method calculateLocalInertia
-         * @param  {Number} mass
-         * @param  {Vec3} target
-         * @return {Vec3} The "target" vector object
+         * 
+         * @param mass
+         * @param target
+         * @return The "target" vector object
          */
-        calculateLocalInertia(mass, target)
+        calculateLocalInertia(mass: number, target: Vec3)
         {
             // Approximate with box inertia
             // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
@@ -370,14 +365,14 @@ namespace CANNON
                 1.0 / 12.0 * mass * (2 * x * 2 * x + 2 * z * 2 * z),
                 1.0 / 12.0 * mass * (2 * y * 2 * y + 2 * x * 2 * x)
             );
-        };
+        }
 
         /**
          * Compute the local AABB for the trimesh
-         * @method computeLocalAABB
-         * @param  {AABB} aabb
+         * 
+         * @param aabb
          */
-        computeLocalAABB(aabb)
+        computeLocalAABB(aabb: AABB)
         {
             var l = aabb.lowerBound,
                 u = aabb.upperBound,
@@ -417,21 +412,18 @@ namespace CANNON
                     u.z = v.z;
                 }
             }
-        };
-
+        }
 
         /**
          * Update the .aabb property
-         * @method updateAABB
          */
         updateAABB()
         {
             this.computeLocalAABB(this.aabb);
-        };
+        }
 
         /**
          * Will update the .boundingSphereRadius property
-         * @method updateBoundingSphereRadius
          */
         updateBoundingSphereRadius()
         {
@@ -449,16 +441,9 @@ namespace CANNON
                 }
             }
             this.boundingSphereRadius = Math.sqrt(max2);
-        };
+        }
 
-        /**
-         * @method calculateWorldAABB
-         * @param {Vec3}        pos
-         * @param {Quaternion}  quat
-         * @param {Vec3}        min
-         * @param {Vec3}        max
-         */
-        calculateWorldAABB(pos, quat, min, max)
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
         {
             /*
             var n = this.vertices.length / 3,
@@ -504,26 +489,24 @@ namespace CANNON
 
         /**
          * Get approximate volume
-         * @method volume
-         * @return {Number}
          */
         volume()
         {
             return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
-        };
+        }
 
         /**
          * Create a Trimesh instance, shaped as a torus.
-         * @static
-         * @method createTorus
-         * @param  {number} [radius=1]
-         * @param  {number} [tube=0.5]
-         * @param  {number} [radialSegments=8]
-         * @param  {number} [tubularSegments=6]
-         * @param  {number} [arc=6.283185307179586]
-         * @return {Trimesh} A torus
+         * 
+         * @param radius 
+         * @param tube 
+         * @param radialSegments 
+         * @param tubularSegments 
+         * @param arc 
+         * 
+         * @return A torus
          */
-        static createTorus(radius, tube, radialSegments, tubularSegments, arc)
+        static createTorus(radius: number, tube: number, radialSegments: number, tubularSegments: number, arc: number)
         {
             radius = radius || 1;
             tube = tube || 0.5;
@@ -531,8 +514,8 @@ namespace CANNON
             tubularSegments = tubularSegments || 6;
             arc = arc || Math.PI * 2;
 
-            var vertices = [];
-            var indices = [];
+            var vertices: number[] = [];
+            var indices: number[] = [];
 
             for (var j = 0; j <= radialSegments; j++)
             {

@@ -796,9 +796,10 @@ declare namespace CANNON {
         body: Body;
         faces: number[][];
         indices: number[];
-        vertices: Vec3[];
+        vertices: Vec3[] | number[];
         faceNormals: Vec3[];
         convexPolyhedronRepresentation: Shape;
+        radius: number;
         /**
          * Base class for shapes
          *
@@ -827,7 +828,7 @@ declare namespace CANNON {
          * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
          */
         calculateLocalInertia(mass: number, target: Vec3): void;
-        calculateWorldAABB(pos: any, quat: any, min: any, max: any): void;
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
         static idCounter: number;
         /**
          * The available shape types.
@@ -1245,7 +1246,7 @@ declare namespace CANNON {
         calculateLocalInertia(mass: number, target: Vec3): Vec3;
         volume(): number;
         updateBoundingSphereRadius(): void;
-        calculateWorldAABB(pos: any, quat: any, min: any, max: any): void;
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
     }
 }
 declare namespace CANNON {
@@ -1258,10 +1259,10 @@ declare namespace CANNON {
          * @author schteppe
          */
         constructor();
-        computeWorldNormal(quat: any): void;
-        calculateLocalInertia(mass: any, target: any): any;
+        computeWorldNormal(quat: Quaternion): void;
+        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
         volume(): number;
-        calculateWorldAABB(pos: any, quat: any, min: any, max: any): void;
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
         updateBoundingSphereRadius(): void;
     }
 }
@@ -1275,10 +1276,10 @@ declare namespace CANNON {
          * @author schteppe / http://github.com/schteppe
          */
         constructor(radius: number);
-        calculateLocalInertia(mass: any, target: any): any;
+        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
         volume(): number;
         updateBoundingSphereRadius(): void;
-        calculateWorldAABB(pos: any, quat: any, min: any, max: any): void;
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
     }
 }
 declare namespace CANNON {
@@ -1362,6 +1363,7 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class Trimesh extends Shape {
+        vertices: number[];
         /**
          * The normals data.
          */
@@ -1383,11 +1385,9 @@ declare namespace CANNON {
          */
         tree: Octree;
         /**
-         * @class Trimesh
-         * @constructor
-         * @param {array} vertices
-         * @param {array} indices
-         * @extends Shape
+         * @param vertices
+         * @param indices
+         *
          * @example
          *     // How to make a mesh with a single triangle
          *     var vertices = [
@@ -1400,7 +1400,7 @@ declare namespace CANNON {
          *     ];
          *     var trimeshShape = new Trimesh(vertices, indices);
          */
-        constructor(vertices: Float32Array, indices: any);
+        constructor(vertices: number[], indices: number[]);
         updateTree(): void;
         /**
          * Get triangles in a local AABB from the trimesh.
@@ -1408,10 +1408,9 @@ declare namespace CANNON {
          * @param aabb
          * @param result An array of integers, referencing the queried triangles.
          */
-        getTrianglesInAABB(aabb: AABB, result: any[]): any;
+        getTrianglesInAABB(aabb: AABB, result: number[]): any[];
         /**
-         * @method setScale
-         * @param {Vec3} scale
+         * @param scale
          */
         setScale(scale: Vec3): void;
         /**
@@ -1424,122 +1423,109 @@ declare namespace CANNON {
         updateEdges(): void;
         /**
          * Get an edge vertex
-         * @method getEdgeVertex
-         * @param  {number} edgeIndex
-         * @param  {number} firstOrSecond 0 or 1, depending on which one of the vertices you need.
-         * @param  {Vec3} vertexStore Where to store the result
+         *
+         * @param edgeIndex
+         * @param firstOrSecond 0 or 1, depending on which one of the vertices you need.
+         * @param vertexStore Where to store the result
          */
-        getEdgeVertex(edgeIndex: any, firstOrSecond: any, vertexStore: any): void;
+        getEdgeVertex(edgeIndex: number, firstOrSecond: number, vertexStore: Vec3): void;
         /**
          * Get a vector along an edge.
-         * @method getEdgeVector
-         * @param  {number} edgeIndex
-         * @param  {Vec3} vectorStore
+         *
+         * @param edgeIndex
+         * @param vectorStore
          */
-        getEdgeVector(edgeIndex: any, vectorStore: any): void;
+        getEdgeVector(edgeIndex: number, vectorStore: Vec3): void;
         /**
          * Get face normal given 3 vertices
-         * @static
-         * @method computeNormal
-         * @param {Vec3} va
-         * @param {Vec3} vb
-         * @param {Vec3} vc
-         * @param {Vec3} target
+         *
+         * @param va
+         * @param vb
+         * @param vc
+         * @param target
          */
-        static computeNormal(va: any, vb: any, vc: any, target: any): void;
+        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3): void;
         /**
          * Get vertex i.
-         * @method getVertex
-         * @param  {number} i
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         *
+         * @param i
+         * @param out
+         * @return The "out" vector object
          */
-        getVertex(i: any, out: any): any;
+        getVertex(i: number, out: Vec3): Vec3;
         /**
          * Get raw vertex i
-         * @private
-         * @method _getUnscaledVertex
-         * @param  {number} i
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         *
+         * @param i
+         * @param out
+         * @return The "out" vector object
          */
         private _getUnscaledVertex;
         /**
          * Get a vertex from the trimesh,transformed by the given position and quaternion.
-         * @method getWorldVertex
-         * @param  {number} i
-         * @param  {Vec3} pos
-         * @param  {Quaternion} quat
-         * @param  {Vec3} out
-         * @return {Vec3} The "out" vector object
+         *
+         * @param i
+         * @param pos
+         * @param quat
+         * @param out
+         * @return The "out" vector object
          */
-        getWorldVertex(i: any, pos: any, quat: any, out: any): any;
+        getWorldVertex(i: number, pos: Vec3, quat: Quaternion, out: Vec3): Vec3;
         /**
          * Get the three vertices for triangle i.
-         * @method getTriangleVertices
-         * @param  {number} i
-         * @param  {Vec3} a
-         * @param  {Vec3} b
-         * @param  {Vec3} c
+         *
+         * @param i
+         * @param a
+         * @param b
+         * @param c
          */
-        getTriangleVertices(i: any, a: any, b: any, c: any): void;
+        getTriangleVertices(i: number, a: Vec3, b: Vec3, c: Vec3): void;
         /**
          * Compute the normal of triangle i.
-         * @method getNormal
-         * @param  {Number} i
-         * @param  {Vec3} target
-         * @return {Vec3} The "target" vector object
+         *
+         * @param i
+         * @param target
+         * @return The "target" vector object
          */
-        getNormal(i: any, target: any): any;
+        getNormal(i: number, target: Vec3): Vec3;
         /**
-         * @method calculateLocalInertia
-         * @param  {Number} mass
-         * @param  {Vec3} target
-         * @return {Vec3} The "target" vector object
+         *
+         * @param mass
+         * @param target
+         * @return The "target" vector object
          */
-        calculateLocalInertia(mass: any, target: any): any;
+        calculateLocalInertia(mass: number, target: Vec3): Vec3;
         /**
          * Compute the local AABB for the trimesh
-         * @method computeLocalAABB
-         * @param  {AABB} aabb
+         *
+         * @param aabb
          */
-        computeLocalAABB(aabb: any): void;
+        computeLocalAABB(aabb: AABB): void;
         /**
          * Update the .aabb property
-         * @method updateAABB
          */
         updateAABB(): void;
         /**
          * Will update the .boundingSphereRadius property
-         * @method updateBoundingSphereRadius
          */
         updateBoundingSphereRadius(): void;
-        /**
-         * @method calculateWorldAABB
-         * @param {Vec3}        pos
-         * @param {Quaternion}  quat
-         * @param {Vec3}        min
-         * @param {Vec3}        max
-         */
-        calculateWorldAABB(pos: any, quat: any, min: any, max: any): void;
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
         /**
          * Get approximate volume
-         * @method volume
-         * @return {Number}
          */
         volume(): number;
         /**
          * Create a Trimesh instance, shaped as a torus.
-         * @static
-         * @method createTorus
-         * @param  {number} [radius=1]
-         * @param  {number} [tube=0.5]
-         * @param  {number} [radialSegments=8]
-         * @param  {number} [tubularSegments=6]
-         * @param  {number} [arc=6.283185307179586]
-         * @return {Trimesh} A torus
+         *
+         * @param radius
+         * @param tube
+         * @param radialSegments
+         * @param tubularSegments
+         * @param arc
+         *
+         * @return A torus
          */
-        static createTorus(radius: any, tube: any, radialSegments: any, tubularSegments: any, arc: any): Trimesh;
+        static createTorus(radius: number, tube: number, radialSegments: number, tubularSegments: number, arc: number): Trimesh;
     }
 }
 declare namespace CANNON {
@@ -1563,42 +1549,43 @@ declare namespace CANNON {
         children: OctreeNode[];
         maxDepth: number;
         /**
-         * @class OctreeNode
-         * @param {object} [options]
-         * @param {Octree} [options.root]
-         * @param {AABB} [options.aabb]
+         *
+         * @param options
          */
-        constructor(options: any);
-        reset(aabb?: any, options?: any): void;
+        constructor(options?: {
+            root?: Octree;
+            aabb?: AABB;
+        });
+        reset(aabb?: AABB, options?: any): void;
         /**
          * Insert data into this node
-         * @method insert
-         * @param  {AABB} aabb
-         * @param  {object} elementData
-         * @return {boolean} True if successful, otherwise false
+         *
+         * @param aabb
+         * @param elementData
+         * @return True if successful, otherwise false
          */
-        insert(aabb: any, elementData: any, level?: number): boolean;
+        insert(aabb: AABB, elementData: any, level?: number): boolean;
         /**
          * Create 8 equally sized children nodes and put them in the .children array.
          */
         subdivide(): void;
         /**
          * Get all data, potentially within an AABB
-         * @method aabbQuery
-         * @param  {AABB} aabb
-         * @param  {array} result
-         * @return {array} The "result" object
+         *
+         * @param aabb
+         * @param result
+         * @return The "result" object
          */
-        aabbQuery(aabb: any, result: any): any;
+        aabbQuery(aabb: AABB, result: any[]): any[];
         /**
          * Get all data, potentially intersected by a ray.
-         * @method rayQuery
-         * @param  {Ray} ray
-         * @param  {Transform} treeTransform
-         * @param  {array} result
-         * @return {array} The "result" object
+         *
+         * @param ray
+         * @param treeTransform
+         * @param result
+         * @return The "result" object
          */
-        rayQuery(ray: any, treeTransform: any, result: any): any;
+        rayQuery(ray: Ray, treeTransform: Transform, result: any[]): any[];
         removeEmptyNodes(): void;
     }
     class Octree extends OctreeNode {
@@ -3104,12 +3091,10 @@ declare namespace CANNON {
         nodePool: any[];
         /**
          * Splits the equations into islands and solves them independently. Can improve performance.
-         * @class SplitSolver
-         * @constructor
-         * @extends Solver
-         * @param {Solver} subsolver
+         *
+         * @param subsolver
          */
-        constructor(subsolver: any);
+        constructor(subsolver: Solver);
         createNode(): {
             body: any;
             children: any[];
@@ -3428,18 +3413,17 @@ declare namespace CANNON {
         constructor(world: World);
         /**
          * Make a contact object, by using the internal pool or creating a new one.
-         * @method createContactEquation
-         * @param {Body} bi
-         * @param {Body} bj
-         * @param {Shape} si
-         * @param {Shape} sj
-         * @param {Shape} overrideShapeA
-         * @param {Shape} overrideShapeB
-         * @return {ContactEquation}
+         *
+         * @param bi
+         * @param bj
+         * @param si
+         * @param sj
+         * @param overrideShapeA
+         * @param overrideShapeB
          */
-        createContactEquation(bi: any, bj: any, si: any, sj: any, overrideShapeA: any, overrideShapeB: any): any;
-        createFrictionEquationsFromContact(contactEquation: any, outArray: any): boolean;
-        createFrictionFromAverage(numContacts: any): void;
+        createContactEquation(bi: Body, bj: Body, si: Shape, sj: Shape, overrideShapeA: Shape, overrideShapeB: Shape): any;
+        createFrictionEquationsFromContact(contactEquation: any, outArray: FrictionEquation[]): boolean;
+        createFrictionFromAverage(numContacts: number): void;
         /**
          * Generate all contacts between a list of body pairs
          * @method getContacts
@@ -3449,22 +3433,11 @@ declare namespace CANNON {
          * @param {array} result Array to store generated contacts
          * @param {array} oldcontacts Optional. Array of reusable contact objects
          */
-        getContacts(p1: any, p2: any, world: any, result: any, oldcontacts: any, frictionResult: any, frictionPool: any): void;
+        getContacts(p1: Body[], p2: Body[], world: World, result: any[], oldcontacts: any[], frictionResult: any[], frictionPool: any[]): void;
         boxBox(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
         boxConvex(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
         boxParticle(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method sphereSphere
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        sphereSphere(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
+        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
         /**
          * @method planeTrimesh
          * @param  {Shape}      si
@@ -3476,92 +3449,14 @@ declare namespace CANNON {
          * @param  {Body}       bi
          * @param  {Body}       bj
          */
-        planeTrimesh(planeShape: any, trimeshShape: any, planePos: any, trimeshPos: any, planeQuat: any, trimeshQuat: any, planeBody: any, trimeshBody: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method sphereTrimesh
-         * @param  {Shape}      sphereShape
-         * @param  {Shape}      trimeshShape
-         * @param  {Vec3}       spherePos
-         * @param  {Vec3}       trimeshPos
-         * @param  {Quaternion} sphereQuat
-         * @param  {Quaternion} trimeshQuat
-         * @param  {Body}       sphereBody
-         * @param  {Body}       trimeshBody
-         */
-        sphereTrimesh(sphereShape: any, trimeshShape: any, spherePos: any, trimeshPos: any, sphereQuat: any, trimeshQuat: any, sphereBody: any, trimeshBody: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method spherePlane
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        spherePlane(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method sphereBox
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        sphereBox(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method sphereConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        sphereConvex(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method planeBox
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        planeBox(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method planeConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        planeConvex(planeShape: any, convexShape: any, planePosition: any, convexPosition: any, planeQuat: any, convexQuat: any, planeBody: any, convexBody: any, si: any, sj: any, justTest: any): boolean;
-        /**
-         * @method convexConvex
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        convexConvex(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any, faceListA?: any, faceListB?: any): boolean;
+        planeTrimesh(planeShape: Shape, trimeshShape: any, planePos: Vec3, trimeshPos: Vec3, planeQuat: Quaternion, trimeshQuat: Quaternion, planeBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereTrimesh(sphereShape: Shape, trimeshShape: any, spherePos: Vec3, trimeshPos: Vec3, sphereQuat: Quaternion, trimeshQuat: Quaternion, sphereBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        spherePlane(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereBox(si: Shape, sj: any, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereConvex(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        planeBox(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        planeConvex(planeShape: Shape, convexShape: any, planePosition: Vec3, convexPosition: Vec3, planeQuat: Quaternion, convexQuat: Quaternion, planeBody: Body, convexBody: Body, si: Shape, sj: Shape, justTest: boolean): boolean;
+        convexConvex(si: any, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: any[], faceListB?: any[]): boolean;
         /**
          * @method convexTrimesh
          * @param  {Array}      result
@@ -3574,54 +3469,12 @@ declare namespace CANNON {
          * @param  {Body}       bi
          * @param  {Body}       bj
          */
-        /**
-         * @method particlePlane
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        planeParticle(sj: any, si: any, xj: any, xi: any, qj: any, qi: any, bj: any, bi: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method particleSphere
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        sphereParticle(sj: any, si: any, xj: any, xi: any, qj: any, qi: any, bj: any, bi: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method convexParticle
-         * @param  {Array}      result
-         * @param  {Shape}      si
-         * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
-         * @param  {Quaternion} qi
-         * @param  {Quaternion} qj
-         * @param  {Body}       bi
-         * @param  {Body}       bj
-         */
-        convexParticle(sj: any, si: any, xj: any, xi: any, qj: any, qi: any, bj: any, bi: any, rsi: any, rsj: any, justTest: any): boolean;
-        boxHeightfield(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method convexHeightfield
-         */
-        convexHeightfield(convexShape: any, hfShape: any, convexPos: any, hfPos: any, convexQuat: any, hfQuat: any, convexBody: any, hfBody: any, rsi: any, rsj: any, justTest: any): boolean;
-        /**
-         * @method sphereHeightfield
-         */
-        sphereHeightfield(sphereShape: any, hfShape: any, spherePos: any, hfPos: any, sphereQuat: any, hfQuat: any, sphereBody: any, hfBody: any, rsi: any, rsj: any, justTest: any): boolean;
+        planeParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        convexParticle(sj: any, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        boxHeightfield(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        convexHeightfield(convexShape: Shape, hfShape: any, convexPos: Vec3, hfPos: Vec3, convexQuat: Quaternion, hfQuat: Quaternion, convexBody: Body, hfBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereHeightfield(sphereShape: Shape, hfShape: any, spherePos: Vec3, hfPos: Vec3, sphereQuat: Quaternion, hfQuat: Quaternion, sphereBody: Body, hfBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
     }
 }
 //# sourceMappingURL=cannon.d.ts.map

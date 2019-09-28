@@ -10,12 +10,10 @@ namespace CANNON
 
         /**
          * Splits the equations into islands and solves them independently. Can improve performance.
-         * @class SplitSolver
-         * @constructor
-         * @extends Solver
-         * @param {Solver} subsolver
+         * 
+         * @param subsolver
          */
-        constructor(subsolver)
+        constructor(subsolver: Solver)
         {
             super();
             this.iterations = 10;
@@ -34,7 +32,7 @@ namespace CANNON
         createNode()
         {
             return { body: null, children: [], eqs: [], visited: false };
-        };
+        }
 
         /**
          * Solve the subsystems
@@ -112,7 +110,7 @@ namespace CANNON
             }
 
             return n;
-        };
+        }
     }
 
 
@@ -158,7 +156,7 @@ namespace CANNON
         }
     }
 
-    function visitFunc(node, bds, eqs)
+    function visitFunc(node: any, bds: any[], eqs: any[])
     {
         bds.push(node.body);
         var Neqs = node.eqs.length;

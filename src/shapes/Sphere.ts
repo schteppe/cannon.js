@@ -26,27 +26,26 @@ namespace CANNON
             this.updateBoundingSphereRadius();
         }
 
-        calculateLocalInertia(mass, target)
+        calculateLocalInertia(mass: number, target = new Vec3())
         {
-            target = target || new Vec3();
             var I = 2.0 * mass * this.radius * this.radius / 5.0;
             target.x = I;
             target.y = I;
             target.z = I;
             return target;
-        };
+        }
 
         volume()
         {
             return 4.0 * Math.PI * this.radius / 3.0;
-        };
+        }
 
         updateBoundingSphereRadius()
         {
             this.boundingSphereRadius = this.radius;
-        };
+        }
 
-        calculateWorldAABB(pos, quat, min, max)
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
         {
             var r = this.radius;
             var axes = ['x', 'y', 'z'];
@@ -56,7 +55,7 @@ namespace CANNON
                 min[ax] = pos[ax] - r;
                 max[ax] = pos[ax] + r;
             }
-        };
+        }
 
     }
 }

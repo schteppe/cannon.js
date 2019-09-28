@@ -23,26 +23,25 @@ namespace CANNON
             this.boundingSphereRadius = Number.MAX_VALUE;
         }
 
-        computeWorldNormal(quat)
+        computeWorldNormal(quat: Quaternion)
         {
             var n = this.worldNormal;
             n.set(0, 0, 1);
             quat.vmult(n, n);
             this.worldNormalNeedsUpdate = false;
-        };
+        }
 
-        calculateLocalInertia(mass, target)
+        calculateLocalInertia(mass: number, target = new Vec3())
         {
-            target = target || new Vec3();
             return target;
-        };
+        }
 
         volume()
         {
             return Number.MAX_VALUE; // The plane is infinite...
-        };
+        }
 
-        calculateWorldAABB(pos, quat, min, max)
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
         {
             // The plane AABB is infinite, except if the normal is pointing along any axis
             tempNormal.set(0, 0, 1); // Default plane normal is z
@@ -58,12 +57,12 @@ namespace CANNON
             if (tempNormal.x === -1) { min.x = pos.x; }
             if (tempNormal.y === -1) { min.y = pos.y; }
             if (tempNormal.z === -1) { min.z = pos.z; }
-        };
+        }
 
         updateBoundingSphereRadius()
         {
             this.boundingSphereRadius = Number.MAX_VALUE;
-        };
+        }
     }
 
     var tempNormal = new Vec3();

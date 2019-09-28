@@ -416,7 +416,7 @@ namespace CANNON
 
             // Checking faces
             var faces = shape.faces,
-                vertices = shape.vertices,
+                vertices = <Vec3[]>shape.vertices,
                 normals = shape.faceNormals;
             var direction = this._direction;
 
