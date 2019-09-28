@@ -5,7 +5,7 @@ namespace cannon
         /**
          * All equations to be solved
          */
-        equations: [];
+        equations: { bi, bj }[];
 
         /**
          * Constraint equation solver base class.
