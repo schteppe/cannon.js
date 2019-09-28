@@ -51,6 +51,7 @@
         "src/objects/Spring.ts",
         "src/objects/WheelInfo.ts",
         "src/objects/RaycastVehicle.ts",
+        "src/objects/RigidVehicle.ts",
         "src/equations/Equation.ts",
         "src/equations/ConeEquation.ts",
         "src/equations/ContactEquation.ts",

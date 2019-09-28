@@ -221,7 +221,7 @@ namespace cannon
          *     body.addShape(shape);
          *     world.addBody(body);
          */
-        constructor(options)
+        constructor(options, a)
         {
             super();
             options = options || {};

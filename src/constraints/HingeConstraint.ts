@@ -27,7 +27,7 @@ namespace cannon
          * 
          * @author schteppe
          */
-        constructor(bodyA: Body, bodyB: Body, options: { pivotA?: Vec3, pivotB?: Vec3, maxForce?: number, axisA?: Vec3, axisB?: Vec3 } = {})
+        constructor(bodyA: Body, bodyB: Body, options: { pivotA?: Vec3, pivotB?: Vec3, maxForce?: number, axisA?: Vec3, axisB?: Vec3, collideConnected?: boolean } = {})
         {
             super(bodyA, options.pivotA ? options.pivotA.clone() : new Vec3(), bodyB, options.pivotB ? options.pivotB.clone() : new Vec3(), maxForce);
 
