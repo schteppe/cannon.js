@@ -127,16 +127,7 @@ namespace CANNON
 
         /**
          * The physics world
-         * @class World
-         * @constructor
-         * @extends EventTarget
-         * @param {object} [options]
-         * @param {Vec3} [options.gravity]
-         * @param {boolean} [options.allowSleep]
-         * @param {Broadphase} [options.broadphase]
-         * @param {Solver} [options.solver]
-         * @param {boolean} [options.quatNormalizeFast]
-         * @param {number} [options.quatNormalizeSkip]
+         * @param options 
          */
         constructor(options: { gravity?: Vec3, allowSleep?: boolean, broadphase?: Broadphase, solver?: Solver, quatNormalizeFast?: boolean, quatNormalizeSkip?: number } = {})
         {
@@ -206,7 +197,7 @@ namespace CANNON
         getContactMaterial(m1: Material, m2: Material)
         {
             return this.contactMaterialTable.get(m1.id, m2.id); //this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
-        };
+        }
 
         /**
          * Get number of objects in the world.
@@ -215,7 +206,7 @@ namespace CANNON
         numObjects()
         {
             return this.bodies.length;
-        };
+        }
 
         /**
          * Store old collision state info
@@ -229,7 +220,7 @@ namespace CANNON
 
             this.bodyOverlapKeeper.tick();
             this.shapeOverlapKeeper.tick();
-        };
+        }
 
         /**
          * Add a rigid body to the simulation.
@@ -260,7 +251,7 @@ namespace CANNON
             this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
             this.dispatchEvent(this.addBodyEvent);
-        };
+        }
 
         /**
          * Add a rigid body to the simulation.
@@ -291,7 +282,7 @@ namespace CANNON
             this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
             this.dispatchEvent(this.addBodyEvent);
-        };
+        }
 
         /**
          * Add a constraint to the simulation.
@@ -300,7 +291,7 @@ namespace CANNON
         addConstraint(c: Constraint)
         {
             this.constraints.push(c);
-        };
+        }
 
         /**
          * Removes a constraint
@@ -313,7 +304,7 @@ namespace CANNON
             {
                 this.constraints.splice(idx, 1);
             }
-        };
+        }
 
         /**
          * Raycast test
@@ -337,7 +328,7 @@ namespace CANNON
                     skipBackfaces: true
                 }, result);
             }
-        };
+        }
 
         /**
          * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
@@ -354,7 +345,7 @@ namespace CANNON
             options.to = to;
             options.callback = callback;
             return tmpRay.intersectWorld(this, options);
-        };
+        }
 
         /**
          * Ray cast, and stop at the first result. Note that the order is random - but the method is fast.
@@ -373,7 +364,7 @@ namespace CANNON
             options.to = to;
             options.result = result;
             return tmpRay.intersectWorld(this, options);
-        };
+        }
 
         /**
          * Ray cast, and return information of the closest hit.
@@ -392,7 +383,7 @@ namespace CANNON
             options.to = to;
             options.result = result;
             return tmpRay.intersectWorld(this, options);
-        };
+        }
 
         /**
          * Remove a rigid body from the simulation.
@@ -420,7 +411,7 @@ namespace CANNON
                 delete this.idToBodyMap[body.id];
                 this.dispatchEvent(this.removeBodyEvent);
             }
-        };
+        }
 
         /**
          * Remove a rigid body from the simulation.
@@ -447,13 +438,13 @@ namespace CANNON
                 delete this.idToBodyMap[body.id];
                 this.dispatchEvent(this.removeBodyEvent);
             }
-        };
+        }
 
 
         getBodyById(id: number)
         {
             return this.idToBodyMap[id];
-        };
+        }
 
         // TODO Make a faster map
         getShapeById(id: number)
@@ -471,7 +462,7 @@ namespace CANNON
                     }
                 }
             }
-        };
+        }
 
         /**
          * Adds a material to the World.
@@ -481,7 +472,7 @@ namespace CANNON
         addMaterial(m: Material)
         {
             this.materials.push(m);
-        };
+        }
 
         /**
          * Adds a contact material to the World
@@ -495,8 +486,7 @@ namespace CANNON
 
             // Add current contact material to the material table
             this.contactMaterialTable.set(cmat.materials[0].id, cmat.materials[1].id, cmat);
-        };
-
+        }
 
         /**
          * Step the physics world forward in time.
@@ -549,7 +539,7 @@ namespace CANNON
                 }
                 this.time += timeSinceLastCalled;
             }
-        };
+        }
 
         internalStep(dt: number)
         {
@@ -935,7 +925,7 @@ namespace CANNON
                     bodies[i].sleepTick(this.time);
                 }
             }
-        };
+        }
 
         emitContactEvents = (function ()
         {
@@ -1057,7 +1047,7 @@ namespace CANNON
                 b.force.set(0, 0, 0);
                 b.torque.set(0, 0, 0);
             }
-        };
+        }
     }
 
 

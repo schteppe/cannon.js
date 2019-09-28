@@ -3206,16 +3206,7 @@ declare namespace CANNON {
         idToBodyMap: {};
         /**
          * The physics world
-         * @class World
-         * @constructor
-         * @extends EventTarget
-         * @param {object} [options]
-         * @param {Vec3} [options.gravity]
-         * @param {boolean} [options.allowSleep]
-         * @param {Broadphase} [options.broadphase]
-         * @param {Solver} [options.solver]
-         * @param {boolean} [options.quatNormalizeFast]
-         * @param {number} [options.quatNormalizeSkip]
+         * @param options
          */
         constructor(options?: {
             gravity?: Vec3;

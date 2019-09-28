@@ -8103,16 +8103,7 @@ var CANNON;
         __extends(World, _super);
         /**
          * The physics world
-         * @class World
-         * @constructor
-         * @extends EventTarget
-         * @param {object} [options]
-         * @param {Vec3} [options.gravity]
-         * @param {boolean} [options.allowSleep]
-         * @param {Broadphase} [options.broadphase]
-         * @param {Solver} [options.solver]
-         * @param {boolean} [options.quatNormalizeFast]
-         * @param {number} [options.quatNormalizeSkip]
+         * @param options
          */
         function World(options) {
             if (options === void 0) { options = {}; }
@@ -8279,7 +8270,6 @@ var CANNON;
         World.prototype.getContactMaterial = function (m1, m2) {
             return this.contactMaterialTable.get(m1.id, m2.id); //this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
         };
-        ;
         /**
          * Get number of objects in the world.
          * @deprecated
@@ -8287,7 +8277,6 @@ var CANNON;
         World.prototype.numObjects = function () {
             return this.bodies.length;
         };
-        ;
         /**
          * Store old collision state info
          */
@@ -8299,7 +8288,6 @@ var CANNON;
             this.bodyOverlapKeeper.tick();
             this.shapeOverlapKeeper.tick();
         };
-        ;
         /**
          * Add a rigid body to the simulation.
          * @param body
@@ -8327,7 +8315,6 @@ var CANNON;
             this.idToBodyMap[body.id] = body;
             this.dispatchEvent(this.addBodyEvent);
         };
-        ;
         /**
          * Add a rigid body to the simulation.
          * @method add
@@ -8355,7 +8342,6 @@ var CANNON;
             this.idToBodyMap[body.id] = body;
             this.dispatchEvent(this.addBodyEvent);
         };
-        ;
         /**
          * Add a constraint to the simulation.
          * @param c
@@ -8363,7 +8349,6 @@ var CANNON;
         World.prototype.addConstraint = function (c) {
             this.constraints.push(c);
         };
-        ;
         /**
          * Removes a constraint
          * @param c
@@ -8374,7 +8359,6 @@ var CANNON;
                 this.constraints.splice(idx, 1);
             }
         };
-        ;
         /**
          * Raycast test
          * @param from
@@ -8396,7 +8380,6 @@ var CANNON;
                 }, result);
             }
         };
-        ;
         /**
          * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
          * @param from
@@ -8413,7 +8396,6 @@ var CANNON;
             options.callback = callback;
             return tmpRay.intersectWorld(this, options);
         };
-        ;
         /**
          * Ray cast, and stop at the first result. Note that the order is random - but the method is fast.
          *
@@ -8431,7 +8413,6 @@ var CANNON;
             options.result = result;
             return tmpRay.intersectWorld(this, options);
         };
-        ;
         /**
          * Ray cast, and return information of the closest hit.
          *
@@ -8449,7 +8430,6 @@ var CANNON;
             options.result = result;
             return tmpRay.intersectWorld(this, options);
         };
-        ;
         /**
          * Remove a rigid body from the simulation.
          * @param body
@@ -8470,7 +8450,6 @@ var CANNON;
                 this.dispatchEvent(this.removeBodyEvent);
             }
         };
-        ;
         /**
          * Remove a rigid body from the simulation.
          * @param body
@@ -8490,11 +8469,9 @@ var CANNON;
                 this.dispatchEvent(this.removeBodyEvent);
             }
         };
-        ;
         World.prototype.getBodyById = function (id) {
             return this.idToBodyMap[id];
         };
-        ;
         // TODO Make a faster map
         World.prototype.getShapeById = function (id) {
             var bodies = this.bodies;
@@ -8508,7 +8485,6 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Adds a material to the World.
          * @param m
@@ -8517,7 +8493,6 @@ var CANNON;
         World.prototype.addMaterial = function (m) {
             this.materials.push(m);
         };
-        ;
         /**
          * Adds a contact material to the World
          * @param cmat
@@ -8528,7 +8503,6 @@ var CANNON;
             // Add current contact material to the material table
             this.contactMaterialTable.set(cmat.materials[0].id, cmat.materials[1].id, cmat);
         };
-        ;
         /**
          * Step the physics world forward in time.
          *
@@ -8571,7 +8545,6 @@ var CANNON;
                 this.time += timeSinceLastCalled;
             }
         };
-        ;
         World.prototype.internalStep = function (dt) {
             this.dt = dt;
             var world = this, that = this, contacts = this.contacts, p1 = World_step_p1, p2 = World_step_p2, N = this.numObjects(), bodies = this.bodies, solver = this.solver, gravity = this.gravity, doProfiling = this.doProfiling, profile = this.profile, DYNAMIC = CANNON.Body.DYNAMIC, profilingStart, constraints = this.constraints, frictionEquationPool = World_step_frictionEquationPool, gnorm = gravity.norm(), gx = gravity.x, gy = gravity.y, gz = gravity.z, i = 0;
@@ -8834,7 +8807,6 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Sets all body forces in the world to zero.
          * @method clearForces
@@ -8848,7 +8820,6 @@ var CANNON;
                 b.torque.set(0, 0, 0);
             }
         };
-        ;
         return World;
     }(CANNON.EventTarget));
     CANNON.World = World;
