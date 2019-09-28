@@ -28,6 +28,8 @@
         "src/utils/TupleDictionary.ts",
         "src/constraints/Constraint.ts",
         "src/constraints/DistanceConstraint.ts",
+        "src/constraints/PointToPointConstraint.ts",
+        "src/constraints/ConeTwistConstraint.ts",
         "src/shapes/Shape.ts",
         "src/shapes/ConvexPolyhedron.ts",
         "src/shapes/Box.ts",
