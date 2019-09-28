@@ -37,6 +37,7 @@
         "src/shapes/Box.ts",
         "src/shapes/Cylinder.ts",
         "src/shapes/Heightfield.ts",
+        "src/shapes/Particle.ts",
         "src/collision/AABB.ts",
         "src/collision/ArrayCollisionMatrix.ts",
         "src/collision/ObjectCollisionMatrix.ts",
