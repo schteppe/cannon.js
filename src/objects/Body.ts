@@ -499,14 +499,12 @@ namespace cannon
 
         /**
          * Convert a world vector to local body frame.
-         * @method vectorToLocalFrame
-         * @param  {Vec3} worldPoint
-         * @param  {Vec3} result
-         * @return {Vec3}
+         * 
+         * @param worldPoint
+         * @param result
          */
-        vectorToLocalFrame(worldVector, result)
+        vectorToLocalFrame(worldVector, result = new Vec3())
         {
-            var result = result || new Vec3();
             this.quaternion.conjugate().vmult(worldVector, result);
             return result;
         };

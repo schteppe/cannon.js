@@ -31,6 +31,7 @@
         "src/constraints/PointToPointConstraint.ts",
         "src/constraints/ConeTwistConstraint.ts",
         "src/constraints/HingeConstraint.ts",
+        "src/constraints/LockConstraint.ts",
         "src/shapes/Shape.ts",
         "src/shapes/ConvexPolyhedron.ts",
         "src/shapes/Box.ts",
