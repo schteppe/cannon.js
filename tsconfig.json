@@ -40,6 +40,7 @@
         "src/shapes/Particle.ts",
         "src/shapes/Plane.ts",
         "src/shapes/Sphere.ts",
+        "src/shapes/Trimesh.ts",
         "src/collision/AABB.ts",
         "src/collision/ArrayCollisionMatrix.ts",
         "src/collision/ObjectCollisionMatrix.ts",
