@@ -443,11 +443,11 @@ namespace CANNON
 
             if (this.cacheEnabled)
             {
-                var data = this.getCachedConvexTrianglePillar(xi, yi, getUpperTriangle);
-                if (data)
+                var data0 = this.getCachedConvexTrianglePillar(xi, yi, getUpperTriangle);
+                if (data0)
                 {
-                    this.pillarConvex = data.convex;
-                    this.pillarOffset = data.offset;
+                    this.pillarConvex = data0.convex;
+                    this.pillarOffset = data0.offset;
                     return;
                 }
 

@@ -86,6 +86,11 @@ namespace CANNON
             throw "calculateLocalInertia() not implemented for shape type " + this.type;
         };
 
+        calculateWorldAABB(pos, quat, min, max)
+        {
+            throw "未实现";
+        }
+
         static idCounter = 0;
 
         /**

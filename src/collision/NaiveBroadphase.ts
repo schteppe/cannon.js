@@ -1,6 +1,6 @@
 namespace CANNON
 {
-    export class GridBroaNaiveBroadphasedphase extends Broadphase
+    export class NaiveBroadphase extends Broadphase
     {
 
         /**

@@ -1092,7 +1092,7 @@ namespace CANNON
     /**
      * Dispatched after the world has stepped forward in time.
      */
-    var World_step_postStepEvent = { type: "postStep" }, // Reusable event objects to save memory
+    var World_step_postStepEvent = { type: "postStep" }; // Reusable event objects to save memory
     /**
      * Dispatched before the world steps forward in time.
      */

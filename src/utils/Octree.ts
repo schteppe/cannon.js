@@ -77,10 +77,9 @@ namespace CANNON
          * @param  {object} elementData
          * @return {boolean} True if successful, otherwise false
          */
-        insert(aabb, elementData, level)
+        insert(aabb, elementData, level = 0)
         {
             var nodeData = this.data;
-            level = level || 0;
 
             // Ignore objects that do not belong in this node
             if (!this.aabb.contains(aabb))

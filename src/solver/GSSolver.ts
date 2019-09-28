@@ -60,7 +60,7 @@ namespace CANNON
             {
                 var c = equations[i];
                 lambda[i] = 0.0;
-                Bs[i] = c.computeB(h);
+                Bs[i] = c.computeB(h, 0, 0);
                 invCs[i] = 1.0 / c.computeC();
             }
 
