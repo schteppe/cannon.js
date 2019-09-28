@@ -1298,12 +1298,10 @@ declare namespace CANNON {
          */
         upperBound: Vec3;
         /**
+         *
+         * @param options
+         *
          * Axis aligned bounding box class.
-         * @class AABB
-         * @constructor
-         * @param {Object} [options]
-         * @param {Vec3}   [options.upperBound]
-         * @param {Vec3}   [options.lowerBound]
          */
         constructor(options?: {
             lowerBound?: Vec3;
@@ -1326,7 +1324,6 @@ declare namespace CANNON {
         copy(aabb: AABB): this;
         /**
          * Clone an AABB
-         * @method clone
          */
         clone(): AABB;
         /**
@@ -1638,10 +1635,9 @@ declare namespace CANNON {
         constructor();
         /**
          * Get an element
-         * @method get
-         * @param  {Number} i
-         * @param  {Number} j
-         * @return {Number}
+         *
+         * @param i
+         * @param j
          */
         get(i0: {
             index: number;
@@ -1650,6 +1646,7 @@ declare namespace CANNON {
         }): number;
         /**
          * Set an element
+         *
          * @param i0
          * @param j0
          * @param value
@@ -1764,11 +1761,13 @@ declare namespace CANNON {
         dirty: boolean;
         /**
          * Base class for broadphase implementations
+         *
          * @author schteppe
          */
         constructor();
         /**
          * Get the collision pairs from the world
+         *
          * @param world The world to search in
          * @param p1 Empty array to be filled with body objects
          * @param p2 Empty array to be filled with body objects
@@ -1776,6 +1775,7 @@ declare namespace CANNON {
         collisionPairs(world: World, p1: any[], p2: any[]): void;
         /**
          * Check if a body pair needs to be intersection tested at all.
+         *
          * @param bodyA
          * @param bodyB
          */
@@ -1902,20 +1902,14 @@ declare namespace CANNON {
         /**
          * Sweep and prune broadphase along one axis.
          *
-         * @class SAPBroadphase
-         * @constructor
-         * @param {World} [world]
-         * @extends Broadphase
+         * @param world
          */
-        constructor(world: any);
+        constructor(world: World);
         /**
          * Change the world
          * @param world
          */
         setWorld(world: World): void;
-        /**
-         * @param a
-         */
         static insertionSortX(a: any[]): any[];
         static insertionSortY(a: any[]): any[];
         static insertionSortZ(a: any[]): any[];

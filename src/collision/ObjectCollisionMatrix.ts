@@ -27,7 +27,7 @@ namespace CANNON
                 i = temp;
             }
             return i + '-' + j in this.matrix;
-        };
+        }
 
         set(i0: { id: number }, j0: { id: number }, value: number)
         {
@@ -47,7 +47,7 @@ namespace CANNON
             {
                 delete this.matrix[i + '-' + j];
             }
-        };
+        }
 
         /**
          * Empty the matrix
@@ -55,7 +55,7 @@ namespace CANNON
         reset()
         {
             this.matrix = {};
-        };
+        }
 
         /**
          * Set max number of objects
@@ -64,7 +64,7 @@ namespace CANNON
          */
         setNumObjects(n: number)
         {
-        };
+        }
 
     }
 }

@@ -162,7 +162,7 @@ namespace CANNON
                     break;
                 }
             }
-        };
+        }
 
         /**
          * @param bodies An array of Body objects.
@@ -212,7 +212,7 @@ namespace CANNON
         private intersectBox(shape: Shape, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
             return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body, reportedShape);
-        };
+        }
 
         private intersectPlane(shape: Shape, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
@@ -259,7 +259,7 @@ namespace CANNON
             from.vadd(dir_scaled_with_t, hitPointWorld);
 
             this.reportIntersection(worldNormal, hitPointWorld, reportedShape, body, -1);
-        };
+        }
 
         /**
          * Get the world AABB of the ray.
@@ -274,7 +274,7 @@ namespace CANNON
             result.upperBound.x = Math.max(to.x, from.x);
             result.upperBound.y = Math.max(to.y, from.y);
             result.upperBound.z = Math.max(to.z, from.z);
-        };
+        }
 
         private intersectHeightfield(shape: any, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
@@ -397,7 +397,7 @@ namespace CANNON
                     this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
                 }
             }
-        };
+        }
 
         private intersectConvex(
             shape: Shape,
@@ -405,7 +405,7 @@ namespace CANNON
             position: Vec3,
             body: Body,
             reportedShape: Shape,
-            options?
+            options: { faceList?: any[] } = {}
         )
         {
             var minDistNormal = intersectConvex_minDistNormal;
@@ -501,7 +501,7 @@ namespace CANNON
                 }
                 // }
             }
-        };
+        }
 
         /**
          * @method intersectTrimesh
@@ -632,7 +632,7 @@ namespace CANNON
                 this.reportIntersection(worldNormal, worldIntersectPoint, reportedShape, body, trianglesIndex);
             }
             triangles.length = 0;
-        };
+        }
 
 
         private reportIntersection(normal: Vec3, hitPointWorld: Vec3, shape: Shape, body: Body, hitFaceIndex?: number)
@@ -703,7 +703,7 @@ namespace CANNON
                     result._shouldStop = true;
                     break;
             }
-        };
+        }
 
         /*
          * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division

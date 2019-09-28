@@ -20,6 +20,7 @@ namespace CANNON
 
         /**
          * Base class for broadphase implementations
+         * 
          * @author schteppe
          */
         constructor()
@@ -31,6 +32,7 @@ namespace CANNON
 
         /**
          * Get the collision pairs from the world
+         * 
          * @param world The world to search in
          * @param p1 Empty array to be filled with body objects
          * @param p2 Empty array to be filled with body objects
@@ -38,10 +40,11 @@ namespace CANNON
         collisionPairs(world: World, p1: any[], p2: any[])
         {
             throw new Error("collisionPairs not implemented for this BroadPhase class!");
-        };
+        }
 
         /**
          * Check if a body pair needs to be intersection tested at all.
+         * 
          * @param bodyA
          * @param bodyB
          */
@@ -81,7 +84,7 @@ namespace CANNON
             {
                 this.doBoundingSphereBroadphase(bodyA, bodyB, pairs1, pairs2);
             }
-        };
+        }
 
         /**
          * Check if the bounding spheres of two bodies are intersecting.
@@ -101,7 +104,7 @@ namespace CANNON
                 pairs1.push(bodyA);
                 pairs2.push(bodyB);
             }
-        };
+        }
 
         /**
          * Check if the bounding boxes of two bodies are intersecting.
@@ -127,7 +130,7 @@ namespace CANNON
                 pairs1.push(bodyA);
                 pairs2.push(bodyB);
             }
-        };
+        }
 
         /**
          * Removes duplicate pairs from the pair arrays.
@@ -167,7 +170,7 @@ namespace CANNON
                 pairs2.push(p2[pairIndex]);
                 delete t[key];
             }
-        };
+        }
 
         /**
          * To be implemented by subcasses
@@ -176,7 +179,7 @@ namespace CANNON
          */
         setWorld(world: World)
         {
-        };
+        }
 
         /**
          * Check if the bounding spheres of two bodies overlap.
@@ -188,7 +191,7 @@ namespace CANNON
             var dist = bsc_dist;
             bodyA.position.vsub(bodyB.position, dist);
             return Math.pow(bodyA.shape.boundingSphereRadius + bodyB.shape.boundingSphereRadius, 2) > dist.norm2();
-        };
+        }
 
         /**
          * Returns all the bodies within the AABB.
@@ -201,7 +204,7 @@ namespace CANNON
         {
             console.warn('.aabbQuery is not implemented in this Broadphase subclass.');
             return [];
-        };
+        }
 
     }
 

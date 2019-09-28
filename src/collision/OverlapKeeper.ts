@@ -21,7 +21,7 @@ namespace CANNON
                 i = temp;
             }
             return (i << 16) | j;
-        };
+        }
 
         set(i: number, j: number)
         {
@@ -42,7 +42,7 @@ namespace CANNON
                 current[j + 1] = current[j];
             }
             current[index] = key;
-        };
+        }
 
         tick()
         {
@@ -50,7 +50,7 @@ namespace CANNON
             this.current = this.previous;
             this.previous = tmp;
             this.current.length = 0;
-        };
+        }
 
         unpackAndPush(array: number[], key: number)
         {
@@ -96,6 +96,6 @@ namespace CANNON
                     this.unpackAndPush(removals, keyB);
                 }
             }
-        };
+        }
     }
 }

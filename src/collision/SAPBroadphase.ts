@@ -14,16 +14,12 @@ namespace CANNON
         private _addBodyHandler: (e: any) => void;
         private _removeBodyHandler: (e: any) => void;
 
-
         /**
          * Sweep and prune broadphase along one axis.
          *
-         * @class SAPBroadphase
-         * @constructor
-         * @param {World} [world]
-         * @extends Broadphase
+         * @param world
          */
-        constructor(world)
+        constructor(world: World)
         {
             super();
 
@@ -80,11 +76,8 @@ namespace CANNON
 
             this.world = world;
             this.dirty = true;
-        };
+        }
 
-        /**
-         * @param a
-         */
         static insertionSortX(a: any[])
         {
             for (var i = 1, l = a.length; i < l; i++)
@@ -101,7 +94,7 @@ namespace CANNON
                 a[j + 1] = v;
             }
             return a;
-        };
+        }
 
         static insertionSortY(a: any[])
         {
@@ -119,7 +112,7 @@ namespace CANNON
                 a[j + 1] = v;
             }
             return a;
-        };
+        }
 
         static insertionSortZ(a: any[])
         {
@@ -137,7 +130,7 @@ namespace CANNON
                 a[j + 1] = v;
             }
             return a;
-        };
+        }
 
         /**
          * Collect all collision pairs
@@ -180,7 +173,7 @@ namespace CANNON
                     this.intersectionTest(bi, bj, p1, p2);
                 }
             }
-        };
+        }
 
         sortList()
         {
@@ -209,7 +202,7 @@ namespace CANNON
             {
                 SAPBroadphase.insertionSortZ(axisList);
             }
-        };
+        }
 
         /**
          * Check if the bounds of two bodies overlap, along the given SAP axis.
@@ -219,8 +212,8 @@ namespace CANNON
          */
         static checkBounds(bi: Body, bj: Body, axisIndex: number)
         {
-            var biPos;
-            var bjPos;
+            var biPos: number;
+            var bjPos: number;
 
             if (axisIndex === 0)
             {
@@ -244,7 +237,7 @@ namespace CANNON
                 boundB2 = bjPos + rj;
 
             return boundB1 < boundA2;
-        };
+        }
 
         /**
          * Computes the variance of the body positions and estimates the best
@@ -299,7 +292,7 @@ namespace CANNON
             {
                 this.axisIndex = 2;
             }
-        };
+        }
 
         /**
          * Returns all the bodies within an AABB.
@@ -340,6 +333,6 @@ namespace CANNON
             }
 
             return result;
-        };
+        }
     }
 }

@@ -57,12 +57,12 @@ namespace CANNON
 			this.hitFaceIndex = -1;
 			this.distance = -1;
 			this._shouldStop = false;
-		};
+		}
 
 		abort()
 		{
 			this._shouldStop = true;
-		};
+		}
 
 		set(
 			rayFromWorld: Vec3,
@@ -81,6 +81,6 @@ namespace CANNON
 			this.shape = shape;
 			this.body = body;
 			this.distance = distance;
-		};
+		}
 	}
 }

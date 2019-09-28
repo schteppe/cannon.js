@@ -248,7 +248,7 @@ namespace CANNON
 			//	}
 
 			this.makePairsUnique(pairs1, pairs2);
-		};
+		}
 	}
 
 

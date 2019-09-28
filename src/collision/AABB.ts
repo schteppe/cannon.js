@@ -2,7 +2,6 @@ namespace CANNON
 {
     export class AABB
     {
-
         /**
          * The lower bound of the bounding box.
          */
@@ -14,12 +13,10 @@ namespace CANNON
         upperBound: Vec3;
 
         /**
+         * 
+         * @param options 
+         * 
          * Axis aligned bounding box class.
-         * @class AABB
-         * @constructor
-         * @param {Object} [options]
-         * @param {Vec3}   [options.upperBound]
-         * @param {Vec3}   [options.lowerBound]
          */
         constructor(options: { lowerBound?: Vec3, upperBound?: Vec3 } = {})
         {
@@ -110,7 +107,6 @@ namespace CANNON
 
         /**
          * Clone an AABB
-         * @method clone
          */
         clone()
         {
@@ -129,7 +125,7 @@ namespace CANNON
             this.upperBound.y = Math.max(this.upperBound.y, aabb.upperBound.y);
             this.lowerBound.z = Math.min(this.lowerBound.z, aabb.lowerBound.z);
             this.upperBound.z = Math.max(this.upperBound.z, aabb.upperBound.z);
-        };
+        }
 
         /**
          * Returns true if the given AABB overlaps this AABB.
@@ -152,7 +148,7 @@ namespace CANNON
             var overlapsZ = ((l2.z <= u1.z && u1.z <= u2.z) || (l1.z <= u2.z && u2.z <= u1.z));
 
             return overlapsX && overlapsY && overlapsZ;
-        };
+        }
 
         /**
          * Mostly for debugging
@@ -162,7 +158,7 @@ namespace CANNON
             var l = this.lowerBound,
                 u = this.upperBound;
             return (u.x - l.x) * (u.y - l.y) * (u.z - l.z);
-        };
+        }
 
 
         /**
@@ -186,7 +182,7 @@ namespace CANNON
                 (l1.y <= l2.y && u1.y >= u2.y) &&
                 (l1.z <= l2.z && u1.z >= u2.z)
             );
-        };
+        }
 
         getCorners(a: Vec3, b: Vec3, c: Vec3, d: Vec3, e: Vec3, f: Vec3, g: Vec3, h: Vec3)
         {
@@ -201,7 +197,7 @@ namespace CANNON
             f.set(l.x, u.y, l.z);
             g.set(l.x, l.y, u.z);
             h.copy(u);
-        };
+        }
 
         /**
          * Get the representation of an AABB in another frame.
@@ -232,7 +228,7 @@ namespace CANNON
             }
 
             return target.setFromPoints(corners);
-        };
+        }
 
         /**
          * Get the representation of an AABB in the global frame.
@@ -264,7 +260,7 @@ namespace CANNON
             }
 
             return target.setFromPoints(corners);
-        };
+        }
 
         /**
          * Check if the AABB is hit by a ray.
@@ -306,7 +302,7 @@ namespace CANNON
             }
 
             return true;
-        };
+        }
 
     }
 

@@ -41,7 +41,7 @@ namespace CANNON
                     this.intersectionTest(bi, bj, pairs1, pairs2);
                 }
             }
-        };
+        }
 
         /**
          * Returns all the bodies within an AABB.
@@ -70,7 +70,7 @@ namespace CANNON
             }
 
             return result;
-        };
+        }
     }
 
     var tmpAABB = new AABB();

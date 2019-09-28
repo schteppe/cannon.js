@@ -3669,12 +3669,10 @@ var CANNON;
 (function (CANNON) {
     var AABB = /** @class */ (function () {
         /**
+         *
+         * @param options
+         *
          * Axis aligned bounding box class.
-         * @class AABB
-         * @constructor
-         * @param {Object} [options]
-         * @param {Vec3}   [options.upperBound]
-         * @param {Vec3}   [options.lowerBound]
          */
         function AABB(options) {
             if (options === void 0) { options = {}; }
@@ -3755,7 +3753,6 @@ var CANNON;
         };
         /**
          * Clone an AABB
-         * @method clone
          */
         AABB.prototype.clone = function () {
             return new AABB().copy(this);
@@ -3772,7 +3769,6 @@ var CANNON;
             this.lowerBound.z = Math.min(this.lowerBound.z, aabb.lowerBound.z);
             this.upperBound.z = Math.max(this.upperBound.z, aabb.upperBound.z);
         };
-        ;
         /**
          * Returns true if the given AABB overlaps this AABB.
          * @param aabb
@@ -3788,7 +3784,6 @@ var CANNON;
             var overlapsZ = ((l2.z <= u1.z && u1.z <= u2.z) || (l1.z <= u2.z && u2.z <= u1.z));
             return overlapsX && overlapsY && overlapsZ;
         };
-        ;
         /**
          * Mostly for debugging
          */
@@ -3796,7 +3791,6 @@ var CANNON;
             var l = this.lowerBound, u = this.upperBound;
             return (u.x - l.x) * (u.y - l.y) * (u.z - l.z);
         };
-        ;
         /**
          * Returns true if the given AABB is fully contained in this AABB.
          * @param aabb
@@ -3811,7 +3805,6 @@ var CANNON;
                 (l1.y <= l2.y && u1.y >= u2.y) &&
                 (l1.z <= l2.z && u1.z >= u2.z));
         };
-        ;
         AABB.prototype.getCorners = function (a, b, c, d, e, f, g, h) {
             var l = this.lowerBound, u = this.upperBound;
             a.copy(l);
@@ -3823,7 +3816,6 @@ var CANNON;
             g.set(l.x, l.y, u.z);
             h.copy(u);
         };
-        ;
         /**
          * Get the representation of an AABB in another frame.
          * @param frame
@@ -3849,7 +3841,6 @@ var CANNON;
             }
             return target.setFromPoints(corners);
         };
-        ;
         /**
          * Get the representation of an AABB in the global frame.
          * @param frame
@@ -3875,7 +3866,6 @@ var CANNON;
             }
             return target.setFromPoints(corners);
         };
-        ;
         /**
          * Check if the AABB is hit by a ray.
          */
@@ -3908,7 +3898,6 @@ var CANNON;
             }
             return true;
         };
-        ;
         return AABB;
     }());
     CANNON.AABB = AABB;
@@ -4576,10 +4565,9 @@ var CANNON;
         }
         /**
          * Get an element
-         * @method get
-         * @param  {Number} i
-         * @param  {Number} j
-         * @return {Number}
+         *
+         * @param i
+         * @param j
          */
         ArrayCollisionMatrix.prototype.get = function (i0, j0) {
             var i = i0.index;
@@ -4591,9 +4579,9 @@ var CANNON;
             }
             return this.matrix[(i * (i + 1) >> 1) + j - 1];
         };
-        ;
         /**
          * Set an element
+         *
          * @param i0
          * @param j0
          * @param value
@@ -4608,7 +4596,6 @@ var CANNON;
             }
             this.matrix[(i * (i + 1) >> 1) + j - 1] = value ? 1 : 0;
         };
-        ;
         /**
          * Sets all elements to zero
          */
@@ -4617,14 +4604,12 @@ var CANNON;
                 this.matrix[i] = 0;
             }
         };
-        ;
         /**
          * Sets the max number of objects
          */
         ArrayCollisionMatrix.prototype.setNumObjects = function (n) {
             this.matrix.length = n * (n - 1) >> 1;
         };
-        ;
         return ArrayCollisionMatrix;
     }());
     CANNON.ArrayCollisionMatrix = ArrayCollisionMatrix;
@@ -4652,7 +4637,6 @@ var CANNON;
             }
             return i + '-' + j in this.matrix;
         };
-        ;
         ObjectCollisionMatrix.prototype.set = function (i0, j0, value) {
             var i = i0.id;
             var j = j0.id;
@@ -4668,14 +4652,12 @@ var CANNON;
                 delete this.matrix[i + '-' + j];
             }
         };
-        ;
         /**
          * Empty the matrix
          */
         ObjectCollisionMatrix.prototype.reset = function () {
             this.matrix = {};
         };
-        ;
         /**
          * Set max number of objects
          *
@@ -4683,7 +4665,6 @@ var CANNON;
          */
         ObjectCollisionMatrix.prototype.setNumObjects = function (n) {
         };
-        ;
         return ObjectCollisionMatrix;
     }());
     CANNON.ObjectCollisionMatrix = ObjectCollisionMatrix;
@@ -4705,7 +4686,6 @@ var CANNON;
             }
             return (i << 16) | j;
         };
-        ;
         OverlapKeeper.prototype.set = function (i, j) {
             // Insertion sort. This way the diff will have linear complexity.
             var key = this.getKey(i, j);
@@ -4722,14 +4702,12 @@ var CANNON;
             }
             current[index] = key;
         };
-        ;
         OverlapKeeper.prototype.tick = function () {
             var tmp = this.current;
             this.current = this.previous;
             this.previous = tmp;
             this.current.length = 0;
         };
-        ;
         OverlapKeeper.prototype.unpackAndPush = function (array, key) {
             array.push((key & 0xFFFF0000) >> 16, key & 0x0000FFFF);
         };
@@ -4763,7 +4741,6 @@ var CANNON;
                 }
             }
         };
-        ;
         return OverlapKeeper;
     }());
     CANNON.OverlapKeeper = OverlapKeeper;
@@ -4810,11 +4787,9 @@ var CANNON;
             this.distance = -1;
             this._shouldStop = false;
         };
-        ;
         RaycastResult.prototype.abort = function () {
             this._shouldStop = true;
         };
-        ;
         RaycastResult.prototype.set = function (rayFromWorld, rayToWorld, hitNormalWorld, hitPointWorld, shape, body, distance) {
             this.rayFromWorld.copy(rayFromWorld);
             this.rayToWorld.copy(rayToWorld);
@@ -4824,7 +4799,6 @@ var CANNON;
             this.body = body;
             this.distance = distance;
         };
-        ;
         return RaycastResult;
     }());
     CANNON.RaycastResult = RaycastResult;
@@ -4834,6 +4808,7 @@ var CANNON;
     var Broadphase = /** @class */ (function () {
         /**
          * Base class for broadphase implementations
+         *
          * @author schteppe
          */
         function Broadphase() {
@@ -4843,6 +4818,7 @@ var CANNON;
         }
         /**
          * Get the collision pairs from the world
+         *
          * @param world The world to search in
          * @param p1 Empty array to be filled with body objects
          * @param p2 Empty array to be filled with body objects
@@ -4850,9 +4826,9 @@ var CANNON;
         Broadphase.prototype.collisionPairs = function (world, p1, p2) {
             throw new Error("collisionPairs not implemented for this BroadPhase class!");
         };
-        ;
         /**
          * Check if a body pair needs to be intersection tested at all.
+         *
          * @param bodyA
          * @param bodyB
          */
@@ -4885,7 +4861,6 @@ var CANNON;
                 this.doBoundingSphereBroadphase(bodyA, bodyB, pairs1, pairs2);
             }
         };
-        ;
         /**
          * Check if the bounding spheres of two bodies are intersecting.
          * @param bodyA
@@ -4903,7 +4878,6 @@ var CANNON;
                 pairs2.push(bodyB);
             }
         };
-        ;
         /**
          * Check if the bounding boxes of two bodies are intersecting.
          * @param bodyA
@@ -4924,7 +4898,6 @@ var CANNON;
                 pairs2.push(bodyB);
             }
         };
-        ;
         /**
          * Removes duplicate pairs from the pair arrays.
          * @param pairs1
@@ -4952,7 +4925,6 @@ var CANNON;
                 delete t[key];
             }
         };
-        ;
         /**
          * To be implemented by subcasses
          * @method setWorld
@@ -4960,7 +4932,6 @@ var CANNON;
          */
         Broadphase.prototype.setWorld = function (world) {
         };
-        ;
         /**
          * Check if the bounding spheres of two bodies overlap.
          * @param bodyA
@@ -4971,7 +4942,6 @@ var CANNON;
             bodyA.position.vsub(bodyB.position, dist);
             return Math.pow(bodyA.shape.boundingSphereRadius + bodyB.shape.boundingSphereRadius, 2) > dist.norm2();
         };
-        ;
         /**
          * Returns all the bodies within the AABB.
          *
@@ -4983,7 +4953,6 @@ var CANNON;
             console.warn('.aabbQuery is not implemented in this Broadphase subclass.');
             return [];
         };
-        ;
         return Broadphase;
     }());
     CANNON.Broadphase = Broadphase;
@@ -5184,7 +5153,6 @@ var CANNON;
             //	}
             this.makePairsUnique(pairs1, pairs2);
         };
-        ;
         return GridBroadphase;
     }(CANNON.Broadphase));
     CANNON.GridBroadphase = GridBroadphase;
@@ -5222,7 +5190,6 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Returns all the bodies within an AABB.
          * @param world
@@ -5243,7 +5210,6 @@ var CANNON;
             }
             return result;
         };
-        ;
         return NaiveBroadphase;
     }(CANNON.Broadphase));
     CANNON.NaiveBroadphase = NaiveBroadphase;
@@ -5256,10 +5222,7 @@ var CANNON;
         /**
          * Sweep and prune broadphase along one axis.
          *
-         * @class SAPBroadphase
-         * @constructor
-         * @param {World} [world]
-         * @extends Broadphase
+         * @param world
          */
         function SAPBroadphase(world) {
             var _this = _super.call(this) || this;
@@ -5301,10 +5264,6 @@ var CANNON;
             this.world = world;
             this.dirty = true;
         };
-        ;
-        /**
-         * @param a
-         */
         SAPBroadphase.insertionSortX = function (a) {
             for (var i = 1, l = a.length; i < l; i++) {
                 var v = a[i];
@@ -5318,7 +5277,6 @@ var CANNON;
             }
             return a;
         };
-        ;
         SAPBroadphase.insertionSortY = function (a) {
             for (var i = 1, l = a.length; i < l; i++) {
                 var v = a[i];
@@ -5332,7 +5290,6 @@ var CANNON;
             }
             return a;
         };
-        ;
         SAPBroadphase.insertionSortZ = function (a) {
             for (var i = 1, l = a.length; i < l; i++) {
                 var v = a[i];
@@ -5346,7 +5303,6 @@ var CANNON;
             }
             return a;
         };
-        ;
         /**
          * Collect all collision pairs
          * @param world
@@ -5374,7 +5330,6 @@ var CANNON;
                 }
             }
         };
-        ;
         SAPBroadphase.prototype.sortList = function () {
             var axisList = this.axisList;
             var axisIndex = this.axisIndex;
@@ -5397,7 +5352,6 @@ var CANNON;
                 SAPBroadphase.insertionSortZ(axisList);
             }
         };
-        ;
         /**
          * Check if the bounds of two bodies overlap, along the given SAP axis.
          * @param bi
@@ -5422,7 +5376,6 @@ var CANNON;
             var ri = bi.boundingRadius, rj = bj.boundingRadius, boundA1 = biPos - ri, boundA2 = biPos + ri, boundB1 = bjPos - rj, boundB2 = bjPos + rj;
             return boundB1 < boundA2;
         };
-        ;
         /**
          * Computes the variance of the body positions and estimates the best
          * axis to use. Will automatically set property .axisIndex.
@@ -5457,7 +5410,6 @@ var CANNON;
                 this.axisIndex = 2;
             }
         };
-        ;
         /**
          * Returns all the bodies within an AABB.
          * @param world
@@ -5491,7 +5443,6 @@ var CANNON;
             }
             return result;
         };
-        ;
         return SAPBroadphase;
     }(CANNON.Broadphase));
     CANNON.SAPBroadphase = SAPBroadphase;
@@ -5579,7 +5530,6 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * @param bodies An array of Body objects.
          * @param result Deprecated
@@ -5617,7 +5567,6 @@ var CANNON;
         Ray.prototype.intersectBox = function (shape, quat, position, body, reportedShape) {
             return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body, reportedShape);
         };
-        ;
         Ray.prototype.intersectPlane = function (shape, quat, position, body, reportedShape) {
             var from = this.from;
             var to = this.to;
@@ -5651,7 +5600,6 @@ var CANNON;
             from.vadd(dir_scaled_with_t, hitPointWorld);
             this.reportIntersection(worldNormal, hitPointWorld, reportedShape, body, -1);
         };
-        ;
         /**
          * Get the world AABB of the ray.
          */
@@ -5665,7 +5613,6 @@ var CANNON;
             result.upperBound.y = Math.max(to.y, from.y);
             result.upperBound.z = Math.max(to.z, from.z);
         };
-        ;
         Ray.prototype.intersectHeightfield = function (shape, quat, position, body, reportedShape) {
             var data = shape.data, w = shape.elementSize;
             // Convert the ray to local heightfield coordinates
@@ -5751,8 +5698,8 @@ var CANNON;
                 }
             }
         };
-        ;
         Ray.prototype.intersectConvex = function (shape, quat, position, body, reportedShape, options) {
+            if (options === void 0) { options = {}; }
             var minDistNormal = intersectConvex_minDistNormal;
             var normal = intersectConvex_normal;
             var vector = intersectConvex_vector;
@@ -5820,7 +5767,6 @@ var CANNON;
                 // }
             }
         };
-        ;
         /**
          * @method intersectTrimesh
          * @private
@@ -5916,7 +5862,6 @@ var CANNON;
             }
             triangles.length = 0;
         };
-        ;
         Ray.prototype.reportIntersection = function (normal, hitPointWorld, shape, body, hitFaceIndex) {
             var from = this.from;
             var to = this.to;
@@ -5951,7 +5896,6 @@ var CANNON;
                     break;
             }
         };
-        ;
         /*
          * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
          */

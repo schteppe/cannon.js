@@ -14,10 +14,9 @@ namespace CANNON
 
         /**
          * Get an element
-         * @method get
-         * @param  {Number} i
-         * @param  {Number} j
-         * @return {Number}
+         * 
+         * @param i
+         * @param j
          */
         get(i0: { index: number }, j0: { index: number })
         {
@@ -30,10 +29,11 @@ namespace CANNON
                 i = temp;
             }
             return this.matrix[(i * (i + 1) >> 1) + j - 1];
-        };
+        }
 
         /**
          * Set an element
+         * 
          * @param i0 
          * @param j0 
          * @param value 
@@ -49,7 +49,7 @@ namespace CANNON
                 i = temp;
             }
             this.matrix[(i * (i + 1) >> 1) + j - 1] = value ? 1 : 0;
-        };
+        }
 
         /**
          * Sets all elements to zero
@@ -60,7 +60,7 @@ namespace CANNON
             {
                 this.matrix[i] = 0;
             }
-        };
+        }
 
         /**
          * Sets the max number of objects
@@ -68,6 +68,6 @@ namespace CANNON
         setNumObjects(n: number)
         {
             this.matrix.length = n * (n - 1) >> 1;
-        };
+        }
     }
 }
