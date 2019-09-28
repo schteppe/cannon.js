@@ -1938,7 +1938,6 @@ var CANNON;
         }
         /**
          * Computes uniqueEdges
-         * @method computeEdges
          */
         ConvexPolyhedron.prototype.computeEdges = function () {
             var faces = this.faces;
@@ -1967,7 +1966,6 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Compute the normals of the faces. Will reuse existing Vec3 objects in the .faceNormals array if they exist.
          */
@@ -1994,15 +1992,13 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Get face normal given 3 vertices
-         * @static
-         * @method getFaceNormal
-         * @param {Vec3} va
-         * @param {Vec3} vb
-         * @param {Vec3} vc
-         * @param {Vec3} target
+         *
+         * @param va
+         * @param vb
+         * @param vc
+         * @param target
          */
         ConvexPolyhedron.computeNormal = function (va, vb, vc, target) {
             vb.vsub(va, ab);
@@ -2012,12 +2008,11 @@ var CANNON;
                 target.normalize();
             }
         };
-        ;
         /**
          * Compute the normal of a face from its vertices
-         * @method getFaceNormal
-         * @param  {Number} i
-         * @param  {Vec3} target
+         *
+         * @param i
+         * @param target
          */
         ConvexPolyhedron.prototype.getFaceNormal = function (i, target) {
             var f = this.faces[i];
@@ -2026,18 +2021,16 @@ var CANNON;
             var vc = this.vertices[f[2]];
             return ConvexPolyhedron.computeNormal(va, vb, vc, target);
         };
-        ;
         /**
-         * @method clipAgainstHull
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @param {Vec3} separatingNormal
-         * @param {Number} minDist Clamp distance
-         * @param {Number} maxDist
-         * @param {array} result The an array of contact point objects, see clipFaceAgainstHull
+         * @param posA
+         * @param quatA
+         * @param hullB
+         * @param posB
+         * @param quatB
+         * @param separatingNormal
+         * @param minDist Clamp distance
+         * @param maxDist
+         * @param result The an array of contact point objects, see clipFaceAgainstHull
          * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
          */
         ConvexPolyhedron.prototype.clipAgainstHull = function (posA, quatA, hullB, posB, quatB, separatingNormal, minDist, maxDist, result) {
@@ -2071,17 +2064,18 @@ var CANNON;
                 this.clipFaceAgainstHull(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist, result);
             }
         };
-        ;
         /**
          * Find the separating axis between this hull and another
-         * @method findSeparatingAxis
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @param {Vec3} target The target vector to save the axis in
-         * @return {bool} Returns false if a separation is found, else true
+         *
+         * @param hullB
+         * @param posA
+         * @param quatA
+         * @param posB
+         * @param quatB
+         * @param target The target vector to save the axis in
+         * @param faceListA
+         * @param faceListB
+         * @returns Returns false if a separation is found, else true
          */
         ConvexPolyhedron.prototype.findSeparatingAxis = function (hullB, posA, quatA, posB, quatB, target, faceListA, faceListB) {
             var faceANormalWS3 = fsa_faceANormalWS3, Worldnormal1 = fsa_Worldnormal1, deltaC = fsa_deltaC, worldEdge0 = fsa_worldEdge0, worldEdge1 = fsa_worldEdge1, Cross = fsa_Cross;
@@ -2181,17 +2175,16 @@ var CANNON;
             }
             return true;
         };
-        ;
         /**
          * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
-         * @method testSepAxis
-         * @param {Vec3} axis
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @return {number} The overlap depth, or FALSE if no penetration.
+         *
+         * @param axis
+         * @param hullB
+         * @param posA
+         * @param quatA
+         * @param posB
+         * @param quatB
+         * @return The overlap depth, or FALSE if no penetration.
          */
         ConvexPolyhedron.prototype.testSepAxis = function (axis, hullB, posA, quatA, posB, quatB) {
             var hullA = this;
@@ -2209,11 +2202,10 @@ var CANNON;
             var depth = d0 < d1 ? d0 : d1;
             return depth;
         };
-        ;
         /**
-         * @method calculateLocalInertia
-         * @param  {Number} mass
-         * @param  {Vec3} target
+         *
+         * @param mass
+         * @param target
          */
         ConvexPolyhedron.prototype.calculateLocalInertia = function (mass, target) {
             // Approximate with box inertia
@@ -2224,11 +2216,9 @@ var CANNON;
             target.y = 1.0 / 12.0 * mass * (2 * x * 2 * x + 2 * z * 2 * z);
             target.z = 1.0 / 12.0 * mass * (2 * y * 2 * y + 2 * x * 2 * x);
         };
-        ;
         /**
-         * @method getPlaneConstantOfFace
-         * @param  {Number} face_i Index of the face
-         * @return {Number}
+         *
+         * @param face_i Index of the face
          */
         ConvexPolyhedron.prototype.getPlaneConstantOfFace = function (face_i) {
             var f = this.faces[face_i];
@@ -2237,17 +2227,16 @@ var CANNON;
             var c = -n.dot(v);
             return c;
         };
-        ;
         /**
          * Clip a face against a hull.
-         * @method clipFaceAgainstHull
-         * @param {Vec3} separatingNormal
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Array} worldVertsB1 An array of Vec3 with vertices in the world frame.
-         * @param {Number} minDist Distance clamping
-         * @param {Number} maxDist
-         * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
+         *
+         * @param separatingNormal
+         * @param posA
+         * @param quatA
+         * @param worldVertsB1 An array of Vec3 with vertices in the world frame.
+         * @param minDist Distance clamping
+         * @param maxDist
+         * @param result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
          */
         ConvexPolyhedron.prototype.clipFaceAgainstHull = function (separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist, result) {
             var faceANormalWS = cfah_faceANormalWS, edge0 = cfah_edge0, WorldEdge0 = cfah_WorldEdge0, worldPlaneAnormal1 = cfah_worldPlaneAnormal1, planeNormalWS1 = cfah_planeNormalWS1, worldA1 = cfah_worldA1, localPlaneNormal = cfah_localPlaneNormal, planeNormalWS = cfah_planeNormalWS;
@@ -2359,14 +2348,13 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Clip a face in a hull against the back of a plane.
-         * @method clipFaceAgainstPlane
-         * @param {Array} inVertices
-         * @param {Array} outVertices
-         * @param {Vec3} planeNormal
-         * @param {Number} planeConstant The constant in the mathematical plane equation
+         *
+         * @param inVertices
+         * @param outVertices
+         * @param planeNormal
+         * @param planeConstant The constant in the mathematical plane equation
          */
         ConvexPolyhedron.prototype.clipFaceAgainstPlane = function (inVertices, outVertices, planeNormal, planeConstant) {
             var n_dot_first, n_dot_last;
@@ -2407,7 +2395,6 @@ var CANNON;
             }
             return outVertices;
         };
-        ;
         // Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
         ConvexPolyhedron.prototype.computeWorldVertices = function (position, quat) {
             var N = this.vertices.length;
@@ -2421,7 +2408,6 @@ var CANNON;
             }
             this.worldVerticesNeedsUpdate = false;
         };
-        ;
         ConvexPolyhedron.prototype.computeLocalAABB = function (aabbmin, aabbmax) {
             var n = this.vertices.length, vertices = this.vertices, worldVert = computeLocalAABB_worldVert;
             aabbmin.set(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
@@ -2448,11 +2434,10 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
-         * @method computeWorldFaceNormals
-         * @param  {Quaternion} quat
+         *
+         * @param quat
          */
         ConvexPolyhedron.prototype.computeWorldFaceNormals = function (quat) {
             var N = this.faceNormals.length;
@@ -2466,9 +2451,6 @@ var CANNON;
             this.worldFaceNormalsNeedsUpdate = false;
         };
         ;
-        /**
-         * @method updateBoundingSphereRadius
-         */
         ConvexPolyhedron.prototype.updateBoundingSphereRadius = function () {
             // Assume points are distributed with local (0,0,0) as center
             var max2 = 0;
@@ -2481,13 +2463,12 @@ var CANNON;
             }
             this.boundingSphereRadius = Math.sqrt(max2);
         };
-        ;
         /**
-         * @method calculateWorldAABB
-         * @param {Vec3}        pos
-         * @param {Quaternion}  quat
-         * @param {Vec3}        min
-         * @param {Vec3}        max
+         *
+         * @param  pos
+         * @param quat
+         * @param min
+         * @param max
          */
         ConvexPolyhedron.prototype.calculateWorldAABB = function (pos, quat, min, max) {
             var n = this.vertices.length, verts = this.vertices;
@@ -2519,21 +2500,16 @@ var CANNON;
             min.set(minx, miny, minz);
             max.set(maxx, maxy, maxz);
         };
-        ;
         /**
          * Get approximate convex volume
-         * @method volume
-         * @return {Number}
          */
         ConvexPolyhedron.prototype.volume = function () {
             return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
         };
-        ;
         /**
          * Get an average of all the vertices positions
-         * @method getAveragePointLocal
-         * @param  {Vec3} target
-         * @return {Vec3}
+         *
+         * @param target
          */
         ConvexPolyhedron.prototype.getAveragePointLocal = function (target) {
             target = target || new CANNON.Vec3();
@@ -2544,12 +2520,11 @@ var CANNON;
             target.mult(1 / n, target);
             return target;
         };
-        ;
         /**
          * Transform all local points. Will change the .vertices
-         * @method transformAllPoints
-         * @param  {Vec3} offset
-         * @param  {Quaternion} quat
+         *
+         * @param  offset
+         * @param quat
          */
         ConvexPolyhedron.prototype.transformAllPoints = function (offset, quat) {
             var n = this.vertices.length, verts = this.vertices;
@@ -2580,12 +2555,10 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.
-         * @method pointIsInside
-         * @param  {Vec3} p      A point given in local coordinates
-         * @return {Boolean}
+         *
+         * @param p      A point given in local coordinates
          */
         ConvexPolyhedron.prototype.pointIsInside = function (p) {
             var n = this.vertices.length, verts = this.vertices, faces = this.faces, normals = this.faceNormals;
@@ -2613,16 +2586,14 @@ var CANNON;
             // If we got here, all dot products were of the same sign.
             return positiveResult ? 1 : -1;
         };
-        ;
         /**
          * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
-         * @static
-         * @method project
-         * @param {ConvexPolyhedron} hull
-         * @param {Vec3} axis
-         * @param {Vec3} pos
-         * @param {Quaternion} quat
-         * @param {array} result result[0] and result[1] will be set to maximum and minimum, respectively.
+         *
+         * @param hull
+         * @param axis
+         * @param pos
+         * @param quat
+         * @param result result[0] and result[1] will be set to maximum and minimum, respectively.
          */
         ConvexPolyhedron.project = function (hull, axis, pos, quat, result) {
             var n = hull.vertices.length, worldVertex = project_worldVertex, localAxis = project_localAxis, max = 0, min = 0, localOrigin = project_localOrigin, vs = hull.vertices;
@@ -2741,20 +2712,17 @@ var CANNON;
             this.convexPolyhedronRepresentation = h;
             h.material = this.material;
         };
-        ;
         Box.prototype.calculateLocalInertia = function (mass, target) {
             if (target === void 0) { target = new CANNON.Vec3(); }
             Box.calculateInertia(this.halfExtents, mass, target);
             return target;
         };
-        ;
         Box.calculateInertia = function (halfExtents, mass, target) {
             var e = halfExtents;
             target.x = 1.0 / 12.0 * mass * (2 * e.y * 2 * e.y + 2 * e.z * 2 * e.z);
             target.y = 1.0 / 12.0 * mass * (2 * e.x * 2 * e.x + 2 * e.z * 2 * e.z);
             target.z = 1.0 / 12.0 * mass * (2 * e.y * 2 * e.y + 2 * e.x * 2 * e.x);
         };
-        ;
         /**
          * Get the box 6 side normals
          * @param sixTargetVectors An array of 6 vectors, to store the resulting side normals in.
@@ -2864,7 +2832,6 @@ var CANNON;
             //     }
             // });
         };
-        ;
         return Box;
     }(CANNON.Shape));
     CANNON.Box = Box;
@@ -2944,14 +2911,12 @@ var CANNON;
         __extends(Heightfield, _super);
         /**
          * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a given distance.
-         * @class Heightfield
-         * @extends Shape
-         * @constructor
-         * @param {Array} data An array of Y values that will be used to construct the terrain.
-         * @param {object} options
-         * @param {Number} [options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
-         * @param {Number} [options.maxValue] Maximum value.
-         * @param {Number} [options.elementSize=0.1] World spacing between the data points in X direction.
+         *
+         * @param data An array of Y values that will be used to construct the terrain.
+         * @param options
+         * @param options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
+         * @param options.maxValue Maximum value.
+         * @param options.elementSize=0.1 World spacing between the data points in X direction.
          * @todo Should be possible to use along all axes, not just y
          * @todo should be possible to scale along all axes
          *
@@ -2970,6 +2935,11 @@ var CANNON;
          *     var heightfieldBody = new Body();
          *     heightfieldBody.addShape(heightfieldShape);
          *     world.addBody(heightfieldBody);
+         */
+        /**
+         *
+         * @param data
+         * @param options
          */
         function Heightfield(data, options) {
             if (options === void 0) { options = {}; }
@@ -3008,7 +2978,6 @@ var CANNON;
         Heightfield.prototype.update = function () {
             this._cachedPillars = {};
         };
-        ;
         /**
          * Update the .minValue property
          */
@@ -3025,7 +2994,6 @@ var CANNON;
             }
             this.minValue = minValue;
         };
-        ;
         /**
          * Update the .maxValue property
          */
@@ -3042,7 +3010,6 @@ var CANNON;
             }
             this.maxValue = maxValue;
         };
-        ;
         /**
          * Set the height value at an index. Don't forget to update maxValue and minValue after you're done.
          *
@@ -3067,7 +3034,6 @@ var CANNON;
                 this.clearCachedConvexTrianglePillar(xi - 1, yi - 1, true);
             }
         };
-        ;
         /**
          * Get max/min in a rectangle in the matrix data
          *
@@ -3093,7 +3059,6 @@ var CANNON;
             result[0] = this.minValue;
             result[1] = max;
         };
-        ;
         /**
          * Get the index of a local position on the heightfield. The indexes indicate the rectangles, so if your terrain is made of N x N height data points, you will have rectangle indexes ranging from 0 to N-1.
          *
@@ -3131,7 +3096,6 @@ var CANNON;
             }
             return true;
         };
-        ;
         Heightfield.prototype.getTriangleAt = function (x, y, edgeClamp, a, b, c) {
             var idx = getHeightAt_idx;
             this.getIndexOfPosition(x, y, idx, edgeClamp);
@@ -3149,7 +3113,6 @@ var CANNON;
             this.getTriangle(xi, yi, upper, a, b, c);
             return upper;
         };
-        ;
         Heightfield.prototype.getNormalAt = function (x, y, edgeClamp, result) {
             var a = getNormalAt_a;
             var b = getNormalAt_b;
@@ -3162,7 +3125,6 @@ var CANNON;
             e0.cross(e1, result);
             result.normalize();
         };
-        ;
         /**
          * Get an AABB of a square in the heightfield
          *
@@ -3176,7 +3138,6 @@ var CANNON;
             result.lowerBound.set(xi * elementSize, yi * elementSize, data[xi][yi]);
             result.upperBound.set((xi + 1) * elementSize, (yi + 1) * elementSize, data[xi + 1][yi + 1]);
         };
-        ;
         /**
          * Get the height in the heightfield at a given position
          *
@@ -3209,34 +3170,30 @@ var CANNON;
                 return data[xi][yi] * w.x + data[xi + 1][yi] * w.y + data[xi][yi + 1] * w.z;
             }
         };
-        ;
         Heightfield.prototype.getCacheConvexTrianglePillarKey = function (xi, yi, getUpperTriangle) {
             return xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0);
         };
-        ;
         Heightfield.prototype.getCachedConvexTrianglePillar = function (xi, yi, getUpperTriangle) {
             return this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)];
         };
-        ;
         Heightfield.prototype.setCachedConvexTrianglePillar = function (xi, yi, getUpperTriangle, convex, offset) {
             this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)] = {
                 convex: convex,
                 offset: offset
             };
         };
-        ;
         Heightfield.prototype.clearCachedConvexTrianglePillar = function (xi, yi, getUpperTriangle) {
             delete this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)];
         };
-        ;
         /**
          * Get a triangle from the heightfield
-         * @param  {number} xi
-         * @param  {number} yi
-         * @param  {boolean} upper
-         * @param  {Vec3} a
-         * @param  {Vec3} b
-         * @param  {Vec3} c
+         *
+         * @param xi
+         * @param yi
+         * @param upper
+         * @param a
+         * @param b
+         * @param c
          */
         Heightfield.prototype.getTriangle = function (xi, yi, upper, a, b, c) {
             var data = this.data;
@@ -3257,10 +3214,10 @@ var CANNON;
         ;
         /**
          * Get a triangle in the terrain in the form of a triangular convex shape.
-         * @method getConvexTrianglePillar
-         * @param  {integer} i
-         * @param  {integer} j
-         * @param  {boolean} getUpperTriangle
+         *
+         * @param i
+         * @param j
+         * @param getUpperTriangle
          */
         Heightfield.prototype.getConvexTrianglePillar = function (xi, yi, getUpperTriangle) {
             var result = this.pillarConvex;
@@ -3377,32 +3334,28 @@ var CANNON;
         };
         ;
         Heightfield.prototype.calculateLocalInertia = function (mass, target) {
-            target = target || new CANNON.Vec3();
+            if (target === void 0) { target = new CANNON.Vec3(); }
             target.set(0, 0, 0);
             return target;
         };
-        ;
         Heightfield.prototype.volume = function () {
             return Number.MAX_VALUE; // The terrain is infinite
         };
-        ;
         Heightfield.prototype.calculateWorldAABB = function (pos, quat, min, max) {
             // TODO: do it properly
             min.set(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
             max.set(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
         };
-        ;
         Heightfield.prototype.updateBoundingSphereRadius = function () {
             // Use the bounding box of the min/max values
             var data = this.data, s = this.elementSize;
             this.boundingSphereRadius = new CANNON.Vec3(data.length * s, data[0].length * s, Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))).norm();
         };
-        ;
         /**
          * Sets the height values from an image. Currently only supported in browser.
-         * @method setHeightsFromImage
-         * @param {Image} image
-         * @param {Vec3} scale
+         *
+         * @param image
+         * @param scale
          */
         Heightfield.prototype.setHeightsFromImage = function (image, scale) {
             var canvas = document.createElement('canvas');
@@ -3439,7 +3392,6 @@ var CANNON;
             this.updateMinValue();
             this.update();
         };
-        ;
         return Heightfield;
     }(CANNON.Shape));
     CANNON.Heightfield = Heightfield;
@@ -6545,7 +6497,6 @@ var CANNON;
         Spring.prototype.setWorldAnchorA = function (worldAnchorA) {
             this.bodyA.pointToLocalFrame(worldAnchorA, this.localAnchorA);
         };
-        ;
         /**
          * Set the anchor point on body B, using world coordinates.
          * @param worldAnchorB
@@ -6553,7 +6504,6 @@ var CANNON;
         Spring.prototype.setWorldAnchorB = function (worldAnchorB) {
             this.bodyB.pointToLocalFrame(worldAnchorB, this.localAnchorB);
         };
-        ;
         /**
          * Get the anchor point on body A, in world coordinates.
          * @param result The vector to store the result in.
@@ -6561,7 +6511,6 @@ var CANNON;
         Spring.prototype.getWorldAnchorA = function (result) {
             this.bodyA.pointToWorldFrame(this.localAnchorA, result);
         };
-        ;
         /**
          * Get the anchor point on body B, in world coordinates.
          * @param result The vector to store the result in.
@@ -6569,7 +6518,6 @@ var CANNON;
         Spring.prototype.getWorldAnchorB = function (result) {
             this.bodyB.pointToWorldFrame(this.localAnchorB, result);
         };
-        ;
         /**
          * Apply the spring force to the connected bodies.
          */
@@ -6605,7 +6553,6 @@ var CANNON;
             bodyA.torque.vsub(ri_x_f, bodyA.torque);
             bodyB.torque.vadd(rj_x_f, bodyB.torque);
         };
-        ;
         return Spring;
     }());
     CANNON.Spring = Spring;
@@ -6625,37 +6572,11 @@ var CANNON;
 (function (CANNON) {
     var WheelInfo = /** @class */ (function () {
         /**
-         * @param {Object} [options]
          *
-         * @param {Vec3} [options.chassisConnectionPointLocal]
-         * @param {Vec3} [options.chassisConnectionPointWorld]
-         * @param {Vec3} [options.directionLocal]
-         * @param {Vec3} [options.directionWorld]
-         * @param {Vec3} [options.axleLocal]
-         * @param {Vec3} [options.axleWorld]
-         * @param {number} [options.suspensionRestLength=1]
-         * @param {number} [options.suspensionMaxLength=2]
-         * @param {number} [options.radius=1]
-         * @param {number} [options.suspensionStiffness=100]
-         * @param {number} [options.dampingCompression=10]
-         * @param {number} [options.dampingRelaxation=10]
-         * @param {number} [options.frictionSlip=10000]
-         * @param {number} [options.steering=0]
-         * @param {number} [options.rotation=0]
-         * @param {number} [options.deltaRotation=0]
-         * @param {number} [options.rollInfluence=0.01]
-         * @param {number} [options.maxSuspensionForce]
-         * @param {boolean} [options.isFrontWheel=true]
-         * @param {number} [options.clippedInvContactDotSuspension=1]
-         * @param {number} [options.suspensionRelativeVelocity=0]
-         * @param {number} [options.suspensionForce=0]
-         * @param {number} [options.skidInfo=0]
-         * @param {number} [options.suspensionLength=0]
-         * @param {number} [options.maxSuspensionTravel=1]
-         * @param {boolean} [options.useCustomSlidingRotationalSpeed=false]
-         * @param {number} [options.customSlidingRotationalSpeed=-0.1]
+         * @param options
          */
         function WheelInfo(options) {
+            if (options === void 0) { options = {}; }
             options = CANNON.Utils.defaults(options, {
                 chassisConnectionPointLocal: new CANNON.Vec3(),
                 chassisConnectionPointWorld: new CANNON.Vec3(),
@@ -6746,7 +6667,6 @@ var CANNON;
                 this.clippedInvContactDotSuspension = 1.0;
             }
         };
-        ;
         return WheelInfo;
     }());
     CANNON.WheelInfo = WheelInfo;
@@ -7281,11 +7201,11 @@ var CANNON;
     var RigidVehicle = /** @class */ (function () {
         /**
          * Simple vehicle helper class with spherical rigid body wheels.
-         * @class RigidVehicle
-         * @constructor
-         * @param {Body} [options.chassisBody]
+         *
+         * @param options
          */
         function RigidVehicle(options) {
+            if (options === void 0) { options = {}; }
             this.wheelBodies = [];
             this.coordinateSystem = typeof (options.coordinateSystem) === 'undefined' ? new CANNON.Vec3(1, 2, 3) : options.coordinateSystem.clone();
             this.chassisBody = options.chassisBody;
@@ -7301,16 +7221,11 @@ var CANNON;
         }
         /**
          * Add a wheel
-         * @method addWheel
-         * @param {object} options
-         * @param {boolean} [options.isFrontWheel]
-         * @param {Vec3} [options.position] Position of the wheel, locally in the chassis body.
-         * @param {Vec3} [options.direction] Slide direction of the wheel along the suspension.
-         * @param {Vec3} [options.axis] Axis of rotation of the wheel, locally defined in the chassis.
-         * @param {Body} [options.body] The wheel body.
+         *
+         * @param options
          */
         RigidVehicle.prototype.addWheel = function (options) {
-            options = options || {};
+            if (options === void 0) { options = {}; }
             var wheelBody = options.body;
             if (!wheelBody) {
                 throw "下一行代码有问题？！";
@@ -7338,7 +7253,6 @@ var CANNON;
             this.constraints.push(hingeConstraint);
             return this.wheelBodies.length - 1;
         };
-        ;
         /**
          * Set the steering value of a wheel.
          *
@@ -7353,7 +7267,6 @@ var CANNON;
             var c = Math.cos(value), s = Math.sin(value), x = axis.x, y = axis.y;
             this.constraints[wheelIndex].axisA.set(c * x - s * y, s * x + c * y, 0);
         };
-        ;
         /**
          * Set the target rotational speed of the hinge constraint.
          *
@@ -7365,7 +7278,6 @@ var CANNON;
             hingeConstraint.enableMotor();
             hingeConstraint.motorTargetVelocity = value;
         };
-        ;
         /**
          * Set the target rotational speed of the hinge constraint.
          *
@@ -7375,7 +7287,6 @@ var CANNON;
             var hingeConstraint = this.constraints[wheelIndex];
             hingeConstraint.disableMotor();
         };
-        ;
         /**
          * Set the wheel force to apply on one of the wheels each time step
          *
@@ -7399,7 +7310,6 @@ var CANNON;
             wheelBody.vectorToWorldFrame(torque, torque);
             bodyTorque.vadd(torque, bodyTorque);
         };
-        ;
         /**
          * Add the vehicle including its constraints to the world.
          *
@@ -7416,14 +7326,12 @@ var CANNON;
             }
             world.addEventListener('preStep', this._update.bind(this));
         };
-        ;
         RigidVehicle.prototype._update = function () {
             var wheelForces = this.wheelForces;
             for (var i = 0; i < wheelForces.length; i++) {
                 this.applyWheelForce(wheelForces[i], i);
             }
         };
-        ;
         /**
          * Remove the vehicle including its constraints from the world.
          * @param world
@@ -7438,7 +7346,6 @@ var CANNON;
                 world.removeConstraint(constraints[i]);
             }
         };
-        ;
         /**
          * Get current rotational velocity of a wheel
          *
@@ -7451,7 +7358,6 @@ var CANNON;
             this.chassisBody.vectorToWorldFrame(axis, worldAxis);
             return w.dot(worldAxis);
         };
-        ;
         return RigidVehicle;
     }());
     CANNON.RigidVehicle = RigidVehicle;
@@ -7487,7 +7393,6 @@ var CANNON;
                 this.neighbors.push([]);
             }
         };
-        ;
         /**
          * Remove a particle from the system.
          *
@@ -7502,7 +7407,6 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Get neighbors within smoothing volume, save in the array neighbors
          *
@@ -7519,7 +7423,6 @@ var CANNON;
                 }
             }
         };
-        ;
         SPHSystem.prototype.update = function () {
             var N = this.particles.length, dist = SPHSystem_update_dist, cs = this.speedOfSound, eps = this.eps;
             for (var i = 0; i !== N; i++) {
@@ -7590,27 +7493,23 @@ var CANNON;
                 particle.force.vadd(a_pressure, particle.force);
             }
         };
-        ;
         // Calculate the weight using the W(r) weightfunction
         SPHSystem.prototype.w = function (r) {
             // 315
             var h = this.smoothingRadius;
             return 315.0 / (64.0 * Math.PI * Math.pow(h, 9)) * Math.pow(h * h - r * r, 3);
         };
-        ;
         // calculate gradient of the weight function
         SPHSystem.prototype.gradw = function (rVec, resultVec) {
             var r = rVec.norm(), h = this.smoothingRadius;
             rVec.mult(945.0 / (32.0 * Math.PI * Math.pow(h, 9)) * Math.pow((h * h - r * r), 2), resultVec);
         };
-        ;
         // Calculate nabla(W)
         SPHSystem.prototype.nablaw = function (r) {
             var h = this.smoothingRadius;
             var nabla = 945.0 / (32.0 * Math.PI * Math.pow(h, 9)) * (h * h - r * r) * (7 * r * r - 3 * h * h);
             return nabla;
         };
-        ;
         return SPHSystem;
     }());
     CANNON.SPHSystem = SPHSystem;

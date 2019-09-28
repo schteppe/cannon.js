@@ -863,7 +863,7 @@ declare namespace CANNON {
         /**
          * If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.
          */
-        uniqueAxes: [];
+        uniqueAxes: any[];
         /**
          * A set of polygons describing a convex shape.
          * @class ConvexPolyhedron
@@ -883,10 +883,9 @@ declare namespace CANNON {
          * @todo Move the clipping functions to ContactGenerator?
          * @todo Automatically merge coplanar polygons in constructor.
          */
-        constructor(points?: any, faces?: any, uniqueAxes?: any);
+        constructor(points?: Vec3[], faces?: number[][], uniqueAxes?: any[]);
         /**
          * Computes uniqueEdges
-         * @method computeEdges
          */
         computeEdges(): void;
         /**
@@ -895,150 +894,141 @@ declare namespace CANNON {
         computeNormals(): void;
         /**
          * Get face normal given 3 vertices
-         * @static
-         * @method getFaceNormal
-         * @param {Vec3} va
-         * @param {Vec3} vb
-         * @param {Vec3} vc
-         * @param {Vec3} target
+         *
+         * @param va
+         * @param vb
+         * @param vc
+         * @param target
          */
-        static computeNormal(va: any, vb: any, vc: any, target: any): void;
+        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3): void;
         /**
          * Compute the normal of a face from its vertices
-         * @method getFaceNormal
-         * @param  {Number} i
-         * @param  {Vec3} target
+         *
+         * @param i
+         * @param target
          */
-        getFaceNormal(i: any, target: any): void;
+        getFaceNormal(i: number, target: Vec3): void;
         /**
-         * @method clipAgainstHull
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @param {Vec3} separatingNormal
-         * @param {Number} minDist Clamp distance
-         * @param {Number} maxDist
-         * @param {array} result The an array of contact point objects, see clipFaceAgainstHull
+         * @param posA
+         * @param quatA
+         * @param hullB
+         * @param posB
+         * @param quatB
+         * @param separatingNormal
+         * @param minDist Clamp distance
+         * @param maxDist
+         * @param result The an array of contact point objects, see clipFaceAgainstHull
          * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
          */
-        clipAgainstHull(posA: any, quatA: any, hullB: any, posB: any, quatB: any, separatingNormal: any, minDist: any, maxDist: any, result: any): void;
+        clipAgainstHull(posA: Vec3, quatA: Quaternion, hullB: ConvexPolyhedron, posB: Vec3, quatB: Quaternion, separatingNormal: Vec3, minDist: number, maxDist: number, result: number[]): void;
         /**
          * Find the separating axis between this hull and another
-         * @method findSeparatingAxis
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @param {Vec3} target The target vector to save the axis in
-         * @return {bool} Returns false if a separation is found, else true
+         *
+         * @param hullB
+         * @param posA
+         * @param quatA
+         * @param posB
+         * @param quatB
+         * @param target The target vector to save the axis in
+         * @param faceListA
+         * @param faceListB
+         * @returns Returns false if a separation is found, else true
          */
-        findSeparatingAxis(hullB: any, posA: any, quatA: any, posB: any, quatB: any, target: any, faceListA: any, faceListB: any): boolean;
+        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA: number[], faceListB: number[]): boolean;
         /**
          * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
-         * @method testSepAxis
-         * @param {Vec3} axis
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @return {number} The overlap depth, or FALSE if no penetration.
+         *
+         * @param axis
+         * @param hullB
+         * @param posA
+         * @param quatA
+         * @param posB
+         * @param quatB
+         * @return The overlap depth, or FALSE if no penetration.
          */
-        testSepAxis(axis: any, hullB: any, posA: any, quatA: any, posB: any, quatB: any): number | false;
+        testSepAxis(axis: Vec3, hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion): number | false;
         /**
-         * @method calculateLocalInertia
-         * @param  {Number} mass
-         * @param  {Vec3} target
+         *
+         * @param mass
+         * @param target
          */
-        calculateLocalInertia(mass: any, target: any): void;
+        calculateLocalInertia(mass: number, target: Vec3): void;
         /**
-         * @method getPlaneConstantOfFace
-         * @param  {Number} face_i Index of the face
-         * @return {Number}
+         *
+         * @param face_i Index of the face
          */
-        getPlaneConstantOfFace(face_i: any): number;
+        getPlaneConstantOfFace(face_i: number): number;
         /**
          * Clip a face against a hull.
-         * @method clipFaceAgainstHull
-         * @param {Vec3} separatingNormal
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Array} worldVertsB1 An array of Vec3 with vertices in the world frame.
-         * @param {Number} minDist Distance clamping
-         * @param {Number} maxDist
-         * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
+         *
+         * @param separatingNormal
+         * @param posA
+         * @param quatA
+         * @param worldVertsB1 An array of Vec3 with vertices in the world frame.
+         * @param minDist Distance clamping
+         * @param maxDist
+         * @param result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
          */
-        clipFaceAgainstHull(separatingNormal: any, posA: any, quatA: any, worldVertsB1: any, minDist: any, maxDist: any, result: any): void;
+        clipFaceAgainstHull(separatingNormal: Vec3, posA: Vec3, quatA: Quaternion, worldVertsB1: Vec3[], minDist: number, maxDist: number, result: any[]): void;
         /**
          * Clip a face in a hull against the back of a plane.
-         * @method clipFaceAgainstPlane
-         * @param {Array} inVertices
-         * @param {Array} outVertices
-         * @param {Vec3} planeNormal
-         * @param {Number} planeConstant The constant in the mathematical plane equation
+         *
+         * @param inVertices
+         * @param outVertices
+         * @param planeNormal
+         * @param planeConstant The constant in the mathematical plane equation
          */
-        clipFaceAgainstPlane(inVertices: any, outVertices: any, planeNormal: any, planeConstant: any): any;
-        computeWorldVertices(position: any, quat: any): void;
+        clipFaceAgainstPlane(inVertices: Vec3[], outVertices: Vec3[], planeNormal: Vec3, planeConstant: number): Vec3[];
+        computeWorldVertices(position: Vec3, quat: Quaternion): void;
         computeLocalAABB(aabbmin: any, aabbmax: any): void;
         /**
          * Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
-         * @method computeWorldFaceNormals
-         * @param  {Quaternion} quat
+         *
+         * @param quat
          */
-        computeWorldFaceNormals(quat: any): void;
-        /**
-         * @method updateBoundingSphereRadius
-         */
+        computeWorldFaceNormals(quat: Quaternion): void;
         updateBoundingSphereRadius(): void;
         /**
-         * @method calculateWorldAABB
-         * @param {Vec3}        pos
-         * @param {Quaternion}  quat
-         * @param {Vec3}        min
-         * @param {Vec3}        max
+         *
+         * @param  pos
+         * @param quat
+         * @param min
+         * @param max
          */
-        calculateWorldAABB(pos: any, quat: any, min: any, max: any): void;
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
         /**
          * Get approximate convex volume
-         * @method volume
-         * @return {Number}
          */
         volume(): number;
         /**
          * Get an average of all the vertices positions
-         * @method getAveragePointLocal
-         * @param  {Vec3} target
-         * @return {Vec3}
+         *
+         * @param target
          */
-        getAveragePointLocal(target: any): any;
+        getAveragePointLocal(target: Vec3): Vec3;
         /**
          * Transform all local points. Will change the .vertices
-         * @method transformAllPoints
-         * @param  {Vec3} offset
-         * @param  {Quaternion} quat
+         *
+         * @param  offset
+         * @param quat
          */
-        transformAllPoints(offset: any, quat: any): void;
+        transformAllPoints(offset: Vec3, quat: Quaternion): void;
         /**
          * Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.
-         * @method pointIsInside
-         * @param  {Vec3} p      A point given in local coordinates
-         * @return {Boolean}
+         *
+         * @param p      A point given in local coordinates
          */
-        pointIsInside(p: any): false | 1 | -1;
+        pointIsInside(p: Vec3): false | 1 | -1;
         /**
          * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
-         * @static
-         * @method project
-         * @param {ConvexPolyhedron} hull
-         * @param {Vec3} axis
-         * @param {Vec3} pos
-         * @param {Quaternion} quat
-         * @param {array} result result[0] and result[1] will be set to maximum and minimum, respectively.
+         *
+         * @param hull
+         * @param axis
+         * @param pos
+         * @param quat
+         * @param result result[0] and result[1] will be set to maximum and minimum, respectively.
          */
-        static project(hull: any, axis: any, pos: any, quat: any, result: any): void;
+        static project(hull: ConvexPolyhedron, axis: Vec3, pos: Vec3, quat: Quaternion, result: number[]): void;
     }
 }
 declare namespace CANNON {
@@ -1059,7 +1049,7 @@ declare namespace CANNON {
          */
         updateConvexPolyhedronRepresentation(): void;
         calculateLocalInertia(mass: number, target?: Vec3): Vec3;
-        static calculateInertia(halfExtents: any, mass: any, target: any): void;
+        static calculateInertia(halfExtents: Vec3, mass: number, target: Vec3): void;
         /**
          * Get the box 6 side normals
          * @param sixTargetVectors An array of 6 vectors, to store the resulting side normals in.
@@ -1111,14 +1101,12 @@ declare namespace CANNON {
         private _cachedPillars;
         /**
          * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a given distance.
-         * @class Heightfield
-         * @extends Shape
-         * @constructor
-         * @param {Array} data An array of Y values that will be used to construct the terrain.
-         * @param {object} options
-         * @param {Number} [options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
-         * @param {Number} [options.maxValue] Maximum value.
-         * @param {Number} [options.elementSize=0.1] World spacing between the data points in X direction.
+         *
+         * @param data An array of Y values that will be used to construct the terrain.
+         * @param options
+         * @param options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
+         * @param options.maxValue Maximum value.
+         * @param options.elementSize=0.1 World spacing between the data points in X direction.
          * @todo Should be possible to use along all axes, not just y
          * @todo should be possible to scale along all axes
          *
@@ -1137,6 +1125,11 @@ declare namespace CANNON {
          *     var heightfieldBody = new Body();
          *     heightfieldBody.addShape(heightfieldShape);
          *     world.addBody(heightfieldBody);
+         */
+        /**
+         *
+         * @param data
+         * @param options
          */
         constructor(data: any[], options?: {
             maxValue?: number;
@@ -1183,8 +1176,8 @@ declare namespace CANNON {
          * @param clamp If the position should be clamped to the heightfield edge.
          */
         getIndexOfPosition(x: number, y: number, result: any[], clamp: boolean): boolean;
-        getTriangleAt(x: any, y: any, edgeClamp: any, a: any, b: any, c: any): boolean;
-        getNormalAt(x: any, y: any, edgeClamp: any, result: any): void;
+        getTriangleAt(x: number, y: number, edgeClamp: boolean, a: Vec3, b: Vec3, c: Vec3): boolean;
+        getNormalAt(x: number, y: number, edgeClamp: boolean, result: Vec3): void;
         /**
          * Get an AABB of a square in the heightfield
          *
@@ -1201,39 +1194,40 @@ declare namespace CANNON {
          * @param edgeClamp
          */
         getHeightAt(x: number, y: number, edgeClamp: boolean): number;
-        getCacheConvexTrianglePillarKey(xi: any, yi: any, getUpperTriangle: any): string;
-        getCachedConvexTrianglePillar(xi: any, yi: any, getUpperTriangle: any): any;
-        setCachedConvexTrianglePillar(xi: any, yi: any, getUpperTriangle: any, convex: any, offset: any): void;
-        clearCachedConvexTrianglePillar(xi: any, yi: any, getUpperTriangle: any): void;
+        getCacheConvexTrianglePillarKey(xi: number, yi: number, getUpperTriangle: boolean): string;
+        getCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean): any;
+        setCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean, convex: ConvexPolyhedron, offset: Vec3): void;
+        clearCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean): void;
         /**
          * Get a triangle from the heightfield
-         * @param  {number} xi
-         * @param  {number} yi
-         * @param  {boolean} upper
-         * @param  {Vec3} a
-         * @param  {Vec3} b
-         * @param  {Vec3} c
+         *
+         * @param xi
+         * @param yi
+         * @param upper
+         * @param a
+         * @param b
+         * @param c
          */
-        getTriangle(xi: any, yi: any, upper: any, a: any, b: any, c: any): void;
+        getTriangle(xi: number, yi: number, upper: boolean, a: Vec3, b: Vec3, c: Vec3): void;
         /**
          * Get a triangle in the terrain in the form of a triangular convex shape.
-         * @method getConvexTrianglePillar
-         * @param  {integer} i
-         * @param  {integer} j
-         * @param  {boolean} getUpperTriangle
+         *
+         * @param i
+         * @param j
+         * @param getUpperTriangle
          */
-        getConvexTrianglePillar(xi: any, yi: any, getUpperTriangle: any): void;
-        calculateLocalInertia(mass: any, target: any): any;
+        getConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean): void;
+        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
         volume(): number;
-        calculateWorldAABB(pos: any, quat: any, min: any, max: any): void;
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
         updateBoundingSphereRadius(): void;
         /**
          * Sets the height values from an image. Currently only supported in browser.
-         * @method setHeightsFromImage
-         * @param {Image} image
-         * @param {Vec3} scale
+         *
+         * @param image
+         * @param scale
          */
-        setHeightsFromImage(image: any, scale: any): void;
+        setHeightsFromImage(image: HTMLImageElement, scale: Vec3): void;
     }
 }
 declare namespace CANNON {
@@ -2587,38 +2581,31 @@ declare namespace CANNON {
         isInContact: boolean;
         slipInfo: number;
         /**
-         * @param {Object} [options]
          *
-         * @param {Vec3} [options.chassisConnectionPointLocal]
-         * @param {Vec3} [options.chassisConnectionPointWorld]
-         * @param {Vec3} [options.directionLocal]
-         * @param {Vec3} [options.directionWorld]
-         * @param {Vec3} [options.axleLocal]
-         * @param {Vec3} [options.axleWorld]
-         * @param {number} [options.suspensionRestLength=1]
-         * @param {number} [options.suspensionMaxLength=2]
-         * @param {number} [options.radius=1]
-         * @param {number} [options.suspensionStiffness=100]
-         * @param {number} [options.dampingCompression=10]
-         * @param {number} [options.dampingRelaxation=10]
-         * @param {number} [options.frictionSlip=10000]
-         * @param {number} [options.steering=0]
-         * @param {number} [options.rotation=0]
-         * @param {number} [options.deltaRotation=0]
-         * @param {number} [options.rollInfluence=0.01]
-         * @param {number} [options.maxSuspensionForce]
-         * @param {boolean} [options.isFrontWheel=true]
-         * @param {number} [options.clippedInvContactDotSuspension=1]
-         * @param {number} [options.suspensionRelativeVelocity=0]
-         * @param {number} [options.suspensionForce=0]
-         * @param {number} [options.skidInfo=0]
-         * @param {number} [options.suspensionLength=0]
-         * @param {number} [options.maxSuspensionTravel=1]
-         * @param {boolean} [options.useCustomSlidingRotationalSpeed=false]
-         * @param {number} [options.customSlidingRotationalSpeed=-0.1]
+         * @param options
          */
-        constructor(options: any);
-        updateWheel(chassis: any): void;
+        constructor(options?: {
+            maxSuspensionTravel?: number;
+            customSlidingRotationalSpeed?: number;
+            useCustomSlidingRotationalSpeed?: boolean;
+            chassisConnectionPointLocal?: Vec3;
+            chassisConnectionPointWorld?: Vec3;
+            directionLocal?: Vec3;
+            directionWorld?: Vec3;
+            axleLocal?: Vec3;
+            axleWorld?: Vec3;
+            suspensionRestLength?: number;
+            suspensionMaxLength?: number;
+            radius?: number;
+            suspensionStiffness?: number;
+            dampingCompression?: number;
+            dampingRelaxation?: number;
+            frictionSlip?: number;
+            rollInfluence?: number;
+            maxSuspensionForce?: number;
+            isFrontWheel?: number;
+        });
+        updateWheel(chassis: Body): void;
     }
 }
 declare namespace CANNON {
@@ -2734,22 +2721,24 @@ declare namespace CANNON {
         wheelForces: any[];
         /**
          * Simple vehicle helper class with spherical rigid body wheels.
-         * @class RigidVehicle
-         * @constructor
-         * @param {Body} [options.chassisBody]
+         *
+         * @param options
          */
-        constructor(options: any);
+        constructor(options?: {
+            coordinateSystem?: any;
+            chassisBody?: Body;
+        });
         /**
          * Add a wheel
-         * @method addWheel
-         * @param {object} options
-         * @param {boolean} [options.isFrontWheel]
-         * @param {Vec3} [options.position] Position of the wheel, locally in the chassis body.
-         * @param {Vec3} [options.direction] Slide direction of the wheel along the suspension.
-         * @param {Vec3} [options.axis] Axis of rotation of the wheel, locally defined in the chassis.
-         * @param {Body} [options.body] The wheel body.
+         *
+         * @param options
          */
-        addWheel(options: any): number;
+        addWheel(options?: {
+            body?: Body;
+            isFrontWheel?: boolean;
+            position?: Vec3;
+            axis?: Vec3;
+        }): number;
         /**
          * Set the steering value of a wheel.
          *

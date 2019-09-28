@@ -27,14 +27,12 @@ namespace CANNON
 
         /**
          * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a given distance.
-         * @class Heightfield
-         * @extends Shape
-         * @constructor
-         * @param {Array} data An array of Y values that will be used to construct the terrain.
-         * @param {object} options
-         * @param {Number} [options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
-         * @param {Number} [options.maxValue] Maximum value.
-         * @param {Number} [options.elementSize=0.1] World spacing between the data points in X direction.
+         * 
+         * @param data An array of Y values that will be used to construct the terrain.
+         * @param options
+         * @param options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
+         * @param options.maxValue Maximum value.
+         * @param options.elementSize=0.1 World spacing between the data points in X direction.
          * @todo Should be possible to use along all axes, not just y
          * @todo should be possible to scale along all axes
          *
@@ -53,6 +51,11 @@ namespace CANNON
          *     var heightfieldBody = new Body();
          *     heightfieldBody.addShape(heightfieldShape);
          *     world.addBody(heightfieldBody);
+         */
+        /**
+         * 
+         * @param data 
+         * @param options 
          */
         constructor(data: any[], options: { maxValue?: number, minValue?: number, elementSize?: number } = {})
         {
@@ -103,7 +106,7 @@ namespace CANNON
         update()
         {
             this._cachedPillars = {};
-        };
+        }
 
         /**
          * Update the .minValue property
@@ -124,7 +127,7 @@ namespace CANNON
                 }
             }
             this.minValue = minValue;
-        };
+        }
 
         /**
          * Update the .maxValue property
@@ -145,7 +148,7 @@ namespace CANNON
                 }
             }
             this.maxValue = maxValue;
-        };
+        }
 
         /**
          * Set the height value at an index. Don't forget to update maxValue and minValue after you're done.
@@ -175,7 +178,7 @@ namespace CANNON
             {
                 this.clearCachedConvexTrianglePillar(xi - 1, yi - 1, true);
             }
-        };
+        }
 
         /**
          * Get max/min in a rectangle in the matrix data
@@ -208,7 +211,7 @@ namespace CANNON
 
             result[0] = this.minValue;
             result[1] = max;
-        };
+        }
 
         /**
          * Get the index of a local position on the heightfield. The indexes indicate the rectangles, so if your terrain is made of N x N height data points, you will have rectangle indexes ranging from 0 to N-1.
@@ -245,10 +248,9 @@ namespace CANNON
             }
 
             return true;
-        };
+        }
 
-
-        getTriangleAt(x, y, edgeClamp, a, b, c)
+        getTriangleAt(x: number, y: number, edgeClamp: boolean, a: Vec3, b: Vec3, c: Vec3)
         {
             var idx = getHeightAt_idx;
             this.getIndexOfPosition(x, y, idx, edgeClamp);
@@ -268,9 +270,9 @@ namespace CANNON
             var upper = lowerDist2 > upperDist2;
             this.getTriangle(xi, yi, upper, a, b, c);
             return upper;
-        };
+        }
 
-        getNormalAt(x, y, edgeClamp, result)
+        getNormalAt(x: number, y: number, edgeClamp: boolean, result: Vec3)
         {
             var a = getNormalAt_a;
             var b = getNormalAt_b;
@@ -282,7 +284,7 @@ namespace CANNON
             c.vsub(a, e1);
             e0.cross(e1, result);
             result.normalize();
-        };
+        }
 
         /**
          * Get an AABB of a square in the heightfield
@@ -306,7 +308,7 @@ namespace CANNON
                 (yi + 1) * elementSize,
                 data[xi + 1][yi + 1]
             );
-        };
+        }
 
         /**
          * Get the height in the heightfield at a given position
@@ -348,41 +350,42 @@ namespace CANNON
                 // Top triangle verts
                 return data[xi][yi] * w.x + data[xi + 1][yi] * w.y + data[xi][yi + 1] * w.z;
             }
-        };
+        }
 
-        getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)
+        getCacheConvexTrianglePillarKey(xi: number, yi: number, getUpperTriangle: boolean)
         {
             return xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0);
-        };
+        }
 
-        getCachedConvexTrianglePillar(xi, yi, getUpperTriangle)
+        getCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean)
         {
             return this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)];
-        };
+        }
 
-        setCachedConvexTrianglePillar(xi, yi, getUpperTriangle, convex, offset)
+        setCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean, convex: ConvexPolyhedron, offset: Vec3)
         {
             this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)] = {
                 convex: convex,
                 offset: offset
             };
-        };
+        }
 
-        clearCachedConvexTrianglePillar(xi, yi, getUpperTriangle)
+        clearCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean)
         {
             delete this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)];
-        };
+        }
 
         /**
          * Get a triangle from the heightfield
-         * @param  {number} xi
-         * @param  {number} yi
-         * @param  {boolean} upper
-         * @param  {Vec3} a
-         * @param  {Vec3} b
-         * @param  {Vec3} c
+         * 
+         * @param xi
+         * @param yi
+         * @param upper
+         * @param a
+         * @param b
+         * @param c
          */
-        getTriangle(xi, yi, upper, a, b, c)
+        getTriangle(xi: number, yi: number, upper: boolean, a: Vec3, b: Vec3, c: Vec3)
         {
             var data = this.data;
             var elementSize = this.elementSize;
@@ -431,12 +434,12 @@ namespace CANNON
 
         /**
          * Get a triangle in the terrain in the form of a triangular convex shape.
-         * @method getConvexTrianglePillar
-         * @param  {integer} i
-         * @param  {integer} j
-         * @param  {boolean} getUpperTriangle
+         * 
+         * @param i
+         * @param j
+         * @param getUpperTriangle
          */
-        getConvexTrianglePillar(xi, yi, getUpperTriangle)
+        getConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean)
         {
             var result = this.pillarConvex;
             var offsetResult = this.pillarOffset;
@@ -644,24 +647,23 @@ namespace CANNON
             this.setCachedConvexTrianglePillar(xi, yi, getUpperTriangle, result, offsetResult);
         };
 
-        calculateLocalInertia(mass, target)
+        calculateLocalInertia(mass: number, target = new Vec3())
         {
-            target = target || new Vec3();
             target.set(0, 0, 0);
             return target;
-        };
+        }
 
         volume()
         {
             return Number.MAX_VALUE; // The terrain is infinite
-        };
+        }
 
-        calculateWorldAABB(pos, quat, min, max)
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
         {
             // TODO: do it properly
             min.set(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
             max.set(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-        };
+        }
 
         updateBoundingSphereRadius()
         {
@@ -669,15 +671,15 @@ namespace CANNON
             var data = this.data,
                 s = this.elementSize;
             this.boundingSphereRadius = new Vec3(data.length * s, data[0].length * s, Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))).norm();
-        };
+        }
 
         /**
          * Sets the height values from an image. Currently only supported in browser.
-         * @method setHeightsFromImage
-         * @param {Image} image
-         * @param {Vec3} scale
+         * 
+         * @param image
+         * @param scale
          */
-        setHeightsFromImage(image, scale)
+        setHeightsFromImage(image: HTMLImageElement, scale: Vec3)
         {
             var canvas = document.createElement('canvas');
             canvas.width = image.width;
@@ -717,7 +719,7 @@ namespace CANNON
             this.updateMaxValue();
             this.updateMinValue();
             this.update();
-        };
+        }
     }
 
     var getHeightAt_idx = [];

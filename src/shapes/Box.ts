@@ -67,21 +67,21 @@ namespace CANNON
             var h = new ConvexPolyhedron(vertices, indices);
             this.convexPolyhedronRepresentation = h;
             h.material = this.material;
-        };
+        }
 
         calculateLocalInertia(mass: number, target = new Vec3())
         {
             Box.calculateInertia(this.halfExtents, mass, target);
             return target;
-        };
+        }
 
-        static calculateInertia(halfExtents, mass, target)
+        static calculateInertia(halfExtents: Vec3, mass: number, target: Vec3)
         {
             var e = halfExtents;
             target.x = 1.0 / 12.0 * mass * (2 * e.y * 2 * e.y + 2 * e.z * 2 * e.z);
             target.y = 1.0 / 12.0 * mass * (2 * e.x * 2 * e.x + 2 * e.z * 2 * e.z);
             target.z = 1.0 / 12.0 * mass * (2 * e.y * 2 * e.y + 2 * e.x * 2 * e.x);
-        };
+        }
 
         /**
          * Get the box 6 side normals
@@ -218,7 +218,7 @@ namespace CANNON
             //         min.z = z;
             //     }
             // });
-        };
+        }
     }
 
 

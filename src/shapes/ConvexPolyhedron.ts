@@ -23,7 +23,7 @@ namespace CANNON
         /**
          * If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.
          */
-        uniqueAxes: [];
+        uniqueAxes: any[];
 
         /**
          * A set of polygons describing a convex shape.
@@ -44,7 +44,7 @@ namespace CANNON
          * @todo Move the clipping functions to ContactGenerator?
          * @todo Automatically merge coplanar polygons in constructor.
          */
-        constructor(points?, faces?, uniqueAxes?)
+        constructor(points?: Vec3[], faces?: number[][], uniqueAxes?: any[])
         {
             super({
                 type: Shape.types.CONVEXPOLYHEDRON
@@ -55,7 +55,7 @@ namespace CANNON
             this.worldVertices = []; // World transformed version of .vertices
             this.worldVerticesNeedsUpdate = true;
 
-            this.faces = faces || [];
+            this.faces = <any>faces || [];
 
             this.faceNormals = [];
             this.computeNormals();
@@ -73,7 +73,6 @@ namespace CANNON
 
         /**
          * Computes uniqueEdges
-         * @method computeEdges
          */
         computeEdges()
         {
@@ -111,7 +110,7 @@ namespace CANNON
                     }
                 }
             }
-        };
+        }
 
         /**
          * Compute the normals of the faces. Will reuse existing Vec3 objects in the .faceNormals array if they exist.
@@ -147,18 +146,17 @@ namespace CANNON
                     }
                 }
             }
-        };
+        }
 
         /**
          * Get face normal given 3 vertices
-         * @static
-         * @method getFaceNormal
-         * @param {Vec3} va
-         * @param {Vec3} vb
-         * @param {Vec3} vc
-         * @param {Vec3} target
+         * 
+         * @param va 
+         * @param vb 
+         * @param vc 
+         * @param target 
          */
-        static computeNormal(va, vb, vc, target)
+        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3)
         {
             vb.vsub(va, ab);
             vc.vsub(vb, cb);
@@ -167,37 +165,36 @@ namespace CANNON
             {
                 target.normalize();
             }
-        };
+        }
 
         /**
          * Compute the normal of a face from its vertices
-         * @method getFaceNormal
-         * @param  {Number} i
-         * @param  {Vec3} target
+         * 
+         * @param i 
+         * @param target 
          */
-        getFaceNormal(i, target)
+        getFaceNormal(i: number, target: Vec3)
         {
             var f = this.faces[i];
             var va = this.vertices[f[0]];
             var vb = this.vertices[f[1]];
             var vc = this.vertices[f[2]];
             return ConvexPolyhedron.computeNormal(va, vb, vc, target);
-        };
+        }
 
         /**
-         * @method clipAgainstHull
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @param {Vec3} separatingNormal
-         * @param {Number} minDist Clamp distance
-         * @param {Number} maxDist
-         * @param {array} result The an array of contact point objects, see clipFaceAgainstHull
+         * @param posA
+         * @param quatA
+         * @param hullB
+         * @param posB
+         * @param quatB
+         * @param separatingNormal
+         * @param minDist Clamp distance
+         * @param maxDist
+         * @param result The an array of contact point objects, see clipFaceAgainstHull
          * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
          */
-        clipAgainstHull(posA, quatA, hullB, posB, quatB, separatingNormal, minDist, maxDist, result)
+        clipAgainstHull(posA: Vec3, quatA: Quaternion, hullB: ConvexPolyhedron, posB: Vec3, quatB: Quaternion, separatingNormal: Vec3, minDist: number, maxDist: number, result: number[])
         {
             var WorldNormal = cah_WorldNormal;
             var hullA = this;
@@ -239,20 +236,22 @@ namespace CANNON
                     maxDist,
                     result);
             }
-        };
+        }
 
         /**
          * Find the separating axis between this hull and another
-         * @method findSeparatingAxis
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @param {Vec3} target The target vector to save the axis in
-         * @return {bool} Returns false if a separation is found, else true
+         * 
+         * @param hullB 
+         * @param posA 
+         * @param quatA 
+         * @param posB 
+         * @param quatB 
+         * @param target The target vector to save the axis in
+         * @param faceListA 
+         * @param faceListB 
+         * @returns Returns false if a separation is found, else true
          */
-        findSeparatingAxis(hullB, posA, quatA, posB, quatB, target, faceListA, faceListB)
+        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA: number[], faceListB: number[])
         {
             var faceANormalWS3 = fsa_faceANormalWS3,
                 Worldnormal1 = fsa_Worldnormal1,
@@ -294,7 +293,6 @@ namespace CANNON
 
             } else
             {
-
                 // Test unique axes
                 for (var i = 0; i !== hullA.uniqueAxes.length; i++)
                 {
@@ -402,20 +400,20 @@ namespace CANNON
             }
 
             return true;
-        };
+        }
 
         /**
          * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
-         * @method testSepAxis
-         * @param {Vec3} axis
-         * @param {ConvexPolyhedron} hullB
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Vec3} posB
-         * @param {Quaternion} quatB
-         * @return {number} The overlap depth, or FALSE if no penetration.
+         * 
+         * @param axis
+         * @param hullB
+         * @param posA
+         * @param quatA
+         * @param posB
+         * @param quatB
+         * @return The overlap depth, or FALSE if no penetration.
          */
-        testSepAxis(axis, hullB, posA, quatA, posB, quatB)
+        testSepAxis(axis: Vec3, hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion)
         {
             var hullA = this;
             ConvexPolyhedron.project(hullA, axis, posA, quatA, maxminA);
@@ -432,15 +430,14 @@ namespace CANNON
             var d1 = maxB - minA;
             var depth = d0 < d1 ? d0 : d1;
             return depth;
-        };
-
+        }
 
         /**
-         * @method calculateLocalInertia
-         * @param  {Number} mass
-         * @param  {Vec3} target
+         * 
+         * @param mass
+         * @param target
          */
-        calculateLocalInertia(mass, target)
+        calculateLocalInertia(mass: number, target: Vec3)
         {
             // Approximate with box inertia
             // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
@@ -451,34 +448,33 @@ namespace CANNON
             target.x = 1.0 / 12.0 * mass * (2 * y * 2 * y + 2 * z * 2 * z);
             target.y = 1.0 / 12.0 * mass * (2 * x * 2 * x + 2 * z * 2 * z);
             target.z = 1.0 / 12.0 * mass * (2 * y * 2 * y + 2 * x * 2 * x);
-        };
+        }
 
         /**
-         * @method getPlaneConstantOfFace
-         * @param  {Number} face_i Index of the face
-         * @return {Number}
+         * 
+         * @param face_i Index of the face
          */
-        getPlaneConstantOfFace(face_i)
+        getPlaneConstantOfFace(face_i: number)
         {
             var f = this.faces[face_i];
             var n = this.faceNormals[face_i];
             var v = this.vertices[f[0]];
             var c = -n.dot(v);
             return c;
-        };
+        }
 
         /**
          * Clip a face against a hull.
-         * @method clipFaceAgainstHull
-         * @param {Vec3} separatingNormal
-         * @param {Vec3} posA
-         * @param {Quaternion} quatA
-         * @param {Array} worldVertsB1 An array of Vec3 with vertices in the world frame.
-         * @param {Number} minDist Distance clamping
-         * @param {Number} maxDist
-         * @param Array result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
+         * 
+         * @param separatingNormal
+         * @param posA
+         * @param quatA
+         * @param worldVertsB1 An array of Vec3 with vertices in the world frame.
+         * @param minDist Distance clamping
+         * @param maxDist
+         * @param result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
          */
-        clipFaceAgainstHull(separatingNormal, posA, quatA, worldVertsB1, minDist, maxDist, result)
+        clipFaceAgainstHull(separatingNormal: Vec3, posA: Vec3, quatA: Quaternion, worldVertsB1: Vec3[], minDist: number, maxDist: number, result: any[])
         {
             var faceANormalWS = cfah_faceANormalWS,
                 edge0 = cfah_edge0,
@@ -618,17 +614,17 @@ namespace CANNON
                     }
                 }
             }
-        };
+        }
 
         /**
          * Clip a face in a hull against the back of a plane.
-         * @method clipFaceAgainstPlane
-         * @param {Array} inVertices
-         * @param {Array} outVertices
-         * @param {Vec3} planeNormal
-         * @param {Number} planeConstant The constant in the mathematical plane equation
+         * 
+         * @param inVertices
+         * @param outVertices
+         * @param planeNormal
+         * @param planeConstant The constant in the mathematical plane equation
          */
-        clipFaceAgainstPlane(inVertices, outVertices, planeNormal, planeConstant)
+        clipFaceAgainstPlane(inVertices: Vec3[], outVertices: Vec3[], planeNormal: Vec3, planeConstant: number)
         {
             var n_dot_first, n_dot_last;
             var numVerts = inVertices.length;
@@ -681,10 +677,10 @@ namespace CANNON
                 n_dot_first = n_dot_last;
             }
             return outVertices;
-        };
+        }
 
         // Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
-        computeWorldVertices(position, quat)
+        computeWorldVertices(position: Vec3, quat: Quaternion)
         {
             var N = this.vertices.length;
             while (this.worldVertices.length < N)
@@ -701,7 +697,7 @@ namespace CANNON
             }
 
             this.worldVerticesNeedsUpdate = false;
-        };
+        }
 
         computeLocalAABB(aabbmin, aabbmax)
         {
@@ -737,14 +733,14 @@ namespace CANNON
                     aabbmax.z = v.z;
                 }
             }
-        };
+        }
 
         /**
          * Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
-         * @method computeWorldFaceNormals
-         * @param  {Quaternion} quat
+         * 
+         * @param quat
          */
-        computeWorldFaceNormals(quat)
+        computeWorldFaceNormals(quat: Quaternion)
         {
             var N = this.faceNormals.length;
             while (this.worldFaceNormals.length < N)
@@ -762,9 +758,6 @@ namespace CANNON
             this.worldFaceNormalsNeedsUpdate = false;
         };
 
-        /**
-         * @method updateBoundingSphereRadius
-         */
         updateBoundingSphereRadius()
         {
             // Assume points are distributed with local (0,0,0) as center
@@ -779,17 +772,16 @@ namespace CANNON
                 }
             }
             this.boundingSphereRadius = Math.sqrt(max2);
-        };
-
+        }
 
         /**
-         * @method calculateWorldAABB
-         * @param {Vec3}        pos
-         * @param {Quaternion}  quat
-         * @param {Vec3}        min
-         * @param {Vec3}        max
+         * 
+         * @param  pos
+         * @param quat
+         * @param min
+         * @param max
          */
-        calculateWorldAABB(pos, quat, min, max)
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
         {
             var n = this.vertices.length, verts = this.vertices;
             var minx, miny, minz, maxx, maxy, maxz;
@@ -825,25 +817,22 @@ namespace CANNON
             }
             min.set(minx, miny, minz);
             max.set(maxx, maxy, maxz);
-        };
+        }
 
         /**
          * Get approximate convex volume
-         * @method volume
-         * @return {Number}
          */
         volume()
         {
             return 4.0 * Math.PI * this.boundingSphereRadius / 3.0;
-        };
+        }
 
         /**
          * Get an average of all the vertices positions
-         * @method getAveragePointLocal
-         * @param  {Vec3} target
-         * @return {Vec3}
+         * 
+         * @param target
          */
-        getAveragePointLocal(target)
+        getAveragePointLocal(target: Vec3)
         {
             target = target || new Vec3();
             var n = this.vertices.length,
@@ -854,15 +843,15 @@ namespace CANNON
             }
             target.mult(1 / n, target);
             return target;
-        };
+        }
 
         /**
          * Transform all local points. Will change the .vertices
-         * @method transformAllPoints
-         * @param  {Vec3} offset
-         * @param  {Quaternion} quat
+         * 
+         * @param  offset
+         * @param quat
          */
-        transformAllPoints(offset, quat)
+        transformAllPoints(offset: Vec3, quat: Quaternion)
         {
             var n = this.vertices.length,
                 verts = this.vertices;
@@ -899,15 +888,14 @@ namespace CANNON
                     v.vadd(offset, v);
                 }
             }
-        };
+        }
 
         /**
          * Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.
-         * @method pointIsInside
-         * @param  {Vec3} p      A point given in local coordinates
-         * @return {Boolean}
+         * 
+         * @param p      A point given in local coordinates
          */
-        pointIsInside(p)
+        pointIsInside(p: Vec3)
         {
             var n = this.vertices.length,
                 verts = this.vertices,
@@ -942,19 +930,18 @@ namespace CANNON
 
             // If we got here, all dot products were of the same sign.
             return positiveResult ? 1 : -1;
-        };
+        }
 
         /**
          * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
-         * @static
-         * @method project
-         * @param {ConvexPolyhedron} hull
-         * @param {Vec3} axis
-         * @param {Vec3} pos
-         * @param {Quaternion} quat
-         * @param {array} result result[0] and result[1] will be set to maximum and minimum, respectively.
+         * 
+         * @param hull
+         * @param axis
+         * @param pos
+         * @param quat
+         * @param result result[0] and result[1] will be set to maximum and minimum, respectively.
          */
-        static project(hull, axis, pos, quat, result)
+        static project(hull: ConvexPolyhedron, axis: Vec3, pos: Vec3, quat: Quaternion, result: number[])
         {
             var n = hull.vertices.length,
                 worldVertex = project_worldVertex,
@@ -1035,7 +1022,6 @@ namespace CANNON
     var computeLocalAABB_worldVert = new Vec3();
 
     var tempWorldVertex = new Vec3();
-
 
     var ConvexPolyhedron_pointIsInside = new Vec3();
     var ConvexPolyhedron_vToP = new Vec3();

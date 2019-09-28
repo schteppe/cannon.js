@@ -55,7 +55,7 @@ namespace CANNON
             {
                 this.neighbors.push([]);
             }
-        };
+        }
 
         /**
          * Remove a particle from the system.
@@ -73,7 +73,7 @@ namespace CANNON
                     this.neighbors.pop();
                 }
             }
-        };
+        }
 
         /**
          * Get neighbors within smoothing volume, save in the array neighbors
@@ -96,7 +96,7 @@ namespace CANNON
                     neighbors.push(p);
                 }
             }
-        };
+        }
 
         update()
         {
@@ -195,7 +195,7 @@ namespace CANNON
                 particle.force.vadd(a_visc, particle.force);
                 particle.force.vadd(a_pressure, particle.force);
             }
-        };
+        }
 
         // Calculate the weight using the W(r) weightfunction
         w(r: number)
@@ -203,7 +203,7 @@ namespace CANNON
             // 315
             var h = this.smoothingRadius;
             return 315.0 / (64.0 * Math.PI * Math.pow(h, 9)) * Math.pow(h * h - r * r, 3);
-        };
+        }
 
         // calculate gradient of the weight function
         gradw(rVec: Vec3, resultVec: Vec3)
@@ -211,7 +211,7 @@ namespace CANNON
             var r = rVec.norm(),
                 h = this.smoothingRadius;
             rVec.mult(945.0 / (32.0 * Math.PI * Math.pow(h, 9)) * Math.pow((h * h - r * r), 2), resultVec);
-        };
+        }
 
         // Calculate nabla(W)
         nablaw(r: number)
@@ -219,7 +219,7 @@ namespace CANNON
             var h = this.smoothingRadius;
             var nabla = 945.0 / (32.0 * Math.PI * Math.pow(h, 9)) * (h * h - r * r) * (7 * r * r - 3 * h * h);
             return nabla;
-        };
+        }
     }
 
 

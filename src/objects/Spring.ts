@@ -85,7 +85,7 @@ namespace CANNON
         setWorldAnchorA(worldAnchorA: Vec3)
         {
             this.bodyA.pointToLocalFrame(worldAnchorA, this.localAnchorA);
-        };
+        }
 
         /**
          * Set the anchor point on body B, using world coordinates.
@@ -94,7 +94,7 @@ namespace CANNON
         setWorldAnchorB(worldAnchorB: Vec3)
         {
             this.bodyB.pointToLocalFrame(worldAnchorB, this.localAnchorB);
-        };
+        }
 
         /**
          * Get the anchor point on body A, in world coordinates.
@@ -103,7 +103,7 @@ namespace CANNON
         getWorldAnchorA(result: Vec3)
         {
             this.bodyA.pointToWorldFrame(this.localAnchorA, result);
-        };
+        }
 
         /**
          * Get the anchor point on body B, in world coordinates.
@@ -112,7 +112,7 @@ namespace CANNON
         getWorldAnchorB(result: Vec3)
         {
             this.bodyB.pointToWorldFrame(this.localAnchorB, result);
-        };
+        }
 
         /**
          * Apply the spring force to the connected bodies.
@@ -172,7 +172,7 @@ namespace CANNON
             rj.cross(f, rj_x_f);
             bodyA.torque.vsub(ri_x_f, bodyA.torque);
             bodyB.torque.vadd(rj_x_f, bodyB.torque);
-        };
+        }
 
     }
 

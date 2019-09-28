@@ -11,11 +11,10 @@ namespace CANNON
 
         /**
          * Simple vehicle helper class with spherical rigid body wheels.
-         * @class RigidVehicle
-         * @constructor
-         * @param {Body} [options.chassisBody]
+         * 
+         * @param options 
          */
-        constructor(options)
+        constructor(options: { coordinateSystem?: any, chassisBody?: Body } = {})
         {
             this.wheelBodies = [];
 
@@ -38,17 +37,11 @@ namespace CANNON
 
         /**
          * Add a wheel
-         * @method addWheel
-         * @param {object} options
-         * @param {boolean} [options.isFrontWheel]
-         * @param {Vec3} [options.position] Position of the wheel, locally in the chassis body.
-         * @param {Vec3} [options.direction] Slide direction of the wheel along the suspension.
-         * @param {Vec3} [options.axis] Axis of rotation of the wheel, locally defined in the chassis.
-         * @param {Body} [options.body] The wheel body.
+         * 
+         * @param options 
          */
-        addWheel(options)
+        addWheel(options: { body?: Body, isFrontWheel?: boolean, position?: Vec3, axis?: Vec3 } = {})
         {
-            options = options || {};
             var wheelBody = options.body;
             if (!wheelBody)
             {
@@ -81,7 +74,7 @@ namespace CANNON
             this.constraints.push(hingeConstraint);
 
             return this.wheelBodies.length - 1;
-        };
+        }
 
         /**
          * Set the steering value of a wheel.
@@ -105,7 +98,7 @@ namespace CANNON
                 s * x + c * y,
                 0
             );
-        };
+        }
 
         /**
          * Set the target rotational speed of the hinge constraint.
@@ -118,7 +111,7 @@ namespace CANNON
             var hingeConstraint = this.constraints[wheelIndex];
             hingeConstraint.enableMotor();
             hingeConstraint.motorTargetVelocity = value;
-        };
+        }
 
         /**
          * Set the target rotational speed of the hinge constraint.
@@ -129,7 +122,7 @@ namespace CANNON
         {
             var hingeConstraint = this.constraints[wheelIndex];
             hingeConstraint.disableMotor();
-        };
+        }
 
         /**
          * Set the wheel force to apply on one of the wheels each time step
@@ -157,7 +150,7 @@ namespace CANNON
             axis.scale(value, torque);
             wheelBody.vectorToWorldFrame(torque, torque);
             bodyTorque.vadd(torque, bodyTorque);
-        };
+        }
 
         /**
          * Add the vehicle including its constraints to the world.
@@ -180,7 +173,7 @@ namespace CANNON
             }
 
             world.addEventListener('preStep', this._update.bind(this));
-        };
+        }
 
         private _update()
         {
@@ -189,7 +182,7 @@ namespace CANNON
             {
                 this.applyWheelForce(wheelForces[i], i);
             }
-        };
+        }
 
         /**
          * Remove the vehicle including its constraints from the world.
@@ -209,8 +202,7 @@ namespace CANNON
             {
                 world.removeConstraint(constraints[i]);
             }
-        };
-
+        }
 
         /**
          * Get current rotational velocity of a wheel
@@ -224,7 +216,7 @@ namespace CANNON
             var w = wheelBody.angularVelocity;
             this.chassisBody.vectorToWorldFrame(axis, worldAxis);
             return w.dot(worldAxis);
-        };
+        }
 
     }
 

@@ -657,7 +657,7 @@ namespace CANNON
     var calcRollingFriction_vel2 = new Vec3();
     var calcRollingFriction_vel = new Vec3();
 
-    function calcRollingFriction(body0, body1, frictionPosWorld, frictionDirectionWorld, maxImpulse)
+    function calcRollingFriction(body0: Body, body1: Body, frictionPosWorld: Vec3, frictionDirectionWorld: Vec3, maxImpulse: number)
     {
         var j1 = 0;
         var contactPosWorld = frictionPosWorld;
@@ -700,7 +700,7 @@ namespace CANNON
     var computeImpulseDenominator_c0 = new Vec3();
     var computeImpulseDenominator_vec = new Vec3();
     var computeImpulseDenominator_m = new Vec3();
-    function computeImpulseDenominator(body, pos, normal)
+    function computeImpulseDenominator(body: Body, pos: Vec3, normal: Vec3)
     {
         var r0 = computeImpulseDenominator_r0;
         var c0 = computeImpulseDenominator_c0;
