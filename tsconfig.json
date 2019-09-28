@@ -69,6 +69,7 @@
         "src/solver/Solver.ts",
         "src/solver/GSSolver.ts",
         "src/solver/SplitSolver.ts",
-        "src/world/World.ts"
+        "src/world/World.ts",
+        "src/world/Narrowphase.ts"
     ]
 }
