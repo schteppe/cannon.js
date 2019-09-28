@@ -1733,6 +1733,7 @@ declare namespace CANNON {
          * If the ray should stop traversing the bodies.
          */
         _shouldStop: boolean;
+        groundObject: number;
         /**
          * Storage for Ray casting data.
          */
@@ -2270,28 +2271,10 @@ declare namespace CANNON {
         index: number;
         /**
          * Base class for all body types.
-         * @class Body
-         * @constructor
-         * @extends EventTarget
-         * @param {object} [options]
-         * @param {Vec3} [options.position]
-         * @param {Vec3} [options.velocity]
-         * @param {Vec3} [options.angularVelocity]
-         * @param {Quaternion} [options.quaternion]
-         * @param {number} [options.mass]
-         * @param {Material} [options.material]
-         * @param {number} [options.type]
-         * @param {number} [options.linearDamping=0.01]
-         * @param {number} [options.angularDamping=0.01]
-         * @param {boolean} [options.allowSleep=true]
-         * @param {number} [options.sleepSpeedLimit=0.1]
-         * @param {number} [options.sleepTimeLimit=1]
-         * @param {number} [options.collisionFilterGroup=1]
-         * @param {number} [options.collisionFilterMask=-1]
-         * @param {boolean} [options.fixedRotation=false]
-         * @param {Vec3} [options.linearFactor]
-         * @param {Vec3} [options.angularFactor]
-         * @param {Shape} [options.shape]
+         *
+         * @param options
+         * @param a
+         *
          * @example
          *     var body = new Body({
          *         mass: 1
@@ -2300,58 +2283,45 @@ declare namespace CANNON {
          *     body.addShape(shape);
          *     world.addBody(body);
          */
-        constructor(options: any, a: any);
-        /**
-         * Dispatched after two bodies collide. This event is dispatched on each
-         * of the two bodies involved in the collision.
-         * @event collide
-         * @param {Body} body The body that was involved in the collision.
-         * @param {ContactEquation} contact The details of the collision.
-         */
+        constructor(options?: {
+            collisionFilterGroup?: number;
+            collisionFilterMask?: number;
+            position?: Vec3;
+            velocity?: Vec3;
+            material?: Material;
+            mass?: number;
+            linearDamping?: number;
+            type?: number;
+            allowSleep?: boolean;
+            sleepSpeedLimit?: number;
+            sleepTimeLimit?: number;
+            quaternion?: Quaternion;
+            angularVelocity?: Vec3;
+            fixedRotation?: boolean;
+            angularDamping?: number;
+            linearFactor?: Vec3;
+            angularFactor?: Vec3;
+            shape?: Shape;
+        }, a?: any);
         static COLLIDE_EVENT_NAME: string;
         /**
          * A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
-         * @static
-         * @property DYNAMIC
-         * @type {Number}
          */
         static DYNAMIC: number;
         /**
          * A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
-         * @static
-         * @property STATIC
-         * @type {Number}
          */
         static STATIC: number;
         /**
          * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
-         * @static
-         * @property KINEMATIC
-         * @type {Number}
          */
         static KINEMATIC: number;
-        /**
-         * @static
-         * @property AWAKE
-         * @type {number}
-         */
         static AWAKE: number;
-        /**
-         * @static
-         * @property SLEEPY
-         * @type {number}
-         */
         static SLEEPY: number;
-        /**
-         * @static
-         * @property SLEEPING
-         * @type {number}
-         */
         static SLEEPING: number;
         static idCounter: number;
         /**
          * Dispatched after a sleeping body has woken up.
-         * @event wakeup
          */
         static wakeupEvent: {
             type: string;
@@ -2379,22 +2349,19 @@ declare namespace CANNON {
         };
         /**
          * Called every timestep to update internal sleep timer and change sleep state if needed.
-         * @param {Number} time The world time in seconds
          */
-        sleepTick(time: any): void;
+        sleepTick(time: number): void;
         /**
          * If the body is sleeping, it should be immovable / have infinite mass during solve. We solve it by having a separate "solve mass".
-         * @method updateSolveMassProperties
          */
         updateSolveMassProperties(): void;
         /**
          * Convert a world point to local body frame.
-         * @method pointToLocalFrame
-         * @param  {Vec3} worldPoint
-         * @param  {Vec3} result
-         * @return {Vec3}
+         *
+         * @param worldPoint
+         * @param result
          */
-        pointToLocalFrame(worldPoint: any, result: any): any;
+        pointToLocalFrame(worldPoint: Vec3, result: Vec3): Vec3;
         /**
          * Convert a world vector to local body frame.
          *
@@ -2404,76 +2371,71 @@ declare namespace CANNON {
         vectorToLocalFrame(worldVector: any, result?: Vec3): Vec3;
         /**
          * Convert a local body point to world frame.
-         * @method pointToWorldFrame
-         * @param  {Vec3} localPoint
-         * @param  {Vec3} result
-         * @return {Vec3}
+         *
+         * @param localPoint
+         * @param result
          */
-        pointToWorldFrame(localPoint: any, result: any): any;
+        pointToWorldFrame(localPoint: Vec3, result: Vec3): Vec3;
         /**
          * Convert a local body point to world frame.
-         * @method vectorToWorldFrame
-         * @param  {Vec3} localVector
-         * @param  {Vec3} result
-         * @return {Vec3}
+         *
+         * @param localVector
+         * @param result
          */
-        vectorToWorldFrame(localVector: any, result: any): any;
+        vectorToWorldFrame(localVector: Vec3, result: Vec3): Vec3;
         /**
          * Add a shape to the body with a local offset and orientation.
-         * @method addShape
-         * @param {Shape} shape
-         * @param {Vec3} [_offset]
-         * @param {Quaternion} [_orientation]
-         * @return {Body} The body object, for chainability.
+         *
+         * @param shape
+         * @param _offset
+         * @param_orientation
+         * @return The body object, for chainability.
          */
         addShape(shape: Shape, _offset?: Vec3, _orientation?: Quaternion): this;
         /**
          * Update the bounding radius of the body. Should be done if any of the shapes are changed.
-         * @method updateBoundingRadius
          */
         updateBoundingRadius(): void;
         /**
          * Updates the .aabb
-         * @method computeAABB
+         *
          * @todo rename to updateAABB()
          */
         computeAABB(): void;
         /**
          * Update .inertiaWorld and .invInertiaWorld
-         * @method updateInertiaWorld
          */
         updateInertiaWorld(force?: any): void;
         /**
          * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.torque.
-         * @method applyForce
-         * @param  {Vec3} force The amount of force to add.
-         * @param  {Vec3} relativePoint A point relative to the center of mass to apply the force on.
+         *
+         * @param force The amount of force to add.
+         * @param relativePoint A point relative to the center of mass to apply the force on.
          */
-        applyForce(force: any, relativePoint: any): void;
+        applyForce(force: Vec3, relativePoint: Vec3): void;
         /**
          * Apply force to a local point in the body.
-         * @method applyLocalForce
-         * @param  {Vec3} force The force vector to apply, defined locally in the body frame.
-         * @param  {Vec3} localPoint A local point in the body to apply the force on.
+         *
+         * @param force The force vector to apply, defined locally in the body frame.
+         * @param localPoint A local point in the body to apply the force on.
          */
-        applyLocalForce(localForce: any, localPoint: any): void;
+        applyLocalForce(localForce: Vec3, localPoint: Vec3): void;
         /**
          * Apply impulse to a world point. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
-         * @method applyImpulse
-         * @param  {Vec3} impulse The amount of impulse to add.
-         * @param  {Vec3} relativePoint A point relative to the center of mass to apply the force on.
+         *
+         * @param impulse The amount of impulse to add.
+         * @param relativePoint A point relative to the center of mass to apply the force on.
          */
-        applyImpulse(impulse: any, relativePoint: any): void;
+        applyImpulse(impulse: Vec3, relativePoint: Vec3): void;
         /**
          * Apply locally-defined impulse to a local point in the body.
-         * @method applyLocalImpulse
-         * @param  {Vec3} force The force vector to apply, defined locally in the body frame.
-         * @param  {Vec3} localPoint A local point in the body to apply the force on.
+         *
+         * @param force The force vector to apply, defined locally in the body frame.
+         * @param localPoint A local point in the body to apply the force on.
          */
-        applyLocalImpulse(localImpulse: any, localPoint: any): void;
+        applyLocalImpulse(localImpulse: Vec3, localPoint: Vec3): void;
         /**
          * Should be called whenever you change the body shape or mass.
-         * @method updateMassProperties
          */
         updateMassProperties(): void;
         /**
@@ -2486,11 +2448,11 @@ declare namespace CANNON {
         getVelocityAtWorldPoint(worldPoint: any, result: any): any;
         /**
          * Move the body forward in time.
-         * @param {number} dt Time step
-         * @param {boolean} quatNormalize Set to true to normalize the body quaternion
-         * @param {boolean} quatNormalizeFast If the quaternion should be normalized using "fast" quaternion normalization
+         * @param dt Time step
+         * @param quatNormalize Set to true to normalize the body quaternion
+         * @param quatNormalizeFast If the quaternion should be normalized using "fast" quaternion normalization
          */
-        integrate(dt: any, quatNormalize: any, quatNormalizeFast: any): void;
+        integrate(dt: number, quatNormalize: boolean, quatNormalizeFast: boolean): void;
     }
 }
 declare namespace CANNON {
@@ -2688,81 +2650,78 @@ declare namespace CANNON {
         constraints: any;
         /**
          * Vehicle helper class that casts rays from the wheel positions towards the ground and applies forces.
-         * @class RaycastVehicle
-         * @constructor
-         * @param {object} [options]
-         * @param {Body} [options.chassisBody] The car chassis body.
-         * @param {integer} [options.indexRightAxis] Axis to use for right. x=0, y=1, z=2
-         * @param {integer} [options.indexLeftAxis]
-         * @param {integer} [options.indexUpAxis]
+         *
+         * @param options
          */
-        constructor(options: any);
+        constructor(options?: {
+            chassisBody?: Body;
+            indexRightAxis?: number;
+            indexForwardAxis?: number;
+            indexUpAxis?: number;
+        });
         /**
          * Add a wheel. For information about the options, see WheelInfo.
-         * @method addWheel
-         * @param {object} [options]
+         *
+         * @param options
          */
-        addWheel(options: any): number;
+        addWheel(options?: {}): number;
         /**
          * Set the steering value of a wheel.
-         * @method setSteeringValue
-         * @param {number} value
-         * @param {integer} wheelIndex
+         *
+         * @param value
+         * @param wheelIndex
          */
-        setSteeringValue(value: any, wheelIndex: any): void;
+        setSteeringValue(value: number, wheelIndex: number): void;
         /**
          * Set the wheel force to apply on one of the wheels each time step
-         * @method applyEngineForce
-         * @param  {number} value
-         * @param  {integer} wheelIndex
+         *
+         * @param value
+         * @param wheelIndex
          */
-        applyEngineForce(value: any, wheelIndex: any): void;
+        applyEngineForce(value: number, wheelIndex: number): void;
         /**
          * Set the braking force of a wheel
-         * @method setBrake
-         * @param {number} brake
-         * @param {integer} wheelIndex
+         *
+         * @param brake
+         * @param wheelIndex
          */
-        setBrake(brake: any, wheelIndex: any): void;
+        setBrake(brake: number, wheelIndex: number): void;
         /**
          * Add the vehicle including its constraints to the world.
-         * @method addToWorld
-         * @param {World} world
+         *
+         * @param world
          */
-        addToWorld(world: any): void;
+        addToWorld(world: World): void;
         /**
          * Get one of the wheel axles, world-oriented.
-         * @private
-         * @method getVehicleAxisWorld
-         * @param  {integer} axisIndex
-         * @param  {Vec3} result
+         * @param axisIndex
+         * @param result
          */
-        getVehicleAxisWorld(axisIndex: any, result: any): void;
-        updateVehicle(timeStep: any): void;
-        updateSuspension(deltaTime: any): void;
+        getVehicleAxisWorld(axisIndex: number, result: Vec3): void;
+        updateVehicle(timeStep: number): void;
+        updateSuspension(deltaTime: number): void;
         /**
          * Remove the vehicle including its constraints from the world.
-         * @method removeFromWorld
-         * @param {World} world
+         *
+         * @param world
          */
-        removeFromWorld(world: any): void;
-        castRay(wheel: any): number;
-        updateWheelTransformWorld(wheel: any): void;
+        removeFromWorld(world: World): void;
+        castRay(wheel: WheelInfo): number;
+        updateWheelTransformWorld(wheel: WheelInfo): void;
         /**
          * Update one of the wheel transform.
          * Note when rendering wheels: during each step, wheel transforms are updated BEFORE the chassis; ie. their position becomes invalid after the step. Thus when you render wheels, you must update wheel transforms before rendering them. See raycastVehicle demo for an example.
-         * @method updateWheelTransform
-         * @param {integer} wheelIndex The wheel index to update.
+         *
+         * @param wheelIndex The wheel index to update.
          */
-        updateWheelTransform(wheelIndex: any): void;
+        updateWheelTransform(wheelIndex: number): void;
         /**
          * Get the world transform of one of the wheels
-         * @method getWheelTransformWorld
-         * @param  {integer} wheelIndex
-         * @return {Transform}
+         *
+         * @param wheelIndex
          */
-        getWheelTransformWorld(wheelIndex: any): Transform;
-        updateFriction(timeStep: any): void;
+        getWheelTransformWorld(wheelIndex: number): Transform;
+        updateFriction(timeStep: number): void;
     }
 }
 declare namespace CANNON {
@@ -3018,7 +2977,7 @@ declare namespace CANNON {
          * @author schteppe
          */
         constructor(bodyA: Body, bodyB: Body, maxForce?: number);
-        computeB(h: any): number;
+        computeB(h: number): number;
         /**
          * Get the current relative velocity in the contact point.
          */

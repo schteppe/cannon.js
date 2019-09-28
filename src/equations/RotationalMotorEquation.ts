@@ -64,6 +64,6 @@ namespace CANNON
             var B = - GW * b - h * GiMf;
 
             return B;
-        };
+        }
     }
 }

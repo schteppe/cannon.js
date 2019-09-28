@@ -38,7 +38,7 @@ namespace CANNON
             this.ni = new Vec3();
         }
 
-        computeB(h)
+        computeB(h: number)
         {
             var a = this.a,
                 b = this.b,
@@ -93,8 +93,7 @@ namespace CANNON
             var B = - g * a - GW * b - h * GiMf;
 
             return B;
-        };
-
+        }
 
         /**
          * Get the current relative velocity in the contact point.
@@ -116,7 +115,7 @@ namespace CANNON
             vi.vsub(vj, relVel);
 
             return this.ni.dot(relVel);
-        };
+        }
 
     }
 

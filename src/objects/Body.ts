@@ -191,28 +191,10 @@ namespace CANNON
 
         /**
          * Base class for all body types.
-         * @class Body
-         * @constructor
-         * @extends EventTarget
-         * @param {object} [options]
-         * @param {Vec3} [options.position]
-         * @param {Vec3} [options.velocity]
-         * @param {Vec3} [options.angularVelocity]
-         * @param {Quaternion} [options.quaternion]
-         * @param {number} [options.mass]
-         * @param {Material} [options.material]
-         * @param {number} [options.type]
-         * @param {number} [options.linearDamping=0.01]
-         * @param {number} [options.angularDamping=0.01]
-         * @param {boolean} [options.allowSleep=true]
-         * @param {number} [options.sleepSpeedLimit=0.1]
-         * @param {number} [options.sleepTimeLimit=1]
-         * @param {number} [options.collisionFilterGroup=1]
-         * @param {number} [options.collisionFilterMask=-1]
-         * @param {boolean} [options.fixedRotation=false]
-         * @param {Vec3} [options.linearFactor]
-         * @param {Vec3} [options.angularFactor]
-         * @param {Shape} [options.shape]
+         * 
+         * @param options 
+         * @param a 
+         * 
          * @example
          *     var body = new Body({
          *         mass: 1
@@ -221,12 +203,14 @@ namespace CANNON
          *     body.addShape(shape);
          *     world.addBody(body);
          */
-        constructor(options, a)
+        constructor(options: {
+            collisionFilterGroup?: number, collisionFilterMask?: number, position?: Vec3, velocity?: Vec3,
+            material?: Material, mass?: number, linearDamping?: number, type?: number, allowSleep?: boolean,
+            sleepSpeedLimit?: number, sleepTimeLimit?: number, quaternion?: Quaternion, angularVelocity?: Vec3,
+            fixedRotation?: boolean, angularDamping?: number, linearFactor?: Vec3, angularFactor?: Vec3, shape?: Shape,
+        } = {}, a = undefined)
         {
             super();
-            options = options || {};
-
-            EventTarget.apply(this);
 
             this.id = Body.idCounter++;
             this.world = null;
@@ -332,69 +316,37 @@ namespace CANNON
             this.updateMassProperties();
         }
 
-        /**
-         * Dispatched after two bodies collide. This event is dispatched on each
-         * of the two bodies involved in the collision.
-         * @event collide
-         * @param {Body} body The body that was involved in the collision.
-         * @param {ContactEquation} contact The details of the collision.
-         */
         static COLLIDE_EVENT_NAME = "collide";
 
         /**
          * A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
-         * @static
-         * @property DYNAMIC
-         * @type {Number}
          */
         static DYNAMIC = 1;
 
         /**
          * A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
-         * @static
-         * @property STATIC
-         * @type {Number}
          */
         static STATIC = 2;
 
         /**
          * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
-         * @static
-         * @property KINEMATIC
-         * @type {Number}
          */
         static KINEMATIC = 4;
 
-        /**
-         * @static
-         * @property AWAKE
-         * @type {number}
-         */
         static AWAKE = 0;
 
-        /**
-         * @static
-         * @property SLEEPY
-         * @type {number}
-         */
         static SLEEPY = 1;
 
-        /**
-         * @static
-         * @property SLEEPING
-         * @type {number}
-         */
         static SLEEPING = 2;
 
         static idCounter = 0;
 
         /**
          * Dispatched after a sleeping body has woken up.
-         * @event wakeup
          */
         static wakeupEvent = {
             type: "wakeup"
-        };
+        }
 
         /**
          * Wake the body up.
@@ -408,7 +360,7 @@ namespace CANNON
             {
                 this.dispatchEvent(Body.wakeupEvent);
             }
-        };
+        }
 
         /**
          * Force body sleep
@@ -419,7 +371,7 @@ namespace CANNON
             this.velocity.set(0, 0, 0);
             this.angularVelocity.set(0, 0, 0);
             this._wakeUpAfterNarrowphase = false;
-        };
+        }
 
         /**
          * Dispatched after a body has gone in to the sleepy state.
@@ -438,9 +390,8 @@ namespace CANNON
 
         /**
          * Called every timestep to update internal sleep timer and change sleep state if needed.
-         * @param {Number} time The world time in seconds
          */
-        sleepTick(time)
+        sleepTick(time: number)
         {
             if (this.allowSleep)
             {
@@ -461,11 +412,10 @@ namespace CANNON
                     this.dispatchEvent(Body.sleepEvent);
                 }
             }
-        };
+        }
 
         /**
          * If the body is sleeping, it should be immovable / have infinite mass during solve. We solve it by having a separate "solve mass".
-         * @method updateSolveMassProperties
          */
         updateSolveMassProperties()
         {
@@ -480,22 +430,21 @@ namespace CANNON
                 this.invInertiaSolve.copy(this.invInertia);
                 this.invInertiaWorldSolve.copy(this.invInertiaWorld);
             }
-        };
+        }
 
         /**
          * Convert a world point to local body frame.
-         * @method pointToLocalFrame
-         * @param  {Vec3} worldPoint
-         * @param  {Vec3} result
-         * @return {Vec3}
+         * 
+         * @param worldPoint
+         * @param result
          */
-        pointToLocalFrame(worldPoint, result)
+        pointToLocalFrame(worldPoint: Vec3, result: Vec3)
         {
             var result = result || new Vec3();
             worldPoint.vsub(this.position, result);
             this.quaternion.conjugate().vmult(result, result);
             return result;
-        };
+        }
 
         /**
          * Convert a world vector to local body frame.
@@ -507,45 +456,42 @@ namespace CANNON
         {
             this.quaternion.conjugate().vmult(worldVector, result);
             return result;
-        };
+        }
 
         /**
          * Convert a local body point to world frame.
-         * @method pointToWorldFrame
-         * @param  {Vec3} localPoint
-         * @param  {Vec3} result
-         * @return {Vec3}
+         * 
+         * @param localPoint
+         * @param result
          */
-        pointToWorldFrame(localPoint, result)
+        pointToWorldFrame(localPoint: Vec3, result: Vec3)
         {
             var result = result || new Vec3();
             this.quaternion.vmult(localPoint, result);
             result.vadd(this.position, result);
             return result;
-        };
+        }
 
         /**
          * Convert a local body point to world frame.
-         * @method vectorToWorldFrame
-         * @param  {Vec3} localVector
-         * @param  {Vec3} result
-         * @return {Vec3}
+         * 
+         * @param localVector
+         * @param result
          */
-        vectorToWorldFrame(localVector, result)
+        vectorToWorldFrame(localVector: Vec3, result: Vec3)
         {
             var result = result || new Vec3();
             this.quaternion.vmult(localVector, result);
             return result;
-        };
-
+        }
 
         /**
          * Add a shape to the body with a local offset and orientation.
-         * @method addShape
-         * @param {Shape} shape
-         * @param {Vec3} [_offset]
-         * @param {Quaternion} [_orientation]
-         * @return {Body} The body object, for chainability.
+         * 
+         * @param shape
+         * @param _offset
+         * @param_orientation
+         * @return The body object, for chainability.
          */
         addShape(shape: Shape, _offset?: Vec3, _orientation?: Quaternion)
         {
@@ -572,11 +518,10 @@ namespace CANNON
             shape.body = this;
 
             return this;
-        };
+        }
 
         /**
          * Update the bounding radius of the body. Should be done if any of the shapes are changed.
-         * @method updateBoundingRadius
          */
         updateBoundingRadius()
         {
@@ -598,12 +543,12 @@ namespace CANNON
             }
 
             this.boundingRadius = radius;
-        };
+        }
 
 
         /**
          * Updates the .aabb
-         * @method computeAABB
+         * 
          * @todo rename to updateAABB()
          */
         computeAABB()
@@ -642,11 +587,10 @@ namespace CANNON
             }
 
             this.aabbNeedsUpdate = false;
-        };
+        }
 
         /**
          * Update .inertiaWorld and .invInertiaWorld
-         * @method updateInertiaWorld
          */
         updateInertiaWorld(force?)
         {
@@ -668,15 +612,15 @@ namespace CANNON
                 m1.scale(I, m1);
                 m1.mmult(m2, this.invInertiaWorld);
             }
-        };
+        }
 
         /**
          * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.torque.
-         * @method applyForce
-         * @param  {Vec3} force The amount of force to add.
-         * @param  {Vec3} relativePoint A point relative to the center of mass to apply the force on.
+         * 
+         * @param force The amount of force to add.
+         * @param relativePoint A point relative to the center of mass to apply the force on.
          */
-        applyForce(force, relativePoint)
+        applyForce(force: Vec3, relativePoint: Vec3)
         {
             if (this.type !== Body.DYNAMIC)
             { // Needed?
@@ -692,16 +636,15 @@ namespace CANNON
 
             // Add rotational force
             this.torque.vadd(rotForce, this.torque);
-        };
+        }
 
         /**
          * Apply force to a local point in the body.
-         * @method applyLocalForce
-         * @param  {Vec3} force The force vector to apply, defined locally in the body frame.
-         * @param  {Vec3} localPoint A local point in the body to apply the force on.
+         * 
+         * @param force The force vector to apply, defined locally in the body frame.
+         * @param localPoint A local point in the body to apply the force on.
          */
-
-        applyLocalForce(localForce, localPoint)
+        applyLocalForce(localForce: Vec3, localPoint: Vec3)
         {
             if (this.type !== Body.DYNAMIC)
             {
@@ -716,15 +659,15 @@ namespace CANNON
             this.vectorToWorldFrame(localPoint, relativePointWorld);
 
             this.applyForce(worldForce, relativePointWorld);
-        };
+        }
 
         /**
          * Apply impulse to a world point. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
-         * @method applyImpulse
-         * @param  {Vec3} impulse The amount of impulse to add.
-         * @param  {Vec3} relativePoint A point relative to the center of mass to apply the force on.
+         * 
+         * @param impulse The amount of impulse to add.
+         * @param relativePoint A point relative to the center of mass to apply the force on.
          */
-        applyImpulse(impulse, relativePoint)
+        applyImpulse(impulse: Vec3, relativePoint: Vec3)
         {
             if (this.type !== Body.DYNAMIC)
             {
@@ -755,15 +698,15 @@ namespace CANNON
 
             // Add rotational Impulse
             this.angularVelocity.vadd(rotVelo, this.angularVelocity);
-        };
+        }
 
         /**
          * Apply locally-defined impulse to a local point in the body.
-         * @method applyLocalImpulse
-         * @param  {Vec3} force The force vector to apply, defined locally in the body frame.
-         * @param  {Vec3} localPoint A local point in the body to apply the force on.
+         * 
+         * @param force The force vector to apply, defined locally in the body frame.
+         * @param localPoint A local point in the body to apply the force on.
          */
-        applyLocalImpulse(localImpulse, localPoint)
+        applyLocalImpulse(localImpulse: Vec3, localPoint: Vec3)
         {
             if (this.type !== Body.DYNAMIC)
             {
@@ -778,12 +721,10 @@ namespace CANNON
             this.vectorToWorldFrame(localPoint, relativePointWorld);
 
             this.applyImpulse(worldImpulse, relativePointWorld);
-        };
-
+        }
 
         /**
          * Should be called whenever you change the body shape or mass.
-         * @method updateMassProperties
          */
         updateMassProperties()
         {
@@ -808,7 +749,7 @@ namespace CANNON
                 I.z > 0 && !fixed ? 1.0 / I.z : 0
             );
             this.updateInertiaWorld(true);
-        };
+        }
 
         /**
          * Get world velocity of a point in the body.
@@ -824,18 +765,16 @@ namespace CANNON
             this.angularVelocity.cross(r, result);
             this.velocity.vadd(result, result);
             return result;
-        };
-
+        }
 
         /**
          * Move the body forward in time.
-         * @param {number} dt Time step
-         * @param {boolean} quatNormalize Set to true to normalize the body quaternion
-         * @param {boolean} quatNormalizeFast If the quaternion should be normalized using "fast" quaternion normalization
+         * @param dt Time step
+         * @param quatNormalize Set to true to normalize the body quaternion
+         * @param quatNormalizeFast If the quaternion should be normalized using "fast" quaternion normalization
          */
-        integrate(dt, quatNormalize, quatNormalizeFast)
+        integrate(dt: number, quatNormalize: boolean, quatNormalizeFast: boolean)
         {
-
             // Save previous position
             this.previousPosition.copy(this.position);
             this.previousQuaternion.copy(this.quaternion);
@@ -891,9 +830,8 @@ namespace CANNON
 
             // Update world inertia
             this.updateInertiaWorld();
-        };
+        }
     }
-
 
     var tmpVec = new Vec3();
     var tmpQuat = new Quaternion();
@@ -917,11 +855,9 @@ namespace CANNON
     var Body_applyLocalImpulse_worldImpulse = new Vec3();
     var Body_applyLocalImpulse_relativePoint = new Vec3();
 
-
     var uiw_m1 = new Mat3();
     var uiw_m2 = new Mat3();
     var uiw_m3 = new Mat3();
-
 
     var computeAABB_shapeAABB = new AABB();
 }

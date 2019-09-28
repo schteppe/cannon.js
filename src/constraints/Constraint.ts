@@ -59,7 +59,7 @@ namespace CANNON
         update()
         {
             throw new Error("method update() not implmemented in this Constraint subclass!");
-        };
+        }
 
         /**
          * Enables all equations in the constraint.
@@ -71,7 +71,7 @@ namespace CANNON
             {
                 eqs[i].enabled = true;
             }
-        };
+        }
 
         /**
          * Disables all equations in the constraint.
@@ -83,7 +83,7 @@ namespace CANNON
             {
                 eqs[i].enabled = false;
             }
-        };
+        }
 
         static idCounter = 0;
     }

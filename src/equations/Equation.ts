@@ -77,7 +77,7 @@ namespace CANNON
             this.a = 4.0 / (h * (1 + 4 * d));
             this.b = (4.0 * d) / (1 + 4 * d);
             this.eps = 4.0 / (h * h * k * (1 + 4 * d));
-        };
+        }
 
         /**
          * Computes the RHS of the SPOOK equation
@@ -88,7 +88,7 @@ namespace CANNON
                 Gq = this.computeGq(),
                 GiMf = this.computeGiMf();
             return - Gq * a - GW * b - GiMf * h;
-        };
+        }
 
         /**
          * Computes G*q, where q are the generalized body coordinates
@@ -102,7 +102,7 @@ namespace CANNON
                 xi = bi.position,
                 xj = bj.position;
             return GA.spatial.dot(xi) + GB.spatial.dot(xj);
-        };
+        }
 
 
         /**
@@ -119,7 +119,7 @@ namespace CANNON
                 wi = bi.angularVelocity,
                 wj = bj.angularVelocity;
             return GA.multiplyVectors(vi, wi) + GB.multiplyVectors(vj, wj);
-        };
+        }
 
 
         /**
@@ -136,7 +136,7 @@ namespace CANNON
                 wi = bi.wlambda,
                 wj = bj.wlambda;
             return GA.multiplyVectors(vi, wi) + GB.multiplyVectors(vj, wj);
-        };
+        }
 
         /**
          * Computes G*inv(M)*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.
@@ -161,7 +161,7 @@ namespace CANNON
             bj.invInertiaWorldSolve.vmult(tj, invIj_vmult_tauj);
 
             return GA.multiplyVectors(iMfi, invIi_vmult_taui) + GB.multiplyVectors(iMfj, invIj_vmult_tauj);
-        };
+        }
 
         /**
          * Computes G*inv(M)*G'
@@ -209,7 +209,7 @@ namespace CANNON
 
             bj.invInertiaWorldSolve.vmult(GB.rotational, temp);
             bj.wlambda.addScaledVector(deltalambda, temp, bj.wlambda);
-        };
+        }
 
         /**
          * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps
@@ -217,7 +217,7 @@ namespace CANNON
         computeC()
         {
             return this.computeGiMGt() + this.eps;
-        };
+        }
     }
 
     var zero = new Vec3();

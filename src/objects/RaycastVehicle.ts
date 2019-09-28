@@ -39,15 +39,10 @@ namespace CANNON
 
         /**
          * Vehicle helper class that casts rays from the wheel positions towards the ground and applies forces.
-         * @class RaycastVehicle
-         * @constructor
-         * @param {object} [options]
-         * @param {Body} [options.chassisBody] The car chassis body.
-         * @param {integer} [options.indexRightAxis] Axis to use for right. x=0, y=1, z=2
-         * @param {integer} [options.indexLeftAxis]
-         * @param {integer} [options.indexUpAxis]
+         * 
+         * @param options 
          */
-        constructor(options)
+        constructor(options: { chassisBody?: Body, indexRightAxis?: number, indexForwardAxis?: number, indexUpAxis?: number } = {})
         {
             this.chassisBody = options.chassisBody;
             this.wheelInfos = [];
@@ -60,61 +55,58 @@ namespace CANNON
 
         /**
          * Add a wheel. For information about the options, see WheelInfo.
-         * @method addWheel
-         * @param {object} [options]
+         * 
+         * @param options
          */
-        addWheel(options)
+        addWheel(options = {})
         {
-            options = options || {};
-
             var info = new WheelInfo(options);
             var index = this.wheelInfos.length;
             this.wheelInfos.push(info);
 
             return index;
-        };
+        }
 
         /**
          * Set the steering value of a wheel.
-         * @method setSteeringValue
-         * @param {number} value
-         * @param {integer} wheelIndex
+         * 
+         * @param value
+         * @param wheelIndex
          */
-        setSteeringValue(value, wheelIndex)
+        setSteeringValue(value: number, wheelIndex: number)
         {
             var wheel = this.wheelInfos[wheelIndex];
             wheel.steering = value;
-        };
-
+        }
 
         /**
          * Set the wheel force to apply on one of the wheels each time step
-         * @method applyEngineForce
-         * @param  {number} value
-         * @param  {integer} wheelIndex
+         * 
+         * @param value
+         * @param wheelIndex
          */
-        applyEngineForce(value, wheelIndex)
+        applyEngineForce(value: number, wheelIndex: number)
         {
             this.wheelInfos[wheelIndex].engineForce = value;
-        };
+        }
 
         /**
          * Set the braking force of a wheel
-         * @method setBrake
-         * @param {number} brake
-         * @param {integer} wheelIndex
+         * 
+         * @param brake
+         * @param wheelIndex
          */
-        setBrake(brake, wheelIndex)
+        setBrake(brake: number, wheelIndex: number)
         {
             this.wheelInfos[wheelIndex].brake = brake;
-        };
+        }
 
         /**
          * Add the vehicle including its constraints to the world.
-         * @method addToWorld
-         * @param {World} world
+         * 
+         * @param world
          */
-        addToWorld(world)
+        addToWorld(world: World)
         {
             var constraints = this.constraints;
             world.addBody(this.chassisBody);
@@ -125,16 +117,14 @@ namespace CANNON
             };
             world.addEventListener('preStep', this.preStepCallback);
             this.world = world;
-        };
+        }
 
         /**
          * Get one of the wheel axles, world-oriented.
-         * @private
-         * @method getVehicleAxisWorld
-         * @param  {integer} axisIndex
-         * @param  {Vec3} result
+         * @param axisIndex
+         * @param result
          */
-        getVehicleAxisWorld(axisIndex, result)
+        getVehicleAxisWorld(axisIndex: number, result: Vec3)
         {
             result.set(
                 axisIndex === 0 ? 1 : 0,
@@ -142,9 +132,9 @@ namespace CANNON
                 axisIndex === 2 ? 1 : 0
             );
             this.chassisBody.vectorToWorldFrame(result, result);
-        };
+        }
 
-        updateVehicle(timeStep)
+        updateVehicle(timeStep: number)
         {
             var wheelInfos = this.wheelInfos;
             var numWheels = wheelInfos.length;
@@ -239,9 +229,9 @@ namespace CANNON
                 wheel.rotation += wheel.deltaRotation; // Use the old value
                 wheel.deltaRotation *= 0.99; // damping of rotation when not in contact
             }
-        };
+        }
 
-        updateSuspension(deltaTime)
+        updateSuspension(deltaTime: number)
         {
             var chassisBody = this.chassisBody;
             var chassisMass = chassisBody.mass;
@@ -285,22 +275,22 @@ namespace CANNON
                     wheel.suspensionForce = 0;
                 }
             }
-        };
+        }
 
         /**
          * Remove the vehicle including its constraints from the world.
-         * @method removeFromWorld
-         * @param {World} world
+         * 
+         * @param world
          */
-        removeFromWorld(world)
+        removeFromWorld(world: World)
         {
             var constraints = this.constraints;
             world.remove(this.chassisBody);
             world.removeEventListener('preStep', this.preStepCallback);
             this.world = null;
-        };
+        }
 
-        castRay(wheel)
+        castRay(wheel: WheelInfo)
         {
             var rayvector = castRay_rayvector;
             var target = castRay_target;
@@ -330,7 +320,7 @@ namespace CANNON
 
             var object = raycastResult.body;
 
-            wheel.raycastResult.groundObject = 0;
+            wheel.raycastResult.groundObject = 0;//?
 
             if (object)
             {
@@ -383,25 +373,24 @@ namespace CANNON
             }
 
             return depth;
-        };
+        }
 
-        updateWheelTransformWorld(wheel)
+        updateWheelTransformWorld(wheel: WheelInfo)
         {
             wheel.isInContact = false;
             var chassisBody = this.chassisBody;
             chassisBody.pointToWorldFrame(wheel.chassisConnectionPointLocal, wheel.chassisConnectionPointWorld);
             chassisBody.vectorToWorldFrame(wheel.directionLocal, wheel.directionWorld);
             chassisBody.vectorToWorldFrame(wheel.axleLocal, wheel.axleWorld);
-        };
-
+        }
 
         /**
          * Update one of the wheel transform.
          * Note when rendering wheels: during each step, wheel transforms are updated BEFORE the chassis; ie. their position becomes invalid after the step. Thus when you render wheels, you must update wheel transforms before rendering them. See raycastVehicle demo for an example.
-         * @method updateWheelTransform
-         * @param {integer} wheelIndex The wheel index to update.
+         * 
+         * @param wheelIndex The wheel index to update.
          */
-        updateWheelTransform(wheelIndex)
+        updateWheelTransform(wheelIndex: number)
         {
             var up = tmpVec4;
             var right = tmpVec5;
@@ -436,21 +425,19 @@ namespace CANNON
             p.copy(wheel.directionWorld);
             p.scale(wheel.suspensionLength, p);
             p.vadd(wheel.chassisConnectionPointWorld, p);
-        };
-
+        }
 
         /**
          * Get the world transform of one of the wheels
-         * @method getWheelTransformWorld
-         * @param  {integer} wheelIndex
-         * @return {Transform}
+         * 
+         * @param wheelIndex
          */
-        getWheelTransformWorld(wheelIndex)
+        getWheelTransformWorld(wheelIndex: number)
         {
             return this.wheelInfos[wheelIndex].worldTransform;
-        };
+        }
 
-        updateFriction(timeStep)
+        updateFriction(timeStep: number)
         {
             var surfNormalWS_scaled_proj = updateFriction_surfNormalWS_scaled_proj;
 
@@ -637,7 +624,7 @@ namespace CANNON
                     groundObject.applyImpulse(sideImp, rel_pos2);
                 }
             }
-        };
+        }
 
     }
 

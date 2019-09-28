@@ -46,19 +46,10 @@ namespace CANNON
 
             // ...and the following rotational equations will keep all rotational DOF's in place
 
-            /**
-             * @property {RotationalEquation} rotationalEquation1
-             */
             var r1 = this.rotationalEquation1 = new RotationalEquation(bodyA, bodyB, options);
 
-            /**
-             * @property {RotationalEquation} rotationalEquation2
-             */
             var r2 = this.rotationalEquation2 = new RotationalEquation(bodyA, bodyB, options);
 
-            /**
-             * @property {RotationalEquation} rotationalEquation3
-             */
             var r3 = this.rotationalEquation3 = new RotationalEquation(bodyA, bodyB, options);
 
             this.equations.push(r1, r2, r3);

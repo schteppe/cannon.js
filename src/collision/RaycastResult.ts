@@ -33,6 +33,7 @@ namespace CANNON
 		 * If the ray should stop traversing the bodies.
 		 */
 		_shouldStop = false;
+        groundObject: number;
 
 		/**
 		 * Storage for Ray casting data.

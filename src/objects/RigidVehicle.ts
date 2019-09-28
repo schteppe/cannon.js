@@ -27,7 +27,8 @@ namespace CANNON
             {
                 // No chassis body given. Create it!
                 var chassisShape = new Box(new Vec3(5, 2, 0.5));
-                this.chassisBody = new Body(1, chassisShape);
+                throw "下一行代码有问题？！"
+                // this.chassisBody = new Body(1, chassisShape);
             }
 
             this.constraints = [];
@@ -51,7 +52,8 @@ namespace CANNON
             var wheelBody = options.body;
             if (!wheelBody)
             {
-                wheelBody = new Body(1, new Sphere(1.2));
+                throw "下一行代码有问题？！";
+                // wheelBody = new Body(1, new Sphere(1.2));
             }
             this.wheelBodies.push(wheelBody);
             this.wheelForces.push(0);

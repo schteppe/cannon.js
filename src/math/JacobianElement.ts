@@ -21,7 +21,7 @@ namespace CANNON
         multiplyElement(element: JacobianElement)
         {
             return element.spatial.dot(this.spatial) + element.rotational.dot(this.rotational);
-        };
+        }
 
         /**
          * Multiply with two vectors
@@ -31,6 +31,6 @@ namespace CANNON
         multiplyVectors(spatial: Vec3, rotational: Vec3)
         {
             return spatial.dot(this.spatial) + rotational.dot(this.rotational);
-        };
+        }
     }
 }

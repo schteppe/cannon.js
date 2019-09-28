@@ -66,7 +66,7 @@ namespace CANNON
         toArray()
         {
             return [this.x, this.y, this.z, this.w];
-        };
+        }
 
         /**
          * Set the quaternion components given an axis and an angle.
@@ -134,7 +134,6 @@ namespace CANNON
             return this;
         }
 
-
         /**
          * Quaternion multiplication
          * @param q
@@ -151,7 +150,7 @@ namespace CANNON
             target.w = aw * bw - ax * bx - ay * by - az * bz;
 
             return target;
-        };
+        }
 
         /**
          * Get the inverse quaternion rotation.
@@ -170,7 +169,7 @@ namespace CANNON
             target.w *= inorm2;
 
             return target;
-        };
+        }
 
         /**
          * Get the quaternion conjugate
@@ -184,7 +183,7 @@ namespace CANNON
             target.w = this.w;
 
             return target;
-        };
+        }
 
         /**
          * Normalize the quaternion. Note that this changes the values of the quaternion.
@@ -207,7 +206,7 @@ namespace CANNON
                 this.w *= l;
             }
             return this;
-        };
+        }
 
         /**
          * Approximation of quaternion normalization. Works best when quat is already almost-normalized.
@@ -231,7 +230,7 @@ namespace CANNON
                 this.w *= f;
             }
             return this;
-        };
+        }
 
         /**
          * Multiply the quaternion by a vector
@@ -260,7 +259,7 @@ namespace CANNON
             target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
 
             return target;
-        };
+        }
 
         /**
          * Copies value of source to this quaternion.
@@ -273,7 +272,7 @@ namespace CANNON
             this.z = source.z;
             this.w = source.w;
             return this;
-        };
+        }
 
         /**
          * Convert the quaternion to euler angle representation. Order: YZX, as this page describes: http://www.euclideanspace.com/maths/standards/index.htm
@@ -320,7 +319,7 @@ namespace CANNON
             target.y = heading;
             target.z = attitude;
             target.x = bank;
-        };
+        }
 
         /**
          * See http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
@@ -391,12 +390,12 @@ namespace CANNON
             }
 
             return this;
-        };
+        }
 
         clone()
         {
             return new Quaternion(this.x, this.y, this.z, this.w);
-        };
+        }
 
         /**
          * Performs a spherical linear interpolation between two quat
@@ -455,7 +454,7 @@ namespace CANNON
             target.w = scale0 * aw + scale1 * bw;
 
             return target;
-        };
+        }
 
         /**
          * Rotate an absolute orientation quaternion given an angular velocity and a time step.
@@ -485,7 +484,7 @@ namespace CANNON
             target.w += half_dt * (- ax * bx - ay * by - az * bz);
 
             return target;
-        };
+        }
     }
 
     var sfv_t1 = new Vec3();

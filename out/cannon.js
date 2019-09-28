@@ -108,7 +108,6 @@ var CANNON;
                 this.z, 0, -this.x,
                 -this.y, this.x, 0]);
         };
-        ;
         /**
          * Normalize the vector. Note that this changes the values in the vector.
          * @returns Returns the norm of the vector
@@ -152,7 +151,6 @@ var CANNON;
             }
             return target;
         };
-        ;
         /**
          * Get the length of the vector
          * @deprecated Use .length() instead
@@ -369,14 +367,12 @@ var CANNON;
             this.negate(antip_neg);
             return antip_neg.almostEquals(v, precision);
         };
-        ;
         /**
          * Clone the vector
          */
         Vec3.prototype.clone = function () {
             return new Vec3(this.x, this.y, this.z);
         };
-        ;
         Vec3.ZERO = new Vec3(0, 0, 0);
         Vec3.UNIT_X = new Vec3(1, 0, 0);
         Vec3.UNIT_Y = new Vec3(0, 1, 0);
@@ -465,7 +461,6 @@ var CANNON;
             target.y = e[4];
             target.z = e[8];
         };
-        ;
         /**
          * Matrix-Vector multiplication
          * @param v The vector to multiply with
@@ -712,7 +707,6 @@ var CANNON;
             } while (i--);
             return target;
         };
-        ;
         /**
          * Set the matrix from a quaterion
          * @param q
@@ -797,7 +791,6 @@ var CANNON;
         Quaternion.prototype.toArray = function () {
             return [this.x, this.y, this.z, this.w];
         };
-        ;
         /**
          * Set the quaternion components given an axis and an angle.
          * @param axis
@@ -870,7 +863,6 @@ var CANNON;
             target.w = aw * bw - ax * bx - ay * by - az * bz;
             return target;
         };
-        ;
         /**
          * Get the inverse quaternion rotation.
          * @param target
@@ -886,7 +878,6 @@ var CANNON;
             target.w *= inorm2;
             return target;
         };
-        ;
         /**
          * Get the quaternion conjugate
          * @param target
@@ -899,7 +890,6 @@ var CANNON;
             target.w = this.w;
             return target;
         };
-        ;
         /**
          * Normalize the quaternion. Note that this changes the values of the quaternion.
          */
@@ -920,7 +910,6 @@ var CANNON;
             }
             return this;
         };
-        ;
         /**
          * Approximation of quaternion normalization. Works best when quat is already almost-normalized.
          * @see http://jsperf.com/fast-quaternion-normalization
@@ -942,7 +931,6 @@ var CANNON;
             }
             return this;
         };
-        ;
         /**
          * Multiply the quaternion by a vector
          * @param v
@@ -959,7 +947,6 @@ var CANNON;
             target.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
             return target;
         };
-        ;
         /**
          * Copies value of source to this quaternion.
          * @param source
@@ -971,7 +958,6 @@ var CANNON;
             this.w = source.w;
             return this;
         };
-        ;
         /**
          * Convert the quaternion to euler angle representation. Order: YZX, as this page describes: http://www.euclideanspace.com/maths/standards/index.htm
          * @param target
@@ -1010,7 +996,6 @@ var CANNON;
             target.z = attitude;
             target.x = bank;
         };
-        ;
         /**
          * See http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
          * @param x
@@ -1064,11 +1049,9 @@ var CANNON;
             }
             return this;
         };
-        ;
         Quaternion.prototype.clone = function () {
             return new Quaternion(this.x, this.y, this.z, this.w);
         };
-        ;
         /**
          * Performs a spherical linear interpolation between two quat
          *
@@ -1112,7 +1095,6 @@ var CANNON;
             target.w = scale0 * aw + scale1 * bw;
             return target;
         };
-        ;
         /**
          * Rotate an absolute orientation quaternion given an angular velocity and a time step.
          * @param angularVelocity
@@ -1131,7 +1113,6 @@ var CANNON;
             target.w += half_dt * (-ax * bx - ay * by - az * bz);
             return target;
         };
-        ;
         return Quaternion;
     }());
     CANNON.Quaternion = Quaternion;
@@ -1168,7 +1149,6 @@ var CANNON;
             tmpQuat.vmult(result, result);
             return result;
         };
-        ;
         /**
          * Get a global point in local transform coordinates.
          * @param worldPoint
@@ -1178,7 +1158,6 @@ var CANNON;
         Transform.prototype.pointToLocal = function (worldPoint, result) {
             return Transform.pointToLocalFrame(this.position, this.quaternion, worldPoint, result);
         };
-        ;
         /**
          * @param position
          * @param quaternion
@@ -1191,7 +1170,6 @@ var CANNON;
             result.vadd(position, result);
             return result;
         };
-        ;
         /**
          * Get a local point in global transform coordinates.
          * @param point
@@ -1201,18 +1179,15 @@ var CANNON;
         Transform.prototype.pointToWorld = function (localPoint, result) {
             return Transform.pointToWorldFrame(this.position, this.quaternion, localPoint, result);
         };
-        ;
         Transform.prototype.vectorToWorldFrame = function (localVector, result) {
             if (result === void 0) { result = new CANNON.Vec3(); }
             this.quaternion.vmult(localVector, result);
             return result;
         };
-        ;
         Transform.vectorToWorldFrame = function (quaternion, localVector, result) {
             quaternion.vmult(localVector, result);
             return result;
         };
-        ;
         Transform.vectorToLocalFrame = function (position, quaternion, worldVector, result) {
             if (result === void 0) { result = new CANNON.Vec3(); }
             quaternion.w *= -1;
@@ -1220,7 +1195,6 @@ var CANNON;
             quaternion.w *= -1;
             return result;
         };
-        ;
         return Transform;
     }());
     CANNON.Transform = Transform;
@@ -1243,7 +1217,6 @@ var CANNON;
         JacobianElement.prototype.multiplyElement = function (element) {
             return element.spatial.dot(this.spatial) + element.rotational.dot(this.rotational);
         };
-        ;
         /**
          * Multiply with two vectors
          * @param spatial
@@ -1252,7 +1225,6 @@ var CANNON;
         JacobianElement.prototype.multiplyVectors = function (spatial, rotational) {
             return spatial.dot(this.spatial) + rotational.dot(this.rotational);
         };
-        ;
         return JacobianElement;
     }());
     CANNON.JacobianElement = JacobianElement;
@@ -1539,7 +1511,6 @@ var CANNON;
         Constraint.prototype.update = function () {
             throw new Error("method update() not implmemented in this Constraint subclass!");
         };
-        ;
         /**
          * Enables all equations in the constraint.
          */
@@ -1549,7 +1520,6 @@ var CANNON;
                 eqs[i].enabled = true;
             }
         };
-        ;
         /**
          * Disables all equations in the constraint.
          */
@@ -1559,7 +1529,6 @@ var CANNON;
                 eqs[i].enabled = false;
             }
         };
-        ;
         Constraint.idCounter = 0;
         return Constraint;
     }());
@@ -1673,7 +1642,6 @@ var CANNON;
             z.ri.copy(x.ri);
             z.rj.copy(x.rj);
         };
-        ;
         return PointToPointConstraint;
     }(CANNON.Constraint));
     CANNON.PointToPointConstraint = PointToPointConstraint;
@@ -1837,17 +1805,8 @@ var CANNON;
             _this.zA = bodyA.vectorToLocalFrame(CANNON.Vec3.UNIT_Z);
             _this.zB = bodyB.vectorToLocalFrame(CANNON.Vec3.UNIT_Z);
             // ...and the following rotational equations will keep all rotational DOF's in place
-            /**
-             * @property {RotationalEquation} rotationalEquation1
-             */
             var r1 = _this.rotationalEquation1 = new CANNON.RotationalEquation(bodyA, bodyB, options);
-            /**
-             * @property {RotationalEquation} rotationalEquation2
-             */
             var r2 = _this.rotationalEquation2 = new CANNON.RotationalEquation(bodyA, bodyB, options);
-            /**
-             * @property {RotationalEquation} rotationalEquation3
-             */
             var r3 = _this.rotationalEquation3 = new CANNON.RotationalEquation(bodyA, bodyB, options);
             _this.equations.push(r1, r2, r3);
             return _this;
@@ -6044,28 +6003,10 @@ var CANNON;
         __extends(Body, _super);
         /**
          * Base class for all body types.
-         * @class Body
-         * @constructor
-         * @extends EventTarget
-         * @param {object} [options]
-         * @param {Vec3} [options.position]
-         * @param {Vec3} [options.velocity]
-         * @param {Vec3} [options.angularVelocity]
-         * @param {Quaternion} [options.quaternion]
-         * @param {number} [options.mass]
-         * @param {Material} [options.material]
-         * @param {number} [options.type]
-         * @param {number} [options.linearDamping=0.01]
-         * @param {number} [options.angularDamping=0.01]
-         * @param {boolean} [options.allowSleep=true]
-         * @param {number} [options.sleepSpeedLimit=0.1]
-         * @param {number} [options.sleepTimeLimit=1]
-         * @param {number} [options.collisionFilterGroup=1]
-         * @param {number} [options.collisionFilterMask=-1]
-         * @param {boolean} [options.fixedRotation=false]
-         * @param {Vec3} [options.linearFactor]
-         * @param {Vec3} [options.angularFactor]
-         * @param {Shape} [options.shape]
+         *
+         * @param options
+         * @param a
+         *
          * @example
          *     var body = new Body({
          *         mass: 1
@@ -6075,9 +6016,9 @@ var CANNON;
          *     world.addBody(body);
          */
         function Body(options, a) {
+            if (options === void 0) { options = {}; }
+            if (a === void 0) { a = undefined; }
             var _this = _super.call(this) || this;
-            options = options || {};
-            CANNON.EventTarget.apply(_this);
             _this.id = Body.idCounter++;
             _this.world = null;
             _this.preStep = null;
@@ -6173,7 +6114,6 @@ var CANNON;
                 this.dispatchEvent(Body.wakeupEvent);
             }
         };
-        ;
         /**
          * Force body sleep
          */
@@ -6183,10 +6123,8 @@ var CANNON;
             this.angularVelocity.set(0, 0, 0);
             this._wakeUpAfterNarrowphase = false;
         };
-        ;
         /**
          * Called every timestep to update internal sleep timer and change sleep state if needed.
-         * @param {Number} time The world time in seconds
          */
         Body.prototype.sleepTick = function (time) {
             if (this.allowSleep) {
@@ -6207,10 +6145,8 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * If the body is sleeping, it should be immovable / have infinite mass during solve. We solve it by having a separate "solve mass".
-         * @method updateSolveMassProperties
          */
         Body.prototype.updateSolveMassProperties = function () {
             if (this.sleepState === Body.SLEEPING || this.type === Body.KINEMATIC) {
@@ -6224,13 +6160,11 @@ var CANNON;
                 this.invInertiaWorldSolve.copy(this.invInertiaWorld);
             }
         };
-        ;
         /**
          * Convert a world point to local body frame.
-         * @method pointToLocalFrame
-         * @param  {Vec3} worldPoint
-         * @param  {Vec3} result
-         * @return {Vec3}
+         *
+         * @param worldPoint
+         * @param result
          */
         Body.prototype.pointToLocalFrame = function (worldPoint, result) {
             var result = result || new CANNON.Vec3();
@@ -6238,7 +6172,6 @@ var CANNON;
             this.quaternion.conjugate().vmult(result, result);
             return result;
         };
-        ;
         /**
          * Convert a world vector to local body frame.
          *
@@ -6250,13 +6183,11 @@ var CANNON;
             this.quaternion.conjugate().vmult(worldVector, result);
             return result;
         };
-        ;
         /**
          * Convert a local body point to world frame.
-         * @method pointToWorldFrame
-         * @param  {Vec3} localPoint
-         * @param  {Vec3} result
-         * @return {Vec3}
+         *
+         * @param localPoint
+         * @param result
          */
         Body.prototype.pointToWorldFrame = function (localPoint, result) {
             var result = result || new CANNON.Vec3();
@@ -6264,27 +6195,24 @@ var CANNON;
             result.vadd(this.position, result);
             return result;
         };
-        ;
         /**
          * Convert a local body point to world frame.
-         * @method vectorToWorldFrame
-         * @param  {Vec3} localVector
-         * @param  {Vec3} result
-         * @return {Vec3}
+         *
+         * @param localVector
+         * @param result
          */
         Body.prototype.vectorToWorldFrame = function (localVector, result) {
             var result = result || new CANNON.Vec3();
             this.quaternion.vmult(localVector, result);
             return result;
         };
-        ;
         /**
          * Add a shape to the body with a local offset and orientation.
-         * @method addShape
-         * @param {Shape} shape
-         * @param {Vec3} [_offset]
-         * @param {Quaternion} [_orientation]
-         * @return {Body} The body object, for chainability.
+         *
+         * @param shape
+         * @param _offset
+         * @param_orientation
+         * @return The body object, for chainability.
          */
         Body.prototype.addShape = function (shape, _offset, _orientation) {
             var offset = new CANNON.Vec3();
@@ -6304,10 +6232,8 @@ var CANNON;
             shape.body = this;
             return this;
         };
-        ;
         /**
          * Update the bounding radius of the body. Should be done if any of the shapes are changed.
-         * @method updateBoundingRadius
          */
         Body.prototype.updateBoundingRadius = function () {
             var shapes = this.shapes, shapeOffsets = this.shapeOffsets, N = shapes.length, radius = 0;
@@ -6321,10 +6247,9 @@ var CANNON;
             }
             this.boundingRadius = radius;
         };
-        ;
         /**
          * Updates the .aabb
-         * @method computeAABB
+         *
          * @todo rename to updateAABB()
          */
         Body.prototype.computeAABB = function () {
@@ -6347,10 +6272,8 @@ var CANNON;
             }
             this.aabbNeedsUpdate = false;
         };
-        ;
         /**
          * Update .inertiaWorld and .invInertiaWorld
-         * @method updateInertiaWorld
          */
         Body.prototype.updateInertiaWorld = function (force) {
             var I = this.invInertia;
@@ -6369,12 +6292,11 @@ var CANNON;
                 m1.mmult(m2, this.invInertiaWorld);
             }
         };
-        ;
         /**
          * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.torque.
-         * @method applyForce
-         * @param  {Vec3} force The amount of force to add.
-         * @param  {Vec3} relativePoint A point relative to the center of mass to apply the force on.
+         *
+         * @param force The amount of force to add.
+         * @param relativePoint A point relative to the center of mass to apply the force on.
          */
         Body.prototype.applyForce = function (force, relativePoint) {
             if (this.type !== Body.DYNAMIC) { // Needed?
@@ -6388,12 +6310,11 @@ var CANNON;
             // Add rotational force
             this.torque.vadd(rotForce, this.torque);
         };
-        ;
         /**
          * Apply force to a local point in the body.
-         * @method applyLocalForce
-         * @param  {Vec3} force The force vector to apply, defined locally in the body frame.
-         * @param  {Vec3} localPoint A local point in the body to apply the force on.
+         *
+         * @param force The force vector to apply, defined locally in the body frame.
+         * @param localPoint A local point in the body to apply the force on.
          */
         Body.prototype.applyLocalForce = function (localForce, localPoint) {
             if (this.type !== Body.DYNAMIC) {
@@ -6406,12 +6327,11 @@ var CANNON;
             this.vectorToWorldFrame(localPoint, relativePointWorld);
             this.applyForce(worldForce, relativePointWorld);
         };
-        ;
         /**
          * Apply impulse to a world point. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
-         * @method applyImpulse
-         * @param  {Vec3} impulse The amount of impulse to add.
-         * @param  {Vec3} relativePoint A point relative to the center of mass to apply the force on.
+         *
+         * @param impulse The amount of impulse to add.
+         * @param relativePoint A point relative to the center of mass to apply the force on.
          */
         Body.prototype.applyImpulse = function (impulse, relativePoint) {
             if (this.type !== Body.DYNAMIC) {
@@ -6437,12 +6357,11 @@ var CANNON;
             // Add rotational Impulse
             this.angularVelocity.vadd(rotVelo, this.angularVelocity);
         };
-        ;
         /**
          * Apply locally-defined impulse to a local point in the body.
-         * @method applyLocalImpulse
-         * @param  {Vec3} force The force vector to apply, defined locally in the body frame.
-         * @param  {Vec3} localPoint A local point in the body to apply the force on.
+         *
+         * @param force The force vector to apply, defined locally in the body frame.
+         * @param localPoint A local point in the body to apply the force on.
          */
         Body.prototype.applyLocalImpulse = function (localImpulse, localPoint) {
             if (this.type !== Body.DYNAMIC) {
@@ -6455,10 +6374,8 @@ var CANNON;
             this.vectorToWorldFrame(localPoint, relativePointWorld);
             this.applyImpulse(worldImpulse, relativePointWorld);
         };
-        ;
         /**
          * Should be called whenever you change the body shape or mass.
-         * @method updateMassProperties
          */
         Body.prototype.updateMassProperties = function () {
             var halfExtents = Body_updateMassProperties_halfExtents;
@@ -6472,7 +6389,6 @@ var CANNON;
             this.invInertia.set(I.x > 0 && !fixed ? 1.0 / I.x : 0, I.y > 0 && !fixed ? 1.0 / I.y : 0, I.z > 0 && !fixed ? 1.0 / I.z : 0);
             this.updateInertiaWorld(true);
         };
-        ;
         /**
          * Get world velocity of a point in the body.
          * @method getVelocityAtWorldPoint
@@ -6487,12 +6403,11 @@ var CANNON;
             this.velocity.vadd(result, result);
             return result;
         };
-        ;
         /**
          * Move the body forward in time.
-         * @param {number} dt Time step
-         * @param {boolean} quatNormalize Set to true to normalize the body quaternion
-         * @param {boolean} quatNormalizeFast If the quaternion should be normalized using "fast" quaternion normalization
+         * @param dt Time step
+         * @param quatNormalize Set to true to normalize the body quaternion
+         * @param quatNormalizeFast If the quaternion should be normalized using "fast" quaternion normalization
          */
         Body.prototype.integrate = function (dt, quatNormalize, quatNormalizeFast) {
             // Save previous position
@@ -6531,58 +6446,25 @@ var CANNON;
             // Update world inertia
             this.updateInertiaWorld();
         };
-        ;
-        /**
-         * Dispatched after two bodies collide. This event is dispatched on each
-         * of the two bodies involved in the collision.
-         * @event collide
-         * @param {Body} body The body that was involved in the collision.
-         * @param {ContactEquation} contact The details of the collision.
-         */
         Body.COLLIDE_EVENT_NAME = "collide";
         /**
          * A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
-         * @static
-         * @property DYNAMIC
-         * @type {Number}
          */
         Body.DYNAMIC = 1;
         /**
          * A static body does not move during simulation and behaves as if it has infinite mass. Static bodies can be moved manually by setting the position of the body. The velocity of a static body is always zero. Static bodies do not collide with other static or kinematic bodies.
-         * @static
-         * @property STATIC
-         * @type {Number}
          */
         Body.STATIC = 2;
         /**
          * A kinematic body moves under simulation according to its velocity. They do not respond to forces. They can be moved manually, but normally a kinematic body is moved by setting its velocity. A kinematic body behaves as if it has infinite mass. Kinematic bodies do not collide with other static or kinematic bodies.
-         * @static
-         * @property KINEMATIC
-         * @type {Number}
          */
         Body.KINEMATIC = 4;
-        /**
-         * @static
-         * @property AWAKE
-         * @type {number}
-         */
         Body.AWAKE = 0;
-        /**
-         * @static
-         * @property SLEEPY
-         * @type {number}
-         */
         Body.SLEEPY = 1;
-        /**
-         * @static
-         * @property SLEEPING
-         * @type {number}
-         */
         Body.SLEEPING = 2;
         Body.idCounter = 0;
         /**
          * Dispatched after a sleeping body has woken up.
-         * @event wakeup
          */
         Body.wakeupEvent = {
             type: "wakeup"
@@ -6877,15 +6759,11 @@ var CANNON;
     var RaycastVehicle = /** @class */ (function () {
         /**
          * Vehicle helper class that casts rays from the wheel positions towards the ground and applies forces.
-         * @class RaycastVehicle
-         * @constructor
-         * @param {object} [options]
-         * @param {Body} [options.chassisBody] The car chassis body.
-         * @param {integer} [options.indexRightAxis] Axis to use for right. x=0, y=1, z=2
-         * @param {integer} [options.indexLeftAxis]
-         * @param {integer} [options.indexUpAxis]
+         *
+         * @param options
          */
         function RaycastVehicle(options) {
+            if (options === void 0) { options = {}; }
             this.chassisBody = options.chassisBody;
             this.wheelInfos = [];
             this.sliding = false;
@@ -6896,52 +6774,48 @@ var CANNON;
         }
         /**
          * Add a wheel. For information about the options, see WheelInfo.
-         * @method addWheel
-         * @param {object} [options]
+         *
+         * @param options
          */
         RaycastVehicle.prototype.addWheel = function (options) {
-            options = options || {};
+            if (options === void 0) { options = {}; }
             var info = new CANNON.WheelInfo(options);
             var index = this.wheelInfos.length;
             this.wheelInfos.push(info);
             return index;
         };
-        ;
         /**
          * Set the steering value of a wheel.
-         * @method setSteeringValue
-         * @param {number} value
-         * @param {integer} wheelIndex
+         *
+         * @param value
+         * @param wheelIndex
          */
         RaycastVehicle.prototype.setSteeringValue = function (value, wheelIndex) {
             var wheel = this.wheelInfos[wheelIndex];
             wheel.steering = value;
         };
-        ;
         /**
          * Set the wheel force to apply on one of the wheels each time step
-         * @method applyEngineForce
-         * @param  {number} value
-         * @param  {integer} wheelIndex
+         *
+         * @param value
+         * @param wheelIndex
          */
         RaycastVehicle.prototype.applyEngineForce = function (value, wheelIndex) {
             this.wheelInfos[wheelIndex].engineForce = value;
         };
-        ;
         /**
          * Set the braking force of a wheel
-         * @method setBrake
-         * @param {number} brake
-         * @param {integer} wheelIndex
+         *
+         * @param brake
+         * @param wheelIndex
          */
         RaycastVehicle.prototype.setBrake = function (brake, wheelIndex) {
             this.wheelInfos[wheelIndex].brake = brake;
         };
-        ;
         /**
          * Add the vehicle including its constraints to the world.
-         * @method addToWorld
-         * @param {World} world
+         *
+         * @param world
          */
         RaycastVehicle.prototype.addToWorld = function (world) {
             var constraints = this.constraints;
@@ -6953,19 +6827,15 @@ var CANNON;
             world.addEventListener('preStep', this.preStepCallback);
             this.world = world;
         };
-        ;
         /**
          * Get one of the wheel axles, world-oriented.
-         * @private
-         * @method getVehicleAxisWorld
-         * @param  {integer} axisIndex
-         * @param  {Vec3} result
+         * @param axisIndex
+         * @param result
          */
         RaycastVehicle.prototype.getVehicleAxisWorld = function (axisIndex, result) {
             result.set(axisIndex === 0 ? 1 : 0, axisIndex === 1 ? 1 : 0, axisIndex === 2 ? 1 : 0);
             this.chassisBody.vectorToWorldFrame(result, result);
         };
-        ;
         RaycastVehicle.prototype.updateVehicle = function (timeStep) {
             var wheelInfos = this.wheelInfos;
             var numWheels = wheelInfos.length;
@@ -7033,7 +6903,6 @@ var CANNON;
                 wheel.deltaRotation *= 0.99; // damping of rotation when not in contact
             }
         };
-        ;
         RaycastVehicle.prototype.updateSuspension = function (deltaTime) {
             var chassisBody = this.chassisBody;
             var chassisMass = chassisBody.mass;
@@ -7068,11 +6937,10 @@ var CANNON;
                 }
             }
         };
-        ;
         /**
          * Remove the vehicle including its constraints from the world.
-         * @method removeFromWorld
-         * @param {World} world
+         *
+         * @param world
          */
         RaycastVehicle.prototype.removeFromWorld = function (world) {
             var constraints = this.constraints;
@@ -7080,7 +6948,6 @@ var CANNON;
             world.removeEventListener('preStep', this.preStepCallback);
             this.world = null;
         };
-        ;
         RaycastVehicle.prototype.castRay = function (wheel) {
             var rayvector = castRay_rayvector;
             var target = castRay_target;
@@ -7101,7 +6968,7 @@ var CANNON;
             this.world.rayTest(source, target, raycastResult);
             chassisBody.collisionResponse = oldState;
             var object = raycastResult.body;
-            wheel.raycastResult.groundObject = 0;
+            wheel.raycastResult.groundObject = 0; //?
             if (object) {
                 depth = raycastResult.distance;
                 wheel.raycastResult.hitNormalWorld = raycastResult.hitNormalWorld;
@@ -7141,7 +7008,6 @@ var CANNON;
             }
             return depth;
         };
-        ;
         RaycastVehicle.prototype.updateWheelTransformWorld = function (wheel) {
             wheel.isInContact = false;
             var chassisBody = this.chassisBody;
@@ -7149,12 +7015,11 @@ var CANNON;
             chassisBody.vectorToWorldFrame(wheel.directionLocal, wheel.directionWorld);
             chassisBody.vectorToWorldFrame(wheel.axleLocal, wheel.axleWorld);
         };
-        ;
         /**
          * Update one of the wheel transform.
          * Note when rendering wheels: during each step, wheel transforms are updated BEFORE the chassis; ie. their position becomes invalid after the step. Thus when you render wheels, you must update wheel transforms before rendering them. See raycastVehicle demo for an example.
-         * @method updateWheelTransform
-         * @param {integer} wheelIndex The wheel index to update.
+         *
+         * @param wheelIndex The wheel index to update.
          */
         RaycastVehicle.prototype.updateWheelTransform = function (wheelIndex) {
             var up = tmpVec4;
@@ -7184,17 +7049,14 @@ var CANNON;
             p.scale(wheel.suspensionLength, p);
             p.vadd(wheel.chassisConnectionPointWorld, p);
         };
-        ;
         /**
          * Get the world transform of one of the wheels
-         * @method getWheelTransformWorld
-         * @param  {integer} wheelIndex
-         * @return {Transform}
+         *
+         * @param wheelIndex
          */
         RaycastVehicle.prototype.getWheelTransformWorld = function (wheelIndex) {
             return this.wheelInfos[wheelIndex].worldTransform;
         };
-        ;
         RaycastVehicle.prototype.updateFriction = function (timeStep) {
             var surfNormalWS_scaled_proj = updateFriction_surfNormalWS_scaled_proj;
             //calculate the impulse, so that the wheels don't move sidewards
@@ -7320,7 +7182,6 @@ var CANNON;
                 }
             }
         };
-        ;
         return RaycastVehicle;
     }());
     CANNON.RaycastVehicle = RaycastVehicle;
@@ -7431,7 +7292,8 @@ var CANNON;
             if (!this.chassisBody) {
                 // No chassis body given. Create it!
                 var chassisShape = new CANNON.Box(new CANNON.Vec3(5, 2, 0.5));
-                this.chassisBody = new CANNON.Body(1, chassisShape);
+                throw "下一行代码有问题？！";
+                // this.chassisBody = new Body(1, chassisShape);
             }
             this.constraints = [];
             this.wheelAxes = [];
@@ -7451,7 +7313,8 @@ var CANNON;
             options = options || {};
             var wheelBody = options.body;
             if (!wheelBody) {
-                wheelBody = new CANNON.Body(1, new CANNON.Sphere(1.2));
+                throw "下一行代码有问题？！";
+                // wheelBody = new Body(1, new Sphere(1.2));
             }
             this.wheelBodies.push(wheelBody);
             this.wheelForces.push(0);
@@ -7797,7 +7660,6 @@ var CANNON;
             this.b = (4.0 * d) / (1 + 4 * d);
             this.eps = 4.0 / (h * h * k * (1 + 4 * d));
         };
-        ;
         /**
          * Computes the RHS of the SPOOK equation
          */
@@ -7805,7 +7667,6 @@ var CANNON;
             var GW = this.computeGW(), Gq = this.computeGq(), GiMf = this.computeGiMf();
             return -Gq * a - GW * b - GiMf * h;
         };
-        ;
         /**
          * Computes G*q, where q are the generalized body coordinates
          */
@@ -7813,7 +7674,6 @@ var CANNON;
             var GA = this.jacobianElementA, GB = this.jacobianElementB, bi = this.bi, bj = this.bj, xi = bi.position, xj = bj.position;
             return GA.spatial.dot(xi) + GB.spatial.dot(xj);
         };
-        ;
         /**
          * Computes G*W, where W are the body velocities
          */
@@ -7821,7 +7681,6 @@ var CANNON;
             var GA = this.jacobianElementA, GB = this.jacobianElementB, bi = this.bi, bj = this.bj, vi = bi.velocity, vj = bj.velocity, wi = bi.angularVelocity, wj = bj.angularVelocity;
             return GA.multiplyVectors(vi, wi) + GB.multiplyVectors(vj, wj);
         };
-        ;
         /**
          * Computes G*Wlambda, where W are the body velocities
          */
@@ -7829,7 +7688,6 @@ var CANNON;
             var GA = this.jacobianElementA, GB = this.jacobianElementB, bi = this.bi, bj = this.bj, vi = bi.vlambda, vj = bj.vlambda, wi = bi.wlambda, wj = bj.wlambda;
             return GA.multiplyVectors(vi, wi) + GB.multiplyVectors(vj, wj);
         };
-        ;
         /**
          * Computes G*inv(M)*f, where M is the mass matrix with diagonal blocks for each body, and f are the forces on the bodies.
          */
@@ -7841,7 +7699,6 @@ var CANNON;
             bj.invInertiaWorldSolve.vmult(tj, invIj_vmult_tauj);
             return GA.multiplyVectors(iMfi, invIi_vmult_taui) + GB.multiplyVectors(iMfj, invIj_vmult_tauj);
         };
-        ;
         /**
          * Computes G*inv(M)*G'
          */
@@ -7868,14 +7725,12 @@ var CANNON;
             bj.invInertiaWorldSolve.vmult(GB.rotational, temp);
             bj.wlambda.addScaledVector(deltalambda, temp, bj.wlambda);
         };
-        ;
         /**
          * Compute the denominator part of the SPOOK equation: C = G*inv(M)*G' + eps
          */
         Equation.prototype.computeC = function () {
             return this.computeGiMGt() + this.eps;
         };
-        ;
         Equation.id = 0;
         return Equation;
     }());
@@ -7931,7 +7786,6 @@ var CANNON;
             var B = -g * a - GW * b - h * GiMf;
             return B;
         };
-        ;
         return ConeEquation;
     }(CANNON.Equation));
     CANNON.ConeEquation = ConeEquation;
@@ -7982,7 +7836,6 @@ var CANNON;
             var B = -g * a - GW * b - h * GiMf;
             return B;
         };
-        ;
         /**
          * Get the current relative velocity in the contact point.
          */
@@ -7999,7 +7852,6 @@ var CANNON;
             vi.vsub(vj, relVel);
             return this.ni.dot(relVel);
         };
-        ;
         return ContactEquation;
     }(CANNON.Equation));
     CANNON.ContactEquation = ContactEquation;
@@ -8050,7 +7902,6 @@ var CANNON;
             var B = -GW * b - h * GiMf;
             return B;
         };
-        ;
         return FrictionEquation;
     }(CANNON.Equation));
     CANNON.FrictionEquation = FrictionEquation;
@@ -8093,7 +7944,6 @@ var CANNON;
             var B = -g * a - GW * b - h * GiMf;
             return B;
         };
-        ;
         return RotationalEquation;
     }(CANNON.Equation));
     CANNON.RotationalEquation = RotationalEquation;
@@ -8133,7 +7983,6 @@ var CANNON;
             var B = -GW * b - h * GiMf;
             return B;
         };
-        ;
         return RotationalMotorEquation;
     }(CANNON.Equation));
     CANNON.RotationalMotorEquation = RotationalMotorEquation;

@@ -81,6 +81,6 @@ namespace CANNON
             y.rj.copy(x.rj);
             z.ri.copy(x.ri);
             z.rj.copy(x.rj);
-        };
+        }
     }
 }

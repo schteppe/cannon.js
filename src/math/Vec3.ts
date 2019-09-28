@@ -122,7 +122,7 @@ namespace CANNON
             return new Mat3([0, -this.z, this.y,
                 this.z, 0, -this.x,
                 -this.y, this.x, 0]);
-        };
+        }
 
         /**
          * Normalize the vector. Note that this changes the values in the vector.
@@ -170,7 +170,7 @@ namespace CANNON
                 target.z = 0;
             }
             return target;
-        };
+        }
 
         /**
          * Get the length of the vector
@@ -428,7 +428,7 @@ namespace CANNON
         {
             this.negate(antip_neg);
             return antip_neg.almostEquals(v, precision);
-        };
+        }
 
         /**
          * Clone the vector
@@ -436,7 +436,7 @@ namespace CANNON
         clone()
         {
             return new Vec3(this.x, this.y, this.z);
-        };
+        }
     }
 
     /**

@@ -55,7 +55,7 @@ namespace CANNON
             var B = - GW * b - h * GiMf;
 
             return B;
-        };
+        }
     }
 
     var FrictionEquation_computeB_temp1 = new Vec3();

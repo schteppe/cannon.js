@@ -84,7 +84,7 @@ namespace CANNON
             target.x = e[0];
             target.y = e[4];
             target.z = e[8];
-        };
+        }
 
         /**
          * Matrix-Vector multiplication
@@ -396,7 +396,7 @@ namespace CANNON
             } while (i--);
 
             return target;
-        };
+        }
 
         /**
          * Set the matrix from a quaterion
