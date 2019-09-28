@@ -65,7 +65,7 @@ namespace cannon
             z.ni.set(0, 0, 1);
         }
 
-        update = function ()
+        update()
         {
             var bodyA = this.bodyA;
             var bodyB = this.bodyB;
