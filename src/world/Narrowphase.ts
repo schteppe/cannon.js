@@ -876,7 +876,7 @@ namespace cannon
             var edgeCenter = v3pool.get();
             var r = v3pool.get(); // r = edge center to sphere center
             var orthogonal = v3pool.get();
-            var dist = v3pool.get();
+            var dist1: Vec3 = v3pool.get();
             var Nsides = sides.length;
             for (var j = 0; j !== Nsides && !found; j++)
             {
@@ -902,14 +902,14 @@ namespace cannon
                         }
 
                         // vec from edge center to sphere projected to the plane orthogonal to the edge tangent
-                        dist.copy(xi);
-                        dist.vsub(orthogonal, dist);
-                        dist.vsub(edgeCenter, dist);
-                        dist.vsub(xj, dist);
+                        dist1.copy(xi);
+                        dist1.vsub(orthogonal, dist1);
+                        dist1.vsub(edgeCenter, dist1);
+                        dist1.vsub(xj, dist1);
 
                         // Distances in tangent direction and distance in the plane orthogonal to it
                         var tdist = Math.abs(orthonorm);
-                        var ndist = dist.norm();
+                        var ndist = dist1.norm();
 
                         if (tdist < sides[l].norm() && ndist < R)
                         {
@@ -921,7 +921,7 @@ namespace cannon
                             var res = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
                             edgeCenter.vadd(orthogonal, res.rj); // box rj
                             res.rj.copy(res.rj);
-                            dist.negate(res.ni);
+                            dist1.negate(res.ni);
                             res.ni.normalize();
 
                             res.ri.copy(res.rj);
@@ -942,7 +942,7 @@ namespace cannon
                     }
                 }
             }
-            v3pool.release(edgeTangent, edgeCenter, r, orthogonal, dist);
+            v3pool.release(edgeTangent, edgeCenter, r, orthogonal, dist1);
         };
 
         /**
@@ -1303,7 +1303,7 @@ namespace cannon
          * @param  {Body}       bi
          * @param  {Body}       bj
          */
-        convexConvex(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest, faceListA, faceListB)
+        convexConvex(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest, faceListA?, faceListB?)
         {
             var sepAxis = convexConvex_sepAxis;
 

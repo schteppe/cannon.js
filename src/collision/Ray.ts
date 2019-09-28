@@ -492,7 +492,7 @@ namespace cannon
 
                     var distance = intersectPoint.distanceTo(from);
 
-                    if (!(pointInTriangle(intersectPoint, a, b, c) || pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance)
+                    if (!(Ray.pointInTriangle(intersectPoint, a, b, c) || Ray.pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance)
                     {
                         continue;
                     }
@@ -621,7 +621,7 @@ namespace cannon
 
                 var squaredDistance = intersectPoint.distanceSquared(localFrom);
 
-                if (!(pointInTriangle(intersectPoint, b, a, c) || pointInTriangle(intersectPoint, a, b, c)) || squaredDistance > fromToDistanceSquared)
+                if (!(Ray.pointInTriangle(intersectPoint, b, a, c) || Ray.pointInTriangle(intersectPoint, a, b, c)) || squaredDistance > fromToDistanceSquared)
                 {
                     continue;
                 }
@@ -705,6 +705,28 @@ namespace cannon
             }
         };
 
+        /*
+         * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
+         */
+        static pointInTriangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3)
+        {
+            c.vsub(a, v0);
+            b.vsub(a, v1);
+            p.vsub(a, v2);
+
+            var dot00 = v0.dot(v0);
+            var dot01 = v0.dot(v1);
+            var dot02 = v0.dot(v2);
+            var dot11 = v1.dot(v1);
+            var dot12 = v1.dot(v2);
+
+            var u: number, v: number;
+
+            return ((u = dot11 * dot02 - dot01 * dot12) >= 0) &&
+                ((v = dot00 * dot12 - dot01 * dot02) >= 0) &&
+                (u + v < (dot00 * dot11 - dot01 * dot01));
+        }
+
     }
 
     var tmpAABB = new AABB();
@@ -782,27 +804,5 @@ namespace cannon
         var distance = position.distanceTo(intersect);
 
         return distance;
-    }
-
-    /*
-     * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
-     */
-    function pointInTriangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3)
-    {
-        c.vsub(a, v0);
-        b.vsub(a, v1);
-        p.vsub(a, v2);
-
-        var dot00 = v0.dot(v0);
-        var dot01 = v0.dot(v1);
-        var dot02 = v0.dot(v2);
-        var dot11 = v1.dot(v1);
-        var dot12 = v1.dot(v2);
-
-        var u: number, v: number;
-
-        return ((u = dot11 * dot02 - dot01 * dot12) >= 0) &&
-            ((v = dot00 * dot12 - dot01 * dot02) >= 0) &&
-            (u + v < (dot00 * dot11 - dot01 * dot01));
     }
 }

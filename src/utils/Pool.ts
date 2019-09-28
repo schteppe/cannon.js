@@ -25,7 +25,7 @@ namespace cannon
         /**
          * Release an object after use
          */
-        release()
+        release(...args)
         {
             var Nargs = arguments.length;
             for (var i = 0; i !== Nargs; i++)
