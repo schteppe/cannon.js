@@ -1,11 +1,11 @@
-namespace cannon
+namespace CANNON
 {
     export class Solver
     {
         /**
          * All equations to be solved
          */
-        equations: { bi, bj }[];
+        equations: Equation[];
 
         /**
          * Constraint equation solver base class.

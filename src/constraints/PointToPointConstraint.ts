@@ -1,4 +1,4 @@
-namespace cannon
+namespace CANNON
 {
     export class PointToPointConstraint extends Constraint
     {

@@ -1,4 +1,4 @@
-namespace cannon
+namespace CANNON
 {
     export class OctreeNode
     {
@@ -56,7 +56,7 @@ namespace cannon
          * @param {number} [options.maxDepth=8]
          * @extends OctreeNode
          */
-        constructor(aabb: AABB, options: { root?: any, aabb?: AABB, maxDepth?: number } = {})
+        constructor(aabb?: AABB, options: { root?: any, aabb?: AABB, maxDepth?: number } = {})
         {
             super(options);
             options.root = null;
@@ -65,7 +65,7 @@ namespace cannon
             this.maxDepth = typeof (options.maxDepth) !== 'undefined' ? options.maxDepth : 8;
         }
 
-        reset(aabb, options)
+        reset(aabb?, options?)
         {
             this.children.length = this.data.length = 0;
         };

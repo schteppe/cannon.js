@@ -1,4 +1,4 @@
-namespace cannon
+namespace CANNON
 {
     export class Ray
     {
@@ -6,7 +6,7 @@ namespace cannon
 
         to: Vec3;
 
-        private _direction: Vec3;
+        _direction: Vec3;
 
         /**
          * The precision of the ray. Used when checking parallelity etc.
@@ -157,7 +157,7 @@ namespace cannon
                     body
                 );
 
-                if (this.result["_shouldStop"])
+                if (this.result._shouldStop)
                 {
                     break;
                 }
@@ -176,7 +176,7 @@ namespace cannon
                 this._updateDirection();
             }
 
-            for (var i = 0, l = bodies.length; !this.result["_shouldStop"] && i < l; i++)
+            for (var i = 0, l = bodies.length; !this.result._shouldStop && i < l; i++)
             {
                 this.intersectBody(bodies[i]);
             }
@@ -312,7 +312,7 @@ namespace cannon
                 for (var j = iMinY; j < iMaxY; j++)
                 {
 
-                    if (this.result["_shouldStop"])
+                    if (this.result._shouldStop)
                     {
                         return;
                     }
@@ -328,7 +328,7 @@ namespace cannon
                     Transform.pointToWorldFrame(position, quat, shape.pillarOffset, worldPillarOffset);
                     this.intersectConvex(shape.pillarConvex, quat, worldPillarOffset, body, reportedShape, intersectConvexOptions);
 
-                    if (this.result["_shouldStop"])
+                    if (this.result._shouldStop)
                     {
                         return;
                     }
@@ -384,7 +384,7 @@ namespace cannon
                     this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
                 }
 
-                if (this.result["_shouldStop"])
+                if (this.result._shouldStop)
                 {
                     return;
                 }
@@ -428,7 +428,7 @@ namespace cannon
             var Nfaces = faceList ? faceList.length : faces.length;
             var result = this.result;
 
-            for (var j = 0; !result["_shouldStop"] && j < Nfaces; j++)
+            for (var j = 0; !result._shouldStop && j < Nfaces; j++)
             {
                 var fi = faceList ? faceList[j] : j;
 
@@ -480,7 +480,7 @@ namespace cannon
                 q.vmult(a, a);
                 x.vadd(a, a);
 
-                for (var i = 1; !result["_shouldStop"] && i < face.length - 1; i++)
+                for (var i = 1; !result._shouldStop && i < face.length - 1; i++)
                 {
                     // Transform 3 vertices to world coords
                     b.copy(vertices[face[i]]);
@@ -579,7 +579,7 @@ namespace cannon
 
             mesh.tree.rayQuery(this, treeTransform, triangles);
 
-            for (var i = 0, N = triangles.length; !this.result["_shouldStop"] && i !== N; i++)
+            for (var i = 0, N = triangles.length; !this.result._shouldStop && i !== N; i++)
             {
                 var trianglesIndex = triangles[i];
 
@@ -700,7 +700,7 @@ namespace cannon
                         body,
                         distance
                     );
-                    result["_shouldStop"] = true;
+                    result._shouldStop = true;
                     break;
             }
         };

@@ -1,4 +1,4 @@
-namespace cannon
+namespace CANNON
 {
 	export class RaycastResult
 	{
@@ -32,7 +32,7 @@ namespace cannon
 		/**
 		 * If the ray should stop traversing the bodies.
 		 */
-		private _shouldStop = false;
+		_shouldStop = false;
 
 		/**
 		 * Storage for Ray casting data.

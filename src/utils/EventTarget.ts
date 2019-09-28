@@ -1,4 +1,4 @@
-namespace cannon
+namespace CANNON
 {
     /**
      * Base class for objects that dispatches events.

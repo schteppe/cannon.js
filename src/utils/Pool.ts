@@ -1,4 +1,4 @@
-namespace cannon
+namespace CANNON
 {
     /**
      * For pooling objects that can be reused.
