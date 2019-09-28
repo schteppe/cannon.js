@@ -44,7 +44,7 @@ namespace cannon
          * @todo Move the clipping functions to ContactGenerator?
          * @todo Automatically merge coplanar polygons in constructor.
          */
-        constructor(points, faces?, uniqueAxes?)
+        constructor(points?, faces?, uniqueAxes?)
         {
             super({
                 type: Shape.types.CONVEXPOLYHEDRON
