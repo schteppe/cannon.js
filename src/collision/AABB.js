@@ -201,7 +201,7 @@ AABB.prototype.getCorners = function(a, b, c, d, e, f, g, h){
     b.set( u.x, l.y, l.z );
     c.set( u.x, u.y, l.z );
     d.set( l.x, u.y, u.z );
-    e.set( u.x, l.y, l.z );
+    e.set( u.x, l.y, u.z );
     f.set( l.x, u.y, l.z );
     g.set( l.x, l.y, u.z );
     h.copy(u);
