@@ -221,7 +221,7 @@ namespace CANNON
             var direction = this._direction;
 
             // Get plane normal
-            var worldNormal = new Vec3(0, 0, 1);
+            var worldNormal = World.worldNormal.clone();
             quat.vmult(worldNormal, worldNormal);
 
             var len = new Vec3();

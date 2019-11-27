@@ -2,6 +2,7 @@ namespace CANNON
 {
     export class World extends EventTarget
     {
+        static worldNormal = new Vec3(0, 0, 1);
 
         /**
          * Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is "fresh" inside event callbacks.

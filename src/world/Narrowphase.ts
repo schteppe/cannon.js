@@ -386,7 +386,7 @@ namespace CANNON
             var v = new Vec3();
 
             var normal = planeTrimesh_normal;
-            normal.set(0, 0, 1);
+            normal.copy(World.worldNormal);
             planeQuat.vmult(normal, normal); // Turn normal according to plane
 
             for (var i = 0; i < trimeshShape.vertices.length / 3; i++)
@@ -633,7 +633,7 @@ namespace CANNON
             var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
 
             // Contact normal
-            r.ni.set(0, 0, 1);
+            r.ni.copy(World.worldNormal);
             qj.vmult(r.ni, r.ni);
             r.ni.negate(r.ni); // body i is the sphere, flip normal
             r.ni.normalize(); // Needed?
@@ -1157,7 +1157,7 @@ namespace CANNON
             // Simply return the points behind the plane.
             var worldVertex = planeConvex_v,
                 worldNormal = planeConvex_normal;
-            worldNormal.set(0, 0, 1);
+            worldNormal.copy(World.worldNormal);
             planeQuat.vmult(worldNormal, worldNormal); // Turn normal according to plane orientation
 
             var numContacts = 0;
@@ -1350,7 +1350,7 @@ namespace CANNON
         planeParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var normal = particlePlane_normal;
-            normal.set(0, 0, 1);
+            normal.copy(World.worldNormal);
             bj.quaternion.vmult(normal, normal); // Turn normal according to plane orientation
             var relpos = particlePlane_relpos;
             xi.vsub(bj.position, relpos);
@@ -1385,7 +1385,7 @@ namespace CANNON
         {
             // The normal is the unit vector from sphere center to particle center
             var normal = particleSphere_normal;
-            normal.set(0, 0, 1);
+            normal.copy(World.worldNormal);
             xi.vsub(xj, normal);
             var lengthSquared = normal.norm2();
 

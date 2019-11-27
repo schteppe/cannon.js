@@ -3112,6 +3112,7 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class World extends EventTarget {
+        static worldNormal: Vec3;
         /**
          * Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is "fresh" inside event callbacks.
          */
