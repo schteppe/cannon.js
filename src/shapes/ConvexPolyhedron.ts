@@ -251,7 +251,7 @@ namespace CANNON
          * @param faceListB 
          * @returns Returns false if a separation is found, else true
          */
-        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA: number[], faceListB: number[])
+        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA?: number[], faceListB?: number[])
         {
             var faceANormalWS3 = fsa_faceANormalWS3,
                 Worldnormal1 = fsa_Worldnormal1,

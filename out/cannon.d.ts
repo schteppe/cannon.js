@@ -935,7 +935,7 @@ declare namespace CANNON {
          * @param faceListB
          * @returns Returns false if a separation is found, else true
          */
-        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA: number[], faceListB: number[]): boolean;
+        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA?: number[], faceListB?: number[]): boolean;
         /**
          * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
          *
@@ -2356,14 +2356,14 @@ declare namespace CANNON {
          * @param localPoint
          * @param result
          */
-        pointToWorldFrame(localPoint: Vec3, result: Vec3): Vec3;
+        pointToWorldFrame(localPoint: Vec3, result?: Vec3): Vec3;
         /**
          * Convert a local body point to world frame.
          *
          * @param localVector
          * @param result
          */
-        vectorToWorldFrame(localVector: Vec3, result: Vec3): Vec3;
+        vectorToWorldFrame(localVector: Vec3, result?: Vec3): Vec3;
         /**
          * Add a shape to the body with a local offset and orientation.
          *

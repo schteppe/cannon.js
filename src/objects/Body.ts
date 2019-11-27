@@ -463,9 +463,8 @@ namespace CANNON
          * @param localPoint
          * @param result
          */
-        pointToWorldFrame(localPoint: Vec3, result: Vec3)
+        pointToWorldFrame(localPoint: Vec3, result = new Vec3())
         {
-            var result = result || new Vec3();
             this.quaternion.vmult(localPoint, result);
             result.vadd(this.position, result);
             return result;
@@ -477,9 +476,8 @@ namespace CANNON
          * @param localVector
          * @param result
          */
-        vectorToWorldFrame(localVector: Vec3, result: Vec3)
+        vectorToWorldFrame(localVector: Vec3, result = new Vec3())
         {
-            var result = result || new Vec3();
             this.quaternion.vmult(localVector, result);
             return result;
         }

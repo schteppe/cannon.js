@@ -1720,8 +1720,9 @@ var CANNON;
          */
         function HingeConstraint(bodyA, bodyB, options) {
             if (options === void 0) { options = {}; }
-            var _this = _super.call(this, bodyA, options.pivotA ? options.pivotA.clone() : new CANNON.Vec3(), bodyB, options.pivotB ? options.pivotB.clone() : new CANNON.Vec3(), maxForce) || this;
+            var _this = this;
             var maxForce = typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6;
+            _this = _super.call(this, bodyA, options.pivotA ? options.pivotA.clone() : new CANNON.Vec3(), bodyB, options.pivotB ? options.pivotB.clone() : new CANNON.Vec3(), maxForce) || this;
             var axisA = _this.axisA = options.axisA ? options.axisA.clone() : new CANNON.Vec3(1, 0, 0);
             axisA.normalize();
             var axisB = _this.axisB = options.axisB ? options.axisB.clone() : new CANNON.Vec3(1, 0, 0);
@@ -4396,9 +4397,10 @@ var CANNON;
          */
         function Octree(aabb, options) {
             if (options === void 0) { options = {}; }
-            var _this = _super.call(this, options) || this;
+            var _this = this;
             options.root = null;
             options.aabb = aabb;
+            _this = _super.call(this, options) || this;
             _this.maxDepth = typeof (options.maxDepth) !== 'undefined' ? options.maxDepth : 8;
             return _this;
         }
@@ -6085,7 +6087,7 @@ var CANNON;
          * @param result
          */
         Body.prototype.pointToWorldFrame = function (localPoint, result) {
-            var result = result || new CANNON.Vec3();
+            if (result === void 0) { result = new CANNON.Vec3(); }
             this.quaternion.vmult(localPoint, result);
             result.vadd(this.position, result);
             return result;
@@ -6097,7 +6099,7 @@ var CANNON;
          * @param result
          */
         Body.prototype.vectorToWorldFrame = function (localVector, result) {
-            var result = result || new CANNON.Vec3();
+            if (result === void 0) { result = new CANNON.Vec3(); }
             this.quaternion.vmult(localVector, result);
             return result;
         };

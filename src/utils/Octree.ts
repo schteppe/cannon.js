@@ -234,9 +234,9 @@ namespace CANNON
          */
         constructor(aabb?: AABB, options: { root?: any, aabb?: AABB, maxDepth?: number } = {})
         {
-            super(options);
             options.root = null;
             options.aabb = aabb;
+            super(options);
 
             this.maxDepth = typeof (options.maxDepth) !== 'undefined' ? options.maxDepth : 8;
         }

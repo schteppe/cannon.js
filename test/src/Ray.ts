@@ -188,7 +188,7 @@ namespace CANNON
 
         QUnit.test("plane", (test) =>
         {
-            var r = new Ray(new Vec3(0, 5, 0), new Vec3(0, -5, 0));
+            var r = new Ray(new Vec3(0, 0, 5), new Vec3(0, 0, -5));
             r.skipBackfaces = true;
             var shape = new Plane();
             var body = new Body({ mass: 1 });
@@ -202,10 +202,10 @@ namespace CANNON
 
             result.reset();
             var body2 = new Body({ mass: 1 });
-            body2.addShape(shape, new Vec3(0, 1, 0), new Quaternion());
+            body2.addShape(shape, new Vec3(0, 0, 1), new Quaternion());
             r.intersectBody(body2, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, 1, 0)));
+            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, 0, 1)));
 
             result.reset();
             var body3 = new Body({ mass: 1 });
@@ -218,10 +218,10 @@ namespace CANNON
             result.reset();
             var body4 = new Body({ mass: 1 });
             body4.addShape(shape);
-            var r = new Ray(new Vec3(1, 5, 1), new Vec3(1, -5, 1));
+            var r = new Ray(new Vec3(1, 1, 5), new Vec3(1, 1, -5));
             r.intersectBody(body4, result);
             test.equal(result.hasHit, true);
-            test.deepEqual(result.hitPointWorld, new Vec3(1, 0, 1));
+            test.deepEqual(result.hitPointWorld, new Vec3(1, 1, 0));
             test.equal(result.distance, 5);
 
             var result = new RaycastResult();
@@ -234,13 +234,13 @@ namespace CANNON
             test.ok(result.hitPointWorld.almostEquals(new Vec3(0, 0, 0)));
 
             var result = new RaycastResult();
-            r.from.set(0, 1, 1 - 5);
-            r.to.set(0, -1, -1 - 5);
+            r.from.set(0, 1 - 5, 1);
+            r.to.set(0, -1 - 5, -1);
             body.position.set(0, 0, 0);
             r.intersectBody(body, result);
             var distance2 = result.distance;
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, 0, -5)));
+            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, -5, 0)));
             test.equal(distance1, distance2);
 
             test.ok(true);
