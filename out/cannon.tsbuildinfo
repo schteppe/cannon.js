@@ -1,0 +1,92 @@
+{
+  "bundle": {
+    "commonSourceDirectory": "..",
+    "sourceFiles": [
+      "../src/math/Vec3.ts",
+      "../src/math/Mat3.ts",
+      "../src/math/Quaternion.ts",
+      "../src/math/Transform.ts",
+      "../src/math/JacobianElement.ts",
+      "../src/utils/EventTarget.ts",
+      "../src/utils/Pool.ts",
+      "../src/utils/Utils.ts",
+      "../src/utils/Vec3Pool.ts",
+      "../src/utils/TupleDictionary.ts",
+      "../src/constraints/Constraint.ts",
+      "../src/constraints/DistanceConstraint.ts",
+      "../src/constraints/PointToPointConstraint.ts",
+      "../src/constraints/ConeTwistConstraint.ts",
+      "../src/constraints/HingeConstraint.ts",
+      "../src/constraints/LockConstraint.ts",
+      "../src/shapes/Shape.ts",
+      "../src/shapes/ConvexPolyhedron.ts",
+      "../src/shapes/Box.ts",
+      "../src/shapes/Cylinder.ts",
+      "../src/shapes/Heightfield.ts",
+      "../src/shapes/Particle.ts",
+      "../src/shapes/Plane.ts",
+      "../src/shapes/Sphere.ts",
+      "../src/collision/AABB.ts",
+      "../src/shapes/Trimesh.ts",
+      "../src/utils/Octree.ts",
+      "../src/collision/ArrayCollisionMatrix.ts",
+      "../src/collision/ObjectCollisionMatrix.ts",
+      "../src/collision/OverlapKeeper.ts",
+      "../src/collision/RaycastResult.ts",
+      "../src/collision/Broadphase.ts",
+      "../src/collision/GridBroadphase.ts",
+      "../src/collision/NaiveBroadphase.ts",
+      "../src/collision/SAPBroadphase.ts",
+      "../src/collision/Ray.ts",
+      "../src/material/Material.ts",
+      "../src/material/ContactMaterial.ts",
+      "../src/objects/Body.ts",
+      "../src/objects/Spring.ts",
+      "../src/objects/WheelInfo.ts",
+      "../src/objects/RaycastVehicle.ts",
+      "../src/objects/RigidVehicle.ts",
+      "../src/objects/SPHSystem.ts",
+      "../src/equations/Equation.ts",
+      "../src/equations/ConeEquation.ts",
+      "../src/equations/ContactEquation.ts",
+      "../src/equations/FrictionEquation.ts",
+      "../src/equations/RotationalEquation.ts",
+      "../src/equations/RotationalMotorEquation.ts",
+      "../src/solver/Solver.ts",
+      "../src/solver/GSSolver.ts",
+      "../src/solver/SplitSolver.ts",
+      "../src/world/World.ts",
+      "../src/world/Narrowphase.ts"
+    ],
+    "js": {
+      "sections": [
+        {
+          "pos": 0,
+          "end": 597,
+          "kind": "emitHelpers",
+          "data": "typescript:extends"
+        },
+        {
+          "pos": 599,
+          "end": 449609,
+          "kind": "text"
+        }
+      ],
+      "sources": {
+        "helpers": [
+          "typescript:extends"
+        ]
+      }
+    },
+    "dts": {
+      "sections": [
+        {
+          "pos": 0,
+          "end": 118770,
+          "kind": "text"
+        }
+      ]
+    }
+  },
+  "version": "3.7.2"
+}

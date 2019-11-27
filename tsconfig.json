@@ -5,6 +5,7 @@
         "sourceMap": true,
         "declarationMap": true,
         "declaration": true,
+        "composite": true,
         // "strict": true,
         "experimentalDecorators": true,
         "lib": [
