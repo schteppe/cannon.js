@@ -45,8 +45,8 @@ namespace CANNON
 
             // Should get less triangles if we use the half AABB
             result.length = 0;
-            aabb.lowerBound.scale(0.1, aabb.lowerBound);
-            aabb.upperBound.scale(0.1, aabb.upperBound);
+            aabb.lowerBound.scaleNumberTo(0.1, aabb.lowerBound);
+            aabb.upperBound.scaleNumberTo(0.1, aabb.upperBound);
             mesh.getTrianglesInAABB(aabb, result);
 
             console.log(result.length, mesh.indices.length / 3)

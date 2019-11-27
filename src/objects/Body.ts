@@ -396,7 +396,7 @@ namespace CANNON
             if (this.allowSleep)
             {
                 var sleepState = this.sleepState;
-                var speedSquared = this.velocity.norm2() + this.angularVelocity.norm2();
+                var speedSquared = this.velocity.lengthSquared() + this.angularVelocity.lengthSquared();
                 var speedLimitSquared = Math.pow(this.sleepSpeedLimit, 2);
                 if (sleepState === Body.AWAKE && speedSquared < speedLimitSquared)
                 {
@@ -677,7 +677,7 @@ namespace CANNON
             // Compute produced central impulse velocity
             var velo = Body_applyImpulse_velo;
             velo.copy(impulse);
-            velo.mult(this.invMass, velo);
+            velo.scaleNumberTo(this.invMass, velo);
 
             // Add linear impulse
             this.velocity.addTo(velo, this.velocity);

@@ -59,7 +59,7 @@ namespace CANNON
             body.addShape(new Sphere(1));
             body.position.set(1, 2, 2);
             var localPoint = body.pointToLocalFrame(new Vec3(1, 2, 3));
-            test.ok(localPoint.almostEquals(new Vec3(0, 0, 1)));
+            test.ok(localPoint.equals(new Vec3(0, 0, 1)));
         });
 
         QUnit.test("pointToWorldFrame", (test) =>
@@ -68,7 +68,7 @@ namespace CANNON
             body.addShape(new Sphere(1));
             body.position.set(1, 2, 2);
             var worldPoint = body.pointToWorldFrame(new Vec3(1, 0, 0));
-            test.ok(worldPoint.almostEquals(new Vec3(2, 2, 2)));
+            test.ok(worldPoint.equals(new Vec3(2, 2, 2)));
         });
 
         QUnit.test("addShape", (test) =>
@@ -116,7 +116,7 @@ namespace CANNON
             var localPoint = new Vec3(1, 0, 0);
             var localForceVector = new Vec3(0, 1, 0);
             body.applyLocalForce(localForceVector, localPoint);
-            test.ok(body.force.almostEquals(new Vec3(0, 0, 1))); // The force is rotated to world space
+            test.ok(body.force.equals(new Vec3(0, 0, 1))); // The force is rotated to world space
 
         });
 
@@ -134,7 +134,7 @@ namespace CANNON
             var impulse = new Vec3(f * dt, 0, 0);
             body.applyImpulse(impulse, worldPoint);
 
-            test.ok(body.velocity.almostEquals(new Vec3(f * dt, 0, 0)));
+            test.ok(body.velocity.equals(new Vec3(f * dt, 0, 0)));
 
         });
 
@@ -152,7 +152,7 @@ namespace CANNON
             var localPoint = new Vec3(1, 0, 0);
             var localImpulseVector = new Vec3(0, f * dt, 0);
             body.applyLocalImpulse(localImpulseVector, localPoint);
-            test.ok(body.velocity.almostEquals(new Vec3(0, 0, f * dt))); // The force is rotated to world space
+            test.ok(body.velocity.equals(new Vec3(0, 0, f * dt))); // The force is rotated to world space
 
         });
 

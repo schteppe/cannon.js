@@ -161,7 +161,7 @@ namespace CANNON
             u.subTo(tmp, u);
 
             // F = - k * ( x - L ) - D * ( u )
-            r_unit.mult(-k * (rlen - l) - d * u.dot(r_unit), f);
+            r_unit.scaleNumberTo(-k * (rlen - l) - d * u.dot(r_unit), f);
 
             // Add forces to bodies
             bodyA.force.subTo(f, bodyA.force);

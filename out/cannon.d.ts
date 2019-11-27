@@ -71,18 +71,13 @@ declare namespace CANNON {
         length(): number;
         /**
          * Get the squared length of the vector
-         * @deprecated Use .lengthSquared() instead.
-         */
-        norm2(): number;
-        /**
-         * Get the squared length of the vector
          */
         lengthSquared(): number;
         /**
          * Get distance from this point to another point
          * @param p
          */
-        distanceTo(p: Vec3): number;
+        distance(p: Vec3): number;
         /**
          * Get squared distance from this point to another point
          * @param p
@@ -92,21 +87,14 @@ declare namespace CANNON {
          * Multiply all the components of the vector with a scalar.
          * @param scalar
          * @param  target The vector to save the result in.
-         * @deprecated Use .scale() instead
          */
-        mult(scalar: number, target?: Vec3): Vec3;
-        /**
-         * Multiply all the components of the vector with a scalar.
-         * @param scalar
-         * @param  target The vector to save the result in.
-         */
-        scale(scalar: number, target?: Vec3): Vec3;
+        scaleNumberTo(scalar: number, target?: Vec3): Vec3;
         /**
          * Multiply the vector with an other vector, component-wise.
          * @param  vector
          * @param  target The vector to save the result in.
          */
-        vmul(vector: Vec3, target?: Vec3): Vec3;
+        scaleTo(vector: Vec3, target?: Vec3): Vec3;
         /**
          * Scale a vector and add it to this vector. Save the result in "target". (target = this + vector * scalar)
          * @param scalar
@@ -124,7 +112,7 @@ declare namespace CANNON {
          * Make the vector point in the opposite direction.
          * @param target Optional target to save in
          */
-        negate(target: Vec3): Vec3;
+        negateTo(target: Vec3): Vec3;
         tangents(t1: Vec3, t2: Vec3): void;
         /**
          * Converts to a more readable format
@@ -151,7 +139,7 @@ declare namespace CANNON {
          * @param v
          * @param  precision
          */
-        almostEquals(v: Vec3, precision?: number): boolean;
+        equals(v: Vec3, precision?: number): boolean;
         /**
          * Check if a vector is almost zero
          * @param precision

@@ -434,7 +434,7 @@ namespace CANNON
             for (var i = 0, N = vertices.length / 3; i !== N; i++)
             {
                 this.getVertex(i, v);
-                var norm2 = v.norm2();
+                var norm2 = v.lengthSquared();
                 if (norm2 > max2)
                 {
                     max2 = norm2;

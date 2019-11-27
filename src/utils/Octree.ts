@@ -114,7 +114,7 @@ namespace CANNON
             );
 
             u.subTo(l, halfDiagonal);
-            halfDiagonal.scale(0.5, halfDiagonal);
+            halfDiagonal.scaleNumberTo(0.5, halfDiagonal);
 
             var root = this.root || this;
 

@@ -201,7 +201,7 @@ namespace CANNON
                 // Not in contact : position wheel in a nice (rest length) position
                 raycastResult.suspensionLength = this.suspensionRestLength;
                 this.suspensionRelativeVelocity = 0.0;
-                raycastResult.directionWorld.scale(-1, raycastResult.hitNormalWorld);
+                raycastResult.directionWorld.scaleNumberTo(-1, raycastResult.hitNormalWorld);
                 this.clippedInvContactDotSuspension = 1.0;
             }
         }

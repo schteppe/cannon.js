@@ -183,14 +183,14 @@ var CANNON;
             body.addShape(new CANNON.Sphere(1));
             body.position.set(1, 2, 2);
             var localPoint = body.pointToLocalFrame(new CANNON.Vec3(1, 2, 3));
-            test.ok(localPoint.almostEquals(new CANNON.Vec3(0, 0, 1)));
+            test.ok(localPoint.equals(new CANNON.Vec3(0, 0, 1)));
         });
         QUnit.test("pointToWorldFrame", function (test) {
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Sphere(1));
             body.position.set(1, 2, 2);
             var worldPoint = body.pointToWorldFrame(new CANNON.Vec3(1, 0, 0));
-            test.ok(worldPoint.almostEquals(new CANNON.Vec3(2, 2, 2)));
+            test.ok(worldPoint.equals(new CANNON.Vec3(2, 2, 2)));
         });
         QUnit.test("addShape", function (test) {
             var sphereShape = new CANNON.Sphere(1);
@@ -227,7 +227,7 @@ var CANNON;
             var localPoint = new CANNON.Vec3(1, 0, 0);
             var localForceVector = new CANNON.Vec3(0, 1, 0);
             body.applyLocalForce(localForceVector, localPoint);
-            test.ok(body.force.almostEquals(new CANNON.Vec3(0, 0, 1))); // The force is rotated to world space
+            test.ok(body.force.equals(new CANNON.Vec3(0, 0, 1))); // The force is rotated to world space
         });
         QUnit.test("applyImpulse", function (test) {
             var sphereShape = new CANNON.Sphere(1);
@@ -240,7 +240,7 @@ var CANNON;
             var worldPoint = new CANNON.Vec3(0, 0, 0);
             var impulse = new CANNON.Vec3(f * dt, 0, 0);
             body.applyImpulse(impulse, worldPoint);
-            test.ok(body.velocity.almostEquals(new CANNON.Vec3(f * dt, 0, 0)));
+            test.ok(body.velocity.equals(new CANNON.Vec3(f * dt, 0, 0)));
         });
         QUnit.test("applyLocalImpulse", function (test) {
             var sphereShape = new CANNON.Sphere(1);
@@ -254,7 +254,7 @@ var CANNON;
             var localPoint = new CANNON.Vec3(1, 0, 0);
             var localImpulseVector = new CANNON.Vec3(0, f * dt, 0);
             body.applyLocalImpulse(localImpulseVector, localPoint);
-            test.ok(body.velocity.almostEquals(new CANNON.Vec3(0, 0, f * dt))); // The force is rotated to world space
+            test.ok(body.velocity.equals(new CANNON.Vec3(0, 0, f * dt))); // The force is rotated to world space
         });
     });
 })(CANNON || (CANNON = {}));
@@ -271,7 +271,7 @@ var CANNON;
             box.forEachWorldCorner(pos, quat, function (x, y, z) {
                 var corner = new CANNON.Vec3(x, y, z);
                 for (var i = 0; i < unique.length; i++) {
-                    test.ok(!corner.almostEquals(unique[i]), "Corners " + i + " and " + numCorners + " are almost equal: (" + unique[i].toString() + ") == (" + corner.toString() + ")");
+                    test.ok(!corner.equals(unique[i]), "Corners " + i + " and " + numCorners + " are almost equal: (" + unique[i].toString() + ") == (" + corner.toString() + ")");
                 }
                 unique.push(corner);
                 numCorners++;
@@ -800,7 +800,7 @@ var CANNON;
             m.e(2, 2, 0);
             var t = m.solve(v);
             var vv = m.vmult(t);
-            test.ok(vv.almostEquals(v, 0.00001), "solving Ax = b");
+            test.ok(vv.equals(v, 0.00001), "solving Ax = b");
             var m1 = new CANNON.Mat3();
             /* set the matrix to
              | 1 2 3 |
@@ -884,13 +884,13 @@ var CANNON;
             // Test zero rotation
             M.setRotationFromQuaternion(q);
             var v = M.vmult(original);
-            test.ok(v.almostEquals(original));
+            test.ok(v.equals(original));
             // Test rotation along x axis
             q.setFromEuler(0.222, 0.123, 1.234);
             M.setRotationFromQuaternion(q);
             var Mv = M.vmult(original);
             var qv = q.vmult(original);
-            test.ok(Mv.almostEquals(qv));
+            test.ok(Mv.equals(qv));
         });
     });
 })(CANNON || (CANNON = {}));
@@ -1124,11 +1124,11 @@ var CANNON;
         QUnit.test("setFromVectors", function (test) {
             var q = new CANNON.Quaternion();
             q.setFromVectors(new CANNON.Vec3(1, 0, 0), new CANNON.Vec3(-1, 0, 0));
-            test.ok(q.vmult(new CANNON.Vec3(1, 0, 0)).almostEquals(new CANNON.Vec3(-1, 0, 0)));
+            test.ok(q.vmult(new CANNON.Vec3(1, 0, 0)).equals(new CANNON.Vec3(-1, 0, 0)));
             q.setFromVectors(new CANNON.Vec3(0, 1, 0), new CANNON.Vec3(0, -1, 0));
-            test.ok(q.vmult(new CANNON.Vec3(0, 1, 0)).almostEquals(new CANNON.Vec3(0, -1, 0)));
+            test.ok(q.vmult(new CANNON.Vec3(0, 1, 0)).equals(new CANNON.Vec3(0, -1, 0)));
             q.setFromVectors(new CANNON.Vec3(0, 0, 1), new CANNON.Vec3(0, 0, -1));
-            test.ok(q.vmult(new CANNON.Vec3(0, 0, 1)).almostEquals(new CANNON.Vec3(0, 0, -1)));
+            test.ok(q.vmult(new CANNON.Vec3(0, 0, 1)).equals(new CANNON.Vec3(0, 0, -1)));
         });
         QUnit.test("slerp", function (test) {
             var qa = new CANNON.Quaternion();
@@ -1158,20 +1158,20 @@ var CANNON;
             var result = new CANNON.RaycastResult();
             r.intersectBody(body, result);
             test.ok(result.hasHit);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0.5, 0, 0)));
             // test rotating the body first
             result.reset();
             body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.ok(result.hasHit);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0.5, 0, 0)));
             // test shooting from other direction
             result.reset();
             r.to.set(0, 0, -5);
             r.from.set(0, 0, 5);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0, 0, 0.5)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0, 0, 0.5)));
             // test miss
             result.reset();
             var r = new CANNON.Ray(new CANNON.Vec3(5, 1, 0), new CANNON.Vec3(-5, 1, 0));
@@ -1191,7 +1191,7 @@ var CANNON;
             var result = new CANNON.RaycastResult();
             r.intersectBodies([body1, body2], result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0.5, 0, 0)));
         });
         QUnit.test("box", function (test) {
             var r = new CANNON.Ray(new CANNON.Vec3(5, 0, 0), new CANNON.Vec3(-5, 0, 0));
@@ -1202,22 +1202,22 @@ var CANNON;
             var result = new CANNON.RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0.5, 0, 0)));
             result.reset();
             body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0.5, 0, 0)));
             result.reset();
             body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0.5, 0, 0)));
             result.reset();
             body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 3 * Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0.5, 0, 0)));
         });
         QUnit.test("sphere", function (test) {
             var r = new CANNON.Ray(new CANNON.Vec3(5, 0, 0), new CANNON.Vec3(-5, 0, 0));
@@ -1228,23 +1228,23 @@ var CANNON;
             var result = new CANNON.RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(1, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(1, 0, 0)));
             result.reset();
             body.position.set(1, 0, 0);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(2, 0, 0)));
             result.reset();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(2, 0, 0)));
             result.reset();
             var shape2 = new CANNON.Sphere(1);
             var body2 = new CANNON.Body({ mass: 1 });
             body2.addShape(shape2, new CANNON.Vec3(1, 0, 0));
             r.intersectBody(body2, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(2, 0, 0)));
         });
         QUnit.test("heightfield", function (test) {
             var r = new CANNON.Ray(new CANNON.Vec3(0, 0, 10), new CANNON.Vec3(0, 0, -10));
@@ -1300,14 +1300,14 @@ var CANNON;
             var result = new CANNON.RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0, 0, 0)));
             test.equal(result.distance, 5);
             result.reset();
             var body2 = new CANNON.Body({ mass: 1 });
             body2.addShape(shape, new CANNON.Vec3(0, 0, 1), new CANNON.Quaternion());
             r.intersectBody(body2, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0, 0, 1)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0, 0, 1)));
             result.reset();
             var body3 = new CANNON.Body({ mass: 1 });
             var quat = new CANNON.Quaternion();
@@ -1330,7 +1330,7 @@ var CANNON;
             r.intersectBody(body, result);
             var distance1 = result.distance;
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0, 0, 0)));
             var result = new CANNON.RaycastResult();
             r.from.set(0, 1 - 5, 1);
             r.to.set(0, -1 - 5, -1);
@@ -1338,7 +1338,7 @@ var CANNON;
             r.intersectBody(body, result);
             var distance2 = result.distance;
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new CANNON.Vec3(0, -5, 0)));
+            test.ok(result.hitPointWorld.equals(new CANNON.Vec3(0, -5, 0)));
             test.equal(distance1, distance2);
             test.ok(true);
         });
@@ -1531,8 +1531,8 @@ var CANNON;
             test.equal(result.length, mesh.indices.length / 3);
             // Should get less triangles if we use the half AABB
             result.length = 0;
-            aabb.lowerBound.scale(0.1, aabb.lowerBound);
-            aabb.upperBound.scale(0.1, aabb.upperBound);
+            aabb.lowerBound.scaleNumberTo(0.1, aabb.lowerBound);
+            aabb.upperBound.scaleNumberTo(0.1, aabb.upperBound);
             mesh.getTrianglesInAABB(aabb, result);
             console.log(result.length, mesh.indices.length / 3);
             test.ok(result.length < mesh.indices.length / 3);
@@ -1717,7 +1717,7 @@ var CANNON;
             test.ok(new CANNON.Vec3(1, 0, 0).isAntiparallelTo(new CANNON.Vec3(-1, 0, 0)));
         });
         QUnit.test("almostEquals", function (test) {
-            test.ok(new CANNON.Vec3(1, 0, 0).almostEquals(new CANNON.Vec3(1, 0, 0)));
+            test.ok(new CANNON.Vec3(1, 0, 0).equals(new CANNON.Vec3(1, 0, 0)));
         });
     });
 })(CANNON || (CANNON = {}));
@@ -1731,8 +1731,8 @@ var CANNON;
             body.force.set(1, 2, 3);
             body.torque.set(4, 5, 6);
             world.clearForces();
-            test.ok(body.force.almostEquals(new CANNON.Vec3(0, 0, 0)));
-            test.ok(body.torque.almostEquals(new CANNON.Vec3(0, 0, 0)));
+            test.ok(body.force.equals(new CANNON.Vec3(0, 0, 0)));
+            test.ok(body.torque.equals(new CANNON.Vec3(0, 0, 0)));
         });
         QUnit.test("rayTestBox", function (test) {
             var world = new CANNON.World();

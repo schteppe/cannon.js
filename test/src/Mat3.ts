@@ -148,7 +148,7 @@ namespace CANNON
 
             var vv = m.vmult(t);
 
-            test.ok(vv.almostEquals(v, 0.00001), "solving Ax = b");
+            test.ok(vv.equals(v, 0.00001), "solving Ax = b");
 
 
             var m1 = new Mat3();
@@ -265,7 +265,7 @@ namespace CANNON
             // Test zero rotation
             M.setRotationFromQuaternion(q);
             var v = M.vmult(original);
-            test.ok(v.almostEquals(original));
+            test.ok(v.equals(original));
 
             // Test rotation along x axis
             q.setFromEuler(0.222, 0.123, 1.234);
@@ -273,7 +273,7 @@ namespace CANNON
             var Mv = M.vmult(original);
             var qv = q.vmult(original);
 
-            test.ok(Mv.almostEquals(qv));
+            test.ok(Mv.equals(qv));
 
         });
     });

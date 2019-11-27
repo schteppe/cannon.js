@@ -236,7 +236,7 @@ namespace CANNON
                 return;
             }
 
-            if (from.distanceTo(to) < planeToFrom)
+            if (from.distance(to) < planeToFrom)
             {
                 return;
             }
@@ -255,7 +255,7 @@ namespace CANNON
 
             from.subTo(position, planePointToFrom);
             var t = -worldNormal.dot(planePointToFrom) / n_dot_dir;
-            direction.scale(t, dir_scaled_with_t);
+            direction.scaleNumberTo(t, dir_scaled_with_t);
             from.addTo(dir_scaled_with_t, hitPointWorld);
 
             this.reportIntersection(worldNormal, hitPointWorld, reportedShape, body, -1);
@@ -422,7 +422,7 @@ namespace CANNON
 
             var from = this.from;
             var to = this.to;
-            var fromToDistance = from.distanceTo(to);
+            var fromToDistance = from.distance(to);
 
             var minDist = -1;
             var Nfaces = faceList ? faceList.length : faces.length;
@@ -472,7 +472,7 @@ namespace CANNON
                 // if (dot < 0) {
 
                 // Intersection point is from + direction * scalar
-                direction.mult(scalar, intersectPoint);
+                direction.scaleNumberTo(scalar, intersectPoint);
                 intersectPoint.addTo(from, intersectPoint);
 
                 // a is the point we compare points b and c with.
@@ -490,7 +490,7 @@ namespace CANNON
                     x.addTo(b, b);
                     x.addTo(c, c);
 
-                    var distance = intersectPoint.distanceTo(from);
+                    var distance = intersectPoint.distance(from);
 
                     if (!(Ray.pointInTriangle(intersectPoint, a, b, c) || Ray.pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance)
                     {
@@ -612,7 +612,7 @@ namespace CANNON
                 }
 
                 // Intersection point is from + direction * scalar
-                localDirection.scale(scalar, intersectPoint);
+                localDirection.scaleNumberTo(scalar, intersectPoint);
                 intersectPoint.addTo(localFrom, intersectPoint);
 
                 // Get triangle vertices
@@ -639,7 +639,7 @@ namespace CANNON
         {
             var from = this.from;
             var to = this.to;
-            var distance = from.distanceTo(hitPointWorld);
+            var distance = from.distance(hitPointWorld);
             var result = this.result;
 
             // Skip back faces?

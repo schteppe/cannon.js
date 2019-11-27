@@ -44,8 +44,8 @@ namespace CANNON
             // And remember, this is a pure velocity constraint, g is always zero!
             var GA = this.jacobianElementA,
                 GB = this.jacobianElementB;
-            t.negate(GA.spatial);
-            rixt.negate(GA.rotational);
+            t.negateTo(GA.spatial);
+            rixt.negateTo(GA.rotational);
             GB.spatial.copy(t);
             GB.rotational.copy(rjxt);
 

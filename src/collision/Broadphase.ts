@@ -98,7 +98,7 @@ namespace CANNON
             var r = Broadphase_collisionPairs_r;
             bodyB.position.subTo(bodyA.position, r);
             var boundingRadiusSum2 = Math.pow(bodyA.boundingRadius + bodyB.boundingRadius, 2);
-            var norm2 = r.norm2();
+            var norm2 = r.lengthSquared();
             if (norm2 < boundingRadiusSum2)
             {
                 pairs1.push(bodyA);
@@ -190,7 +190,7 @@ namespace CANNON
         {
             var dist = bsc_dist;
             bodyA.position.subTo(bodyB.position, dist);
-            return Math.pow(bodyA.shape.boundingSphereRadius + bodyB.shape.boundingSphereRadius, 2) > dist.norm2();
+            return Math.pow(bodyA.shape.boundingSphereRadius + bodyB.shape.boundingSphereRadius, 2) > dist.lengthSquared();
         }
 
         /**

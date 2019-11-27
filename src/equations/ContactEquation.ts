@@ -72,8 +72,8 @@ namespace CANNON
 
             // g = xj+rj -(xi+ri)
             // G = [ -ni  -rixn  ni  rjxn ]
-            n.negate(GA.spatial);
-            rixn.negate(GA.rotational);
+            n.negateTo(GA.spatial);
+            rixn.negateTo(GA.rotational);
             GB.spatial.copy(n);
             GB.rotational.copy(rjxn);
 

@@ -97,7 +97,7 @@ namespace CANNON
                     var found = false;
                     for (var p = 0; p !== edges.length; p++)
                     {
-                        if (edges[p].almostEquals(edge) || edges[p].almostEquals(edge))
+                        if (edges[p].equals(edge) || edges[p].equals(edge))
                         {
                             found = true;
                             break;
@@ -134,7 +134,7 @@ namespace CANNON
 
                 var n = this.faceNormals[i] || new Vec3();
                 this.getFaceNormal(i, n);
-                n.negate(n);
+                n.negateTo(n);
                 this.faceNormals[i] = n;
                 var vertex = this.vertices[this.faces[i][0]];
                 if (n.dot(vertex) < 0)
@@ -396,7 +396,7 @@ namespace CANNON
             posB.subTo(posA, deltaC);
             if ((deltaC.dot(target)) > 0.0)
             {
-                target.negate(target);
+                target.negateTo(target);
             }
 
             return true;
@@ -539,7 +539,7 @@ namespace CANNON
                 quatA.vmult(worldPlaneAnormal1, worldPlaneAnormal1);
                 posA.addTo(worldPlaneAnormal1, worldPlaneAnormal1);
                 WorldEdge0.cross(worldPlaneAnormal1, planeNormalWS1);
-                planeNormalWS1.negate(planeNormalWS1);
+                planeNormalWS1.negateTo(planeNormalWS1);
                 worldA1.copy(a);
                 quatA.vmult(worldA1, worldA1);
                 posA.addTo(worldA1, worldA1);
@@ -765,7 +765,7 @@ namespace CANNON
             var verts = this.vertices;
             for (var i = 0, N = verts.length; i !== N; i++)
             {
-                var norm2 = verts[i].norm2();
+                var norm2 = verts[i].lengthSquared();
                 if (norm2 > max2)
                 {
                     max2 = norm2;
@@ -841,7 +841,7 @@ namespace CANNON
             {
                 target.addTo(verts[i], target);
             }
-            target.mult(1 / n, target);
+            target.scaleNumberTo(1 / n, target);
             return target;
         }
 

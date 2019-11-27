@@ -81,7 +81,7 @@ namespace CANNON
 
         QUnit.test("almostEquals", (test) =>
         {
-            test.ok(new Vec3(1, 0, 0).almostEquals(new Vec3(1, 0, 0)));
+            test.ok(new Vec3(1, 0, 0).equals(new Vec3(1, 0, 0)));
         });
     });
 }
