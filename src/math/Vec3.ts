@@ -39,7 +39,7 @@ namespace CANNON
          * @param v 
          * @param target Target to save in.
          */
-        cross(v: Vec3, target = new Vec3())
+        crossTo(v: Vec3, target = new Vec3())
         {
             var vx = v.x, vy = v.y, vz = v.z, x = this.x, y = this.y, z = this.z;
             target = target;
@@ -295,13 +295,13 @@ namespace CANNON
                 if (Math.abs(n.x) < 0.9)
                 {
                     randVec.set(1, 0, 0);
-                    n.cross(randVec, t1);
+                    n.crossTo(randVec, t1);
                 } else
                 {
                     randVec.set(0, 1, 0);
-                    n.cross(randVec, t1);
+                    n.crossTo(randVec, t1);
                 }
-                n.cross(t1, t2);
+                n.crossTo(t1, t2);
             } else
             {
                 // The normal length is zero, make something up

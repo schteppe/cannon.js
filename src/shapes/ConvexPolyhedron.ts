@@ -160,7 +160,7 @@ namespace CANNON
         {
             vb.subTo(va, ab);
             vc.subTo(vb, cb);
-            cb.cross(ab, target);
+            cb.crossTo(ab, target);
             if (!target.isZero())
             {
                 target.normalize();
@@ -374,7 +374,7 @@ namespace CANNON
 
                     // Get world edge 2
                     quatB.vmult(hullB.uniqueEdges[e1], worldEdge1);
-                    worldEdge0.cross(worldEdge1, Cross);
+                    worldEdge0.crossTo(worldEdge1, Cross);
 
                     if (!Cross.almostZero())
                     {
@@ -538,7 +538,7 @@ namespace CANNON
                 worldPlaneAnormal1.copy(this.faceNormals[closestFaceA]);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
                 quatA.vmult(worldPlaneAnormal1, worldPlaneAnormal1);
                 posA.addTo(worldPlaneAnormal1, worldPlaneAnormal1);
-                WorldEdge0.cross(worldPlaneAnormal1, planeNormalWS1);
+                WorldEdge0.crossTo(worldPlaneAnormal1, planeNormalWS1);
                 planeNormalWS1.negateTo(planeNormalWS1);
                 worldA1.copy(a);
                 quatA.vmult(worldA1, worldA1);

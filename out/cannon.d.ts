@@ -1,4 +1,7 @@
 declare namespace CANNON {
+    var Vector3: typeof feng3d.Vector3;
+}
+declare namespace CANNON {
     class Vec3 {
         x: number;
         y: number;
@@ -26,7 +29,7 @@ declare namespace CANNON {
          * @param v
          * @param target Target to save in.
          */
-        cross(v: Vec3, target?: Vec3): Vec3;
+        crossTo(v: Vec3, target?: Vec3): Vec3;
         /**
          * Set the vectors' 3 elements
          * @param x

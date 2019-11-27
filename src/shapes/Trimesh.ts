@@ -255,7 +255,7 @@ namespace CANNON
         {
             vb.subTo(va, ab);
             vc.subTo(vb, cb);
-            cb.cross(ab, target);
+            cb.crossTo(ab, target);
             if (!target.isZero())
             {
                 target.normalize();

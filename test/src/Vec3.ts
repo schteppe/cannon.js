@@ -20,7 +20,7 @@ namespace CANNON
 
             var v = new Vec3(1, 2, 3);
             var u = new Vec3(4, 5, 6);
-            v = v.cross(u);
+            v = v.crossTo(u);
 
             test.equal(v.x, -3, "Calculating cross product x");
             test.equal(v.y, 6, "Calculating cross product x");

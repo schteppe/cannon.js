@@ -635,7 +635,7 @@ namespace CANNON
             // Contact normal
             r.ni.copy(World.worldNormal);
             qj.vmult(r.ni, r.ni);
-            r.ni.negate(r.ni); // body i is the sphere, flip normal
+            r.ni.negateTo(r.ni); // body i is the sphere, flip normal
             r.ni.normalize(); // Needed?
 
             // Vector from sphere center to contact point
@@ -743,7 +743,7 @@ namespace CANNON
                 var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
                 side_ns.scaleNumberTo(-R, r.ri); // Sphere r
                 r.ni.copy(side_ns);
-                r.ni.negate(r.ni); // Normal should be out of sphere
+                r.ni.negateTo(r.ni); // Normal should be out of sphere
                 side_ns.scaleNumberTo(side_h, side_ns);
                 side_ns1.scaleNumberTo(side_dot1, side_ns1);
                 side_ns.addTo(side_ns1, side_ns);
@@ -839,7 +839,7 @@ namespace CANNON
                     if (j % 3 !== k % 3)
                     {
                         // Get edge tangent
-                        sides[k].cross(sides[j], edgeTangent);
+                        sides[k].crossTo(sides[j], edgeTangent);
                         edgeTangent.normalize();
                         sides[j].addTo(sides[k], edgeCenter);
                         r.copy(xi);
@@ -1238,7 +1238,7 @@ namespace CANNON
                         ri = r.ri,
                         rj = r.rj;
                     sepAxis.negateTo(r.ni);
-                    res[j].normal.negate(q);
+                    res[j].normal.negateTo(q);
                     q.scaleNumberTo(res[j].depth, q);
                     res[j].point.vadd(q, ri);
                     rj.copy(res[j].point);
@@ -1326,8 +1326,8 @@ namespace CANNON
         //                 ri = r.ri,
         //                 rj = r.rj;
         //             r.ni.copy(triangleNormal);
-        //             r.ni.negate(r.ni);
-        //             res[j].normal.negate(q);
+        //             r.ni.negateTo(r.ni);
+        //             res[j].normal.negateTo(q);
         //             q.mult(res[j].depth, q);
         //             res[j].point.vadd(q, ri);
         //             rj.copy(res[j].point);
@@ -1365,7 +1365,7 @@ namespace CANNON
 
                 var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
                 r.ni.copy(normal); // Contact normal is the plane normal
-                r.ni.negate(r.ni);
+                r.ni.negateTo(r.ni);
                 r.ri.set(0, 0, 0); // Center of particle
 
                 // Get particle position projected on plane
@@ -1400,7 +1400,7 @@ namespace CANNON
                 r.rj.copy(normal);
                 r.rj.mult(sj.radius, r.rj);
                 r.ni.copy(normal); // Contact normal
-                r.ni.negate(r.ni);
+                r.ni.negateTo(r.ni);
                 r.ri.set(0, 0, 0); // Center of particle
                 this.result.push(r);
                 this.createFrictionEquationsFromContact(r, this.frictionResult);
@@ -1772,7 +1772,7 @@ namespace CANNON
             // Get cross product between polygon normal and the edge
             var edge_x_normal = pointInPolygon_edge_x_normal;
             //var edge_x_normal = new Vec3();
-            edge.cross(normal, edge_x_normal);
+            edge.crossTo(normal, edge_x_normal);
 
             // Get vector between point and current vertex
             var vertex_to_p = pointInPolygon_vtp;

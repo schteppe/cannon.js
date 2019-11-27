@@ -626,7 +626,7 @@ namespace CANNON
 
             // Compute produced rotational force
             var rotForce = Body_applyForce_rotForce;
-            relativePoint.cross(force, rotForce);
+            relativePoint.crossTo(force, rotForce);
 
             // Add linear force
             this.force.addTo(force, this.force);
@@ -684,7 +684,7 @@ namespace CANNON
 
             // Compute produced rotational impulse velocity
             var rotVelo = Body_applyImpulse_rotVelo;
-            r.cross(impulse, rotVelo);
+            r.crossTo(impulse, rotVelo);
 
             /*
             rotVelo.x *= this.invInertia.x;
@@ -759,7 +759,7 @@ namespace CANNON
         {
             var r = new Vec3();
             worldPoint.vsub(this.position, r);
-            this.angularVelocity.cross(r, result);
+            this.angularVelocity.crossTo(r, result);
             this.velocity.addTo(result, result);
             return result;
         }

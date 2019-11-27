@@ -21,6 +21,7 @@
         },
     ],
     "files": [ //注：如果有继承关系的，父类必须排在子类前面
+        "src/Feng3d.ts",
         //
         "src/math/Vec3.ts",
         "src/math/Mat3.ts",

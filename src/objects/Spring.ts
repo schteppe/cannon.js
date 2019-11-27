@@ -155,9 +155,9 @@ namespace CANNON
             bodyB.velocity.subTo(bodyA.velocity, u);
             // Add rotational velocity
 
-            bodyB.angularVelocity.cross(rj, tmp);
+            bodyB.angularVelocity.crossTo(rj, tmp);
             u.addTo(tmp, u);
-            bodyA.angularVelocity.cross(ri, tmp);
+            bodyA.angularVelocity.crossTo(ri, tmp);
             u.subTo(tmp, u);
 
             // F = - k * ( x - L ) - D * ( u )
@@ -168,8 +168,8 @@ namespace CANNON
             bodyB.force.addTo(f, bodyB.force);
 
             // Angular force
-            ri.cross(f, ri_x_f);
-            rj.cross(f, rj_x_f);
+            ri.crossTo(f, ri_x_f);
+            rj.crossTo(f, rj_x_f);
             bodyA.torque.subTo(ri_x_f, bodyA.torque);
             bodyB.torque.addTo(rj_x_f, bodyB.torque);
         }

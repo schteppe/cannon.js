@@ -13,6 +13,10 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var CANNON;
 (function (CANNON) {
+    CANNON.Vector3 = feng3d.Vector3;
+})(CANNON || (CANNON = {}));
+var CANNON;
+(function (CANNON) {
     var Vec3 = /** @class */ (function () {
         /**
          * 3-dimensional vector
@@ -40,7 +44,7 @@ var CANNON;
          * @param v
          * @param target Target to save in.
          */
-        Vec3.prototype.cross = function (v, target) {
+        Vec3.prototype.crossTo = function (v, target) {
             if (target === void 0) { target = new Vec3(); }
             var vx = v.x, vy = v.y, vz = v.z, x = this.x, y = this.y, z = this.z;
             target = target;
@@ -253,13 +257,13 @@ var CANNON;
                 var randVec = Vec3_tangents_randVec;
                 if (Math.abs(n.x) < 0.9) {
                     randVec.set(1, 0, 0);
-                    n.cross(randVec, t1);
+                    n.crossTo(randVec, t1);
                 }
                 else {
                     randVec.set(0, 1, 0);
-                    n.cross(randVec, t1);
+                    n.crossTo(randVec, t1);
                 }
-                n.cross(t1, t2);
+                n.crossTo(t1, t2);
             }
             else {
                 // The normal length is zero, make something up
@@ -811,7 +815,7 @@ var CANNON;
                 this.setFromAxisAngle(t1, Math.PI);
             }
             else {
-                var a = u.cross(v);
+                var a = u.crossTo(v);
                 this.x = a.x;
                 this.y = a.y;
                 this.z = a.z;
@@ -1972,7 +1976,7 @@ var CANNON;
         ConvexPolyhedron.computeNormal = function (va, vb, vc, target) {
             vb.subTo(va, ab);
             vc.subTo(vb, cb);
-            cb.cross(ab, target);
+            cb.crossTo(ab, target);
             if (!target.isZero()) {
                 target.normalize();
             }
@@ -2124,7 +2128,7 @@ var CANNON;
                 for (var e1 = 0; e1 !== hullB.uniqueEdges.length; e1++) {
                     // Get world edge 2
                     quatB.vmult(hullB.uniqueEdges[e1], worldEdge1);
-                    worldEdge0.cross(worldEdge1, Cross);
+                    worldEdge0.crossTo(worldEdge1, Cross);
                     if (!Cross.almostZero()) {
                         Cross.normalize();
                         var dist = hullA.testSepAxis(Cross, hullB, posA, quatA, posB, quatB);
@@ -2255,7 +2259,7 @@ var CANNON;
                 worldPlaneAnormal1.copy(this.faceNormals[closestFaceA]); //transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
                 quatA.vmult(worldPlaneAnormal1, worldPlaneAnormal1);
                 posA.addTo(worldPlaneAnormal1, worldPlaneAnormal1);
-                WorldEdge0.cross(worldPlaneAnormal1, planeNormalWS1);
+                WorldEdge0.crossTo(worldPlaneAnormal1, planeNormalWS1);
                 planeNormalWS1.negateTo(planeNormalWS1);
                 worldA1.copy(a);
                 quatA.vmult(worldA1, worldA1);
@@ -3091,7 +3095,7 @@ var CANNON;
             this.getTriangleAt(x, y, edgeClamp, a, b, c);
             b.subTo(a, e0);
             c.subTo(a, e1);
-            e0.cross(e1, result);
+            e0.crossTo(e1, result);
             result.normalize();
         };
         /**
@@ -3968,7 +3972,7 @@ var CANNON;
         Trimesh.computeNormal = function (va, vb, vc, target) {
             vb.subTo(va, ab);
             vc.subTo(vb, cb);
-            cb.cross(ab, target);
+            cb.crossTo(ab, target);
             if (!target.isZero()) {
                 target.normalize();
             }
@@ -6172,7 +6176,7 @@ var CANNON;
             }
             // Compute produced rotational force
             var rotForce = Body_applyForce_rotForce;
-            relativePoint.cross(force, rotForce);
+            relativePoint.crossTo(force, rotForce);
             // Add linear force
             this.force.addTo(force, this.force);
             // Add rotational force
@@ -6215,7 +6219,7 @@ var CANNON;
             this.velocity.addTo(velo, this.velocity);
             // Compute produced rotational impulse velocity
             var rotVelo = Body_applyImpulse_rotVelo;
-            r.cross(impulse, rotVelo);
+            r.crossTo(impulse, rotVelo);
             /*
             rotVelo.x *= this.invInertia.x;
             rotVelo.y *= this.invInertia.y;
@@ -6267,7 +6271,7 @@ var CANNON;
         Body.prototype.getVelocityAtWorldPoint = function (worldPoint, result) {
             var r = new CANNON.Vec3();
             worldPoint.vsub(this.position, r);
-            this.angularVelocity.cross(r, result);
+            this.angularVelocity.crossTo(r, result);
             this.velocity.addTo(result, result);
             return result;
         };
@@ -6454,9 +6458,9 @@ var CANNON;
             // Compute relative velocity of the anchor points, u
             bodyB.velocity.subTo(bodyA.velocity, u);
             // Add rotational velocity
-            bodyB.angularVelocity.cross(rj, tmp);
+            bodyB.angularVelocity.crossTo(rj, tmp);
             u.addTo(tmp, u);
-            bodyA.angularVelocity.cross(ri, tmp);
+            bodyA.angularVelocity.crossTo(ri, tmp);
             u.subTo(tmp, u);
             // F = - k * ( x - L ) - D * ( u )
             r_unit.scaleNumberTo(-k * (rlen - l) - d * u.dot(r_unit), f);
@@ -6464,8 +6468,8 @@ var CANNON;
             bodyA.force.subTo(f, bodyA.force);
             bodyB.force.addTo(f, bodyB.force);
             // Angular force
-            ri.cross(f, ri_x_f);
-            rj.cross(f, rj_x_f);
+            ri.crossTo(f, ri_x_f);
+            rj.crossTo(f, rj_x_f);
             bodyA.torque.subTo(ri_x_f, bodyA.torque);
             bodyB.torque.addTo(rj_x_f, bodyB.torque);
         };
@@ -6865,7 +6869,7 @@ var CANNON;
             this.updateWheelTransformWorld(wheel);
             wheel.directionLocal.scaleNumberTo(-1, up);
             right.copy(wheel.axleLocal);
-            up.cross(right, fwd);
+            up.crossTo(right, fwd);
             fwd.normalize();
             right.normalize();
             // Rotate around steering over the wheelAxle
@@ -6930,7 +6934,7 @@ var CANNON;
                     surfNormalWS.scaleNumberTo(proj, surfNormalWS_scaled_proj);
                     axlei.vsub(surfNormalWS_scaled_proj, axlei);
                     axlei.normalize();
-                    surfNormalWS.cross(axlei, forwardWS[i]);
+                    surfNormalWS.crossTo(axlei, forwardWS[i]);
                     forwardWS[i].normalize();
                     wheel.sideImpulse = resolveSingleBilateral(chassisBody, wheel.raycastResult.hitPointWorld, groundObject, wheel.raycastResult.hitPointWorld, axlei);
                     wheel.sideImpulse *= sideFrictionStiffness2;
@@ -7081,9 +7085,9 @@ var CANNON;
         var vec = computeImpulseDenominator_vec;
         var m = computeImpulseDenominator_m;
         pos.subTo(body.position, r0);
-        r0.cross(normal, c0);
+        r0.crossTo(normal, c0);
         body.invInertiaWorld.vmult(c0, m);
-        m.cross(r0, vec);
+        m.crossTo(r0, vec);
         return body.invMass + normal.dot(vec);
     }
     var resolveSingleBilateral_vel1 = new CANNON.Vec3();
@@ -7589,8 +7593,8 @@ var CANNON;
         ConeEquation.prototype.computeB = function (h) {
             var a = this.a, b = this.b, ni = this.axisA, nj = this.axisB, nixnj = tmpVec1, njxni = tmpVec2, GA = this.jacobianElementA, GB = this.jacobianElementB;
             // Caluclate cross products
-            ni.cross(nj, nixnj);
-            nj.cross(ni, njxni);
+            ni.crossTo(nj, nixnj);
+            nj.crossTo(ni, njxni);
             // The angle between two vector is:
             // cos(theta) = a * b / (length(a) * length(b) = { len(a) = len(b) = 1 } = a * b
             // g = a * b
@@ -7632,8 +7636,8 @@ var CANNON;
         ContactEquation.prototype.computeB = function (h) {
             var a = this.a, b = this.b, bi = this.bi, bj = this.bj, ri = this.ri, rj = this.rj, rixn = ContactEquation_computeB_temp1, rjxn = ContactEquation_computeB_temp2, vi = bi.velocity, wi = bi.angularVelocity, fi = bi.force, taui = bi.torque, vj = bj.velocity, wj = bj.angularVelocity, fj = bj.force, tauj = bj.torque, penetrationVec = ContactEquation_computeB_temp3, GA = this.jacobianElementA, GB = this.jacobianElementB, n = this.ni;
             // Caluclate cross products
-            ri.cross(n, rixn);
-            rj.cross(n, rjxn);
+            ri.crossTo(n, rixn);
+            rj.crossTo(n, rjxn);
             // g = xj+rj -(xi+ri)
             // G = [ -ni  -rixn  ni  rjxn ]
             n.negateTo(GA.spatial);
@@ -7705,8 +7709,8 @@ var CANNON;
         FrictionEquation.prototype.computeB = function (h) {
             var a = this.a, b = this.b, bi = this.bi, bj = this.bj, ri = this.ri, rj = this.rj, rixt = FrictionEquation_computeB_temp1, rjxt = FrictionEquation_computeB_temp2, t = this.t;
             // Caluclate cross products
-            ri.cross(t, rixt);
-            rj.cross(t, rjxt);
+            ri.crossTo(t, rixt);
+            rj.crossTo(t, rjxt);
             // G = [-t -rixt t rjxt]
             // And remember, this is a pure velocity constraint, g is always zero!
             var GA = this.jacobianElementA, GB = this.jacobianElementB;
@@ -7749,8 +7753,8 @@ var CANNON;
         RotationalEquation.prototype.computeB = function (h) {
             var a = this.a, b = this.b, ni = this.axisA, nj = this.axisB, nixnj = tmpVec1, njxni = tmpVec2, GA = this.jacobianElementA, GB = this.jacobianElementB;
             // Caluclate cross products
-            ni.cross(nj, nixnj);
-            nj.cross(ni, njxni);
+            ni.crossTo(nj, nixnj);
+            nj.crossTo(ni, njxni);
             // g = ni * nj
             // gdot = (nj x ni) * wi + (ni x nj) * wj
             // G = [0 njxni 0 nixnj]
@@ -9268,7 +9272,7 @@ var CANNON;
             // Contact normal
             r.ni.copy(CANNON.World.worldNormal);
             qj.vmult(r.ni, r.ni);
-            r.ni.negate(r.ni); // body i is the sphere, flip normal
+            r.ni.negateTo(r.ni); // body i is the sphere, flip normal
             r.ni.normalize(); // Needed?
             // Vector from sphere center to contact point
             r.ni.mult(si.radius, r.ri);
@@ -9353,7 +9357,7 @@ var CANNON;
                 var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
                 side_ns.scaleNumberTo(-R, r.ri); // Sphere r
                 r.ni.copy(side_ns);
-                r.ni.negate(r.ni); // Normal should be out of sphere
+                r.ni.negateTo(r.ni); // Normal should be out of sphere
                 side_ns.scaleNumberTo(side_h, side_ns);
                 side_ns1.scaleNumberTo(side_dot1, side_ns1);
                 side_ns.addTo(side_ns1, side_ns);
@@ -9430,7 +9434,7 @@ var CANNON;
                 for (var k = 0; k !== Nsides && !found; k++) {
                     if (j % 3 !== k % 3) {
                         // Get edge tangent
-                        sides[k].cross(sides[j], edgeTangent);
+                        sides[k].crossTo(sides[j], edgeTangent);
                         edgeTangent.normalize();
                         sides[j].addTo(sides[k], edgeCenter);
                         r.copy(xi);
@@ -9721,7 +9725,7 @@ var CANNON;
                     }
                     var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj), ri = r.ri, rj = r.rj;
                     sepAxis.negateTo(r.ni);
-                    res[j].normal.negate(q);
+                    res[j].normal.negateTo(q);
                     q.scaleNumberTo(res[j].depth, q);
                     res[j].point.vadd(q, ri);
                     rj.copy(res[j].point);
@@ -9794,8 +9798,8 @@ var CANNON;
         //                 ri = r.ri,
         //                 rj = r.rj;
         //             r.ni.copy(triangleNormal);
-        //             r.ni.negate(r.ni);
-        //             res[j].normal.negate(q);
+        //             r.ni.negateTo(r.ni);
+        //             res[j].normal.negateTo(q);
         //             q.mult(res[j].depth, q);
         //             res[j].point.vadd(q, ri);
         //             rj.copy(res[j].point);
@@ -9824,7 +9828,7 @@ var CANNON;
                 }
                 var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
                 r.ni.copy(normal); // Contact normal is the plane normal
-                r.ni.negate(r.ni);
+                r.ni.negateTo(r.ni);
                 r.ri.set(0, 0, 0); // Center of particle
                 // Get particle position projected on plane
                 var projected = particlePlane_projected;
@@ -9852,7 +9856,7 @@ var CANNON;
                 r.rj.copy(normal);
                 r.rj.mult(sj.radius, r.rj);
                 r.ni.copy(normal); // Contact normal
-                r.ni.negate(r.ni);
+                r.ni.negateTo(r.ni);
                 r.ri.set(0, 0, 0); // Center of particle
                 this.result.push(r);
                 this.createFrictionEquationsFromContact(r, this.frictionResult);
@@ -10131,7 +10135,7 @@ var CANNON;
             // Get cross product between polygon normal and the edge
             var edge_x_normal = pointInPolygon_edge_x_normal;
             //var edge_x_normal = new Vec3();
-            edge.cross(normal, edge_x_normal);
+            edge.crossTo(normal, edge_x_normal);
             // Get vector between point and current vertex
             var vertex_to_p = pointInPolygon_vtp;
             p.vsub(v, vertex_to_p);

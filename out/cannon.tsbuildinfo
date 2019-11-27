@@ -2,6 +2,7 @@
   "bundle": {
     "commonSourceDirectory": "..",
     "sourceFiles": [
+      "../src/Feng3d.ts",
       "../src/math/Vec3.ts",
       "../src/math/Mat3.ts",
       "../src/math/Quaternion.ts",
@@ -68,7 +69,7 @@
         },
         {
           "pos": 599,
-          "end": 449692,
+          "end": 449871,
           "kind": "text"
         }
       ],
@@ -82,7 +83,7 @@
       "sections": [
         {
           "pos": 0,
-          "end": 118301,
+          "end": 118375,
           "kind": "text"
         }
       ]

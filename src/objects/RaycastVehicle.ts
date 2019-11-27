@@ -401,7 +401,7 @@ namespace CANNON
 
             wheel.directionLocal.scaleNumberTo(-1, up);
             right.copy(wheel.axleLocal);
-            up.cross(right, fwd);
+            up.crossTo(right, fwd);
             fwd.normalize();
             right.normalize();
 
@@ -492,7 +492,7 @@ namespace CANNON
                     axlei.vsub(surfNormalWS_scaled_proj, axlei);
                     axlei.normalize();
 
-                    surfNormalWS.cross(axlei, forwardWS[i]);
+                    surfNormalWS.crossTo(axlei, forwardWS[i]);
                     forwardWS[i].normalize();
 
                     wheel.sideImpulse = resolveSingleBilateral(
@@ -708,9 +708,9 @@ namespace CANNON
         var m = computeImpulseDenominator_m;
 
         pos.subTo(body.position, r0);
-        r0.cross(normal, c0);
+        r0.crossTo(normal, c0);
         body.invInertiaWorld.vmult(c0, m);
-        m.cross(r0, vec);
+        m.crossTo(r0, vec);
 
         return body.invMass + normal.dot(vec);
     }

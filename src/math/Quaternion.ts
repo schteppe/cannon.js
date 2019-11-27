@@ -124,7 +124,7 @@ namespace CANNON
                 this.setFromAxisAngle(t1, Math.PI);
             } else
             {
-                var a = u.cross(v);
+                var a = u.crossTo(v);
                 this.x = a.x;
                 this.y = a.y;
                 this.z = a.z;

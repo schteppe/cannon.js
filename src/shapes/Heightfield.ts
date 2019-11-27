@@ -282,7 +282,7 @@ namespace CANNON
             this.getTriangleAt(x, y, edgeClamp, a, b, c);
             b.subTo(a, e0);
             c.subTo(a, e1);
-            e0.cross(e1, result);
+            e0.crossTo(e1, result);
             result.normalize();
         }
 

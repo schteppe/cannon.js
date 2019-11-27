@@ -67,8 +67,8 @@ namespace CANNON
                 n = this.ni;
 
             // Caluclate cross products
-            ri.cross(n, rixn);
-            rj.cross(n, rjxn);
+            ri.crossTo(n, rixn);
+            rj.crossTo(n, rjxn);
 
             // g = xj+rj -(xi+ri)
             // G = [ -ni  -rixn  ni  rjxn ]
