@@ -504,11 +504,8 @@ namespace CANNON
          *
          * @see http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
          */
-        step(dt: number, timeSinceLastCalled: number, maxSubSteps: number)
+        step(dt: number, timeSinceLastCalled = 0, maxSubSteps = 10)
         {
-            maxSubSteps = maxSubSteps || 10;
-            timeSinceLastCalled = timeSinceLastCalled || 0;
-
             if (timeSinceLastCalled === 0)
             { // Fixed, simple stepping
 

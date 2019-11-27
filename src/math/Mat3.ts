@@ -240,7 +240,7 @@ namespace CANNON
          * @param column
          * @param value Optional. If provided, the matrix element will be set to this value.
          */
-        e(row: number, column: number, value: number)
+        e(row: number, column: number, value?: number)
         {
             if (value === undefined)
             {

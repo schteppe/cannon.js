@@ -326,7 +326,7 @@ namespace CANNON
             return this.convexParticle(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         }
 
-        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean)
         {
             if (justTest)
             {
@@ -1604,9 +1604,9 @@ namespace CANNON
             hfQuat: Quaternion,
             sphereBody: Body,
             hfBody: Body,
-            rsi: Shape,
-            rsj: Shape,
-            justTest: boolean
+            rsi?: Shape,
+            rsj?: Shape,
+            justTest?: boolean
         )
         {
             var data = hfShape.data,

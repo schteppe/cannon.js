@@ -115,7 +115,7 @@ namespace CANNON
          * @param body
          * @param result Deprecated - set the result property of the Ray instead.
          */
-        private intersectBody(body: Body, result?: RaycastResult)
+        intersectBody(body: Body, result?: RaycastResult)
         {
             if (result)
             {

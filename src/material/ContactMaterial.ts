@@ -51,7 +51,7 @@ namespace CANNON
          * @param m2 
          * @param options 
          */
-        constructor(m1: Material, m2: Material, options: {
+        constructor(m1?: Material, m2?: Material, options: {
             friction?: number, restitution?: number,
             contactEquationStiffness?: number,
             contactEquationRelaxation?: number,

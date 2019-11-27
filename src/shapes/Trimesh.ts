@@ -506,14 +506,8 @@ namespace CANNON
          * 
          * @return A torus
          */
-        static createTorus(radius: number, tube: number, radialSegments: number, tubularSegments: number, arc: number)
+        static createTorus(radius = 1, tube = 0.5, radialSegments = 8, tubularSegments = 6, arc = Math.PI * 2)
         {
-            radius = radius || 1;
-            tube = tube || 0.5;
-            radialSegments = radialSegments || 8;
-            tubularSegments = tubularSegments || 6;
-            arc = arc || Math.PI * 2;
-
             var vertices: number[] = [];
             var indices: number[] = [];
 

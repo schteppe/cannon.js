@@ -221,7 +221,7 @@ namespace CANNON
          * @param result Two-element array
          * @param clamp If the position should be clamped to the heightfield edge.
          */
-        getIndexOfPosition(x: number, y: number, result: any[], clamp: boolean)
+        getIndexOfPosition(x: number, y: number, result: any[], clamp?: boolean)
         {
             // Get the index of the data points to test against
             var w = this.elementSize;
@@ -317,7 +317,7 @@ namespace CANNON
          * @param y
          * @param edgeClamp
          */
-        getHeightAt(x: number, y: number, edgeClamp: boolean)
+        getHeightAt(x: number, y: number, edgeClamp?: boolean)
         {
             var data = this.data;
             var a = getHeightAt_a;

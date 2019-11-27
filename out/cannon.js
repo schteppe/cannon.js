@@ -964,7 +964,7 @@ var CANNON;
          * @param order Three-character string e.g. "YZX", which also is default.
          */
         Quaternion.prototype.toEuler = function (target, order) {
-            order = order || "YZX";
+            if (order === void 0) { order = "YZX"; }
             var heading, attitude, bank;
             var x = this.x, y = this.y, z = this.z, w = this.w;
             switch (order) {
@@ -1004,7 +1004,7 @@ var CANNON;
          * @param order The order to apply angles: 'XYZ' or 'YXZ' or any other combination
          */
         Quaternion.prototype.setFromEuler = function (x, y, z, order) {
-            order = order || "XYZ";
+            if (order === void 0) { order = "XYZ"; }
             var c1 = Math.cos(x / 2);
             var c2 = Math.cos(y / 2);
             var c3 = Math.cos(z / 2);
@@ -4195,11 +4195,11 @@ var CANNON;
          * @return A torus
          */
         Trimesh.createTorus = function (radius, tube, radialSegments, tubularSegments, arc) {
-            radius = radius || 1;
-            tube = tube || 0.5;
-            radialSegments = radialSegments || 8;
-            tubularSegments = tubularSegments || 6;
-            arc = arc || Math.PI * 2;
+            if (radius === void 0) { radius = 1; }
+            if (tube === void 0) { tube = 0.5; }
+            if (radialSegments === void 0) { radialSegments = 8; }
+            if (tubularSegments === void 0) { tubularSegments = 6; }
+            if (arc === void 0) { arc = Math.PI * 2; }
             var vertices = [];
             var indices = [];
             for (var j = 0; j <= radialSegments; j++) {
@@ -6062,7 +6062,7 @@ var CANNON;
          * @param result
          */
         Body.prototype.pointToLocalFrame = function (worldPoint, result) {
-            var result = result || new CANNON.Vec3();
+            if (result === void 0) { result = new CANNON.Vec3(); }
             worldPoint.vsub(this.position, result);
             this.quaternion.conjugate().vmult(result, result);
             return result;
@@ -7478,9 +7478,11 @@ var CANNON;
          * @param {Number} maxForce Maximum (read: positive max) force to be applied by the constraint.
          */
         function Equation(bi, bj, minForce, maxForce) {
+            if (minForce === void 0) { minForce = -1e6; }
+            if (maxForce === void 0) { maxForce = 1e6; }
             this.id = Equation.id++;
-            this.minForce = typeof (minForce) === "undefined" ? -1e6 : minForce;
-            this.maxForce = typeof (maxForce) === "undefined" ? 1e6 : maxForce;
+            this.minForce = minForce;
+            this.maxForce = maxForce;
             this.bi = bi;
             this.bj = bj;
             this.a = 0.0;
@@ -8519,8 +8521,8 @@ var CANNON;
          * @see http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
          */
         World.prototype.step = function (dt, timeSinceLastCalled, maxSubSteps) {
-            maxSubSteps = maxSubSteps || 10;
-            timeSinceLastCalled = timeSinceLastCalled || 0;
+            if (timeSinceLastCalled === void 0) { timeSinceLastCalled = 0; }
+            if (maxSubSteps === void 0) { maxSubSteps = 10; }
             if (timeSinceLastCalled === 0) { // Fixed, simple stepping
                 this.internalStep(dt);
                 // Increment time

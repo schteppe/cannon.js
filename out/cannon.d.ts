@@ -241,7 +241,7 @@ declare namespace CANNON {
          * @param column
          * @param value Optional. If provided, the matrix element will be set to this value.
          */
-        e(row: number, column: number, value: number): number;
+        e(row: number, column: number, value?: number): number;
         /**
          * Copy another matrix into this matrix object.
          * @param source
@@ -373,7 +373,7 @@ declare namespace CANNON {
          * @param target
          * @param order Three-character string e.g. "YZX", which also is default.
          */
-        toEuler(target: Vec3, order: string): void;
+        toEuler(target: Vec3, order?: string): void;
         /**
          * See http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
          * @param x
@@ -381,7 +381,7 @@ declare namespace CANNON {
          * @param z
          * @param order The order to apply angles: 'XYZ' or 'YXZ' or any other combination
          */
-        setFromEuler(x: number, y: number, z: number, order: string): this;
+        setFromEuler(x: number, y: number, z: number, order?: string): this;
         clone(): Quaternion;
         /**
          * Performs a spherical linear interpolation between two quat
@@ -1176,7 +1176,7 @@ declare namespace CANNON {
          * @param result Two-element array
          * @param clamp If the position should be clamped to the heightfield edge.
          */
-        getIndexOfPosition(x: number, y: number, result: any[], clamp: boolean): boolean;
+        getIndexOfPosition(x: number, y: number, result: any[], clamp?: boolean): boolean;
         getTriangleAt(x: number, y: number, edgeClamp: boolean, a: Vec3, b: Vec3, c: Vec3): boolean;
         getNormalAt(x: number, y: number, edgeClamp: boolean, result: Vec3): void;
         /**
@@ -1194,7 +1194,7 @@ declare namespace CANNON {
          * @param y
          * @param edgeClamp
          */
-        getHeightAt(x: number, y: number, edgeClamp: boolean): number;
+        getHeightAt(x: number, y: number, edgeClamp?: boolean): number;
         getCacheConvexTrianglePillarKey(xi: number, yi: number, getUpperTriangle: boolean): string;
         getCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean): any;
         setCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean, convex: ConvexPolyhedron, offset: Vec3): void;
@@ -1525,7 +1525,7 @@ declare namespace CANNON {
          *
          * @return A torus
          */
-        static createTorus(radius: number, tube: number, radialSegments: number, tubularSegments: number, arc: number): Trimesh;
+        static createTorus(radius?: number, tube?: number, radialSegments?: number, tubularSegments?: number, arc?: number): Trimesh;
     }
 }
 declare namespace CANNON {
@@ -1989,7 +1989,7 @@ declare namespace CANNON {
          * @param body
          * @param result Deprecated - set the result property of the Ray instead.
          */
-        private intersectBody;
+        intersectBody(body: Body, result?: RaycastResult): void;
         /**
          * @param bodies An array of Body objects.
          * @param result Deprecated
@@ -2105,7 +2105,7 @@ declare namespace CANNON {
          * @param m2
          * @param options
          */
-        constructor(m1: Material, m2: Material, options?: {
+        constructor(m1?: Material, m2?: Material, options?: {
             friction?: number;
             restitution?: number;
             contactEquationStiffness?: number;
@@ -2342,7 +2342,7 @@ declare namespace CANNON {
          * @param worldPoint
          * @param result
          */
-        pointToLocalFrame(worldPoint: Vec3, result: Vec3): Vec3;
+        pointToLocalFrame(worldPoint: Vec3, result?: Vec3): Vec3;
         /**
          * Convert a world vector to local body frame.
          *
@@ -2863,7 +2863,7 @@ declare namespace CANNON {
          * @param {Number} minForce Minimum (read: negative max) force to be applied by the constraint.
          * @param {Number} maxForce Maximum (read: positive max) force to be applied by the constraint.
          */
-        constructor(bi: Body, bj: Body, minForce: number, maxForce: number);
+        constructor(bi: Body, bj: Body, minForce?: number, maxForce?: number);
         static id: number;
         /**
          * Recalculates a,b,eps.
@@ -3368,7 +3368,7 @@ declare namespace CANNON {
          *
          * @see http://bulletphysics.org/mediawiki-1.5.8/index.php/Stepping_The_World
          */
-        step(dt: number, timeSinceLastCalled: number, maxSubSteps: number): void;
+        step(dt: number, timeSinceLastCalled?: number, maxSubSteps?: number): void;
         internalStep(dt: number): void;
         emitContactEvents: () => void;
         /**
@@ -3429,7 +3429,7 @@ declare namespace CANNON {
         boxBox(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
         boxConvex(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
         boxParticle(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
         /**
          * @method planeTrimesh
          * @param  {Shape}      si
@@ -3466,7 +3466,7 @@ declare namespace CANNON {
         convexParticle(sj: any, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
         boxHeightfield(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
         convexHeightfield(convexShape: Shape, hfShape: any, convexPos: Vec3, hfPos: Vec3, convexQuat: Quaternion, hfQuat: Quaternion, convexBody: Body, hfBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereHeightfield(sphereShape: Shape, hfShape: any, spherePos: Vec3, hfPos: Vec3, sphereQuat: Quaternion, hfQuat: Quaternion, sphereBody: Body, hfBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereHeightfield(sphereShape: Shape, hfShape: any, spherePos: Vec3, hfPos: Vec3, sphereQuat: Quaternion, hfQuat: Quaternion, sphereBody: Body, hfBody: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
     }
 }
 //# sourceMappingURL=cannon.d.ts.map

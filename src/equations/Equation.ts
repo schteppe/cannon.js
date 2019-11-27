@@ -44,12 +44,12 @@ namespace CANNON
          * @param {Number} minForce Minimum (read: negative max) force to be applied by the constraint.
          * @param {Number} maxForce Maximum (read: positive max) force to be applied by the constraint.
          */
-        constructor(bi: Body, bj: Body, minForce: number, maxForce: number)
+        constructor(bi: Body, bj: Body, minForce = -1e6, maxForce = 1e6)
         {
             this.id = Equation.id++;
 
-            this.minForce = typeof (minForce) === "undefined" ? -1e6 : minForce;
-            this.maxForce = typeof (maxForce) === "undefined" ? 1e6 : maxForce;
+            this.minForce = minForce;
+            this.maxForce = maxForce;
             this.bi = bi;
             this.bj = bj;
             this.a = 0.0;

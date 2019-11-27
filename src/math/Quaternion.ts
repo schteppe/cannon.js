@@ -279,10 +279,8 @@ namespace CANNON
          * @param target
          * @param order Three-character string e.g. "YZX", which also is default.
          */
-        toEuler(target: Vec3, order: string)
+        toEuler(target: Vec3, order = "YZX")
         {
-            order = order || "YZX";
-
             var heading, attitude, bank;
             var x = this.x, y = this.y, z = this.z, w = this.w;
 
@@ -328,10 +326,8 @@ namespace CANNON
          * @param z
          * @param order The order to apply angles: 'XYZ' or 'YXZ' or any other combination
          */
-        setFromEuler(x: number, y: number, z: number, order: string)
+        setFromEuler(x: number, y: number, z: number, order = "XYZ")
         {
-            order = order || "XYZ";
-
             var c1 = Math.cos(x / 2);
             var c2 = Math.cos(y / 2);
             var c3 = Math.cos(z / 2);
