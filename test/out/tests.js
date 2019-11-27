@@ -1708,7 +1708,7 @@ var CANNON;
             test.expect(3);
             var v = new CANNON.Vec3(1, 2, 3);
             var u = new CANNON.Vec3(4, 5, 6);
-            v = v.vadd(u);
+            v = v.addTo(u);
             test.equal(v.x, 5, "Adding a vector (x)");
             test.equal(v.y, 7, "Adding a vector (y)");
             test.equal(v.z, 9, "Adding a vector (z)");

@@ -117,7 +117,7 @@ namespace CANNON
 
         updateBoundingSphereRadius()
         {
-            this.boundingSphereRadius = this.halfExtents.norm();
+            this.boundingSphereRadius = this.halfExtents.length();
         }
 
         forEachWorldCorner(pos: Vec3, quat: Quaternion, callback: Function)
@@ -135,7 +135,7 @@ namespace CANNON
             {
                 worldCornerTempPos.set(corners[i][0], corners[i][1], corners[i][2]);
                 quat.vmult(worldCornerTempPos, worldCornerTempPos);
-                pos.vadd(worldCornerTempPos, worldCornerTempPos);
+                pos.addTo(worldCornerTempPos, worldCornerTempPos);
                 callback(worldCornerTempPos.x,
                     worldCornerTempPos.y,
                     worldCornerTempPos.z);
@@ -156,14 +156,14 @@ namespace CANNON
 
             var wc = worldCornersTemp[0];
             quat.vmult(wc, wc);
-            pos.vadd(wc, wc);
+            pos.addTo(wc, wc);
             max.copy(wc);
             min.copy(wc);
             for (var i = 1; i < 8; i++)
             {
                 var wc = worldCornersTemp[i];
                 quat.vmult(wc, wc);
-                pos.vadd(wc, wc);
+                pos.addTo(wc, wc);
                 var x = wc.x;
                 var y = wc.y;
                 var z = wc.z;

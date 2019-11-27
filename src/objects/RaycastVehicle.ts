@@ -145,7 +145,7 @@ namespace CANNON
                 this.updateWheelTransform(i);
             }
 
-            this.currentVehicleSpeedKmHour = 3.6 * chassisBody.velocity.norm();
+            this.currentVehicleSpeedKmHour = 3.6 * chassisBody.velocity.length();
 
             var forwardWorld = new Vec3();
             this.getVehicleAxisWorld(this.indexForwardAxis, forwardWorld);
@@ -176,7 +176,7 @@ namespace CANNON
                 }
                 wheel.raycastResult.hitNormalWorld.scale(suspensionForce * timeStep, impulse);
 
-                wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, relpos);
+                wheel.raycastResult.hitPointWorld.subTo(chassisBody.position, relpos);
                 chassisBody.applyImpulse(impulse, relpos);
             }
 
@@ -208,7 +208,7 @@ namespace CANNON
                     var proj = fwd.dot(wheel.raycastResult.hitNormalWorld);
                     wheel.raycastResult.hitNormalWorld.scale(proj, hitNormalWorldScaledWithProj);
 
-                    fwd.vsub(hitNormalWorldScaledWithProj, fwd);
+                    fwd.subTo(hitNormalWorldScaledWithProj, fwd);
 
                     var proj2 = fwd.dot(vel);
                     wheel.deltaRotation = m * proj2 * timeStep / wheel.radius;
@@ -304,7 +304,7 @@ namespace CANNON
 
             wheel.directionWorld.scale(raylen, rayvector);
             var source = wheel.chassisConnectionPointWorld;
-            source.vadd(rayvector, target);
+            source.addTo(rayvector, target);
             var raycastResult = wheel.raycastResult;
 
             var param = 0;
@@ -424,7 +424,7 @@ namespace CANNON
             var p = wheel.worldTransform.position;
             p.copy(wheel.directionWorld);
             p.scale(wheel.suspensionLength, p);
-            p.vadd(wheel.chassisConnectionPointWorld, p);
+            p.addTo(wheel.chassisConnectionPointWorld, p);
         }
 
         /**
@@ -591,7 +591,7 @@ namespace CANNON
                 var wheel = wheelInfos[i];
 
                 var rel_pos = new Vec3();
-                wheel.raycastResult.hitPointWorld.vsub(chassisBody.position, rel_pos);
+                wheel.raycastResult.hitPointWorld.subTo(chassisBody.position, rel_pos);
                 // cannons applyimpulse is using world coord for the position
                 //rel_pos.copy(wheel.raycastResult.hitPointWorld);
 
@@ -607,7 +607,7 @@ namespace CANNON
                     var groundObject = wheel.raycastResult.body;
 
                     var rel_pos2 = new Vec3();
-                    wheel.raycastResult.hitPointWorld.vsub(groundObject.position, rel_pos2);
+                    wheel.raycastResult.hitPointWorld.subTo(groundObject.position, rel_pos2);
                     //rel_pos2.copy(wheel.raycastResult.hitPointWorld);
                     var sideImp = new Vec3();
                     axle[i].scale(wheel.sideImpulse, sideImp);
@@ -672,7 +672,7 @@ namespace CANNON
 
         body0.getVelocityAtWorldPoint(contactPosWorld, vel1);
         body1.getVelocityAtWorldPoint(contactPosWorld, vel2);
-        vel1.vsub(vel2, vel);
+        vel1.subTo(vel2, vel);
 
         var vrel = frictionDirectionWorld.dot(vel);
 
@@ -707,7 +707,7 @@ namespace CANNON
         var vec = computeImpulseDenominator_vec;
         var m = computeImpulseDenominator_m;
 
-        pos.vsub(body.position, r0);
+        pos.subTo(body.position, r0);
         r0.cross(normal, c0);
         body.invInertiaWorld.vmult(c0, m);
         m.cross(r0, vec);
@@ -739,7 +739,7 @@ namespace CANNON
         body1.getVelocityAtWorldPoint(pos1, vel1);
         body2.getVelocityAtWorldPoint(pos2, vel2);
 
-        vel1.vsub(vel2, vel);
+        vel1.subTo(vel2, vel);
 
         var rel_vel = normal.dot(vel);
 

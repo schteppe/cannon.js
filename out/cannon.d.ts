@@ -43,13 +43,13 @@ declare namespace CANNON {
          * @param v
          * @param target
          */
-        vadd(v: Vec3, target?: Vec3): Vec3;
+        addTo(v: Vec3, target?: Vec3): Vec3;
         /**
          * Vector subtraction
          * @param v
          * @param target Target to save in.
          */
-        vsub(v: Vec3, target?: Vec3): Vec3;
+        subTo(v: Vec3, target?: Vec3): Vec3;
         /**
          * Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
          * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
@@ -65,11 +65,6 @@ declare namespace CANNON {
          * @param target target to save in
          */
         unit(target?: Vec3): Vec3;
-        /**
-         * Get the length of the vector
-         * @deprecated Use .length() instead
-         */
-        norm(): number;
         /**
          * Get the length of the vector
          */

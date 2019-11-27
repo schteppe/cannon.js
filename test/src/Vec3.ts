@@ -65,7 +65,7 @@ namespace CANNON
 
             var v = new Vec3(1, 2, 3);
             var u = new Vec3(4, 5, 6);
-            v = v.vadd(u);
+            v = v.addTo(u);
 
             test.equal(v.x, 5, "Adding a vector (x)");
             test.equal(v.y, 7, "Adding a vector (y)");

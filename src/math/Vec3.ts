@@ -78,7 +78,7 @@ namespace CANNON
          * @param v 
          * @param target 
          */
-        vadd(v: Vec3, target: Vec3 = null)
+        addTo(v: Vec3, target: Vec3 = null)
         {
             if (target)
             {
@@ -98,7 +98,7 @@ namespace CANNON
          * @param v 
          * @param target Target to save in.
          */
-        vsub(v: Vec3, target: Vec3 = null)
+        subTo(v: Vec3, target: Vec3 = null)
         {
             if (target)
             {
@@ -170,16 +170,6 @@ namespace CANNON
                 target.z = 0;
             }
             return target;
-        }
-
-        /**
-         * Get the length of the vector
-         * @deprecated Use .length() instead
-         */
-        norm()
-        {
-            var x = this.x, y = this.y, z = this.z;
-            return Math.sqrt(x * x + y * y + z * z);
         }
 
         /**
@@ -321,7 +311,7 @@ namespace CANNON
 
         tangents(t1: Vec3, t2: Vec3)
         {
-            var norm = this.norm();
+            var norm = this.length();
             if (norm > 0.0)
             {
                 var n = Vec3_tangents_n;

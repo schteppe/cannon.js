@@ -440,7 +440,7 @@ namespace CANNON
          */
         pointToLocalFrame(worldPoint: Vec3, result = new Vec3())
         {
-            worldPoint.vsub(this.position, result);
+            worldPoint.subTo(this.position, result);
             this.quaternion.conjugate().vmult(result, result);
             return result;
         }
@@ -466,7 +466,7 @@ namespace CANNON
         pointToWorldFrame(localPoint: Vec3, result = new Vec3())
         {
             this.quaternion.vmult(localPoint, result);
-            result.vadd(this.position, result);
+            result.addTo(this.position, result);
             return result;
         }
 
@@ -531,7 +531,7 @@ namespace CANNON
             {
                 var shape = shapes[i];
                 shape.updateBoundingSphereRadius();
-                var offset = shapeOffsets[i].norm(),
+                var offset = shapeOffsets[i].length(),
                     r = shape.boundingSphereRadius;
                 if (offset + r > radius)
                 {
@@ -566,7 +566,7 @@ namespace CANNON
 
                 // Get shape world position
                 bodyQuat.vmult(shapeOffsets[i], offset);
-                offset.vadd(this.position, offset);
+                offset.addTo(this.position, offset);
 
                 // Get shape world quaternion
                 shapeOrientations[i].mult(bodyQuat, orientation);
@@ -629,10 +629,10 @@ namespace CANNON
             relativePoint.cross(force, rotForce);
 
             // Add linear force
-            this.force.vadd(force, this.force);
+            this.force.addTo(force, this.force);
 
             // Add rotational force
-            this.torque.vadd(rotForce, this.torque);
+            this.torque.addTo(rotForce, this.torque);
         }
 
         /**
@@ -680,7 +680,7 @@ namespace CANNON
             velo.mult(this.invMass, velo);
 
             // Add linear impulse
-            this.velocity.vadd(velo, this.velocity);
+            this.velocity.addTo(velo, this.velocity);
 
             // Compute produced rotational impulse velocity
             var rotVelo = Body_applyImpulse_rotVelo;
@@ -694,7 +694,7 @@ namespace CANNON
             this.invInertiaWorld.vmult(rotVelo, rotVelo);
 
             // Add rotational Impulse
-            this.angularVelocity.vadd(rotVelo, this.angularVelocity);
+            this.angularVelocity.addTo(rotVelo, this.angularVelocity);
         }
 
         /**
@@ -760,7 +760,7 @@ namespace CANNON
             var r = new Vec3();
             worldPoint.vsub(this.position, r);
             this.angularVelocity.cross(r, result);
-            this.velocity.vadd(result, result);
+            this.velocity.addTo(result, result);
             return result;
         }
 

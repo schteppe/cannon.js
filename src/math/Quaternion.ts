@@ -128,7 +128,7 @@ namespace CANNON
                 this.x = a.x;
                 this.y = a.y;
                 this.z = a.z;
-                this.w = Math.sqrt(Math.pow(u.norm(), 2) * Math.pow(v.norm(), 2)) + u.dot(v);
+                this.w = Math.sqrt(Math.pow(u.length(), 2) * Math.pow(v.length(), 2)) + u.dot(v);
                 this.normalize();
             }
             return this;

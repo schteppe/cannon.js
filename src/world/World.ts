@@ -558,7 +558,7 @@ namespace CANNON
                 profilingStart,
                 constraints = this.constraints,
                 frictionEquationPool = World_step_frictionEquationPool,
-                gnorm = gravity.norm(),
+                gnorm = gravity.length(),
                 gx = gravity.x,
                 gy = gravity.y,
                 gz = gravity.z,

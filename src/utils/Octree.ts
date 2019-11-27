@@ -113,7 +113,7 @@ namespace CANNON
                 new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(0, 1, 0) }) })
             );
 
-            u.vsub(l, halfDiagonal);
+            u.subTo(l, halfDiagonal);
             halfDiagonal.scale(0.5, halfDiagonal);
 
             var root = this.root || this;
@@ -131,10 +131,10 @@ namespace CANNON
                 lowerBound.y *= halfDiagonal.y;
                 lowerBound.z *= halfDiagonal.z;
 
-                lowerBound.vadd(l, lowerBound);
+                lowerBound.addTo(l, lowerBound);
 
                 // Upper bound is always lower bound + halfDiagonal
-                lowerBound.vadd(halfDiagonal, child.aabb.upperBound);
+                lowerBound.addTo(halfDiagonal, child.aabb.upperBound);
             }
         }
 

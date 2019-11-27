@@ -182,7 +182,7 @@ namespace CANNON
             if (this.isInContact)
             {
                 var project = raycastResult.hitNormalWorld.dot(raycastResult.directionWorld);
-                raycastResult.hitPointWorld.vsub(chassis.position, relpos);
+                raycastResult.hitPointWorld.subTo(chassis.position, relpos);
                 chassis.getVelocityAtWorldPoint(relpos, chassis_velocity_at_contactPoint);
                 var projVel = raycastResult.hitNormalWorld.dot(chassis_velocity_at_contactPoint);
                 if (project >= -0.1)

@@ -240,7 +240,7 @@ namespace CANNON
             var vb = getEdgeVector_vb;
             this.getEdgeVertex(edgeIndex, 0, va);
             this.getEdgeVertex(edgeIndex, 1, vb);
-            vb.vsub(va, vectorStore);
+            vb.subTo(va, vectorStore);
         }
 
         /**
@@ -253,8 +253,8 @@ namespace CANNON
          */
         static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3)
         {
-            vb.vsub(va, ab);
-            vc.vsub(vb, cb);
+            vb.subTo(va, ab);
+            vc.subTo(vb, cb);
             cb.cross(ab, target);
             if (!target.isZero())
             {

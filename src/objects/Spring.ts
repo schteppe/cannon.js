@@ -142,36 +142,36 @@ namespace CANNON
             this.getWorldAnchorB(worldAnchorB);
 
             // Get offset points
-            worldAnchorA.vsub(bodyA.position, ri);
-            worldAnchorB.vsub(bodyB.position, rj);
+            worldAnchorA.subTo(bodyA.position, ri);
+            worldAnchorB.subTo(bodyB.position, rj);
 
             // Compute distance vector between world anchor points
-            worldAnchorB.vsub(worldAnchorA, r);
-            var rlen = r.norm();
+            worldAnchorB.subTo(worldAnchorA, r);
+            var rlen = r.length();
             r_unit.copy(r);
             r_unit.normalize();
 
             // Compute relative velocity of the anchor points, u
-            bodyB.velocity.vsub(bodyA.velocity, u);
+            bodyB.velocity.subTo(bodyA.velocity, u);
             // Add rotational velocity
 
             bodyB.angularVelocity.cross(rj, tmp);
-            u.vadd(tmp, u);
+            u.addTo(tmp, u);
             bodyA.angularVelocity.cross(ri, tmp);
-            u.vsub(tmp, u);
+            u.subTo(tmp, u);
 
             // F = - k * ( x - L ) - D * ( u )
             r_unit.mult(-k * (rlen - l) - d * u.dot(r_unit), f);
 
             // Add forces to bodies
-            bodyA.force.vsub(f, bodyA.force);
-            bodyB.force.vadd(f, bodyB.force);
+            bodyA.force.subTo(f, bodyA.force);
+            bodyB.force.addTo(f, bodyB.force);
 
             // Angular force
             ri.cross(f, ri_x_f);
             rj.cross(f, rj_x_f);
-            bodyA.torque.vsub(ri_x_f, bodyA.torque);
-            bodyB.torque.vadd(rj_x_f, bodyB.torque);
+            bodyA.torque.subTo(ri_x_f, bodyA.torque);
+            bodyB.torque.addTo(rj_x_f, bodyB.torque);
         }
 
     }
