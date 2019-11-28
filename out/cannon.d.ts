@@ -407,7 +407,7 @@ declare namespace CANNON {
     class Transform {
         position: Vec3;
         quaternion: Quaternion;
-        constructor(options?: any);
+        constructor(position?: Vec3, quaternion?: Quaternion);
         /**
          * @param position
          * @param quaternion
@@ -721,6 +721,7 @@ declare namespace CANNON {
          * Equations to be fed to the solver
          */
         equations: Equation[];
+        motorTargetVelocity: number;
         /**
          * Hinge constraint. Think of it as a door hinge. It tries to keep the door in the correct place and with the correct orientation.
          *
@@ -2510,7 +2511,7 @@ declare namespace CANNON {
         /**
          * Max travel distance of the suspension, in meters.
          */
-        maxSuspensionTravel: any;
+        maxSuspensionTravel: number;
         /**
          * Speed to apply to the wheel rotation when the wheel is sliding.
          */
@@ -2535,7 +2536,7 @@ declare namespace CANNON {
         suspensionStiffness: number;
         dampingCompression: number;
         dampingRelaxation: number;
-        frictionSlip: any;
+        frictionSlip: number;
         steering: number;
         /**
          * Rotation value, in radians.
@@ -2697,19 +2698,19 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class RigidVehicle {
-        wheelBodies: any[];
-        coordinateSystem: any;
-        chassisBody: any;
-        constraints: any[];
-        wheelAxes: any[];
-        wheelForces: any[];
+        wheelBodies: Body[];
+        coordinateSystem: Vec3;
+        chassisBody: Body;
+        constraints: HingeConstraint[];
+        wheelAxes: Vec3[];
+        wheelForces: number[];
         /**
          * Simple vehicle helper class with spherical rigid body wheels.
          *
          * @param options
          */
         constructor(options?: {
-            coordinateSystem?: any;
+            coordinateSystem?: Vec3;
             chassisBody?: Body;
         });
         /**
@@ -2776,12 +2777,12 @@ declare namespace CANNON {
          *
          * @param wheelIndex
          */
-        getWheelSpeed(wheelIndex: number): any;
+        getWheelSpeed(wheelIndex: number): number;
     }
 }
 declare namespace CANNON {
     class SPHSystem {
-        particles: any[];
+        particles: Body[];
         /**
          * Density of the system (kg/m3).
          */
@@ -2797,9 +2798,9 @@ declare namespace CANNON {
          */
         viscosity: number;
         eps: number;
-        pressures: any[];
-        densities: any[];
-        neighbors: any[];
+        pressures: number[];
+        densities: number[];
+        neighbors: Body[][];
         /**
          * Smoothed-particle hydrodynamics system
          */
@@ -2822,7 +2823,7 @@ declare namespace CANNON {
          * @param particle
          * @param neighbors
          */
-        getNeighbors(particle: Body, neighbors: any[]): void;
+        getNeighbors(particle: Body, neighbors: Body[]): void;
         update(): void;
         w(r: number): number;
         gradw(rVec: Vec3, resultVec: Vec3): void;

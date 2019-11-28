@@ -1125,16 +1125,11 @@ var CANNON;
 var CANNON;
 (function (CANNON) {
     var Transform = /** @class */ (function () {
-        function Transform(options) {
-            if (options === void 0) { options = {}; }
-            this.position = new CANNON.Vec3();
-            if (options.position) {
-                this.position.copy(options.position);
-            }
-            this.quaternion = new CANNON.Quaternion();
-            if (options.quaternion) {
-                this.quaternion.copy(options.quaternion);
-            }
+        function Transform(position, quaternion) {
+            if (position === void 0) { position = new CANNON.Vec3(); }
+            if (quaternion === void 0) { quaternion = new CANNON.Quaternion(); }
+            this.position = position;
+            this.quaternion = quaternion;
         }
         /**
          * @param position

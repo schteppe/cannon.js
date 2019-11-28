@@ -6,7 +6,7 @@ namespace CANNON
         /**
          * Max travel distance of the suspension, in meters.
          */
-        maxSuspensionTravel;
+        maxSuspensionTravel: number;
 
         /**
          * Speed to apply to the wheel rotation when the wheel is sliding.
@@ -47,7 +47,7 @@ namespace CANNON
 
         dampingRelaxation: number;
 
-        frictionSlip;
+        frictionSlip: number;
 
         steering: number;
 

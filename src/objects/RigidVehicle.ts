@@ -2,19 +2,19 @@ namespace CANNON
 {
     export class RigidVehicle
     {
-        wheelBodies: any[];
-        coordinateSystem: any;
-        chassisBody: any;
-        constraints: any[];
-        wheelAxes: any[];
-        wheelForces: any[];
+        wheelBodies: Body[];
+        coordinateSystem: Vec3;
+        chassisBody: Body;
+        constraints: HingeConstraint[];
+        wheelAxes: Vec3[];
+        wheelForces: number[];
 
         /**
          * Simple vehicle helper class with spherical rigid body wheels.
          * 
          * @param options 
          */
-        constructor(options: { coordinateSystem?: any, chassisBody?: Body } = {})
+        constructor(options: { coordinateSystem?: Vec3, chassisBody?: Body } = {})
         {
             this.wheelBodies = [];
 

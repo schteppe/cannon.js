@@ -2,7 +2,7 @@ namespace CANNON
 {
     export class SPHSystem
     {
-        particles: any[];
+        particles: Body[];
         /**
          * Density of the system (kg/m3).
          */
@@ -18,9 +18,9 @@ namespace CANNON
          */
         viscosity: number;
         eps: number;
-        pressures: any[];
-        densities: any[];
-        neighbors: any[];
+        pressures: number[];
+        densities: number[];
+        neighbors: Body[][];
 
         /**
          * Smoothed-particle hydrodynamics system
@@ -81,7 +81,7 @@ namespace CANNON
          * @param particle
          * @param neighbors
          */
-        getNeighbors(particle: Body, neighbors: any[])
+        getNeighbors(particle: Body, neighbors: Body[])
         {
             var N = this.particles.length,
                 id = particle.id,

@@ -6,18 +6,10 @@ namespace CANNON
         position: Vec3;
         quaternion: Quaternion;
 
-        constructor(options: any = {})
+        constructor(position = new Vec3(), quaternion = new Quaternion())
         {
-            this.position = new Vec3();
-            if (options.position)
-            {
-                this.position.copy(options.position);
-            }
-            this.quaternion = new Quaternion();
-            if (options.quaternion)
-            {
-                this.quaternion.copy(options.quaternion);
-            }
+            this.position = position;
+            this.quaternion = quaternion;
         }
 
         /**

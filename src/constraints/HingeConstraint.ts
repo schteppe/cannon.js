@@ -17,6 +17,7 @@ namespace CANNON
          * Equations to be fed to the solver
          */
         equations: Equation[];
+        motorTargetVelocity: number;
 
         /**
          * Hinge constraint. Think of it as a door hinge. It tries to keep the door in the correct place and with the correct orientation.
