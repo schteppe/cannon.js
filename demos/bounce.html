@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -44,7 +45,7 @@
             var shapeBody1 = new CANNON.Body({
                 mass: mass,
                 material: mat1,
-                position: new CANNON.Vec3(3*size, size, height)
+                position: new CANNON.Vector3(3*size, size, height)
             });
             shapeBody1.addShape(sphereShape);
             shapeBody1.linearDamping = damping;
@@ -55,7 +56,7 @@
             var shapeBody2 = new CANNON.Body({
                 mass: mass,
                 material: mat2,
-                position: new CANNON.Vec3(0 , size , height)
+                position: new CANNON.Vector3(0 , size , height)
             });
             shapeBody2.addShape(sphereShape);
             shapeBody2.linearDamping = damping;
@@ -66,7 +67,7 @@
             var shapeBody3 = new CANNON.Body({
                 mass: mass,
                 material: mat3,
-                position: new CANNON.Vec3(-3*size , size , height)
+                position: new CANNON.Vector3(-3*size , size , height)
             });
             shapeBody3.addShape(sphereShape);
             shapeBody3.linearDamping = damping;

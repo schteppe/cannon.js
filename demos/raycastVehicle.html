@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -39,7 +40,7 @@
             world.addContactMaterial(wheelGroundContactMaterial);
 
             var chassisShape;
-            chassisShape = new CANNON.Box(new CANNON.Vec3(2, 1,0.5));
+            chassisShape = new CANNON.Box(new CANNON.Vector3(2, 1,0.5));
             var chassisBody = new CANNON.Body({ mass: mass });
             chassisBody.addShape(chassisShape);
             chassisBody.position.set(0, 0, 4);
@@ -48,7 +49,7 @@
 
             var options = {
                 radius: 0.5,
-                directionLocal: new CANNON.Vec3(0, 0, -1),
+                directionLocal: new CANNON.Vector3(0, 0, -1),
                 suspensionStiffness: 30,
                 suspensionRestLength: 0.3,
                 frictionSlip: 5,
@@ -56,8 +57,8 @@
                 dampingCompression: 4.4,
                 maxSuspensionForce: 100000,
                 rollInfluence:  0.01,
-                axleLocal: new CANNON.Vec3(0, 1, 0),
-                chassisConnectionPointLocal: new CANNON.Vec3(1, 1, 0),
+                axleLocal: new CANNON.Vector3(0, 1, 0),
+                chassisConnectionPointLocal: new CANNON.Vector3(1, 1, 0),
                 maxSuspensionTravel: 0.3,
                 customSlidingRotationalSpeed: -30,
                 useCustomSlidingRotationalSpeed: true
@@ -92,8 +93,8 @@
                 wheelBody.type = CANNON.Body.KINEMATIC;
                 wheelBody.collisionFilterGroup = 0; // turn off collisions
                 var q = new CANNON.Quaternion();
-                q.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
-                wheelBody.addShape(cylinderShape, new CANNON.Vec3(), q);
+                q.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
+                wheelBody.addShape(cylinderShape, new CANNON.Vector3(), q);
                 wheelBodies.push(wheelBody);
                 demo.addVisual(wheelBody);
                 world.addBody(wheelBody);

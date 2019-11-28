@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -34,7 +35,7 @@
             demo.addVisual(groundBody);
 
             // Create a box with fixed rotation
-            var shape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+            var shape = new CANNON.Box(new CANNON.Vector3(size,size,size));
             var boxBody = new CANNON.Body({ mass: 1 });
             boxBody.addShape(shape);
             boxBody.position.set(0,0,size);
@@ -44,7 +45,7 @@
             demo.addVisual(boxBody);
 
             // Another one
-            var shape2 = new CANNON.Box(new CANNON.Vec3(size, size, size));
+            var shape2 = new CANNON.Box(new CANNON.Vector3(size, size, size));
             var boxBody2 = new CANNON.Body({ mass: 1, });
             boxBody2.addShape(shape2);
             boxBody2.position.set(size*3/2, 0, size*4);

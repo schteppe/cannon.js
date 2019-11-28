@@ -7,7 +7,8 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	</head>
 	<body>
-		<script src="../out/cannon.js"></script>
+		    <script src="../../feng3d/out/feng3d.js"></script>
+    <script src="../out/cannon.js"></script>
 		<script src="../build/cannon.demo.js"></script>
 		<script src="../libs/dat.gui.js"></script>
 		<script src="../libs/Three.js"></script>
@@ -47,7 +48,7 @@
 					for(var j=0; j<3; j++){
 						var body = new CANNON.Body({ mass: mass });
 
-						var he = new CANNON.Vec3(size * 3, size, size);
+						var he = new CANNON.Vector3(size * 3, size, size);
 						var dx = 0;
 						var dy = 1;
 						if(i % 2 === 0){

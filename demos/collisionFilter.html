@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -45,8 +46,8 @@
             var sphereShape = new CANNON.Sphere(size);
             var sphereBody = new CANNON.Body({
                 mass: mass,
-                position: new CANNON.Vec3(5,0,0),
-                velocity: new CANNON.Vec3(-5,0,0),
+                position: new CANNON.Vector3(5,0,0),
+                velocity: new CANNON.Vector3(-5,0,0),
                 collisionFilterGroup: GROUP1, // Put the sphere in group 1
                 collisionFilterMask: GROUP2 | GROUP3, // It can only collide with group 2 and 3
                 shape: sphereShape
@@ -55,7 +56,7 @@
             // Box
             var boxBody = new CANNON.Body({
                 mass: mass,
-                shape: new CANNON.Box(new CANNON.Vec3(size,size,size)),
+                shape: new CANNON.Box(new CANNON.Vector3(size,size,size)),
                 collisionFilterGroup: GROUP2, // Put the box in group 2
                 collisionFilterMask:  GROUP1 // It can only collide with group 1 (the sphere)
             });
@@ -65,7 +66,7 @@
             var cylinderBody = new CANNON.Body({
                 mass: mass,
                 shape: cylinderShape,
-                position: new CANNON.Vec3(-5,0,0),
+                position: new CANNON.Vector3(-5,0,0),
                 collisionFilterGroup: GROUP3, // Put the cylinder in group 3
                 collisionFilterMask:  GROUP1 // It can only collide with group 1 (the sphere)
             });

@@ -3,6 +3,7 @@
   <head>
     <title>Canvas interpolation example - Cannon.js</title>
     <meta charset="utf-8">
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
   </head>
   <body>
@@ -26,13 +27,13 @@
         ctx.lineWidth = 0.05;
 
         // Init world
-        world = new CANNON.World({ gravity:new CANNON.Vec3() });
+        world = new CANNON.World({ gravity:new CANNON.Vector3() });
 
         // Add a circle
         sphereShape = new CANNON.Sphere(1);
         var velo = [0,0],
             pos  = [-3,0];
-        sphereBody = new CANNON.Body({ mass:1, position:new CANNON.Vec3(-3,0,0) });
+        sphereBody = new CANNON.Body({ mass:1, position:new CANNON.Vector3(-3,0,0) });
         sphereBody.damping = 0;
         sphereBody.addShape(sphereShape);
         world.addBody(sphereBody);

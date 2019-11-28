@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -30,7 +31,7 @@
             world.solver.iterations = 20;
             world.gravity.set(0,0,-10);
             var size = 0.5;
-            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+            var boxShape = new CANNON.Box(new CANNON.Vector3(size,size,size));
             var mass = 1;
             var space = 0.1*size;
 
@@ -40,7 +41,7 @@
                 var boxbody = new CANNON.Body({
                   mass: mass,
                   shape: boxShape,
-                  position: new CANNON.Vec3((N-i-N/2)*(size*2+2*space), 0, size*6+space)
+                  position: new CANNON.Vector3((N-i-N/2)*(size*2+2*space), 0, size*6+space)
                 });
                 world.addBody(boxbody);
                 demo.addVisual(boxbody);
@@ -59,7 +60,7 @@
             var bodyA = new CANNON.Body({
               mass: 0,
               shape: boxShape,
-              position: new CANNON.Vec3((-N/2+1)*(size*2+2*space), 0, size*3)
+              position: new CANNON.Vector3((-N/2+1)*(size*2+2*space), 0, size*3)
             });
             world.addBody(bodyA);
             demo.addVisual(bodyA);
@@ -67,7 +68,7 @@
             var bodyB = new CANNON.Body({
               mass: 0,
               shape: boxShape,
-              position: new CANNON.Vec3((N/2)*(size*2+2*space), 0, size*3)
+              position: new CANNON.Vector3((N/2)*(size*2+2*space), 0, size*3)
             });
             world.addBody(bodyB);
             demo.addVisual(bodyB);
@@ -78,7 +79,7 @@
             var world = setupWorld(demo);
             world.gravity.set(0,-1,-20);
             var size = 1;
-            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size*0.1,size));
+            var boxShape = new CANNON.Box(new CANNON.Vector3(size,size*0.1,size));
             var mass = 0;
             var space = 0.1*size;
 
@@ -96,8 +97,8 @@
                 if(i!=0){
                     // Connect the current body to the last one
                     // We connect two corner points to each other.
-                    var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(-size,0,size+space),last,new CANNON.Vec3(-size,0,-size-space));
-                    var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(size,0,size+space),last,new CANNON.Vec3(size,0,-size-space));
+                    var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vector3(-size,0,size+space),last,new CANNON.Vector3(-size,0,-size-space));
+                    var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vector3(size,0,size+space),last,new CANNON.Vector3(size,0,-size-space));
                     world.addConstraint(c1);
                     world.addConstraint(c2);
                 } else {
@@ -175,7 +176,7 @@
             demo.addVisual(spherebody2);
 
             // Connect this body to the last one
-            var c = new CANNON.PointToPointConstraint(spherebody,new CANNON.Vec3(0,0,size*2),spherebody2,new CANNON.Vec3(0,0,-size*2));
+            var c = new CANNON.PointToPointConstraint(spherebody,new CANNON.Vector3(0,0,size*2),spherebody2,new CANNON.Vector3(0,0,-size*2));
             world.addConstraint(c);
         });
 

@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -25,8 +26,8 @@
         var world = demo.getWorld();
 
         // Inputs
-        var startPosition = new CANNON.Vec3(5, 0, 2);
-        var endPosition = new CANNON.Vec3(-5, 0, 2);
+        var startPosition = new CANNON.Vector3(5, 0, 2);
+        var endPosition = new CANNON.Vector3(-5, 0, 2);
         var tweenTime = 3; // seconds
 
         var body = new CANNON.Body({
@@ -34,7 +35,7 @@
           type: CANNON.Body.KINEMATIC,
           position: startPosition
         });
-        body.addShape(new CANNON.Box(new CANNON.Vec3(1,1,1)));
+        body.addShape(new CANNON.Box(new CANNON.Vector3(1,1,1)));
         world.addBody(body);
         demo.addVisual(body);
 
@@ -43,7 +44,7 @@
         }
 
         // Compute direction vector and get total length of the path
-        var direction = new CANNON.Vec3();
+        var direction = new CANNON.Vector3();
         endPosition.vsub(startPosition, direction);
         var totalLength = direction.length();
         direction.normalize();
@@ -54,7 +55,7 @@
         // Save the start time
         var startTime = world.time;
 
-        var offset = new CANNON.Vec3();
+        var offset = new CANNON.Vector3();
 
         postStepHandler = function(){
 

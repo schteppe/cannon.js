@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -45,7 +46,7 @@
         var sphereBody = new CANNON.Body({
           mass: 1,
           shape: sphereShape,
-          position: new CANNON.Vec3(3,3,11)
+          position: new CANNON.Vector3(3,3,11)
         });
         world.addBody(sphereBody);
         demo.addVisual(sphereBody);
@@ -53,7 +54,7 @@
         // Shape on plane
         var shapeBody = new CANNON.Body({ mass: 1 });
         shapeBody.addShape(shape);
-        var pos = new CANNON.Vec3(0,0,size);
+        var pos = new CANNON.Vector3(0,0,size);
         shapeBody.position.set(0,0,size*2);
         shapeBody.velocity.set(0,1,1);
         shapeBody.angularVelocity.set(0,0,0);
@@ -85,14 +86,14 @@
         }
 
         // Shape on plane
-        var shapeBody = new CANNON.Body({ mass: 1, position: new CANNON.Vec3(0.01, 0.01, 0.01) });
+        var shapeBody = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(0.01, 0.01, 0.01) });
         shapeBody.addShape(shape);
         shapeBody.angularVelocity.set(0,1,0);
         world.addBody(shapeBody);
         demo.addVisual(shapeBody);
 
-        var from = new CANNON.Vec3(10,1,0);
-        var to = new CANNON.Vec3(-10,1,0);
+        var from = new CANNON.Vector3(10,1,0);
+        var to = new CANNON.Vector3(-10,1,0);
         var result = new CANNON.RaycastResult();
         var raycastOptions = {};
         var listener = function (evt) {

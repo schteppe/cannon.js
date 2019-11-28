@@ -24,10 +24,10 @@ THREE.CannonDebugRenderer = function(scene, world, options){
 
 THREE.CannonDebugRenderer.prototype = {
 
-    tmpVec0: new CANNON.Vec3(),
-    tmpVec1: new CANNON.Vec3(),
-    tmpVec2: new CANNON.Vec3(),
-    tmpQuat0: new CANNON.Vec3(),
+    tmpVec0: new CANNON.Vector3(),
+    tmpVec1: new CANNON.Vector3(),
+    tmpVec2: new CANNON.Vector3(),
+    tmpQuat0: new CANNON.Vector3(),
 
     update: function(){
 

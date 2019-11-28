@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -22,10 +23,10 @@
 
 
         function createTetra(){
-            var verts = [new CANNON.Vec3(0,0,0),
-                         new CANNON.Vec3(2,0,0),
-                         new CANNON.Vec3(0,2,0),
-                         new CANNON.Vec3(0,0,2)];
+            var verts = [new CANNON.Vector3(0,0,0),
+                         new CANNON.Vector3(2,0,0),
+                         new CANNON.Vector3(0,2,0),
+                         new CANNON.Vector3(0,0,2)];
             var offset = -0.35;
             for(var i=0; i<verts.length; i++){
                 var v = verts[i];
@@ -65,8 +66,8 @@
             // Cylinder shape 2
             var cylinderShape2 = new CANNON.Cylinder(size,size,2*size,10);
             var q = new CANNON.Quaternion();
-            q.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI / 2);
-            cylinderShape2.transformAllPoints(new CANNON.Vec3(),q);
+            q.setFromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI / 2);
+            cylinderShape2.transformAllPoints(new CANNON.Vector3(),q);
             var cylinderBody2 = new CANNON.Body({ mass: mass });
             cylinderBody2.addShape(cylinderShape2);
             cylinderBody2.position.set(-size*2,size*2,4*size+1);
@@ -75,7 +76,7 @@
 
 
             // Box shape
-            var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+            var boxShape = new CANNON.Box(new CANNON.Vector3(size,size,size));
             var boxBody = new CANNON.Body({ mass: mass });
             boxBody.addShape(boxShape);
             boxBody.position.set(-size*2,-size*2,size+1);
@@ -98,21 +99,21 @@
             // Compound
             var compoundBody = new CANNON.Body({ mass: mass });
             var s = size;
-            var shape = new CANNON.Box(new CANNON.Vec3(0.5*s,0.5*s,0.5*s));
-            compoundBody.addShape(shape, new CANNON.Vec3( 0, 0, s));
-            compoundBody.addShape(shape, new CANNON.Vec3( 0, 0, 0));
-            compoundBody.addShape(shape, new CANNON.Vec3( 0, 0,-s));
-            compoundBody.addShape(shape, new CANNON.Vec3(-s, 0,-s));
+            var shape = new CANNON.Box(new CANNON.Vector3(0.5*s,0.5*s,0.5*s));
+            compoundBody.addShape(shape, new CANNON.Vector3( 0, 0, s));
+            compoundBody.addShape(shape, new CANNON.Vector3( 0, 0, 0));
+            compoundBody.addShape(shape, new CANNON.Vector3( 0, 0,-s));
+            compoundBody.addShape(shape, new CANNON.Vector3(-s, 0,-s));
             compoundBody.position.set(-size*4,size*4,size+1);
             world.addBody(compoundBody);
             demo.addVisual(compoundBody);
 
 
             // ConvexPolyhedron tetra shape
-            var verts = [new CANNON.Vec3(0,0,0),
-                         new CANNON.Vec3(2,0,0),
-                         new CANNON.Vec3(0,2,0),
-                         new CANNON.Vec3(0,0,2)];
+            var verts = [new CANNON.Vector3(0,0,0),
+                         new CANNON.Vector3(2,0,0),
+                         new CANNON.Vector3(0,2,0),
+                         new CANNON.Vector3(0,0,2)];
             var offset = -0.35;
             for(var i=0; i<verts.length; i++){
                 var v = verts[i];

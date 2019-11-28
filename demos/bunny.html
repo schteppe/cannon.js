@@ -7,7 +7,8 @@
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     </head>
     <body>
-        <script src="../out/cannon.js"></script>
+            <script src="../../feng3d/out/feng3d.js"></script>
+    <script src="../out/cannon.js"></script>
         <script src="../build/cannon.demo.js"></script>
         <script src="../libs/dat.gui.js"></script>
         <script src="../libs/Three.js"></script>
@@ -42,7 +43,7 @@
 
                 // Get vertices
                 for(var j=0; j<rawVerts.length; j+=3){
-                    verts.push(new CANNON.Vec3( rawVerts[j]  ,
+                    verts.push(new CANNON.Vector3( rawVerts[j]  ,
                                                 rawVerts[j+1],
                                                 rawVerts[j+2]));
                 }
@@ -53,7 +54,7 @@
                 }
 
                 // Get offset
-                offset = new CANNON.Vec3(rawOffset[0],rawOffset[1],rawOffset[2]);
+                offset = new CANNON.Vector3(rawOffset[0],rawOffset[1],rawOffset[2]);
 
                 // Construct polyhedron
                 var bunnyPart = new CANNON.ConvexPolyhedron(verts,faces);
@@ -63,9 +64,9 @@
             }
 
             // Create body
-            bunnyBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+            bunnyBody.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
             var z180 = new CANNON.Quaternion();
-            z180.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI);
+            z180.setFromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI);
             bunnyBody.quaternion = z180.mult(bunnyBody.quaternion);
             world.addBody(bunnyBody);
             demo.addVisual(bunnyBody);
@@ -74,7 +75,7 @@
             var groundShape = new CANNON.Plane();
             var groundBody = new CANNON.Body({
                 mass: 0,
-                position: new CANNON.Vec3(0,0,-5)
+                position: new CANNON.Vector3(0,0,-5)
             });
             groundBody.addShape(groundShape);
             world.addBody(groundBody);

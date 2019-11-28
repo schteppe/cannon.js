@@ -127,7 +127,7 @@
             var shape = new CANNON.Plane();
             var body = new CANNON.Body({ mass: 0 });
             body.addShape(shape);
-            body.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+            body.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
             world.addBody(body);
             bodies.push(body);
 
@@ -141,7 +141,7 @@
 
         function addBox(){
             // Physics
-            var shape = new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5));
+            var shape = new CANNON.Box(new CANNON.Vector3(0.5,0.5,0.5));
             var body = new CANNON.Body({ mass: mass });
             body.addShape(shape);
             body.position.set(1,5,0);

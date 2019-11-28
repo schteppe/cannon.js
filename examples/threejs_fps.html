@@ -59,7 +59,8 @@
     </head>
     <body>
         <script src="../libs/Three.js"></script>
-        <script src="../out/cannon.js"></script>
+            <script src="../../feng3d/out/feng3d.js"></script>
+    <script src="../out/cannon.js"></script>
         <script src="js/PointerLockControls.js"></script>
 
         <div id="blocker">
@@ -214,7 +215,7 @@
                 var groundShape = new CANNON.Plane();
                 var groundBody = new CANNON.Body({ mass: 0 });
                 groundBody.addShape(groundShape);
-                groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+                groundBody.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
                 world.addBody(groundBody);
             }
 
@@ -274,7 +275,7 @@
                 window.addEventListener( 'resize', onWindowResize, false );
 
                 // Add boxes
-                var halfExtents = new CANNON.Vec3(1,1,1);
+                var halfExtents = new CANNON.Vector3(1,1,1);
                 var boxShape = new CANNON.Box(halfExtents);
                 var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
                 for(var i=0; i<7; i++){
@@ -297,7 +298,7 @@
 
                 // Add linked boxes
                 var size = 0.5;
-                var he = new CANNON.Vec3(size,size,size*0.1);
+                var he = new CANNON.Vector3(size,size,size*0.1);
                 var boxShape = new CANNON.Box(he);
                 var mass = 0;
                 var space = 0.1 * size;
@@ -319,8 +320,8 @@
 
                     if(i!=0){
                         // Connect this body to the last one
-                        var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(-size,size+space,0),last,new CANNON.Vec3(-size,-size-space,0));
-                        var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vec3(size,size+space,0),last,new CANNON.Vec3(size,-size-space,0));
+                        var c1 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vector3(-size,size+space,0),last,new CANNON.Vector3(-size,-size-space,0));
+                        var c2 = new CANNON.PointToPointConstraint(boxbody,new CANNON.Vector3(size,size+space,0),last,new CANNON.Vector3(size,-size-space,0));
                         world.addConstraint(c1);
                         world.addConstraint(c2);
                     } else {

@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -24,7 +25,7 @@
     var demo = new CANNON.Demo(), size = 1.0;
 
     demo.addScene("Friction", function(){
-        var shape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+        var shape = new CANNON.Box(new CANNON.Vector3(size,size,size));
 
         // Create world
         var world = demo.getWorld();
@@ -89,7 +90,7 @@
 
         // Create slippery box - will slide on the plane
         var boxBody = new CANNON.Body({ mass: 1 });
-        var shape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+        var shape = new CANNON.Box(new CANNON.Vector3(size,size,size));
         shape.material = slipperyMaterial;
         boxBody.addShape(shape);
         boxBody.position.set(0,0,5);
@@ -98,7 +99,7 @@
 
         // Create box made of groundMaterial - will not slide on the plane
         var boxBody2 = new CANNON.Body({ mass: 10 });
-        var shape2 = new CANNON.Box(new CANNON.Vec3(size,size,size));
+        var shape2 = new CANNON.Box(new CANNON.Vector3(size,size,size));
         shape2.material = groundMaterial;
         boxBody2.addShape(shape2);
         boxBody2.position.set(size*4,0,5);

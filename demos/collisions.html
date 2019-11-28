@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -49,7 +50,7 @@
       demo.addScene("Sphere / box side",function(){
           var world = setupWorld(demo);
 
-          var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(1,1,1));
           var sphereShape = new CANNON.Sphere(1);
 
           // Box
@@ -74,7 +75,7 @@
       demo.addScene("Sphere / box edge",function(){
           var world = setupWorld(demo);
 
-          var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(1,1,1));
           var sphereShape = new CANNON.Sphere(1);
 
           // Box
@@ -84,7 +85,7 @@
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
           var q = new CANNON.Quaternion();
-          q.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI*0.25);
+          q.setFromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI*0.25);
           b1.quaternion.set(q.x,q.y,q.z,q.w);
           world.addBody(b1);
           demo.addVisual(b1);
@@ -102,7 +103,7 @@
       demo.addScene("Sphere / box corner",function(){
           var world = setupWorld(demo);
 
-          var boxShape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(1,1,1));
           var sphereShape = new CANNON.Sphere(1);
 
           // Box
@@ -112,9 +113,9 @@
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
           var q1 = new CANNON.Quaternion();
-          q1.setFromAxisAngle(new CANNON.Vec3(0,0,1),Math.PI*0.25);
+          q1.setFromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI*0.25);
           var q2 = new CANNON.Quaternion();
-          q2.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI*0.25);
+          q2.setFromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI*0.25);
           var q = q1.mult(q2);
           b1.quaternion.set(q.x,q.y,q.z,q.w);
           world.addBody(b1);

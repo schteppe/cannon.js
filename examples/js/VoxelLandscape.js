@@ -14,7 +14,7 @@ var VoxelLandscape = function ( world, nx, ny, nz, sx, sy, sz ) {
     this.map = [];
     this.boxified = [];
     this.boxes = [];
-    this.boxShape = new CANNON.Box(new CANNON.Vec3(sx*0.5,sy*0.5,sz*0.5));
+    this.boxShape = new CANNON.Box(new CANNON.Vector3(sx*0.5,sy*0.5,sz*0.5));
 
     var map = this.map,
         boxes = this.boxes,
@@ -193,7 +193,7 @@ VoxelLandscape.prototype.update = function(){
         );
 
         // Replace box shapes
-        b.addShape(new CANNON.Box(new CANNON.Vec3(b.nx*sx*0.5, b.ny*sy*0.5, b.nz*sz*0.5)));
+        b.addShape(new CANNON.Box(new CANNON.Vector3(b.nx*sx*0.5, b.ny*sy*0.5, b.nz*sz*0.5)));
         //b.aabbNeedsUpdate = true;
         world.addBody(b);
         //this.boxes.push(box);

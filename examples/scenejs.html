@@ -10,6 +10,7 @@
   <body>
 
     <script src="../libs/scenejs.js"></script>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
 
     <canvas id="theCanvas" width="600" height="400"/>
@@ -28,7 +29,7 @@
           world = new CANNON.World();
           world.gravity.set(0,0,0);
 
-          shape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+          shape = new CANNON.Box(new CANNON.Vector3(1,1,1));
           body = new CANNON.Body({
             mass: 1
           });

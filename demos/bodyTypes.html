@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -26,7 +27,7 @@
       demo.addScene("Moving box",function(){
           var world = setupWorld(demo);
 
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size,size,size));
           var sphereShape = new CANNON.Sphere(size);
 
           var mass = 5, boxMass = 0;
@@ -37,7 +38,7 @@
           var b1 = new CANNON.Body({
             mass: boxMass,
             type: CANNON.Body.KINEMATIC,
-            position: new CANNON.Vec3(0, 0, 0.5*size)
+            position: new CANNON.Vector3(0, 0, 0.5*size)
           });
           b1.addShape(boxShape);
           world.addBody(b1);
@@ -56,7 +57,7 @@
           // Dynamic bodies can collide with bodies of all other types.
           var b2 = new CANNON.Body({
             mass: mass,
-            position: new CANNON.Vec3(0,0,3*size)
+            position: new CANNON.Vector3(0,0,3*size)
           });
           b2.addShape(sphereShape);
           world.addBody(b2);

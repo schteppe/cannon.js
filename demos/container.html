@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -72,7 +73,7 @@
         var planeShapeXmin = new CANNON.Plane();
         var planeXmin = new CANNON.Body({ mass: 0, material: stone });
         planeXmin.addShape(planeShapeXmin);
-        planeXmin.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),Math.PI/2);
+        planeXmin.quaternion.setFromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI/2);
         planeXmin.position.set(-5,0,0);
         world.addBody(planeXmin);
 
@@ -80,7 +81,7 @@
         var planeShapeXmax = new CANNON.Plane();
         var planeXmax = new CANNON.Body({ mass: 0, material: stone });
         planeXmax.addShape(planeShapeXmax);
-        planeXmax.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),-Math.PI/2);
+        planeXmax.quaternion.setFromAxisAngle(new CANNON.Vector3(0,1,0),-Math.PI/2);
         planeXmax.position.set(5,0,0);
         world.addBody(planeXmax);
 
@@ -88,7 +89,7 @@
         var planeShapeYmin = new CANNON.Plane();
         var planeYmin = new CANNON.Body({ mass: 0, material: stone });
         planeYmin.addShape(planeShapeYmin);
-        planeYmin.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+        planeYmin.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
         planeYmin.position.set(0,-5,0);
         world.addBody(planeYmin);
 
@@ -96,7 +97,7 @@
         var planeShapeYmax = new CANNON.Plane();
         var planeYmax = new CANNON.Body({ mass: 0,  material: stone });
         planeYmax.addShape(planeShapeYmax);
-        planeYmax.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
+        planeYmax.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI/2);
         planeYmax.position.set(0,5,0);
         world.addBody(planeYmax);
 

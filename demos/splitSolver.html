@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -39,7 +40,7 @@
       var size = 0.5;
 
       var shape = new CANNON.Sphere(size);
-      var shape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+      var shape = new CANNON.Box(new CANNON.Vector3(size*0.5,size*0.5,size*0.5));
       demo.addScene("with split",function(){
           createScene(demo,shape,true);
         });

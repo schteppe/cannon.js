@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -32,7 +33,7 @@
           var planetShape = new CANNON.Sphere(3.5);
           var moon = new CANNON.Body({
             mass: mass,
-            position: new CANNON.Vec3(5,0,0)
+            position: new CANNON.Vector3(5,0,0)
           });
           moon.addShape(moonShape);
           var planet = new CANNON.Body({ mass: 0 });
@@ -46,7 +47,7 @@
           moon.preStep = function(){
 
             // Get the vector pointing from the moon to the planet center
-            var moon_to_planet = new CANNON.Vec3();
+            var moon_to_planet = new CANNON.Vector3();
             this.position.negate(moon_to_planet);
 
             // Get distance from planet to moon

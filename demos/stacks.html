@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -24,10 +25,10 @@
       var size = 2, mass=5;
 
       function createTetra(){
-            var verts = [new CANNON.Vec3(0,0,0),
-                         new CANNON.Vec3(2,0,0),
-                         new CANNON.Vec3(0,2,0),
-                         new CANNON.Vec3(0,0,2)];
+            var verts = [new CANNON.Vector3(0,0,0),
+                         new CANNON.Vector3(2,0,0),
+                         new CANNON.Vector3(0,2,0),
+                         new CANNON.Vector3(0,0,2)];
             var offset = -0.35;
             for(var i=0; i<verts.length; i++){
                 var v = verts[i];
@@ -45,18 +46,18 @@
       }
       function createBoxPolyhedron(size){
           size = size || 1;
-          var box = new CANNON.Box(new CANNON.Vec3(size,size,size));
+          var box = new CANNON.Box(new CANNON.Vector3(size,size,size));
           return box.convexPolyhedronRepresentation;
       }
 
       function createCompound(mass){
         var compoundBody = new CANNON.Body({ mass: mass });
         var s = size;
-        var shape = new CANNON.Box(new CANNON.Vec3(0.5*s,0.5*s,0.5*s));
-        compoundBody.addShape(shape, new CANNON.Vec3( 0, 0, s));
-        compoundBody.addShape(shape, new CANNON.Vec3( 0, 0, 0));
-        compoundBody.addShape(shape, new CANNON.Vec3( 0, 0,-s));
-        compoundBody.addShape(shape, new CANNON.Vec3(-s, 0,-s));
+        var shape = new CANNON.Box(new CANNON.Vector3(0.5*s,0.5*s,0.5*s));
+        compoundBody.addShape(shape, new CANNON.Vector3( 0, 0, s));
+        compoundBody.addShape(shape, new CANNON.Vector3( 0, 0, 0));
+        compoundBody.addShape(shape, new CANNON.Vector3( 0, 0,-s));
+        compoundBody.addShape(shape, new CANNON.Vector3(-s, 0,-s));
         return compoundBody;
       }
 
@@ -97,7 +98,7 @@
       demo.addScene("sphere/box",function(){
           var world = setupWorld(demo);
 
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size,size,size));
           var sphereShape = new CANNON.Sphere(size);
 
           // Box
@@ -173,7 +174,7 @@
 
       demo.addScene("plane/box",function(){
           var world = setupWorld(demo);
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size,size,size));
           var b1 = new CANNON.Body({ mass: 5 });
           b1.addShape(boxShape);
           b1.position.set(0,0,1*size);
@@ -214,7 +215,7 @@
           var world = setupWorld(demo);
 
           // Box 1
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size*0.5,size*0.5,size*0.5));
           var b1 = new CANNON.Body({ mass: 5 });
           b1.addShape(boxShape);
           b1.position.set(0,0,1*size);
@@ -237,7 +238,7 @@
           world.addBody(b2);
           demo.addVisual(b2);
 
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size*0.5,size*0.5,size*0.5));
           var b1 = new CANNON.Body({ mass: 5 });
           b1.addShape(boxShape);
           b1.position.set(0,0,7*size);
@@ -255,7 +256,7 @@
           world.addBody(b2);
           demo.addVisual(b2);
 
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size*0.5,size*0.5,size*0.5));
           var b1 = new CANNON.Body({ mass: 5 });
           b1.addShape(boxShape);
           b1.position.set(0,0,2*size);
@@ -266,7 +267,7 @@
       demo.addScene("box/particle",function(){
           var world = setupWorld(demo);
 
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size*0.5,size*0.5,size*0.5));
           var b1 = new CANNON.Body({ mass:5 });
           b1.addShape(boxShape);
           b1.position.set(0,0,1*size);
@@ -307,7 +308,7 @@
           demo.addVisual(b1);
 
           // Box 2
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size*0.5,size*0.5,size*0.5));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size*0.5,size*0.5,size*0.5));
           var b2 = new CANNON.Body({ mass:5 });
           b2.addShape(boxShape);
           b2.position.set(0,0,1*size);
@@ -359,7 +360,7 @@
           var t = new CANNON.Body({ mass:5 });
           t.addShape(tetraShape);
           t.position.set(0,0,1*size);
-          t.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI/2);
+          t.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI/2);
 
           // Particle
           var p = new CANNON.Body({ mass: 1 });
@@ -388,7 +389,7 @@
         var groundBody = new CANNON.Body({ mass:0 });
         groundBody.addShape(groundShape);
         groundBody.position.set(0,0,-1);
-        //groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),0.2);
+        //groundBody.quaternion.setFromAxisAngle(new CANNON.Vector3(0,1,0),0.2);
         world.addBody(groundBody);
         demo.addVisual(groundBody);
         return world;

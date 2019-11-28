@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -35,7 +36,7 @@
         demo.addVisual(sphereBody);
 
         // Create a box body
-        var halfExtents = new CANNON.Vec3(size,size*0.3,size),
+        var halfExtents = new CANNON.Vector3(size,size*0.3,size),
             boxShape = new CANNON.Box(halfExtents);
             boxBody = new CANNON.Body({ mass: 5 });
         boxBody.addShape(boxShape);
@@ -44,8 +45,8 @@
         demo.addVisual(boxBody);
 
         var spring = new CANNON.Spring(boxBody,sphereBody,{
-            localAnchorA: new CANNON.Vec3(size,0,size),
-            localAnchorB: new CANNON.Vec3(0,0,0),
+            localAnchorA: new CANNON.Vector3(size,0,size),
+            localAnchorB: new CANNON.Vector3(0,0,0),
             restLength : 0,
             stiffness : 50,
             damping : 1,

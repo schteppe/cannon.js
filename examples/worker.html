@@ -53,11 +53,11 @@
                 var plane = new CANNON.Plane();
                 var groundBody = new CANNON.Body({ mass: 0 });
                 groundBody.addShape(plane);
-                groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+                groundBody.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
                 world.addBody(groundBody);
 
                 // Create N cubes
-                var shape = new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5));
+                var shape = new CANNON.Box(new CANNON.Vector3(0.5,0.5,0.5));
                 for(var i=0; i!==e.data.N; i++){
                     var body = new CANNON.Body({ mass: 1 });
                     body.addShape(shape);

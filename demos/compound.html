@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -41,20 +42,20 @@
           var mass = 10;
           var body = new CANNON.Body({ mass: mass });
           body.position.set(0,0,6);
-          body.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 32);
+          body.quaternion.setFromAxisAngle(new CANNON.Vector3(0, 1, 0), Math.PI / 32);
 
           // Use a box shape as child shape
-          var shape = new CANNON.Box(new CANNON.Vec3(0.5*s,0.5*s,0.5*s));
+          var shape = new CANNON.Box(new CANNON.Vector3(0.5*s,0.5*s,0.5*s));
 
           // We can add the same shape several times to position child shapes within the Compound.
-          body.addShape(shape, new CANNON.Vec3( s, 0,-s));
-          body.addShape(shape, new CANNON.Vec3( s, 0, s));
-          body.addShape(shape, new CANNON.Vec3(-s, 0,-s));
-          body.addShape(shape, new CANNON.Vec3(-s, 0, s));
+          body.addShape(shape, new CANNON.Vector3( s, 0,-s));
+          body.addShape(shape, new CANNON.Vector3( s, 0, s));
+          body.addShape(shape, new CANNON.Vector3(-s, 0,-s));
+          body.addShape(shape, new CANNON.Vector3(-s, 0, s));
           // Note: we only use translational offsets. The third argument could be a CANNON.Quaternion to rotate the child shape.
-          body.addShape(shape, new CANNON.Vec3(-s, 0, 0));
-          body.addShape(shape, new CANNON.Vec3( 0, 0,-s));
-          body.addShape(shape, new CANNON.Vec3( 0, 0, s));
+          body.addShape(shape, new CANNON.Vector3(-s, 0, 0));
+          body.addShape(shape, new CANNON.Vector3( 0, 0,-s));
+          body.addShape(shape, new CANNON.Vector3( 0, 0, s));
 
           world.addBody(body);
           demo.addVisual(body);
@@ -70,10 +71,10 @@
 
           // Compound shape
           var sphereShape = new CANNON.Sphere(1);
-          body.addShape(sphereShape, new CANNON.Vec3( 1, 0,-1));
-          body.addShape(sphereShape, new CANNON.Vec3( 1, 0, 1));
-          body.addShape(sphereShape, new CANNON.Vec3(-1, 0,-1));
-          body.addShape(sphereShape, new CANNON.Vec3(-1, 0, 1));
+          body.addShape(sphereShape, new CANNON.Vector3( 1, 0,-1));
+          body.addShape(sphereShape, new CANNON.Vector3( 1, 0, 1));
+          body.addShape(sphereShape, new CANNON.Vector3(-1, 0,-1));
+          body.addShape(sphereShape, new CANNON.Vector3(-1, 0, 1));
 
           body.position.set(0,0,6);
           body.quaternion.set(0,1,0,0.1);

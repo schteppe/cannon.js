@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   </head>
   <body>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -26,7 +27,7 @@
         });
 
       demo.addScene("Box",function(){
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
+          var boxShape = new CANNON.Box(new CANNON.Vector3(size,size,size));
           createBodyOnPlane(demo,boxShape);
         });
 
@@ -53,7 +54,7 @@
         // Shape on plane
         var shapeBody = new CANNON.Body({ mass: 30 });
         shapeBody.addShape(shape);
-        var pos = new CANNON.Vec3(0,0,size);
+        var pos = new CANNON.Vector3(0,0,size);
         shapeBody.position.set(0,size,size*2);
         shapeBody.velocity.set(0,0,0);
         shapeBody.angularVelocity.set(0,0,0);

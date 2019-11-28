@@ -1,158 +1,6 @@
 declare namespace CANNON {
-}
-declare namespace CANNON {
-    class Vector3 {
-        x: number;
-        y: number;
-        z: number;
-        /**
-         * 3-dimensional vector
-         *
-         * @param x
-         * @param y
-         * @param z
-         *
-         * @author schteppe
-         * @example
-         *     var v = new Vector3(1, 2, 3);
-         *     console.log('x=' + v.x); // x=1
-         */
-        constructor(x?: number, y?: number, z?: number);
-        static ZERO: Vector3;
-        static X_AXIS: Vector3;
-        static Y_AXIS: Vector3;
-        static Z_AXIS: Vector3;
-        /**
-         * Vector cross product
-         *
-         * @param v
-         * @param target Target to save in.
-         */
-        crossTo(v: Vector3, target?: Vector3): Vector3;
-        /**
-         * Set the vectors' 3 elements
-         * @param x
-         * @param y
-         * @param z
-         */
-        set(x: number, y: number, z: number): this;
-        /**
-         * Set all components of the vector to zero.
-         */
-        setZero(): void;
-        /**
-         * Vector addition
-         * @param v
-         * @param target
-         */
-        addTo(v: Vector3, target?: Vector3): Vector3;
-        /**
-         * Vector subtraction
-         * @param v
-         * @param target Target to save in.
-         */
-        subTo(v: Vector3, target?: Vector3): Vector3;
-        /**
-         * Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
-         * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
-         */
-        crossmat(): Mat3;
-        /**
-         * Normalize the vector. Note that this changes the values in the vector.
-         * @returns Returns the norm of the vector
-         */
-        normalize(): number;
-        /**
-         * Get the version of this vector that is of length 1.
-         * @param target target to save in
-         */
-        unit(target?: Vector3): Vector3;
-        /**
-         * Get the length of the vector
-         */
-        get length(): number;
-        /**
-         * Get the squared length of the vector
-         */
-        get lengthSquared(): number;
-        /**
-         * Get distance from this point to another point
-         * @param p
-         */
-        distance(p: Vector3): number;
-        /**
-         * Get squared distance from this point to another point
-         * @param p
-         */
-        distanceSquared(p: Vector3): number;
-        /**
-         * Multiply all the components of the vector with a scalar.
-         * @param scalar
-         * @param  target The vector to save the result in.
-         */
-        scaleNumberTo(scalar: number, target?: Vector3): Vector3;
-        /**
-         * Multiply the vector with an other vector, component-wise.
-         * @param  vector
-         * @param  target The vector to save the result in.
-         */
-        scaleTo(vector: Vector3, target?: Vector3): Vector3;
-        /**
-         * Scale a vector and add it to this vector. Save the result in "target". (target = this + vector * scalar)
-         * @param scalar
-         * @param vector
-         * @param  target The vector to save the result in.
-         */
-        addScaledVectorTo(scalar: number, vector: Vector3, target?: Vector3): Vector3;
-        /**
-         * Calculate dot product
-         * @param {Vector3} v
-         */
-        dot(v: Vector3): number;
-        isZero(): boolean;
-        /**
-         * Make the vector point in the opposite direction.
-         * @param target Optional target to save in
-         */
-        negateTo(target: Vector3): Vector3;
-        tangents(t1: Vector3, t2: Vector3): void;
-        /**
-         * Converts to a more readable format
-         */
-        toString(): string;
-        /**
-         * Converts to an array
-         */
-        toArray(): number[];
-        /**
-         * Copies value of source to this vector.
-         * @param source
-         */
-        copy(source: Vector3): this;
-        /**
-         * Do a linear interpolation between two vectors
-         *
-         * @param v
-         * @param t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
-         */
-        lerpNumberTo(v: Vector3, t: number, target: Vector3): void;
-        /**
-         * Check if a vector equals is almost equal to another one.
-         * @param v
-         * @param  precision
-         */
-        equals(v: Vector3, precision?: number): boolean;
-        /**
-         * Check if the vector is anti-parallel to another vector.
-         * @param  v
-         * @param  precision Set to zero for exact comparisons
-         */
-        isAntiparallelTo(v: Vector3, precision?: number): boolean;
-        /**
-         * Clone the vector
-         */
-        clone(): Vector3;
-    }
+    var Vector3: typeof feng3d.Vector3;
+    type Vector3 = feng3d.Vector3;
 }
 declare namespace CANNON {
     class Mat3 {
@@ -186,13 +34,13 @@ declare namespace CANNON {
         /**
          * Gets the matrix diagonal elements
          */
-        getTrace(target?: Vector3): void;
+        getTrace(target?: feng3d.Vector3): void;
         /**
          * Matrix-Vector multiplication
          * @param v The vector to multiply with
          * @param target Optional, target to save the result in.
          */
-        vmult(v: Vector3, target?: Vector3): Vector3;
+        vmult(v: Vector3, target?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Matrix-scalar multiplication
          * @param s
@@ -214,7 +62,7 @@ declare namespace CANNON {
          * @param target Optional. Target vector to save in.
          * @todo should reuse arrays
          */
-        solve(b: Vector3, target?: Vector3): Vector3;
+        solve(b: Vector3, target?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Get an element in the matrix by index. Index starts at 0, not 1!!!
          * @param row
@@ -304,7 +152,7 @@ declare namespace CANNON {
          * @param targetAxis A vector object to reuse for storing the axis.
          * @return An array, first elemnt is the axis and the second is the angle in radians.
          */
-        toAxisAngle(targetAxis?: Vector3): (number | Vector3)[];
+        toAxisAngle(targetAxis?: feng3d.Vector3): (number | feng3d.Vector3)[];
         /**
          * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
          * @param u
@@ -342,7 +190,7 @@ declare namespace CANNON {
          * @param v
          * @param target Optional
          */
-        vmult(v: Vector3, target?: Vector3): Vector3;
+        vmult(v: Vector3, target?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Copies value of source to this quaternion.
          * @param source
@@ -387,38 +235,38 @@ declare namespace CANNON {
     class Transform {
         position: Vector3;
         quaternion: Quaternion;
-        constructor(position?: Vector3, quaternion?: Quaternion);
+        constructor(position?: feng3d.Vector3, quaternion?: Quaternion);
         /**
          * @param position
          * @param quaternion
          * @param worldPoint
          * @param result
          */
-        static pointToLocalFrame(position: Vector3, quaternion: Quaternion, worldPoint: Vector3, result?: Vector3): Vector3;
+        static pointToLocalFrame(position: Vector3, quaternion: Quaternion, worldPoint: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Get a global point in local transform coordinates.
          * @param worldPoint
          * @param result
          * @returnThe "result" vector object
          */
-        pointToLocal(worldPoint: Vector3, result: Vector3): Vector3;
+        pointToLocal(worldPoint: Vector3, result: Vector3): feng3d.Vector3;
         /**
          * @param position
          * @param quaternion
          * @param localPoint
          * @param result
          */
-        static pointToWorldFrame(position: Vector3, quaternion: Quaternion, localPoint: Vector3, result?: Vector3): Vector3;
+        static pointToWorldFrame(position: Vector3, quaternion: Quaternion, localPoint: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Get a local point in global transform coordinates.
          * @param point
          * @param result
          * @return The "result" vector object
          */
-        pointToWorld(localPoint: Vector3, result: Vector3): Vector3;
-        vectorToWorldFrame(localVector: Vector3, result?: Vector3): Vector3;
-        static vectorToWorldFrame(quaternion: Quaternion, localVector: Vector3, result: Vector3): Vector3;
-        static vectorToLocalFrame(position: Vector3, quaternion: Quaternion, worldVector: Vector3, result?: Vector3): Vector3;
+        pointToWorld(localPoint: Vector3, result: Vector3): feng3d.Vector3;
+        vectorToWorldFrame(localVector: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
+        static vectorToWorldFrame(quaternion: Quaternion, localVector: Vector3, result: Vector3): feng3d.Vector3;
+        static vectorToLocalFrame(position: Vector3, quaternion: Quaternion, worldVector: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
     }
 }
 declare namespace CANNON {
@@ -534,7 +382,7 @@ declare namespace CANNON {
         /**
          * Construct a vector
          */
-        constructObject(): Vector3;
+        constructObject(): feng3d.Vector3;
     }
 }
 declare namespace CANNON {
@@ -968,7 +816,7 @@ declare namespace CANNON {
          * @param planeNormal
          * @param planeConstant The constant in the mathematical plane equation
          */
-        clipFaceAgainstPlane(inVertices: Vector3[], outVertices: Vector3[], planeNormal: Vector3, planeConstant: number): Vector3[];
+        clipFaceAgainstPlane(inVertices: Vector3[], outVertices: Vector3[], planeNormal: Vector3, planeConstant: number): feng3d.Vector3[];
         computeWorldVertices(position: Vector3, quat: Quaternion): void;
         computeLocalAABB(aabbmin: any, aabbmax: any): void;
         /**
@@ -995,7 +843,7 @@ declare namespace CANNON {
          *
          * @param target
          */
-        getAveragePointLocal(target: Vector3): Vector3;
+        getAveragePointLocal(target: Vector3): feng3d.Vector3;
         /**
          * Transform all local points. Will change the .vertices
          *
@@ -1038,14 +886,14 @@ declare namespace CANNON {
          * Updates the local convex polyhedron representation used for some collisions.
          */
         updateConvexPolyhedronRepresentation(): void;
-        calculateLocalInertia(mass: number, target?: Vector3): Vector3;
+        calculateLocalInertia(mass: number, target?: feng3d.Vector3): feng3d.Vector3;
         static calculateInertia(halfExtents: Vector3, mass: number, target: Vector3): void;
         /**
          * Get the box 6 side normals
          * @param sixTargetVectors An array of 6 vectors, to store the resulting side normals in.
          * @param quat             Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
          */
-        getSideNormals(sixTargetVectors: Vector3[], quat: Quaternion): Vector3[];
+        getSideNormals(sixTargetVectors: Vector3[], quat: Quaternion): feng3d.Vector3[];
         volume(): number;
         updateBoundingSphereRadius(): void;
         forEachWorldCorner(pos: Vector3, quat: Quaternion, callback: Function): void;
@@ -1207,7 +1055,7 @@ declare namespace CANNON {
          * @param getUpperTriangle
          */
         getConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean): void;
-        calculateLocalInertia(mass: number, target?: Vector3): Vector3;
+        calculateLocalInertia(mass: number, target?: feng3d.Vector3): feng3d.Vector3;
         volume(): number;
         calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
         updateBoundingSphereRadius(): void;
@@ -1232,7 +1080,7 @@ declare namespace CANNON {
          * @param mass
          * @param target
          */
-        calculateLocalInertia(mass: number, target: Vector3): Vector3;
+        calculateLocalInertia(mass: number, target: Vector3): feng3d.Vector3;
         volume(): number;
         updateBoundingSphereRadius(): void;
         calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
@@ -1249,7 +1097,7 @@ declare namespace CANNON {
          */
         constructor();
         computeWorldNormal(quat: Quaternion): void;
-        calculateLocalInertia(mass: number, target?: Vector3): Vector3;
+        calculateLocalInertia(mass: number, target?: feng3d.Vector3): feng3d.Vector3;
         volume(): number;
         calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
         updateBoundingSphereRadius(): void;
@@ -1265,7 +1113,7 @@ declare namespace CANNON {
          * @author schteppe / http://github.com/schteppe
          */
         constructor(radius: number);
-        calculateLocalInertia(mass: number, target?: Vector3): Vector3;
+        calculateLocalInertia(mass: number, target?: feng3d.Vector3): feng3d.Vector3;
         volume(): number;
         updateBoundingSphereRadius(): void;
         calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
@@ -1276,18 +1124,18 @@ declare namespace CANNON {
         /**
          * The lower bound of the bounding box.
          */
-        lowerBound: Vector3;
+        lowerBound: feng3d.Vector3;
         /**
          * The upper bound of the bounding box.
          */
-        upperBound: Vector3;
+        upperBound: feng3d.Vector3;
         /**
          *
          * @param options
          *
          * Axis aligned bounding box class.
          */
-        constructor(lowerBound?: Vector3, upperBound?: Vector3);
+        constructor(lowerBound?: feng3d.Vector3, upperBound?: feng3d.Vector3);
         /**
          * Set the AABB bounds from a set of points.
          * @param points An array of Vec3's.
@@ -1438,7 +1286,7 @@ declare namespace CANNON {
          * @param out
          * @return The "out" vector object
          */
-        getVertex(i: number, out: Vector3): Vector3;
+        getVertex(i: number, out: Vector3): feng3d.Vector3;
         /**
          * Get raw vertex i
          *
@@ -1456,7 +1304,7 @@ declare namespace CANNON {
          * @param out
          * @return The "out" vector object
          */
-        getWorldVertex(i: number, pos: Vector3, quat: Quaternion, out: Vector3): Vector3;
+        getWorldVertex(i: number, pos: Vector3, quat: Quaternion, out: Vector3): feng3d.Vector3;
         /**
          * Get the three vertices for triangle i.
          *
@@ -1473,14 +1321,14 @@ declare namespace CANNON {
          * @param target
          * @return The "target" vector object
          */
-        getNormal(i: number, target: Vector3): Vector3;
+        getNormal(i: number, target: Vector3): feng3d.Vector3;
         /**
          *
          * @param mass
          * @param target
          * @return The "target" vector object
          */
-        calculateLocalInertia(mass: number, target: Vector3): Vector3;
+        calculateLocalInertia(mass: number, target: Vector3): feng3d.Vector3;
         /**
          * Compute the local AABB for the trimesh
          *
@@ -1679,10 +1527,10 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class RaycastResult {
-        rayFromWorld: Vector3;
-        rayToWorld: Vector3;
-        hitNormalWorld: Vector3;
-        hitPointWorld: Vector3;
+        rayFromWorld: feng3d.Vector3;
+        rayToWorld: feng3d.Vector3;
+        hitNormalWorld: feng3d.Vector3;
+        hitPointWorld: feng3d.Vector3;
         hasHit: boolean;
         shape: Shape;
         body: Body;
@@ -2328,28 +2176,28 @@ declare namespace CANNON {
          * @param worldPoint
          * @param result
          */
-        pointToLocalFrame(worldPoint: Vector3, result?: Vector3): Vector3;
+        pointToLocalFrame(worldPoint: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Convert a world vector to local body frame.
          *
          * @param worldPoint
          * @param result
          */
-        vectorToLocalFrame(worldVector: any, result?: Vector3): Vector3;
+        vectorToLocalFrame(worldVector: any, result?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Convert a local body point to world frame.
          *
          * @param localPoint
          * @param result
          */
-        pointToWorldFrame(localPoint: Vector3, result?: Vector3): Vector3;
+        pointToWorldFrame(localPoint: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Convert a local body point to world frame.
          *
          * @param localVector
          * @param result
          */
-        vectorToWorldFrame(localVector: Vector3, result?: Vector3): Vector3;
+        vectorToWorldFrame(localVector: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
         /**
          * Add a shape to the body with a local offset and orientation.
          *
@@ -2412,7 +2260,7 @@ declare namespace CANNON {
          * @param  {Vector3} result
          * @return {Vector3} The result vector.
          */
-        getVelocityAtWorldPoint(worldPoint: Vector3, result: Vector3): Vector3;
+        getVelocityAtWorldPoint(worldPoint: Vector3, result: Vector3): feng3d.Vector3;
         /**
          * Move the body forward in time.
          * @param dt Time step
@@ -3103,7 +2951,7 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class World extends EventTarget {
-        static worldNormal: Vector3;
+        static worldNormal: feng3d.Vector3;
         /**
          * Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is "fresh" inside event callbacks.
          */

@@ -16,6 +16,7 @@
   </head>
   <body>
     <script src="../libs/Three.js"></script>
+        <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script>
 
@@ -33,7 +34,7 @@
           world.broadphase = new CANNON.NaiveBroadphase();
           world.solver.iterations = 10;
 
-          shape = new CANNON.Box(new CANNON.Vec3(1,1,1));
+          shape = new CANNON.Box(new CANNON.Vector3(1,1,1));
           mass = 1;
           body = new CANNON.Body({
             mass: 1
