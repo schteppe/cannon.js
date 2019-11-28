@@ -508,11 +508,11 @@ declare namespace CANNON {
     /**
      * For pooling objects that can be reused.
      */
-    class Pool {
+    class Pool<T> {
         /**
          * The pooled objects
          */
-        objects: any[];
+        objects: T[];
         /**
          * Constructor of the objects
          */
@@ -521,15 +521,15 @@ declare namespace CANNON {
         /**
          * Release an object after use
          */
-        release(...args: any[]): this;
+        release(...args: T[]): this;
         /**
          * Get an object
          */
-        get(): any;
+        get(): T;
         /**
          * Construct an object. Should be implmented in each subclass.
          */
-        constructObject(): void;
+        constructObject(): T;
         /**
          * @param size
          * @return Self, for chaining
@@ -549,7 +549,7 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    class Vec3Pool extends Pool {
+    class Vec3Pool extends Pool<Vec3> {
         constructor();
         /**
          * Construct a vector
@@ -558,19 +558,19 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    class TupleDictionary {
+    class TupleDictionary<T> {
         /**
          * The data storage
          */
         data: {
-            keys: any[];
+            keys: string[];
         };
         /**
          * @param i
          * @param j
          */
-        get(i: number, j: number): any;
-        set(i: number, j: number, value: any): void;
+        get(i: number, j: number): T;
+        set(i: number, j: number, value: T): void;
         reset(): void;
     }
 }
@@ -1607,7 +1607,7 @@ declare namespace CANNON {
          * @extends OctreeNode
          */
         constructor(aabb?: AABB, options?: {
-            root?: any;
+            root?: OctreeNode;
             aabb?: AABB;
             maxDepth?: number;
         });
@@ -2193,7 +2193,7 @@ declare namespace CANNON {
          */
         sleepTimeLimit: number;
         timeLastSleepy: number;
-        private _wakeUpAfterNarrowphase;
+        _wakeUpAfterNarrowphase: boolean;
         /**
          * World space rotational force on the body, around center of mass.
          */
@@ -2950,6 +2950,9 @@ declare namespace CANNON {
          * Contact normal, pointing out of body i.
          */
         ni: Vec3;
+        si: Shape;
+        sj: Shape;
+        bodyA: Body;
         /**
          * Contact/non-penetration constraint equation
          *
@@ -3037,6 +3040,15 @@ declare namespace CANNON {
 declare namespace CANNON {
     class Solver {
         /**
+         * The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
+         * @todo write more about solver and iterations in the wiki
+         */
+        iterations: number;
+        /**
+         * When tolerance is reached, the system is assumed to be converged.
+         */
+        tolerance: number;
+        /**
          * All equations to be solved
          */
         equations: Equation[];
@@ -3050,7 +3062,9 @@ declare namespace CANNON {
          * @param dt
          * @param world
          */
-        solve(dt: number, world: World): number;
+        solve(dt: number, world: {
+            bodies: Body[];
+        }): number;
         /**
          * Add an equation
          * @param eq
@@ -3070,15 +3084,6 @@ declare namespace CANNON {
 declare namespace CANNON {
     class GSSolver extends Solver {
         /**
-         * The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
-         * @todo write more about solver and iterations in the wiki
-         */
-        iterations: number;
-        /**
-         * When tolerance is reached, the system is assumed to be converged.
-         */
-        tolerance: number;
-        /**
          * Constraint equation Gauss-Seidel solver.
          * @todo The spook parameters should be specified for each constraint, not globally.
          * @author schteppe / https://github.com/schteppe
@@ -3089,24 +3094,23 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    class SplitSolver extends Solver {
-        iterations: number;
-        tolerance: number;
-        subsolver: any;
-        nodes: any[];
-        nodePool: any[];
+    interface SSNode {
+        body: Body;
+        children: SSNode[];
+        eqs: Equation[];
+        visited: boolean;
+    }
+    export class SplitSolver extends Solver {
+        subsolver: Solver;
+        nodes: SSNode[];
+        nodePool: SSNode[];
         /**
          * Splits the equations into islands and solves them independently. Can improve performance.
          *
          * @param subsolver
          */
         constructor(subsolver: Solver);
-        createNode(): {
-            body: any;
-            children: any[];
-            eqs: any[];
-            visited: boolean;
-        };
+        createNode(): SSNode;
         /**
          * Solve the subsystems
          * @method solve
@@ -3115,6 +3119,7 @@ declare namespace CANNON {
          */
         solve(dt: number, world: World): number;
     }
+    export {};
 }
 declare namespace CANNON {
     class World extends EventTarget {
@@ -3130,8 +3135,8 @@ declare namespace CANNON {
         /**
          * All the current contacts (instances of ContactEquation) in the world.
          */
-        contacts: any[];
-        frictionEquations: any[];
+        contacts: ContactEquation[];
+        frictionEquations: FrictionEquation[];
         /**
          * How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).
          */
@@ -3155,12 +3160,12 @@ declare namespace CANNON {
          * The broadphase algorithm to use. Default is NaiveBroadphase
          */
         broadphase: Broadphase;
-        bodies: any[];
+        bodies: Body[];
         /**
          * The solver algorithm to use. Default is GSSolver
          */
         solver: Solver;
-        constraints: any[];
+        constraints: Constraint[];
         narrowphase: Narrowphase;
         collisionMatrix: ArrayCollisionMatrix;
         /**
@@ -3173,11 +3178,11 @@ declare namespace CANNON {
          * All added materials
          */
         materials: Material[];
-        contactmaterials: any[];
+        contactmaterials: ContactMaterial[];
         /**
          * Used to look up a ContactMaterial given two instances of Material.
          */
-        contactMaterialTable: TupleDictionary;
+        contactMaterialTable: TupleDictionary<ContactMaterial>;
         defaultMaterial: Material;
         /**
          * This contact material is used if no suitable contactmaterial is found for a contact.
@@ -3195,7 +3200,7 @@ declare namespace CANNON {
          * Time accumulator for interpolation. See http://gafferongames.com/game-physics/fix-your-timestep/
          */
         accumulator: number;
-        subsystems: any[];
+        subsystems: SPHSystem[];
         /**
          * Dispatched after a body has been added to the world.
          */
@@ -3229,7 +3234,7 @@ declare namespace CANNON {
          * @param m2
          * @return  The contact material if it was found.
          */
-        getContactMaterial(m1: Material, m2: Material): any;
+        getContactMaterial(m1: Material, m2: Material): ContactMaterial;
         /**
          * Get number of objects in the world.
          * @deprecated
@@ -3347,7 +3352,7 @@ declare namespace CANNON {
          */
         removeBody(body: Body): void;
         getBodyById(id: number): any;
-        getShapeById(id: number): any;
+        getShapeById(id: number): Shape;
         /**
          * Adds a material to the World.
          * @param m
@@ -3389,16 +3394,16 @@ declare namespace CANNON {
         /**
          * Internal storage of pooled contact points.
          */
-        contactPointPool: any[];
-        frictionEquationPool: any[];
-        result: any[];
-        frictionResult: any[];
+        contactPointPool: ContactEquation[];
+        frictionEquationPool: FrictionEquation[];
+        result: ContactEquation[];
+        frictionResult: FrictionEquation[];
         /**
          * Pooled vectors.
          */
         v3pool: Vec3Pool;
         world: World;
-        currentContactMaterial: any;
+        currentContactMaterial: ContactMaterial;
         enableFrictionReduction: boolean;
         /**
          * Helper class for the World. Generates ContactEquations.
@@ -3419,8 +3424,8 @@ declare namespace CANNON {
          * @param overrideShapeA
          * @param overrideShapeB
          */
-        createContactEquation(bi: Body, bj: Body, si: Shape, sj: Shape, overrideShapeA: Shape, overrideShapeB: Shape): any;
-        createFrictionEquationsFromContact(contactEquation: any, outArray: FrictionEquation[]): boolean;
+        createContactEquation(bi: Body, bj: Body, si: Shape, sj: Shape, overrideShapeA: Shape, overrideShapeB: Shape): ContactEquation;
+        createFrictionEquationsFromContact(contactEquation: ContactEquation, outArray: FrictionEquation[]): boolean;
         createFrictionFromAverage(numContacts: number): void;
         /**
          * Generate all contacts between a list of body pairs
@@ -3431,11 +3436,11 @@ declare namespace CANNON {
          * @param {array} result Array to store generated contacts
          * @param {array} oldcontacts Optional. Array of reusable contact objects
          */
-        getContacts(p1: Body[], p2: Body[], world: World, result: any[], oldcontacts: any[], frictionResult: any[], frictionPool: any[]): void;
-        boxBox(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        boxConvex(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        boxParticle(si: any, sj: any, xi: any, xj: any, qi: any, qj: any, bi: any, bj: any, rsi: any, rsj: any, justTest: any): boolean;
-        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
+        getContacts(p1: Body[], p2: Body[], world: World, result: ContactEquation[], oldcontacts: ContactEquation[], frictionResult: FrictionEquation[], frictionPool: FrictionEquation[]): void;
+        boxBox(si: Box, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        boxConvex(si: Box, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        boxParticle(si: Box, sj: Particle, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereSphere(si: Sphere, sj: Sphere, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
         /**
          * @method planeTrimesh
          * @param  {Shape}      si
@@ -3447,14 +3452,14 @@ declare namespace CANNON {
          * @param  {Body}       bi
          * @param  {Body}       bj
          */
-        planeTrimesh(planeShape: Shape, trimeshShape: any, planePos: Vec3, trimeshPos: Vec3, planeQuat: Quaternion, trimeshQuat: Quaternion, planeBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereTrimesh(sphereShape: Shape, trimeshShape: any, spherePos: Vec3, trimeshPos: Vec3, sphereQuat: Quaternion, trimeshQuat: Quaternion, sphereBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        spherePlane(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereBox(si: Shape, sj: any, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereConvex(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        planeBox(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        planeConvex(planeShape: Shape, convexShape: any, planePosition: Vec3, convexPosition: Vec3, planeQuat: Quaternion, convexQuat: Quaternion, planeBody: Body, convexBody: Body, si: Shape, sj: Shape, justTest: boolean): boolean;
-        convexConvex(si: any, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: any[], faceListB?: any[]): boolean;
+        planeTrimesh(planeShape: Plane, trimeshShape: Trimesh, planePos: Vec3, trimeshPos: Vec3, planeQuat: Quaternion, trimeshQuat: Quaternion, planeBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereTrimesh(sphereShape: Sphere, trimeshShape: Trimesh, spherePos: Vec3, trimeshPos: Vec3, sphereQuat: Quaternion, trimeshQuat: Quaternion, sphereBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        spherePlane(si: Sphere, sj: Plane, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereBox(si: Sphere, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereConvex(si: Sphere, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        planeBox(si: Plane, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        planeConvex(planeShape: Plane, convexShape: ConvexPolyhedron, planePosition: Vec3, convexPosition: Vec3, planeQuat: Quaternion, convexQuat: Quaternion, planeBody: Body, convexBody: Body, si: Shape, sj: Shape, justTest: boolean): boolean;
+        convexConvex(si: ConvexPolyhedron, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: number[], faceListB?: number[]): boolean;
         /**
          * @method convexTrimesh
          * @param  {Array}      result
@@ -3467,12 +3472,12 @@ declare namespace CANNON {
          * @param  {Body}       bi
          * @param  {Body}       bj
          */
-        planeParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        convexParticle(sj: any, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        boxHeightfield(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        convexHeightfield(convexShape: Shape, hfShape: any, convexPos: Vec3, hfPos: Vec3, convexQuat: Quaternion, hfQuat: Quaternion, convexBody: Body, hfBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereHeightfield(sphereShape: Shape, hfShape: any, spherePos: Vec3, hfPos: Vec3, sphereQuat: Quaternion, hfQuat: Quaternion, sphereBody: Body, hfBody: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
+        planeParticle(sj: Plane, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereParticle(sj: Sphere, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        convexParticle(sj: ConvexPolyhedron, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        boxHeightfield(si: Box, sj: Heightfield, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        convexHeightfield(convexShape: ConvexPolyhedron, hfShape: Heightfield, convexPos: Vec3, hfPos: Vec3, convexQuat: Quaternion, hfQuat: Quaternion, convexBody: Body, hfBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereHeightfield(sphereShape: Sphere, hfShape: Heightfield, spherePos: Vec3, hfPos: Vec3, sphereQuat: Quaternion, hfQuat: Quaternion, sphereBody: Body, hfBody: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
     }
 }
 //# sourceMappingURL=cannon.d.ts.map

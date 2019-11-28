@@ -3,13 +3,13 @@ namespace CANNON
     /**
      * For pooling objects that can be reused.
      */
-    export class Pool
+    export class Pool<T>
     {
 
         /**
          * The pooled objects
          */
-        objects: any[];
+        objects: T[];
 
         /**
          * Constructor of the objects
@@ -25,7 +25,7 @@ namespace CANNON
         /**
          * Release an object after use
          */
-        release(...args: any[])
+        release(...args: T[])
         {
             var Nargs = arguments.length;
             for (var i = 0; i !== Nargs; i++)
@@ -52,7 +52,7 @@ namespace CANNON
         /**
          * Construct an object. Should be implmented in each subclass.
          */
-        constructObject()
+        constructObject(): T
         {
             throw new Error("constructObject() not implemented in this Pool subclass yet!");
         }

@@ -1,12 +1,18 @@
 namespace CANNON
 {
+    interface SSNode
+    {
+        body: Body;
+        children: SSNode[];
+        eqs: Equation[];
+        visited: boolean;
+    };
+
     export class SplitSolver extends Solver
     {
-        iterations: number;
-        tolerance: number;
-        subsolver: any;
-        nodes: any[];
-        nodePool: any[];
+        subsolver: Solver;
+        nodes: SSNode[];
+        nodePool: SSNode[];
 
         /**
          * Splits the equations into islands and solves them independently. Can improve performance.
@@ -29,7 +35,7 @@ namespace CANNON
             }
         }
 
-        createNode()
+        createNode(): SSNode
         {
             return { body: null, children: [], eqs: [], visited: false };
         }
@@ -115,11 +121,11 @@ namespace CANNON
 
 
     // Returns the number of subsystems
-    var SplitSolver_solve_nodes = []; // All allocated node objects
+    var SplitSolver_solve_nodes: SSNode[] = []; // All allocated node objects
     var SplitSolver_solve_nodePool = []; // All allocated node objects
     var SplitSolver_solve_eqs = [];   // Temp array
     var SplitSolver_solve_bds = [];   // Temp array
-    var SplitSolver_solve_dummyWorld = { bodies: [] }; // Temp object
+    var SplitSolver_solve_dummyWorld: { bodies: Body[] } = { bodies: [] }; // Temp object
 
     var STATIC = Body.STATIC;
     function getUnvisitedNode(nodes)
@@ -156,7 +162,7 @@ namespace CANNON
         }
     }
 
-    function visitFunc(node: any, bds: any[], eqs: any[])
+    function visitFunc(node: SSNode, bds: Body[], eqs: Equation[])
     {
         bds.push(node.body);
         var Neqs = node.eqs.length;

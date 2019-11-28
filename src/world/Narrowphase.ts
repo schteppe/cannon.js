@@ -5,16 +5,16 @@ namespace CANNON
         /**
          * Internal storage of pooled contact points.
          */
-        contactPointPool: any[];
-        frictionEquationPool: any[];
-        result: any[];
-        frictionResult: any[];
+        contactPointPool: ContactEquation[];
+        frictionEquationPool: FrictionEquation[];
+        result: ContactEquation[];
+        frictionResult: FrictionEquation[];
         /**
          * Pooled vectors.
          */
         v3pool: Vec3Pool;
         world: World;
-        currentContactMaterial: any;
+        currentContactMaterial: ContactMaterial;
         enableFrictionReduction: boolean;
 
         /**
@@ -54,7 +54,7 @@ namespace CANNON
          */
         createContactEquation(bi: Body, bj: Body, si: Shape, sj: Shape, overrideShapeA: Shape, overrideShapeB: Shape)
         {
-            var c: any;
+            var c: ContactEquation;
             if (this.contactPointPool.length)
             {
                 c = this.contactPointPool.pop();
@@ -90,7 +90,7 @@ namespace CANNON
             return c;
         };
 
-        createFrictionEquationsFromContact(contactEquation: any, outArray: FrictionEquation[])
+        createFrictionEquationsFromContact(contactEquation: ContactEquation, outArray: FrictionEquation[])
         {
             var bodyA = contactEquation.bi;
             var bodyB = contactEquation.bj;
@@ -206,7 +206,7 @@ namespace CANNON
          * @param {array} result Array to store generated contacts
          * @param {array} oldcontacts Optional. Array of reusable contact objects
          */
-        getContacts(p1: Body[], p2: Body[], world: World, result: any[], oldcontacts: any[], frictionResult: any[], frictionPool: any[])
+        getContacts(p1: Body[], p2: Body[], world: World, result: ContactEquation[], oldcontacts: ContactEquation[], frictionResult: FrictionEquation[], frictionPool: FrictionEquation[])
         {
             // Save old contact objects
             this.contactPointPool = oldcontacts;
@@ -227,7 +227,7 @@ namespace CANNON
                     bj = p2[k];
 
                 // Get contact material
-                var bodyContactMaterial = null;
+                var bodyContactMaterial: ContactMaterial = null;
                 if (bi.material && bj.material)
                 {
                     bodyContactMaterial = world.getContactMaterial(bi.material, bj.material) || null;
@@ -270,7 +270,7 @@ namespace CANNON
                         }
 
                         // Get collision material
-                        var shapeContactMaterial = null;
+                        var shapeContactMaterial: ContactMaterial = null;
                         if (si.material && sj.material)
                         {
                             shapeContactMaterial = world.getContactMaterial(si.material, sj.material) || null;
@@ -303,7 +303,7 @@ namespace CANNON
             }
         }
 
-        boxBox(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        boxBox(si: Box, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             sj.convexPolyhedronRepresentation.material = sj.material;
@@ -312,21 +312,21 @@ namespace CANNON
             return this.convexConvex(si.convexPolyhedronRepresentation, sj.convexPolyhedronRepresentation, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         }
 
-        boxConvex(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        boxConvex(si: Box, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexConvex(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         }
 
-        boxParticle(si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest)
+        boxParticle(si: Box, sj: Particle, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexParticle(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         }
 
-        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean)
+        sphereSphere(si: Sphere, sj: Sphere, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean)
         {
             if (justTest)
             {
@@ -369,8 +369,8 @@ namespace CANNON
          * @param  {Body}       bj
          */
         planeTrimesh(
-            planeShape: Shape,
-            trimeshShape: any,
+            planeShape: Plane,
+            trimeshShape: Trimesh,
             planePos: Vec3,
             trimeshPos: Vec3,
             planeQuat: Quaternion,
@@ -436,8 +436,8 @@ namespace CANNON
         }
 
         sphereTrimesh(
-            sphereShape: Shape,
-            trimeshShape: any,
+            sphereShape: Sphere,
+            trimeshShape: Trimesh,
             spherePos: Vec3,
             trimeshPos: Vec3,
             sphereQuat: Quaternion,
@@ -627,7 +627,7 @@ namespace CANNON
             triangles.length = 0;
         }
 
-        spherePlane(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        spherePlane(si: Sphere, sj: Plane, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             // We will have one contact in this case
             var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
@@ -667,7 +667,7 @@ namespace CANNON
             }
         }
 
-        sphereBox(si: Shape, sj: any, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        sphereBox(si: Sphere, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var v3pool = this.v3pool;
 
@@ -740,7 +740,7 @@ namespace CANNON
             if (side_penetrations)
             {
                 found = true;
-                var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
+                let r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
                 side_ns.mult(-R, r.ri); // Sphere r
                 r.ni.copy(side_ns);
                 r.ni.negate(r.ni); // Normal should be out of sphere
@@ -803,7 +803,7 @@ namespace CANNON
                                 return true;
                             }
                             found = true;
-                            var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
+                            let r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
                             r.ri.copy(sphere_to_corner);
                             r.ri.normalize();
                             r.ni.copy(r.ri);
@@ -828,7 +828,7 @@ namespace CANNON
             // Check edges
             var edgeTangent = v3pool.get();
             var edgeCenter = v3pool.get();
-            var r = v3pool.get(); // r = edge center to sphere center
+            let r = v3pool.get(); // r = edge center to sphere center
             var orthogonal = v3pool.get();
             var dist1: Vec3 = v3pool.get();
             var Nsides = sides.length;
@@ -899,7 +899,7 @@ namespace CANNON
             v3pool.release(edgeTangent, edgeCenter, r, orthogonal, dist1);
         }
 
-        sphereConvex(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        sphereConvex(si: Sphere, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var v3pool = this.v3pool;
             xi.vsub(xj, convex_to_sphere);
@@ -1132,7 +1132,7 @@ namespace CANNON
             }
         }
 
-        planeBox(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        planeBox(si: Plane, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             sj.convexPolyhedronRepresentation.material = sj.material;
             sj.convexPolyhedronRepresentation.collisionResponse = sj.collisionResponse;
@@ -1141,8 +1141,8 @@ namespace CANNON
         }
 
         planeConvex(
-            planeShape: Shape,
-            convexShape: any,
+            planeShape: Plane,
+            convexShape: ConvexPolyhedron,
             planePosition: Vec3,
             convexPosition: Vec3,
             planeQuat: Quaternion,
@@ -1213,7 +1213,7 @@ namespace CANNON
             }
         }
 
-        convexConvex(si: any, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: any[], faceListB?: any[])
+        convexConvex(si: ConvexPolyhedron, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: number[], faceListB?: number[])
         {
             var sepAxis = convexConvex_sepAxis;
 
@@ -1347,7 +1347,7 @@ namespace CANNON
         //     }
         // };
 
-        planeParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        planeParticle(sj: Plane, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var normal = particlePlane_normal;
             normal.copy(World.worldNormal);
@@ -1381,7 +1381,7 @@ namespace CANNON
             }
         }
 
-        sphereParticle(sj: Shape, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        sphereParticle(sj: Sphere, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             // The normal is the unit vector from sphere center to particle center
             var normal = particleSphere_normal;
@@ -1407,7 +1407,7 @@ namespace CANNON
             }
         }
 
-        convexParticle(sj: any, si: Shape, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        convexParticle(sj: ConvexPolyhedron, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var penetratedFaceIndex = -1;
             var penetratedFaceNormal = convexParticle_penetratedFaceNormal;
@@ -1495,7 +1495,7 @@ namespace CANNON
             }
         }
 
-        boxHeightfield(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        boxHeightfield(si: Box, sj: Heightfield, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
@@ -1503,8 +1503,8 @@ namespace CANNON
         }
 
         convexHeightfield(
-            convexShape: Shape,
-            hfShape: any,
+            convexShape: ConvexPolyhedron,
+            hfShape: Heightfield,
             convexPos: Vec3,
             hfPos: Vec3,
             convexQuat: Quaternion,
@@ -1596,8 +1596,8 @@ namespace CANNON
         };
 
         sphereHeightfield(
-            sphereShape: Shape,
-            hfShape: any,
+            sphereShape: Sphere,
+            hfShape: Heightfield,
             spherePos: Vec3,
             hfPos: Vec3,
             sphereQuat: Quaternion,

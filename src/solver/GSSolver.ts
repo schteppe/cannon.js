@@ -4,17 +4,6 @@ namespace CANNON
     {
 
         /**
-         * The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
-         * @todo write more about solver and iterations in the wiki
-         */
-        iterations: number;
-
-        /**
-         * When tolerance is reached, the system is assumed to be converged.
-         */
-        tolerance: number;
-
-        /**
          * Constraint equation Gauss-Seidel solver.
          * @todo The spook parameters should be specified for each constraint, not globally.
          * @author schteppe / https://github.com/schteppe

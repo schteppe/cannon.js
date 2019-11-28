@@ -97,7 +97,7 @@ namespace CANNON
 
         timeLastSleepy: number;
 
-        private _wakeUpAfterNarrowphase: boolean;
+        _wakeUpAfterNarrowphase: boolean;
 
         /**
          * World space rotational force on the body, around center of mass.

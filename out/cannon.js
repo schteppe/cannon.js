@@ -4948,10 +4948,11 @@ var CANNON;
                         addBoxToBins(x - r, y - r, z - r, x + r, y + r, z + r, bi);
                         break;
                     case PLANE:
-                        if (si.worldNormalNeedsUpdate) {
-                            si.computeWorldNormal(bi.quaternion);
+                        var plane = si;
+                        if (plane.worldNormalNeedsUpdate) {
+                            plane.computeWorldNormal(bi.quaternion);
                         }
-                        var planeNormal = si.worldNormal;
+                        var planeNormal = plane.worldNormal;
                         //Relative position from origin of plane object to the first bin
                         //Incremented as we iterate through the bins
                         var xreset = xmin + binsizeX * 0.5 - bi.position.x, yreset = ymin + binsizeY * 0.5 - bi.position.y, zreset = zmin + binsizeZ * 0.5 - bi.position.z;
@@ -7976,6 +7977,7 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
+    ;
     var SplitSolver = /** @class */ (function (_super) {
         __extends(SplitSolver, _super);
         /**
@@ -8624,13 +8626,13 @@ var CANNON;
             var ncontacts = contacts.length;
             for (var k = 0; k !== ncontacts; k++) {
                 // Current contact
-                var c = contacts[k];
+                var c_1 = contacts[k];
                 // Get current collision indeces
-                var bi = c.bi, bj = c.bj, si = c.si, sj = c.sj;
+                var bi_2 = c_1.bi, bj = c_1.bj, si = c_1.si, sj = c_1.sj;
                 // Get collision properties
                 var cm;
-                if (bi.material && bj.material) {
-                    cm = this.getContactMaterial(bi.material, bj.material) || this.defaultContactMaterial;
+                if (bi_2.material && bj.material) {
+                    cm = this.getContactMaterial(bi_2.material, bj.material) || this.defaultContactMaterial;
                 }
                 else {
                     cm = this.defaultContactMaterial;
@@ -8639,12 +8641,12 @@ var CANNON;
                 var mu = cm.friction;
                 // c.restitution = cm.restitution;
                 // If friction or restitution were specified in the material, use them
-                if (bi.material && bj.material) {
-                    if (bi.material.friction >= 0 && bj.material.friction >= 0) {
-                        mu = bi.material.friction * bj.material.friction;
+                if (bi_2.material && bj.material) {
+                    if (bi_2.material.friction >= 0 && bj.material.friction >= 0) {
+                        mu = bi_2.material.friction * bj.material.friction;
                     }
-                    if (bi.material.restitution >= 0 && bj.material.restitution >= 0) {
-                        c.restitution = bi.material.restitution * bj.material.restitution;
+                    if (bi_2.material.restitution >= 0 && bj.material.restitution >= 0) {
+                        c_1.restitution = bi_2.material.restitution * bj.material.restitution;
                     }
                 }
                 // c.setSpookParams(
@@ -8652,7 +8654,7 @@ var CANNON;
                 //           cm.contactEquationRelaxation,
                 //           dt
                 //       );
-                solver.addEquation(c);
+                solver.addEquation(c_1);
                 // // Add friction constraint equation
                 // if(mu > 0){
                 // 	// Create 2 tangent equations
@@ -8684,40 +8686,40 @@ var CANNON;
                 // 	solver.addEquation(c1);
                 // 	solver.addEquation(c2);
                 // }
-                if (bi.allowSleep &&
-                    bi.type === CANNON.Body.DYNAMIC &&
-                    bi.sleepState === CANNON.Body.SLEEPING &&
+                if (bi_2.allowSleep &&
+                    bi_2.type === CANNON.Body.DYNAMIC &&
+                    bi_2.sleepState === CANNON.Body.SLEEPING &&
                     bj.sleepState === CANNON.Body.AWAKE &&
                     bj.type !== CANNON.Body.STATIC) {
                     var speedSquaredB = bj.velocity.norm2() + bj.angularVelocity.norm2();
                     var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit, 2);
                     if (speedSquaredB >= speedLimitSquaredB * 2) {
-                        bi._wakeUpAfterNarrowphase = true;
+                        bi_2._wakeUpAfterNarrowphase = true;
                     }
                 }
                 if (bj.allowSleep &&
                     bj.type === CANNON.Body.DYNAMIC &&
                     bj.sleepState === CANNON.Body.SLEEPING &&
-                    bi.sleepState === CANNON.Body.AWAKE &&
-                    bi.type !== CANNON.Body.STATIC) {
-                    var speedSquaredA = bi.velocity.norm2() + bi.angularVelocity.norm2();
-                    var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit, 2);
+                    bi_2.sleepState === CANNON.Body.AWAKE &&
+                    bi_2.type !== CANNON.Body.STATIC) {
+                    var speedSquaredA = bi_2.velocity.norm2() + bi_2.angularVelocity.norm2();
+                    var speedLimitSquaredA = Math.pow(bi_2.sleepSpeedLimit, 2);
                     if (speedSquaredA >= speedLimitSquaredA * 2) {
                         bj._wakeUpAfterNarrowphase = true;
                     }
                 }
                 // Now we know that i and j are in contact. Set collision matrix state
-                this.collisionMatrix.set(bi, bj, true);
-                if (!this.collisionMatrixPrevious.get(bi, bj)) {
+                this.collisionMatrix.set(bi_2, bj, true);
+                if (!this.collisionMatrixPrevious.get(bi_2, bj)) {
                     // First contact!
                     // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
                     World_step_collideEvent.body = bj;
-                    World_step_collideEvent.contact = c;
-                    bi.dispatchEvent(World_step_collideEvent);
-                    World_step_collideEvent.body = bi;
+                    World_step_collideEvent.contact = c_1;
+                    bi_2.dispatchEvent(World_step_collideEvent);
+                    World_step_collideEvent.body = bi_2;
                     bj.dispatchEvent(World_step_collideEvent);
                 }
-                this.bodyOverlapKeeper.set(bi.id, bj.id);
+                this.bodyOverlapKeeper.set(bi_2.id, bj.id);
                 this.shapeOverlapKeeper.set(si.id, sj.id);
             }
             this.emitContactEvents();
@@ -9377,22 +9379,22 @@ var CANNON;
             }
             if (side_penetrations) {
                 found = true;
-                var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
-                side_ns.mult(-R, r.ri); // Sphere r
-                r.ni.copy(side_ns);
-                r.ni.negate(r.ni); // Normal should be out of sphere
+                var r_1 = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
+                side_ns.mult(-R, r_1.ri); // Sphere r
+                r_1.ni.copy(side_ns);
+                r_1.ni.negate(r_1.ni); // Normal should be out of sphere
                 side_ns.mult(side_h, side_ns);
                 side_ns1.mult(side_dot1, side_ns1);
                 side_ns.vadd(side_ns1, side_ns);
                 side_ns2.mult(side_dot2, side_ns2);
-                side_ns.vadd(side_ns2, r.rj);
+                side_ns.vadd(side_ns2, r_1.rj);
                 // Make relative to bodies
-                r.ri.vadd(xi, r.ri);
-                r.ri.vsub(bi.position, r.ri);
-                r.rj.vadd(xj, r.rj);
-                r.rj.vsub(bj.position, r.rj);
-                this.result.push(r);
-                this.createFrictionEquationsFromContact(r, this.frictionResult);
+                r_1.ri.vadd(xi, r_1.ri);
+                r_1.ri.vsub(bi.position, r_1.ri);
+                r_1.rj.vadd(xj, r_1.rj);
+                r_1.rj.vsub(bj.position, r_1.rj);
+                this.result.push(r_1);
+                this.createFrictionEquationsFromContact(r_1, this.frictionResult);
             }
             // Check corners
             var rj = v3pool.get();
@@ -9427,19 +9429,19 @@ var CANNON;
                                 return true;
                             }
                             found = true;
-                            var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
-                            r.ri.copy(sphere_to_corner);
-                            r.ri.normalize();
-                            r.ni.copy(r.ri);
-                            r.ri.mult(R, r.ri);
-                            r.rj.copy(rj);
+                            var r_2 = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
+                            r_2.ri.copy(sphere_to_corner);
+                            r_2.ri.normalize();
+                            r_2.ni.copy(r_2.ri);
+                            r_2.ri.mult(R, r_2.ri);
+                            r_2.rj.copy(rj);
                             // Make relative to bodies
-                            r.ri.vadd(xi, r.ri);
-                            r.ri.vsub(bi.position, r.ri);
-                            r.rj.vadd(xj, r.rj);
-                            r.rj.vsub(bj.position, r.rj);
-                            this.result.push(r);
-                            this.createFrictionEquationsFromContact(r, this.frictionResult);
+                            r_2.ri.vadd(xi, r_2.ri);
+                            r_2.ri.vsub(bi.position, r_2.ri);
+                            r_2.rj.vadd(xj, r_2.rj);
+                            r_2.rj.vsub(bj.position, r_2.rj);
+                            this.result.push(r_2);
+                            this.createFrictionEquationsFromContact(r_2, this.frictionResult);
                         }
                     }
                 }

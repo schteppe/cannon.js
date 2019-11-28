@@ -232,7 +232,7 @@ namespace CANNON
          * @param {number} [options.maxDepth=8]
          * @extends OctreeNode
          */
-        constructor(aabb?: AABB, options: { root?: any, aabb?: AABB, maxDepth?: number } = {})
+        constructor(aabb?: AABB, options: { root?: OctreeNode, aabb?: AABB, maxDepth?: number } = {})
         {
             options.root = null;
             options.aabb = aabb;

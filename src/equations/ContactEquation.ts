@@ -19,6 +19,9 @@ namespace CANNON
          * Contact normal, pointing out of body i.
          */
         ni: Vec3;
+        si: Shape;
+        sj: Shape;
+        bodyA: Body;
 
         /**
          * Contact/non-penetration constraint equation

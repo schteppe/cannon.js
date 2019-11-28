@@ -161,11 +161,12 @@ namespace CANNON
 						break;
 
 					case PLANE:
-						if (si.worldNormalNeedsUpdate)
+						var plane = <Plane>si;
+						if (plane.worldNormalNeedsUpdate)
 						{
-							si.computeWorldNormal(bi.quaternion);
+							plane.computeWorldNormal(bi.quaternion);
 						}
-						var planeNormal = si.worldNormal;
+						var planeNormal = plane.worldNormal;
 
 						//Relative position from origin of plane object to the first bin
 						//Incremented as we iterate through the bins

@@ -17,8 +17,8 @@ namespace CANNON
         /**
          * All the current contacts (instances of ContactEquation) in the world.
          */
-        contacts: any[];
-        frictionEquations: any[];
+        contacts: ContactEquation[];
+        frictionEquations: FrictionEquation[];
 
         /**
          * How often to normalize quaternions. Set to 0 for every step, 1 for every second etc.. A larger value increases performance. If bodies tend to explode, set to a smaller value (zero to be sure nothing can go wrong).
@@ -51,14 +51,14 @@ namespace CANNON
          */
         broadphase: Broadphase;
 
-        bodies: any[];
+        bodies: Body[];
 
         /**
          * The solver algorithm to use. Default is GSSolver
          */
         solver: Solver;
 
-        constraints: any[];
+        constraints: Constraint[];
 
         narrowphase: Narrowphase;
 
@@ -77,12 +77,12 @@ namespace CANNON
          */
         materials: Material[];
 
-        contactmaterials: any[];
+        contactmaterials: ContactMaterial[];
 
         /**
          * Used to look up a ContactMaterial given two instances of Material.
          */
-        contactMaterialTable: TupleDictionary;
+        contactMaterialTable: TupleDictionary<ContactMaterial>;
 
         defaultMaterial: Material;
 
@@ -106,7 +106,7 @@ namespace CANNON
          */
         accumulator: number;
 
-        subsystems: any[];
+        subsystems: SPHSystem[];
 
         /**
          * Dispatched after a body has been added to the world.
@@ -667,16 +667,16 @@ namespace CANNON
             {
 
                 // Current contact
-                var c = contacts[k];
+                let c = contacts[k];
 
                 // Get current collision indeces
-                var bi = c.bi,
+                let bi = c.bi,
                     bj = c.bj,
                     si = c.si,
                     sj = c.sj;
 
                 // Get collision properties
-                var cm;
+                var cm: ContactMaterial;
                 if (bi.material && bj.material)
                 {
                     cm = this.getContactMaterial(bi.material, bj.material) || this.defaultContactMaterial;

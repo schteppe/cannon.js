@@ -1,6 +1,6 @@
 namespace CANNON
 {
-    export class Vec3Pool extends Pool
+    export class Vec3Pool extends Pool<Vec3>
     {
         constructor()
         {

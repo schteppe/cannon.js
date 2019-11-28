@@ -1,18 +1,20 @@
 namespace CANNON
 {
-    export class TupleDictionary
+    export class TupleDictionary<T>
     {
 
         /**
          * The data storage
          */
-        data = { keys: [] };
+        data: {
+            keys: string[];
+        } = { keys: [] };
 
         /**
          * @param i
          * @param j
          */
-        get(i: number, j: number)
+        get(i: number, j: number): T
         {
             if (i > j)
             {
@@ -24,7 +26,7 @@ namespace CANNON
             return this.data[i + '-' + j];
         }
 
-        set(i: number, j: number, value: any)
+        set(i: number, j: number, value: T)
         {
             if (i > j)
             {
