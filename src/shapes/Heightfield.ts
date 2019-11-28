@@ -280,9 +280,9 @@ namespace CANNON
             var e0 = getNormalAt_e0;
             var e1 = getNormalAt_e1;
             this.getTriangleAt(x, y, edgeClamp, a, b, c);
-            b.vsub(a, e0);
-            c.vsub(a, e1);
-            e0.cross(e1, result);
+            b.subTo(a, e0);
+            c.subTo(a, e1);
+            e0.crossTo(e1, result);
             result.normalize();
         }
 
@@ -670,7 +670,7 @@ namespace CANNON
             // Use the bounding box of the min/max values
             var data = this.data,
                 s = this.elementSize;
-            this.boundingSphereRadius = new Vec3(data.length * s, data[0].length * s, Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))).norm();
+            this.boundingSphereRadius = new Vec3(data.length * s, data[0].length * s, Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))).length;
         }
 
         /**

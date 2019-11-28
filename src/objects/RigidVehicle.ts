@@ -147,9 +147,9 @@ namespace CANNON
             var wheelBody = this.wheelBodies[wheelIndex];
             var bodyTorque = wheelBody.torque;
 
-            axis.scale(value, torque);
+            axis.scaleNumberTo(value, torque);
             wheelBody.vectorToWorldFrame(torque, torque);
-            bodyTorque.vadd(torque, bodyTorque);
+            bodyTorque.addTo(torque, bodyTorque);
         }
 
         /**

@@ -531,7 +531,7 @@ namespace CANNON
                 for (var j = 0; j !== this.bodies.length; j++)
                 {
                     var b = this.bodies[j];
-                    b.previousPosition.lerp(b.position, t, b.interpolatedPosition);
+                    b.previousPosition.lerpNumberTo(b.position, t, b.interpolatedPosition);
                     b.previousQuaternion.slerp(b.quaternion, t, b.interpolatedQuaternion);
                     b.previousQuaternion.normalize();
                 }
@@ -558,7 +558,7 @@ namespace CANNON
                 profilingStart,
                 constraints = this.constraints,
                 frictionEquationPool = World_step_frictionEquationPool,
-                gnorm = gravity.norm(),
+                gnorm = gravity.length,
                 gx = gravity.x,
                 gy = gravity.y,
                 gz = gravity.z,
@@ -758,7 +758,7 @@ namespace CANNON
                     bj.type !== Body.STATIC
                 )
                 {
-                    var speedSquaredB = bj.velocity.norm2() + bj.angularVelocity.norm2();
+                    var speedSquaredB = bj.velocity.lengthSquared + bj.angularVelocity.lengthSquared;
                     var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit, 2);
                     if (speedSquaredB >= speedLimitSquaredB * 2)
                     {
@@ -773,7 +773,7 @@ namespace CANNON
                     bi.type !== Body.STATIC
                 )
                 {
-                    var speedSquaredA = bi.velocity.norm2() + bi.angularVelocity.norm2();
+                    var speedSquaredA = bi.velocity.lengthSquared + bi.angularVelocity.lengthSquared;
                     var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit, 2);
                     if (speedSquaredA >= speedLimitSquaredA * 2)
                     {
@@ -852,12 +852,12 @@ namespace CANNON
                 { // Only for dynamic bodies
                     var ld = pow(1.0 - bi.linearDamping, dt);
                     var v = bi.velocity;
-                    v.mult(ld, v);
+                    v.scaleNumberTo(ld, v);
                     var av = bi.angularVelocity;
                     if (av)
                     {
                         var ad = pow(1.0 - bi.angularDamping, dt);
-                        av.mult(ad, av);
+                        av.scaleNumberTo(ad, av);
                     }
                 }
             }

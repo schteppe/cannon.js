@@ -27,11 +27,11 @@ namespace CANNON
 
         static ZERO = new Vec3(0, 0, 0);
 
-        static UNIT_X = new Vec3(1, 0, 0);
+        static X_AXIS = new Vec3(1, 0, 0);
 
-        static UNIT_Y = new Vec3(0, 1, 0);
+        static Y_AXIS = new Vec3(0, 1, 0);
 
-        static UNIT_Z = new Vec3(0, 0, 1);
+        static Z_AXIS = new Vec3(0, 0, 1);
 
         /**
          * Vector cross product
@@ -39,7 +39,7 @@ namespace CANNON
          * @param v 
          * @param target Target to save in.
          */
-        cross(v: Vec3, target = new Vec3())
+        crossTo(v: Vec3, target = new Vec3())
         {
             var vx = v.x, vy = v.y, vz = v.z, x = this.x, y = this.y, z = this.z;
             target = target;
@@ -78,7 +78,7 @@ namespace CANNON
          * @param v 
          * @param target 
          */
-        vadd(v: Vec3, target: Vec3 = null)
+        addTo(v: Vec3, target: Vec3 = null)
         {
             if (target)
             {
@@ -98,7 +98,7 @@ namespace CANNON
          * @param v 
          * @param target Target to save in.
          */
-        vsub(v: Vec3, target: Vec3 = null)
+        subTo(v: Vec3, target: Vec3 = null)
         {
             if (target)
             {
@@ -174,18 +174,8 @@ namespace CANNON
 
         /**
          * Get the length of the vector
-         * @deprecated Use .length() instead
          */
-        norm()
-        {
-            var x = this.x, y = this.y, z = this.z;
-            return Math.sqrt(x * x + y * y + z * z);
-        }
-
-        /**
-         * Get the length of the vector
-         */
-        length()
+        get length()
         {
             var x = this.x, y = this.y, z = this.z;
             return Math.sqrt(x * x + y * y + z * z);
@@ -193,17 +183,8 @@ namespace CANNON
 
         /**
          * Get the squared length of the vector
-         * @deprecated Use .lengthSquared() instead.
          */
-        norm2()
-        {
-            return this.dot(this);
-        }
-
-        /**
-         * Get the squared length of the vector
-         */
-        lengthSquared()
+        get lengthSquared()
         {
             return this.dot(this);
         }
@@ -212,7 +193,7 @@ namespace CANNON
          * Get distance from this point to another point
          * @param p 
          */
-        distanceTo(p: Vec3)
+        distance(p: Vec3)
         {
             var x = this.x, y = this.y, z = this.z;
             var px = p.x, py = p.y, pz = p.z;
@@ -236,25 +217,8 @@ namespace CANNON
          * Multiply all the components of the vector with a scalar.
          * @param scalar
          * @param  target The vector to save the result in.
-         * @deprecated Use .scale() instead
          */
-        mult(scalar: number, target = new Vec3())
-        {
-            var x = this.x,
-                y = this.y,
-                z = this.z;
-            target.x = scalar * x;
-            target.y = scalar * y;
-            target.z = scalar * z;
-            return target;
-        }
-
-        /**
-         * Multiply all the components of the vector with a scalar.
-         * @param scalar
-         * @param  target The vector to save the result in.
-         */
-        scale(scalar: number, target = new Vec3())
+        scaleNumberTo(scalar: number, target = new Vec3())
         {
             var x = this.x,
                 y = this.y,
@@ -270,7 +234,7 @@ namespace CANNON
          * @param  vector
          * @param  target The vector to save the result in.
          */
-        vmul(vector: Vec3, target = new Vec3())
+        scaleTo(vector: Vec3, target = new Vec3())
         {
             target.x = vector.x * this.x;
             target.y = vector.y * this.y;
@@ -284,7 +248,7 @@ namespace CANNON
          * @param vector
          * @param  target The vector to save the result in.
          */
-        addScaledVector(scalar: number, vector: Vec3, target = new Vec3())
+        addScaledVectorTo(scalar: number, vector: Vec3, target = new Vec3())
         {
             target.x = this.x + scalar * vector.x;
             target.y = this.y + scalar * vector.y;
@@ -310,7 +274,7 @@ namespace CANNON
          * Make the vector point in the opposite direction.
          * @param target Optional target to save in
          */
-        negate(target: Vec3)
+        negateTo(target: Vec3)
         {
             target = target || new Vec3();
             target.x = -this.x;
@@ -321,7 +285,7 @@ namespace CANNON
 
         tangents(t1: Vec3, t2: Vec3)
         {
-            var norm = this.norm();
+            var norm = this.length;
             if (norm > 0.0)
             {
                 var n = Vec3_tangents_n;
@@ -331,13 +295,13 @@ namespace CANNON
                 if (Math.abs(n.x) < 0.9)
                 {
                     randVec.set(1, 0, 0);
-                    n.cross(randVec, t1);
+                    n.crossTo(randVec, t1);
                 } else
                 {
                     randVec.set(0, 1, 0);
-                    n.cross(randVec, t1);
+                    n.crossTo(randVec, t1);
                 }
-                n.cross(t1, t2);
+                n.crossTo(t1, t2);
             } else
             {
                 // The normal length is zero, make something up
@@ -380,7 +344,7 @@ namespace CANNON
          * @param v
          * @param t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
          */
-        lerp(v: Vec3, t: number, target: Vec3)
+        lerpNumberTo(v: Vec3, t: number, target: Vec3)
         {
             var x = this.x, y = this.y, z = this.z;
             target.x = x + (v.x - x) * t;
@@ -393,26 +357,11 @@ namespace CANNON
          * @param v
          * @param  precision
          */
-        almostEquals(v: Vec3, precision = 1e-6)
+        equals(v: Vec3, precision = 1e-6)
         {
             if (Math.abs(this.x - v.x) > precision ||
                 Math.abs(this.y - v.y) > precision ||
                 Math.abs(this.z - v.z) > precision)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        /**
-         * Check if a vector is almost zero
-         * @param precision
-         */
-        almostZero(precision = 1e-6)
-        {
-            if (Math.abs(this.x) > precision ||
-                Math.abs(this.y) > precision ||
-                Math.abs(this.z) > precision)
             {
                 return false;
             }
@@ -426,8 +375,8 @@ namespace CANNON
          */
         isAntiparallelTo(v: Vec3, precision = 1e-6)
         {
-            this.negate(antip_neg);
-            return antip_neg.almostEquals(v, precision);
+            this.negateTo(antip_neg);
+            return antip_neg.equals(v, precision);
         }
 
         /**

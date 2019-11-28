@@ -148,7 +148,7 @@ namespace CANNON
 
                 body.quaternion.mult(body.shapeOrientations[i], qi);
                 body.quaternion.vmult(body.shapeOffsets[i], xi);
-                xi.vadd(body.position, xi);
+                xi.addTo(body.position, xi);
 
                 this.intersectShape(
                     shape,
@@ -187,7 +187,7 @@ namespace CANNON
          */
         private _updateDirection()
         {
-            this.to.vsub(this.from, this._direction);
+            this.to.subTo(this.from, this._direction);
             this._direction.normalize();
         };
 
@@ -225,9 +225,9 @@ namespace CANNON
             quat.vmult(worldNormal, worldNormal);
 
             var len = new Vec3();
-            from.vsub(position, len);
+            from.subTo(position, len);
             var planeToFrom = len.dot(worldNormal);
-            to.vsub(position, len);
+            to.subTo(position, len);
             var planeToTo = len.dot(worldNormal);
 
             if (planeToFrom * planeToTo > 0)
@@ -236,7 +236,7 @@ namespace CANNON
                 return;
             }
 
-            if (from.distanceTo(to) < planeToFrom)
+            if (from.distance(to) < planeToFrom)
             {
                 return;
             }
@@ -253,10 +253,10 @@ namespace CANNON
             var dir_scaled_with_t = new Vec3();
             var hitPointWorld = new Vec3();
 
-            from.vsub(position, planePointToFrom);
+            from.subTo(position, planePointToFrom);
             var t = -worldNormal.dot(planePointToFrom) / n_dot_dir;
-            direction.scale(t, dir_scaled_with_t);
-            from.vadd(dir_scaled_with_t, hitPointWorld);
+            direction.scaleNumberTo(t, dir_scaled_with_t);
+            from.addTo(dir_scaled_with_t, hitPointWorld);
 
             this.reportIntersection(worldNormal, hitPointWorld, reportedShape, body, -1);
         }
@@ -364,9 +364,9 @@ namespace CANNON
             } else if (delta === 0)
             {
                 // single intersection point
-                from.lerp(to, delta, intersectionPoint);
+                from.lerpNumberTo(to, delta, intersectionPoint);
 
-                intersectionPoint.vsub(position, normal);
+                intersectionPoint.subTo(position, normal);
                 normal.normalize();
 
                 this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
@@ -378,8 +378,8 @@ namespace CANNON
 
                 if (d1 >= 0 && d1 <= 1)
                 {
-                    from.lerp(to, d1, intersectionPoint);
-                    intersectionPoint.vsub(position, normal);
+                    from.lerpNumberTo(to, d1, intersectionPoint);
+                    intersectionPoint.subTo(position, normal);
                     normal.normalize();
                     this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
                 }
@@ -391,8 +391,8 @@ namespace CANNON
 
                 if (d2 >= 0 && d2 <= 1)
                 {
-                    from.lerp(to, d2, intersectionPoint);
-                    intersectionPoint.vsub(position, normal);
+                    from.lerpNumberTo(to, d2, intersectionPoint);
+                    intersectionPoint.subTo(position, normal);
                     normal.normalize();
                     this.reportIntersection(normal, intersectionPoint, reportedShape, body, -1);
                 }
@@ -422,7 +422,7 @@ namespace CANNON
 
             var from = this.from;
             var to = this.to;
-            var fromToDistance = from.distanceTo(to);
+            var fromToDistance = from.distance(to);
 
             var minDist = -1;
             var Nfaces = faceList ? faceList.length : faces.length;
@@ -443,10 +443,10 @@ namespace CANNON
                 // Get plane point in world coordinates...
                 vector.copy(vertices[face[0]]);
                 q.vmult(vector, vector);
-                vector.vadd(x, vector);
+                vector.addTo(x, vector);
 
                 // ...but make it relative to the ray from. We'll fix this later.
-                vector.vsub(from, vector);
+                vector.subTo(from, vector);
 
                 // Get plane normal
                 q.vmult(faceNormal, normal);
@@ -472,13 +472,13 @@ namespace CANNON
                 // if (dot < 0) {
 
                 // Intersection point is from + direction * scalar
-                direction.mult(scalar, intersectPoint);
-                intersectPoint.vadd(from, intersectPoint);
+                direction.scaleNumberTo(scalar, intersectPoint);
+                intersectPoint.addTo(from, intersectPoint);
 
                 // a is the point we compare points b and c with.
                 a.copy(vertices[face[0]]);
                 q.vmult(a, a);
-                x.vadd(a, a);
+                x.addTo(a, a);
 
                 for (var i = 1; !result._shouldStop && i < face.length - 1; i++)
                 {
@@ -487,10 +487,10 @@ namespace CANNON
                     c.copy(vertices[face[i + 1]]);
                     q.vmult(b, b);
                     q.vmult(c, c);
-                    x.vadd(b, b);
-                    x.vadd(c, c);
+                    x.addTo(b, b);
+                    x.addTo(c, c);
 
-                    var distance = intersectPoint.distanceTo(from);
+                    var distance = intersectPoint.distance(from);
 
                     if (!(Ray.pointInTriangle(intersectPoint, a, b, c) || Ray.pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance)
                     {
@@ -572,7 +572,7 @@ namespace CANNON
             localFrom.y *= mesh.scale.y;
             localFrom.z *= mesh.scale.z;
 
-            localTo.vsub(localFrom, localDirection);
+            localTo.subTo(localFrom, localDirection);
             localDirection.normalize();
 
             var fromToDistanceSquared = localFrom.distanceSquared(localTo);
@@ -592,7 +592,7 @@ namespace CANNON
                 mesh.getVertex(indices[trianglesIndex * 3], a);
 
                 // ...but make it relative to the ray from. We'll fix this later.
-                a.vsub(localFrom, vector);
+                a.subTo(localFrom, vector);
 
                 // If this dot product is negative, we have something interesting
                 var dot = localDirection.dot(normal);
@@ -612,8 +612,8 @@ namespace CANNON
                 }
 
                 // Intersection point is from + direction * scalar
-                localDirection.scale(scalar, intersectPoint);
-                intersectPoint.vadd(localFrom, intersectPoint);
+                localDirection.scaleNumberTo(scalar, intersectPoint);
+                intersectPoint.addTo(localFrom, intersectPoint);
 
                 // Get triangle vertices
                 mesh.getVertex(indices[trianglesIndex * 3 + 1], b);
@@ -639,7 +639,7 @@ namespace CANNON
         {
             var from = this.from;
             var to = this.to;
-            var distance = from.distanceTo(hitPointWorld);
+            var distance = from.distance(hitPointWorld);
             var result = this.result;
 
             // Skip back faces?
@@ -710,9 +710,9 @@ namespace CANNON
          */
         static pointInTriangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3)
         {
-            c.vsub(a, v0);
-            b.vsub(a, v1);
-            p.vsub(a, v2);
+            c.subTo(a, v0);
+            b.subTo(a, v1);
+            p.subTo(a, v2);
 
             var dot00 = v0.dot(v0);
             var dot01 = v0.dot(v1);
@@ -790,18 +790,18 @@ namespace CANNON
     Ray.prototype[Shape.types.TRIMESH] = Ray.prototype["intersectTrimesh"];
     Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype["intersectConvex"];
 
-    function distanceFromIntersection(from, direction, position)
+    function distanceFromIntersection(from: Vec3, direction: Vec3, position: Vec3)
     {
 
         // v0 is vector from from to position
-        position.vsub(from, v0);
+        position.subTo(from, v0);
         var dot = v0.dot(direction);
 
         // intersect = direction*dot + from
-        direction.mult(dot, intersect);
-        intersect.vadd(from, intersect);
+        direction.scaleNumberTo(dot, intersect);
+        intersect.addTo(from, intersect);
 
-        var distance = position.distanceTo(intersect);
+        var distance = position.distance(intersect);
 
         return distance;
     }

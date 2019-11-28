@@ -96,9 +96,9 @@ namespace CANNON
         doBoundingSphereBroadphase(bodyA: Body, bodyB: Body, pairs1: Body[], pairs2: Body[])
         {
             var r = Broadphase_collisionPairs_r;
-            bodyB.position.vsub(bodyA.position, r);
+            bodyB.position.subTo(bodyA.position, r);
             var boundingRadiusSum2 = Math.pow(bodyA.boundingRadius + bodyB.boundingRadius, 2);
-            var norm2 = r.norm2();
+            var norm2 = r.lengthSquared;
             if (norm2 < boundingRadiusSum2)
             {
                 pairs1.push(bodyA);
@@ -189,8 +189,8 @@ namespace CANNON
         static boundingSphereCheck(bodyA: Body, bodyB: Body)
         {
             var dist = bsc_dist;
-            bodyA.position.vsub(bodyB.position, dist);
-            return Math.pow(bodyA.shape.boundingSphereRadius + bodyB.shape.boundingSphereRadius, 2) > dist.norm2();
+            bodyA.position.subTo(bodyB.position, dist);
+            return Math.pow(bodyA.shape.boundingSphereRadius + bodyB.shape.boundingSphereRadius, 2) > dist.lengthSquared;
         }
 
         /**

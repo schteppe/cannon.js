@@ -31,18 +31,18 @@ namespace CANNON
             var pivotA = this.pivotA;
             var pivotB = this.pivotB;
             var halfWay = new Vec3();
-            bodyA.position.vadd(bodyB.position, halfWay);
-            halfWay.scale(0.5, halfWay);
+            bodyA.position.addTo(bodyB.position, halfWay);
+            halfWay.scaleNumberTo(0.5, halfWay);
             bodyB.pointToLocalFrame(halfWay, pivotB);
             bodyA.pointToLocalFrame(halfWay, pivotA);
 
             // Store initial rotation of the bodies as unit vectors in the local body spaces
-            this.xA = bodyA.vectorToLocalFrame(Vec3.UNIT_X);
-            this.xB = bodyB.vectorToLocalFrame(Vec3.UNIT_X);
-            this.yA = bodyA.vectorToLocalFrame(Vec3.UNIT_Y);
-            this.yB = bodyB.vectorToLocalFrame(Vec3.UNIT_Y);
-            this.zA = bodyA.vectorToLocalFrame(Vec3.UNIT_Z);
-            this.zB = bodyB.vectorToLocalFrame(Vec3.UNIT_Z);
+            this.xA = bodyA.vectorToLocalFrame(Vec3.X_AXIS);
+            this.xB = bodyB.vectorToLocalFrame(Vec3.X_AXIS);
+            this.yA = bodyA.vectorToLocalFrame(Vec3.Y_AXIS);
+            this.yB = bodyB.vectorToLocalFrame(Vec3.Y_AXIS);
+            this.zA = bodyA.vectorToLocalFrame(Vec3.Z_AXIS);
+            this.zB = bodyB.vectorToLocalFrame(Vec3.Z_AXIS);
 
             // ...and the following rotational equations will keep all rotational DOF's in place
 

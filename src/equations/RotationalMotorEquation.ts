@@ -56,7 +56,7 @@ namespace CANNON
             // G = [0 axisA 0 -axisB]
 
             GA.rotational.copy(axisA);
-            axisB.negate(GB.rotational);
+            axisB.negateTo(GB.rotational);
 
             var GW = this.computeGW() - this.targetVelocity,
                 GiMf = this.computeGiMf();

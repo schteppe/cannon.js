@@ -154,8 +154,8 @@ namespace CANNON
                 invMassi = bi.invMassSolve,
                 invMassj = bj.invMassSolve;
 
-            fi.scale(invMassi, iMfi);
-            fj.scale(invMassj, iMfj);
+            fi.scaleNumberTo(invMassi, iMfi);
+            fj.scaleNumberTo(invMassj, iMfj);
 
             bi.invInertiaWorldSolve.vmult(ti, invIi_vmult_taui);
             bj.invInertiaWorldSolve.vmult(tj, invIj_vmult_tauj);
@@ -200,15 +200,15 @@ namespace CANNON
 
             // Add to linear velocity
             // v_lambda += inv(M) * delta_lamba * G
-            bi.vlambda.addScaledVector(bi.invMassSolve * deltalambda, GA.spatial, bi.vlambda);
-            bj.vlambda.addScaledVector(bj.invMassSolve * deltalambda, GB.spatial, bj.vlambda);
+            bi.vlambda.addScaledVectorTo(bi.invMassSolve * deltalambda, GA.spatial, bi.vlambda);
+            bj.vlambda.addScaledVectorTo(bj.invMassSolve * deltalambda, GB.spatial, bj.vlambda);
 
             // Add to angular velocity
             bi.invInertiaWorldSolve.vmult(GA.rotational, temp);
-            bi.wlambda.addScaledVector(deltalambda, temp, bi.wlambda);
+            bi.wlambda.addScaledVectorTo(deltalambda, temp, bi.wlambda);
 
             bj.invInertiaWorldSolve.vmult(GB.rotational, temp);
-            bj.wlambda.addScaledVector(deltalambda, temp, bj.wlambda);
+            bj.wlambda.addScaledVectorTo(deltalambda, temp, bj.wlambda);
         }
 
         /**

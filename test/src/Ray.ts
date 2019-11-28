@@ -21,14 +21,14 @@ namespace CANNON
 
             r.intersectBody(body, result);
             test.ok(result.hasHit);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
 
             // test rotating the body first
             result.reset();
             body.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.ok(result.hasHit);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
 
             // test shooting from other direction
             result.reset();
@@ -36,7 +36,7 @@ namespace CANNON
             r.from.set(0, 0, 5);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, 0, 0.5)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0, 0, 0.5)));
 
             // test miss
             result.reset();
@@ -61,7 +61,7 @@ namespace CANNON
             var result = new RaycastResult();
             r.intersectBodies([body1, body2], result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
         });
 
         QUnit.test("box", (test) =>
@@ -75,25 +75,25 @@ namespace CANNON
 
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
 
             result.reset();
             body.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
 
             result.reset();
             body.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
 
             result.reset();
             body.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), 3 * Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
 
         });
 
@@ -108,18 +108,18 @@ namespace CANNON
             var result = new RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(1, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(1, 0, 0)));
 
             result.reset();
             body.position.set(1, 0, 0);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(2, 0, 0)));
 
             result.reset();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(2, 0, 0)));
 
             result.reset();
             var shape2 = new Sphere(1);
@@ -127,7 +127,7 @@ namespace CANNON
             body2.addShape(shape2, new Vec3(1, 0, 0));
             r.intersectBody(body2, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(2, 0, 0)));
 
         });
 
@@ -197,7 +197,7 @@ namespace CANNON
             var result = new RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0, 0, 0)));
             test.equal(result.distance, 5);
 
             result.reset();
@@ -205,7 +205,7 @@ namespace CANNON
             body2.addShape(shape, new Vec3(0, 0, 1), new Quaternion());
             r.intersectBody(body2, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, 0, 1)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0, 0, 1)));
 
             result.reset();
             var body3 = new Body({ mass: 1 });
@@ -231,7 +231,7 @@ namespace CANNON
             r.intersectBody(body, result);
             var distance1 = result.distance;
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0, 0, 0)));
 
             var result = new RaycastResult();
             r.from.set(0, 1 - 5, 1);
@@ -240,7 +240,7 @@ namespace CANNON
             r.intersectBody(body, result);
             var distance2 = result.distance;
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.almostEquals(new Vec3(0, -5, 0)));
+            test.ok(result.hitPointWorld.equals(new Vec3(0, -5, 0)));
             test.equal(distance1, distance2);
 
             test.ok(true);

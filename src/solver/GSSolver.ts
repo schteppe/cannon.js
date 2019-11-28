@@ -114,11 +114,11 @@ namespace CANNON
                         v = b.velocity,
                         w = b.angularVelocity;
 
-                    b.vlambda.vmul(b.linearFactor, b.vlambda);
-                    v.vadd(b.vlambda, v);
+                    b.vlambda.scaleTo(b.linearFactor, b.vlambda);
+                    v.addTo(b.vlambda, v);
 
-                    b.wlambda.vmul(b.angularFactor, b.wlambda);
-                    w.vadd(b.wlambda, w);
+                    b.wlambda.scaleTo(b.angularFactor, b.wlambda);
+                    w.addTo(b.wlambda, w);
                 }
 
                 // Set the .multiplier property of each equation

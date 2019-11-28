@@ -67,8 +67,8 @@ namespace CANNON
             // Add offset
             if (position)
             {
-                position.vadd(l, l);
-                position.vadd(u, u);
+                position.addTo(l, l);
+                position.addTo(u, u);
             }
 
             if (skinSize)

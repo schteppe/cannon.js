@@ -240,7 +240,7 @@ namespace CANNON
             var vb = getEdgeVector_vb;
             this.getEdgeVertex(edgeIndex, 0, va);
             this.getEdgeVertex(edgeIndex, 1, vb);
-            vb.vsub(va, vectorStore);
+            vb.subTo(va, vectorStore);
         }
 
         /**
@@ -253,9 +253,9 @@ namespace CANNON
          */
         static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3)
         {
-            vb.vsub(va, ab);
-            vc.vsub(vb, cb);
-            cb.cross(ab, target);
+            vb.subTo(va, ab);
+            vc.subTo(vb, cb);
+            cb.crossTo(ab, target);
             if (!target.isZero())
             {
                 target.normalize();
@@ -434,7 +434,7 @@ namespace CANNON
             for (var i = 0, N = vertices.length / 3; i !== N; i++)
             {
                 this.getVertex(i, v);
-                var norm2 = v.norm2();
+                var norm2 = v.lengthSquared;
                 if (norm2 > max2)
                 {
                     max2 = norm2;
@@ -454,7 +454,7 @@ namespace CANNON
             for(var i=0; i<n; i++){
                 this.getVertex(i, v);
                 quat.vmult(v, v);
-                pos.vadd(v, v);
+                pos.addTo(v, v);
                 if (v.x < minx || minx===undefined){
                     minx = v.x;
                 } else if(v.x > maxx || maxx===undefined){

@@ -13,8 +13,8 @@ namespace CANNON
 
             world.clearForces();
 
-            test.ok(body.force.almostEquals(new Vec3(0, 0, 0)));
-            test.ok(body.torque.almostEquals(new Vec3(0, 0, 0)));
+            test.ok(body.force.equals(new Vec3(0, 0, 0)));
+            test.ok(body.torque.equals(new Vec3(0, 0, 0)));
 
         });
 

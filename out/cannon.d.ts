@@ -1,4 +1,6 @@
 declare namespace CANNON {
+}
+declare namespace CANNON {
     class Vec3 {
         x: number;
         y: number;
@@ -17,16 +19,16 @@ declare namespace CANNON {
          */
         constructor(x?: number, y?: number, z?: number);
         static ZERO: Vec3;
-        static UNIT_X: Vec3;
-        static UNIT_Y: Vec3;
-        static UNIT_Z: Vec3;
+        static X_AXIS: Vec3;
+        static Y_AXIS: Vec3;
+        static Z_AXIS: Vec3;
         /**
          * Vector cross product
          *
          * @param v
          * @param target Target to save in.
          */
-        cross(v: Vec3, target?: Vec3): Vec3;
+        crossTo(v: Vec3, target?: Vec3): Vec3;
         /**
          * Set the vectors' 3 elements
          * @param x
@@ -43,13 +45,13 @@ declare namespace CANNON {
          * @param v
          * @param target
          */
-        vadd(v: Vec3, target?: Vec3): Vec3;
+        addTo(v: Vec3, target?: Vec3): Vec3;
         /**
          * Vector subtraction
          * @param v
          * @param target Target to save in.
          */
-        vsub(v: Vec3, target?: Vec3): Vec3;
+        subTo(v: Vec3, target?: Vec3): Vec3;
         /**
          * Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
          * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
@@ -67,27 +69,17 @@ declare namespace CANNON {
         unit(target?: Vec3): Vec3;
         /**
          * Get the length of the vector
-         * @deprecated Use .length() instead
          */
-        norm(): number;
-        /**
-         * Get the length of the vector
-         */
-        length(): number;
-        /**
-         * Get the squared length of the vector
-         * @deprecated Use .lengthSquared() instead.
-         */
-        norm2(): number;
+        get length(): number;
         /**
          * Get the squared length of the vector
          */
-        lengthSquared(): number;
+        get lengthSquared(): number;
         /**
          * Get distance from this point to another point
          * @param p
          */
-        distanceTo(p: Vec3): number;
+        distance(p: Vec3): number;
         /**
          * Get squared distance from this point to another point
          * @param p
@@ -97,28 +89,21 @@ declare namespace CANNON {
          * Multiply all the components of the vector with a scalar.
          * @param scalar
          * @param  target The vector to save the result in.
-         * @deprecated Use .scale() instead
          */
-        mult(scalar: number, target?: Vec3): Vec3;
-        /**
-         * Multiply all the components of the vector with a scalar.
-         * @param scalar
-         * @param  target The vector to save the result in.
-         */
-        scale(scalar: number, target?: Vec3): Vec3;
+        scaleNumberTo(scalar: number, target?: Vec3): Vec3;
         /**
          * Multiply the vector with an other vector, component-wise.
          * @param  vector
          * @param  target The vector to save the result in.
          */
-        vmul(vector: Vec3, target?: Vec3): Vec3;
+        scaleTo(vector: Vec3, target?: Vec3): Vec3;
         /**
          * Scale a vector and add it to this vector. Save the result in "target". (target = this + vector * scalar)
          * @param scalar
          * @param vector
          * @param  target The vector to save the result in.
          */
-        addScaledVector(scalar: number, vector: Vec3, target?: Vec3): Vec3;
+        addScaledVectorTo(scalar: number, vector: Vec3, target?: Vec3): Vec3;
         /**
          * Calculate dot product
          * @param {Vec3} v
@@ -129,7 +114,7 @@ declare namespace CANNON {
          * Make the vector point in the opposite direction.
          * @param target Optional target to save in
          */
-        negate(target: Vec3): Vec3;
+        negateTo(target: Vec3): Vec3;
         tangents(t1: Vec3, t2: Vec3): void;
         /**
          * Converts to a more readable format
@@ -150,18 +135,13 @@ declare namespace CANNON {
          * @param v
          * @param t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
          */
-        lerp(v: Vec3, t: number, target: Vec3): void;
+        lerpNumberTo(v: Vec3, t: number, target: Vec3): void;
         /**
          * Check if a vector equals is almost equal to another one.
          * @param v
          * @param  precision
          */
-        almostEquals(v: Vec3, precision?: number): boolean;
-        /**
-         * Check if a vector is almost zero
-         * @param precision
-         */
-        almostZero(precision?: number): boolean;
+        equals(v: Vec3, precision?: number): boolean;
         /**
          * Check if the vector is anti-parallel to another vector.
          * @param  v
@@ -2432,7 +2412,7 @@ declare namespace CANNON {
          * @param  {Vec3} result
          * @return {Vec3} The result vector.
          */
-        getVelocityAtWorldPoint(worldPoint: any, result: any): any;
+        getVelocityAtWorldPoint(worldPoint: Vec3, result: Vec3): Vec3;
         /**
          * Move the body forward in time.
          * @param dt Time step

@@ -70,21 +70,21 @@ namespace CANNON
                 n = this.ni;
 
             // Caluclate cross products
-            ri.cross(n, rixn);
-            rj.cross(n, rjxn);
+            ri.crossTo(n, rixn);
+            rj.crossTo(n, rjxn);
 
             // g = xj+rj -(xi+ri)
             // G = [ -ni  -rixn  ni  rjxn ]
-            n.negate(GA.spatial);
-            rixn.negate(GA.rotational);
+            n.negateTo(GA.spatial);
+            rixn.negateTo(GA.rotational);
             GB.spatial.copy(n);
             GB.rotational.copy(rjxn);
 
             // Calculate the penetration vector
             penetrationVec.copy(bj.position);
-            penetrationVec.vadd(rj, penetrationVec);
-            penetrationVec.vsub(bi.position, penetrationVec);
-            penetrationVec.vsub(ri, penetrationVec);
+            penetrationVec.addTo(rj, penetrationVec);
+            penetrationVec.subTo(bi.position, penetrationVec);
+            penetrationVec.subTo(ri, penetrationVec);
 
             var g = n.dot(penetrationVec);
 
@@ -109,13 +109,13 @@ namespace CANNON
             var xj = ContactEquation_getImpactVelocityAlongNormal_xj;
             var relVel = ContactEquation_getImpactVelocityAlongNormal_relVel;
 
-            this.bi.position.vadd(this.ri, xi);
-            this.bj.position.vadd(this.rj, xj);
+            this.bi.position.addTo(this.ri, xi);
+            this.bj.position.addTo(this.rj, xj);
 
             this.bi.getVelocityAtWorldPoint(xi, vi);
             this.bj.getVelocityAtWorldPoint(xj, vj);
 
-            vi.vsub(vj, relVel);
+            vi.subTo(vj, relVel);
 
             return this.ni.dot(relVel);
         }

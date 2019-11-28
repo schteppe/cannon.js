@@ -92,12 +92,12 @@ namespace CANNON
                 for (var j = 0; j !== numVertices; j++)
                 {
                     var k = (j + 1) % numVertices;
-                    vertices[face[j]].vsub(vertices[face[k]], edge);
+                    vertices[face[j]].subTo(vertices[face[k]], edge);
                     edge.normalize();
                     var found = false;
                     for (var p = 0; p !== edges.length; p++)
                     {
-                        if (edges[p].almostEquals(edge) || edges[p].almostEquals(edge))
+                        if (edges[p].equals(edge) || edges[p].equals(edge))
                         {
                             found = true;
                             break;
@@ -134,7 +134,7 @@ namespace CANNON
 
                 var n = this.faceNormals[i] || new Vec3();
                 this.getFaceNormal(i, n);
-                n.negate(n);
+                n.negateTo(n);
                 this.faceNormals[i] = n;
                 var vertex = this.vertices[this.faces[i][0]];
                 if (n.dot(vertex) < 0)
@@ -158,9 +158,9 @@ namespace CANNON
          */
         static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3)
         {
-            vb.vsub(va, ab);
-            vc.vsub(vb, cb);
-            cb.cross(ab, target);
+            vb.subTo(va, ab);
+            vc.subTo(vb, cb);
+            cb.crossTo(ab, target);
             if (!target.isZero())
             {
                 target.normalize();
@@ -209,7 +209,7 @@ namespace CANNON
             {
                 WorldNormal.copy(hullB.faceNormals[face]);
                 quatB.vmult(WorldNormal, WorldNormal);
-                //posB.vadd(WorldNormal,WorldNormal);
+                //posB.addTo(WorldNormal,WorldNormal);
                 var d = WorldNormal.dot(separatingNormal);
                 if (d > dmax)
                 {
@@ -226,7 +226,7 @@ namespace CANNON
                 var worldb = new Vec3();
                 worldb.copy(b);
                 quatB.vmult(worldb, worldb);
-                posB.vadd(worldb, worldb);
+                posB.addTo(worldb, worldb);
                 worldVertsB1.push(worldb);
             }
 
@@ -378,9 +378,9 @@ namespace CANNON
 
                     // Get world edge 2
                     quatB.vmult(hullB.uniqueEdges[e1], worldEdge1);
-                    worldEdge0.cross(worldEdge1, Cross);
+                    worldEdge0.crossTo(worldEdge1, Cross);
 
-                    if (!Cross.almostZero())
+                    if (!Cross.equals(Vec3.ZERO))
                     {
                         Cross.normalize();
                         var dist = hullA.testSepAxis(Cross, hullB, posA, quatA, posB, quatB);
@@ -397,10 +397,10 @@ namespace CANNON
                 }
             }
 
-            posB.vsub(posA, deltaC);
+            posB.subTo(posA, deltaC);
             if ((deltaC.dot(target)) > 0.0)
             {
-                target.negate(target);
+                target.negateTo(target);
             }
 
             return true;
@@ -504,7 +504,7 @@ namespace CANNON
             {
                 faceANormalWS.copy(hullA.faceNormals[face]);
                 quatA.vmult(faceANormalWS, faceANormalWS);
-                //posA.vadd(faceANormalWS,faceANormalWS);
+                //posA.addTo(faceANormalWS,faceANormalWS);
                 var d = faceANormalWS.dot(separatingNormal);
                 if (d < dmin)
                 {
@@ -539,18 +539,18 @@ namespace CANNON
             {
                 var a = hullA.vertices[polyA[e0]];
                 var b = hullA.vertices[polyA[(e0 + 1) % numVerticesA]];
-                a.vsub(b, edge0);
+                a.subTo(b, edge0);
                 WorldEdge0.copy(edge0);
                 quatA.vmult(WorldEdge0, WorldEdge0);
-                posA.vadd(WorldEdge0, WorldEdge0);
+                posA.addTo(WorldEdge0, WorldEdge0);
                 worldPlaneAnormal1.copy(this.faceNormals[closestFaceA]);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
                 quatA.vmult(worldPlaneAnormal1, worldPlaneAnormal1);
-                posA.vadd(worldPlaneAnormal1, worldPlaneAnormal1);
-                WorldEdge0.cross(worldPlaneAnormal1, planeNormalWS1);
-                planeNormalWS1.negate(planeNormalWS1);
+                posA.addTo(worldPlaneAnormal1, worldPlaneAnormal1);
+                WorldEdge0.crossTo(worldPlaneAnormal1, planeNormalWS1);
+                planeNormalWS1.negateTo(planeNormalWS1);
                 worldA1.copy(a);
                 quatA.vmult(worldA1, worldA1);
-                posA.vadd(worldA1, worldA1);
+                posA.addTo(worldA1, worldA1);
                 var planeEqWS1 = -worldA1.dot(planeNormalWS1);
                 var planeEqWS: number;
                 if (true)
@@ -561,7 +561,7 @@ namespace CANNON
 
                     planeNormalWS.copy(localPlaneNormal);
                     quatA.vmult(planeNormalWS, planeNormalWS);
-                    //posA.vadd(planeNormalWS,planeNormalWS);
+                    //posA.addTo(planeNormalWS,planeNormalWS);
                     var planeEqWS = localPlaneEq - planeNormalWS.dot(posA);
                 } else
                 {
@@ -663,7 +663,7 @@ namespace CANNON
                     {
                         // Start < 0, end >= 0, so output intersection
                         var newv = new Vec3();
-                        firstVertex.lerp(lastVertex,
+                        firstVertex.lerpNumberTo(lastVertex,
                             n_dot_first / (n_dot_first - n_dot_last),
                             newv);
                         outVertices.push(newv);
@@ -674,7 +674,7 @@ namespace CANNON
                     {
                         // Start >= 0, end < 0 so output intersection and end
                         var newv = new Vec3();
-                        firstVertex.lerp(lastVertex,
+                        firstVertex.lerpNumberTo(lastVertex,
                             n_dot_first / (n_dot_first - n_dot_last),
                             newv);
                         outVertices.push(newv);
@@ -701,7 +701,7 @@ namespace CANNON
             for (var i = 0; i !== N; i++)
             {
                 quat.vmult(verts[i], worldVerts[i]);
-                position.vadd(worldVerts[i], worldVerts[i]);
+                position.addTo(worldVerts[i], worldVerts[i]);
             }
 
             this.worldVerticesNeedsUpdate = false;
@@ -773,7 +773,7 @@ namespace CANNON
             var verts = this.vertices;
             for (var i = 0, N = verts.length; i !== N; i++)
             {
-                var norm2 = verts[i].norm2();
+                var norm2 = verts[i].lengthSquared;
                 if (norm2 > max2)
                 {
                     max2 = norm2;
@@ -797,7 +797,7 @@ namespace CANNON
             {
                 tempWorldVertex.copy(verts[i]);
                 quat.vmult(tempWorldVertex, tempWorldVertex);
-                pos.vadd(tempWorldVertex, tempWorldVertex);
+                pos.addTo(tempWorldVertex, tempWorldVertex);
                 var v = tempWorldVertex;
                 if (v.x < minx || minx === undefined)
                 {
@@ -847,9 +847,9 @@ namespace CANNON
                 verts = this.vertices;
             for (var i = 0; i < n; i++)
             {
-                target.vadd(verts[i], target);
+                target.addTo(verts[i], target);
             }
-            target.mult(1 / n, target);
+            target.scaleNumberTo(1 / n, target);
             return target;
         }
 
@@ -893,7 +893,7 @@ namespace CANNON
                 for (var i = 0; i < n; i++)
                 {
                     var v = verts[i];
-                    v.vadd(offset, v);
+                    v.addTo(offset, v);
                 }
             }
         }
@@ -921,11 +921,11 @@ namespace CANNON
 
                 // This dot product determines which side of the edge the point is
                 var vToP = ConvexPolyhedron_vToP;
-                p.vsub(v, vToP);
+                p.subTo(v, vToP);
                 var r1 = n0.dot(vToP);
 
                 var vToPointInside = ConvexPolyhedron_vToPointInside;
-                pointInside.vsub(v, vToPointInside);
+                pointInside.subTo(v, vToPointInside);
                 var r2 = n0.dot(vToPointInside);
 
                 if ((r1 < 0 && r2 > 0) || (r1 > 0 && r2 < 0))
