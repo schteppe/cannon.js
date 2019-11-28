@@ -103,14 +103,14 @@ namespace CANNON
             var children = this.children;
 
             children.push(
-                new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(0, 0, 0) }) }),
-                new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(1, 0, 0) }) }),
-                new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(1, 1, 0) }) }),
-                new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(1, 1, 1) }) }),
-                new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(0, 1, 1) }) }),
-                new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(0, 0, 1) }) }),
-                new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(1, 0, 1) }) }),
-                new OctreeNode({ aabb: new AABB({ lowerBound: new Vec3(0, 1, 0) }) })
+                new OctreeNode({ aabb: new AABB(new Vec3(0, 0, 0)) }),
+                new OctreeNode({ aabb: new AABB(new Vec3(1, 0, 0)) }),
+                new OctreeNode({ aabb: new AABB(new Vec3(1, 1, 0)) }),
+                new OctreeNode({ aabb: new AABB(new Vec3(1, 1, 1)) }),
+                new OctreeNode({ aabb: new AABB(new Vec3(0, 1, 1)) }),
+                new OctreeNode({ aabb: new AABB(new Vec3(0, 0, 1)) }),
+                new OctreeNode({ aabb: new AABB(new Vec3(1, 0, 1)) }),
+                new OctreeNode({ aabb: new AABB(new Vec3(0, 1, 0)) })
             );
 
             u.vsub(l, halfDiagonal);

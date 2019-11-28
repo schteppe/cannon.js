@@ -3571,16 +3571,19 @@ var CANNON;
          *
          * Axis aligned bounding box class.
          */
-        function AABB(options) {
-            if (options === void 0) { options = {}; }
+        function AABB(lowerBound, upperBound) {
+            if (lowerBound === void 0) { lowerBound = new CANNON.Vec3(); }
+            if (upperBound === void 0) { upperBound = new CANNON.Vec3(); }
+            /**
+             * The lower bound of the bounding box.
+             */
             this.lowerBound = new CANNON.Vec3();
-            if (options.lowerBound) {
-                this.lowerBound.copy(options.lowerBound);
-            }
+            /**
+             * The upper bound of the bounding box.
+             */
             this.upperBound = new CANNON.Vec3();
-            if (options.upperBound) {
-                this.upperBound.copy(options.upperBound);
-            }
+            this.lowerBound = lowerBound;
+            this.upperBound = upperBound;
         }
         /**
          * Set the AABB bounds from a set of points.
@@ -4306,7 +4309,7 @@ var CANNON;
             var l = aabb.lowerBound;
             var u = aabb.upperBound;
             var children = this.children;
-            children.push(new OctreeNode({ aabb: new CANNON.AABB({ lowerBound: new CANNON.Vec3(0, 0, 0) }) }), new OctreeNode({ aabb: new CANNON.AABB({ lowerBound: new CANNON.Vec3(1, 0, 0) }) }), new OctreeNode({ aabb: new CANNON.AABB({ lowerBound: new CANNON.Vec3(1, 1, 0) }) }), new OctreeNode({ aabb: new CANNON.AABB({ lowerBound: new CANNON.Vec3(1, 1, 1) }) }), new OctreeNode({ aabb: new CANNON.AABB({ lowerBound: new CANNON.Vec3(0, 1, 1) }) }), new OctreeNode({ aabb: new CANNON.AABB({ lowerBound: new CANNON.Vec3(0, 0, 1) }) }), new OctreeNode({ aabb: new CANNON.AABB({ lowerBound: new CANNON.Vec3(1, 0, 1) }) }), new OctreeNode({ aabb: new CANNON.AABB({ lowerBound: new CANNON.Vec3(0, 1, 0) }) }));
+            children.push(new OctreeNode({ aabb: new CANNON.AABB(new CANNON.Vec3(0, 0, 0)) }), new OctreeNode({ aabb: new CANNON.AABB(new CANNON.Vec3(1, 0, 0)) }), new OctreeNode({ aabb: new CANNON.AABB(new CANNON.Vec3(1, 1, 0)) }), new OctreeNode({ aabb: new CANNON.AABB(new CANNON.Vec3(1, 1, 1)) }), new OctreeNode({ aabb: new CANNON.AABB(new CANNON.Vec3(0, 1, 1)) }), new OctreeNode({ aabb: new CANNON.AABB(new CANNON.Vec3(0, 0, 1)) }), new OctreeNode({ aabb: new CANNON.AABB(new CANNON.Vec3(1, 0, 1)) }), new OctreeNode({ aabb: new CANNON.AABB(new CANNON.Vec3(0, 1, 0)) }));
             u.vsub(l, halfDiagonal);
             halfDiagonal.scale(0.5, halfDiagonal);
             var root = this.root || this;

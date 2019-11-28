@@ -12,44 +12,23 @@ var CANNON;
             test.deepEqual(a, b);
         });
         QUnit.test("clone", function (test) {
-            var a = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -2, -3),
-                upperBound: new CANNON.Vec3(1, 2, 3)
-            });
+            var a = new CANNON.AABB(new CANNON.Vec3(-1, -2, -3), new CANNON.Vec3(1, 2, 3));
             var b = a.clone();
             test.deepEqual(a, b);
             test.equal(a === b, false);
         });
         QUnit.test("extend", function (test) {
-            var a = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(1, 1, 1)
-            });
-            var b = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-2, -2, -2),
-                upperBound: new CANNON.Vec3(2, 2, 2)
-            });
+            var a = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(1, 1, 1));
+            var b = new CANNON.AABB(new CANNON.Vec3(-2, -2, -2), new CANNON.Vec3(2, 2, 2));
             a.extend(b);
             test.deepEqual(a, b);
-            a = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(1, 1, 1)
-            });
-            b = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-2, -2, -2),
-                upperBound: new CANNON.Vec3(2, 2, 2)
-            });
+            a = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(1, 1, 1));
+            b = new CANNON.AABB(new CANNON.Vec3(-2, -2, -2), new CANNON.Vec3(2, 2, 2));
             b.extend(a);
             test.deepEqual(b.lowerBound, new CANNON.Vec3(-2, -2, -2));
             test.deepEqual(b.upperBound, new CANNON.Vec3(2, 2, 2));
-            a = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-2, -1, -1),
-                upperBound: new CANNON.Vec3(2, 1, 1)
-            });
-            b = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(1, 1, 1)
-            });
+            a = new CANNON.AABB(new CANNON.Vec3(-2, -1, -1), new CANNON.Vec3(2, 1, 1));
+            b = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(1, 1, 1));
             b.extend(a);
             test.deepEqual(a.lowerBound, new CANNON.Vec3(-2, -1, -1));
             test.deepEqual(a.upperBound, new CANNON.Vec3(2, 1, 1));
@@ -112,10 +91,7 @@ var CANNON;
             // Some translation
             frame.position.set(-1, 0, 0);
             worldAABB.toLocalFrame(frame, localAABB);
-            test.deepEqual(localAABB, new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(0, -1, -1),
-                upperBound: new CANNON.Vec3(2, 1, 1)
-            }));
+            test.deepEqual(localAABB, new CANNON.AABB(new CANNON.Vec3(0, -1, -1), new CANNON.Vec3(2, 1, 1)));
         });
         QUnit.test("toWorldFrame", function (test) {
             var localAABB = new CANNON.AABB();
@@ -129,10 +105,7 @@ var CANNON;
             // Some translation on the frame
             frame.position.set(1, 0, 0);
             localAABB.toWorldFrame(frame, worldAABB);
-            test.deepEqual(worldAABB, new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(0, -1, -1),
-                upperBound: new CANNON.Vec3(2, 1, 1)
-            }));
+            test.deepEqual(worldAABB, new CANNON.AABB(new CANNON.Vec3(0, -1, -1), new CANNON.Vec3(2, 1, 1)));
         });
     });
 })(CANNON || (CANNON = {}));
@@ -947,15 +920,9 @@ var CANNON;
             test.ok(true);
         });
         QUnit.test("insertRoot", function (test) {
-            var aabb = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(1, 1, 1)
-            });
+            var aabb = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(1, 1, 1));
             var tree = new CANNON.Octree(aabb);
-            var nodeAABB = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(1, 1, 1)
-            });
+            var nodeAABB = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(1, 1, 1));
             var nodeData = 123;
             tree.insert(nodeAABB, nodeData);
             // Should end up in root node and not children
@@ -963,17 +930,11 @@ var CANNON;
             test.equal(tree.children.length, 0);
         });
         QUnit.test("insertDeep", function (test) {
-            var aabb = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(1, 1, 1)
-            });
+            var aabb = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(1, 1, 1));
             var tree = new CANNON.Octree(aabb, {
                 maxDepth: 8
             });
-            var nodeAABB = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(-1, -1, -1)
-            });
+            var nodeAABB = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(-1, -1, -1));
             var nodeData = 123;
             tree.insert(nodeAABB, nodeData);
             // Should be deep (maxDepth deep) in lower corner
@@ -990,31 +951,22 @@ var CANNON;
             test.equal(tree.data.length, 0);
         });
         QUnit.test("aabbQuery", function (test) {
-            var aabb = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(1, 1, 1)
-            });
+            var aabb = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(1, 1, 1));
             var tree = new CANNON.Octree(aabb);
-            var nodeAABB = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(1, 1, 1)
-            });
+            var nodeAABB = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(1, 1, 1));
             var nodeData = 123;
             tree.insert(nodeAABB, nodeData);
             var result = [];
             tree.aabbQuery(aabb, result);
             test.deepEqual(result, [123]);
-            var nodeAABB2 = new CANNON.AABB({
-                lowerBound: new CANNON.Vec3(-1, -1, -1),
-                upperBound: new CANNON.Vec3(-1, -1, -1)
-            });
+            var nodeAABB2 = new CANNON.AABB(new CANNON.Vec3(-1, -1, -1), new CANNON.Vec3(-1, -1, -1));
             var nodeData2 = 456;
             tree.insert(nodeAABB2, nodeData2);
             result = [];
             tree.aabbQuery(aabb, result);
             test.deepEqual(result, [123, 456]);
             result = [];
-            tree.aabbQuery(new CANNON.AABB({ lowerBound: new CANNON.Vec3(0, 0, 0), upperBound: new CANNON.Vec3(1, 1, 1) }), result);
+            tree.aabbQuery(new CANNON.AABB(new CANNON.Vec3(0, 0, 0), new CANNON.Vec3(1, 1, 1)), result);
             test.deepEqual(result, [123]);
         });
     });

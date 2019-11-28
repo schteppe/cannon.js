@@ -1298,10 +1298,7 @@ declare namespace CANNON {
          *
          * Axis aligned bounding box class.
          */
-        constructor(options?: {
-            lowerBound?: Vec3;
-            upperBound?: Vec3;
-        });
+        constructor(lowerBound?: Vec3, upperBound?: Vec3);
         /**
          * Set the AABB bounds from a set of points.
          * @param points An array of Vec3's.

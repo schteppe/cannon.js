@@ -5,12 +5,12 @@ namespace CANNON
         /**
          * The lower bound of the bounding box.
          */
-        lowerBound: Vec3;
+        lowerBound = new Vec3();
 
         /**
          * The upper bound of the bounding box.
          */
-        upperBound: Vec3;
+        upperBound = new Vec3();
 
         /**
          * 
@@ -18,19 +18,10 @@ namespace CANNON
          * 
          * Axis aligned bounding box class.
          */
-        constructor(options: { lowerBound?: Vec3, upperBound?: Vec3 } = {})
+        constructor(lowerBound = new Vec3(), upperBound = new Vec3())
         {
-            this.lowerBound = new Vec3();
-            if (options.lowerBound)
-            {
-                this.lowerBound.copy(options.lowerBound);
-            }
-
-            this.upperBound = new Vec3();
-            if (options.upperBound)
-            {
-                this.upperBound.copy(options.upperBound);
-            }
+            this.lowerBound = lowerBound;
+            this.upperBound = upperBound;
         }
 
         /**
