@@ -579,7 +579,7 @@ declare namespace CANNON {
         /**
          * Equations to be solved in this constraint
          */
-        equations: any[];
+        equations: Equation[];
         bodyA: Body;
         id: number;
         /**
@@ -617,7 +617,7 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class DistanceConstraint extends Constraint {
-        distance: any;
+        distance: number;
         distanceEquation: ContactEquation;
         /**
          * Constrains two bodies to be at a constant distance from each others center of mass.
@@ -748,15 +748,15 @@ declare namespace CANNON {
 declare namespace CANNON {
     class LockConstraint extends PointToPointConstraint {
         xA: Vec3;
-        xB: any;
+        xB: Vec3;
         yA: Vec3;
-        yB: any;
+        yB: Vec3;
         zA: Vec3;
-        zB: any;
+        zB: Vec3;
         rotationalEquation1: RotationalEquation;
         rotationalEquation2: RotationalEquation;
         rotationalEquation3: RotationalEquation;
-        motorEquation: any;
+        motorEquation: Equation;
         /**
          * Lock constraint. Will remove all degrees of freedom between the bodies.
          *

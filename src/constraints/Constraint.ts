@@ -5,7 +5,7 @@ namespace CANNON
         /**
          * Equations to be solved in this constraint
          */
-        equations: any[];
+        equations: Equation[];
         bodyA: Body;
         id: number;
         /**

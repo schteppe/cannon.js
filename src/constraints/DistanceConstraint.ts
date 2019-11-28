@@ -2,7 +2,7 @@ namespace CANNON
 {
     export class DistanceConstraint extends Constraint
     {
-        distance: any;
+        distance: number;
 
         distanceEquation: ContactEquation;
 

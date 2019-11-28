@@ -3,15 +3,15 @@ namespace CANNON
     export class LockConstraint extends PointToPointConstraint
     {
         xA: Vec3;
-        xB: any;
+        xB: Vec3;
         yA: Vec3;
-        yB: any;
+        yB: Vec3;
         zA: Vec3;
-        zB: any;
+        zB: Vec3;
         rotationalEquation1: RotationalEquation;
         rotationalEquation2: RotationalEquation;
         rotationalEquation3: RotationalEquation;
-        motorEquation: any;
+        motorEquation: Equation;
 
         /**
          * Lock constraint. Will remove all degrees of freedom between the bodies.
