@@ -6,7 +6,7 @@ namespace CANNON
          * An array of numbers, or height values, that are spread out along the x axis.
          * @property {array} data
          */
-        data: any[];
+        data: number[][];
         /**
          * Max value of the data
          */
@@ -57,7 +57,7 @@ namespace CANNON
          * @param data 
          * @param options 
          */
-        constructor(data: any[], options: { maxValue?: number, minValue?: number, elementSize?: number } = {})
+        constructor(data: number[][], options: { maxValue?: number, minValue?: number, elementSize?: number } = {})
         {
             super();
             options = Utils.defaults(options, {
@@ -190,7 +190,7 @@ namespace CANNON
          * @param result An array to store the results in.
          * @return The result array, if it was passed in. Minimum will be at position 0 and max at 1.
          */
-        getRectMinMax(iMinX: number, iMinY: number, iMaxX: number, iMaxY: number, result: any[])
+        getRectMinMax(iMinX: number, iMinY: number, iMaxX: number, iMaxY: number, result: number[])
         {
             result = result || [];
 
@@ -221,7 +221,7 @@ namespace CANNON
          * @param result Two-element array
          * @param clamp If the position should be clamped to the heightfield edge.
          */
-        getIndexOfPosition(x: number, y: number, result: any[], clamp?: boolean)
+        getIndexOfPosition(x: number, y: number, result: number[], clamp?: boolean)
         {
             // Get the index of the data points to test against
             var w = this.elementSize;

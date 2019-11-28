@@ -23,7 +23,7 @@ namespace CANNON
         /**
          * If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.
          */
-        uniqueAxes: any[];
+        uniqueAxes: Vec3[];
 
         /**
          * A set of polygons describing a convex shape.
@@ -44,7 +44,7 @@ namespace CANNON
          * @todo Move the clipping functions to ContactGenerator?
          * @todo Automatically merge coplanar polygons in constructor.
          */
-        constructor(points?: Vec3[], faces?: number[][], uniqueAxes?: any[])
+        constructor(points?: Vec3[], faces?: number[][], uniqueAxes?: Vec3[])
         {
             super({
                 type: Shape.types.CONVEXPOLYHEDRON
@@ -194,7 +194,11 @@ namespace CANNON
          * @param result The an array of contact point objects, see clipFaceAgainstHull
          * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
          */
-        clipAgainstHull(posA: Vec3, quatA: Quaternion, hullB: ConvexPolyhedron, posB: Vec3, quatB: Quaternion, separatingNormal: Vec3, minDist: number, maxDist: number, result: number[])
+        clipAgainstHull(posA: Vec3, quatA: Quaternion, hullB: ConvexPolyhedron, posB: Vec3, quatB: Quaternion, separatingNormal: Vec3, minDist: number, maxDist: number, result: {
+            point: Vec3;
+            normal: Vec3;
+            depth: number;
+        }[])
         {
             var WorldNormal = cah_WorldNormal;
             var hullA = this;
@@ -474,7 +478,11 @@ namespace CANNON
          * @param maxDist
          * @param result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
          */
-        clipFaceAgainstHull(separatingNormal: Vec3, posA: Vec3, quatA: Quaternion, worldVertsB1: Vec3[], minDist: number, maxDist: number, result: any[])
+        clipFaceAgainstHull(separatingNormal: Vec3, posA: Vec3, quatA: Quaternion, worldVertsB1: Vec3[], minDist: number, maxDist: number, result: {
+            point: Vec3;
+            normal: Vec3;
+            depth: number;
+        }[])
         {
             var faceANormalWS = cfah_faceANormalWS,
                 edge0 = cfah_edge0,

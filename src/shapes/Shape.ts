@@ -31,7 +31,7 @@ namespace CANNON
         body: Body;
 
         faces: number[][];
-        indices: number[];
+        indices: Int16Array;
         vertices: Vec3[] | number[];
         faceNormals: Vec3[];
 
@@ -44,7 +44,7 @@ namespace CANNON
          * @param options 
          * @author schteppe
          */
-        constructor(options: { type?: number, collisionFilterGroup?: number, collisionFilterMask?: number, collisionResponse?: boolean, material?: any } = {})
+        constructor(options: { type?: number, collisionFilterGroup?: number, collisionFilterMask?: number, collisionResponse?: boolean, material?: Material } = {})
         {
             this.id = Shape.idCounter++;
             this.type = options.type || 0;

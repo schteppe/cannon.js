@@ -796,7 +796,7 @@ declare namespace CANNON {
         material: Material;
         body: Body;
         faces: number[][];
-        indices: number[];
+        indices: Int16Array;
         vertices: Vec3[] | number[];
         faceNormals: Vec3[];
         convexPolyhedronRepresentation: Shape;
@@ -812,7 +812,7 @@ declare namespace CANNON {
             collisionFilterGroup?: number;
             collisionFilterMask?: number;
             collisionResponse?: boolean;
-            material?: any;
+            material?: Material;
         });
         /**
          * Computes the bounding sphere radius. The result is stored in the property .boundingSphereRadius
@@ -865,7 +865,7 @@ declare namespace CANNON {
         /**
          * If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.
          */
-        uniqueAxes: any[];
+        uniqueAxes: Vec3[];
         /**
          * A set of polygons describing a convex shape.
          * @class ConvexPolyhedron
@@ -885,7 +885,7 @@ declare namespace CANNON {
          * @todo Move the clipping functions to ContactGenerator?
          * @todo Automatically merge coplanar polygons in constructor.
          */
-        constructor(points?: Vec3[], faces?: number[][], uniqueAxes?: any[]);
+        constructor(points?: Vec3[], faces?: number[][], uniqueAxes?: Vec3[]);
         /**
          * Computes uniqueEdges
          */
@@ -922,7 +922,11 @@ declare namespace CANNON {
          * @param result The an array of contact point objects, see clipFaceAgainstHull
          * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
          */
-        clipAgainstHull(posA: Vec3, quatA: Quaternion, hullB: ConvexPolyhedron, posB: Vec3, quatB: Quaternion, separatingNormal: Vec3, minDist: number, maxDist: number, result: number[]): void;
+        clipAgainstHull(posA: Vec3, quatA: Quaternion, hullB: ConvexPolyhedron, posB: Vec3, quatB: Quaternion, separatingNormal: Vec3, minDist: number, maxDist: number, result: {
+            point: Vec3;
+            normal: Vec3;
+            depth: number;
+        }[]): void;
         /**
          * Find the separating axis between this hull and another
          *
@@ -971,7 +975,11 @@ declare namespace CANNON {
          * @param maxDist
          * @param result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
          */
-        clipFaceAgainstHull(separatingNormal: Vec3, posA: Vec3, quatA: Quaternion, worldVertsB1: Vec3[], minDist: number, maxDist: number, result: any[]): void;
+        clipFaceAgainstHull(separatingNormal: Vec3, posA: Vec3, quatA: Quaternion, worldVertsB1: Vec3[], minDist: number, maxDist: number, result: {
+            point: Vec3;
+            normal: Vec3;
+            depth: number;
+        }[]): void;
         /**
          * Clip a face in a hull against the back of a plane.
          *
@@ -1083,7 +1091,7 @@ declare namespace CANNON {
          * An array of numbers, or height values, that are spread out along the x axis.
          * @property {array} data
          */
-        data: any[];
+        data: number[][];
         /**
          * Max value of the data
          */
@@ -1133,7 +1141,7 @@ declare namespace CANNON {
          * @param data
          * @param options
          */
-        constructor(data: any[], options?: {
+        constructor(data: number[][], options?: {
             maxValue?: number;
             minValue?: number;
             elementSize?: number;
@@ -1168,7 +1176,7 @@ declare namespace CANNON {
          * @param result An array to store the results in.
          * @return The result array, if it was passed in. Minimum will be at position 0 and max at 1.
          */
-        getRectMinMax(iMinX: number, iMinY: number, iMaxX: number, iMaxY: number, result: any[]): void;
+        getRectMinMax(iMinX: number, iMinY: number, iMaxX: number, iMaxY: number, result: number[]): void;
         /**
          * Get the index of a local position on the heightfield. The indexes indicate the rectangles, so if your terrain is made of N x N height data points, you will have rectangle indexes ranging from 0 to N-1.
          *
@@ -1177,7 +1185,7 @@ declare namespace CANNON {
          * @param result Two-element array
          * @param clamp If the position should be clamped to the heightfield edge.
          */
-        getIndexOfPosition(x: number, y: number, result: any[], clamp?: boolean): boolean;
+        getIndexOfPosition(x: number, y: number, result: number[], clamp?: boolean): boolean;
         getTriangleAt(x: number, y: number, edgeClamp: boolean, a: Vec3, b: Vec3, c: Vec3): boolean;
         getNormalAt(x: number, y: number, edgeClamp: boolean, result: Vec3): void;
         /**
@@ -1373,7 +1381,7 @@ declare namespace CANNON {
         /**
          * References to vertex pairs, making up all unique edges in the trimesh.
          */
-        edges: any[];
+        edges: Int16Array;
         /**
          * Local scaling of the mesh. Use .setScale() to set it.
          */

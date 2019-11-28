@@ -14,7 +14,7 @@ namespace CANNON
         /**
          * References to vertex pairs, making up all unique edges in the trimesh.
          */
-        edges: any[];
+        edges: Int16Array;
         /**
          * Local scaling of the mesh. Use .setScale() to set it.
          */
@@ -206,7 +206,7 @@ namespace CANNON
                 add(c, a);
             }
             var keys = Object.keys(edges);
-            this.edges = <any>new Int16Array(keys.length * 2);
+            this.edges = new Int16Array(keys.length * 2);
             for (var i = 0; i < keys.length; i++)
             {
                 var indices = keys[i].split('_');
@@ -540,7 +540,7 @@ namespace CANNON
                 }
             }
 
-            return new Trimesh(<any>vertices, indices);
+            return new Trimesh(vertices, indices);
         };
     }
 
