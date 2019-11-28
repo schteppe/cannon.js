@@ -8111,8 +8111,8 @@ var CANNON;
          */
         function World(options) {
             if (options === void 0) { options = {}; }
-            var _this = _super.call(this) || this;
-            _this.profile = {
+            var _this_1 = _super.call(this) || this;
+            _this_1.profile = {
                 solve: 0,
                 makeContactConstraints: 0,
                 broadphase: 0,
@@ -8122,19 +8122,19 @@ var CANNON;
             /**
              * Dispatched after a body has been added to the world.
              */
-            _this.addBodyEvent = {
+            _this_1.addBodyEvent = {
                 type: "addBody",
                 body: null
             };
             /**
              * Dispatched after a body has been removed from the world.
              */
-            _this.removeBodyEvent = {
+            _this_1.removeBodyEvent = {
                 type: "removeBody",
                 body: null
             };
-            _this.idToBodyMap = {};
-            _this.emitContactEvents = (function () {
+            _this_1.idToBodyMap = {};
+            _this_1.emitContactEvents = (function () {
                 var additions = [];
                 var removals = [];
                 var beginContactEvent = {
@@ -8162,108 +8162,109 @@ var CANNON;
                     shapeB: null
                 };
                 return function () {
-                    var hasBeginContact = this.hasAnyEventListener('beginContact');
-                    var hasEndContact = this.hasAnyEventListener('endContact');
+                    var _this = this;
+                    var hasBeginContact = _this.hasAnyEventListener('beginContact');
+                    var hasEndContact = _this.hasAnyEventListener('endContact');
                     if (hasBeginContact || hasEndContact) {
-                        this.bodyOverlapKeeper.getDiff(additions, removals);
+                        _this.bodyOverlapKeeper.getDiff(additions, removals);
                     }
                     if (hasBeginContact) {
                         for (var i = 0, l = additions.length; i < l; i += 2) {
-                            beginContactEvent.bodyA = this.getBodyById(additions[i]);
-                            beginContactEvent.bodyB = this.getBodyById(additions[i + 1]);
-                            this.dispatchEvent(beginContactEvent);
+                            beginContactEvent.bodyA = _this.getBodyById(additions[i]);
+                            beginContactEvent.bodyB = _this.getBodyById(additions[i + 1]);
+                            _this.dispatchEvent(beginContactEvent);
                         }
                         beginContactEvent.bodyA = beginContactEvent.bodyB = null;
                     }
                     if (hasEndContact) {
                         for (var i = 0, l = removals.length; i < l; i += 2) {
-                            endContactEvent.bodyA = this.getBodyById(removals[i]);
-                            endContactEvent.bodyB = this.getBodyById(removals[i + 1]);
-                            this.dispatchEvent(endContactEvent);
+                            endContactEvent.bodyA = _this.getBodyById(removals[i]);
+                            endContactEvent.bodyB = _this.getBodyById(removals[i + 1]);
+                            _this.dispatchEvent(endContactEvent);
                         }
                         endContactEvent.bodyA = endContactEvent.bodyB = null;
                     }
                     additions.length = removals.length = 0;
-                    var hasBeginShapeContact = this.hasAnyEventListener('beginShapeContact');
-                    var hasEndShapeContact = this.hasAnyEventListener('endShapeContact');
+                    var hasBeginShapeContact = _this.hasAnyEventListener('beginShapeContact');
+                    var hasEndShapeContact = _this.hasAnyEventListener('endShapeContact');
                     if (hasBeginShapeContact || hasEndShapeContact) {
-                        this.shapeOverlapKeeper.getDiff(additions, removals);
+                        _this.shapeOverlapKeeper.getDiff(additions, removals);
                     }
                     if (hasBeginShapeContact) {
                         for (var i = 0, l = additions.length; i < l; i += 2) {
-                            var shapeA = this.getShapeById(additions[i]);
-                            var shapeB = this.getShapeById(additions[i + 1]);
+                            var shapeA = _this.getShapeById(additions[i]);
+                            var shapeB = _this.getShapeById(additions[i + 1]);
                             beginShapeContactEvent.shapeA = shapeA;
                             beginShapeContactEvent.shapeB = shapeB;
                             beginShapeContactEvent.bodyA = shapeA.body;
                             beginShapeContactEvent.bodyB = shapeB.body;
-                            this.dispatchEvent(beginShapeContactEvent);
+                            _this.dispatchEvent(beginShapeContactEvent);
                         }
                         beginShapeContactEvent.bodyA = beginShapeContactEvent.bodyB = beginShapeContactEvent.shapeA = beginShapeContactEvent.shapeB = null;
                     }
                     if (hasEndShapeContact) {
                         for (var i = 0, l = removals.length; i < l; i += 2) {
-                            var shapeA = this.getShapeById(removals[i]);
-                            var shapeB = this.getShapeById(removals[i + 1]);
+                            var shapeA = _this.getShapeById(removals[i]);
+                            var shapeB = _this.getShapeById(removals[i + 1]);
                             endShapeContactEvent.shapeA = shapeA;
                             endShapeContactEvent.shapeB = shapeB;
                             endShapeContactEvent.bodyA = shapeA.body;
                             endShapeContactEvent.bodyB = shapeB.body;
-                            this.dispatchEvent(endShapeContactEvent);
+                            _this.dispatchEvent(endShapeContactEvent);
                         }
                         endShapeContactEvent.bodyA = endShapeContactEvent.bodyB = endShapeContactEvent.shapeA = endShapeContactEvent.shapeB = null;
                     }
                 };
             })();
-            _this.dt = -1;
-            _this.allowSleep = !!options.allowSleep;
-            _this.contacts = [];
-            _this.frictionEquations = [];
-            _this.quatNormalizeSkip = options.quatNormalizeSkip !== undefined ? options.quatNormalizeSkip : 0;
-            _this.quatNormalizeFast = options.quatNormalizeFast !== undefined ? options.quatNormalizeFast : false;
-            _this.time = 0.0;
-            _this.stepnumber = 0;
-            _this.default_dt = 1 / 60;
-            _this.nextId = 0;
-            _this.gravity = new CANNON.Vec3();
+            _this_1.dt = -1;
+            _this_1.allowSleep = !!options.allowSleep;
+            _this_1.contacts = [];
+            _this_1.frictionEquations = [];
+            _this_1.quatNormalizeSkip = options.quatNormalizeSkip !== undefined ? options.quatNormalizeSkip : 0;
+            _this_1.quatNormalizeFast = options.quatNormalizeFast !== undefined ? options.quatNormalizeFast : false;
+            _this_1.time = 0.0;
+            _this_1.stepnumber = 0;
+            _this_1.default_dt = 1 / 60;
+            _this_1.nextId = 0;
+            _this_1.gravity = new CANNON.Vec3();
             if (options.gravity) {
-                _this.gravity.copy(options.gravity);
+                _this_1.gravity.copy(options.gravity);
             }
-            _this.broadphase = options.broadphase !== undefined ? options.broadphase : new CANNON.NaiveBroadphase();
-            _this.bodies = [];
-            _this.solver = options.solver !== undefined ? options.solver : new CANNON.GSSolver();
-            _this.constraints = [];
-            _this.narrowphase = new CANNON.Narrowphase(_this);
-            _this.collisionMatrix = new CANNON.ArrayCollisionMatrix();
-            _this.collisionMatrixPrevious = new CANNON.ArrayCollisionMatrix();
-            _this.bodyOverlapKeeper = new CANNON.OverlapKeeper();
-            _this.shapeOverlapKeeper = new CANNON.OverlapKeeper();
-            _this.materials = [];
-            _this.contactmaterials = [];
-            _this.contactMaterialTable = new CANNON.TupleDictionary();
-            _this.defaultMaterial = new CANNON.Material("default");
-            _this.defaultContactMaterial = new CANNON.ContactMaterial(_this.defaultMaterial, _this.defaultMaterial, { friction: 0.3, restitution: 0.0 });
-            _this.doProfiling = false;
-            _this.profile = {
+            _this_1.broadphase = options.broadphase !== undefined ? options.broadphase : new CANNON.NaiveBroadphase();
+            _this_1.bodies = [];
+            _this_1.solver = options.solver !== undefined ? options.solver : new CANNON.GSSolver();
+            _this_1.constraints = [];
+            _this_1.narrowphase = new CANNON.Narrowphase(_this_1);
+            _this_1.collisionMatrix = new CANNON.ArrayCollisionMatrix();
+            _this_1.collisionMatrixPrevious = new CANNON.ArrayCollisionMatrix();
+            _this_1.bodyOverlapKeeper = new CANNON.OverlapKeeper();
+            _this_1.shapeOverlapKeeper = new CANNON.OverlapKeeper();
+            _this_1.materials = [];
+            _this_1.contactmaterials = [];
+            _this_1.contactMaterialTable = new CANNON.TupleDictionary();
+            _this_1.defaultMaterial = new CANNON.Material("default");
+            _this_1.defaultContactMaterial = new CANNON.ContactMaterial(_this_1.defaultMaterial, _this_1.defaultMaterial, { friction: 0.3, restitution: 0.0 });
+            _this_1.doProfiling = false;
+            _this_1.profile = {
                 solve: 0,
                 makeContactConstraints: 0,
                 broadphase: 0,
                 integrate: 0,
                 narrowphase: 0,
             };
-            _this.accumulator = 0;
-            _this.subsystems = [];
-            _this.addBodyEvent = {
+            _this_1.accumulator = 0;
+            _this_1.subsystems = [];
+            _this_1.addBodyEvent = {
                 type: "addBody",
                 body: null
             };
-            _this.removeBodyEvent = {
+            _this_1.removeBodyEvent = {
                 type: "removeBody",
                 body: null
             };
-            _this.idToBodyMap = {};
-            _this.broadphase.setWorld(_this);
-            return _this;
+            _this_1.idToBodyMap = {};
+            _this_1.broadphase.setWorld(_this_1);
+            return _this_1;
         }
         /**
          * Get the contact material between materials m1 and m2

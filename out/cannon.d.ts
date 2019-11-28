@@ -3215,7 +3215,9 @@ declare namespace CANNON {
             type: string;
             body: any;
         };
-        idToBodyMap: {};
+        idToBodyMap: {
+            [id: string]: Body;
+        };
         /**
          * The physics world
          * @param options
@@ -3351,7 +3353,7 @@ declare namespace CANNON {
          * @param body
          */
         removeBody(body: Body): void;
-        getBodyById(id: number): any;
+        getBodyById(id: number): Body;
         getShapeById(id: number): Shape;
         /**
          * Adds a material to the World.

@@ -124,7 +124,7 @@ namespace CANNON
             body: null
         };
 
-        idToBodyMap = {};
+        idToBodyMap: { [id: string]: Body } = {};
 
         /**
          * The physics world
@@ -929,24 +929,44 @@ namespace CANNON
         {
             var additions = [];
             var removals = [];
-            var beginContactEvent = {
+            var beginContactEvent: {
+                type: 'beginContact';
+                bodyA: Body;
+                bodyB: Body;
+            } = {
                 type: 'beginContact',
                 bodyA: null,
                 bodyB: null
             };
-            var endContactEvent = {
+            var endContactEvent: {
+                type: 'endContact';
+                bodyA: Body;
+                bodyB: Body;
+            } = {
                 type: 'endContact',
                 bodyA: null,
                 bodyB: null
             };
-            var beginShapeContactEvent = {
+            var beginShapeContactEvent: {
+                type: 'beginShapeContact';
+                bodyA: Body;
+                bodyB: Body;
+                shapeA: Shape;
+                shapeB: Shape;
+            } = {
                 type: 'beginShapeContact',
                 bodyA: null,
                 bodyB: null,
                 shapeA: null,
                 shapeB: null
             };
-            var endShapeContactEvent = {
+            var endShapeContactEvent: {
+                type: 'endShapeContact';
+                bodyA: Body;
+                bodyB: Body;
+                shapeA: Shape;
+                shapeB: Shape;
+            } = {
                 type: 'endShapeContact',
                 bodyA: null,
                 bodyB: null,
@@ -955,21 +975,23 @@ namespace CANNON
             };
             return function ()
             {
-                var hasBeginContact = this.hasAnyEventListener('beginContact');
-                var hasEndContact = this.hasAnyEventListener('endContact');
+                var _this = <World>this;
+
+                var hasBeginContact = _this.hasAnyEventListener('beginContact');
+                var hasEndContact = _this.hasAnyEventListener('endContact');
 
                 if (hasBeginContact || hasEndContact)
                 {
-                    this.bodyOverlapKeeper.getDiff(additions, removals);
+                    _this.bodyOverlapKeeper.getDiff(additions, removals);
                 }
 
                 if (hasBeginContact)
                 {
                     for (var i = 0, l = additions.length; i < l; i += 2)
                     {
-                        beginContactEvent.bodyA = this.getBodyById(additions[i]);
-                        beginContactEvent.bodyB = this.getBodyById(additions[i + 1]);
-                        this.dispatchEvent(beginContactEvent);
+                        beginContactEvent.bodyA = _this.getBodyById(additions[i]);
+                        beginContactEvent.bodyB = _this.getBodyById(additions[i + 1]);
+                        _this.dispatchEvent(beginContactEvent);
                     }
                     beginContactEvent.bodyA = beginContactEvent.bodyB = null;
                 }
@@ -978,34 +1000,34 @@ namespace CANNON
                 {
                     for (var i = 0, l = removals.length; i < l; i += 2)
                     {
-                        endContactEvent.bodyA = this.getBodyById(removals[i]);
-                        endContactEvent.bodyB = this.getBodyById(removals[i + 1]);
-                        this.dispatchEvent(endContactEvent);
+                        endContactEvent.bodyA = _this.getBodyById(removals[i]);
+                        endContactEvent.bodyB = _this.getBodyById(removals[i + 1]);
+                        _this.dispatchEvent(endContactEvent);
                     }
                     endContactEvent.bodyA = endContactEvent.bodyB = null;
                 }
 
                 additions.length = removals.length = 0;
 
-                var hasBeginShapeContact = this.hasAnyEventListener('beginShapeContact');
-                var hasEndShapeContact = this.hasAnyEventListener('endShapeContact');
+                var hasBeginShapeContact = _this.hasAnyEventListener('beginShapeContact');
+                var hasEndShapeContact = _this.hasAnyEventListener('endShapeContact');
 
                 if (hasBeginShapeContact || hasEndShapeContact)
                 {
-                    this.shapeOverlapKeeper.getDiff(additions, removals);
+                    _this.shapeOverlapKeeper.getDiff(additions, removals);
                 }
 
                 if (hasBeginShapeContact)
                 {
                     for (var i = 0, l = additions.length; i < l; i += 2)
                     {
-                        var shapeA = this.getShapeById(additions[i]);
-                        var shapeB = this.getShapeById(additions[i + 1]);
+                        var shapeA = _this.getShapeById(additions[i]);
+                        var shapeB = _this.getShapeById(additions[i + 1]);
                         beginShapeContactEvent.shapeA = shapeA;
                         beginShapeContactEvent.shapeB = shapeB;
                         beginShapeContactEvent.bodyA = shapeA.body;
                         beginShapeContactEvent.bodyB = shapeB.body;
-                        this.dispatchEvent(beginShapeContactEvent);
+                        _this.dispatchEvent(beginShapeContactEvent);
                     }
                     beginShapeContactEvent.bodyA = beginShapeContactEvent.bodyB = beginShapeContactEvent.shapeA = beginShapeContactEvent.shapeB = null;
                 }
@@ -1014,13 +1036,13 @@ namespace CANNON
                 {
                     for (var i = 0, l = removals.length; i < l; i += 2)
                     {
-                        var shapeA = this.getShapeById(removals[i]);
-                        var shapeB = this.getShapeById(removals[i + 1]);
+                        var shapeA = _this.getShapeById(removals[i]);
+                        var shapeB = _this.getShapeById(removals[i + 1]);
                         endShapeContactEvent.shapeA = shapeA;
                         endShapeContactEvent.shapeB = shapeB;
                         endShapeContactEvent.bodyA = shapeA.body;
                         endShapeContactEvent.bodyB = shapeB.body;
-                        this.dispatchEvent(endShapeContactEvent);
+                        _this.dispatchEvent(endShapeContactEvent);
                     }
                     endShapeContactEvent.bodyA = endShapeContactEvent.bodyB = endShapeContactEvent.shapeA = endShapeContactEvent.shapeB = null;
                 }
