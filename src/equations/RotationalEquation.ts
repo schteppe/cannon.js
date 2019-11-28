@@ -2,8 +2,8 @@ namespace CANNON
 {
     export class RotationalEquation extends Equation
     {
-        axisA: Vec3;
-        axisB: Vec3;
+        axisA: Vector3;
+        axisB: Vector3;
 
         maxAngle: number;
 
@@ -16,12 +16,12 @@ namespace CANNON
          * 
          * @author schteppe
          */
-        constructor(bodyA: Body, bodyB: Body, options: { axisA?: Vec3, axisB?: Vec3, maxForce?: number } = {})
+        constructor(bodyA: Body, bodyB: Body, options: { axisA?: Vector3, axisB?: Vector3, maxForce?: number } = {})
         {
             super(bodyA, bodyB, -(typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6), typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6);
 
-            this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
-            this.axisB = options.axisB ? options.axisB.clone() : new Vec3(0, 1, 0);
+            this.axisA = options.axisA ? options.axisA.clone() : new Vector3(1, 0, 0);
+            this.axisB = options.axisB ? options.axisB.clone() : new Vector3(0, 1, 0);
 
             this.maxAngle = Math.PI / 2;
         }
@@ -62,6 +62,6 @@ namespace CANNON
 
     }
 
-    var tmpVec1 = new Vec3();
-    var tmpVec2 = new Vec3();
+    var tmpVec1 = new Vector3();
+    var tmpVec2 = new Vector3();
 }

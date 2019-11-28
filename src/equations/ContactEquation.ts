@@ -8,17 +8,17 @@ namespace CANNON
         /**
          * World-oriented vector that goes from the center of bi to the contact point.
          */
-        ri: Vec3;
+        ri: Vector3;
 
         /**
          * World-oriented vector that starts in body j position and goes to the contact point.
          */
-        rj: Vec3;
+        rj: Vector3;
 
         /**
          * Contact normal, pointing out of body i.
          */
-        ni: Vec3;
+        ni: Vector3;
         si: Shape;
         sj: Shape;
         bodyA: Body;
@@ -36,9 +36,9 @@ namespace CANNON
             super(bodyA, bodyB, 0, typeof (maxForce) !== 'undefined' ? maxForce : 1e6);
 
             this.restitution = 0.0; // "bounciness": u1 = -e*u0
-            this.ri = new Vec3();
-            this.rj = new Vec3();
-            this.ni = new Vec3();
+            this.ri = new Vector3();
+            this.rj = new Vector3();
+            this.ni = new Vector3();
         }
 
         computeB(h: number)
@@ -122,14 +122,14 @@ namespace CANNON
 
     }
 
-    var ContactEquation_computeB_temp1 = new Vec3(); // Temp vectors
-    var ContactEquation_computeB_temp2 = new Vec3();
-    var ContactEquation_computeB_temp3 = new Vec3();
+    var ContactEquation_computeB_temp1 = new Vector3(); // Temp vectors
+    var ContactEquation_computeB_temp2 = new Vector3();
+    var ContactEquation_computeB_temp3 = new Vector3();
 
 
-    var ContactEquation_getImpactVelocityAlongNormal_vi = new Vec3();
-    var ContactEquation_getImpactVelocityAlongNormal_vj = new Vec3();
-    var ContactEquation_getImpactVelocityAlongNormal_xi = new Vec3();
-    var ContactEquation_getImpactVelocityAlongNormal_xj = new Vec3();
-    var ContactEquation_getImpactVelocityAlongNormal_relVel = new Vec3();
+    var ContactEquation_getImpactVelocityAlongNormal_vi = new Vector3();
+    var ContactEquation_getImpactVelocityAlongNormal_vj = new Vector3();
+    var ContactEquation_getImpactVelocityAlongNormal_xi = new Vector3();
+    var ContactEquation_getImpactVelocityAlongNormal_xj = new Vector3();
+    var ContactEquation_getImpactVelocityAlongNormal_relVel = new Vector3();
 }

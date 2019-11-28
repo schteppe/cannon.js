@@ -20,8 +20,8 @@ namespace CANNON
             cg.sphereSphere(
                 sphereShape,
                 sphereShape,
-                new Vec3(0.5, 0, 0),
-                new Vec3(-0.5, 0, 0),
+                new Vector3(0.5, 0, 0),
+                new Vector3(-0.5, 0, 0),
                 new Quaternion(),
                 new Quaternion(),
                 bodyA,
@@ -43,8 +43,8 @@ namespace CANNON
             cg.sphereHeightfield(
                 sphereShape,
                 hfShape,
-                new Vec3(0.25, 0.25, 0.05), // hit the first triangle in the field
-                new Vec3(0, 0, 0),
+                new Vector3(0.25, 0.25, 0.05), // hit the first triangle in the field
+                new Vector3(0, 0, 0),
                 new Quaternion(),
                 new Quaternion(),
                 new Body(),

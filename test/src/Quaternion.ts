@@ -49,8 +49,8 @@ namespace CANNON
             test.expect(3);
 
             var q = new Quaternion();
-            q.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 4);
-            var euler = new Vec3();
+            q.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
+            var euler = new Vector3();
             q.toEuler(euler);
 
             // we should expect (0,0,pi/4)
@@ -63,14 +63,14 @@ namespace CANNON
         QUnit.test("setFromVectors", (test) =>
         {
             var q = new Quaternion();
-            q.setFromVectors(new Vec3(1, 0, 0), new Vec3(-1, 0, 0));
-            test.ok(q.vmult(new Vec3(1, 0, 0)).equals(new Vec3(-1, 0, 0)));
+            q.setFromVectors(new Vector3(1, 0, 0), new Vector3(-1, 0, 0));
+            test.ok(q.vmult(new Vector3(1, 0, 0)).equals(new Vector3(-1, 0, 0)));
 
-            q.setFromVectors(new Vec3(0, 1, 0), new Vec3(0, -1, 0));
-            test.ok(q.vmult(new Vec3(0, 1, 0)).equals(new Vec3(0, -1, 0)));
+            q.setFromVectors(new Vector3(0, 1, 0), new Vector3(0, -1, 0));
+            test.ok(q.vmult(new Vector3(0, 1, 0)).equals(new Vector3(0, -1, 0)));
 
-            q.setFromVectors(new Vec3(0, 0, 1), new Vec3(0, 0, -1));
-            test.ok(q.vmult(new Vec3(0, 0, 1)).equals(new Vec3(0, 0, -1)));
+            q.setFromVectors(new Vector3(0, 0, 1), new Vector3(0, 0, -1));
+            test.ok(q.vmult(new Vector3(0, 0, 1)).equals(new Vector3(0, 0, -1)));
 
         });
 
@@ -81,8 +81,8 @@ namespace CANNON
             qa.slerp(qb, 0.5, qb);
             test.deepEqual(qa, qb);
 
-            qa.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 4);
-            qb.setFromAxisAngle(new Vec3(0, 0, 1), -Math.PI / 4);
+            qa.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
+            qb.setFromAxisAngle(new Vector3(0, 0, 1), -Math.PI / 4);
             qa.slerp(qb, 0.5, qb);
             test.deepEqual(qb, new Quaternion());
 

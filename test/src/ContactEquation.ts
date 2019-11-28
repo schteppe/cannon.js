@@ -14,12 +14,12 @@ namespace CANNON
         QUnit.test("getImpactVelocityAlongNormal", (test) =>
         {
             var bodyA = new Body({
-                position: new Vec3(1, 0, 0),
-                velocity: new Vec3(-10, 0, 0)
+                position: new Vector3(1, 0, 0),
+                velocity: new Vector3(-10, 0, 0)
             });
             var bodyB = new Body({
-                position: new Vec3(-1, 0, 0),
-                velocity: new Vec3(1, 0, 0)
+                position: new Vector3(-1, 0, 0),
+                velocity: new Vector3(1, 0, 0)
             });
             var contact = new ContactEquation(bodyA, bodyB);
             contact.ni.set(1, 0, 0);

@@ -1,7 +1,7 @@
 declare namespace CANNON {
 }
 declare namespace CANNON {
-    class Vec3 {
+    class Vector3 {
         x: number;
         y: number;
         z: number;
@@ -14,21 +14,21 @@ declare namespace CANNON {
          *
          * @author schteppe
          * @example
-         *     var v = new Vec3(1, 2, 3);
+         *     var v = new Vector3(1, 2, 3);
          *     console.log('x=' + v.x); // x=1
          */
         constructor(x?: number, y?: number, z?: number);
-        static ZERO: Vec3;
-        static X_AXIS: Vec3;
-        static Y_AXIS: Vec3;
-        static Z_AXIS: Vec3;
+        static ZERO: Vector3;
+        static X_AXIS: Vector3;
+        static Y_AXIS: Vector3;
+        static Z_AXIS: Vector3;
         /**
          * Vector cross product
          *
          * @param v
          * @param target Target to save in.
          */
-        crossTo(v: Vec3, target?: Vec3): Vec3;
+        crossTo(v: Vector3, target?: Vector3): Vector3;
         /**
          * Set the vectors' 3 elements
          * @param x
@@ -45,13 +45,13 @@ declare namespace CANNON {
          * @param v
          * @param target
          */
-        addTo(v: Vec3, target?: Vec3): Vec3;
+        addTo(v: Vector3, target?: Vector3): Vector3;
         /**
          * Vector subtraction
          * @param v
          * @param target Target to save in.
          */
-        subTo(v: Vec3, target?: Vec3): Vec3;
+        subTo(v: Vector3, target?: Vector3): Vector3;
         /**
          * Get the cross product matrix a_cross from a vector, such that a x b = a_cross * b = c
          * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
@@ -66,7 +66,7 @@ declare namespace CANNON {
          * Get the version of this vector that is of length 1.
          * @param target target to save in
          */
-        unit(target?: Vec3): Vec3;
+        unit(target?: Vector3): Vector3;
         /**
          * Get the length of the vector
          */
@@ -79,43 +79,43 @@ declare namespace CANNON {
          * Get distance from this point to another point
          * @param p
          */
-        distance(p: Vec3): number;
+        distance(p: Vector3): number;
         /**
          * Get squared distance from this point to another point
          * @param p
          */
-        distanceSquared(p: Vec3): number;
+        distanceSquared(p: Vector3): number;
         /**
          * Multiply all the components of the vector with a scalar.
          * @param scalar
          * @param  target The vector to save the result in.
          */
-        scaleNumberTo(scalar: number, target?: Vec3): Vec3;
+        scaleNumberTo(scalar: number, target?: Vector3): Vector3;
         /**
          * Multiply the vector with an other vector, component-wise.
          * @param  vector
          * @param  target The vector to save the result in.
          */
-        scaleTo(vector: Vec3, target?: Vec3): Vec3;
+        scaleTo(vector: Vector3, target?: Vector3): Vector3;
         /**
          * Scale a vector and add it to this vector. Save the result in "target". (target = this + vector * scalar)
          * @param scalar
          * @param vector
          * @param  target The vector to save the result in.
          */
-        addScaledVectorTo(scalar: number, vector: Vec3, target?: Vec3): Vec3;
+        addScaledVectorTo(scalar: number, vector: Vector3, target?: Vector3): Vector3;
         /**
          * Calculate dot product
-         * @param {Vec3} v
+         * @param {Vector3} v
          */
-        dot(v: Vec3): number;
+        dot(v: Vector3): number;
         isZero(): boolean;
         /**
          * Make the vector point in the opposite direction.
          * @param target Optional target to save in
          */
-        negateTo(target: Vec3): Vec3;
-        tangents(t1: Vec3, t2: Vec3): void;
+        negateTo(target: Vector3): Vector3;
+        tangents(t1: Vector3, t2: Vector3): void;
         /**
          * Converts to a more readable format
          */
@@ -128,30 +128,30 @@ declare namespace CANNON {
          * Copies value of source to this vector.
          * @param source
          */
-        copy(source: Vec3): this;
+        copy(source: Vector3): this;
         /**
          * Do a linear interpolation between two vectors
          *
          * @param v
          * @param t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
          */
-        lerpNumberTo(v: Vec3, t: number, target: Vec3): void;
+        lerpNumberTo(v: Vector3, t: number, target: Vector3): void;
         /**
          * Check if a vector equals is almost equal to another one.
          * @param v
          * @param  precision
          */
-        equals(v: Vec3, precision?: number): boolean;
+        equals(v: Vector3, precision?: number): boolean;
         /**
          * Check if the vector is anti-parallel to another vector.
          * @param  v
          * @param  precision Set to zero for exact comparisons
          */
-        isAntiparallelTo(v: Vec3, precision?: number): boolean;
+        isAntiparallelTo(v: Vector3, precision?: number): boolean;
         /**
          * Clone the vector
          */
-        clone(): Vec3;
+        clone(): Vector3;
     }
 }
 declare namespace CANNON {
@@ -182,17 +182,17 @@ declare namespace CANNON {
          * Sets the matrix diagonal elements from a Vec3
          * @param vec3
          */
-        setTrace(vec3: Vec3): void;
+        setTrace(vec3: Vector3): void;
         /**
          * Gets the matrix diagonal elements
          */
-        getTrace(target?: Vec3): void;
+        getTrace(target?: Vector3): void;
         /**
          * Matrix-Vector multiplication
          * @param v The vector to multiply with
          * @param target Optional, target to save the result in.
          */
-        vmult(v: Vec3, target?: Vec3): Vec3;
+        vmult(v: Vector3, target?: Vector3): Vector3;
         /**
          * Matrix-scalar multiplication
          * @param s
@@ -207,14 +207,14 @@ declare namespace CANNON {
          * Scale each column of the matrix
          * @param v
          */
-        scale(v: Vec3, target?: Mat3): Mat3;
+        scale(v: Vector3, target?: Mat3): Mat3;
         /**
          * Solve Ax=b
          * @param b The right hand side
          * @param target Optional. Target vector to save in.
          * @todo should reuse arrays
          */
-        solve(b: Vec3, target?: Vec3): Vec3;
+        solve(b: Vector3, target?: Vector3): Vector3;
         /**
          * Get an element in the matrix by index. Index starts at 0, not 1!!!
          * @param row
@@ -298,19 +298,19 @@ declare namespace CANNON {
          * @param axis
          * @param angle in radians
          */
-        setFromAxisAngle(axis: Vec3, angle: number): this;
+        setFromAxisAngle(axis: Vector3, angle: number): this;
         /**
          * Converts the quaternion to axis/angle representation.
          * @param targetAxis A vector object to reuse for storing the axis.
          * @return An array, first elemnt is the axis and the second is the angle in radians.
          */
-        toAxisAngle(targetAxis?: Vec3): (number | Vec3)[];
+        toAxisAngle(targetAxis?: Vector3): (number | Vector3)[];
         /**
          * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
          * @param u
          * @param v
          */
-        setFromVectors(u: Vec3, v: Vec3): this;
+        setFromVectors(u: Vector3, v: Vector3): this;
         /**
          * Quaternion multiplication
          * @param q
@@ -342,7 +342,7 @@ declare namespace CANNON {
          * @param v
          * @param target Optional
          */
-        vmult(v: Vec3, target?: Vec3): Vec3;
+        vmult(v: Vector3, target?: Vector3): Vector3;
         /**
          * Copies value of source to this quaternion.
          * @param source
@@ -353,7 +353,7 @@ declare namespace CANNON {
          * @param target
          * @param order Three-character string e.g. "YZX", which also is default.
          */
-        toEuler(target: Vec3, order?: string): void;
+        toEuler(target: Vector3, order?: string): void;
         /**
          * See http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
          * @param x
@@ -380,51 +380,51 @@ declare namespace CANNON {
          * @param  target
          * @return The "target" object
          */
-        integrate(angularVelocity: Vec3, dt: number, angularFactor: Vec3, target: Quaternion): Quaternion;
+        integrate(angularVelocity: Vector3, dt: number, angularFactor: Vector3, target: Quaternion): Quaternion;
     }
 }
 declare namespace CANNON {
     class Transform {
-        position: Vec3;
+        position: Vector3;
         quaternion: Quaternion;
-        constructor(position?: Vec3, quaternion?: Quaternion);
+        constructor(position?: Vector3, quaternion?: Quaternion);
         /**
          * @param position
          * @param quaternion
          * @param worldPoint
          * @param result
          */
-        static pointToLocalFrame(position: Vec3, quaternion: Quaternion, worldPoint: Vec3, result?: Vec3): Vec3;
+        static pointToLocalFrame(position: Vector3, quaternion: Quaternion, worldPoint: Vector3, result?: Vector3): Vector3;
         /**
          * Get a global point in local transform coordinates.
          * @param worldPoint
          * @param result
          * @returnThe "result" vector object
          */
-        pointToLocal(worldPoint: Vec3, result: Vec3): Vec3;
+        pointToLocal(worldPoint: Vector3, result: Vector3): Vector3;
         /**
          * @param position
          * @param quaternion
          * @param localPoint
          * @param result
          */
-        static pointToWorldFrame(position: Vec3, quaternion: Quaternion, localPoint: Vec3, result?: Vec3): Vec3;
+        static pointToWorldFrame(position: Vector3, quaternion: Quaternion, localPoint: Vector3, result?: Vector3): Vector3;
         /**
          * Get a local point in global transform coordinates.
          * @param point
          * @param result
          * @return The "result" vector object
          */
-        pointToWorld(localPoint: Vec3, result: Vec3): Vec3;
-        vectorToWorldFrame(localVector: Vec3, result?: Vec3): Vec3;
-        static vectorToWorldFrame(quaternion: Quaternion, localVector: Vec3, result: Vec3): Vec3;
-        static vectorToLocalFrame(position: Vec3, quaternion: Quaternion, worldVector: Vec3, result?: Vec3): Vec3;
+        pointToWorld(localPoint: Vector3, result: Vector3): Vector3;
+        vectorToWorldFrame(localVector: Vector3, result?: Vector3): Vector3;
+        static vectorToWorldFrame(quaternion: Quaternion, localVector: Vector3, result: Vector3): Vector3;
+        static vectorToLocalFrame(position: Vector3, quaternion: Quaternion, worldVector: Vector3, result?: Vector3): Vector3;
     }
 }
 declare namespace CANNON {
     class JacobianElement {
-        spatial: Vec3;
-        rotational: Vec3;
+        spatial: Vector3;
+        rotational: Vector3;
         /**
          * An element containing 6 entries, 3 spatial and 3 rotational degrees of freedom.
          */
@@ -439,7 +439,7 @@ declare namespace CANNON {
          * @param spatial
          * @param rotational
          */
-        multiplyVectors(spatial: Vec3, rotational: Vec3): number;
+        multiplyVectors(spatial: Vector3, rotational: Vector3): number;
     }
 }
 declare namespace CANNON {
@@ -529,12 +529,12 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    class Vec3Pool extends Pool<Vec3> {
+    class Vec3Pool extends Pool<Vector3> {
         constructor();
         /**
          * Construct a vector
          */
-        constructObject(): Vec3;
+        constructObject(): Vector3;
     }
 }
 declare namespace CANNON {
@@ -619,11 +619,11 @@ declare namespace CANNON {
         /**
          * Pivot, defined locally in bodyA.
          */
-        pivotA: Vec3;
+        pivotA: Vector3;
         /**
          * Pivot, defined locally in bodyB.
          */
-        pivotB: Vec3;
+        pivotB: Vector3;
         equationX: ContactEquation;
         equationY: ContactEquation;
         equationZ: ContactEquation;
@@ -645,19 +645,19 @@ declare namespace CANNON {
          *     bodyB.addShape(shapeB);
          *     world.addBody(bodyA);
          *     world.addBody(bodyB);
-         *     var localPivotA = new Vec3(1, 0, 0);
-         *     var localPivotB = new Vec3(-1, 0, 0);
+         *     var localPivotA = new Vector3(1, 0, 0);
+         *     var localPivotB = new Vector3(-1, 0, 0);
          *     var constraint = new PointToPointConstraint(bodyA, localPivotA, bodyB, localPivotB);
          *     world.addConstraint(constraint);
          */
-        constructor(bodyA: Body, pivotA: Vec3, bodyB: Body, pivotB: Vec3, maxForce?: number);
+        constructor(bodyA: Body, pivotA: Vector3, bodyB: Body, pivotB: Vector3, maxForce?: number);
         update(): void;
     }
 }
 declare namespace CANNON {
     class ConeTwistConstraint extends PointToPointConstraint {
-        axisA: Vec3;
-        axisB: Vec3;
+        axisA: Vector3;
+        axisB: Vector3;
         angle: number;
         coneEquation: ConeEquation;
         twistEquation: RotationalEquation;
@@ -672,11 +672,11 @@ declare namespace CANNON {
          * @author schteppe
          */
         constructor(bodyA: Body, bodyB: Body, options?: {
-            pivotA?: Vec3;
-            pivotB?: Vec3;
+            pivotA?: Vector3;
+            pivotB?: Vector3;
             maxForce?: number;
-            axisA?: Vec3;
-            axisB?: Vec3;
+            axisA?: Vector3;
+            axisB?: Vector3;
             collideConnected?: boolean;
             angle?: number;
             twistAngle?: number;
@@ -689,11 +689,11 @@ declare namespace CANNON {
         /**
          * Rotation axis, defined locally in bodyA.
          */
-        axisA: Vec3;
+        axisA: Vector3;
         /**
          * Rotation axis, defined locally in bodyB.
          */
-        axisB: Vec3;
+        axisB: Vector3;
         rotationalEquation1: RotationalEquation;
         rotationalEquation2: RotationalEquation;
         motorEquation: RotationalMotorEquation;
@@ -712,11 +712,11 @@ declare namespace CANNON {
          * @author schteppe
          */
         constructor(bodyA: Body, bodyB: Body, options?: {
-            pivotA?: Vec3;
-            pivotB?: Vec3;
+            pivotA?: Vector3;
+            pivotB?: Vector3;
             maxForce?: number;
-            axisA?: Vec3;
-            axisB?: Vec3;
+            axisA?: Vector3;
+            axisB?: Vector3;
             collideConnected?: boolean;
         });
         enableMotor(): void;
@@ -728,12 +728,12 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class LockConstraint extends PointToPointConstraint {
-        xA: Vec3;
-        xB: Vec3;
-        yA: Vec3;
-        yB: Vec3;
-        zA: Vec3;
-        zB: Vec3;
+        xA: Vector3;
+        xB: Vector3;
+        yA: Vector3;
+        yB: Vector3;
+        zA: Vector3;
+        zB: Vector3;
         rotationalEquation1: RotationalEquation;
         rotationalEquation2: RotationalEquation;
         rotationalEquation3: RotationalEquation;
@@ -777,8 +777,8 @@ declare namespace CANNON {
         body: Body;
         faces: number[][];
         indices: Int16Array;
-        vertices: Vec3[] | number[];
-        faceNormals: Vec3[];
+        vertices: Vector3[] | number[];
+        faceNormals: Vector3[];
         convexPolyhedronRepresentation: Shape;
         radius: number;
         /**
@@ -808,8 +808,8 @@ declare namespace CANNON {
          * @param target
          * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
          */
-        calculateLocalInertia(mass: number, target: Vec3): void;
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        calculateLocalInertia(mass: number, target: Vector3): void;
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
         static idCounter: number;
         /**
          * The available shape types.
@@ -829,8 +829,8 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class ConvexPolyhedron extends Shape {
-        vertices: Vec3[];
-        worldVertices: Vec3[];
+        vertices: Vector3[];
+        worldVertices: Vector3[];
         worldVerticesNeedsUpdate: boolean;
         /**
          * Array of integer arrays, indicating which vertices each face consists of
@@ -838,14 +838,14 @@ declare namespace CANNON {
         faces: ({
             connectedFaces: number[];
         } & (number[]))[];
-        faceNormals: Vec3[];
+        faceNormals: Vector3[];
         worldFaceNormalsNeedsUpdate: boolean;
-        worldFaceNormals: Vec3[];
-        uniqueEdges: Vec3[];
+        worldFaceNormals: Vector3[];
+        uniqueEdges: Vector3[];
         /**
          * If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.
          */
-        uniqueAxes: Vec3[];
+        uniqueAxes: Vector3[];
         /**
          * A set of polygons describing a convex shape.
          * @class ConvexPolyhedron
@@ -865,7 +865,7 @@ declare namespace CANNON {
          * @todo Move the clipping functions to ContactGenerator?
          * @todo Automatically merge coplanar polygons in constructor.
          */
-        constructor(points?: Vec3[], faces?: number[][], uniqueAxes?: Vec3[]);
+        constructor(points?: Vector3[], faces?: number[][], uniqueAxes?: Vector3[]);
         /**
          * Computes uniqueEdges
          */
@@ -882,14 +882,14 @@ declare namespace CANNON {
          * @param vc
          * @param target
          */
-        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3): void;
+        static computeNormal(va: Vector3, vb: Vector3, vc: Vector3, target: Vector3): void;
         /**
          * Compute the normal of a face from its vertices
          *
          * @param i
          * @param target
          */
-        getFaceNormal(i: number, target: Vec3): void;
+        getFaceNormal(i: number, target: Vector3): void;
         /**
          * @param posA
          * @param quatA
@@ -902,9 +902,9 @@ declare namespace CANNON {
          * @param result The an array of contact point objects, see clipFaceAgainstHull
          * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
          */
-        clipAgainstHull(posA: Vec3, quatA: Quaternion, hullB: ConvexPolyhedron, posB: Vec3, quatB: Quaternion, separatingNormal: Vec3, minDist: number, maxDist: number, result: {
-            point: Vec3;
-            normal: Vec3;
+        clipAgainstHull(posA: Vector3, quatA: Quaternion, hullB: ConvexPolyhedron, posB: Vector3, quatB: Quaternion, separatingNormal: Vector3, minDist: number, maxDist: number, result: {
+            point: Vector3;
+            normal: Vector3;
             depth: number;
         }[]): void;
         /**
@@ -920,7 +920,7 @@ declare namespace CANNON {
          * @param faceListB
          * @returns Returns false if a separation is found, else true
          */
-        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA?: number[], faceListB?: number[]): boolean;
+        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vector3, quatA: Quaternion, posB: Vector3, quatB: Quaternion, target: Vector3, faceListA?: number[], faceListB?: number[]): boolean;
         /**
          * Test separating axis against two hulls. Both hulls are projected onto the axis and the overlap size is returned if there is one.
          *
@@ -932,13 +932,13 @@ declare namespace CANNON {
          * @param quatB
          * @return The overlap depth, or FALSE if no penetration.
          */
-        testSepAxis(axis: Vec3, hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion): number | false;
+        testSepAxis(axis: Vector3, hullB: ConvexPolyhedron, posA: Vector3, quatA: Quaternion, posB: Vector3, quatB: Quaternion): number | false;
         /**
          *
          * @param mass
          * @param target
          */
-        calculateLocalInertia(mass: number, target: Vec3): void;
+        calculateLocalInertia(mass: number, target: Vector3): void;
         /**
          *
          * @param face_i Index of the face
@@ -955,9 +955,9 @@ declare namespace CANNON {
          * @param maxDist
          * @param result Array to store resulting contact points in. Will be objects with properties: point, depth, normal. These are represented in world coordinates.
          */
-        clipFaceAgainstHull(separatingNormal: Vec3, posA: Vec3, quatA: Quaternion, worldVertsB1: Vec3[], minDist: number, maxDist: number, result: {
-            point: Vec3;
-            normal: Vec3;
+        clipFaceAgainstHull(separatingNormal: Vector3, posA: Vector3, quatA: Quaternion, worldVertsB1: Vector3[], minDist: number, maxDist: number, result: {
+            point: Vector3;
+            normal: Vector3;
             depth: number;
         }[]): void;
         /**
@@ -968,8 +968,8 @@ declare namespace CANNON {
          * @param planeNormal
          * @param planeConstant The constant in the mathematical plane equation
          */
-        clipFaceAgainstPlane(inVertices: Vec3[], outVertices: Vec3[], planeNormal: Vec3, planeConstant: number): Vec3[];
-        computeWorldVertices(position: Vec3, quat: Quaternion): void;
+        clipFaceAgainstPlane(inVertices: Vector3[], outVertices: Vector3[], planeNormal: Vector3, planeConstant: number): Vector3[];
+        computeWorldVertices(position: Vector3, quat: Quaternion): void;
         computeLocalAABB(aabbmin: any, aabbmax: any): void;
         /**
          * Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
@@ -985,7 +985,7 @@ declare namespace CANNON {
          * @param min
          * @param max
          */
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
         /**
          * Get approximate convex volume
          */
@@ -995,20 +995,20 @@ declare namespace CANNON {
          *
          * @param target
          */
-        getAveragePointLocal(target: Vec3): Vec3;
+        getAveragePointLocal(target: Vector3): Vector3;
         /**
          * Transform all local points. Will change the .vertices
          *
          * @param  offset
          * @param quat
          */
-        transformAllPoints(offset: Vec3, quat: Quaternion): void;
+        transformAllPoints(offset: Vector3, quat: Quaternion): void;
         /**
          * Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.
          *
          * @param p      A point given in local coordinates
          */
-        pointIsInside(p: Vec3): false | 1 | -1;
+        pointIsInside(p: Vector3): false | 1 | -1;
         /**
          * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis. Results are saved in the array maxmin.
          *
@@ -1018,12 +1018,12 @@ declare namespace CANNON {
          * @param quat
          * @param result result[0] and result[1] will be set to maximum and minimum, respectively.
          */
-        static project(hull: ConvexPolyhedron, axis: Vec3, pos: Vec3, quat: Quaternion, result: number[]): void;
+        static project(hull: ConvexPolyhedron, axis: Vector3, pos: Vector3, quat: Quaternion, result: number[]): void;
     }
 }
 declare namespace CANNON {
     class Box extends Shape {
-        halfExtents: Vec3;
+        halfExtents: Vector3;
         /**
          * Used by the contact generator to make contacts with other convex polyhedra for example
          */
@@ -1033,23 +1033,23 @@ declare namespace CANNON {
          * @param halfExtents
          * @author schteppe
          */
-        constructor(halfExtents: Vec3);
+        constructor(halfExtents: Vector3);
         /**
          * Updates the local convex polyhedron representation used for some collisions.
          */
         updateConvexPolyhedronRepresentation(): void;
-        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
-        static calculateInertia(halfExtents: Vec3, mass: number, target: Vec3): void;
+        calculateLocalInertia(mass: number, target?: Vector3): Vector3;
+        static calculateInertia(halfExtents: Vector3, mass: number, target: Vector3): void;
         /**
          * Get the box 6 side normals
          * @param sixTargetVectors An array of 6 vectors, to store the resulting side normals in.
          * @param quat             Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
          */
-        getSideNormals(sixTargetVectors: Vec3[], quat: Quaternion): Vec3[];
+        getSideNormals(sixTargetVectors: Vector3[], quat: Quaternion): Vector3[];
         volume(): number;
         updateBoundingSphereRadius(): void;
-        forEachWorldCorner(pos: Vec3, quat: Quaternion, callback: Function): void;
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        forEachWorldCorner(pos: Vector3, quat: Quaternion, callback: Function): void;
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
     }
 }
 declare namespace CANNON {
@@ -1087,7 +1087,7 @@ declare namespace CANNON {
         elementSize: number;
         cacheEnabled: boolean;
         pillarConvex: ConvexPolyhedron;
-        pillarOffset: Vec3;
+        pillarOffset: Vector3;
         private _cachedPillars;
         /**
          * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a given distance.
@@ -1166,8 +1166,8 @@ declare namespace CANNON {
          * @param clamp If the position should be clamped to the heightfield edge.
          */
         getIndexOfPosition(x: number, y: number, result: number[], clamp?: boolean): boolean;
-        getTriangleAt(x: number, y: number, edgeClamp: boolean, a: Vec3, b: Vec3, c: Vec3): boolean;
-        getNormalAt(x: number, y: number, edgeClamp: boolean, result: Vec3): void;
+        getTriangleAt(x: number, y: number, edgeClamp: boolean, a: Vector3, b: Vector3, c: Vector3): boolean;
+        getNormalAt(x: number, y: number, edgeClamp: boolean, result: Vector3): void;
         /**
          * Get an AABB of a square in the heightfield
          *
@@ -1186,7 +1186,7 @@ declare namespace CANNON {
         getHeightAt(x: number, y: number, edgeClamp?: boolean): number;
         getCacheConvexTrianglePillarKey(xi: number, yi: number, getUpperTriangle: boolean): string;
         getCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean): any;
-        setCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean, convex: ConvexPolyhedron, offset: Vec3): void;
+        setCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean, convex: ConvexPolyhedron, offset: Vector3): void;
         clearCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean): void;
         /**
          * Get a triangle from the heightfield
@@ -1198,7 +1198,7 @@ declare namespace CANNON {
          * @param b
          * @param c
          */
-        getTriangle(xi: number, yi: number, upper: boolean, a: Vec3, b: Vec3, c: Vec3): void;
+        getTriangle(xi: number, yi: number, upper: boolean, a: Vector3, b: Vector3, c: Vector3): void;
         /**
          * Get a triangle in the terrain in the form of a triangular convex shape.
          *
@@ -1207,9 +1207,9 @@ declare namespace CANNON {
          * @param getUpperTriangle
          */
         getConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean): void;
-        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
+        calculateLocalInertia(mass: number, target?: Vector3): Vector3;
         volume(): number;
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
         updateBoundingSphereRadius(): void;
         /**
          * Sets the height values from an image. Currently only supported in browser.
@@ -1217,7 +1217,7 @@ declare namespace CANNON {
          * @param image
          * @param scale
          */
-        setHeightsFromImage(image: HTMLImageElement, scale: Vec3): void;
+        setHeightsFromImage(image: HTMLImageElement, scale: Vector3): void;
     }
 }
 declare namespace CANNON {
@@ -1232,15 +1232,15 @@ declare namespace CANNON {
          * @param mass
          * @param target
          */
-        calculateLocalInertia(mass: number, target: Vec3): Vec3;
+        calculateLocalInertia(mass: number, target: Vector3): Vector3;
         volume(): number;
         updateBoundingSphereRadius(): void;
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
     }
 }
 declare namespace CANNON {
     class Plane extends Shape {
-        worldNormal: Vec3;
+        worldNormal: Vector3;
         worldNormalNeedsUpdate: boolean;
         /**
          * A plane, facing in the Z direction. The plane has its surface at z=0 and everything below z=0 is assumed to be solid plane. To make the plane face in some other direction than z, you must put it inside a Body and rotate that body. See the demos.
@@ -1249,9 +1249,9 @@ declare namespace CANNON {
          */
         constructor();
         computeWorldNormal(quat: Quaternion): void;
-        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
+        calculateLocalInertia(mass: number, target?: Vector3): Vector3;
         volume(): number;
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
         updateBoundingSphereRadius(): void;
     }
 }
@@ -1265,10 +1265,10 @@ declare namespace CANNON {
          * @author schteppe / http://github.com/schteppe
          */
         constructor(radius: number);
-        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
+        calculateLocalInertia(mass: number, target?: Vector3): Vector3;
         volume(): number;
         updateBoundingSphereRadius(): void;
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
     }
 }
 declare namespace CANNON {
@@ -1276,18 +1276,18 @@ declare namespace CANNON {
         /**
          * The lower bound of the bounding box.
          */
-        lowerBound: Vec3;
+        lowerBound: Vector3;
         /**
          * The upper bound of the bounding box.
          */
-        upperBound: Vec3;
+        upperBound: Vector3;
         /**
          *
          * @param options
          *
          * Axis aligned bounding box class.
          */
-        constructor(lowerBound?: Vec3, upperBound?: Vec3);
+        constructor(lowerBound?: Vector3, upperBound?: Vector3);
         /**
          * Set the AABB bounds from a set of points.
          * @param points An array of Vec3's.
@@ -1296,7 +1296,7 @@ declare namespace CANNON {
          * @param skinSize
          * @return The self object
          */
-        setFromPoints(points: Vec3[], position?: Vec3, quaternion?: Quaternion, skinSize?: number): this;
+        setFromPoints(points: Vector3[], position?: Vector3, quaternion?: Quaternion, skinSize?: number): this;
         /**
          * Copy bounds from an AABB to this AABB
          * @param aabb Source to copy from
@@ -1326,7 +1326,7 @@ declare namespace CANNON {
          * @param aabb
          */
         contains(aabb: AABB): boolean;
-        getCorners(a: Vec3, b: Vec3, c: Vec3, d: Vec3, e: Vec3, f: Vec3, g: Vec3, h: Vec3): void;
+        getCorners(a: Vector3, b: Vector3, c: Vector3, d: Vector3, e: Vector3, f: Vector3, g: Vector3, h: Vector3): void;
         /**
          * Get the representation of an AABB in another frame.
          * @param frame
@@ -1365,7 +1365,7 @@ declare namespace CANNON {
         /**
          * Local scaling of the mesh. Use .setScale() to set it.
          */
-        scale: Vec3;
+        scale: Vector3;
         /**
          * The indexed triangles. Use .updateTree() to update it.
          */
@@ -1398,7 +1398,7 @@ declare namespace CANNON {
         /**
          * @param scale
          */
-        setScale(scale: Vec3): void;
+        setScale(scale: Vector3): void;
         /**
          * Compute the normals of the faces. Will save in the .normals array.
          */
@@ -1414,14 +1414,14 @@ declare namespace CANNON {
          * @param firstOrSecond 0 or 1, depending on which one of the vertices you need.
          * @param vertexStore Where to store the result
          */
-        getEdgeVertex(edgeIndex: number, firstOrSecond: number, vertexStore: Vec3): void;
+        getEdgeVertex(edgeIndex: number, firstOrSecond: number, vertexStore: Vector3): void;
         /**
          * Get a vector along an edge.
          *
          * @param edgeIndex
          * @param vectorStore
          */
-        getEdgeVector(edgeIndex: number, vectorStore: Vec3): void;
+        getEdgeVector(edgeIndex: number, vectorStore: Vector3): void;
         /**
          * Get face normal given 3 vertices
          *
@@ -1430,7 +1430,7 @@ declare namespace CANNON {
          * @param vc
          * @param target
          */
-        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3): void;
+        static computeNormal(va: Vector3, vb: Vector3, vc: Vector3, target: Vector3): void;
         /**
          * Get vertex i.
          *
@@ -1438,7 +1438,7 @@ declare namespace CANNON {
          * @param out
          * @return The "out" vector object
          */
-        getVertex(i: number, out: Vec3): Vec3;
+        getVertex(i: number, out: Vector3): Vector3;
         /**
          * Get raw vertex i
          *
@@ -1456,7 +1456,7 @@ declare namespace CANNON {
          * @param out
          * @return The "out" vector object
          */
-        getWorldVertex(i: number, pos: Vec3, quat: Quaternion, out: Vec3): Vec3;
+        getWorldVertex(i: number, pos: Vector3, quat: Quaternion, out: Vector3): Vector3;
         /**
          * Get the three vertices for triangle i.
          *
@@ -1465,7 +1465,7 @@ declare namespace CANNON {
          * @param b
          * @param c
          */
-        getTriangleVertices(i: number, a: Vec3, b: Vec3, c: Vec3): void;
+        getTriangleVertices(i: number, a: Vector3, b: Vector3, c: Vector3): void;
         /**
          * Compute the normal of triangle i.
          *
@@ -1473,14 +1473,14 @@ declare namespace CANNON {
          * @param target
          * @return The "target" vector object
          */
-        getNormal(i: number, target: Vec3): Vec3;
+        getNormal(i: number, target: Vector3): Vector3;
         /**
          *
          * @param mass
          * @param target
          * @return The "target" vector object
          */
-        calculateLocalInertia(mass: number, target: Vec3): Vec3;
+        calculateLocalInertia(mass: number, target: Vector3): Vector3;
         /**
          * Compute the local AABB for the trimesh
          *
@@ -1495,7 +1495,7 @@ declare namespace CANNON {
          * Will update the .boundingSphereRadius property
          */
         updateBoundingSphereRadius(): void;
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
         /**
          * Get approximate volume
          */
@@ -1679,10 +1679,10 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class RaycastResult {
-        rayFromWorld: Vec3;
-        rayToWorld: Vec3;
-        hitNormalWorld: Vec3;
-        hitPointWorld: Vec3;
+        rayFromWorld: Vector3;
+        rayToWorld: Vector3;
+        hitNormalWorld: Vector3;
+        hitPointWorld: Vector3;
         hasHit: boolean;
         shape: Shape;
         body: Body;
@@ -1695,7 +1695,7 @@ declare namespace CANNON {
          */
         distance: number;
         suspensionLength: number;
-        directionWorld: Vec3;
+        directionWorld: Vector3;
         /**
          * If the ray should stop traversing the bodies.
          */
@@ -1710,7 +1710,7 @@ declare namespace CANNON {
          */
         reset(): void;
         abort(): void;
-        set(rayFromWorld: Vec3, rayToWorld: Vec3, hitNormalWorld: Vec3, hitPointWorld: Vec3, shape: Shape, body: Body, distance: number): void;
+        set(rayFromWorld: Vector3, rayToWorld: Vector3, hitNormalWorld: Vector3, hitPointWorld: Vector3, shape: Shape, body: Body, distance: number): void;
     }
 }
 declare namespace CANNON {
@@ -1806,8 +1806,8 @@ declare namespace CANNON {
         nx: number;
         ny: number;
         nz: number;
-        aabbMin: Vec3;
-        aabbMax: Vec3;
+        aabbMin: Vector3;
+        aabbMax: Vector3;
         bins: Body[][];
         binLengths: number[];
         /**
@@ -1821,7 +1821,7 @@ declare namespace CANNON {
          *
          * @todo Needs support for more than just planes and spheres.
          */
-        constructor(aabbMin: Vec3, aabbMax: Vec3, nx: number, ny: number, nz: number);
+        constructor(aabbMin: Vector3, aabbMax: Vector3, nx: number, ny: number, nz: number);
         /**
          * Get all the collision pairs in the physics world
          *
@@ -1912,9 +1912,9 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class Ray {
-        from: Vec3;
-        to: Vec3;
-        _direction: Vec3;
+        from: Vector3;
+        to: Vector3;
+        _direction: Vector3;
         /**
          * The precision of the ray. Used when checking parallelity etc.
          */
@@ -1950,7 +1950,7 @@ declare namespace CANNON {
          * @param from
          * @param to
          */
-        constructor(from?: Vec3, to?: Vec3);
+        constructor(from?: Vector3, to?: Vector3);
         static CLOSEST: number;
         static ANY: number;
         static ALL: number;
@@ -1966,8 +1966,8 @@ declare namespace CANNON {
             skipBackfaces?: boolean;
             collisionFilterMask?: number;
             collisionFilterGroup?: number;
-            from?: Vec3;
-            to?: Vec3;
+            from?: Vector3;
+            to?: Vector3;
             callback?: Function;
         }): boolean;
         /**
@@ -2000,7 +2000,7 @@ declare namespace CANNON {
          * @private
          * @param  {Shape} shape
          * @param  {Quaternion} quat
-         * @param  {Vec3} position
+         * @param  {Vector3} position
          * @param  {Body} body
          * @param {object} [options]
          */
@@ -2018,7 +2018,7 @@ declare namespace CANNON {
          */
         private intersectTrimesh;
         private reportIntersection;
-        static pointInTriangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3): boolean;
+        static pointInTriangle(p: Vector3, a: Vector3, b: Vector3, c: Vector3): boolean;
     }
 }
 declare namespace CANNON {
@@ -2119,7 +2119,7 @@ declare namespace CANNON {
          * @deprecated Use World events instead
          */
         postStep: Function;
-        vlambda: Vec3;
+        vlambda: Vector3;
         collisionFilterGroup: number;
         collisionFilterMask: number;
         /**
@@ -2129,25 +2129,25 @@ declare namespace CANNON {
         /**
          * World space position of the body.
          */
-        position: Vec3;
-        previousPosition: Vec3;
+        position: Vector3;
+        previousPosition: Vector3;
         /**
          * Interpolated position of the body.
          */
-        interpolatedPosition: Vec3;
+        interpolatedPosition: Vector3;
         /**
          * Initial position of the body
          */
-        initPosition: Vec3;
+        initPosition: Vector3;
         /**
          * World space velocity of the body.
          */
-        velocity: Vec3;
-        initVelocity: Vec3;
+        velocity: Vector3;
+        initVelocity: Vector3;
         /**
          * Linear force on the body in world space.
          */
-        force: Vec3;
+        force: Vector3;
         mass: number;
         invMass: number;
         material: Material;
@@ -2177,7 +2177,7 @@ declare namespace CANNON {
         /**
          * World space rotational force on the body, around center of mass.
          */
-        torque: Vec3;
+        torque: Vector3;
         /**
          * World space orientation of the body.
          */
@@ -2191,22 +2191,22 @@ declare namespace CANNON {
         /**
          * Angular velocity of the body, in world space. Think of the angular velocity as a vector, which the body rotates around. The length of this vector determines how fast (in radians per second) the body rotates.
          */
-        angularVelocity: Vec3;
-        initAngularVelocity: Vec3;
+        angularVelocity: Vector3;
+        initAngularVelocity: Vector3;
         shapes: Shape[];
         /**
          * Position of each Shape in the body, given in local Body space.
          */
-        shapeOffsets: Vec3[];
+        shapeOffsets: Vector3[];
         /**
          * Orientation of each Shape, given in local Body space.
          */
         shapeOrientations: Quaternion[];
-        inertia: Vec3;
-        invInertia: Vec3;
+        inertia: Vector3;
+        invInertia: Vector3;
         invInertiaWorld: Mat3;
         invMassSolve: number;
-        invInertiaSolve: Vec3;
+        invInertiaSolve: Vector3;
         invInertiaWorldSolve: Mat3;
         /**
          * Set to true if you don't want the body to rotate. Make sure to run .updateMassProperties() after changing this.
@@ -2216,11 +2216,11 @@ declare namespace CANNON {
         /**
          * Use this property to limit the motion along any world axis. (1,1,1) will allow motion along all axes while (0,0,0) allows none.
          */
-        linearFactor: Vec3;
+        linearFactor: Vector3;
         /**
          * Use this property to limit the rotational motion along any world axis. (1,1,1) will allow rotation along all axes while (0,0,0) allows none.
          */
-        angularFactor: Vec3;
+        angularFactor: Vector3;
         /**
          * World space bounding box of the body and its shapes.
          */
@@ -2233,7 +2233,7 @@ declare namespace CANNON {
          * Total bounding radius of the Body including its shapes, relative to body.position.
          */
         boundingRadius: number;
-        wlambda: Vec3;
+        wlambda: Vector3;
         shape: Shape;
         index: number;
         /**
@@ -2253,8 +2253,8 @@ declare namespace CANNON {
         constructor(options?: {
             collisionFilterGroup?: number;
             collisionFilterMask?: number;
-            position?: Vec3;
-            velocity?: Vec3;
+            position?: Vector3;
+            velocity?: Vector3;
             material?: Material;
             mass?: number;
             linearDamping?: number;
@@ -2263,11 +2263,11 @@ declare namespace CANNON {
             sleepSpeedLimit?: number;
             sleepTimeLimit?: number;
             quaternion?: Quaternion;
-            angularVelocity?: Vec3;
+            angularVelocity?: Vector3;
             fixedRotation?: boolean;
             angularDamping?: number;
-            linearFactor?: Vec3;
-            angularFactor?: Vec3;
+            linearFactor?: Vector3;
+            angularFactor?: Vector3;
             shape?: Shape;
         });
         static COLLIDE_EVENT_NAME: string;
@@ -2328,28 +2328,28 @@ declare namespace CANNON {
          * @param worldPoint
          * @param result
          */
-        pointToLocalFrame(worldPoint: Vec3, result?: Vec3): Vec3;
+        pointToLocalFrame(worldPoint: Vector3, result?: Vector3): Vector3;
         /**
          * Convert a world vector to local body frame.
          *
          * @param worldPoint
          * @param result
          */
-        vectorToLocalFrame(worldVector: any, result?: Vec3): Vec3;
+        vectorToLocalFrame(worldVector: any, result?: Vector3): Vector3;
         /**
          * Convert a local body point to world frame.
          *
          * @param localPoint
          * @param result
          */
-        pointToWorldFrame(localPoint: Vec3, result?: Vec3): Vec3;
+        pointToWorldFrame(localPoint: Vector3, result?: Vector3): Vector3;
         /**
          * Convert a local body point to world frame.
          *
          * @param localVector
          * @param result
          */
-        vectorToWorldFrame(localVector: Vec3, result?: Vec3): Vec3;
+        vectorToWorldFrame(localVector: Vector3, result?: Vector3): Vector3;
         /**
          * Add a shape to the body with a local offset and orientation.
          *
@@ -2358,7 +2358,7 @@ declare namespace CANNON {
          * @param_orientation
          * @return The body object, for chainability.
          */
-        addShape(shape: Shape, _offset?: Vec3, _orientation?: Quaternion): this;
+        addShape(shape: Shape, _offset?: Vector3, _orientation?: Quaternion): this;
         /**
          * Update the bounding radius of the body. Should be done if any of the shapes are changed.
          */
@@ -2379,28 +2379,28 @@ declare namespace CANNON {
          * @param force The amount of force to add.
          * @param relativePoint A point relative to the center of mass to apply the force on.
          */
-        applyForce(force: Vec3, relativePoint: Vec3): void;
+        applyForce(force: Vector3, relativePoint: Vector3): void;
         /**
          * Apply force to a local point in the body.
          *
          * @param force The force vector to apply, defined locally in the body frame.
          * @param localPoint A local point in the body to apply the force on.
          */
-        applyLocalForce(localForce: Vec3, localPoint: Vec3): void;
+        applyLocalForce(localForce: Vector3, localPoint: Vector3): void;
         /**
          * Apply impulse to a world point. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
          *
          * @param impulse The amount of impulse to add.
          * @param relativePoint A point relative to the center of mass to apply the force on.
          */
-        applyImpulse(impulse: Vec3, relativePoint: Vec3): void;
+        applyImpulse(impulse: Vector3, relativePoint: Vector3): void;
         /**
          * Apply locally-defined impulse to a local point in the body.
          *
          * @param force The force vector to apply, defined locally in the body frame.
          * @param localPoint A local point in the body to apply the force on.
          */
-        applyLocalImpulse(localImpulse: Vec3, localPoint: Vec3): void;
+        applyLocalImpulse(localImpulse: Vector3, localPoint: Vector3): void;
         /**
          * Should be called whenever you change the body shape or mass.
          */
@@ -2408,11 +2408,11 @@ declare namespace CANNON {
         /**
          * Get world velocity of a point in the body.
          * @method getVelocityAtWorldPoint
-         * @param  {Vec3} worldPoint
-         * @param  {Vec3} result
-         * @return {Vec3} The result vector.
+         * @param  {Vector3} worldPoint
+         * @param  {Vector3} result
+         * @return {Vector3} The result vector.
          */
-        getVelocityAtWorldPoint(worldPoint: Vec3, result: Vec3): Vec3;
+        getVelocityAtWorldPoint(worldPoint: Vector3, result: Vector3): Vector3;
         /**
          * Move the body forward in time.
          * @param dt Time step
@@ -2447,11 +2447,11 @@ declare namespace CANNON {
         /**
          * Anchor for bodyA in local bodyA coordinates.
          */
-        localAnchorA: Vec3;
+        localAnchorA: Vector3;
         /**
          * Anchor for bodyB in local bodyB coordinates.
          */
-        localAnchorB: Vec3;
+        localAnchorB: Vector3;
         /**
          * A spring, connecting two bodies.
          *
@@ -2463,31 +2463,31 @@ declare namespace CANNON {
             restLength?: number;
             stiffness?: number;
             damping?: number;
-            localAnchorA?: Vec3;
-            localAnchorB?: Vec3;
-            worldAnchorA?: Vec3;
-            worldAnchorB?: Vec3;
+            localAnchorA?: Vector3;
+            localAnchorB?: Vector3;
+            worldAnchorA?: Vector3;
+            worldAnchorB?: Vector3;
         });
         /**
          * Set the anchor point on body A, using world coordinates.
          * @param worldAnchorA
          */
-        setWorldAnchorA(worldAnchorA: Vec3): void;
+        setWorldAnchorA(worldAnchorA: Vector3): void;
         /**
          * Set the anchor point on body B, using world coordinates.
          * @param worldAnchorB
          */
-        setWorldAnchorB(worldAnchorB: Vec3): void;
+        setWorldAnchorB(worldAnchorB: Vector3): void;
         /**
          * Get the anchor point on body A, in world coordinates.
          * @param result The vector to store the result in.
          */
-        getWorldAnchorA(result: Vec3): void;
+        getWorldAnchorA(result: Vector3): void;
         /**
          * Get the anchor point on body B, in world coordinates.
          * @param result The vector to store the result in.
          */
-        getWorldAnchorB(result: Vec3): void;
+        getWorldAnchorB(result: Vector3): void;
         /**
          * Apply the spring force to the connected bodies.
          */
@@ -2512,12 +2512,12 @@ declare namespace CANNON {
         /**
          * Connection point, defined locally in the chassis body frame.
          */
-        chassisConnectionPointLocal: Vec3;
-        chassisConnectionPointWorld: Vec3;
-        directionLocal: Vec3;
-        directionWorld: Vec3;
-        axleLocal: Vec3;
-        axleWorld: Vec3;
+        chassisConnectionPointLocal: Vector3;
+        chassisConnectionPointWorld: Vector3;
+        directionLocal: Vector3;
+        directionWorld: Vector3;
+        axleLocal: Vector3;
+        axleWorld: Vector3;
         suspensionRestLength: number;
         suspensionMaxLength: number;
         radius: number;
@@ -2561,12 +2561,12 @@ declare namespace CANNON {
             maxSuspensionTravel?: number;
             customSlidingRotationalSpeed?: number;
             useCustomSlidingRotationalSpeed?: boolean;
-            chassisConnectionPointLocal?: Vec3;
-            chassisConnectionPointWorld?: Vec3;
-            directionLocal?: Vec3;
-            directionWorld?: Vec3;
-            axleLocal?: Vec3;
-            axleWorld?: Vec3;
+            chassisConnectionPointLocal?: Vector3;
+            chassisConnectionPointWorld?: Vector3;
+            directionLocal?: Vector3;
+            directionWorld?: Vector3;
+            axleLocal?: Vector3;
+            axleWorld?: Vector3;
             suspensionRestLength?: number;
             suspensionMaxLength?: number;
             radius?: number;
@@ -2657,7 +2657,7 @@ declare namespace CANNON {
          * @param axisIndex
          * @param result
          */
-        getVehicleAxisWorld(axisIndex: number, result: Vec3): void;
+        getVehicleAxisWorld(axisIndex: number, result: Vector3): void;
         updateVehicle(timeStep: number): void;
         updateSuspension(deltaTime: number): void;
         /**
@@ -2687,10 +2687,10 @@ declare namespace CANNON {
 declare namespace CANNON {
     class RigidVehicle {
         wheelBodies: Body[];
-        coordinateSystem: Vec3;
+        coordinateSystem: Vector3;
         chassisBody: Body;
         constraints: HingeConstraint[];
-        wheelAxes: Vec3[];
+        wheelAxes: Vector3[];
         wheelForces: number[];
         /**
          * Simple vehicle helper class with spherical rigid body wheels.
@@ -2698,7 +2698,7 @@ declare namespace CANNON {
          * @param options
          */
         constructor(options?: {
-            coordinateSystem?: Vec3;
+            coordinateSystem?: Vector3;
             chassisBody?: Body;
         });
         /**
@@ -2709,8 +2709,8 @@ declare namespace CANNON {
         addWheel(options?: {
             body?: Body;
             isFrontWheel?: boolean;
-            position?: Vec3;
-            axis?: Vec3;
+            position?: Vector3;
+            axis?: Vector3;
         }): number;
         /**
          * Set the steering value of a wheel.
@@ -2814,7 +2814,7 @@ declare namespace CANNON {
         getNeighbors(particle: Body, neighbors: Body[]): void;
         update(): void;
         w(r: number): number;
-        gradw(rVec: Vec3, resultVec: Vec3): void;
+        gradw(rVec: Vector3, resultVec: Vector3): void;
         nablaw(r: number): number;
     }
 }
@@ -2891,8 +2891,8 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class ConeEquation extends Equation {
-        axisA: Vec3;
-        axisB: Vec3;
+        axisA: Vector3;
+        axisB: Vector3;
         /**
          * The cone angle to keep
          */
@@ -2908,8 +2908,8 @@ declare namespace CANNON {
          */
         constructor(bodyA: Body, bodyB: Body, options?: {
             maxForce?: number;
-            axisA?: Vec3;
-            axisB?: Vec3;
+            axisA?: Vector3;
+            axisB?: Vector3;
             angle?: number;
         });
         computeB(h: number): number;
@@ -2921,15 +2921,15 @@ declare namespace CANNON {
         /**
          * World-oriented vector that goes from the center of bi to the contact point.
          */
-        ri: Vec3;
+        ri: Vector3;
         /**
          * World-oriented vector that starts in body j position and goes to the contact point.
          */
-        rj: Vec3;
+        rj: Vector3;
         /**
          * Contact normal, pointing out of body i.
          */
-        ni: Vec3;
+        ni: Vector3;
         si: Shape;
         sj: Shape;
         bodyA: Body;
@@ -2951,9 +2951,9 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class FrictionEquation extends Equation {
-        ri: Vec3;
-        rj: Vec3;
-        t: Vec3;
+        ri: Vector3;
+        rj: Vector3;
+        t: Vector3;
         /**
          * Constrains the slipping in a contact along a tangent
          * @class FrictionEquation
@@ -2970,8 +2970,8 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class RotationalEquation extends Equation {
-        axisA: Vec3;
-        axisB: Vec3;
+        axisA: Vector3;
+        axisB: Vector3;
         maxAngle: number;
         /**
          * Rotational constraint. Works to keep the local vectors orthogonal to each other in world space.
@@ -2983,8 +2983,8 @@ declare namespace CANNON {
          * @author schteppe
          */
         constructor(bodyA: Body, bodyB: Body, options?: {
-            axisA?: Vec3;
-            axisB?: Vec3;
+            axisA?: Vector3;
+            axisB?: Vector3;
             maxForce?: number;
         });
         computeB(h: number): number;
@@ -2995,11 +2995,11 @@ declare namespace CANNON {
         /**
          * World oriented rotational axis
          */
-        axisA: Vec3;
+        axisA: Vector3;
         /**
          * World oriented rotational axis
          */
-        axisB: Vec3;
+        axisB: Vector3;
         /**
          * Motor velocity
          */
@@ -3103,7 +3103,7 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class World extends EventTarget {
-        static worldNormal: Vec3;
+        static worldNormal: Vector3;
         /**
          * Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is "fresh" inside event callbacks.
          */
@@ -3135,7 +3135,7 @@ declare namespace CANNON {
         stepnumber: number;
         default_dt: number;
         nextId: number;
-        gravity: Vec3;
+        gravity: Vector3;
         /**
          * The broadphase algorithm to use. Default is NaiveBroadphase
          */
@@ -3203,7 +3203,7 @@ declare namespace CANNON {
          * @param options
          */
         constructor(options?: {
-            gravity?: Vec3;
+            gravity?: Vector3;
             allowSleep?: boolean;
             broadphase?: Broadphase;
             solver?: Solver;
@@ -3261,7 +3261,7 @@ declare namespace CANNON {
          * @param result
          * @deprecated Use .raycastAll, .raycastClosest or .raycastAny instead.
          */
-        rayTest(from: Vec3, to: Vec3, result: RaycastResult): void;
+        rayTest(from: Vector3, to: Vector3, result: RaycastResult): void;
         /**
          * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
          * @param from
@@ -3270,14 +3270,14 @@ declare namespace CANNON {
          * @param callback
          * @return True if any body was hit.
          */
-        raycastAll(from: Vec3, to: Vec3, options: {
+        raycastAll(from: Vector3, to: Vector3, options: {
             collisionFilterMask?: number;
             collisionFilterGroup?: number;
             skipBackfaces?: boolean;
             checkCollisionResponse?: boolean;
             mode?: number;
-            from?: Vec3;
-            to?: Vec3;
+            from?: Vector3;
+            to?: Vector3;
             callback?: Function;
         }, callback: Function): boolean;
         /**
@@ -3290,14 +3290,14 @@ declare namespace CANNON {
          *
          * @return True if any body was hit.
          */
-        raycastAny(from: Vec3, to: Vec3, options: {
+        raycastAny(from: Vector3, to: Vector3, options: {
             collisionFilterMask?: number;
             collisionFilterGroup?: number;
             skipBackfaces?: boolean;
             checkCollisionResponse?: boolean;
             mode?: number;
-            from?: Vec3;
-            to?: Vec3;
+            from?: Vector3;
+            to?: Vector3;
             callback?: Function;
             result?: RaycastResult;
         }, result: RaycastResult): boolean;
@@ -3311,14 +3311,14 @@ declare namespace CANNON {
          *
          * @return True if any body was hit.
          */
-        raycastClosest(from: Vec3, to: Vec3, options: {
+        raycastClosest(from: Vector3, to: Vector3, options: {
             collisionFilterMask?: number;
             collisionFilterGroup?: number;
             skipBackfaces?: boolean;
             checkCollisionResponse?: boolean;
             mode?: number;
-            from?: Vec3;
-            to?: Vec3;
+            from?: Vector3;
+            to?: Vector3;
             callback?: Function;
             result?: RaycastResult;
         }, result: RaycastResult): boolean;
@@ -3419,47 +3419,47 @@ declare namespace CANNON {
          * @param {array} oldcontacts Optional. Array of reusable contact objects
          */
         getContacts(p1: Body[], p2: Body[], world: World, result: ContactEquation[], oldcontacts: ContactEquation[], frictionResult: FrictionEquation[], frictionPool: FrictionEquation[]): void;
-        boxBox(si: Box, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        boxConvex(si: Box, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        boxParticle(si: Box, sj: Particle, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereSphere(si: Sphere, sj: Sphere, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
+        boxBox(si: Box, sj: Box, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        boxConvex(si: Box, sj: ConvexPolyhedron, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        boxParticle(si: Box, sj: Particle, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereSphere(si: Sphere, sj: Sphere, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
         /**
          * @method planeTrimesh
          * @param  {Shape}      si
          * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
+         * @param  {Vector3}       xi
+         * @param  {Vector3}       xj
          * @param  {Quaternion} qi
          * @param  {Quaternion} qj
          * @param  {Body}       bi
          * @param  {Body}       bj
          */
-        planeTrimesh(planeShape: Plane, trimeshShape: Trimesh, planePos: Vec3, trimeshPos: Vec3, planeQuat: Quaternion, trimeshQuat: Quaternion, planeBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereTrimesh(sphereShape: Sphere, trimeshShape: Trimesh, spherePos: Vec3, trimeshPos: Vec3, sphereQuat: Quaternion, trimeshQuat: Quaternion, sphereBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        spherePlane(si: Sphere, sj: Plane, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereBox(si: Sphere, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereConvex(si: Sphere, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        planeBox(si: Plane, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        planeConvex(planeShape: Plane, convexShape: ConvexPolyhedron, planePosition: Vec3, convexPosition: Vec3, planeQuat: Quaternion, convexQuat: Quaternion, planeBody: Body, convexBody: Body, si: Shape, sj: Shape, justTest: boolean): boolean;
-        convexConvex(si: ConvexPolyhedron, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: number[], faceListB?: number[]): boolean;
+        planeTrimesh(planeShape: Plane, trimeshShape: Trimesh, planePos: Vector3, trimeshPos: Vector3, planeQuat: Quaternion, trimeshQuat: Quaternion, planeBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereTrimesh(sphereShape: Sphere, trimeshShape: Trimesh, spherePos: Vector3, trimeshPos: Vector3, sphereQuat: Quaternion, trimeshQuat: Quaternion, sphereBody: Body, trimeshBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        spherePlane(si: Sphere, sj: Plane, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereBox(si: Sphere, sj: Box, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereConvex(si: Sphere, sj: ConvexPolyhedron, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        planeBox(si: Plane, sj: Box, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        planeConvex(planeShape: Plane, convexShape: ConvexPolyhedron, planePosition: Vector3, convexPosition: Vector3, planeQuat: Quaternion, convexQuat: Quaternion, planeBody: Body, convexBody: Body, si: Shape, sj: Shape, justTest: boolean): boolean;
+        convexConvex(si: ConvexPolyhedron, sj: ConvexPolyhedron, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: number[], faceListB?: number[]): boolean;
         /**
          * @method convexTrimesh
          * @param  {Array}      result
          * @param  {Shape}      si
          * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
+         * @param  {Vector3}       xi
+         * @param  {Vector3}       xj
          * @param  {Quaternion} qi
          * @param  {Quaternion} qj
          * @param  {Body}       bi
          * @param  {Body}       bj
          */
-        planeParticle(sj: Plane, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereParticle(sj: Sphere, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        convexParticle(sj: ConvexPolyhedron, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        boxHeightfield(si: Box, sj: Heightfield, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        convexHeightfield(convexShape: ConvexPolyhedron, hfShape: Heightfield, convexPos: Vec3, hfPos: Vec3, convexQuat: Quaternion, hfQuat: Quaternion, convexBody: Body, hfBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
-        sphereHeightfield(sphereShape: Sphere, hfShape: Heightfield, spherePos: Vec3, hfPos: Vec3, sphereQuat: Quaternion, hfQuat: Quaternion, sphereBody: Body, hfBody: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
+        planeParticle(sj: Plane, si: Particle, xj: Vector3, xi: Vector3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereParticle(sj: Sphere, si: Particle, xj: Vector3, xi: Vector3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        convexParticle(sj: ConvexPolyhedron, si: Particle, xj: Vector3, xi: Vector3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        boxHeightfield(si: Box, sj: Heightfield, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        convexHeightfield(convexShape: ConvexPolyhedron, hfShape: Heightfield, convexPos: Vector3, hfPos: Vector3, convexQuat: Quaternion, hfQuat: Quaternion, convexBody: Body, hfBody: Body, rsi: Shape, rsj: Shape, justTest: boolean): boolean;
+        sphereHeightfield(sphereShape: Sphere, hfShape: Heightfield, spherePos: Vector3, hfPos: Vector3, sphereQuat: Quaternion, hfQuat: Quaternion, sphereBody: Body, hfBody: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean): boolean;
     }
 }
 //# sourceMappingURL=cannon.d.ts.map

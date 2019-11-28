@@ -57,7 +57,7 @@ namespace CANNON
         {
             test.expect(1);
 
-            var v = new Vec3(2, 3, 7);
+            var v = new Vector3(2, 3, 7);
             var m = new Mat3();
 
             /*
@@ -126,7 +126,7 @@ namespace CANNON
             test.expect(2);
 
             var m = new Mat3();
-            var v = new Vec3(2, 3, 7);
+            var v = new Vector3(2, 3, 7);
 
             /* set the matrix to
             | 5 2 4 |
@@ -250,7 +250,7 @@ namespace CANNON
             var M = new Mat3([1, 1, 1,
                 1, 1, 1,
                 1, 1, 1]);
-            var Mt = M.scale(new Vec3(1, 2, 3));
+            var Mt = M.scale(new Vector3(1, 2, 3));
             test.deepEqual(Mt.elements, [1, 2, 3,
                 1, 2, 3,
                 1, 2, 3]);
@@ -260,7 +260,7 @@ namespace CANNON
         {
             var M = new Mat3(),
                 q = new Quaternion(),
-                original = new Vec3(1, 2, 3);
+                original = new Vector3(1, 2, 3);
 
             // Test zero rotation
             M.setRotationFromQuaternion(q);

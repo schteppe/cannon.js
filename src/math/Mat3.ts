@@ -67,7 +67,7 @@ namespace CANNON
          * Sets the matrix diagonal elements from a Vec3
          * @param vec3
          */
-        setTrace(vec3: Vec3)
+        setTrace(vec3: Vector3)
         {
             var e = this.elements;
             e[0] = vec3.x;
@@ -78,7 +78,7 @@ namespace CANNON
         /**
          * Gets the matrix diagonal elements
          */
-        getTrace(target = new Vec3())
+        getTrace(target = new Vector3())
         {
             var e = this.elements;
             target.x = e[0];
@@ -91,7 +91,7 @@ namespace CANNON
          * @param v The vector to multiply with
          * @param target Optional, target to save the result in.
          */
-        vmult(v: Vec3, target = new Vec3())
+        vmult(v: Vector3, target = new Vector3())
         {
             var e = this.elements,
                 x = v.x,
@@ -141,7 +141,7 @@ namespace CANNON
          * Scale each column of the matrix
          * @param v
          */
-        scale(v: Vec3, target = new Mat3())
+        scale(v: Vector3, target = new Mat3())
         {
             var e = this.elements,
                 t = target.elements;
@@ -160,7 +160,7 @@ namespace CANNON
          * @param target Optional. Target vector to save in.
          * @todo should reuse arrays
          */
-        solve(b: Vec3, target = new Vec3())
+        solve(b: Vector3, target = new Vector3())
         {
             // Construct equations
             var nr = 3; // num rows

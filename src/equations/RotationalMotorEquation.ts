@@ -6,12 +6,12 @@ namespace CANNON
         /**
          * World oriented rotational axis
          */
-        axisA: Vec3;
+        axisA: Vector3;
 
         /**
          * World oriented rotational axis
          */
-        axisB: Vec3; // World oriented rotational axis
+        axisB: Vector3; // World oriented rotational axis
 
         /**
          * Motor velocity
@@ -31,8 +31,8 @@ namespace CANNON
         {
             super(bodyA, bodyB, -(typeof (maxForce) !== 'undefined' ? maxForce : 1e6), typeof (maxForce) !== 'undefined' ? maxForce : 1e6);
 
-            this.axisA = new Vec3();
-            this.axisB = new Vec3(); // World oriented rotational axis
+            this.axisA = new Vector3();
+            this.axisB = new Vector3(); // World oriented rotational axis
             this.targetVelocity = 0;
         }
 

@@ -206,7 +206,7 @@ namespace CANNON
         }
 
         // calculate gradient of the weight function
-        gradw(rVec: Vec3, resultVec: Vec3)
+        gradw(rVec: Vector3, resultVec: Vector3)
         {
             var r = rVec.length,
                 h = this.smoothingRadius;
@@ -223,11 +223,11 @@ namespace CANNON
     }
 
 
-    var SPHSystem_getNeighbors_dist = new Vec3();
-    var SPHSystem_update_dist = new Vec3();
-    var SPHSystem_update_a_pressure = new Vec3();
-    var SPHSystem_update_a_visc = new Vec3();
-    var SPHSystem_update_gradW = new Vec3();
-    var SPHSystem_update_r_vec = new Vec3();
-    var SPHSystem_update_u = new Vec3(); // Relative velocity
+    var SPHSystem_getNeighbors_dist = new Vector3();
+    var SPHSystem_update_dist = new Vector3();
+    var SPHSystem_update_a_pressure = new Vector3();
+    var SPHSystem_update_a_visc = new Vector3();
+    var SPHSystem_update_gradW = new Vector3();
+    var SPHSystem_update_r_vec = new Vector3();
+    var SPHSystem_update_u = new Vector3(); // Relative velocity
 }

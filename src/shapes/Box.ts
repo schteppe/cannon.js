@@ -3,7 +3,7 @@ namespace CANNON
     export class Box extends Shape
     {
 
-        halfExtents: Vec3;
+        halfExtents: Vector3;
 
         /**
          * Used by the contact generator to make contacts with other convex polyhedra for example
@@ -15,7 +15,7 @@ namespace CANNON
          * @param halfExtents
          * @author schteppe
          */
-        constructor(halfExtents: Vec3)
+        constructor(halfExtents: Vector3)
         {
             super({
                 type: Shape.types.BOX
@@ -36,7 +36,7 @@ namespace CANNON
             var sx = this.halfExtents.x;
             var sy = this.halfExtents.y;
             var sz = this.halfExtents.z;
-            var V = Vec3;
+            var V = Vector3;
 
             var vertices = [
                 new V(-sx, -sy, -sz),
@@ -69,13 +69,13 @@ namespace CANNON
             h.material = this.material;
         }
 
-        calculateLocalInertia(mass: number, target = new Vec3())
+        calculateLocalInertia(mass: number, target = new Vector3())
         {
             Box.calculateInertia(this.halfExtents, mass, target);
             return target;
         }
 
-        static calculateInertia(halfExtents: Vec3, mass: number, target: Vec3)
+        static calculateInertia(halfExtents: Vector3, mass: number, target: Vector3)
         {
             var e = halfExtents;
             target.x = 1.0 / 12.0 * mass * (2 * e.y * 2 * e.y + 2 * e.z * 2 * e.z);
@@ -88,7 +88,7 @@ namespace CANNON
          * @param sixTargetVectors An array of 6 vectors, to store the resulting side normals in.
          * @param quat             Orientation to apply to the normal vectors. If not provided, the vectors will be in respect to the local frame.
          */
-        getSideNormals(sixTargetVectors: Vec3[], quat: Quaternion)
+        getSideNormals(sixTargetVectors: Vector3[], quat: Quaternion)
         {
             var sides = sixTargetVectors;
             var ex = this.halfExtents;
@@ -120,7 +120,7 @@ namespace CANNON
             this.boundingSphereRadius = this.halfExtents.length;
         }
 
-        forEachWorldCorner(pos: Vec3, quat: Quaternion, callback: Function)
+        forEachWorldCorner(pos: Vector3, quat: Quaternion, callback: Function)
         {
             var e = this.halfExtents;
             var corners = [[e.x, e.y, e.z],
@@ -142,7 +142,7 @@ namespace CANNON
             }
         }
 
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3)
         {
             var e = this.halfExtents;
             worldCornersTemp[0].set(e.x, e.y, e.z);
@@ -222,17 +222,17 @@ namespace CANNON
     }
 
 
-    var worldCornerTempPos = new Vec3();
-    var worldCornerTempNeg = new Vec3();
+    var worldCornerTempPos = new Vector3();
+    var worldCornerTempNeg = new Vector3();
 
     var worldCornersTemp = [
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3()
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3()
     ];
 }

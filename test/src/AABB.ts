@@ -20,7 +20,7 @@ namespace CANNON
 
         QUnit.test("clone", (test) =>
         {
-            var a = new AABB(new Vec3(-1, -2, -3), new Vec3(1, 2, 3));
+            var a = new AABB(new Vector3(-1, -2, -3), new Vector3(1, 2, 3));
             var b = a.clone();
 
             test.deepEqual(a, b);
@@ -30,22 +30,22 @@ namespace CANNON
 
         QUnit.test("extend", (test) =>
         {
-            var a = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
-            var b = new AABB(new Vec3(-2, -2, -2), new Vec3(2, 2, 2));
+            var a = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            var b = new AABB(new Vector3(-2, -2, -2), new Vector3(2, 2, 2));
             a.extend(b);
             test.deepEqual(a, b);
 
-            a = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
-            b = new AABB(new Vec3(-2, -2, -2), new Vec3(2, 2, 2));
+            a = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            b = new AABB(new Vector3(-2, -2, -2), new Vector3(2, 2, 2));
             b.extend(a);
-            test.deepEqual(b.lowerBound, new Vec3(-2, -2, -2));
-            test.deepEqual(b.upperBound, new Vec3(2, 2, 2));
+            test.deepEqual(b.lowerBound, new Vector3(-2, -2, -2));
+            test.deepEqual(b.upperBound, new Vector3(2, 2, 2));
 
-            a = new AABB(new Vec3(-2, -1, -1), new Vec3(2, 1, 1));
-            b = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
+            a = new AABB(new Vector3(-2, -1, -1), new Vector3(2, 1, 1));
+            b = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             b.extend(a);
-            test.deepEqual(a.lowerBound, new Vec3(-2, -1, -1));
-            test.deepEqual(a.upperBound, new Vec3(2, 1, 1));
+            test.deepEqual(a.lowerBound, new Vector3(-2, -1, -1));
+            test.deepEqual(a.upperBound, new Vector3(2, 1, 1));
         });
 
         QUnit.test("extend", (test) =>
@@ -132,7 +132,7 @@ namespace CANNON
             worldAABB.toLocalFrame(frame, localAABB);
             test.deepEqual(
                 localAABB,
-                new AABB(new Vec3(0, -1, -1), new Vec3(2, 1, 1))
+                new AABB(new Vector3(0, -1, -1), new Vector3(2, 1, 1))
             );
 
         });
@@ -155,7 +155,7 @@ namespace CANNON
             localAABB.toWorldFrame(frame, worldAABB);
             test.deepEqual(
                 worldAABB,
-                new AABB(new Vec3(0, -1, -1), new Vec3(2, 1, 1))
+                new AABB(new Vector3(0, -1, -1), new Vector3(2, 1, 1))
             );
 
         });

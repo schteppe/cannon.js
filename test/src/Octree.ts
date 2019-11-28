@@ -11,10 +11,10 @@ namespace CANNON
 
         QUnit.test("insertRoot", (test) =>
         {
-            var aabb = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
+            var aabb = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var tree = new Octree(aabb);
 
-            var nodeAABB = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
+            var nodeAABB = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var nodeData = 123;
             tree.insert(nodeAABB, nodeData);
 
@@ -25,12 +25,12 @@ namespace CANNON
 
         QUnit.test("insertDeep", (test) =>
         {
-            var aabb = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
+            var aabb = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var tree = new Octree(aabb, {
                 maxDepth: 8
             });
 
-            var nodeAABB = new AABB(new Vec3(-1, -1, -1), new Vec3(-1, -1, -1));
+            var nodeAABB = new AABB(new Vector3(-1, -1, -1), new Vector3(-1, -1, -1));
             var nodeData = 123;
 
             tree.insert(nodeAABB, nodeData);
@@ -53,10 +53,10 @@ namespace CANNON
 
         QUnit.test("aabbQuery", (test) =>
         {
-            var aabb = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
+            var aabb = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var tree = new Octree<number>(aabb);
 
-            var nodeAABB = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
+            var nodeAABB = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var nodeData = 123;
 
             tree.insert(nodeAABB, nodeData);
@@ -67,7 +67,7 @@ namespace CANNON
             test.deepEqual(result, [123]);
 
 
-            var nodeAABB2 = new AABB(new Vec3(-1, -1, -1), new Vec3(-1, -1, -1));
+            var nodeAABB2 = new AABB(new Vector3(-1, -1, -1), new Vector3(-1, -1, -1));
             var nodeData2 = 456;
             tree.insert(nodeAABB2, nodeData2);
 
@@ -76,7 +76,7 @@ namespace CANNON
             test.deepEqual(result, [123, 456]);
 
             result = [];
-            tree.aabbQuery(new AABB(new Vec3(0, 0, 0), new Vec3(1, 1, 1)), result);
+            tree.aabbQuery(new AABB(new Vector3(0, 0, 0), new Vector3(1, 1, 1)), result);
             test.deepEqual(result, [123]);
 
         });

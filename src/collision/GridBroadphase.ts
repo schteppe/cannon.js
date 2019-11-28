@@ -5,8 +5,8 @@ namespace CANNON
 		nx: number;
 		ny: number;
 		nz: number;
-		aabbMin: Vec3;
-		aabbMax: Vec3;
+		aabbMin: Vector3;
+		aabbMax: Vector3;
 		bins: Body[][];
 		binLengths: number[]; //Rather than continually resizing arrays (thrashing the memory), just record length and allow them to grow
 
@@ -21,14 +21,14 @@ namespace CANNON
 		 * 
 		 * @todo Needs support for more than just planes and spheres.
 		 */
-		constructor(aabbMin: Vec3, aabbMax: Vec3, nx: number, ny: number, nz: number)
+		constructor(aabbMin: Vector3, aabbMax: Vector3, nx: number, ny: number, nz: number)
 		{
 			super();
 			this.nx = nx || 10;
 			this.ny = ny || 10;
 			this.nz = nz || 10;
-			this.aabbMin = aabbMin || new Vec3(100, 100, 100);
-			this.aabbMax = aabbMax || new Vec3(-100, -100, -100);
+			this.aabbMin = aabbMin || new Vector3(100, 100, 100);
+			this.aabbMax = aabbMax || new Vector3(-100, -100, -100);
 			var nbins = this.nx * this.ny * this.nz;
 			if (nbins <= 0)
 			{
@@ -253,6 +253,6 @@ namespace CANNON
 	}
 
 
-	var GridBroadphase_collisionPairs_d = new Vec3();
-	var GridBroadphase_collisionPairs_binPos = new Vec3();
+	var GridBroadphase_collisionPairs_d = new Vector3();
+	var GridBroadphase_collisionPairs_binPos = new Vector3();
 }

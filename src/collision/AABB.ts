@@ -5,12 +5,12 @@ namespace CANNON
         /**
          * The lower bound of the bounding box.
          */
-        lowerBound = new Vec3();
+        lowerBound = new Vector3();
 
         /**
          * The upper bound of the bounding box.
          */
-        upperBound = new Vec3();
+        upperBound = new Vector3();
 
         /**
          * 
@@ -18,7 +18,7 @@ namespace CANNON
          * 
          * Axis aligned bounding box class.
          */
-        constructor(lowerBound = new Vec3(), upperBound = new Vec3())
+        constructor(lowerBound = new Vector3(), upperBound = new Vector3())
         {
             this.lowerBound = lowerBound;
             this.upperBound = upperBound;
@@ -32,7 +32,7 @@ namespace CANNON
          * @param skinSize
          * @return The self object
          */
-        setFromPoints(points: Vec3[], position?: Vec3, quaternion?: Quaternion, skinSize?: number)
+        setFromPoints(points: Vector3[], position?: Vector3, quaternion?: Quaternion, skinSize?: number)
         {
             var l = this.lowerBound,
                 u = this.upperBound,
@@ -175,7 +175,7 @@ namespace CANNON
             );
         }
 
-        getCorners(a: Vec3, b: Vec3, c: Vec3, d: Vec3, e: Vec3, f: Vec3, g: Vec3, h: Vec3)
+        getCorners(a: Vector3, b: Vector3, c: Vector3, d: Vector3, e: Vector3, f: Vector3, g: Vector3, h: Vector3)
         {
             var l = this.lowerBound,
                 u = this.upperBound;
@@ -297,15 +297,15 @@ namespace CANNON
 
     }
 
-    var tmp = new Vec3();
+    var tmp = new Vector3();
     var transformIntoFrame_corners = [
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3(),
-        new Vec3()
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3()
     ];
 }

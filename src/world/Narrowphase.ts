@@ -303,7 +303,7 @@ namespace CANNON
             }
         }
 
-        boxBox(si: Box, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        boxBox(si: Box, sj: Box, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             sj.convexPolyhedronRepresentation.material = sj.material;
@@ -312,21 +312,21 @@ namespace CANNON
             return this.convexConvex(si.convexPolyhedronRepresentation, sj.convexPolyhedronRepresentation, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         }
 
-        boxConvex(si: Box, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        boxConvex(si: Box, sj: ConvexPolyhedron, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexConvex(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         }
 
-        boxParticle(si: Box, sj: Particle, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        boxParticle(si: Box, sj: Particle, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
             return this.convexParticle(si.convexPolyhedronRepresentation, sj, xi, xj, qi, qj, bi, bj, si, sj, justTest);
         }
 
-        sphereSphere(si: Sphere, sj: Sphere, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean)
+        sphereSphere(si: Sphere, sj: Sphere, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi?: Shape, rsj?: Shape, justTest?: boolean)
         {
             if (justTest)
             {
@@ -361,8 +361,8 @@ namespace CANNON
          * @method planeTrimesh
          * @param  {Shape}      si
          * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
+         * @param  {Vector3}       xi
+         * @param  {Vector3}       xj
          * @param  {Quaternion} qi
          * @param  {Quaternion} qj
          * @param  {Body}       bi
@@ -371,8 +371,8 @@ namespace CANNON
         planeTrimesh(
             planeShape: Plane,
             trimeshShape: Trimesh,
-            planePos: Vec3,
-            trimeshPos: Vec3,
+            planePos: Vector3,
+            trimeshPos: Vector3,
             planeQuat: Quaternion,
             trimeshQuat: Quaternion,
             planeBody: Body,
@@ -383,7 +383,7 @@ namespace CANNON
         )
         {
             // Make contacts!
-            var v = new Vec3();
+            var v = new Vector3();
 
             var normal = planeTrimesh_normal;
             normal.copy(World.worldNormal);
@@ -396,7 +396,7 @@ namespace CANNON
                 trimeshShape.getVertex(i, v);
 
                 // Safe up
-                var v2 = new Vec3();
+                var v2 = new Vector3();
                 v2.copy(v);
                 Transform.pointToWorldFrame(trimeshPos, trimeshQuat, v2, v);
 
@@ -438,8 +438,8 @@ namespace CANNON
         sphereTrimesh(
             sphereShape: Sphere,
             trimeshShape: Trimesh,
-            spherePos: Vec3,
-            trimeshPos: Vec3,
+            spherePos: Vector3,
+            trimeshPos: Vector3,
             sphereQuat: Quaternion,
             trimeshQuat: Quaternion,
             sphereBody: Body,
@@ -627,7 +627,7 @@ namespace CANNON
             triangles.length = 0;
         }
 
-        spherePlane(si: Sphere, sj: Plane, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        spherePlane(si: Sphere, sj: Plane, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             // We will have one contact in this case
             var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
@@ -667,7 +667,7 @@ namespace CANNON
             }
         }
 
-        sphereBox(si: Sphere, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        sphereBox(si: Sphere, sj: Box, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var v3pool = this.v3pool;
 
@@ -830,7 +830,7 @@ namespace CANNON
             var edgeCenter = v3pool.get();
             let r = v3pool.get(); // r = edge center to sphere center
             var orthogonal = v3pool.get();
-            var dist1: Vec3 = v3pool.get();
+            var dist1: Vector3 = v3pool.get();
             var Nsides = sides.length;
             for (var j = 0; j !== Nsides && !found; j++)
             {
@@ -899,7 +899,7 @@ namespace CANNON
             v3pool.release(edgeTangent, edgeCenter, r, orthogonal, dist1);
         }
 
-        sphereConvex(si: Sphere, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        sphereConvex(si: Sphere, sj: ConvexPolyhedron, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var v3pool = this.v3pool;
             xi.subTo(xj, convex_to_sphere);
@@ -916,7 +916,7 @@ namespace CANNON
             // Check corners
             for (var i = 0; i !== verts.length; i++)
             {
-                var v = <Vec3>verts[i];
+                var v = <Vector3>verts[i];
 
                 // World position of corner
                 var worldCorner = sphereConvex_worldCorner;
@@ -965,7 +965,7 @@ namespace CANNON
 
                 // Get a world vertex from the face
                 var worldPoint = sphereConvex_worldPoint;
-                qj.vmult(<Vec3>verts[face[0]], worldPoint);
+                qj.vmult(<Vector3>verts[face[0]], worldPoint);
                 worldPoint.addTo(xj, worldPoint);
 
                 // Get a point on the sphere, closest to the face normal
@@ -990,7 +990,7 @@ namespace CANNON
                     for (var j = 0, Nverts = face.length; j !== Nverts; j++)
                     {
                         var worldVertex = v3pool.get();
-                        qj.vmult(<Vec3>verts[face[j]], worldVertex);
+                        qj.vmult(<Vector3>verts[face[j]], worldVertex);
                         xj.addTo(worldVertex, worldVertex);
                         faceVerts.push(worldVertex);
                     }
@@ -1047,8 +1047,8 @@ namespace CANNON
                             // Get two world transformed vertices
                             var v1 = v3pool.get();
                             var v2 = v3pool.get();
-                            qj.vmult(<Vec3>verts[face[(j + 1) % face.length]], v1);
-                            qj.vmult(<Vec3>verts[face[(j + 2) % face.length]], v2);
+                            qj.vmult(<Vector3>verts[face[(j + 1) % face.length]], v1);
+                            qj.vmult(<Vector3>verts[face[(j + 2) % face.length]], v2);
                             xj.addTo(v1, v1);
                             xj.addTo(v2, v2);
 
@@ -1132,7 +1132,7 @@ namespace CANNON
             }
         }
 
-        planeBox(si: Plane, sj: Box, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        planeBox(si: Plane, sj: Box, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             sj.convexPolyhedronRepresentation.material = sj.material;
             sj.convexPolyhedronRepresentation.collisionResponse = sj.collisionResponse;
@@ -1143,8 +1143,8 @@ namespace CANNON
         planeConvex(
             planeShape: Plane,
             convexShape: ConvexPolyhedron,
-            planePosition: Vec3,
-            convexPosition: Vec3,
+            planePosition: Vector3,
+            convexPosition: Vector3,
             planeQuat: Quaternion,
             convexQuat: Quaternion,
             planeBody: Body,
@@ -1213,7 +1213,7 @@ namespace CANNON
             }
         }
 
-        convexConvex(si: ConvexPolyhedron, sj: ConvexPolyhedron, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: number[], faceListB?: number[])
+        convexConvex(si: ConvexPolyhedron, sj: ConvexPolyhedron, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean, faceListA?: number[], faceListB?: number[])
         {
             var sepAxis = convexConvex_sepAxis;
 
@@ -1225,8 +1225,8 @@ namespace CANNON
             if (si.findSeparatingAxis(sj, xi, qi, xj, qj, sepAxis, faceListA, faceListB))
             {
                 var res: {
-                    point: Vec3;
-                    normal: Vec3;
+                    point: Vector3;
+                    normal: Vector3;
                     depth: number;
                 }[] = [];
                 var q = convexConvex_q;
@@ -1276,8 +1276,8 @@ namespace CANNON
          * @param  {Array}      result
          * @param  {Shape}      si
          * @param  {Shape}      sj
-         * @param  {Vec3}       xi
-         * @param  {Vec3}       xj
+         * @param  {Vector3}       xi
+         * @param  {Vector3}       xj
          * @param  {Quaternion} qi
          * @param  {Quaternion} qj
          * @param  {Body}       bi
@@ -1295,9 +1295,9 @@ namespace CANNON
         //     var hullB = new ConvexPolyhedron();
 
         //     hullB.faces = [[0,1,2]];
-        //     var va = new Vec3();
-        //     var vb = new Vec3();
-        //     var vc = new Vec3();
+        //     var va = new Vector3();
+        //     var vb = new Vector3();
+        //     var vc = new Vector3();
         //     hullB.vertices = [
         //         va,
         //         vb,
@@ -1306,7 +1306,7 @@ namespace CANNON
 
         //     for (var i = 0; i < sj.indices.length / 3; i++) {
 
-        //         var triangleNormal = new Vec3();
+        //         var triangleNormal = new Vector3();
         //         sj.getNormal(i, triangleNormal);
         //         hullB.faceNormals = [triangleNormal];
 
@@ -1351,7 +1351,7 @@ namespace CANNON
         //     }
         // };
 
-        planeParticle(sj: Plane, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        planeParticle(sj: Plane, si: Particle, xj: Vector3, xi: Vector3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var normal = particlePlane_normal;
             normal.copy(World.worldNormal);
@@ -1385,7 +1385,7 @@ namespace CANNON
             }
         }
 
-        sphereParticle(sj: Sphere, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        sphereParticle(sj: Sphere, si: Particle, xj: Vector3, xi: Vector3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             // The normal is the unit vector from sphere center to particle center
             var normal = particleSphere_normal;
@@ -1411,7 +1411,7 @@ namespace CANNON
             }
         }
 
-        convexParticle(sj: ConvexPolyhedron, si: Particle, xj: Vec3, xi: Vec3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        convexParticle(sj: ConvexPolyhedron, si: Particle, xj: Vector3, xi: Vector3, qj: Quaternion, qi: Quaternion, bj: Body, bi: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             var penetratedFaceIndex = -1;
             var penetratedFaceNormal = convexParticle_penetratedFaceNormal;
@@ -1499,7 +1499,7 @@ namespace CANNON
             }
         }
 
-        boxHeightfield(si: Box, sj: Heightfield, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
+        boxHeightfield(si: Box, sj: Heightfield, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
             si.convexPolyhedronRepresentation.material = si.material;
             si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse;
@@ -1509,8 +1509,8 @@ namespace CANNON
         convexHeightfield(
             convexShape: ConvexPolyhedron,
             hfShape: Heightfield,
-            convexPos: Vec3,
-            hfPos: Vec3,
+            convexPos: Vector3,
+            hfPos: Vector3,
             convexQuat: Quaternion,
             hfQuat: Quaternion,
             convexBody: Body,
@@ -1602,8 +1602,8 @@ namespace CANNON
         sphereHeightfield(
             sphereShape: Sphere,
             hfShape: Heightfield,
-            spherePos: Vec3,
-            hfPos: Vec3,
+            spherePos: Vector3,
+            hfPos: Vector3,
             sphereQuat: Quaternion,
             hfQuat: Quaternion,
             sphereBody: Body,
@@ -1709,12 +1709,12 @@ namespace CANNON
 
     }
 
-    var averageNormal = new Vec3();
-    var averageContactPointA = new Vec3();
-    var averageContactPointB = new Vec3();
+    var averageNormal = new Vector3();
+    var averageContactPointA = new Vector3();
+    var averageContactPointB = new Vector3();
 
-    var tmpVec1 = new Vec3();
-    var tmpVec2 = new Vec3();
+    var tmpVec1 = new Vector3();
+    var tmpVec2 = new Vector3();
     var tmpQuat1 = new Quaternion();
     var tmpQuat2 = new Quaternion();
 
@@ -1733,35 +1733,35 @@ namespace CANNON
         console.warn(msg);
     }
 
-    var planeTrimesh_normal = new Vec3();
-    var planeTrimesh_relpos = new Vec3();
-    var planeTrimesh_projected = new Vec3();
+    var planeTrimesh_normal = new Vector3();
+    var planeTrimesh_relpos = new Vector3();
+    var planeTrimesh_projected = new Vector3();
 
-    var sphereTrimesh_normal = new Vec3();
-    var sphereTrimesh_relpos = new Vec3();
-    var sphereTrimesh_projected = new Vec3();
-    var sphereTrimesh_v = new Vec3();
-    var sphereTrimesh_v2 = new Vec3();
-    var sphereTrimesh_edgeVertexA = new Vec3();
-    var sphereTrimesh_edgeVertexB = new Vec3();
-    var sphereTrimesh_edgeVector = new Vec3();
-    var sphereTrimesh_edgeVectorUnit = new Vec3();
-    var sphereTrimesh_localSpherePos = new Vec3();
-    var sphereTrimesh_tmp = new Vec3();
-    var sphereTrimesh_va = new Vec3();
-    var sphereTrimesh_vb = new Vec3();
-    var sphereTrimesh_vc = new Vec3();
+    var sphereTrimesh_normal = new Vector3();
+    var sphereTrimesh_relpos = new Vector3();
+    var sphereTrimesh_projected = new Vector3();
+    var sphereTrimesh_v = new Vector3();
+    var sphereTrimesh_v2 = new Vector3();
+    var sphereTrimesh_edgeVertexA = new Vector3();
+    var sphereTrimesh_edgeVertexB = new Vector3();
+    var sphereTrimesh_edgeVector = new Vector3();
+    var sphereTrimesh_edgeVectorUnit = new Vector3();
+    var sphereTrimesh_localSpherePos = new Vector3();
+    var sphereTrimesh_tmp = new Vector3();
+    var sphereTrimesh_va = new Vector3();
+    var sphereTrimesh_vb = new Vector3();
+    var sphereTrimesh_vc = new Vector3();
     var sphereTrimesh_localSphereAABB = new AABB();
     var sphereTrimesh_triangles = [];
 
-    var point_on_plane_to_sphere = new Vec3();
-    var plane_to_sphere_ortho = new Vec3();
+    var point_on_plane_to_sphere = new Vector3();
+    var plane_to_sphere_ortho = new Vector3();
 
     // See http://bulletphysics.com/Bullet/BulletFull/SphereTriangleDetector_8cpp_source.html
-    var pointInPolygon_edge = new Vec3();
-    var pointInPolygon_edge_x_normal = new Vec3();
-    var pointInPolygon_vtp = new Vec3();
-    function pointInPolygon(verts: Vec3[], normal: Vec3, p: Vec3)
+    var pointInPolygon_edge = new Vector3();
+    var pointInPolygon_edge_x_normal = new Vector3();
+    var pointInPolygon_vtp = new Vector3();
+    function pointInPolygon(verts: Vector3[], normal: Vector3, p: Vector3)
     {
         var positiveResult = null;
         var N = verts.length;
@@ -1775,7 +1775,7 @@ namespace CANNON
 
             // Get cross product between polygon normal and the edge
             var edge_x_normal = pointInPolygon_edge_x_normal;
-            //var edge_x_normal = new Vec3();
+            //var edge_x_normal = new Vector3();
             edge.crossTo(normal, edge_x_normal);
 
             // Get vector between point and current vertex
@@ -1803,58 +1803,58 @@ namespace CANNON
         return true;
     }
 
-    var box_to_sphere = new Vec3();
-    var sphereBox_ns = new Vec3();
-    var sphereBox_ns1 = new Vec3();
-    var sphereBox_ns2 = new Vec3();
-    var sphereBox_sides = [new Vec3(), new Vec3(), new Vec3(), new Vec3(), new Vec3(), new Vec3()];
-    var sphereBox_sphere_to_corner = new Vec3();
-    var sphereBox_side_ns = new Vec3();
-    var sphereBox_side_ns1 = new Vec3();
-    var sphereBox_side_ns2 = new Vec3();
+    var box_to_sphere = new Vector3();
+    var sphereBox_ns = new Vector3();
+    var sphereBox_ns1 = new Vector3();
+    var sphereBox_ns2 = new Vector3();
+    var sphereBox_sides = [new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3()];
+    var sphereBox_sphere_to_corner = new Vector3();
+    var sphereBox_side_ns = new Vector3();
+    var sphereBox_side_ns1 = new Vector3();
+    var sphereBox_side_ns2 = new Vector3();
 
-    var convex_to_sphere = new Vec3();
-    var sphereConvex_edge = new Vec3();
-    var sphereConvex_edgeUnit = new Vec3();
-    var sphereConvex_sphereToCorner = new Vec3();
-    var sphereConvex_worldCorner = new Vec3();
-    var sphereConvex_worldNormal = new Vec3();
-    var sphereConvex_worldPoint = new Vec3();
-    var sphereConvex_worldSpherePointClosestToPlane = new Vec3();
-    var sphereConvex_penetrationVec = new Vec3();
-    var sphereConvex_sphereToWorldPoint = new Vec3();
+    var convex_to_sphere = new Vector3();
+    var sphereConvex_edge = new Vector3();
+    var sphereConvex_edgeUnit = new Vector3();
+    var sphereConvex_sphereToCorner = new Vector3();
+    var sphereConvex_worldCorner = new Vector3();
+    var sphereConvex_worldNormal = new Vector3();
+    var sphereConvex_worldPoint = new Vector3();
+    var sphereConvex_worldSpherePointClosestToPlane = new Vector3();
+    var sphereConvex_penetrationVec = new Vector3();
+    var sphereConvex_sphereToWorldPoint = new Vector3();
 
-    var planeBox_normal = new Vec3();
-    var plane_to_corner = new Vec3();
+    var planeBox_normal = new Vector3();
+    var plane_to_corner = new Vector3();
 
-    var planeConvex_v = new Vec3();
-    var planeConvex_normal = new Vec3();
-    var planeConvex_relpos = new Vec3();
-    var planeConvex_projected = new Vec3();
+    var planeConvex_v = new Vector3();
+    var planeConvex_normal = new Vector3();
+    var planeConvex_relpos = new Vector3();
+    var planeConvex_projected = new Vector3();
 
-    var convexConvex_sepAxis = new Vec3();
-    var convexConvex_q = new Vec3();
+    var convexConvex_sepAxis = new Vector3();
+    var convexConvex_q = new Vector3();
 
-    var particlePlane_normal = new Vec3();
-    var particlePlane_relpos = new Vec3();
-    var particlePlane_projected = new Vec3();
+    var particlePlane_normal = new Vector3();
+    var particlePlane_relpos = new Vector3();
+    var particlePlane_projected = new Vector3();
 
-    var particleSphere_normal = new Vec3();
+    var particleSphere_normal = new Vector3();
 
     // WIP
     var cqj = new Quaternion();
-    var convexParticle_local = new Vec3();
-    var convexParticle_normal = new Vec3();
-    var convexParticle_penetratedFaceNormal = new Vec3();
-    var convexParticle_vertexToParticle = new Vec3();
-    var convexParticle_worldPenetrationVec = new Vec3();
+    var convexParticle_local = new Vector3();
+    var convexParticle_normal = new Vector3();
+    var convexParticle_penetratedFaceNormal = new Vector3();
+    var convexParticle_vertexToParticle = new Vector3();
+    var convexParticle_worldPenetrationVec = new Vector3();
 
-    var convexHeightfield_tmp1 = new Vec3();
-    var convexHeightfield_tmp2 = new Vec3();
+    var convexHeightfield_tmp1 = new Vector3();
+    var convexHeightfield_tmp2 = new Vector3();
     var convexHeightfield_faceList = [0];
 
-    var sphereHeightfield_tmp1 = new Vec3();
-    var sphereHeightfield_tmp2 = new Vec3();
+    var sphereHeightfield_tmp1 = new Vector3();
+    var sphereHeightfield_tmp2 = new Vector3();
 
 
     Narrowphase.prototype[Shape.types.BOX | Shape.types.BOX] = Narrowphase.prototype.boxBox;

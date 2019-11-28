@@ -31,12 +31,12 @@ namespace CANNON
         /**
          * Anchor for bodyA in local bodyA coordinates.
          */
-        localAnchorA: Vec3;
+        localAnchorA: Vector3;
 
         /**
          * Anchor for bodyB in local bodyB coordinates.
          */
-        localAnchorB: Vec3;
+        localAnchorB: Vector3;
 
         /**
          * A spring, connecting two bodies.
@@ -45,7 +45,7 @@ namespace CANNON
          * @param bodyB 
          * @param options 
          */
-        constructor(bodyA: Body, bodyB: Body, options: { restLength?: number, stiffness?: number, damping?: number, localAnchorA?: Vec3, localAnchorB?: Vec3, worldAnchorA?: Vec3, worldAnchorB?: Vec3 } = {})
+        constructor(bodyA: Body, bodyB: Body, options: { restLength?: number, stiffness?: number, damping?: number, localAnchorA?: Vector3, localAnchorB?: Vector3, worldAnchorA?: Vector3, worldAnchorB?: Vector3 } = {})
         {
             this.restLength = typeof (options.restLength) === "number" ? options.restLength : 1;
 
@@ -57,8 +57,8 @@ namespace CANNON
 
             this.bodyB = bodyB;
 
-            this.localAnchorA = new Vec3();
-            this.localAnchorB = new Vec3();
+            this.localAnchorA = new Vector3();
+            this.localAnchorB = new Vector3();
 
             if (options.localAnchorA)
             {
@@ -82,7 +82,7 @@ namespace CANNON
          * Set the anchor point on body A, using world coordinates.
          * @param worldAnchorA
          */
-        setWorldAnchorA(worldAnchorA: Vec3)
+        setWorldAnchorA(worldAnchorA: Vector3)
         {
             this.bodyA.pointToLocalFrame(worldAnchorA, this.localAnchorA);
         }
@@ -91,7 +91,7 @@ namespace CANNON
          * Set the anchor point on body B, using world coordinates.
          * @param worldAnchorB
          */
-        setWorldAnchorB(worldAnchorB: Vec3)
+        setWorldAnchorB(worldAnchorB: Vector3)
         {
             this.bodyB.pointToLocalFrame(worldAnchorB, this.localAnchorB);
         }
@@ -100,7 +100,7 @@ namespace CANNON
          * Get the anchor point on body A, in world coordinates.
          * @param result The vector to store the result in.
          */
-        getWorldAnchorA(result: Vec3)
+        getWorldAnchorA(result: Vector3)
         {
             this.bodyA.pointToWorldFrame(this.localAnchorA, result);
         }
@@ -109,7 +109,7 @@ namespace CANNON
          * Get the anchor point on body B, in world coordinates.
          * @param result The vector to store the result in.
          */
-        getWorldAnchorB(result: Vec3)
+        getWorldAnchorB(result: Vector3)
         {
             this.bodyB.pointToWorldFrame(this.localAnchorB, result);
         }
@@ -176,17 +176,17 @@ namespace CANNON
 
     }
 
-    var applyForce_r = new Vec3();
-    var applyForce_r_unit = new Vec3();
-    var applyForce_u = new Vec3();
-    var applyForce_f = new Vec3();
-    var applyForce_worldAnchorA = new Vec3();
-    var applyForce_worldAnchorB = new Vec3();
-    var applyForce_ri = new Vec3();
-    var applyForce_rj = new Vec3();
-    var applyForce_ri_x_f = new Vec3();
-    var applyForce_rj_x_f = new Vec3();
-    var applyForce_tmp = new Vec3();
+    var applyForce_r = new Vector3();
+    var applyForce_r_unit = new Vector3();
+    var applyForce_u = new Vector3();
+    var applyForce_f = new Vector3();
+    var applyForce_worldAnchorA = new Vector3();
+    var applyForce_worldAnchorB = new Vector3();
+    var applyForce_ri = new Vector3();
+    var applyForce_rj = new Vector3();
+    var applyForce_ri_x_f = new Vector3();
+    var applyForce_rj_x_f = new Vector3();
+    var applyForce_tmp = new Vector3();
 
 }
 

@@ -5,8 +5,8 @@ namespace CANNON
 
         QUnit.test("construct", (test) =>
         {
-            var bodyA = new Body({ mass: 1, position: new Vec3(1, 0, 0) });
-            var bodyB = new Body({ mass: 1, position: new Vec3(-1, 0, 0) });
+            var bodyA = new Body({ mass: 1, position: new Vector3(1, 0, 0) });
+            var bodyB = new Body({ mass: 1, position: new Vector3(-1, 0, 0) });
             var c = new LockConstraint(bodyA, bodyB, { maxForce: 123 });
 
             test.equal(c.equations.length, 6);
@@ -29,8 +29,8 @@ namespace CANNON
 
         QUnit.test("update", (test) =>
         {
-            var bodyA = new Body({ mass: 1, position: new Vec3(1, 0, 0) });
-            var bodyB = new Body({ mass: 1, position: new Vec3(-1, 0, 0) });
+            var bodyA = new Body({ mass: 1, position: new Vector3(1, 0, 0) });
+            var bodyB = new Body({ mass: 1, position: new Vector3(-1, 0, 0) });
             var c = new LockConstraint(bodyA, bodyB, { maxForce: 123 });
 
             c.update();

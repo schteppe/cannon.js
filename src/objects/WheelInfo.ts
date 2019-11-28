@@ -23,17 +23,17 @@ namespace CANNON
         /**
          * Connection point, defined locally in the chassis body frame.
          */
-        chassisConnectionPointLocal: Vec3;
+        chassisConnectionPointLocal: Vector3;
 
-        chassisConnectionPointWorld: Vec3;
+        chassisConnectionPointWorld: Vector3;
 
-        directionLocal: Vec3;
+        directionLocal: Vector3;
 
-        directionWorld: Vec3;
+        directionWorld: Vector3;
 
-        axleLocal: Vec3;
+        axleLocal: Vector3;
 
-        axleWorld: Vec3;
+        axleWorld: Vector3;
 
         suspensionRestLength: number;
 
@@ -102,19 +102,19 @@ namespace CANNON
          */
         constructor(options: {
             maxSuspensionTravel?: number, customSlidingRotationalSpeed?: number, useCustomSlidingRotationalSpeed?: boolean,
-            chassisConnectionPointLocal?: Vec3, chassisConnectionPointWorld?: Vec3, directionLocal?: Vec3, directionWorld?: Vec3,
-            axleLocal?: Vec3, axleWorld?: Vec3, suspensionRestLength?: number, suspensionMaxLength?: number, radius?: number,
+            chassisConnectionPointLocal?: Vector3, chassisConnectionPointWorld?: Vector3, directionLocal?: Vector3, directionWorld?: Vector3,
+            axleLocal?: Vector3, axleWorld?: Vector3, suspensionRestLength?: number, suspensionMaxLength?: number, radius?: number,
             suspensionStiffness?: number, dampingCompression?: number, dampingRelaxation?: number, frictionSlip?: number,
             rollInfluence?: number, maxSuspensionForce?: number, isFrontWheel?: number,
         } = {})
         {
             options = Utils.defaults(options, {
-                chassisConnectionPointLocal: new Vec3(),
-                chassisConnectionPointWorld: new Vec3(),
-                directionLocal: new Vec3(),
-                directionWorld: new Vec3(),
-                axleLocal: new Vec3(),
-                axleWorld: new Vec3(),
+                chassisConnectionPointLocal: new Vector3(),
+                chassisConnectionPointWorld: new Vector3(),
+                directionLocal: new Vector3(),
+                directionWorld: new Vector3(),
+                axleLocal: new Vector3(),
+                axleWorld: new Vector3(),
                 suspensionRestLength: 1,
                 suspensionMaxLength: 2,
                 radius: 1,
@@ -207,7 +207,7 @@ namespace CANNON
         }
     }
 
-    var chassis_velocity_at_contactPoint = new Vec3();
-    var relpos = new Vec3();
-    var chassis_velocity_at_contactPoint = new Vec3();
+    var chassis_velocity_at_contactPoint = new Vector3();
+    var relpos = new Vector3();
+    var chassis_velocity_at_contactPoint = new Vector3();
 }

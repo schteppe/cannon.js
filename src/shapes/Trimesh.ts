@@ -18,7 +18,7 @@ namespace CANNON
         /**
          * Local scaling of the mesh. Use .setScale() to set it.
          */
-        scale: Vec3;
+        scale: Vector3;
 
         /**
          * The indexed triangles. Use .updateTree() to update it.
@@ -60,7 +60,7 @@ namespace CANNON
 
             this.edges = null;
 
-            this.scale = new Vec3(1, 1, 1);
+            this.scale = new Vector3(1, 1, 1);
 
             this.tree = new Octree();
 
@@ -87,9 +87,9 @@ namespace CANNON
 
             // Insert all triangles
             var triangleAABB = new AABB();
-            var a = new Vec3();
-            var b = new Vec3();
-            var c = new Vec3();
+            var a = new Vector3();
+            var b = new Vector3();
+            var c = new Vector3();
             var points = [a, b, c];
             for (var i = 0; i < this.indices.length / 3; i++)
             {
@@ -137,7 +137,7 @@ namespace CANNON
         /**
          * @param scale
          */
-        setScale(scale: Vec3)
+        setScale(scale: Vector3)
         {
             // var wasUniform = this.scale.x === this.scale.y === this.scale.z;// 等价下面代码?
             var wasUniform = this.scale.x === this.scale.y && this.scale.y === this.scale.z;//?
@@ -222,7 +222,7 @@ namespace CANNON
          * @param firstOrSecond 0 or 1, depending on which one of the vertices you need.
          * @param vertexStore Where to store the result
          */
-        getEdgeVertex(edgeIndex: number, firstOrSecond: number, vertexStore: Vec3)
+        getEdgeVertex(edgeIndex: number, firstOrSecond: number, vertexStore: Vector3)
         {
             var vertexIndex = this.edges[edgeIndex * 2 + (firstOrSecond ? 1 : 0)];
             this.getVertex(vertexIndex, vertexStore);
@@ -234,7 +234,7 @@ namespace CANNON
          * @param edgeIndex
          * @param vectorStore
          */
-        getEdgeVector(edgeIndex: number, vectorStore: Vec3)
+        getEdgeVector(edgeIndex: number, vectorStore: Vector3)
         {
             var va = getEdgeVector_va;
             var vb = getEdgeVector_vb;
@@ -251,7 +251,7 @@ namespace CANNON
          * @param vc
          * @param target
          */
-        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3)
+        static computeNormal(va: Vector3, vb: Vector3, vc: Vector3, target: Vector3)
         {
             vb.subTo(va, ab);
             vc.subTo(vb, cb);
@@ -269,7 +269,7 @@ namespace CANNON
          * @param out
          * @return The "out" vector object
          */
-        getVertex(i: number, out: Vec3)
+        getVertex(i: number, out: Vector3)
         {
             var scale = this.scale;
             this._getUnscaledVertex(i, out);
@@ -286,7 +286,7 @@ namespace CANNON
          * @param out
          * @return The "out" vector object
          */
-        private _getUnscaledVertex(i: number, out: Vec3)
+        private _getUnscaledVertex(i: number, out: Vector3)
         {
             var i3 = i * 3;
             var vertices = this.vertices;
@@ -306,7 +306,7 @@ namespace CANNON
          * @param out
          * @return The "out" vector object
          */
-        getWorldVertex(i: number, pos: Vec3, quat: Quaternion, out: Vec3)
+        getWorldVertex(i: number, pos: Vector3, quat: Quaternion, out: Vector3)
         {
             this.getVertex(i, out);
             Transform.pointToWorldFrame(pos, quat, out, out);
@@ -321,7 +321,7 @@ namespace CANNON
          * @param b
          * @param c
          */
-        getTriangleVertices(i: number, a: Vec3, b: Vec3, c: Vec3)
+        getTriangleVertices(i: number, a: Vector3, b: Vector3, c: Vector3)
         {
             var i3 = i * 3;
             this.getVertex(this.indices[i3], a);
@@ -336,7 +336,7 @@ namespace CANNON
          * @param target
          * @return The "target" vector object
          */
-        getNormal(i: number, target: Vec3)
+        getNormal(i: number, target: Vector3)
         {
             var i3 = i * 3;
             return target.set(
@@ -352,7 +352,7 @@ namespace CANNON
          * @param target
          * @return The "target" vector object
          */
-        calculateLocalInertia(mass: number, target: Vec3)
+        calculateLocalInertia(mass: number, target: Vector3)
         {
             // Approximate with box inertia
             // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
@@ -430,7 +430,7 @@ namespace CANNON
             // Assume points are distributed with local (0,0,0) as center
             var max2 = 0;
             var vertices = this.vertices;
-            var v = new Vec3();
+            var v = new Vector3();
             for (var i = 0, N = vertices.length / 3; i !== N; i++)
             {
                 this.getVertex(i, v);
@@ -443,7 +443,7 @@ namespace CANNON
             this.boundingSphereRadius = Math.sqrt(max2);
         }
 
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3)
         {
             /*
             var n = this.vertices.length / 3,
@@ -544,25 +544,25 @@ namespace CANNON
         };
     }
 
-    var computeNormals_n = new Vec3();
+    var computeNormals_n = new Vector3();
 
     var unscaledAABB = new AABB();
 
-    var getEdgeVector_va = new Vec3();
-    var getEdgeVector_vb = new Vec3();
+    var getEdgeVector_va = new Vector3();
+    var getEdgeVector_vb = new Vector3();
 
-    var cb = new Vec3();
-    var ab = new Vec3();
+    var cb = new Vector3();
+    var ab = new Vector3();
 
-    var va = new Vec3();
-    var vb = new Vec3();
-    var vc = new Vec3();
+    var va = new Vector3();
+    var vb = new Vector3();
+    var vc = new Vector3();
 
     var cli_aabb = new AABB();
 
-    var computeLocalAABB_worldVert = new Vec3();
+    var computeLocalAABB_worldVert = new Vector3();
 
-    var tempWorldVertex = new Vec3();
+    var tempWorldVertex = new Vector3();
     var calculateWorldAABB_frame = new Transform();
     var calculateWorldAABB_aabb = new AABB();
 

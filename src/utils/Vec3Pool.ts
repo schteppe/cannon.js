@@ -1,11 +1,11 @@
 namespace CANNON
 {
-    export class Vec3Pool extends Pool<Vec3>
+    export class Vec3Pool extends Pool<Vector3>
     {
         constructor()
         {
             super();
-            this.type = Vec3;
+            this.type = Vector3;
         }
 
         /**
@@ -13,7 +13,7 @@ namespace CANNON
          */
         constructObject()
         {
-            return new Vec3();
+            return new Vector3();
         }
     }
 }

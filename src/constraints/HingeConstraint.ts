@@ -5,11 +5,11 @@ namespace CANNON
         /**
          * Rotation axis, defined locally in bodyA.
          */
-        axisA: Vec3;
+        axisA: Vector3;
         /**
          * Rotation axis, defined locally in bodyB.
          */
-        axisB: Vec3;
+        axisB: Vector3;
         rotationalEquation1: RotationalEquation;
         rotationalEquation2: RotationalEquation;
         motorEquation: RotationalMotorEquation;
@@ -28,16 +28,16 @@ namespace CANNON
          * 
          * @author schteppe
          */
-        constructor(bodyA: Body, bodyB: Body, options: { pivotA?: Vec3, pivotB?: Vec3, maxForce?: number, axisA?: Vec3, axisB?: Vec3, collideConnected?: boolean } = {})
+        constructor(bodyA: Body, bodyB: Body, options: { pivotA?: Vector3, pivotB?: Vector3, maxForce?: number, axisA?: Vector3, axisB?: Vector3, collideConnected?: boolean } = {})
         {
             var maxForce = typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6;
 
-            super(bodyA, options.pivotA ? options.pivotA.clone() : new Vec3(), bodyB, options.pivotB ? options.pivotB.clone() : new Vec3(), maxForce);
+            super(bodyA, options.pivotA ? options.pivotA.clone() : new Vector3(), bodyB, options.pivotB ? options.pivotB.clone() : new Vector3(), maxForce);
 
-            var axisA = this.axisA = options.axisA ? options.axisA.clone() : new Vec3(1, 0, 0);
+            var axisA = this.axisA = options.axisA ? options.axisA.clone() : new Vector3(1, 0, 0);
             axisA.normalize();
 
-            var axisB = this.axisB = options.axisB ? options.axisB.clone() : new Vec3(1, 0, 0);
+            var axisB = this.axisB = options.axisB ? options.axisB.clone() : new Vector3(1, 0, 0);
             axisB.normalize();
 
             var r1 = this.rotationalEquation1 = new RotationalEquation(bodyA, bodyB, options);
@@ -108,6 +108,6 @@ namespace CANNON
     }
 
 
-    var HingeConstraint_update_tmpVec1 = new Vec3();
-    var HingeConstraint_update_tmpVec2 = new Vec3();
+    var HingeConstraint_update_tmpVec1 = new Vector3();
+    var HingeConstraint_update_tmpVec2 = new Vector3();
 }

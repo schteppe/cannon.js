@@ -26,7 +26,7 @@ namespace CANNON
             this.updateBoundingSphereRadius();
         }
 
-        calculateLocalInertia(mass: number, target = new Vec3())
+        calculateLocalInertia(mass: number, target = new Vector3())
         {
             var I = 2.0 * mass * this.radius * this.radius / 5.0;
             target.x = I;
@@ -45,7 +45,7 @@ namespace CANNON
             this.boundingSphereRadius = this.radius;
         }
 
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3)
         {
             var r = this.radius;
             var axes = ['x', 'y', 'z'];

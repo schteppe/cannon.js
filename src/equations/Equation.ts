@@ -220,18 +220,18 @@ namespace CANNON
         }
     }
 
-    var zero = new Vec3();
-    var iMfi = new Vec3();
-    var iMfj = new Vec3();
-    var invIi_vmult_taui = new Vec3();
-    var invIj_vmult_tauj = new Vec3();
-    var tmp = new Vec3();
+    var zero = new Vector3();
+    var iMfi = new Vector3();
+    var iMfj = new Vector3();
+    var invIi_vmult_taui = new Vector3();
+    var invIj_vmult_tauj = new Vector3();
+    var tmp = new Vector3();
 
 
-    var addToWlambda_temp = new Vec3();
-    var addToWlambda_Gi = new Vec3();
-    var addToWlambda_Gj = new Vec3();
-    var addToWlambda_ri = new Vec3();
-    var addToWlambda_rj = new Vec3();
-    var addToWlambda_Mdiag = new Vec3();
+    var addToWlambda_temp = new Vector3();
+    var addToWlambda_Gi = new Vector3();
+    var addToWlambda_Gj = new Vector3();
+    var addToWlambda_ri = new Vector3();
+    var addToWlambda_rj = new Vector3();
+    var addToWlambda_Mdiag = new Vector3();
 }

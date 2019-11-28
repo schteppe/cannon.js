@@ -83,16 +83,16 @@ namespace CANNON
         QUnit.test("getVehicleAxisWorld", (test) =>
         {
             var vehicle = createVehicle();
-            var v = new Vec3();
+            var v = new Vector3();
 
             vehicle.getVehicleAxisWorld(0, v);
-            test.deepEqual(v, new Vec3(1, 0, 0));
+            test.deepEqual(v, new Vector3(1, 0, 0));
 
             vehicle.getVehicleAxisWorld(1, v);
-            test.deepEqual(v, new Vec3(0, 1, 0));
+            test.deepEqual(v, new Vector3(0, 1, 0));
 
             vehicle.getVehicleAxisWorld(2, v);
-            test.deepEqual(v, new Vec3(0, 0, 1));
+            test.deepEqual(v, new Vector3(0, 0, 1));
 
             test.ok(true);
         });
@@ -122,10 +122,10 @@ namespace CANNON
                 mass: 1
             })
         });
-        var down = new Vec3(0, 0, -1);
+        var down = new Vector3(0, 0, -1);
         var info = {
-            chassisConnectionPointLocal: new Vec3(-5, -1 / 2, 0),
-            axleLocal: new Vec3(0, -1, 0),
+            chassisConnectionPointLocal: new Vector3(-5, -1 / 2, 0),
+            axleLocal: new Vector3(0, -1, 0),
             directionLocal: down,
             suspensionStiffness: 1000,
             suspensionRestLength: 2,

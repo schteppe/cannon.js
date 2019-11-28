@@ -3,10 +3,10 @@ namespace CANNON
     export class RigidVehicle
     {
         wheelBodies: Body[];
-        coordinateSystem: Vec3;
+        coordinateSystem: Vector3;
         chassisBody: Body;
         constraints: HingeConstraint[];
-        wheelAxes: Vec3[];
+        wheelAxes: Vector3[];
         wheelForces: number[];
 
         /**
@@ -14,18 +14,18 @@ namespace CANNON
          * 
          * @param options 
          */
-        constructor(options: { coordinateSystem?: Vec3, chassisBody?: Body } = {})
+        constructor(options: { coordinateSystem?: Vector3, chassisBody?: Body } = {})
         {
             this.wheelBodies = [];
 
-            this.coordinateSystem = typeof (options.coordinateSystem) === 'undefined' ? new Vec3(1, 2, 3) : options.coordinateSystem.clone();
+            this.coordinateSystem = typeof (options.coordinateSystem) === 'undefined' ? new Vector3(1, 2, 3) : options.coordinateSystem.clone();
 
             this.chassisBody = options.chassisBody;
 
             if (!this.chassisBody)
             {
                 // No chassis body given. Create it!
-                var chassisShape = new Box(new Vec3(5, 2, 0.5));
+                var chassisShape = new Box(new Vector3(5, 2, 0.5));
                 throw "下一行代码有问题？！"
                 // this.chassisBody = new Body(1, chassisShape);
             }
@@ -40,7 +40,7 @@ namespace CANNON
          * 
          * @param options 
          */
-        addWheel(options: { body?: Body, isFrontWheel?: boolean, position?: Vec3, axis?: Vec3 } = {})
+        addWheel(options: { body?: Body, isFrontWheel?: boolean, position?: Vector3, axis?: Vector3 } = {})
         {
             var wheelBody = options.body;
             if (!wheelBody)
@@ -52,22 +52,22 @@ namespace CANNON
             this.wheelForces.push(0);
 
             // Position constrain wheels
-            var zero = new Vec3();
-            var position = typeof (options.position) !== 'undefined' ? options.position.clone() : new Vec3();
+            var zero = new Vector3();
+            var position = typeof (options.position) !== 'undefined' ? options.position.clone() : new Vector3();
 
             // Set position locally to the chassis
-            var worldPosition = new Vec3();
+            var worldPosition = new Vector3();
             this.chassisBody.pointToWorldFrame(position, worldPosition);
             wheelBody.position.set(worldPosition.x, worldPosition.y, worldPosition.z);
 
             // Constrain wheel
-            var axis = typeof (options.axis) !== 'undefined' ? options.axis.clone() : new Vec3(0, 1, 0);
+            var axis = typeof (options.axis) !== 'undefined' ? options.axis.clone() : new Vector3(0, 1, 0);
             this.wheelAxes.push(axis);
 
             var hingeConstraint = new HingeConstraint(this.chassisBody, wheelBody, {
                 pivotA: position,
                 axisA: axis,
-                pivotB: Vec3.ZERO,
+                pivotB: Vector3.ZERO,
                 axisB: axis,
                 collideConnected: false
             });
@@ -221,7 +221,7 @@ namespace CANNON
     }
 
 
-    var torque = new Vec3();
+    var torque = new Vector3();
 
-    var worldAxis = new Vec3();
+    var worldAxis = new Vector3();
 }

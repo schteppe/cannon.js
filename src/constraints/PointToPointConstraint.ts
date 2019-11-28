@@ -5,11 +5,11 @@ namespace CANNON
         /**
          * Pivot, defined locally in bodyA.
          */
-        pivotA: Vec3;
+        pivotA: Vector3;
         /**
          * Pivot, defined locally in bodyB.
          */
-        pivotB: Vec3;
+        pivotB: Vector3;
         equationX: ContactEquation;
         equationY: ContactEquation;
         equationZ: ContactEquation;
@@ -32,20 +32,20 @@ namespace CANNON
          *     bodyB.addShape(shapeB);
          *     world.addBody(bodyA);
          *     world.addBody(bodyB);
-         *     var localPivotA = new Vec3(1, 0, 0);
-         *     var localPivotB = new Vec3(-1, 0, 0);
+         *     var localPivotA = new Vector3(1, 0, 0);
+         *     var localPivotB = new Vector3(-1, 0, 0);
          *     var constraint = new PointToPointConstraint(bodyA, localPivotA, bodyB, localPivotB);
          *     world.addConstraint(constraint);
          */
-        constructor(bodyA: Body, pivotA: Vec3, bodyB: Body, pivotB: Vec3, maxForce?: number)
+        constructor(bodyA: Body, pivotA: Vector3, bodyB: Body, pivotB: Vector3, maxForce?: number)
         {
             super(bodyA, bodyB);
 
             maxForce = typeof (maxForce) !== 'undefined' ? maxForce : 1e6;
 
-            this.pivotA = pivotA ? pivotA.clone() : new Vec3();
+            this.pivotA = pivotA ? pivotA.clone() : new Vector3();
 
-            this.pivotB = pivotB ? pivotB.clone() : new Vec3();
+            this.pivotB = pivotB ? pivotB.clone() : new Vector3();
 
             var x = this.equationX = new ContactEquation(bodyA, bodyB);
 

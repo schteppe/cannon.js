@@ -5,8 +5,8 @@ namespace CANNON
 
         QUnit.test("construct", (test) =>
         {
-            var bodyA = new Body({ mass: 1, position: new Vec3(1, 0, 0) });
-            var bodyB = new Body({ mass: 1, position: new Vec3(-1, 0, 0) });
+            var bodyA = new Body({ mass: 1, position: new Vector3(1, 0, 0) });
+            var bodyB = new Body({ mass: 1, position: new Vector3(-1, 0, 0) });
             var c = new HingeConstraint(bodyA, bodyB, { maxForce: 123 });
 
             test.equal(c.equations.length, 6); // 5 actually, and 1 for the motor
@@ -29,8 +29,8 @@ namespace CANNON
 
         QUnit.test("update", (test) =>
         {
-            var bodyA = new Body({ mass: 1, position: new Vec3(1, 0, 0) });
-            var bodyB = new Body({ mass: 1, position: new Vec3(-1, 0, 0) });
+            var bodyA = new Body({ mass: 1, position: new Vector3(1, 0, 0) });
+            var bodyB = new Body({ mass: 1, position: new Vector3(-1, 0, 0) });
             var c = new HingeConstraint(bodyA, bodyB, { maxForce: 123 });
 
             c.update();
@@ -39,8 +39,8 @@ namespace CANNON
 
         QUnit.test("enableDisableMotor", (test) =>
         {
-            var bodyA = new Body({ mass: 1, position: new Vec3(1, 0, 0) });
-            var bodyB = new Body({ mass: 1, position: new Vec3(-1, 0, 0) });
+            var bodyA = new Body({ mass: 1, position: new Vector3(1, 0, 0) });
+            var bodyB = new Body({ mass: 1, position: new Vector3(-1, 0, 0) });
             var c = new HingeConstraint(bodyA, bodyB);
 
             c.enableMotor();
@@ -55,8 +55,8 @@ namespace CANNON
 
         QUnit.test("setMotorSpeed", (test) =>
         {
-            var bodyA = new Body({ mass: 1, position: new Vec3(1, 0, 0) });
-            var bodyB = new Body({ mass: 1, position: new Vec3(-1, 0, 0) });
+            var bodyA = new Body({ mass: 1, position: new Vector3(1, 0, 0) });
+            var bodyB = new Body({ mass: 1, position: new Vector3(-1, 0, 0) });
             var c = new HingeConstraint(bodyA, bodyB);
 
             c.setMotorSpeed(5);
@@ -66,8 +66,8 @@ namespace CANNON
 
         QUnit.test("setMotorMaxForce", (test) =>
         {
-            var bodyA = new Body({ mass: 1, position: new Vec3(1, 0, 0) });
-            var bodyB = new Body({ mass: 1, position: new Vec3(-1, 0, 0) });
+            var bodyA = new Body({ mass: 1, position: new Vector3(1, 0, 0) });
+            var bodyB = new Body({ mass: 1, position: new Vector3(-1, 0, 0) });
             var c = new HingeConstraint(bodyA, bodyB);
 
             c.setMotorMaxForce(100);

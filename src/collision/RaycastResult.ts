@@ -2,13 +2,13 @@ namespace CANNON
 {
 	export class RaycastResult
 	{
-		rayFromWorld = new Vec3();
+		rayFromWorld = new Vector3();
 
-		rayToWorld = new Vec3();
+		rayToWorld = new Vector3();
 
-		hitNormalWorld = new Vec3();
+		hitNormalWorld = new Vector3();
 
-		hitPointWorld = new Vec3();
+		hitPointWorld = new Vector3();
 
 		hasHit = false;
 
@@ -27,7 +27,7 @@ namespace CANNON
 		distance = -1;
 
 		suspensionLength: number;
-		directionWorld: Vec3;
+		directionWorld: Vector3;
 
 		/**
 		 * If the ray should stop traversing the bodies.
@@ -66,10 +66,10 @@ namespace CANNON
 		}
 
 		set(
-			rayFromWorld: Vec3,
-			rayToWorld: Vec3,
-			hitNormalWorld: Vec3,
-			hitPointWorld: Vec3,
+			rayFromWorld: Vector3,
+			rayToWorld: Vector3,
+			hitNormalWorld: Vector3,
+			hitPointWorld: Vector3,
 			shape: Shape,
 			body: Body,
 			distance: number

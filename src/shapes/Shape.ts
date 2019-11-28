@@ -32,8 +32,8 @@ namespace CANNON
 
         faces: number[][];
         indices: Int16Array;
-        vertices: Vec3[] | number[];
-        faceNormals: Vec3[];
+        vertices: Vector3[] | number[];
+        faceNormals: Vector3[];
 
         convexPolyhedronRepresentation: Shape;
         radius: number;
@@ -82,12 +82,12 @@ namespace CANNON
          * @param target
          * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
          */
-        calculateLocalInertia(mass: number, target: Vec3)
+        calculateLocalInertia(mass: number, target: Vector3)
         {
             throw "calculateLocalInertia() not implemented for shape type " + this.type;
         }
 
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3)
+        calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3)
         {
             throw "未实现";
         }

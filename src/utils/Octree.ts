@@ -103,14 +103,14 @@ namespace CANNON
             var children = this.children;
 
             children.push(
-                new OctreeNode({ aabb: new AABB(new Vec3(0, 0, 0)) }),
-                new OctreeNode({ aabb: new AABB(new Vec3(1, 0, 0)) }),
-                new OctreeNode({ aabb: new AABB(new Vec3(1, 1, 0)) }),
-                new OctreeNode({ aabb: new AABB(new Vec3(1, 1, 1)) }),
-                new OctreeNode({ aabb: new AABB(new Vec3(0, 1, 1)) }),
-                new OctreeNode({ aabb: new AABB(new Vec3(0, 0, 1)) }),
-                new OctreeNode({ aabb: new AABB(new Vec3(1, 0, 1)) }),
-                new OctreeNode({ aabb: new AABB(new Vec3(0, 1, 0)) })
+                new OctreeNode({ aabb: new AABB(new Vector3(0, 0, 0)) }),
+                new OctreeNode({ aabb: new AABB(new Vector3(1, 0, 0)) }),
+                new OctreeNode({ aabb: new AABB(new Vector3(1, 1, 0)) }),
+                new OctreeNode({ aabb: new AABB(new Vector3(1, 1, 1)) }),
+                new OctreeNode({ aabb: new AABB(new Vector3(0, 1, 1)) }),
+                new OctreeNode({ aabb: new AABB(new Vector3(0, 0, 1)) }),
+                new OctreeNode({ aabb: new AABB(new Vector3(1, 0, 1)) }),
+                new OctreeNode({ aabb: new AABB(new Vector3(0, 1, 0)) })
             );
 
             u.subTo(l, halfDiagonal);
@@ -242,7 +242,7 @@ namespace CANNON
         }
     }
 
-    var halfDiagonal = new Vec3();
+    var halfDiagonal = new Vector3();
 
     var tmpAABB = new AABB();
 }

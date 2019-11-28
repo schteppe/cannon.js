@@ -9,10 +9,10 @@ namespace CANNON
                 elementSize: 1,
                 minValue: 0
             });
-            var min = new Vec3();
-            var max = new Vec3();
+            var min = new Vector3();
+            var max = new Vector3();
             hfShape.calculateWorldAABB(
-                new Vec3(),
+                new Vector3(),
                 new Quaternion(),
                 min,
                 max
@@ -36,20 +36,20 @@ namespace CANNON
             hfShape.getConvexTrianglePillar(0, 0, false);
             test.equal(hfShape.pillarConvex.vertices.length, 6);
             test.deepEqual(hfShape.pillarConvex.vertices.slice(0, 3), [
-                new Vec3(-0.25, -0.25, 0.5),
-                new Vec3(0.75, -0.25, 0.5),
-                new Vec3(-0.25, 0.75, 0.5)
+                new Vector3(-0.25, -0.25, 0.5),
+                new Vector3(0.75, -0.25, 0.5),
+                new Vector3(-0.25, 0.75, 0.5)
             ]);
-            test.deepEqual(hfShape.pillarOffset, new Vec3(0.25, 0.25, 0.5));
+            test.deepEqual(hfShape.pillarOffset, new Vector3(0.25, 0.25, 0.5));
 
             hfShape.getConvexTrianglePillar(0, 0, true);
             test.equal(hfShape.pillarConvex.vertices.length, 6);
             test.deepEqual(hfShape.pillarConvex.vertices.slice(0, 3), [
-                new Vec3(0.25, 0.25, 0.5),
-                new Vec3(-0.75, 0.25, 0.5),
-                new Vec3(0.25, -0.75, 0.5)
+                new Vector3(0.25, 0.25, 0.5),
+                new Vector3(-0.75, 0.25, 0.5),
+                new Vector3(0.25, -0.75, 0.5)
             ]);
-            test.deepEqual(hfShape.pillarOffset, new Vec3(0.75, 0.75, 0.5));
+            test.deepEqual(hfShape.pillarOffset, new Vector3(0.75, 0.75, 0.5));
 
             // Out of bounds
             test.throws(function ()
@@ -73,19 +73,19 @@ namespace CANNON
                 minValue: 0,
                 size: 2
             });
-            var a = new Vec3();
-            var b = new Vec3();
-            var c = new Vec3();
+            var a = new Vector3();
+            var b = new Vector3();
+            var c = new Vector3();
 
             hfShape.getTriangle(0, 0, false, a, b, c);
-            test.deepEqual(a, new Vec3(0, 0, 1));
-            test.deepEqual(b, new Vec3(1, 0, 1));
-            test.deepEqual(c, new Vec3(0, 1, 1));
+            test.deepEqual(a, new Vector3(0, 0, 1));
+            test.deepEqual(b, new Vector3(1, 0, 1));
+            test.deepEqual(c, new Vector3(0, 1, 1));
 
             hfShape.getTriangle(0, 0, true, a, b, c);
-            test.deepEqual(a, new Vec3(1, 1, 1));
-            test.deepEqual(b, new Vec3(0, 1, 1));
-            test.deepEqual(c, new Vec3(1, 0, 1));
+            test.deepEqual(a, new Vector3(1, 1, 1));
+            test.deepEqual(b, new Vector3(0, 1, 1));
+            test.deepEqual(c, new Vector3(1, 0, 1));
         });
 
         QUnit.test("getRectMinMax", (test) =>

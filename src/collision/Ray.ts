@@ -2,11 +2,11 @@ namespace CANNON
 {
     export class Ray
     {
-        from: Vec3;
+        from: Vector3;
 
-        to: Vec3;
+        to: Vector3;
 
-        _direction: Vec3;
+        _direction: Vector3;
 
         /**
          * The precision of the ray. Used when checking parallelity etc.
@@ -52,11 +52,11 @@ namespace CANNON
          * @param from
          * @param to
          */
-        constructor(from?: Vec3, to?: Vec3)
+        constructor(from?: Vector3, to?: Vector3)
         {
-            this.from = from ? from.clone() : new Vec3();
-            this.to = to ? to.clone() : new Vec3();
-            this._direction = new Vec3();
+            this.from = from ? from.clone() : new Vector3();
+            this.to = to ? to.clone() : new Vector3();
+            this._direction = new Vector3();
             this.precision = 0.0001;
             this.checkCollisionResponse = true;
             this.skipBackfaces = false;
@@ -80,7 +80,7 @@ namespace CANNON
          */
         intersectWorld(world: World, options: {
             mode?: number, result?: RaycastResult, skipBackfaces?: boolean, collisionFilterMask?: number,
-            collisionFilterGroup?: number, from?: Vec3, to?: Vec3, callback?: Function
+            collisionFilterGroup?: number, from?: Vector3, to?: Vector3, callback?: Function
         })
         {
             this.mode = options.mode || Ray.ANY;
@@ -191,7 +191,7 @@ namespace CANNON
             this._direction.normalize();
         };
 
-        private intersectShape(shape: Shape, quat: Quaternion, position: Vec3, body: Body)
+        private intersectShape(shape: Shape, quat: Quaternion, position: Vector3, body: Body)
         {
             var from = this.from;
 
@@ -209,12 +209,12 @@ namespace CANNON
             }
         }
 
-        private intersectBox(shape: Shape, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
+        private intersectBox(shape: Shape, quat: Quaternion, position: Vector3, body: Body, reportedShape: Shape)
         {
             return this.intersectConvex(shape.convexPolyhedronRepresentation, quat, position, body, reportedShape);
         }
 
-        private intersectPlane(shape: Shape, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
+        private intersectPlane(shape: Shape, quat: Quaternion, position: Vector3, body: Body, reportedShape: Shape)
         {
             var from = this.from;
             var to = this.to;
@@ -224,7 +224,7 @@ namespace CANNON
             var worldNormal = World.worldNormal.clone();
             quat.vmult(worldNormal, worldNormal);
 
-            var len = new Vec3();
+            var len = new Vector3();
             from.subTo(position, len);
             var planeToFrom = len.dot(worldNormal);
             to.subTo(position, len);
@@ -249,9 +249,9 @@ namespace CANNON
                 return;
             }
 
-            var planePointToFrom = new Vec3();
-            var dir_scaled_with_t = new Vec3();
-            var hitPointWorld = new Vec3();
+            var planePointToFrom = new Vector3();
+            var dir_scaled_with_t = new Vector3();
+            var hitPointWorld = new Vector3();
 
             from.subTo(position, planePointToFrom);
             var t = -worldNormal.dot(planePointToFrom) / n_dot_dir;
@@ -276,7 +276,7 @@ namespace CANNON
             result.upperBound.z = Math.max(to.z, from.z);
         }
 
-        private intersectHeightfield(shape: Heightfield, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
+        private intersectHeightfield(shape: Heightfield, quat: Quaternion, position: Vector3, body: Body, reportedShape: Shape)
         {
             var data = shape.data,
                 w = shape.elementSize;
@@ -341,7 +341,7 @@ namespace CANNON
             }
         }
 
-        private intersectSphere(shape: Sphere, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
+        private intersectSphere(shape: Sphere, quat: Quaternion, position: Vector3, body: Body, reportedShape: Shape)
         {
             var from = this.from,
                 to = this.to,
@@ -402,7 +402,7 @@ namespace CANNON
         private intersectConvex(
             shape: Shape,
             quat: Quaternion,
-            position: Vec3,
+            position: Vector3,
             body: Body,
             reportedShape: Shape,
             options: { faceList?: number[] } = {}
@@ -416,7 +416,7 @@ namespace CANNON
 
             // Checking faces
             var faces = shape.faces,
-                vertices = <Vec3[]>shape.vertices,
+                vertices = <Vector3[]>shape.vertices,
                 normals = shape.faceNormals;
             var direction = this._direction;
 
@@ -508,7 +508,7 @@ namespace CANNON
          * @private
          * @param  {Shape} shape
          * @param  {Quaternion} quat
-         * @param  {Vec3} position
+         * @param  {Vector3} position
          * @param  {Body} body
          * @param {object} [options]
          */
@@ -527,7 +527,7 @@ namespace CANNON
         private intersectTrimesh(
             mesh: Trimesh,
             quat: Quaternion,
-            position: Vec3,
+            position: Vector3,
             body: Body,
             reportedShape: Shape,
             options: { faceList: number[] }
@@ -635,7 +635,7 @@ namespace CANNON
         }
 
 
-        private reportIntersection(normal: Vec3, hitPointWorld: Vec3, shape: Shape, body: Body, hitFaceIndex?: number)
+        private reportIntersection(normal: Vector3, hitPointWorld: Vector3, shape: Shape, body: Body, hitFaceIndex?: number)
         {
             var from = this.from;
             var to = this.to;
@@ -708,7 +708,7 @@ namespace CANNON
         /*
          * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
          */
-        static pointInTriangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3)
+        static pointInTriangle(p: Vector3, a: Vector3, b: Vector3, c: Vector3)
         {
             c.subTo(a, v0);
             b.subTo(a, v1);
@@ -732,35 +732,35 @@ namespace CANNON
     var tmpAABB = new AABB();
     var tmpArray = [];
 
-    var v1 = new Vec3();
-    var v2 = new Vec3();
+    var v1 = new Vector3();
+    var v2 = new Vector3();
 
-    var intersectBody_xi = new Vec3();
+    var intersectBody_xi = new Vector3();
     var intersectBody_qi = new Quaternion();
 
 
-    var vector = new Vec3();
-    var normal = new Vec3();
-    var intersectPoint = new Vec3();
+    var vector = new Vector3();
+    var normal = new Vector3();
+    var intersectPoint = new Vector3();
 
-    var a = new Vec3();
-    var b = new Vec3();
-    var c = new Vec3();
-    var d = new Vec3();
+    var a = new Vector3();
+    var b = new Vector3();
+    var c = new Vector3();
+    var d = new Vector3();
 
     var tmpRaycastResult = new RaycastResult();
 
 
-    var v0 = new Vec3();
-    var intersect = new Vec3();
+    var v0 = new Vector3();
+    var intersect = new Vector3();
 
 
-    var intersectTrimesh_normal = new Vec3();
-    var intersectTrimesh_localDirection = new Vec3();
-    var intersectTrimesh_localFrom = new Vec3();
-    var intersectTrimesh_localTo = new Vec3();
-    var intersectTrimesh_worldNormal = new Vec3();
-    var intersectTrimesh_worldIntersectPoint = new Vec3();
+    var intersectTrimesh_normal = new Vector3();
+    var intersectTrimesh_localDirection = new Vector3();
+    var intersectTrimesh_localFrom = new Vector3();
+    var intersectTrimesh_localTo = new Vector3();
+    var intersectTrimesh_worldNormal = new Vector3();
+    var intersectTrimesh_worldIntersectPoint = new Vector3();
     var intersectTrimesh_localAABB = new AABB();
     var intersectTrimesh_triangles = [];
     var intersectTrimesh_treeTransform = new Transform();
@@ -768,18 +768,18 @@ namespace CANNON
     var intersectConvexOptions = {
         faceList: [0]
     };
-    var worldPillarOffset = new Vec3();
+    var worldPillarOffset = new Vector3();
     var intersectHeightfield_localRay = new Ray();
     var intersectHeightfield_index = [];
     var intersectHeightfield_minMax = [];
 
-    var Ray_intersectSphere_intersectionPoint = new Vec3();
-    var Ray_intersectSphere_normal = new Vec3();
+    var Ray_intersectSphere_intersectionPoint = new Vector3();
+    var Ray_intersectSphere_normal = new Vector3();
 
-    var intersectConvex_normal = new Vec3();
-    var intersectConvex_minDistNormal = new Vec3();
-    var intersectConvex_minDistIntersect = new Vec3();
-    var intersectConvex_vector = new Vec3();
+    var intersectConvex_normal = new Vector3();
+    var intersectConvex_minDistNormal = new Vector3();
+    var intersectConvex_minDistIntersect = new Vector3();
+    var intersectConvex_vector = new Vector3();
 
     Ray.prototype[Shape.types.BOX] = Ray.prototype["intersectBox"];
     Ray.prototype[Shape.types.PLANE] = Ray.prototype["intersectPlane"];
@@ -790,7 +790,7 @@ namespace CANNON
     Ray.prototype[Shape.types.TRIMESH] = Ray.prototype["intersectTrimesh"];
     Ray.prototype[Shape.types.CONVEXPOLYHEDRON] = Ray.prototype["intersectConvex"];
 
-    function distanceFromIntersection(from: Vec3, direction: Vec3, position: Vec3)
+    function distanceFromIntersection(from: Vector3, direction: Vector3, position: Vector3)
     {
 
         // v0 is vector from from to position

@@ -25,7 +25,7 @@ namespace CANNON
             mesh.updateTree();
 
             var bigMesh = Trimesh.createTorus();
-            bigMesh.setScale(new Vec3(2, 2, 2));
+            bigMesh.setScale(new Vector3(2, 2, 2));
 
             test.equal(bigMesh.aabb.upperBound.x, mesh.aabb.upperBound.x * 2, 'AABB does not scale with the mesh!');
 
@@ -77,37 +77,37 @@ namespace CANNON
         QUnit.test("getVertex unscaled", (test) =>
         {
             var mesh = Trimesh.createTorus();
-            var vertex = new Vec3();
+            var vertex = new Vector3();
             mesh.getVertex(0, vertex);
-            test.deepEqual(vertex, new Vec3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
+            test.deepEqual(vertex, new Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
         });
 
         QUnit.test("getVertex scaled", (test) =>
         {
             var mesh = Trimesh.createTorus();
-            mesh.setScale(new Vec3(1, 2, 3));
-            var vertex = new Vec3();
+            mesh.setScale(new Vector3(1, 2, 3));
+            var vertex = new Vector3();
             mesh.getVertex(0, vertex);
-            test.deepEqual(vertex, new Vec3(1 * mesh.vertices[0], 2 * mesh.vertices[1], 3 * mesh.vertices[2]));
+            test.deepEqual(vertex, new Vector3(1 * mesh.vertices[0], 2 * mesh.vertices[1], 3 * mesh.vertices[2]));
         });
 
         QUnit.test("getWorldVertex", (test) =>
         {
             var mesh = Trimesh.createTorus();
-            var vertex = new Vec3();
-            mesh.getWorldVertex(0, new Vec3(), new Quaternion(), vertex);
-            test.deepEqual(vertex, new Vec3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
+            var vertex = new Vector3();
+            mesh.getWorldVertex(0, new Vector3(), new Quaternion(), vertex);
+            test.deepEqual(vertex, new Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
         });
 
         QUnit.test("getTriangleVertices", (test) =>
         {
             var mesh = Trimesh.createTorus();
-            var va = new Vec3();
-            var vb = new Vec3();
-            var vc = new Vec3();
-            var va1 = new Vec3();
-            var vb1 = new Vec3();
-            var vc1 = new Vec3();
+            var va = new Vector3();
+            var vb = new Vector3();
+            var vc = new Vector3();
+            var va1 = new Vector3();
+            var vb1 = new Vector3();
+            var vc1 = new Vector3();
             mesh.getVertex(mesh.indices[0], va);
             mesh.getVertex(mesh.indices[1], vb);
             mesh.getVertex(mesh.indices[2], vc);
@@ -120,15 +120,15 @@ namespace CANNON
         QUnit.test("getNormal", (test) =>
         {
             var mesh = Trimesh.createTorus();
-            var normal = new Vec3();
+            var normal = new Vector3();
             mesh.getNormal(0, normal);
-            test.deepEqual(new Vec3(mesh.normals[0], mesh.normals[1], mesh.normals[2]), normal);
+            test.deepEqual(new Vector3(mesh.normals[0], mesh.normals[1], mesh.normals[2]), normal);
         });
 
         QUnit.test("calculateLocalInertia", (test) =>
         {
             var mesh = Trimesh.createTorus();
-            var inertia = new Vec3();
+            var inertia = new Vector3();
             mesh.calculateLocalInertia(1, inertia);
             test.ok(true);
         });
@@ -148,10 +148,10 @@ namespace CANNON
         QUnit.test("calculateWorldAABB", (test) =>
         {
             var poly = Trimesh.createTorus();
-            var min = new Vec3();
-            var max = new Vec3();
+            var min = new Vector3();
+            var max = new Vector3();
             poly.calculateWorldAABB(
-                new Vec3(1, 0, 0), // Translate 2 x in world
+                new Vector3(1, 0, 0), // Translate 2 x in world
                 new Quaternion(0, 0, 0, 1),
                 min,
                 max

@@ -5,15 +5,15 @@ namespace CANNON
 
         QUnit.test("forEachWOrldCorner", (test) =>
         {
-            var box = new Box(new Vec3(1, 1, 1));
-            var pos = new Vec3();
+            var box = new Box(new Vector3(1, 1, 1));
+            var pos = new Vector3();
             var quat = new Quaternion();
-            quat.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI * 0.25);
+            quat.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI * 0.25);
             var numCorners = 0;
             var unique = [];
             box.forEachWorldCorner(pos, quat, function (x, y, z)
             {
-                var corner = new Vec3(x, y, z);
+                var corner = new Vector3(x, y, z);
                 for (var i = 0; i < unique.length; i++)
                 {
                     test.ok(!corner.equals(unique[i]), "Corners " + i + " and " + numCorners + " are almost equal: (" + unique[i].toString() + ") == (" + corner.toString() + ")");
@@ -26,10 +26,10 @@ namespace CANNON
 
         QUnit.test("calculateWorldAABB", (test) =>
         {
-            var box = new Box(new Vec3(1, 1, 1));
-            var min = new Vec3();
-            var max = new Vec3();
-            box.calculateWorldAABB(new Vec3(3, 0, 0),
+            var box = new Box(new Vector3(1, 1, 1));
+            var min = new Vector3();
+            var max = new Vector3();
+            box.calculateWorldAABB(new Vector3(3, 0, 0),
                 new Quaternion(0, 0, 0, 1),
                 min,
                 max);

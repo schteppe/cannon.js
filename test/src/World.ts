@@ -13,8 +13,8 @@ namespace CANNON
 
             world.clearForces();
 
-            test.ok(body.force.equals(new Vec3(0, 0, 0)));
-            test.ok(body.torque.equals(new Vec3(0, 0, 0)));
+            test.ok(body.force.equals(new Vector3(0, 0, 0)));
+            test.ok(body.torque.equals(new Vector3(0, 0, 0)));
 
         });
 
@@ -23,11 +23,11 @@ namespace CANNON
             var world = new World();
 
             var body = new Body();
-            body.addShape(new Box(new Vec3(1, 1, 1)));
+            body.addShape(new Box(new Vector3(1, 1, 1)));
             world.addBody(body);
 
-            var from = new Vec3(-10, 0, 0);
-            var to = new Vec3(10, 0, 0);
+            var from = new Vector3(-10, 0, 0);
+            var to = new Vector3(10, 0, 0);
 
             var result = new RaycastResult();
             world.rayTest(from, to, result);
@@ -44,8 +44,8 @@ namespace CANNON
             body.addShape(new Sphere(1));
             world.addBody(body);
 
-            var from = new Vec3(-10, 0, 0);
-            var to = new Vec3(10, 0, 0);
+            var from = new Vector3(-10, 0, 0);
+            var to = new Vector3(10, 0, 0);
 
             var result = new RaycastResult();
             world.rayTest(from, to, result);
@@ -62,8 +62,8 @@ namespace CANNON
             });
             world.addBody(body);
 
-            var from = new Vec3(-10, 0, 0);
-            var to = new Vec3(10, 0, 0);
+            var from = new Vector3(-10, 0, 0);
+            var to = new Vector3(10, 0, 0);
 
             var result = new RaycastResult();
             world.raycastClosest(from, to, {}, result);
@@ -76,13 +76,13 @@ namespace CANNON
         QUnit.test("raycastClosest order", (test) =>
         {
             var world = new World();
-            var bodyA = new Body({ shape: new Sphere(1), position: new Vec3(-1, 0, 0) });
-            var bodyB = new Body({ shape: new Sphere(1), position: new Vec3(1, 0, 0) });
+            var bodyA = new Body({ shape: new Sphere(1), position: new Vector3(-1, 0, 0) });
+            var bodyB = new Body({ shape: new Sphere(1), position: new Vector3(1, 0, 0) });
             world.addBody(bodyA);
             world.addBody(bodyB);
 
-            var from = new Vec3(-10, 0, 0);
-            var to = new Vec3(10, 0, 0);
+            var from = new Vector3(-10, 0, 0);
+            var to = new Vector3(10, 0, 0);
 
             var result = new RaycastResult();
             world.raycastClosest(from, to, {}, result);
@@ -109,8 +109,8 @@ namespace CANNON
             var body = new Body({ shape: new Sphere(1) });
             world.addBody(body);
 
-            var from = new Vec3(-10, 0, 0);
-            var to = new Vec3(10, 0, 0);
+            var from = new Vector3(-10, 0, 0);
+            var to = new Vector3(10, 0, 0);
 
             var hasHit;
             var numResults = 0;
@@ -142,8 +142,8 @@ namespace CANNON
             var body2 = new Body({ shape: new Sphere(1) });
             world.addBody(body2);
 
-            var from = new Vec3(-10, 0, 0);
-            var to = new Vec3(10, 0, 0);
+            var from = new Vector3(-10, 0, 0);
+            var to = new Vector3(10, 0, 0);
 
             var hasHit = false;
             var numResults = 0;
@@ -174,7 +174,7 @@ namespace CANNON
             var resultBody;
             var resultShape;
 
-            world.raycastAll(new Vec3(-10, 0, 0), new Vec3(10, 0, 0), { skipBackfaces: true }, function (result)
+            world.raycastAll(new Vector3(-10, 0, 0), new Vector3(10, 0, 0), { skipBackfaces: true }, function (result)
             {
                 hasHit = result.hasHit;
                 resultShape = result.shape;
@@ -199,7 +199,7 @@ namespace CANNON
 
             var numResults = 0;
 
-            world.raycastAll(new Vec3(-10, 0, 0), new Vec3(10, 0, 0), {
+            world.raycastAll(new Vector3(-10, 0, 0), new Vector3(10, 0, 0), {
                 collisionFilterGroup: 2,
                 collisionFilterMask: 2
             }, function (result)
@@ -211,7 +211,7 @@ namespace CANNON
 
             numResults = 0;
 
-            world.raycastAll(new Vec3(-10, 0, 0), new Vec3(10, 0, 0), {
+            world.raycastAll(new Vector3(-10, 0, 0), new Vector3(10, 0, 0), {
                 collisionFilterGroup: 1,
                 collisionFilterMask: 1
             }, function (result)
@@ -228,8 +228,8 @@ namespace CANNON
             var world = new World();
             world.addBody(new Body({ shape: new Sphere(1) }));
 
-            var from = new Vec3(-10, 0, 0);
-            var to = new Vec3(10, 0, 0);
+            var from = new Vector3(-10, 0, 0);
+            var to = new Vector3(10, 0, 0);
 
             var result = new RaycastResult();
             world.raycastAny(from, to, {}, result);

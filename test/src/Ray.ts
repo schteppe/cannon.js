@@ -5,13 +5,13 @@ namespace CANNON
 
         QUnit.test("construct", (test) =>
         {
-            var r = new Ray(new Vec3(), new Vec3(1, 0, 0));
+            var r = new Ray(new Vector3(), new Vector3(1, 0, 0));
             test.ok(true);
         });
 
         QUnit.test("intersectBody", (test) =>
         {
-            var r = new Ray(new Vec3(5, 0, 0), new Vec3(-5, 0, 0));
+            var r = new Ray(new Vector3(5, 0, 0), new Vector3(-5, 0, 0));
             r.skipBackfaces = true;
             var shape = createPolyhedron(0.5);
             var body = new Body({ mass: 1 });
@@ -21,14 +21,14 @@ namespace CANNON
 
             r.intersectBody(body, result);
             test.ok(result.hasHit);
-            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
             // test rotating the body first
             result.reset();
-            body.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI);
+            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.ok(result.hasHit);
-            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
             // test shooting from other direction
             result.reset();
@@ -36,11 +36,11 @@ namespace CANNON
             r.from.set(0, 0, 5);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0, 0, 0.5)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0, 0, 0.5)));
 
             // test miss
             result.reset();
-            var r = new Ray(new Vec3(5, 1, 0), new Vec3(-5, 1, 0));
+            var r = new Ray(new Vector3(5, 1, 0), new Vector3(-5, 1, 0));
             r.intersectBody(body, result);
             test.equal(result.hasHit, false);
 
@@ -49,7 +49,7 @@ namespace CANNON
 
         QUnit.test("intersectBodies", (test) =>
         {
-            var r = new Ray(new Vec3(5, 0, 0), new Vec3(-5, 0, 0));
+            var r = new Ray(new Vector3(5, 0, 0), new Vector3(-5, 0, 0));
             r.skipBackfaces = true;
             var shape = createPolyhedron(0.5);
             var body1 = new Body({ mass: 1 });
@@ -61,45 +61,45 @@ namespace CANNON
             var result = new RaycastResult();
             r.intersectBodies([body1, body2], result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
         });
 
         QUnit.test("box", (test) =>
         {
-            var r = new Ray(new Vec3(5, 0, 0), new Vec3(-5, 0, 0));
+            var r = new Ray(new Vector3(5, 0, 0), new Vector3(-5, 0, 0));
             r.skipBackfaces = true;
-            var shape = new Box(new Vec3(0.5, 0.5, 0.5));
+            var shape = new Box(new Vector3(0.5, 0.5, 0.5));
             var body = new Body({ mass: 1 });
             body.addShape(shape);
             var result = new RaycastResult();
 
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
             result.reset();
-            body.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI / 2);
+            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
             result.reset();
-            body.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI);
+            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
             result.reset();
-            body.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), 3 * Math.PI / 2);
+            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), 3 * Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0.5, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
         });
 
         QUnit.test("sphere", (test) =>
         {
-            var r = new Ray(new Vec3(5, 0, 0), new Vec3(-5, 0, 0));
+            var r = new Ray(new Vector3(5, 0, 0), new Vector3(-5, 0, 0));
             r.skipBackfaces = true;
             var shape = new Sphere(1);
             var body = new Body({ mass: 1 });
@@ -108,32 +108,32 @@ namespace CANNON
             var result = new RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(1, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(1, 0, 0)));
 
             result.reset();
             body.position.set(1, 0, 0);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(2, 0, 0)));
 
             result.reset();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(2, 0, 0)));
 
             result.reset();
             var shape2 = new Sphere(1);
             var body2 = new Body({ mass: 1 });
-            body2.addShape(shape2, new Vec3(1, 0, 0));
+            body2.addShape(shape2, new Vector3(1, 0, 0));
             r.intersectBody(body2, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(2, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(2, 0, 0)));
 
         });
 
         QUnit.test("heightfield", (test) =>
         {
-            var r = new Ray(new Vec3(0, 0, 10), new Vec3(0, 0, -10));
+            var r = new Ray(new Vector3(0, 0, 10), new Vector3(0, 0, -10));
             r.skipBackfaces = true;
             var data = [
                 [1, 1, 1],
@@ -150,7 +150,7 @@ namespace CANNON
             var result = new RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.deepEqual(result.hitPointWorld, new Vec3(0, 0, 1));
+            test.deepEqual(result.hitPointWorld, new Vector3(0, 0, 1));
 
             // Miss
             var result = new RaycastResult();
@@ -188,7 +188,7 @@ namespace CANNON
 
         QUnit.test("plane", (test) =>
         {
-            var r = new Ray(new Vec3(0, 0, 5), new Vec3(0, 0, -5));
+            var r = new Ray(new Vector3(0, 0, 5), new Vector3(0, 0, -5));
             r.skipBackfaces = true;
             var shape = new Plane();
             var body = new Body({ mass: 1 });
@@ -197,31 +197,31 @@ namespace CANNON
             var result = new RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0, 0, 0)));
             test.equal(result.distance, 5);
 
             result.reset();
             var body2 = new Body({ mass: 1 });
-            body2.addShape(shape, new Vec3(0, 0, 1), new Quaternion());
+            body2.addShape(shape, new Vector3(0, 0, 1), new Quaternion());
             r.intersectBody(body2, result);
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0, 0, 1)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0, 0, 1)));
 
             result.reset();
             var body3 = new Body({ mass: 1 });
             var quat = new Quaternion();
-            quat.setFromAxisAngle(new Vec3(1, 0, 0), Math.PI / 2);
-            body3.addShape(shape, new Vec3(), quat);
+            quat.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+            body3.addShape(shape, new Vector3(), quat);
             r.intersectBody(body3, result);
             test.equal(result.hasHit, false);
 
             result.reset();
             var body4 = new Body({ mass: 1 });
             body4.addShape(shape);
-            var r = new Ray(new Vec3(1, 1, 5), new Vec3(1, 1, -5));
+            var r = new Ray(new Vector3(1, 1, 5), new Vector3(1, 1, -5));
             r.intersectBody(body4, result);
             test.equal(result.hasHit, true);
-            test.deepEqual(result.hitPointWorld, new Vec3(1, 1, 0));
+            test.deepEqual(result.hitPointWorld, new Vector3(1, 1, 0));
             test.equal(result.distance, 5);
 
             var result = new RaycastResult();
@@ -231,7 +231,7 @@ namespace CANNON
             r.intersectBody(body, result);
             var distance1 = result.distance;
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0, 0, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0, 0, 0)));
 
             var result = new RaycastResult();
             r.from.set(0, 1 - 5, 1);
@@ -240,7 +240,7 @@ namespace CANNON
             r.intersectBody(body, result);
             var distance2 = result.distance;
             test.equal(result.hasHit, true);
-            test.ok(result.hitPointWorld.equals(new Vec3(0, -5, 0)));
+            test.ok(result.hitPointWorld.equals(new Vector3(0, -5, 0)));
             test.equal(distance1, distance2);
 
             test.ok(true);
@@ -248,7 +248,7 @@ namespace CANNON
 
         QUnit.test("trimesh", (test) =>
         {
-            var r = new Ray(new Vec3(0.5, 0.5, 10), new Vec3(0.5, 0.5, -10));
+            var r = new Ray(new Vector3(0.5, 0.5, 10), new Vector3(0.5, 0.5, -10));
             r.skipBackfaces = true;
 
             var vertices = [
@@ -269,7 +269,7 @@ namespace CANNON
             var result = new RaycastResult();
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
-            test.deepEqual(result.hitPointWorld, new Vec3(0.5, 0.5, 0));
+            test.deepEqual(result.hitPointWorld, new Vector3(0.5, 0.5, 0));
 
             // Miss
             result = new RaycastResult();
@@ -285,7 +285,7 @@ namespace CANNON
     function createPolyhedron(size)
     {
         size = (size === undefined ? 0.5 : size);
-        var box = new Box(new Vec3(size, size, size));
+        var box = new Box(new Vector3(size, size, size));
         box.updateConvexPolyhedronRepresentation();
         return box.convexPolyhedronRepresentation;
     }

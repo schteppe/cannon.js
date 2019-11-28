@@ -22,13 +22,13 @@ namespace CANNON
                 sin = Math.sin;
 
             // First bottom point
-            verts.push(new Vec3(radiusBottom * cos(0),
+            verts.push(new Vector3(radiusBottom * cos(0),
                 radiusBottom * sin(0),
                 -height * 0.5));
             bottomface.push(0);
 
             // First top point
-            verts.push(new Vec3(radiusTop * cos(0),
+            verts.push(new Vector3(radiusTop * cos(0),
                 radiusTop * sin(0),
                 height * 0.5));
             topface.push(1);
@@ -40,12 +40,12 @@ namespace CANNON
                 if (i < N - 1)
                 {
                     // Bottom
-                    verts.push(new Vec3(radiusBottom * cos(theta),
+                    verts.push(new Vector3(radiusBottom * cos(theta),
                         radiusBottom * sin(theta),
                         -height * 0.5));
                     bottomface.push(2 * i + 2);
                     // Top
-                    verts.push(new Vec3(radiusTop * cos(theta),
+                    verts.push(new Vector3(radiusTop * cos(theta),
                         radiusTop * sin(theta),
                         height * 0.5));
                     topface.push(2 * i + 3);
@@ -60,11 +60,11 @@ namespace CANNON
                 // Axis: we can cut off half of them if we have even number of segments
                 if (N % 2 === 1 || i < N / 2)
                 {
-                    axes.push(new Vec3(cos(thetaN), sin(thetaN), 0));
+                    axes.push(new Vector3(cos(thetaN), sin(thetaN), 0));
                 }
             }
             faces.push(topface);
-            axes.push(new Vec3(0, 0, 1));
+            axes.push(new Vector3(0, 0, 1));
 
             // Reorder bottom face
             var temp = [];
