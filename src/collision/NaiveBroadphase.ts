@@ -18,11 +18,11 @@ namespace CANNON
          * @param pairs1
          * @param pairs2
          */
-        collisionPairs(world: World, pairs1: any[], pairs2: any[])
+        collisionPairs(world: World, pairs1: Body[], pairs2: Body[])
         {
             var bodies = world.bodies,
                 n = bodies.length,
-                i, j, bi, bj;
+                i: number, j: number, bi: Body, bj: Body;
 
             // Naive N^2 ftw!
             for (i = 0; i !== n; i++)
@@ -49,7 +49,7 @@ namespace CANNON
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: any[])
+        aabbQuery(world: World, aabb: AABB, result: Body[])
         {
             result = result || [];
 

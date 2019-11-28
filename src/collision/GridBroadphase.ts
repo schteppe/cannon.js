@@ -7,8 +7,8 @@ namespace CANNON
 		nz: number;
 		aabbMin: Vec3;
 		aabbMax: Vec3;
-		bins: any[];
-		binLengths: any[]; //Rather than continually resizing arrays (thrashing the memory), just record length and allow them to grow
+		bins: Body[][];
+		binLengths: number[]; //Rather than continually resizing arrays (thrashing the memory), just record length and allow them to grow
 
 		/**
 		 * Axis aligned uniform grid broadphase.
@@ -52,7 +52,7 @@ namespace CANNON
 		 * @param pairs1
 		 * @param pairs2
 		 */
-		collisionPairs(world: World, pairs1: any[], pairs2: any[])
+		collisionPairs(world: World, pairs1: Body[], pairs2: Body[])
 		{
 			var N = world.numObjects(),
 				bodies = world.bodies;
@@ -222,7 +222,7 @@ namespace CANNON
 					// Do N^2 broadphase inside
 					for (var xi = 0; xi !== binLength; xi++)
 					{
-						var bi = bin[xi];
+						let bi = bin[xi];
 						for (var yi = 0; yi !== xi; yi++)
 						{
 							var bj = bin[yi];

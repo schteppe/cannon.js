@@ -37,7 +37,7 @@ namespace CANNON
          * @param p1 Empty array to be filled with body objects
          * @param p2 Empty array to be filled with body objects
          */
-        collisionPairs(world: World, p1: any[], p2: any[])
+        collisionPairs(world: World, p1: Body[], p2: Body[])
         {
             throw new Error("collisionPairs not implemented for this BroadPhase class!");
         }
@@ -75,7 +75,7 @@ namespace CANNON
           * @param pairs1 
           * @param pairs2 
           */
-        intersectionTest(bodyA: Body, bodyB: Body, pairs1: any[], pairs2: any[])
+        intersectionTest(bodyA: Body, bodyB: Body, pairs1: Body[], pairs2: Body[])
         {
             if (this.useBoundingBoxes)
             {
@@ -137,7 +137,7 @@ namespace CANNON
          * @param pairs1
          * @param pairs2
          */
-        makePairsUnique(pairs1: any[], pairs2: any[])
+        makePairsUnique(pairs1: Body[], pairs2: Body[])
         {
             var t = Broadphase_makePairsUnique_temp,
                 p1 = Broadphase_makePairsUnique_p1,
@@ -200,7 +200,7 @@ namespace CANNON
          * @param aabb 
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: any[])
+        aabbQuery(world: World, aabb: AABB, result: Body[])
         {
             console.warn('.aabbQuery is not implemented in this Broadphase subclass.');
             return [];
@@ -215,8 +215,8 @@ namespace CANNON
 
 
     var Broadphase_makePairsUnique_temp: { keys: string[] } = { keys: [] };
-    var Broadphase_makePairsUnique_p1: any[] = [];
-    var Broadphase_makePairsUnique_p2: any[] = [];
+    var Broadphase_makePairsUnique_p1: Body[] = [];
+    var Broadphase_makePairsUnique_p2: Body[] = [];
 
     var bsc_dist = new Vec3();
 }

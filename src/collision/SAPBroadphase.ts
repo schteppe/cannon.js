@@ -5,14 +5,14 @@ namespace CANNON
         /**
          * List of bodies currently in the broadphase.
          */
-        axisList: any[];
+        axisList: Body[];
         /**
          * Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.
          */
         axisIndex: number;
 
-        private _addBodyHandler: (e: any) => void;
-        private _removeBodyHandler: (e: any) => void;
+        private _addBodyHandler: (e: { body: Body }) => void;
+        private _removeBodyHandler: (e: { body: Body }) => void;
 
         /**
          * Sweep and prune broadphase along one axis.
@@ -78,7 +78,7 @@ namespace CANNON
             this.dirty = true;
         }
 
-        static insertionSortX(a: any[])
+        static insertionSortX(a: Body[])
         {
             for (var i = 1, l = a.length; i < l; i++)
             {
@@ -96,7 +96,7 @@ namespace CANNON
             return a;
         }
 
-        static insertionSortY(a: any[])
+        static insertionSortY(a: Body[])
         {
             for (var i = 1, l = a.length; i < l; i++)
             {
@@ -114,7 +114,7 @@ namespace CANNON
             return a;
         }
 
-        static insertionSortZ(a: any[])
+        static insertionSortZ(a: Body[])
         {
             for (var i = 1, l = a.length; i < l; i++)
             {
@@ -138,12 +138,12 @@ namespace CANNON
          * @param p1
          * @param p2
          */
-        collisionPairs(world: World, p1: any[], p2: any[])
+        collisionPairs(world: World, p1: Body[], p2: Body[])
         {
             var bodies = this.axisList,
                 N = bodies.length,
                 axisIndex = this.axisIndex,
-                i, j;
+                i: number, j: number;
 
             if (this.dirty)
             {
@@ -300,7 +300,7 @@ namespace CANNON
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: any[])
+        aabbQuery(world: World, aabb: AABB, result: Body[])
         {
             result = result || [];
 

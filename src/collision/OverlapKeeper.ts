@@ -3,8 +3,8 @@ namespace CANNON
     export class OverlapKeeper
     {
 
-        current = [];
-        previous = [];
+        current: number[] = [];
+        previous: number[] = [];
 
         constructor()
         {

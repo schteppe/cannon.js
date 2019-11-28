@@ -1678,8 +1678,8 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class OverlapKeeper {
-        current: any[];
-        previous: any[];
+        current: number[];
+        previous: number[];
         constructor();
         getKey(i: number, j: number): number;
         set(i: number, j: number): void;
@@ -1751,7 +1751,7 @@ declare namespace CANNON {
          * @param p1 Empty array to be filled with body objects
          * @param p2 Empty array to be filled with body objects
          */
-        collisionPairs(world: World, p1: any[], p2: any[]): void;
+        collisionPairs(world: World, p1: Body[], p2: Body[]): void;
         /**
          * Check if a body pair needs to be intersection tested at all.
          *
@@ -1767,7 +1767,7 @@ declare namespace CANNON {
           * @param pairs1
           * @param pairs2
           */
-        intersectionTest(bodyA: Body, bodyB: Body, pairs1: any[], pairs2: any[]): void;
+        intersectionTest(bodyA: Body, bodyB: Body, pairs1: Body[], pairs2: Body[]): void;
         /**
          * Check if the bounding spheres of two bodies are intersecting.
          * @param bodyA
@@ -1789,7 +1789,7 @@ declare namespace CANNON {
          * @param pairs1
          * @param pairs2
          */
-        makePairsUnique(pairs1: any[], pairs2: any[]): void;
+        makePairsUnique(pairs1: Body[], pairs2: Body[]): void;
         /**
          * To be implemented by subcasses
          * @method setWorld
@@ -1809,7 +1809,7 @@ declare namespace CANNON {
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: any[]): any[];
+        aabbQuery(world: World, aabb: AABB, result: Body[]): any[];
     }
 }
 declare namespace CANNON {
@@ -1819,8 +1819,8 @@ declare namespace CANNON {
         nz: number;
         aabbMin: Vec3;
         aabbMax: Vec3;
-        bins: any[];
-        binLengths: any[];
+        bins: Body[][];
+        binLengths: number[];
         /**
          * Axis aligned uniform grid broadphase.
          *
@@ -1840,7 +1840,7 @@ declare namespace CANNON {
          * @param pairs1
          * @param pairs2
          */
-        collisionPairs(world: World, pairs1: any[], pairs2: any[]): void;
+        collisionPairs(world: World, pairs1: Body[], pairs2: Body[]): void;
     }
 }
 declare namespace CANNON {
@@ -1856,14 +1856,14 @@ declare namespace CANNON {
          * @param pairs1
          * @param pairs2
          */
-        collisionPairs(world: World, pairs1: any[], pairs2: any[]): void;
+        collisionPairs(world: World, pairs1: Body[], pairs2: Body[]): void;
         /**
          * Returns all the bodies within an AABB.
          * @param world
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: any[]): any[];
+        aabbQuery(world: World, aabb: AABB, result: Body[]): Body[];
     }
 }
 declare namespace CANNON {
@@ -1871,7 +1871,7 @@ declare namespace CANNON {
         /**
          * List of bodies currently in the broadphase.
          */
-        axisList: any[];
+        axisList: Body[];
         /**
          * Axis to sort the bodies along. Set to 0 for x axis, and 1 for y axis. For best performance, choose an axis that the bodies are spread out more on.
          */
@@ -1889,16 +1889,16 @@ declare namespace CANNON {
          * @param world
          */
         setWorld(world: World): void;
-        static insertionSortX(a: any[]): any[];
-        static insertionSortY(a: any[]): any[];
-        static insertionSortZ(a: any[]): any[];
+        static insertionSortX(a: Body[]): Body[];
+        static insertionSortY(a: Body[]): Body[];
+        static insertionSortZ(a: Body[]): Body[];
         /**
          * Collect all collision pairs
          * @param world
          * @param p1
          * @param p2
          */
-        collisionPairs(world: World, p1: any[], p2: any[]): void;
+        collisionPairs(world: World, p1: Body[], p2: Body[]): void;
         sortList(): void;
         /**
          * Check if the bounds of two bodies overlap, along the given SAP axis.
@@ -1918,7 +1918,7 @@ declare namespace CANNON {
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: any[]): any[];
+        aabbQuery(world: World, aabb: AABB, result: Body[]): Body[];
     }
 }
 declare namespace CANNON {

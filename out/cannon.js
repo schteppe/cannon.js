@@ -4989,11 +4989,11 @@ var CANNON;
                     var bin = bins[i];
                     // Do N^2 broadphase inside
                     for (var xi = 0; xi !== binLength; xi++) {
-                        var bi = bin[xi];
+                        var bi_1 = bin[xi];
                         for (var yi = 0; yi !== xi; yi++) {
                             var bj = bin[yi];
-                            if (this.needBroadphaseCollision(bi, bj)) {
-                                this.intersectionTest(bi, bj, pairs1, pairs2);
+                            if (this.needBroadphaseCollision(bi_1, bj)) {
+                                this.intersectionTest(bi_1, bj, pairs1, pairs2);
                             }
                         }
                     }

@@ -276,7 +276,7 @@ namespace CANNON
             result.upperBound.z = Math.max(to.z, from.z);
         }
 
-        private intersectHeightfield(shape: any, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
+        private intersectHeightfield(shape: Heightfield, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
             var data = shape.data,
                 w = shape.elementSize;
@@ -341,7 +341,7 @@ namespace CANNON
             }
         }
 
-        private intersectSphere(shape: any, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
+        private intersectSphere(shape: Sphere, quat: Quaternion, position: Vec3, body: Body, reportedShape: Shape)
         {
             var from = this.from,
                 to = this.to,
@@ -405,7 +405,7 @@ namespace CANNON
             position: Vec3,
             body: Body,
             reportedShape: Shape,
-            options: { faceList?: any[] } = {}
+            options: { faceList?: number[] } = {}
         )
         {
             var minDistNormal = intersectConvex_minDistNormal;
@@ -525,12 +525,12 @@ namespace CANNON
          * @todo Use Octree lookup
          */
         private intersectTrimesh(
-            mesh: any,
+            mesh: Trimesh,
             quat: Quaternion,
             position: Vec3,
             body: Body,
             reportedShape: Shape,
-            options
+            options: { faceList: number[] }
         )
         {
             var normal = intersectTrimesh_normal;
