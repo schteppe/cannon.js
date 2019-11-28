@@ -1562,7 +1562,7 @@ declare namespace CANNON {
             root?: OctreeNode<T>;
             aabb?: AABB;
         });
-        reset(aabb?: AABB, options?: any): void;
+        reset(): void;
         /**
          * Insert data into this node
          *
@@ -1570,7 +1570,7 @@ declare namespace CANNON {
          * @param elementData
          * @return True if successful, otherwise false
          */
-        insert(aabb: AABB, elementData: any, level?: number): boolean;
+        insert(aabb: AABB, elementData: T, level?: number): boolean;
         /**
          * Create 8 equally sized children nodes and put them in the .children array.
          */
@@ -1591,7 +1591,7 @@ declare namespace CANNON {
          * @param result
          * @return The "result" object
          */
-        rayQuery(ray: Ray, treeTransform: Transform, result: any[]): any[];
+        rayQuery(ray: Ray, treeTransform: Transform, result: T[]): T[];
         removeEmptyNodes(): void;
     }
     class Octree<T> extends OctreeNode<T> {

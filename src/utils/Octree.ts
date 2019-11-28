@@ -35,7 +35,7 @@ namespace CANNON
             this.children = [];
         }
 
-        reset(aabb?: AABB, options?: any)
+        reset()
         {
             this.children.length = this.data.length = 0;
         }
@@ -47,7 +47,7 @@ namespace CANNON
          * @param elementData
          * @return True if successful, otherwise false
          */
-        insert(aabb: AABB, elementData: any, level = 0)
+        insert(aabb: AABB, elementData: T, level = 0)
         {
             var nodeData = this.data;
 
@@ -188,7 +188,7 @@ namespace CANNON
          * @param result
          * @return The "result" object
          */
-        rayQuery(ray: Ray, treeTransform: Transform, result: any[])
+        rayQuery(ray: Ray, treeTransform: Transform, result: T[])
         {
 
             // Use aabb query for now.

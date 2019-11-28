@@ -4256,7 +4256,7 @@ var CANNON;
             this.data = [];
             this.children = [];
         }
-        OctreeNode.prototype.reset = function (aabb, options) {
+        OctreeNode.prototype.reset = function () {
             this.children.length = this.data.length = 0;
         };
         /**
