@@ -23,7 +23,7 @@ namespace CANNON
 
             if (typeof (distance) === "undefined")
             {
-                distance = bodyA.position.distance(bodyB.position);
+                distance = bodyA.position.distanceTo(bodyB.position);
             }
 
             if (typeof (maxForce) === "undefined")
@@ -52,10 +52,10 @@ namespace CANNON
             var halfDist = this.distance * 0.5;
             var normal = eq.ni;
 
-            bodyB.position.subTo(bodyA.position, normal);
+            bodyB.position.vsub(bodyA.position, normal);
             normal.normalize();
-            normal.scaleNumberTo(halfDist, eq.ri);
-            normal.scaleNumberTo(-halfDist, eq.rj);
+            normal.mult(halfDist, eq.ri);
+            normal.mult(-halfDist, eq.rj);
         }
     }
 }

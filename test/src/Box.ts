@@ -16,7 +16,7 @@ namespace CANNON
                 var corner = new Vec3(x, y, z);
                 for (var i = 0; i < unique.length; i++)
                 {
-                    test.ok(!corner.equals(unique[i]), "Corners " + i + " and " + numCorners + " are almost equal: (" + unique[i].toString() + ") == (" + corner.toString() + ")");
+                    test.ok(!corner.almostEquals(unique[i]), "Corners " + i + " and " + numCorners + " are almost equal: (" + unique[i].toString() + ") == (" + corner.toString() + ")");
                 }
                 unique.push(corner);
                 numCorners++;

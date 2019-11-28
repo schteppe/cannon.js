@@ -64,13 +64,13 @@ namespace CANNON
         {
             var q = new Quaternion();
             q.setFromVectors(new Vec3(1, 0, 0), new Vec3(-1, 0, 0));
-            test.ok(q.vmult(new Vec3(1, 0, 0)).equals(new Vec3(-1, 0, 0)));
+            test.ok(q.vmult(new Vec3(1, 0, 0)).almostEquals(new Vec3(-1, 0, 0)));
 
             q.setFromVectors(new Vec3(0, 1, 0), new Vec3(0, -1, 0));
-            test.ok(q.vmult(new Vec3(0, 1, 0)).equals(new Vec3(0, -1, 0)));
+            test.ok(q.vmult(new Vec3(0, 1, 0)).almostEquals(new Vec3(0, -1, 0)));
 
             q.setFromVectors(new Vec3(0, 0, 1), new Vec3(0, 0, -1));
-            test.ok(q.vmult(new Vec3(0, 0, 1)).equals(new Vec3(0, 0, -1)));
+            test.ok(q.vmult(new Vec3(0, 0, 1)).almostEquals(new Vec3(0, 0, -1)));
 
         });
 

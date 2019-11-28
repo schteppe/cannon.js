@@ -154,8 +154,8 @@ namespace CANNON
                 invMassi = bi.invMassSolve,
                 invMassj = bj.invMassSolve;
 
-            fi.scaleNumberTo(invMassi, iMfi);
-            fj.scaleNumberTo(invMassj, iMfj);
+            fi.scale(invMassi, iMfi);
+            fj.scale(invMassj, iMfj);
 
             bi.invInertiaWorldSolve.vmult(ti, invIi_vmult_taui);
             bj.invInertiaWorldSolve.vmult(tj, invIj_vmult_tauj);

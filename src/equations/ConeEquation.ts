@@ -43,8 +43,8 @@ namespace CANNON
                 GB = this.jacobianElementB;
 
             // Caluclate cross products
-            ni.crossTo(nj, nixnj);
-            nj.crossTo(ni, njxni);
+            ni.cross(nj, nixnj);
+            nj.cross(ni, njxni);
 
             // The angle between two vector is:
             // cos(theta) = a * b / (length(a) * length(b) = { len(a) = len(b) = 1 } = a * b

@@ -20,7 +20,7 @@ namespace CANNON
 
             var v = new Vec3(1, 2, 3);
             var u = new Vec3(4, 5, 6);
-            v = v.crossTo(u);
+            v = v.cross(u);
 
             test.equal(v.x, -3, "Calculating cross product x");
             test.equal(v.y, 6, "Calculating cross product x");
@@ -65,7 +65,7 @@ namespace CANNON
 
             var v = new Vec3(1, 2, 3);
             var u = new Vec3(4, 5, 6);
-            v = v.addTo(u);
+            v = v.vadd(u);
 
             test.equal(v.x, 5, "Adding a vector (x)");
             test.equal(v.y, 7, "Adding a vector (y)");
@@ -81,7 +81,7 @@ namespace CANNON
 
         QUnit.test("almostEquals", (test) =>
         {
-            test.ok(new Vec3(1, 0, 0).equals(new Vec3(1, 0, 0)));
+            test.ok(new Vec3(1, 0, 0).almostEquals(new Vec3(1, 0, 0)));
         });
     });
 }

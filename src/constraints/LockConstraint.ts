@@ -31,8 +31,8 @@ namespace CANNON
             var pivotA = this.pivotA;
             var pivotB = this.pivotB;
             var halfWay = new Vec3();
-            bodyA.position.addTo(bodyB.position, halfWay);
-            halfWay.scaleNumberTo(0.5, halfWay);
+            bodyA.position.vadd(bodyB.position, halfWay);
+            halfWay.scale(0.5, halfWay);
             bodyB.pointToLocalFrame(halfWay, pivotB);
             bodyA.pointToLocalFrame(halfWay, pivotA);
 

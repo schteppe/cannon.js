@@ -41,8 +41,8 @@ namespace CANNON
                 GB = this.jacobianElementB;
 
             // Caluclate cross products
-            ni.crossTo(nj, nixnj);
-            nj.crossTo(ni, njxni);
+            ni.cross(nj, nixnj);
+            nj.cross(ni, njxni);
 
             // g = ni * nj
             // gdot = (nj x ni) * wi + (ni x nj) * wj

@@ -182,7 +182,7 @@ namespace CANNON
             if (this.isInContact)
             {
                 var project = raycastResult.hitNormalWorld.dot(raycastResult.directionWorld);
-                raycastResult.hitPointWorld.subTo(chassis.position, relpos);
+                raycastResult.hitPointWorld.vsub(chassis.position, relpos);
                 chassis.getVelocityAtWorldPoint(relpos, chassis_velocity_at_contactPoint);
                 var projVel = raycastResult.hitNormalWorld.dot(chassis_velocity_at_contactPoint);
                 if (project >= -0.1)
@@ -201,7 +201,7 @@ namespace CANNON
                 // Not in contact : position wheel in a nice (rest length) position
                 raycastResult.suspensionLength = this.suspensionRestLength;
                 this.suspensionRelativeVelocity = 0.0;
-                raycastResult.directionWorld.scaleNumberTo(-1, raycastResult.hitNormalWorld);
+                raycastResult.directionWorld.scale(-1, raycastResult.hitNormalWorld);
                 this.clippedInvContactDotSuspension = 1.0;
             }
         }

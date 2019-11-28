@@ -37,15 +37,15 @@ namespace CANNON
                 t = this.t;
 
             // Caluclate cross products
-            ri.crossTo(t, rixt);
-            rj.crossTo(t, rjxt);
+            ri.cross(t, rixt);
+            rj.cross(t, rjxt);
 
             // G = [-t -rixt t rjxt]
             // And remember, this is a pure velocity constraint, g is always zero!
             var GA = this.jacobianElementA,
                 GB = this.jacobianElementB;
-            t.negateTo(GA.spatial);
-            rixt.negateTo(GA.rotational);
+            t.negate(GA.spatial);
+            rixt.negate(GA.rotational);
             GB.spatial.copy(t);
             GB.rotational.copy(rjxt);
 

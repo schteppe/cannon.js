@@ -92,12 +92,12 @@ namespace CANNON
                 for (var j = 0; j !== numVertices; j++)
                 {
                     var k = (j + 1) % numVertices;
-                    vertices[face[j]].subTo(vertices[face[k]], edge);
+                    vertices[face[j]].vsub(vertices[face[k]], edge);
                     edge.normalize();
                     var found = false;
                     for (var p = 0; p !== edges.length; p++)
                     {
-                        if (edges[p].equals(edge) || edges[p].equals(edge))
+                        if (edges[p].almostEquals(edge) || edges[p].almostEquals(edge))
                         {
                             found = true;
                             break;
@@ -134,7 +134,7 @@ namespace CANNON
 
                 var n = this.faceNormals[i] || new Vec3();
                 this.getFaceNormal(i, n);
-                n.negateTo(n);
+                n.negate(n);
                 this.faceNormals[i] = n;
                 var vertex = this.vertices[this.faces[i][0]];
                 if (n.dot(vertex) < 0)
@@ -158,9 +158,9 @@ namespace CANNON
          */
         static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3)
         {
-            vb.subTo(va, ab);
-            vc.subTo(vb, cb);
-            cb.crossTo(ab, target);
+            vb.vsub(va, ab);
+            vc.vsub(vb, cb);
+            cb.cross(ab, target);
             if (!target.isZero())
             {
                 target.normalize();
@@ -222,7 +222,7 @@ namespace CANNON
                 var worldb = new Vec3();
                 worldb.copy(b);
                 quatB.vmult(worldb, worldb);
-                posB.addTo(worldb, worldb);
+                posB.vadd(worldb, worldb);
                 worldVertsB1.push(worldb);
             }
 
@@ -374,7 +374,7 @@ namespace CANNON
 
                     // Get world edge 2
                     quatB.vmult(hullB.uniqueEdges[e1], worldEdge1);
-                    worldEdge0.crossTo(worldEdge1, Cross);
+                    worldEdge0.cross(worldEdge1, Cross);
 
                     if (!Cross.almostZero())
                     {
@@ -393,10 +393,10 @@ namespace CANNON
                 }
             }
 
-            posB.subTo(posA, deltaC);
+            posB.vsub(posA, deltaC);
             if ((deltaC.dot(target)) > 0.0)
             {
-                target.negateTo(target);
+                target.negate(target);
             }
 
             return true;
@@ -531,18 +531,18 @@ namespace CANNON
             {
                 var a = hullA.vertices[polyA[e0]];
                 var b = hullA.vertices[polyA[(e0 + 1) % numVerticesA]];
-                a.subTo(b, edge0);
+                a.vsub(b, edge0);
                 WorldEdge0.copy(edge0);
                 quatA.vmult(WorldEdge0, WorldEdge0);
-                posA.addTo(WorldEdge0, WorldEdge0);
+                posA.vadd(WorldEdge0, WorldEdge0);
                 worldPlaneAnormal1.copy(this.faceNormals[closestFaceA]);//transA.getBasis()* btVector3(polyA.m_plane[0],polyA.m_plane[1],polyA.m_plane[2]);
                 quatA.vmult(worldPlaneAnormal1, worldPlaneAnormal1);
-                posA.addTo(worldPlaneAnormal1, worldPlaneAnormal1);
-                WorldEdge0.crossTo(worldPlaneAnormal1, planeNormalWS1);
-                planeNormalWS1.negateTo(planeNormalWS1);
+                posA.vadd(worldPlaneAnormal1, worldPlaneAnormal1);
+                WorldEdge0.cross(worldPlaneAnormal1, planeNormalWS1);
+                planeNormalWS1.negate(planeNormalWS1);
                 worldA1.copy(a);
                 quatA.vmult(worldA1, worldA1);
-                posA.addTo(worldA1, worldA1);
+                posA.vadd(worldA1, worldA1);
                 var planeEqWS1 = -worldA1.dot(planeNormalWS1);
                 var planeEqWS: number;
                 if (true)
@@ -693,7 +693,7 @@ namespace CANNON
             for (var i = 0; i !== N; i++)
             {
                 quat.vmult(verts[i], worldVerts[i]);
-                position.addTo(worldVerts[i], worldVerts[i]);
+                position.vadd(worldVerts[i], worldVerts[i]);
             }
 
             this.worldVerticesNeedsUpdate = false;
@@ -765,7 +765,7 @@ namespace CANNON
             var verts = this.vertices;
             for (var i = 0, N = verts.length; i !== N; i++)
             {
-                var norm2 = verts[i].lengthSquared();
+                var norm2 = verts[i].norm2();
                 if (norm2 > max2)
                 {
                     max2 = norm2;
@@ -789,7 +789,7 @@ namespace CANNON
             {
                 tempWorldVertex.copy(verts[i]);
                 quat.vmult(tempWorldVertex, tempWorldVertex);
-                pos.addTo(tempWorldVertex, tempWorldVertex);
+                pos.vadd(tempWorldVertex, tempWorldVertex);
                 var v = tempWorldVertex;
                 if (v.x < minx || minx === undefined)
                 {
@@ -839,9 +839,9 @@ namespace CANNON
                 verts = this.vertices;
             for (var i = 0; i < n; i++)
             {
-                target.addTo(verts[i], target);
+                target.vadd(verts[i], target);
             }
-            target.scaleNumberTo(1 / n, target);
+            target.mult(1 / n, target);
             return target;
         }
 
@@ -885,7 +885,7 @@ namespace CANNON
                 for (var i = 0; i < n; i++)
                 {
                     var v = verts[i];
-                    v.addTo(offset, v);
+                    v.vadd(offset, v);
                 }
             }
         }
@@ -913,11 +913,11 @@ namespace CANNON
 
                 // This dot product determines which side of the edge the point is
                 var vToP = ConvexPolyhedron_vToP;
-                p.subTo(v, vToP);
+                p.vsub(v, vToP);
                 var r1 = n0.dot(vToP);
 
                 var vToPointInside = ConvexPolyhedron_vToPointInside;
-                pointInside.subTo(v, vToPointInside);
+                pointInside.vsub(v, vToPointInside);
                 var r2 = n0.dot(vToPointInside);
 
                 if ((r1 < 0 && r2 > 0) || (r1 > 0 && r2 < 0))
