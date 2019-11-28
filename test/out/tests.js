@@ -893,7 +893,7 @@ var CANNON;
             cg.currentContactMaterial = new CANNON.ContactMaterial();
             cg.result = result;
             cg.sphereHeightfield(sphereShape, hfShape, new CANNON.Vec3(0.25, 0.25, 0.05), // hit the first triangle in the field
-            new CANNON.Vec3(0, 0, 0), new CANNON.Quaternion(), new CANNON.Quaternion(), new CANNON.Body(1, sphereShape), new CANNON.Body(1, hfShape));
+            new CANNON.Vec3(0, 0, 0), new CANNON.Quaternion(), new CANNON.Quaternion(), new CANNON.Body(), new CANNON.Body());
             test.equal(result.length, 1);
         });
     });
@@ -1209,7 +1209,7 @@ var CANNON;
             var shape = new CANNON.Heightfield(data, {
                 elementSize: 1
             });
-            var body = new CANNON.Body({ mass: 1 }, new CANNON.Vec3(-1, -1, 0));
+            var body = new CANNON.Body({ mass: 1 });
             body.addShape(shape);
             // Hit
             var result = new CANNON.RaycastResult();

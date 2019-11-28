@@ -1389,7 +1389,7 @@ declare namespace CANNON {
         /**
          * The indexed triangles. Use .updateTree() to update it.
          */
-        tree: Octree;
+        tree: Octree<number>;
         /**
          * @param vertices
          * @param indices
@@ -1414,7 +1414,7 @@ declare namespace CANNON {
          * @param aabb
          * @param result An array of integers, referencing the queried triangles.
          */
-        getTrianglesInAABB(aabb: AABB, result: number[]): any[];
+        getTrianglesInAABB(aabb: AABB, result: number[]): number[];
         /**
          * @param scale
          */
@@ -1535,11 +1535,11 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    class OctreeNode {
+    class OctreeNode<T> {
         /**
          * The root node
          */
-        root: OctreeNode;
+        root: OctreeNode<T>;
         /**
          * Boundary of this node
          */
@@ -1548,18 +1548,18 @@ declare namespace CANNON {
          * Contained data at the current node level.
          * @property {Array} data
          */
-        data: any[];
+        data: T[];
         /**
          * Children to this node
          */
-        children: OctreeNode[];
+        children: OctreeNode<T>[];
         maxDepth: number;
         /**
          *
          * @param options
          */
         constructor(options?: {
-            root?: Octree;
+            root?: OctreeNode<T>;
             aabb?: AABB;
         });
         reset(aabb?: AABB, options?: any): void;
@@ -1582,7 +1582,7 @@ declare namespace CANNON {
          * @param result
          * @return The "result" object
          */
-        aabbQuery(aabb: AABB, result: any[]): any[];
+        aabbQuery(aabb: AABB, result: T[]): T[];
         /**
          * Get all data, potentially intersected by a ray.
          *
@@ -1594,7 +1594,7 @@ declare namespace CANNON {
         rayQuery(ray: Ray, treeTransform: Transform, result: any[]): any[];
         removeEmptyNodes(): void;
     }
-    class Octree extends OctreeNode {
+    class Octree<T> extends OctreeNode<T> {
         /**
          * Maximum subdivision depth
          */
@@ -1607,7 +1607,7 @@ declare namespace CANNON {
          * @extends OctreeNode
          */
         constructor(aabb?: AABB, options?: {
-            root?: OctreeNode;
+            root?: OctreeNode<T>;
             aabb?: AABB;
             maxDepth?: number;
         });
@@ -2289,7 +2289,7 @@ declare namespace CANNON {
             linearFactor?: Vec3;
             angularFactor?: Vec3;
             shape?: Shape;
-        }, a?: any);
+        });
         static COLLIDE_EVENT_NAME: string;
         /**
          * A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.

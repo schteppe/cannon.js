@@ -23,7 +23,7 @@ namespace CANNON
         /**
          * The indexed triangles. Use .updateTree() to update it.
          */
-        tree: Octree;
+        tree: Octree<number>;
 
         /**
          * @param vertices

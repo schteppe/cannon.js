@@ -5911,9 +5911,8 @@ var CANNON;
          *     body.addShape(shape);
          *     world.addBody(body);
          */
-        function Body(options, a) {
+        function Body(options) {
             if (options === void 0) { options = {}; }
-            if (a === void 0) { a = undefined; }
             var _this = _super.call(this) || this;
             _this.id = Body.idCounter++;
             _this.world = null;

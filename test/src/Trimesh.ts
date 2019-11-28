@@ -36,7 +36,7 @@ namespace CANNON
         QUnit.test("getTrianglesInAABB unscaled", (test) =>
         {
             var mesh = Trimesh.createTorus(1, 1, 32, 32);
-            var result = [];
+            var result: number[] = [];
 
             // Should get all triangles if we use the full AABB
             var aabb = mesh.aabb.clone();

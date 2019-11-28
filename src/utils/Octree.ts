@@ -1,11 +1,11 @@
 namespace CANNON
 {
-    export class OctreeNode
+    export class OctreeNode<T>
     {
         /**
          * The root node
          */
-        root: OctreeNode;
+        root: OctreeNode<T>;
 
         /**
          * Boundary of this node
@@ -15,19 +15,19 @@ namespace CANNON
          * Contained data at the current node level.
          * @property {Array} data
          */
-        data: any[];
+        data: T[];
 
         /**
          * Children to this node
          */
-        children: OctreeNode[];
+        children: OctreeNode<T>[];
         maxDepth: number;
 
         /**
          * 
          * @param options 
          */
-        constructor(options: { root?: Octree, aabb?: AABB } = {})
+        constructor(options: { root?: OctreeNode<T>, aabb?: AABB } = {})
         {
             this.root = options.root || null;
             this.aabb = options.aabb ? options.aabb.clone() : new AABB();
@@ -145,7 +145,7 @@ namespace CANNON
          * @param result
          * @return The "result" object
          */
-        aabbQuery(aabb: AABB, result: any[])
+        aabbQuery(aabb: AABB, result: T[])
         {
             var nodeData = this.data;
 
@@ -218,7 +218,7 @@ namespace CANNON
         }
     }
 
-    export class Octree extends OctreeNode
+    export class Octree<T> extends OctreeNode<T>
     {
         /**
          * Maximum subdivision depth
@@ -232,7 +232,7 @@ namespace CANNON
          * @param {number} [options.maxDepth=8]
          * @extends OctreeNode
          */
-        constructor(aabb?: AABB, options: { root?: OctreeNode, aabb?: AABB, maxDepth?: number } = {})
+        constructor(aabb?: AABB, options: { root?: OctreeNode<T>, aabb?: AABB, maxDepth?: number } = {})
         {
             options.root = null;
             options.aabb = aabb;

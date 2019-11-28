@@ -208,7 +208,7 @@ namespace CANNON
             material?: Material, mass?: number, linearDamping?: number, type?: number, allowSleep?: boolean,
             sleepSpeedLimit?: number, sleepTimeLimit?: number, quaternion?: Quaternion, angularVelocity?: Vec3,
             fixedRotation?: boolean, angularDamping?: number, linearFactor?: Vec3, angularFactor?: Vec3, shape?: Shape,
-        } = {}, a = undefined)
+        } = {})
         {
             super();
 

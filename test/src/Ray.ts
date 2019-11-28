@@ -143,7 +143,7 @@ namespace CANNON
             var shape = new Heightfield(data, {
                 elementSize: 1
             });
-            var body = new Body({ mass: 1 }, new Vec3(-1, -1, 0));
+            var body = new Body({ mass: 1 });
             body.addShape(shape);
 
             // Hit

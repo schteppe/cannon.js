@@ -47,8 +47,8 @@ namespace CANNON
                 new Vec3(0, 0, 0),
                 new Quaternion(),
                 new Quaternion(),
-                new Body(<any>1, sphereShape),
-                new Body(<any>1, hfShape)
+                new Body(),
+                new Body()
             );
 
             test.equal(result.length, 1);

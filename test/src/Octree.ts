@@ -54,14 +54,14 @@ namespace CANNON
         QUnit.test("aabbQuery", (test) =>
         {
             var aabb = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
-            var tree = new Octree(aabb);
+            var tree = new Octree<number>(aabb);
 
             var nodeAABB = new AABB(new Vec3(-1, -1, -1), new Vec3(1, 1, 1));
             var nodeData = 123;
 
             tree.insert(nodeAABB, nodeData);
 
-            var result = [];
+            var result: number[] = [];
             tree.aabbQuery(aabb, result);
 
             test.deepEqual(result, [123]);
