@@ -320,7 +320,7 @@ var CANNON;
         return box.convexPolyhedronRepresentation;
     }
     function createPolyBox(sx, sy, sz) {
-        var v = CANNON.Vec3;
+        var v = CANNON.Vector3;
         var box = new CANNON.Box(new CANNON.Vector3(sx, sy, sz));
         return box.convexPolyhedronRepresentation;
     }

@@ -10,7 +10,7 @@ namespace CANNON
 
     function createPolyBox(sx, sy, sz)
     {
-        var v = Vec3;
+        var v = Vector3;
         var box = new Box(new Vector3(sx, sy, sz));
         return box.convexPolyhedronRepresentation;
     }
