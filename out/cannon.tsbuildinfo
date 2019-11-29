@@ -3,7 +3,6 @@
     "commonSourceDirectory": "..",
     "sourceFiles": [
       "../src/Feng3d.ts",
-      "../src/math/Vec3.ts",
       "../src/math/Mat3.ts",
       "../src/math/Quaternion.ts",
       "../src/math/Transform.ts",
@@ -69,7 +68,7 @@
         },
         {
           "pos": 599,
-          "end": 451790,
+          "end": 439557,
           "kind": "text"
         }
       ],

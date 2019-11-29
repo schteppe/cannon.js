@@ -24,7 +24,6 @@
         //
         "src/Feng3d.ts",
         //
-        "src/math/Vec3.ts",
         "src/math/Mat3.ts",
         "src/math/Quaternion.ts",
         "src/math/Transform.ts",

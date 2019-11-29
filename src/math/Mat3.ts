@@ -165,7 +165,7 @@ namespace CANNON
             // Construct equations
             var nr = 3; // num rows
             var nc = 4; // num cols
-            var eqns = [];
+            var eqns: number[] = [];
             for (var i = 0; i < nr * nc; i++)
             {
                 eqns.push(0);
