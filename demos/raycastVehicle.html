@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>cannon.js - RaycastVehicle</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  </head>
-  <body>
-        <script src="../../feng3d/out/feng3d.js"></script>
+</head>
+
+<body>
+    <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
@@ -22,7 +24,8 @@
         var mass = 150;
         var vehicle;
 
-        demo.addScene("car",function(){
+        demo.addScene("car", function ()
+        {
             var world = demo.getWorld();
             world.broadphase = new CANNON.SAPBroadphase(world);
             world.gravity.set(0, 0, -10);
@@ -40,7 +43,7 @@
             world.addContactMaterial(wheelGroundContactMaterial);
 
             var chassisShape;
-            chassisShape = new CANNON.Box(new CANNON.Vector3(2, 1,0.5));
+            chassisShape = new CANNON.Box(new CANNON.Vector3(2, 1, 0.5));
             var chassisBody = new CANNON.Body({ mass: mass });
             chassisBody.addShape(chassisShape);
             chassisBody.position.set(0, 0, 4);
@@ -56,7 +59,7 @@
                 dampingRelaxation: 2.3,
                 dampingCompression: 4.4,
                 maxSuspensionForce: 100000,
-                rollInfluence:  0.01,
+                rollInfluence: 0.01,
                 axleLocal: new CANNON.Vector3(0, 1, 0),
                 chassisConnectionPointLocal: new CANNON.Vector3(1, 1, 0),
                 maxSuspensionTravel: 0.3,
@@ -84,7 +87,8 @@
             vehicle.addToWorld(world);
 
             var wheelBodies = [];
-            for(var i=0; i<vehicle.wheelInfos.length; i++){
+            for (var i = 0; i < vehicle.wheelInfos.length; i++)
+            {
                 var wheel = vehicle.wheelInfos[i];
                 var cylinderShape = new CANNON.Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20);
                 var wheelBody = new CANNON.Body({
@@ -101,8 +105,10 @@
             }
 
             // Update wheels
-            world.addEventListener('postStep', function(){
-                for (var i = 0; i < vehicle.wheelInfos.length; i++) {
+            world.addEventListener('postStep', function ()
+            {
+                for (var i = 0; i < vehicle.wheelInfos.length; i++)
+                {
                     vehicle.updateWheelTransform(i);
                     var t = vehicle.wheelInfos[i].worldTransform;
                     var wheelBody = wheelBodies[i];
@@ -115,11 +121,13 @@
             var sizeX = 64,
                 sizeY = 64;
 
-            for (var i = 0; i < sizeX; i++) {
+            for (var i = 0; i < sizeX; i++)
+            {
                 matrix.push([]);
-                for (var j = 0; j < sizeY; j++) {
-                    var height = Math.cos(i / sizeX * Math.PI * 5) * Math.cos(j/sizeY * Math.PI * 5) * 2 + 2;
-                    if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
+                for (var j = 0; j < sizeY; j++)
+                {
+                    var height = Math.cos(i / sizeX * Math.PI * 5) * Math.cos(j / sizeY * Math.PI * 5) * 2 + 2;
+                    if (i === 0 || i === sizeX - 1 || j === 0 || j === sizeY - 1)
                         height = 3;
                     matrix[i].push(height);
                 }
@@ -143,10 +151,12 @@
         var maxSteerVal = 0.5;
         var maxForce = 1000;
         var brakeForce = 1000000;
-        function handler(event){
+        function handler(event)
+        {
             var up = (event.type == 'keyup');
 
-            if(!up && event.type !== 'keydown'){
+            if (!up && event.type !== 'keydown')
+            {
                 return;
             }
 
@@ -155,38 +165,40 @@
             vehicle.setBrake(0, 2);
             vehicle.setBrake(0, 3);
 
-            switch(event.keyCode){
+            switch (event.keyCode)
+            {
 
-            case 38: // forward
-                vehicle.applyEngineForce(up ? 0 : -maxForce, 2);
-                vehicle.applyEngineForce(up ? 0 : -maxForce, 3);
-                break;
+                case 38: // forward
+                    vehicle.applyEngineForce(up ? 0 : -maxForce, 2);
+                    vehicle.applyEngineForce(up ? 0 : -maxForce, 3);
+                    break;
 
-            case 40: // backward
-                vehicle.applyEngineForce(up ? 0 : maxForce, 2);
-                vehicle.applyEngineForce(up ? 0 : maxForce, 3);
-                break;
+                case 40: // backward
+                    vehicle.applyEngineForce(up ? 0 : maxForce, 2);
+                    vehicle.applyEngineForce(up ? 0 : maxForce, 3);
+                    break;
 
-            case 66: // b
-                vehicle.setBrake(brakeForce, 0);
-                vehicle.setBrake(brakeForce, 1);
-                vehicle.setBrake(brakeForce, 2);
-                vehicle.setBrake(brakeForce, 3);
-                break;
+                case 66: // b
+                    vehicle.setBrake(brakeForce, 0);
+                    vehicle.setBrake(brakeForce, 1);
+                    vehicle.setBrake(brakeForce, 2);
+                    vehicle.setBrake(brakeForce, 3);
+                    break;
 
-            case 39: // right
-                vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 0);
-                vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 1);
-                break;
+                case 39: // right
+                    vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 0);
+                    vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 1);
+                    break;
 
-            case 37: // left
-                vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0);
-                vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1);
-                break;
+                case 37: // left
+                    vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0);
+                    vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1);
+                    break;
 
             }
         }
 
     </script>
-  </body>
+</body>
+
 </html>

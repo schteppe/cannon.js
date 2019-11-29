@@ -834,44 +834,6 @@ var CANNON;
 var CANNON;
 (function (CANNON) {
     QUnit.module("Quaternion", function () {
-        QUnit.test("creation", function (test) {
-            test.expect(4);
-            var q = new CANNON.Quaternion(1, 2, 3, 4);
-            test.equal(q.x, 1, "Creating should set the first parameter to the x value");
-            test.equal(q.y, 2, "Creating should set the second parameter to the y value");
-            test.equal(q.z, 3, "Creating should set the third parameter to the z value");
-            test.equal(q.w, 4, "Creating should set the third parameter to the z value");
-        });
-        QUnit.test("toEuler", function (test) {
-            test.expect(3);
-            var q = new CANNON.Quaternion();
-            q.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
-            var euler = new CANNON.Vector3();
-            q.toEuler(euler);
-            // we should expect (0,0,pi/4)
-            test.equal(euler.x, 0, "euler x should be zero, got " + euler.x);
-            test.equal(euler.y, 0, "euler y should be yero, got " + euler.y);
-            test.ok(Math.abs(euler.z - Math.PI / 4) < 0.001, "euler z should be " + (Math.PI / 4) + ", got " + euler.z);
-        });
-        QUnit.test("setFromVectors", function (test) {
-            var q = new CANNON.Quaternion();
-            q.setFromVectors(new CANNON.Vector3(1, 0, 0), new CANNON.Vector3(-1, 0, 0));
-            test.ok(q.vmult(new CANNON.Vector3(1, 0, 0)).equals(new CANNON.Vector3(-1, 0, 0)));
-            q.setFromVectors(new CANNON.Vector3(0, 1, 0), new CANNON.Vector3(0, -1, 0));
-            test.ok(q.vmult(new CANNON.Vector3(0, 1, 0)).equals(new CANNON.Vector3(0, -1, 0)));
-            q.setFromVectors(new CANNON.Vector3(0, 0, 1), new CANNON.Vector3(0, 0, -1));
-            test.ok(q.vmult(new CANNON.Vector3(0, 0, 1)).equals(new CANNON.Vector3(0, 0, -1)));
-        });
-        QUnit.test("slerp", function (test) {
-            var qa = new CANNON.Quaternion();
-            var qb = new CANNON.Quaternion();
-            qa.slerpTo(qb, 0.5, qb);
-            test.deepEqual(qa, qb);
-            qa.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
-            qb.fromAxisAngle(new CANNON.Vector3(0, 0, 1), -Math.PI / 4);
-            qa.slerpTo(qb, 0.5, qb);
-            test.deepEqual(qb, new CANNON.Quaternion());
-        });
     });
 })(CANNON || (CANNON = {}));
 var CANNON;

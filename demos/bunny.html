@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>cannon.js - bunny demo</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="css/style.css" type="text/css"/>
-        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    </head>
-    <body>
-            <script src="../../feng3d/out/feng3d.js"></script>
+
+<head>
+    <title>cannon.js - bunny demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+
+<body>
+    <script src="../../feng3d/out/feng3d.js"></script>
     <script src="../out/cannon.js"></script>
-        <script src="../build/cannon.demo.js"></script>
-        <script src="../libs/dat.gui.js"></script>
-        <script src="../libs/Three.js"></script>
-        <script src="../libs/TrackballControls.js"></script>
-        <script src="../libs/Detector.js"></script>
-        <script src="../libs/Stats.js"></script>
-        <script src="../libs/smoothie.js"></script>
-        <script src="js/bunny.js"></script>
-        <script>
+    <script src="../build/cannon.demo.js"></script>
+    <script src="../libs/dat.gui.js"></script>
+    <script src="../libs/Three.js"></script>
+    <script src="../libs/TrackballControls.js"></script>
+    <script src="../libs/Detector.js"></script>
+    <script src="../libs/Stats.js"></script>
+    <script src="../libs/smoothie.js"></script>
+    <script src="js/bunny.js"></script>
+    <script>
 
         var demo = new CANNON.Demo();
 
-        demo.addScene("Bunny",function(){
+        demo.addScene("Bunny", function ()
+        {
 
             var world = demo.getWorld();
 
-            world.gravity.set(0,0,-20);
+            world.gravity.set(0, 0, -20);
             world.solver.iterations = 20;
             world.defaultContactMaterial.contactEquationStiffness = 1e10;
             world.defaultContactMaterial.contactEquationRelaxation = 10;
@@ -33,40 +36,43 @@
             var bunnyBody = new CANNON.Body({
                 mass: 1
             });
-            for(var i=0; i<bunny.length; i++){
+            for (var i = 0; i < bunny.length; i++)
+            {
 
                 var rawVerts = bunny[i].verts;
                 var rawFaces = bunny[i].faces;
                 var rawOffset = bunny[i].offset;
 
-                var verts=[], faces=[], offset;
+                var verts = [], faces = [], offset;
 
                 // Get vertices
-                for(var j=0; j<rawVerts.length; j+=3){
-                    verts.push(new CANNON.Vector3( rawVerts[j]  ,
-                                                rawVerts[j+1],
-                                                rawVerts[j+2]));
+                for (var j = 0; j < rawVerts.length; j += 3)
+                {
+                    verts.push(new CANNON.Vector3(rawVerts[j],
+                        rawVerts[j + 1],
+                        rawVerts[j + 2]));
                 }
 
                 // Get faces
-                for(var j=0; j<rawFaces.length; j+=3){
-                    faces.push([rawFaces[j],rawFaces[j+1],rawFaces[j+2]]);
+                for (var j = 0; j < rawFaces.length; j += 3)
+                {
+                    faces.push([rawFaces[j], rawFaces[j + 1], rawFaces[j + 2]]);
                 }
 
                 // Get offset
-                offset = new CANNON.Vector3(rawOffset[0],rawOffset[1],rawOffset[2]);
+                offset = new CANNON.Vector3(rawOffset[0], rawOffset[1], rawOffset[2]);
 
                 // Construct polyhedron
-                var bunnyPart = new CANNON.ConvexPolyhedron(verts,faces);
+                var bunnyPart = new CANNON.ConvexPolyhedron(verts, faces);
 
                 // Add to compound
-                bunnyBody.addShape(bunnyPart,offset);
+                bunnyBody.addShape(bunnyPart, offset);
             }
 
             // Create body
-            bunnyBody.quaternion.fromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
+            bunnyBody.quaternion.fromAxisAngle(new CANNON.Vector3(1, 0, 0), -Math.PI / 2);
             var z180 = new CANNON.Quaternion();
-            z180.fromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI);
+            z180.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI);
             bunnyBody.quaternion = z180.multTo(bunnyBody.quaternion);
             world.addBody(bunnyBody);
             demo.addVisual(bunnyBody);
@@ -75,7 +81,7 @@
             var groundShape = new CANNON.Plane();
             var groundBody = new CANNON.Body({
                 mass: 0,
-                position: new CANNON.Vector3(0,0,-5)
+                position: new CANNON.Vector3(0, 0, -5)
             });
             groundBody.addShape(groundShape);
             world.addBody(groundBody);
@@ -85,6 +91,7 @@
 
         demo.start();
 
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>
