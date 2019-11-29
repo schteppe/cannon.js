@@ -146,7 +146,7 @@ namespace CANNON
                     continue; // Skip
                 }
 
-                body.quaternion.mult(body.shapeOrientations[i], qi);
+                body.quaternion.multTo(body.shapeOrientations[i], qi);
                 body.quaternion.vmult(body.shapeOffsets[i], xi);
                 xi.addTo(body.position, xi);
 

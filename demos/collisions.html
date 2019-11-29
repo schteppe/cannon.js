@@ -116,7 +116,7 @@
           q1.fromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI*0.25);
           var q2 = new CANNON.Quaternion();
           q2.fromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI*0.25);
-          var q = q1.mult(q2);
+          var q = q1.multTo(q2);
           b1.quaternion.set(q.x,q.y,q.z,q.w);
           world.addBody(b1);
           demo.addVisual(b1);

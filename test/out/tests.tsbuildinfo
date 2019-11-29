@@ -11,7 +11,6 @@
       "../src/Heightfield.ts",
       "../src/HingeConstraint.ts",
       "../src/LockConstraint.ts",
-      "../src/Mat3.ts",
       "../src/Narrowphase.ts",
       "../src/Octree.ts",
       "../src/OverlapKeeper.ts",
@@ -27,7 +26,7 @@
       "sections": [
         {
           "pos": 0,
-          "end": 85719,
+          "end": 76891,
           "kind": "text"
         }
       ]
@@ -36,7 +35,7 @@
       "sections": [
         {
           "pos": 0,
-          "end": 620,
+          "end": 589,
           "kind": "text"
         }
       ]

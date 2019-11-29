@@ -15,19 +15,6 @@ namespace CANNON
 
         });
 
-        QUnit.test("conjugate", (test) =>
-        {
-            test.expect(4);
-
-            var q = new Quaternion(1, 2, 3, 4);
-            q.conjugate(q);
-            test.equal(q.x, -1, ".conjugate() should negate x");
-            test.equal(q.y, -2, ".conjugate() should negate y");
-            test.equal(q.z, -3, ".conjugate() should negate z");
-            test.equal(q.w, 4, ".conjugate() should not touch w");
-
-        });
-
         QUnit.test("toEuler", (test) =>
         {
             test.expect(3);
@@ -62,12 +49,12 @@ namespace CANNON
         {
             var qa = new Quaternion();
             var qb = new Quaternion();
-            qa.slerp(qb, 0.5, qb);
+            qa.slerpTo(qb, 0.5, qb);
             test.deepEqual(qa, qb);
 
             qa.fromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
             qb.fromAxisAngle(new Vector3(0, 0, 1), -Math.PI / 4);
-            qa.slerp(qb, 0.5, qb);
+            qa.slerpTo(qb, 0.5, qb);
             test.deepEqual(qb, new Quaternion());
 
         });

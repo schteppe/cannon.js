@@ -129,7 +129,7 @@ var CANNON;
         });
         QUnit.test("computeAABB boxOffset", function (test) {
             var quaternion = new CANNON.Quaternion();
-            quaternion.setFromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 2);
+            quaternion.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 2);
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Box(new CANNON.Vector3(1, 1, 1)), new CANNON.Vector3(1, 1, 1));
             body.computeAABB();
@@ -196,7 +196,7 @@ var CANNON;
                 mass: 1,
                 shape: sphereShape
             });
-            body.quaternion.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
+            body.quaternion.fromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
             var localPoint = new CANNON.Vector3(1, 0, 0);
             var localForceVector = new CANNON.Vector3(0, 1, 0);
             body.applyLocalForce(localForceVector, localPoint);
@@ -221,7 +221,7 @@ var CANNON;
                 mass: 1,
                 shape: sphereShape
             });
-            body.quaternion.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
+            body.quaternion.fromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
             var f = 1000;
             var dt = 1 / 60;
             var localPoint = new CANNON.Vector3(1, 0, 0);
@@ -238,7 +238,7 @@ var CANNON;
             var box = new CANNON.Box(new CANNON.Vector3(1, 1, 1));
             var pos = new CANNON.Vector3();
             var quat = new CANNON.Quaternion();
-            quat.setFromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI * 0.25);
+            quat.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI * 0.25);
             var numCorners = 0;
             var unique = [];
             box.forEachWorldCorner(pos, quat, function (x, y, z) {
@@ -387,7 +387,7 @@ var CANNON;
             var found = hullA.findSeparatingAxis(hullB, posA, quatA, posB, quatB, sepaxis);
             var result = [];
             //hullA.clipAgainstHull(posA,quatA,hullB,posB,quatB,sepaxis,-100,100,result);
-            quatB.setFromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
+            quatB.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
             //console.log("clipping....");
             hullA.clipAgainstHull(posA, quatA, hullB, posB, quatB, sepaxis, -100, 100, result);
             //console.log("result:",result);
@@ -407,7 +407,7 @@ var CANNON;
             test.equal(found2, false, "found separating axis though there are none");
             // Inclined 45 degrees, what happens then?
             posA.x = 1;
-            quatB.setFromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
+            quatB.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
             var found3 = hullA.testSepAxis(sepAxis, hullB, posA, quatA, posB, quatB);
             test.ok(typeof (found3), "number" + " Did not fetch");
         });
@@ -417,7 +417,7 @@ var CANNON;
             var sepaxis = new CANNON.Vector3();
             var found = hullA.findSeparatingAxis(hullB, posA, quatA, posB, quatB, sepaxis);
             //console.log("SepAxis found:",found,", the axis:",sepaxis.toString());
-            quatB.setFromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
+            quatB.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
             var found2 = hullA.findSeparatingAxis(hullB, posA, quatA, posB, quatB, sepaxis);
             //console.log("SepAxis found:",found2,", the axis:",sepaxis.toString());
             test.ok(true);
@@ -439,7 +439,7 @@ var CANNON;
             CANNON.ConvexPolyhedron.project(convex, axis, pos, quat, result);
             test.deepEqual(result, [1.5, 0.5]);
             // Test to rotate
-            quat.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
+            quat.fromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
             pos.set(0, 1, 0);
             axis.set(0, 1, 0);
             CANNON.ConvexPolyhedron.project(convex, axis, pos, quat, result);
@@ -669,206 +669,6 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Mat3", function () {
-        QUnit.test("creation", function (test) {
-            test.expect(1);
-            var m = new CANNON.Matrix3x3();
-            var success = true;
-            for (var c = 0; c < 3; c++)
-                for (var r = 0; r < 3; r++)
-                    success = success && (m.getElement(r, c) == 0);
-            test.ok(success, "creation without paramaters should return a null matrix");
-        });
-        QUnit.test("e", function (test) {
-            test.expect(2);
-            var m = new CANNON.Matrix3x3();
-            // row 1, column 2
-            m.setElement(1, 2, 5);
-            test.equal(m.getElement(1, 2), 5, "write and access");
-            var success = true;
-            for (var c = 0; c < 3; c++)
-                for (var r = 0; r < 3; r++)
-                    if (r != 1 || c != 2)
-                        success = success && (m.getElement(r, c) == 0);
-            test.ok(success, "write should not touch the others elements");
-        });
-        QUnit.test("identity", function (test) {
-            test.expect(9);
-            var m = new CANNON.Matrix3x3();
-            m.identity();
-            for (var c = 0; c < 3; c++)
-                for (var r = 0; r < 3; r++)
-                    test.equal(m.getElement(r, c), (r == c) ? 1 : 0, "cellule ( row : " + r + " column : " + c + " )  should be " + (c == r ? "1" : "0"));
-        });
-        QUnit.test("vmult", function (test) {
-            test.expect(1);
-            var v = new CANNON.Vector3(2, 3, 7);
-            var m = new CANNON.Matrix3x3();
-            /*
-              set the matrix to
-              | 1 2 3 |
-              | 4 5 6 |
-              | 7 8 9 |
-            */
-            for (var c = 0; c < 3; c++)
-                for (var r = 0; r < 3; r++)
-                    m.setElement(r, c, 1 + r * 3 + c);
-            var t = m.vmult(v);
-            test.ok(t.x == 29 && t.y == 65 && t.z == 101, "Expected (29,65,101), got (" + t.toString() + "), while multiplying m=" + m.toString() + " with " + v.toString());
-        });
-        QUnit.test("mmult", function (test) {
-            test.expect(1);
-            var m1 = new CANNON.Matrix3x3();
-            var m2 = new CANNON.Matrix3x3();
-            /* set the matrix to
-                | 1 2 3 |
-                | 4 5 6 |
-                | 7 8 9 |
-            */
-            for (var c = 0; c < 3; c++)
-                for (var r = 0; r < 3; r++)
-                    m1.setElement(r, c, 1 + r * 3 + c);
-            /* set the matrix to
-             | 5 2 4 |
-             | 4 5 1 |
-             | 1 8 0 |
-            */
-            m2.setElement(0, 0, 5);
-            m2.setElement(0, 1, 2);
-            m2.setElement(0, 2, 4);
-            m2.setElement(1, 0, 4);
-            m2.setElement(1, 1, 5);
-            m2.setElement(1, 2, 1);
-            m2.setElement(2, 0, 1);
-            m2.setElement(2, 1, 8);
-            m2.setElement(2, 2, 0);
-            var m3 = m1.mmult(m2);
-            test.ok(m3.getElement(0, 0) == 16
-                && m3.getElement(0, 1) == 36
-                && m3.getElement(0, 2) == 6
-                && m3.getElement(1, 0) == 46
-                && m3.getElement(1, 1) == 81
-                && m3.getElement(1, 2) == 21
-                && m3.getElement(2, 0) == 76
-                && m3.getElement(2, 1) == 126
-                && m3.getElement(2, 2) == 36, "calculating multiplication with another matrix");
-        });
-        QUnit.test("solve", function (test) {
-            test.expect(2);
-            var m = new CANNON.Matrix3x3();
-            var v = new CANNON.Vector3(2, 3, 7);
-            /* set the matrix to
-            | 5 2 4 |
-            | 4 5 1 |
-            | 1 8 0 |
-            */
-            m.setElement(0, 0, 5);
-            m.setElement(0, 1, 2);
-            m.setElement(0, 2, 4);
-            m.setElement(1, 0, 4);
-            m.setElement(1, 1, 5);
-            m.setElement(1, 2, 1);
-            m.setElement(2, 0, 1);
-            m.setElement(2, 1, 8);
-            m.setElement(2, 2, 0);
-            var t = m.solve(v);
-            var vv = m.vmult(t);
-            test.ok(vv.equals(v, 0.00001), "solving Ax = b");
-            var m1 = new CANNON.Matrix3x3();
-            /* set the matrix to
-             | 1 2 3 |
-             | 4 5 6 |
-             | 7 8 9 |
-             */
-            for (var c = 0; c < 3; c++)
-                for (var r = 0; r < 3; r++)
-                    m1.setElement(r, c, 1 + r * 3 + c);
-            var error = false;
-            try {
-                m1.solve(v);
-            }
-            catch (e) {
-                error = true;
-            }
-            test.ok(error, "should rise an error if the system has no solutions");
-        });
-        QUnit.test("reverse", function (test) {
-            test.expect(2);
-            var m = new CANNON.Matrix3x3();
-            /* set the matrix to
-            | 5 2 4 |
-            | 4 5 1 |
-            | 1 8 0 |
-            */
-            m.setElement(0, 0, 5);
-            m.setElement(0, 1, 2);
-            m.setElement(0, 2, 4);
-            m.setElement(1, 0, 4);
-            m.setElement(1, 1, 5);
-            m.setElement(1, 2, 1);
-            m.setElement(2, 0, 1);
-            m.setElement(2, 1, 8);
-            m.setElement(2, 2, 0);
-            var m2 = m.reverseTo();
-            var m3 = m2.mmult(m);
-            var success = true;
-            for (var c = 0; c < 3; c++)
-                for (var r = 0; r < 3; r++)
-                    success = success && (Math.abs(m3.getElement(r, c) - (c == r ? 1 : 0)) < 0.00001);
-            test.ok(success, "inversing");
-            var m1 = new CANNON.Matrix3x3();
-            /* set the matrix to
-            | 1 2 3 |
-            | 4 5 6 |
-            | 7 8 9 |
-            */
-            for (var c = 0; c < 3; c++)
-                for (var r = 0; r < 3; r++)
-                    m1.setElement(r, c, 1 + r * 3 + c);
-            var error = false;
-            try {
-                m1.reverseTo();
-            }
-            catch (e) {
-                error = true;
-            }
-            test.ok(error, "should rise an error if the matrix is not inersible");
-        });
-        QUnit.test("transpose", function (test) {
-            var M = new CANNON.Matrix3x3([1, 2, 3,
-                4, 5, 6,
-                7, 8, 9]);
-            var Mt = M.transposeTo();
-            test.deepEqual(Mt.elements, [1, 4, 7,
-                2, 5, 8,
-                3, 6, 9]);
-        });
-        QUnit.test("scale", function (test) {
-            var M = new CANNON.Matrix3x3([1, 1, 1,
-                1, 1, 1,
-                1, 1, 1]);
-            var Mt = M.scale(new CANNON.Vector3(1, 2, 3));
-            test.deepEqual(Mt.elements, [1, 2, 3,
-                1, 2, 3,
-                1, 2, 3]);
-        });
-        QUnit.test("setRotationFromQuaternion", function (test) {
-            var M = new CANNON.Matrix3x3(), q = new CANNON.Quaternion(), original = new CANNON.Vector3(1, 2, 3);
-            // Test zero rotation
-            M.setRotationFromQuaternion(q);
-            var v = M.vmult(original);
-            test.ok(v.equals(original));
-            // Test rotation along x axis
-            q.setFromEuler(0.222, 0.123, 1.234);
-            M.setRotationFromQuaternion(q);
-            var Mv = M.vmult(original);
-            var qv = q.vmult(original);
-            test.ok(Mv.equals(qv));
-        });
-    });
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
     QUnit.module("Narrowphase", function () {
         QUnit.test("sphereSphere", function (test) {
             var world = new CANNON.World();
@@ -1042,30 +842,10 @@ var CANNON;
             test.equal(q.z, 3, "Creating should set the third parameter to the z value");
             test.equal(q.w, 4, "Creating should set the third parameter to the z value");
         });
-        QUnit.test("conjugate", function (test) {
-            test.expect(4);
-            var q = new CANNON.Quaternion(1, 2, 3, 4);
-            q.conjugate(q);
-            test.equal(q.x, -1, ".conjugate() should negate x");
-            test.equal(q.y, -2, ".conjugate() should negate y");
-            test.equal(q.z, -3, ".conjugate() should negate z");
-            test.equal(q.w, 4, ".conjugate() should not touch w");
-        });
-        QUnit.test("inverse", function (test) {
-            test.expect(4);
-            var q = new CANNON.Quaternion(1, 2, 3, 4);
-            var denominator = 1 * 1 + 2 * 2 + 3 * 3 + 4 * 4;
-            q.inverse(q);
-            // Quaternion inverse is conj(q) / ||q||^2
-            test.equal(q.x, -1 / denominator, ".inverse() should negate x and divide by length^2");
-            test.equal(q.y, -2 / denominator, ".inverse() should negate y and divide by length^2");
-            test.equal(q.z, -3 / denominator, ".inverse() should negate z and divide by length^2");
-            test.equal(q.w, 4 / denominator, ".inverse() should divide by length^2");
-        });
         QUnit.test("toEuler", function (test) {
             test.expect(3);
             var q = new CANNON.Quaternion();
-            q.setFromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
+            q.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
             var euler = new CANNON.Vector3();
             q.toEuler(euler);
             // we should expect (0,0,pi/4)
@@ -1085,11 +865,11 @@ var CANNON;
         QUnit.test("slerp", function (test) {
             var qa = new CANNON.Quaternion();
             var qb = new CANNON.Quaternion();
-            qa.slerp(qb, 0.5, qb);
+            qa.slerpTo(qb, 0.5, qb);
             test.deepEqual(qa, qb);
-            qa.setFromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
-            qb.setFromAxisAngle(new CANNON.Vector3(0, 0, 1), -Math.PI / 4);
-            qa.slerp(qb, 0.5, qb);
+            qa.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 4);
+            qb.fromAxisAngle(new CANNON.Vector3(0, 0, 1), -Math.PI / 4);
+            qa.slerpTo(qb, 0.5, qb);
             test.deepEqual(qb, new CANNON.Quaternion());
         });
     });
@@ -1113,7 +893,7 @@ var CANNON;
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(0.5, 0, 0)));
             // test rotating the body first
             result.reset();
-            body.quaternion.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI);
+            body.quaternion.fromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.ok(result.hasHit);
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(0.5, 0, 0)));
@@ -1156,17 +936,17 @@ var CANNON;
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(0.5, 0, 0)));
             result.reset();
-            body.quaternion.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
+            body.quaternion.fromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(0.5, 0, 0)));
             result.reset();
-            body.quaternion.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI);
+            body.quaternion.fromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(0.5, 0, 0)));
             result.reset();
-            body.quaternion.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), 3 * Math.PI / 2);
+            body.quaternion.fromAxisAngle(new CANNON.Vector3(1, 0, 0), 3 * Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(0.5, 0, 0)));
@@ -1263,7 +1043,7 @@ var CANNON;
             result.reset();
             var body3 = new CANNON.Body({ mass: 1 });
             var quat = new CANNON.Quaternion();
-            quat.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
+            quat.fromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
             body3.addShape(shape, new CANNON.Vector3(), quat);
             r.intersectBody(body3, result);
             test.equal(result.hasHit, false);

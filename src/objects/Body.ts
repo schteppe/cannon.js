@@ -441,7 +441,7 @@ namespace CANNON
         pointToLocalFrame(worldPoint: Vector3, result = new Vector3())
         {
             worldPoint.subTo(this.position, result);
-            this.quaternion.inverse().vmult(result, result);
+            this.quaternion.inverseTo().vmult(result, result);
             return result;
         }
 
@@ -453,7 +453,7 @@ namespace CANNON
          */
         vectorToLocalFrame(worldVector, result = new Vector3())
         {
-            this.quaternion.inverse().vmult(worldVector, result);
+            this.quaternion.inverseTo().vmult(worldVector, result);
             return result;
         }
 
@@ -569,7 +569,7 @@ namespace CANNON
                 offset.addTo(this.position, offset);
 
                 // Get shape world quaternion
-                shapeOrientations[i].mult(bodyQuat, orientation);
+                shapeOrientations[i].multTo(bodyQuat, orientation);
 
                 // Get shape AABB
                 shape.calculateWorldAABB(offset, orientation, shapeAABB.lowerBound, shapeAABB.upperBound);
@@ -810,7 +810,7 @@ namespace CANNON
             pos.y += velo.y * dt;
             pos.z += velo.z * dt;
 
-            quat.integrate(this.angularVelocity, dt, this.angularFactor, quat);
+            quat.integrateTo(this.angularVelocity, dt, this.angularFactor, quat);
 
             if (quatNormalize)
             {

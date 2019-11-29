@@ -307,7 +307,7 @@
           var v1 = new CANNON.Vector3(x,y,z).subTo(constrainedBody.position);
 
           // Apply anti-quaternion to vector to tranform it into the local body coordinate system
-          var antiRot = constrainedBody.quaternion.inverse();
+          var antiRot = constrainedBody.quaternion.inverseTo();
           pivot = antiRot.vmult(v1); // pivot is not in local body coordinates
 
           // Move the cannon click marker particle to the click position

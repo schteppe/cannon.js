@@ -48,15 +48,15 @@
 
             // Get the vector pointing from the moon to the planet center
             var moon_to_planet = new CANNON.Vector3();
-            this.position.negate(moon_to_planet);
+            this.position.negateTo(moon_to_planet);
 
             // Get distance from planet to moon
-            var distance = moon_to_planet.norm();
+            var distance = moon_to_planet.length;
 
             // Now apply force on moon
             // Fore is pointing in the moon-planet direction
             moon_to_planet.normalize();
-            moon_to_planet.mult(1500/Math.pow(distance,2),this.force);
+            moon_to_planet.scaleNumberTo(1500/Math.pow(distance,2),this.force);
 
           }
 

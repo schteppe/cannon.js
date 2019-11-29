@@ -3,146 +3,14 @@ declare namespace CANNON {
     type Vector3 = feng3d.Vector3;
     var Matrix3x3: typeof feng3d.Matrix3x3;
     type Matrix3x3 = feng3d.Matrix3x3;
-}
-declare namespace CANNON {
-    class Quaternion {
-        /**
-         * Multiplier of the imaginary basis vector i.
-         */
-        x: number;
-        /**
-         * Multiplier of the imaginary basis vector j.
-         */
-        y: number;
-        /**
-         * Multiplier of the imaginary basis vector k.
-         */
-        z: number;
-        /**
-         * Multiplier of the real part.
-         */
-        w: number;
-        /**
-         * A Quaternion describes a rotation in 3D space. The Quaternion is mathematically defined as Q = x*i + y*j + z*k + w, where (i,j,k) are imaginary basis vectors. (x,y,z) can be seen as a vector related to the axis of rotation, while the real multiplier, w, is related to the amount of rotation.
-         *
-         * @param x Multiplier of the imaginary basis vector i.
-         * @param y Multiplier of the imaginary basis vector j.
-         * @param z Multiplier of the imaginary basis vector k.
-         * @param w Multiplier of the real part.
-         * @see http://en.wikipedia.org/wiki/Quaternion
-         */
-        constructor(x?: number, y?: number, z?: number, w?: number);
-        /**
-         * Set the value of the quaternion.
-         * @param x
-         * @param y
-         * @param z
-         * @param w
-         */
-        set(x: number, y: number, z: number, w: number): this;
-        /**
-         * Convert to a readable format
-         */
-        toString(): string;
-        /**
-         * Convert to an Array
-         */
-        toArray(): number[];
-        /**
-         * Set the quaternion components given an axis and an angle.
-         * @param axis
-         * @param angle in radians
-         */
-        fromAxisAngle(axis: Vector3, angle: number): this;
-        /**
-         * Converts the quaternion to axis/angle representation.
-         * @param targetAxis A vector object to reuse for storing the axis.
-         * @return An array, first elemnt is the axis and the second is the angle in radians.
-         */
-        toAxisAngle(targetAxis?: feng3d.Vector3): (number | feng3d.Vector3)[];
-        /**
-         * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
-         * @param u
-         * @param v
-         */
-        setFromVectors(u: Vector3, v: Vector3): this;
-        /**
-         * Quaternion multiplication
-         * @param q
-         * @param target
-         */
-        mult(q: Quaternion, target?: Quaternion): Quaternion;
-        /**
-         * Get the inverse quaternion rotation.
-         * @param target
-         */
-        inverse(target: Quaternion): Quaternion;
-        /**
-         * Get the quaternion conjugate
-         * @param target
-         */
-        conjugate(target?: Quaternion): Quaternion;
-        /**
-         * Normalize the quaternion. Note that this changes the values of the quaternion.
-         */
-        normalize(): this;
-        /**
-         * Approximation of quaternion normalization. Works best when quat is already almost-normalized.
-         * @see http://jsperf.com/fast-quaternion-normalization
-         * @author unphased, https://github.com/unphased
-         */
-        normalizeFast(): this;
-        /**
-         * Multiply the quaternion by a vector
-         * @param v
-         * @param target Optional
-         */
-        vmult(v: Vector3, target?: feng3d.Vector3): feng3d.Vector3;
-        /**
-         * Copies value of source to this quaternion.
-         * @param source
-         */
-        copy(source: Quaternion): this;
-        /**
-         * Convert the quaternion to euler angle representation. Order: YZX, as this page describes: http://www.euclideanspace.com/maths/standards/index.htm
-         * @param target
-         * @param order Three-character string e.g. "YZX", which also is default.
-         */
-        toEuler(target: Vector3, order?: string): void;
-        /**
-         * See http://www.mathworks.com/matlabcentral/fileexchange/20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/content/SpinCalc.m
-         * @param x
-         * @param y
-         * @param z
-         * @param order The order to apply angles: 'XYZ' or 'YXZ' or any other combination
-         */
-        setFromEuler(x: number, y: number, z: number, order?: string): this;
-        clone(): Quaternion;
-        /**
-         * Performs a spherical linear interpolation between two quat
-         *
-         * @param toQuat second operand
-         * @param t interpolation amount between the self quaternion and toQuat
-         * @param target A quaternion to store the result in. If not provided, a new one will be created.
-         * @returns The "target" object
-         */
-        slerp(toQuat: Quaternion, t: number, target?: Quaternion): Quaternion;
-        /**
-         * Rotate an absolute orientation quaternion given an angular velocity and a time step.
-         * @param angularVelocity
-         * @param dt
-         * @param angularFactor
-         * @param  target
-         * @return The "target" object
-         */
-        integrate(angularVelocity: Vector3, dt: number, angularFactor: Vector3, target: Quaternion): Quaternion;
-    }
+    var Quaternion: typeof feng3d.Quaternion;
+    type Quaternion = feng3d.Quaternion;
 }
 declare namespace CANNON {
     class Transform {
         position: Vector3;
         quaternion: Quaternion;
-        constructor(position?: feng3d.Vector3, quaternion?: Quaternion);
+        constructor(position?: feng3d.Vector3, quaternion?: feng3d.Quaternion);
         /**
          * @param position
          * @param quaternion

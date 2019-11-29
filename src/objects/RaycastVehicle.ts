@@ -415,8 +415,8 @@ namespace CANNON
 
             // World rotation of the wheel
             var q = wheel.worldTransform.quaternion;
-            this.chassisBody.quaternion.mult(steeringOrn, q);
-            q.mult(rotatingOrn, q);
+            this.chassisBody.quaternion.multTo(steeringOrn, q);
+            q.multTo(rotatingOrn, q);
 
             q.normalize();
 

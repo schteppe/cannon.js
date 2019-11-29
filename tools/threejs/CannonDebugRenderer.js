@@ -55,7 +55,7 @@ THREE.CannonDebugRenderer.prototype = {
                     body.position.vadd(shapeWorldPosition, shapeWorldPosition);
 
                     // Get world quaternion
-                    body.quaternion.mult(body.shapeOrientations[j], shapeWorldQuaternion);
+                    body.quaternion.multTo(body.shapeOrientations[j], shapeWorldQuaternion);
 
                     // Copy to meshes
                     mesh.position.copy(shapeWorldPosition);

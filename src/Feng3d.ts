@@ -5,4 +5,7 @@ namespace CANNON
 
     export var Matrix3x3 = feng3d.Matrix3x3;
     export type Matrix3x3 = feng3d.Matrix3x3;
+
+    export var Quaternion = feng3d.Quaternion;
+    export type Quaternion = feng3d.Quaternion;
 }
