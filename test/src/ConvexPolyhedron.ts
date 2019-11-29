@@ -101,7 +101,7 @@ namespace CANNON
             var found = hullA.findSeparatingAxis(hullB, posA, quatA, posB, quatB, sepaxis);
             var result = [];
             //hullA.clipAgainstHull(posA,quatA,hullB,posB,quatB,sepaxis,-100,100,result);
-            quatB.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
+            quatB.fromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
             //console.log("clipping....");
             hullA.clipAgainstHull(posA, quatA, hullB, posB, quatB, sepaxis, -100, 100, result);
             //console.log("result:",result);
@@ -131,7 +131,7 @@ namespace CANNON
 
             // Inclined 45 degrees, what happens then?
             posA.x = 1;
-            quatB.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
+            quatB.fromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
             var found3 = hullA.testSepAxis(sepAxis, hullB, posA, quatA, posB, quatB);
             test.ok(typeof (found3), "number" + " Did not fetch");
         });
@@ -150,7 +150,7 @@ namespace CANNON
             var found = hullA.findSeparatingAxis(hullB, posA, quatA, posB, quatB, sepaxis);
             //console.log("SepAxis found:",found,", the axis:",sepaxis.toString());
 
-            quatB.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
+            quatB.fromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
             var found2 = hullA.findSeparatingAxis(hullB, posA, quatA, posB, quatB, sepaxis);
             //console.log("SepAxis found:",found2,", the axis:",sepaxis.toString());
 
@@ -183,7 +183,7 @@ namespace CANNON
             test.deepEqual(result, [1.5, 0.5]);
 
             // Test to rotate
-            quat.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+            quat.fromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
             pos.set(0, 1, 0);
             axis.set(0, 1, 0);
             ConvexPolyhedron.project(convex, axis, pos, quat, result);

@@ -25,7 +25,7 @@ namespace CANNON
 
             // test rotating the body first
             result.reset();
-            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI);
+            body.quaternion.fromAxisAngle(new Vector3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.ok(result.hasHit);
             test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
@@ -78,19 +78,19 @@ namespace CANNON
             test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
             result.reset();
-            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+            body.quaternion.fromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
             result.reset();
-            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI);
+            body.quaternion.fromAxisAngle(new Vector3(1, 0, 0), Math.PI);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
 
             result.reset();
-            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), 3 * Math.PI / 2);
+            body.quaternion.fromAxisAngle(new Vector3(1, 0, 0), 3 * Math.PI / 2);
             r.intersectBody(body, result);
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new Vector3(0.5, 0, 0)));
@@ -210,7 +210,7 @@ namespace CANNON
             result.reset();
             var body3 = new Body({ mass: 1 });
             var quat = new Quaternion();
-            quat.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+            quat.fromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
             body3.addShape(shape, new Vector3(), quat);
             r.intersectBody(body3, result);
             test.equal(result.hasHit, false);

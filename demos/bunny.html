@@ -64,9 +64,9 @@
             }
 
             // Create body
-            bunnyBody.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
+            bunnyBody.quaternion.fromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
             var z180 = new CANNON.Quaternion();
-            z180.setFromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI);
+            z180.fromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI);
             bunnyBody.quaternion = z180.mult(bunnyBody.quaternion);
             world.addBody(bunnyBody);
             demo.addVisual(bunnyBody);

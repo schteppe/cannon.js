@@ -1,101 +1,8 @@
 declare namespace CANNON {
     var Vector3: typeof feng3d.Vector3;
     type Vector3 = feng3d.Vector3;
-}
-declare namespace CANNON {
-    class Mat3 {
-        /**
-         * A vector of length 9, containing all matrix elements
-         */
-        elements: [number, number, number, number, number, number, number, number, number];
-        /**
-         * A 3x3 matrix.
-         * @class Mat3
-         * @constructor
-         * @param array elements Array of nine elements. Optional.
-         * @author schteppe / http://github.com/schteppe
-         */
-        constructor(elements?: [number, number, number, number, number, number, number, number, number]);
-        /**
-         * Sets the matrix to identity
-         * @todo Should perhaps be renamed to setIdentity() to be more clear.
-         * @todo Create another function that immediately creates an identity matrix eg. eye()
-         */
-        identity(): void;
-        /**
-         * Set all elements to zero
-         */
-        setZero(): void;
-        /**
-         * Sets the matrix diagonal elements from a Vec3
-         * @param vec3
-         */
-        setTrace(vec3: Vector3): void;
-        /**
-         * Gets the matrix diagonal elements
-         */
-        getTrace(target?: feng3d.Vector3): void;
-        /**
-         * Matrix-Vector multiplication
-         * @param v The vector to multiply with
-         * @param target Optional, target to save the result in.
-         */
-        vmult(v: Vector3, target?: feng3d.Vector3): feng3d.Vector3;
-        /**
-         * Matrix-scalar multiplication
-         * @param s
-         */
-        smult(s: number): void;
-        /**
-         * Matrix multiplication
-         * @param  m Matrix to multiply with from left side.
-         */
-        mmult(m: Mat3, target?: Mat3): Mat3;
-        /**
-         * Scale each column of the matrix
-         * @param v
-         */
-        scale(v: Vector3, target?: Mat3): Mat3;
-        /**
-         * Solve Ax=b
-         * @param b The right hand side
-         * @param target Optional. Target vector to save in.
-         * @todo should reuse arrays
-         */
-        solve(b: Vector3, target?: feng3d.Vector3): feng3d.Vector3;
-        /**
-         * Get an element in the matrix by index. Index starts at 0, not 1!!!
-         * @param row
-         * @param column
-         * @param value Optional. If provided, the matrix element will be set to this value.
-         */
-        e(row: number, column: number, value?: number): number;
-        /**
-         * Copy another matrix into this matrix object.
-         * @param source
-         */
-        copy(source: Mat3): this;
-        /**
-         * Returns a string representation of the matrix.
-         */
-        toString(): string;
-        /**
-         * reverse the matrix
-         * @param target Optional. Target matrix to save in.
-         */
-        reverse(target?: Mat3): Mat3;
-        /**
-         * Set the matrix from a quaterion
-         * @param q
-         */
-        setRotationFromQuaternion(q: Quaternion): this;
-        /**
-         * Transpose the matrix
-         * @param target Where to store the result.
-         * @return The target Mat3, or a new Mat3 if target was omitted.
-         */
-        transpose(target?: Mat3): Mat3;
-    }
+    var Matrix3x3: typeof feng3d.Matrix3x3;
+    type Matrix3x3 = feng3d.Matrix3x3;
 }
 declare namespace CANNON {
     class Quaternion {
@@ -146,7 +53,7 @@ declare namespace CANNON {
          * @param axis
          * @param angle in radians
          */
-        setFromAxisAngle(axis: Vector3, angle: number): this;
+        fromAxisAngle(axis: Vector3, angle: number): this;
         /**
          * Converts the quaternion to axis/angle representation.
          * @param targetAxis A vector object to reuse for storing the axis.
@@ -2052,10 +1959,10 @@ declare namespace CANNON {
         shapeOrientations: Quaternion[];
         inertia: Vector3;
         invInertia: Vector3;
-        invInertiaWorld: Mat3;
+        invInertiaWorld: Matrix3x3;
         invMassSolve: number;
         invInertiaSolve: Vector3;
-        invInertiaWorldSolve: Mat3;
+        invInertiaWorldSolve: Matrix3x3;
         /**
          * Set to true if you don't want the body to rotate. Make sure to run .updateMassProperties() after changing this.
          */

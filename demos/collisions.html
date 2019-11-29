@@ -85,7 +85,7 @@
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
           var q = new CANNON.Quaternion();
-          q.setFromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI*0.25);
+          q.fromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI*0.25);
           b1.quaternion.set(q.x,q.y,q.z,q.w);
           world.addBody(b1);
           demo.addVisual(b1);
@@ -113,9 +113,9 @@
           b1.velocity.set(-5,0,0);
           b1.linearDamping = 0;
           var q1 = new CANNON.Quaternion();
-          q1.setFromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI*0.25);
+          q1.fromAxisAngle(new CANNON.Vector3(0,0,1),Math.PI*0.25);
           var q2 = new CANNON.Quaternion();
-          q2.setFromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI*0.25);
+          q2.fromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI*0.25);
           var q = q1.mult(q2);
           b1.quaternion.set(q.x,q.y,q.z,q.w);
           world.addBody(b1);

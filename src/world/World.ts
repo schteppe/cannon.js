@@ -532,7 +532,7 @@ namespace CANNON
                 {
                     var b = this.bodies[j];
                     b.previousPosition.lerpNumberTo(b.position, t, b.interpolatedPosition);
-                    b.previousQuaternion.slerp(b.quaternion, t, b.interpolatedQuaternion);
+                    b.previousQuaternion.slerpTo(b.quaternion, t, b.interpolatedQuaternion);
                     b.previousQuaternion.normalize();
                 }
                 this.time += timeSinceLastCalled;

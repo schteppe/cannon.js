@@ -21,7 +21,7 @@ namespace CANNON
         static pointToLocalFrame(position: Vector3, quaternion: Quaternion, worldPoint: Vector3, result = new Vector3())
         {
             worldPoint.subTo(position, result);
-            quaternion.conjugate(tmpQuat);
+            quaternion.inverse(tmpQuat);
             tmpQuat.vmult(result, result);
             return result;
         }

@@ -21,14 +21,13 @@
       "../src/Sphere.ts",
       "../src/Trimesh.ts",
       "../src/TupleDictionary.ts",
-      "../src/Vec3.ts",
       "../src/World.ts"
     ],
     "js": {
       "sections": [
         {
           "pos": 0,
-          "end": 87750,
+          "end": 85719,
           "kind": "text"
         }
       ]
@@ -37,7 +36,7 @@
       "sections": [
         {
           "pos": 0,
-          "end": 651,
+          "end": 620,
           "kind": "text"
         }
       ]

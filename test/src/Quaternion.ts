@@ -28,28 +28,12 @@ namespace CANNON
 
         });
 
-        QUnit.test("inverse", (test) =>
-        {
-            test.expect(4);
-
-            var q = new Quaternion(1, 2, 3, 4);
-            var denominator = 1 * 1 + 2 * 2 + 3 * 3 + 4 * 4;
-            q.inverse(q);
-
-            // Quaternion inverse is conj(q) / ||q||^2
-            test.equal(q.x, -1 / denominator, ".inverse() should negate x and divide by length^2");
-            test.equal(q.y, -2 / denominator, ".inverse() should negate y and divide by length^2");
-            test.equal(q.z, -3 / denominator, ".inverse() should negate z and divide by length^2");
-            test.equal(q.w, 4 / denominator, ".inverse() should divide by length^2");
-
-        });
-
         QUnit.test("toEuler", (test) =>
         {
             test.expect(3);
 
             var q = new Quaternion();
-            q.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
+            q.fromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
             var euler = new Vector3();
             q.toEuler(euler);
 
@@ -81,8 +65,8 @@ namespace CANNON
             qa.slerp(qb, 0.5, qb);
             test.deepEqual(qa, qb);
 
-            qa.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
-            qb.setFromAxisAngle(new Vector3(0, 0, 1), -Math.PI / 4);
+            qa.fromAxisAngle(new Vector3(0, 0, 1), Math.PI / 4);
+            qb.fromAxisAngle(new Vector3(0, 0, 1), -Math.PI / 4);
             qa.slerp(qb, 0.5, qb);
             test.deepEqual(qb, new Quaternion());
 

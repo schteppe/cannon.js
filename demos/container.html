@@ -73,7 +73,7 @@
         var planeShapeXmin = new CANNON.Plane();
         var planeXmin = new CANNON.Body({ mass: 0, material: stone });
         planeXmin.addShape(planeShapeXmin);
-        planeXmin.quaternion.setFromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI/2);
+        planeXmin.quaternion.fromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI/2);
         planeXmin.position.set(-5,0,0);
         world.addBody(planeXmin);
 
@@ -81,7 +81,7 @@
         var planeShapeXmax = new CANNON.Plane();
         var planeXmax = new CANNON.Body({ mass: 0, material: stone });
         planeXmax.addShape(planeShapeXmax);
-        planeXmax.quaternion.setFromAxisAngle(new CANNON.Vector3(0,1,0),-Math.PI/2);
+        planeXmax.quaternion.fromAxisAngle(new CANNON.Vector3(0,1,0),-Math.PI/2);
         planeXmax.position.set(5,0,0);
         world.addBody(planeXmax);
 
@@ -89,7 +89,7 @@
         var planeShapeYmin = new CANNON.Plane();
         var planeYmin = new CANNON.Body({ mass: 0, material: stone });
         planeYmin.addShape(planeShapeYmin);
-        planeYmin.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
+        planeYmin.quaternion.fromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
         planeYmin.position.set(0,-5,0);
         world.addBody(planeYmin);
 
@@ -97,7 +97,7 @@
         var planeShapeYmax = new CANNON.Plane();
         var planeYmax = new CANNON.Body({ mass: 0,  material: stone });
         planeYmax.addShape(planeShapeYmax);
-        planeYmax.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI/2);
+        planeYmax.quaternion.fromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI/2);
         planeYmax.position.set(0,5,0);
         world.addBody(planeYmax);
 

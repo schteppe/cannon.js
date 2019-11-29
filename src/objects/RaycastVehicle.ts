@@ -408,10 +408,10 @@ namespace CANNON
             // Rotate around steering over the wheelAxle
             var steering = wheel.steering;
             var steeringOrn = new Quaternion();
-            steeringOrn.setFromAxisAngle(up, steering);
+            steeringOrn.fromAxisAngle(up, steering);
 
             var rotatingOrn = new Quaternion();
-            rotatingOrn.setFromAxisAngle(right, wheel.rotation);
+            rotatingOrn.fromAxisAngle(right, wheel.rotation);
 
             // World rotation of the wheel
             var q = wheel.worldTransform.quaternion;

@@ -42,7 +42,7 @@
           var mass = 10;
           var body = new CANNON.Body({ mass: mass });
           body.position.set(0,0,6);
-          body.quaternion.setFromAxisAngle(new CANNON.Vector3(0, 1, 0), Math.PI / 32);
+          body.quaternion.fromAxisAngle(new CANNON.Vector3(0, 1, 0), Math.PI / 32);
 
           // Use a box shape as child shape
           var shape = new CANNON.Box(new CANNON.Vector3(0.5*s,0.5*s,0.5*s));

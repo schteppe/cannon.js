@@ -8,7 +8,7 @@ namespace CANNON
             var box = new Box(new Vector3(1, 1, 1));
             var pos = new Vector3();
             var quat = new Quaternion();
-            quat.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI * 0.25);
+            quat.fromAxisAngle(new Vector3(0, 0, 1), Math.PI * 0.25);
             var numCorners = 0;
             var unique = [];
             box.forEachWorldCorner(pos, quat, function (x, y, z)

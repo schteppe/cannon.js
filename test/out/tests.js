@@ -672,38 +672,38 @@ var CANNON;
     QUnit.module("Mat3", function () {
         QUnit.test("creation", function (test) {
             test.expect(1);
-            var m = new CANNON.Mat3();
+            var m = new CANNON.Matrix3x3();
             var success = true;
             for (var c = 0; c < 3; c++)
                 for (var r = 0; r < 3; r++)
-                    success = success && (m.e(r, c) == 0);
+                    success = success && (m.getElement(r, c) == 0);
             test.ok(success, "creation without paramaters should return a null matrix");
         });
         QUnit.test("e", function (test) {
             test.expect(2);
-            var m = new CANNON.Mat3();
+            var m = new CANNON.Matrix3x3();
             // row 1, column 2
-            m.e(1, 2, 5);
-            test.equal(m.e(1, 2), 5, "write and access");
+            m.setElement(1, 2, 5);
+            test.equal(m.getElement(1, 2), 5, "write and access");
             var success = true;
             for (var c = 0; c < 3; c++)
                 for (var r = 0; r < 3; r++)
                     if (r != 1 || c != 2)
-                        success = success && (m.e(r, c) == 0);
+                        success = success && (m.getElement(r, c) == 0);
             test.ok(success, "write should not touch the others elements");
         });
         QUnit.test("identity", function (test) {
             test.expect(9);
-            var m = new CANNON.Mat3();
+            var m = new CANNON.Matrix3x3();
             m.identity();
             for (var c = 0; c < 3; c++)
                 for (var r = 0; r < 3; r++)
-                    test.equal(m.e(r, c), (r == c) ? 1 : 0, "cellule ( row : " + r + " column : " + c + " )  should be " + (c == r ? "1" : "0"));
+                    test.equal(m.getElement(r, c), (r == c) ? 1 : 0, "cellule ( row : " + r + " column : " + c + " )  should be " + (c == r ? "1" : "0"));
         });
         QUnit.test("vmult", function (test) {
             test.expect(1);
             var v = new CANNON.Vector3(2, 3, 7);
-            var m = new CANNON.Mat3();
+            var m = new CANNON.Matrix3x3();
             /*
               set the matrix to
               | 1 2 3 |
@@ -712,14 +712,14 @@ var CANNON;
             */
             for (var c = 0; c < 3; c++)
                 for (var r = 0; r < 3; r++)
-                    m.e(r, c, 1 + r * 3 + c);
+                    m.setElement(r, c, 1 + r * 3 + c);
             var t = m.vmult(v);
             test.ok(t.x == 29 && t.y == 65 && t.z == 101, "Expected (29,65,101), got (" + t.toString() + "), while multiplying m=" + m.toString() + " with " + v.toString());
         });
         QUnit.test("mmult", function (test) {
             test.expect(1);
-            var m1 = new CANNON.Mat3();
-            var m2 = new CANNON.Mat3();
+            var m1 = new CANNON.Matrix3x3();
+            var m2 = new CANNON.Matrix3x3();
             /* set the matrix to
                 | 1 2 3 |
                 | 4 5 6 |
@@ -727,54 +727,54 @@ var CANNON;
             */
             for (var c = 0; c < 3; c++)
                 for (var r = 0; r < 3; r++)
-                    m1.e(r, c, 1 + r * 3 + c);
+                    m1.setElement(r, c, 1 + r * 3 + c);
             /* set the matrix to
              | 5 2 4 |
              | 4 5 1 |
              | 1 8 0 |
             */
-            m2.e(0, 0, 5);
-            m2.e(0, 1, 2);
-            m2.e(0, 2, 4);
-            m2.e(1, 0, 4);
-            m2.e(1, 1, 5);
-            m2.e(1, 2, 1);
-            m2.e(2, 0, 1);
-            m2.e(2, 1, 8);
-            m2.e(2, 2, 0);
+            m2.setElement(0, 0, 5);
+            m2.setElement(0, 1, 2);
+            m2.setElement(0, 2, 4);
+            m2.setElement(1, 0, 4);
+            m2.setElement(1, 1, 5);
+            m2.setElement(1, 2, 1);
+            m2.setElement(2, 0, 1);
+            m2.setElement(2, 1, 8);
+            m2.setElement(2, 2, 0);
             var m3 = m1.mmult(m2);
-            test.ok(m3.e(0, 0) == 16
-                && m3.e(0, 1) == 36
-                && m3.e(0, 2) == 6
-                && m3.e(1, 0) == 46
-                && m3.e(1, 1) == 81
-                && m3.e(1, 2) == 21
-                && m3.e(2, 0) == 76
-                && m3.e(2, 1) == 126
-                && m3.e(2, 2) == 36, "calculating multiplication with another matrix");
+            test.ok(m3.getElement(0, 0) == 16
+                && m3.getElement(0, 1) == 36
+                && m3.getElement(0, 2) == 6
+                && m3.getElement(1, 0) == 46
+                && m3.getElement(1, 1) == 81
+                && m3.getElement(1, 2) == 21
+                && m3.getElement(2, 0) == 76
+                && m3.getElement(2, 1) == 126
+                && m3.getElement(2, 2) == 36, "calculating multiplication with another matrix");
         });
         QUnit.test("solve", function (test) {
             test.expect(2);
-            var m = new CANNON.Mat3();
+            var m = new CANNON.Matrix3x3();
             var v = new CANNON.Vector3(2, 3, 7);
             /* set the matrix to
             | 5 2 4 |
             | 4 5 1 |
             | 1 8 0 |
             */
-            m.e(0, 0, 5);
-            m.e(0, 1, 2);
-            m.e(0, 2, 4);
-            m.e(1, 0, 4);
-            m.e(1, 1, 5);
-            m.e(1, 2, 1);
-            m.e(2, 0, 1);
-            m.e(2, 1, 8);
-            m.e(2, 2, 0);
+            m.setElement(0, 0, 5);
+            m.setElement(0, 1, 2);
+            m.setElement(0, 2, 4);
+            m.setElement(1, 0, 4);
+            m.setElement(1, 1, 5);
+            m.setElement(1, 2, 1);
+            m.setElement(2, 0, 1);
+            m.setElement(2, 1, 8);
+            m.setElement(2, 2, 0);
             var t = m.solve(v);
             var vv = m.vmult(t);
             test.ok(vv.equals(v, 0.00001), "solving Ax = b");
-            var m1 = new CANNON.Mat3();
+            var m1 = new CANNON.Matrix3x3();
             /* set the matrix to
              | 1 2 3 |
              | 4 5 6 |
@@ -782,7 +782,7 @@ var CANNON;
              */
             for (var c = 0; c < 3; c++)
                 for (var r = 0; r < 3; r++)
-                    m1.e(r, c, 1 + r * 3 + c);
+                    m1.setElement(r, c, 1 + r * 3 + c);
             var error = false;
             try {
                 m1.solve(v);
@@ -794,29 +794,29 @@ var CANNON;
         });
         QUnit.test("reverse", function (test) {
             test.expect(2);
-            var m = new CANNON.Mat3();
+            var m = new CANNON.Matrix3x3();
             /* set the matrix to
             | 5 2 4 |
             | 4 5 1 |
             | 1 8 0 |
             */
-            m.e(0, 0, 5);
-            m.e(0, 1, 2);
-            m.e(0, 2, 4);
-            m.e(1, 0, 4);
-            m.e(1, 1, 5);
-            m.e(1, 2, 1);
-            m.e(2, 0, 1);
-            m.e(2, 1, 8);
-            m.e(2, 2, 0);
-            var m2 = m.reverse();
+            m.setElement(0, 0, 5);
+            m.setElement(0, 1, 2);
+            m.setElement(0, 2, 4);
+            m.setElement(1, 0, 4);
+            m.setElement(1, 1, 5);
+            m.setElement(1, 2, 1);
+            m.setElement(2, 0, 1);
+            m.setElement(2, 1, 8);
+            m.setElement(2, 2, 0);
+            var m2 = m.reverseTo();
             var m3 = m2.mmult(m);
             var success = true;
             for (var c = 0; c < 3; c++)
                 for (var r = 0; r < 3; r++)
-                    success = success && (Math.abs(m3.e(r, c) - (c == r ? 1 : 0)) < 0.00001);
+                    success = success && (Math.abs(m3.getElement(r, c) - (c == r ? 1 : 0)) < 0.00001);
             test.ok(success, "inversing");
-            var m1 = new CANNON.Mat3();
+            var m1 = new CANNON.Matrix3x3();
             /* set the matrix to
             | 1 2 3 |
             | 4 5 6 |
@@ -824,10 +824,10 @@ var CANNON;
             */
             for (var c = 0; c < 3; c++)
                 for (var r = 0; r < 3; r++)
-                    m1.e(r, c, 1 + r * 3 + c);
+                    m1.setElement(r, c, 1 + r * 3 + c);
             var error = false;
             try {
-                m1.reverse();
+                m1.reverseTo();
             }
             catch (e) {
                 error = true;
@@ -835,16 +835,16 @@ var CANNON;
             test.ok(error, "should rise an error if the matrix is not inersible");
         });
         QUnit.test("transpose", function (test) {
-            var M = new CANNON.Mat3([1, 2, 3,
+            var M = new CANNON.Matrix3x3([1, 2, 3,
                 4, 5, 6,
                 7, 8, 9]);
-            var Mt = M.transpose();
+            var Mt = M.transposeTo();
             test.deepEqual(Mt.elements, [1, 4, 7,
                 2, 5, 8,
                 3, 6, 9]);
         });
         QUnit.test("scale", function (test) {
-            var M = new CANNON.Mat3([1, 1, 1,
+            var M = new CANNON.Matrix3x3([1, 1, 1,
                 1, 1, 1,
                 1, 1, 1]);
             var Mt = M.scale(new CANNON.Vector3(1, 2, 3));
@@ -853,7 +853,7 @@ var CANNON;
                 1, 2, 3]);
         });
         QUnit.test("setRotationFromQuaternion", function (test) {
-            var M = new CANNON.Mat3(), q = new CANNON.Quaternion(), original = new CANNON.Vector3(1, 2, 3);
+            var M = new CANNON.Matrix3x3(), q = new CANNON.Quaternion(), original = new CANNON.Vector3(1, 2, 3);
             // Test zero rotation
             M.setRotationFromQuaternion(q);
             var v = M.vmult(original);
@@ -1615,61 +1615,6 @@ var CANNON;
             t.set(1, 2, '1');
             t.reset();
             test.deepEqual(t.data, empty.data);
-        });
-    });
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
-    QUnit.module("Vec3", function () {
-        QUnit.test("creation", function (test) {
-            test.expect(3);
-            var v = new CANNON.Vector3(1, 2, 3);
-            test.equal(v.x, 1, "Creating a vec3 should set the first parameter to the x value");
-            test.equal(v.y, 2, "Creating a vec3 should set the second parameter to the y value");
-            test.equal(v.z, 3, "Creating a vec3 should set the third parameter to the z value");
-        });
-        QUnit.test("cross", function (test) {
-            test.expect(3);
-            var v = new CANNON.Vector3(1, 2, 3);
-            var u = new CANNON.Vector3(4, 5, 6);
-            v = v.crossTo(u);
-            test.equal(v.x, -3, "Calculating cross product x");
-            test.equal(v.y, 6, "Calculating cross product x");
-            test.equal(v.z, -3, "Calculating cross product x");
-        });
-        QUnit.test("dot", function (test) {
-            test.expect(2);
-            var v = new CANNON.Vector3(1, 2, 3);
-            var u = new CANNON.Vector3(4, 5, 6);
-            var dot = v.dot(u);
-            test.equal(dot, 4 + 10 + 18, "Calculating dot product x");
-            v = new CANNON.Vector3(3, 2, 1);
-            u = new CANNON.Vector3(4, 5, 6);
-            dot = v.dot(u);
-            test.equal(dot, 12 + 10 + 6, "Calculating dot product x");
-        });
-        QUnit.test("set", function (test) {
-            test.expect(3);
-            var v = new CANNON.Vector3(1, 2, 3);
-            v.set(4, 5, 6);
-            test.equal(v.x, 4, "Setting values from x, y, z");
-            test.equal(v.y, 5, "Setting values from x, y, z");
-            test.equal(v.z, 6, "Setting values from x, y, z");
-        });
-        QUnit.test("vadd", function (test) {
-            test.expect(3);
-            var v = new CANNON.Vector3(1, 2, 3);
-            var u = new CANNON.Vector3(4, 5, 6);
-            v = v.addTo(u);
-            test.equal(v.x, 5, "Adding a vector (x)");
-            test.equal(v.y, 7, "Adding a vector (y)");
-            test.equal(v.z, 9, "Adding a vector (z)");
-        });
-        QUnit.test("isAntiparallelTo", function (test) {
-            test.ok(new CANNON.Vector3(1, 0, 0).isAntiparallelTo(new CANNON.Vector3(-1, 0, 0)));
-        });
-        QUnit.test("almostEquals", function (test) {
-            test.ok(new CANNON.Vector3(1, 0, 0).equals(new CANNON.Vector3(1, 0, 0)));
         });
     });
 })(CANNON || (CANNON = {}));

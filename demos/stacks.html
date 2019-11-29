@@ -360,7 +360,7 @@
           var t = new CANNON.Body({ mass:5 });
           t.addShape(tetraShape);
           t.position.set(0,0,1*size);
-          t.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI/2);
+          t.quaternion.fromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI/2);
 
           // Particle
           var p = new CANNON.Body({ mass: 1 });
@@ -389,7 +389,7 @@
         var groundBody = new CANNON.Body({ mass:0 });
         groundBody.addShape(groundShape);
         groundBody.position.set(0,0,-1);
-        //groundBody.quaternion.setFromAxisAngle(new CANNON.Vector3(0,1,0),0.2);
+        //groundBody.quaternion.fromAxisAngle(new CANNON.Vector3(0,1,0),0.2);
         world.addBody(groundBody);
         demo.addVisual(groundBody);
         return world;

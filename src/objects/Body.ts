@@ -143,13 +143,13 @@ namespace CANNON
 
         invInertia: Vector3;
 
-        invInertiaWorld: Mat3;
+        invInertiaWorld: Matrix3x3;
 
         invMassSolve: number;
 
         invInertiaSolve: Vector3;
 
-        invInertiaWorldSolve: Mat3;
+        invInertiaWorldSolve: Matrix3x3;
 
         /**
          * Set to true if you don't want the body to rotate. Make sure to run .updateMassProperties() after changing this.
@@ -285,11 +285,11 @@ namespace CANNON
             this.shapeOrientations = [];
             this.inertia = new Vector3();
             this.invInertia = new Vector3();
-            this.invInertiaWorld = new Mat3();
+            this.invInertiaWorld = new Matrix3x3();
 
             this.invMassSolve = 0;
             this.invInertiaSolve = new Vector3();
-            this.invInertiaWorldSolve = new Mat3();
+            this.invInertiaWorldSolve = new Matrix3x3();
             this.fixedRotation = typeof (options.fixedRotation) !== "undefined" ? options.fixedRotation : false;
             this.angularDamping = typeof (options.angularDamping) !== 'undefined' ? options.angularDamping : 0.01;
             this.linearFactor = new Vector3(1, 1, 1);
@@ -441,7 +441,7 @@ namespace CANNON
         pointToLocalFrame(worldPoint: Vector3, result = new Vector3())
         {
             worldPoint.subTo(this.position, result);
-            this.quaternion.conjugate().vmult(result, result);
+            this.quaternion.inverse().vmult(result, result);
             return result;
         }
 
@@ -453,7 +453,7 @@ namespace CANNON
          */
         vectorToLocalFrame(worldVector, result = new Vector3())
         {
-            this.quaternion.conjugate().vmult(worldVector, result);
+            this.quaternion.inverse().vmult(worldVector, result);
             return result;
         }
 
@@ -605,7 +605,7 @@ namespace CANNON
                     m2 = uiw_m2,
                     m3 = uiw_m3;
                 m1.setRotationFromQuaternion(this.quaternion);
-                m1.transpose(m2);
+                m1.transposeTo(m2);
                 m1.scale(I, m1);
                 m1.mmult(m2, this.invInertiaWorld);
             }
@@ -852,9 +852,9 @@ namespace CANNON
     var Body_applyLocalImpulse_worldImpulse = new Vector3();
     var Body_applyLocalImpulse_relativePoint = new Vector3();
 
-    var uiw_m1 = new Mat3();
-    var uiw_m2 = new Mat3();
-    var uiw_m3 = new Mat3();
+    var uiw_m1 = new Matrix3x3();
+    var uiw_m2 = new Matrix3x3();
+    var uiw_m3 = new Matrix3x3();
 
     var computeAABB_shapeAABB = new AABB();
 }

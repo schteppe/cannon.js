@@ -93,7 +93,7 @@
                 wheelBody.type = CANNON.Body.KINEMATIC;
                 wheelBody.collisionFilterGroup = 0; // turn off collisions
                 var q = new CANNON.Quaternion();
-                q.setFromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
+                q.fromAxisAngle(new CANNON.Vector3(1, 0, 0), Math.PI / 2);
                 wheelBody.addShape(cylinderShape, new CANNON.Vector3(), q);
                 wheelBodies.push(wheelBody);
                 demo.addVisual(wheelBody);

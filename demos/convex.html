@@ -83,7 +83,7 @@
           var cylinderBody = new CANNON.Body({ mass: mass });
           cylinderBody.addShape(cylinderShape);
           cylinderBody.position.set(0,0,size*4+1);
-          cylinderBody.quaternion.setFromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI/3);
+          cylinderBody.quaternion.fromAxisAngle(new CANNON.Vector3(0,1,0),Math.PI/3);
           world.addBody(cylinderBody);
           demo.addVisual(cylinderBody);
 

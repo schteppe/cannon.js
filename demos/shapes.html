@@ -66,7 +66,7 @@
             // Cylinder shape 2
             var cylinderShape2 = new CANNON.Cylinder(size,size,2*size,10);
             var q = new CANNON.Quaternion();
-            q.setFromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI / 2);
+            q.fromAxisAngle(new CANNON.Vector3(1,0,0),Math.PI / 2);
             cylinderShape2.transformAllPoints(new CANNON.Vector3(),q);
             var cylinderBody2 = new CANNON.Body({ mass: mass });
             cylinderBody2.addShape(cylinderShape2);

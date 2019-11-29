@@ -287,7 +287,7 @@
             var groundShape = new CANNON.Plane();
             var groundBody = new CANNON.Body({ mass: 0 });
             groundBody.addShape(groundShape);
-            groundBody.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
+            groundBody.quaternion.fromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
             world.addBody(groundBody);
 
             // Joint body
@@ -304,7 +304,7 @@
           constrainedBody = body;
 
           // Vector to the clicked point, relative to the body
-          var v1 = new CANNON.Vector3(x,y,z).vsub(constrainedBody.position);
+          var v1 = new CANNON.Vector3(x,y,z).subTo(constrainedBody.position);
 
           // Apply anti-quaternion to vector to tranform it into the local body coordinate system
           var antiRot = constrainedBody.quaternion.inverse();

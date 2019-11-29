@@ -25,7 +25,7 @@ namespace CANNON
         QUnit.test("computeAABB boxOffset", (test) =>
         {
             var quaternion = new Quaternion();
-            quaternion.setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
+            quaternion.fromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2);
             var body = new Body({ mass: 1 });
             body.addShape(new Box(new Vector3(1, 1, 1)), new Vector3(1, 1, 1));
             body.computeAABB();
@@ -111,7 +111,7 @@ namespace CANNON
                 mass: 1,
                 shape: sphereShape
             });
-            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+            body.quaternion.fromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
 
             var localPoint = new Vector3(1, 0, 0);
             var localForceVector = new Vector3(0, 1, 0);
@@ -145,7 +145,7 @@ namespace CANNON
                 mass: 1,
                 shape: sphereShape
             });
-            body.quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
+            body.quaternion.fromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2);
 
             var f = 1000;
             var dt = 1 / 60;

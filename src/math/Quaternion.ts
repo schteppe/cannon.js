@@ -73,7 +73,7 @@ namespace CANNON
          * @param axis
          * @param angle in radians
          */
-        setFromAxisAngle(axis: Vector3, angle: number)
+        fromAxisAngle(axis: Vector3, angle: number)
         {
             var s = Math.sin(angle * 0.5);
             this.x = axis.x * s;
@@ -121,7 +121,7 @@ namespace CANNON
                 var t2 = sfv_t2;
 
                 u.tangents(t1, t2);
-                this.setFromAxisAngle(t1, Math.PI);
+                this.fromAxisAngle(t1, Math.PI);
             } else
             {
                 var a = u.crossTo(v);
@@ -153,29 +153,10 @@ namespace CANNON
         }
 
         /**
-         * Get the inverse quaternion rotation.
-         * @param target
-         */
-        inverse(target: Quaternion)
-        {
-            var x = this.x, y = this.y, z = this.z, w = this.w;
-            target = target || new Quaternion();
-
-            this.conjugate(target);
-            var inorm2 = 1 / (x * x + y * y + z * z + w * w);
-            target.x *= inorm2;
-            target.y *= inorm2;
-            target.z *= inorm2;
-            target.w *= inorm2;
-
-            return target;
-        }
-
-        /**
          * Get the quaternion conjugate
          * @param target
          */
-        conjugate(target = new Quaternion())
+        inverse(target = new Quaternion())
         {
             target.x = -this.x;
             target.y = -this.y;
@@ -401,7 +382,7 @@ namespace CANNON
          * @param target A quaternion to store the result in. If not provided, a new one will be created.
          * @returns The "target" object
          */
-        slerp(toQuat: Quaternion, t: number, target = new Quaternion())
+        slerpTo(toQuat: Quaternion, t: number, target = new Quaternion())
         {
             var ax = this.x,
                 ay = this.y,

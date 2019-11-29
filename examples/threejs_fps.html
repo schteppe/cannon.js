@@ -215,7 +215,7 @@
                 var groundShape = new CANNON.Plane();
                 var groundBody = new CANNON.Body({ mass: 0 });
                 groundBody.addShape(groundShape);
-                groundBody.quaternion.setFromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
+                groundBody.quaternion.fromAxisAngle(new CANNON.Vector3(1,0,0),-Math.PI/2);
                 world.addBody(groundBody);
             }
 
