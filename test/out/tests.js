@@ -833,11 +833,6 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Quaternion", function () {
-    });
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
     QUnit.module("Ray", function () {
         QUnit.test("construct", function (test) {
             var r = new CANNON.Ray(new CANNON.Vector3(), new CANNON.Vector3(1, 0, 0));

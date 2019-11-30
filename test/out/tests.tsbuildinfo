@@ -14,7 +14,6 @@
       "../src/Narrowphase.ts",
       "../src/Octree.ts",
       "../src/OverlapKeeper.ts",
-      "../src/Quaternion.ts",
       "../src/Ray.ts",
       "../src/RaycastVehicle.ts",
       "../src/Sphere.ts",
@@ -26,7 +25,7 @@
       "sections": [
         {
           "pos": 0,
-          "end": 74619,
+          "end": 74499,
           "kind": "text"
         }
       ]
@@ -35,7 +34,7 @@
       "sections": [
         {
           "pos": 0,
-          "end": 589,
+          "end": 558,
           "kind": "text"
         }
       ]
