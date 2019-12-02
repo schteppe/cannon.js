@@ -3,8 +3,6 @@
     "commonSourceDirectory": "..",
     "sourceFiles": [
       "../src/Feng3d.ts",
-      "../src/math/Mat3.ts",
-      "../src/math/Quaternion.ts",
       "../src/math/Transform.ts",
       "../src/math/JacobianElement.ts",
       "../src/utils/EventTarget.ts",
@@ -68,7 +66,7 @@
         },
         {
           "pos": 599,
-          "end": 442175,
+          "end": 410183,
           "kind": "text"
         }
       ],

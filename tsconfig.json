@@ -24,8 +24,6 @@
         //
         "src/Feng3d.ts",
         //
-        "src/math/Mat3.ts",
-        "src/math/Quaternion.ts",
         "src/math/Transform.ts",
         "src/math/JacobianElement.ts",
         "src/utils/EventTarget.ts",
