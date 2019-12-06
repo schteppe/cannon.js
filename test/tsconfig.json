@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "ES5",
         "noImplicitAny": false,
         "sourceMap": true,
         "composite": true,
@@ -8,7 +8,7 @@
         // "strict": true,
         "experimentalDecorators": true,
         "lib": [
-            "es2015",
+            "ES2015",
             "dom"
         ],
         // "outDir": "./debug"
