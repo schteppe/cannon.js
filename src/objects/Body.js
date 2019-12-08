@@ -664,7 +664,7 @@ Body.prototype.computeAABB = function(){
         offset.vadd(this.position, offset);
 
         // Get shape world quaternion
-        shapeOrientations[i].mult(bodyQuat, orientation);
+        bodyQuat.mult(shapeOrientations[i], orientation);
 
         // Get shape AABB
         shape.calculateWorldAABB(offset, orientation, shapeAABB.lowerBound, shapeAABB.upperBound);
