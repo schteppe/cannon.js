@@ -32,18 +32,18 @@ namespace CANNON
         {
             var a = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var b = new Box3(new Vector3(-2, -2, -2), new Vector3(2, 2, 2));
-            a.extend(b);
+            a.union(b);
             test.deepEqual(a, b);
 
             a = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             b = new Box3(new Vector3(-2, -2, -2), new Vector3(2, 2, 2));
-            b.extend(a);
+            b.union(a);
             test.deepEqual(b.min, new Vector3(-2, -2, -2));
             test.deepEqual(b.max, new Vector3(2, 2, 2));
 
             a = new Box3(new Vector3(-2, -1, -1), new Vector3(2, 1, 1));
             b = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
-            b.extend(a);
+            b.union(a);
             test.deepEqual(a.min, new Vector3(-2, -1, -1));
             test.deepEqual(a.max, new Vector3(2, 1, 1));
         });

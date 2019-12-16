@@ -80,7 +80,7 @@ namespace CANNON
          * Extend this AABB so that it covers the given AABB too.
          * @param aabb
          */
-        extend(aabb: Box3)
+        union(aabb: Box3)
         {
             this.min.x = Math.min(this.min.x, aabb.min.x);
             this.max.x = Math.max(this.max.x, aabb.max.x);

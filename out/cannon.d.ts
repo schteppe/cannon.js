@@ -934,7 +934,7 @@ declare namespace CANNON {
          * Extend this AABB so that it covers the given AABB too.
          * @param aabb
          */
-        extend(aabb: Box3): void;
+        union(aabb: Box3): void;
         /**
          * Returns true if the given AABB overlaps this AABB.
          * @param aabb

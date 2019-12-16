@@ -2531,7 +2531,7 @@ var CANNON;
          * Extend this AABB so that it covers the given AABB too.
          * @param aabb
          */
-        Box3.prototype.extend = function (aabb) {
+        Box3.prototype.union = function (aabb) {
             this.min.x = Math.min(this.min.x, aabb.min.x);
             this.max.x = Math.max(this.max.x, aabb.max.x);
             this.min.y = Math.min(this.min.y, aabb.min.y);
@@ -5037,7 +5037,7 @@ var CANNON;
                     aabb.copy(shapeAABB);
                 }
                 else {
-                    aabb.extend(shapeAABB);
+                    aabb.union(shapeAABB);
                 }
             }
             this.aabbNeedsUpdate = false;
