@@ -465,12 +465,12 @@ namespace CANNON
 
             // Get the aabb of the sphere locally in the trimesh
             var sphereRadius = sphereShape.radius;
-            localSphereAABB.lowerBound.set(
+            localSphereAABB.min.set(
                 localSpherePos.x - sphereRadius,
                 localSpherePos.y - sphereRadius,
                 localSpherePos.z - sphereRadius
             );
-            localSphereAABB.upperBound.set(
+            localSphereAABB.max.set(
                 localSpherePos.x + sphereRadius,
                 localSpherePos.y + sphereRadius,
                 localSpherePos.z + sphereRadius
@@ -1751,7 +1751,7 @@ namespace CANNON
     var sphereTrimesh_va = new Vector3();
     var sphereTrimesh_vb = new Vector3();
     var sphereTrimesh_vc = new Vector3();
-    var sphereTrimesh_localSphereAABB = new AABB();
+    var sphereTrimesh_localSphereAABB = new Box3();
     var sphereTrimesh_triangles = [];
 
     var point_on_plane_to_sphere = new Vector3();

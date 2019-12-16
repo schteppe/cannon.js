@@ -49,7 +49,7 @@ namespace CANNON
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: Body[])
+        aabbQuery(world: World, aabb: Box3, result: Body[])
         {
             result = result || [];
 
@@ -73,5 +73,5 @@ namespace CANNON
         }
     }
 
-    var tmpAABB = new AABB();
+    var tmpAABB = new Box3();
 }

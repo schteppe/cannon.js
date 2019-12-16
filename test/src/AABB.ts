@@ -5,22 +5,22 @@ namespace CANNON
 
         QUnit.test("construct", (test) =>
         {
-            new AABB();
+            new Box3();
             test.ok(true);
         });
 
         QUnit.test("copy", (test) =>
         {
-            var a = new AABB(),
-                b = new AABB();
-            a.upperBound.set(1, 2, 3);
+            var a = new Box3(),
+                b = new Box3();
+            a.max.set(1, 2, 3);
             b.copy(a);
             test.deepEqual(a, b);
         });
 
         QUnit.test("clone", (test) =>
         {
-            var a = new AABB(new Vector3(-1, -2, -3), new Vector3(1, 2, 3));
+            var a = new Box3(new Vector3(-1, -2, -3), new Vector3(1, 2, 3));
             var b = a.clone();
 
             test.deepEqual(a, b);
@@ -30,98 +30,98 @@ namespace CANNON
 
         QUnit.test("extend", (test) =>
         {
-            var a = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
-            var b = new AABB(new Vector3(-2, -2, -2), new Vector3(2, 2, 2));
+            var a = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            var b = new Box3(new Vector3(-2, -2, -2), new Vector3(2, 2, 2));
             a.extend(b);
             test.deepEqual(a, b);
 
-            a = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
-            b = new AABB(new Vector3(-2, -2, -2), new Vector3(2, 2, 2));
+            a = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            b = new Box3(new Vector3(-2, -2, -2), new Vector3(2, 2, 2));
             b.extend(a);
-            test.deepEqual(b.lowerBound, new Vector3(-2, -2, -2));
-            test.deepEqual(b.upperBound, new Vector3(2, 2, 2));
+            test.deepEqual(b.min, new Vector3(-2, -2, -2));
+            test.deepEqual(b.max, new Vector3(2, 2, 2));
 
-            a = new AABB(new Vector3(-2, -1, -1), new Vector3(2, 1, 1));
-            b = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            a = new Box3(new Vector3(-2, -1, -1), new Vector3(2, 1, 1));
+            b = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             b.extend(a);
-            test.deepEqual(a.lowerBound, new Vector3(-2, -1, -1));
-            test.deepEqual(a.upperBound, new Vector3(2, 1, 1));
+            test.deepEqual(a.min, new Vector3(-2, -1, -1));
+            test.deepEqual(a.max, new Vector3(2, 1, 1));
         });
 
         QUnit.test("extend", (test) =>
         {
-            var a = new AABB(),
-                b = new AABB();
+            var a = new Box3(),
+                b = new Box3();
 
             // Same aabb
-            a.lowerBound.set(-1, -1, 0);
-            a.upperBound.set(1, 1, 0);
-            b.lowerBound.set(-1, -1, 0);
-            b.upperBound.set(1, 1, 0);
+            a.min.set(-1, -1, 0);
+            a.max.set(1, 1, 0);
+            b.min.set(-1, -1, 0);
+            b.max.set(1, 1, 0);
             test.ok(a.overlaps(b), 'should detect overlap');
 
             // Corner overlaps
-            b.lowerBound.set(1, 1, 0);
-            b.upperBound.set(2, 2, 0);
+            b.min.set(1, 1, 0);
+            b.max.set(2, 2, 0);
             test.ok(a.overlaps(b), 'should detect corner overlap');
 
             // Separate
-            b.lowerBound.set(1.1, 1.1, 0);
+            b.min.set(1.1, 1.1, 0);
             test.ok(!a.overlaps(b), 'should detect separated');
 
             // fully inside
-            b.lowerBound.set(-0.5, -0.5, 0);
-            b.upperBound.set(0.5, 0.5, 0);
+            b.min.set(-0.5, -0.5, 0);
+            b.max.set(0.5, 0.5, 0);
             test.ok(a.overlaps(b), 'should detect if aabb is fully inside other aabb');
-            b.lowerBound.set(-1.5, -1.5, 0);
-            b.upperBound.set(1.5, 1.5, 0);
+            b.min.set(-1.5, -1.5, 0);
+            b.max.set(1.5, 1.5, 0);
             test.ok(a.overlaps(b), 'should detect if aabb is fully inside other aabb');
 
             // Translated
-            b.lowerBound.set(-3, -0.5, 0);
-            b.upperBound.set(-2, 0.5, 0);
+            b.min.set(-3, -0.5, 0);
+            b.max.set(-2, 0.5, 0);
             test.ok(!a.overlaps(b), 'should detect translated');
 
         });
 
         QUnit.test("contains", (test) =>
         {
-            var a = new AABB(),
-                b = new AABB();
+            var a = new Box3(),
+                b = new Box3();
 
-            a.lowerBound.set(-1, -1, -1);
-            a.upperBound.set(1, 1, 1);
-            b.lowerBound.set(-1, -1, -1);
-            b.upperBound.set(1, 1, 1);
-
-            test.ok(a.contains(b));
-
-            a.lowerBound.set(-2, -2, -2);
-            a.upperBound.set(2, 2, 2);
+            a.min.set(-1, -1, -1);
+            a.max.set(1, 1, 1);
+            b.min.set(-1, -1, -1);
+            b.max.set(1, 1, 1);
 
             test.ok(a.contains(b));
 
-            b.lowerBound.set(-3, -3, -3);
-            b.upperBound.set(3, 3, 3);
+            a.min.set(-2, -2, -2);
+            a.max.set(2, 2, 2);
+
+            test.ok(a.contains(b));
+
+            b.min.set(-3, -3, -3);
+            b.max.set(3, 3, 3);
 
             test.equal(a.contains(b), false);
 
-            a.lowerBound.set(0, 0, 0);
-            a.upperBound.set(2, 2, 2);
-            b.lowerBound.set(-1, -1, -1);
-            b.upperBound.set(1, 1, 1);
+            a.min.set(0, 0, 0);
+            a.max.set(2, 2, 2);
+            b.min.set(-1, -1, -1);
+            b.max.set(1, 1, 1);
 
             test.equal(a.contains(b), false);
         });
 
         QUnit.test("toLocalFrame", (test) =>
         {
-            var worldAABB = new AABB();
-            var localAABB = new AABB();
+            var worldAABB = new Box3();
+            var localAABB = new Box3();
             var frame = new Transform();
 
-            worldAABB.lowerBound.set(-1, -1, -1);
-            worldAABB.upperBound.set(1, 1, 1);
+            worldAABB.min.set(-1, -1, -1);
+            worldAABB.max.set(1, 1, 1);
 
             // No transform - should stay the same
             worldAABB.toLocalFrame(frame, localAABB);
@@ -132,19 +132,19 @@ namespace CANNON
             worldAABB.toLocalFrame(frame, localAABB);
             test.deepEqual(
                 localAABB,
-                new AABB(new Vector3(0, -1, -1), new Vector3(2, 1, 1))
+                new Box3(new Vector3(0, -1, -1), new Vector3(2, 1, 1))
             );
 
         });
 
         QUnit.test("toWorldFrame", (test) =>
         {
-            var localAABB = new AABB();
-            var worldAABB = new AABB();
+            var localAABB = new Box3();
+            var worldAABB = new Box3();
             var frame = new Transform();
 
-            localAABB.lowerBound.set(-1, -1, -1);
-            localAABB.upperBound.set(1, 1, 1);
+            localAABB.min.set(-1, -1, -1);
+            localAABB.max.set(1, 1, 1);
 
             // No transform - should stay the same
             localAABB.toLocalFrame(frame, worldAABB);
@@ -155,7 +155,7 @@ namespace CANNON
             localAABB.toWorldFrame(frame, worldAABB);
             test.deepEqual(
                 worldAABB,
-                new AABB(new Vector3(0, -1, -1), new Vector3(2, 1, 1))
+                new Box3(new Vector3(0, -1, -1), new Vector3(2, 1, 1))
             );
 
         });

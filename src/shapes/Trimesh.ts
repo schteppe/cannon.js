@@ -10,7 +10,7 @@ namespace CANNON
         /**
          * The local AABB of the mesh.
          */
-        aabb: AABB;
+        aabb: Box3;
         /**
          * References to vertex pairs, making up all unique edges in the trimesh.
          */
@@ -56,7 +56,7 @@ namespace CANNON
 
             this.normals = new Float32Array(indices.length);
 
-            this.aabb = new AABB();
+            this.aabb = new Box3();
 
             this.edges = null;
 
@@ -78,15 +78,15 @@ namespace CANNON
             tree.reset();
             tree.aabb.copy(this.aabb);
             var scale = this.scale; // The local mesh AABB is scaled, but the octree AABB should be unscaled
-            tree.aabb.lowerBound.x *= 1 / scale.x;
-            tree.aabb.lowerBound.y *= 1 / scale.y;
-            tree.aabb.lowerBound.z *= 1 / scale.z;
-            tree.aabb.upperBound.x *= 1 / scale.x;
-            tree.aabb.upperBound.y *= 1 / scale.y;
-            tree.aabb.upperBound.z *= 1 / scale.z;
+            tree.aabb.min.x *= 1 / scale.x;
+            tree.aabb.min.y *= 1 / scale.y;
+            tree.aabb.min.z *= 1 / scale.z;
+            tree.aabb.max.x *= 1 / scale.x;
+            tree.aabb.max.y *= 1 / scale.y;
+            tree.aabb.max.z *= 1 / scale.z;
 
             // Insert all triangles
-            var triangleAABB = new AABB();
+            var triangleAABB = new Box3();
             var a = new Vector3();
             var b = new Vector3();
             var c = new Vector3();
@@ -101,7 +101,7 @@ namespace CANNON
                 this._getUnscaledVertex(this.indices[i3 + 1], b);
                 this._getUnscaledVertex(this.indices[i3 + 2], c);
 
-                triangleAABB.setFromPoints(points);
+                triangleAABB.fromPoints(points);
                 tree.insert(triangleAABB, i);
             }
             tree.removeEmptyNodes();
@@ -113,7 +113,7 @@ namespace CANNON
          * @param aabb
          * @param result An array of integers, referencing the queried triangles.
          */
-        getTrianglesInAABB(aabb: AABB, result: number[])
+        getTrianglesInAABB(aabb: Box3, result: number[])
         {
             unscaledAABB.copy(aabb);
 
@@ -122,8 +122,8 @@ namespace CANNON
             var isx = scale.x;
             var isy = scale.y;
             var isz = scale.z;
-            var l = unscaledAABB.lowerBound;
-            var u = unscaledAABB.upperBound;
+            var l = unscaledAABB.min;
+            var u = unscaledAABB.max;
             l.x /= isx;
             l.y /= isy;
             l.z /= isz;
@@ -357,9 +357,9 @@ namespace CANNON
             // Approximate with box inertia
             // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
             this.computeLocalAABB(cli_aabb);
-            var x = cli_aabb.upperBound.x - cli_aabb.lowerBound.x,
-                y = cli_aabb.upperBound.y - cli_aabb.lowerBound.y,
-                z = cli_aabb.upperBound.z - cli_aabb.lowerBound.z;
+            var x = cli_aabb.max.x - cli_aabb.min.x,
+                y = cli_aabb.max.y - cli_aabb.min.y,
+                z = cli_aabb.max.z - cli_aabb.min.z;
             return target.set(
                 1.0 / 12.0 * mass * (2 * y * 2 * y + 2 * z * 2 * z),
                 1.0 / 12.0 * mass * (2 * x * 2 * x + 2 * z * 2 * z),
@@ -372,10 +372,10 @@ namespace CANNON
          * 
          * @param aabb
          */
-        computeLocalAABB(aabb: AABB)
+        computeLocalAABB(aabb: Box3)
         {
-            var l = aabb.lowerBound,
-                u = aabb.upperBound,
+            var l = aabb.min,
+                u = aabb.max,
                 n = this.vertices.length,
                 vertices = this.vertices,
                 v = computeLocalAABB_worldVert;
@@ -483,8 +483,8 @@ namespace CANNON
             frame.position = pos;
             frame.quaternion = quat;
             this.aabb.toWorldFrame(frame, result);
-            min.copy(result.lowerBound);
-            max.copy(result.upperBound);
+            min.copy(result.min);
+            max.copy(result.max);
         };
 
         /**
@@ -546,7 +546,7 @@ namespace CANNON
 
     var computeNormals_n = new Vector3();
 
-    var unscaledAABB = new AABB();
+    var unscaledAABB = new Box3();
 
     var getEdgeVector_va = new Vector3();
     var getEdgeVector_vb = new Vector3();
@@ -558,12 +558,12 @@ namespace CANNON
     var vb = new Vector3();
     var vc = new Vector3();
 
-    var cli_aabb = new AABB();
+    var cli_aabb = new Box3();
 
     var computeLocalAABB_worldVert = new Vector3();
 
     var tempWorldVertex = new Vector3();
     var calculateWorldAABB_frame = new Transform();
-    var calculateWorldAABB_aabb = new AABB();
+    var calculateWorldAABB_aabb = new Box3();
 
 }

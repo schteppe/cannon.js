@@ -2,110 +2,110 @@ var CANNON;
 (function (CANNON) {
     QUnit.module("AABB", function () {
         QUnit.test("construct", function (test) {
-            new CANNON.AABB();
+            new CANNON.Box3();
             test.ok(true);
         });
         QUnit.test("copy", function (test) {
-            var a = new CANNON.AABB(), b = new CANNON.AABB();
-            a.upperBound.set(1, 2, 3);
+            var a = new CANNON.Box3(), b = new CANNON.Box3();
+            a.max.set(1, 2, 3);
             b.copy(a);
             test.deepEqual(a, b);
         });
         QUnit.test("clone", function (test) {
-            var a = new CANNON.AABB(new CANNON.Vector3(-1, -2, -3), new CANNON.Vector3(1, 2, 3));
+            var a = new CANNON.Box3(new CANNON.Vector3(-1, -2, -3), new CANNON.Vector3(1, 2, 3));
             var b = a.clone();
             test.deepEqual(a, b);
             test.equal(a === b, false);
         });
         QUnit.test("extend", function (test) {
-            var a = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
-            var b = new CANNON.AABB(new CANNON.Vector3(-2, -2, -2), new CANNON.Vector3(2, 2, 2));
+            var a = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
+            var b = new CANNON.Box3(new CANNON.Vector3(-2, -2, -2), new CANNON.Vector3(2, 2, 2));
             a.extend(b);
             test.deepEqual(a, b);
-            a = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
-            b = new CANNON.AABB(new CANNON.Vector3(-2, -2, -2), new CANNON.Vector3(2, 2, 2));
+            a = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
+            b = new CANNON.Box3(new CANNON.Vector3(-2, -2, -2), new CANNON.Vector3(2, 2, 2));
             b.extend(a);
-            test.deepEqual(b.lowerBound, new CANNON.Vector3(-2, -2, -2));
-            test.deepEqual(b.upperBound, new CANNON.Vector3(2, 2, 2));
-            a = new CANNON.AABB(new CANNON.Vector3(-2, -1, -1), new CANNON.Vector3(2, 1, 1));
-            b = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
+            test.deepEqual(b.min, new CANNON.Vector3(-2, -2, -2));
+            test.deepEqual(b.max, new CANNON.Vector3(2, 2, 2));
+            a = new CANNON.Box3(new CANNON.Vector3(-2, -1, -1), new CANNON.Vector3(2, 1, 1));
+            b = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             b.extend(a);
-            test.deepEqual(a.lowerBound, new CANNON.Vector3(-2, -1, -1));
-            test.deepEqual(a.upperBound, new CANNON.Vector3(2, 1, 1));
+            test.deepEqual(a.min, new CANNON.Vector3(-2, -1, -1));
+            test.deepEqual(a.max, new CANNON.Vector3(2, 1, 1));
         });
         QUnit.test("extend", function (test) {
-            var a = new CANNON.AABB(), b = new CANNON.AABB();
+            var a = new CANNON.Box3(), b = new CANNON.Box3();
             // Same aabb
-            a.lowerBound.set(-1, -1, 0);
-            a.upperBound.set(1, 1, 0);
-            b.lowerBound.set(-1, -1, 0);
-            b.upperBound.set(1, 1, 0);
+            a.min.set(-1, -1, 0);
+            a.max.set(1, 1, 0);
+            b.min.set(-1, -1, 0);
+            b.max.set(1, 1, 0);
             test.ok(a.overlaps(b), 'should detect overlap');
             // Corner overlaps
-            b.lowerBound.set(1, 1, 0);
-            b.upperBound.set(2, 2, 0);
+            b.min.set(1, 1, 0);
+            b.max.set(2, 2, 0);
             test.ok(a.overlaps(b), 'should detect corner overlap');
             // Separate
-            b.lowerBound.set(1.1, 1.1, 0);
+            b.min.set(1.1, 1.1, 0);
             test.ok(!a.overlaps(b), 'should detect separated');
             // fully inside
-            b.lowerBound.set(-0.5, -0.5, 0);
-            b.upperBound.set(0.5, 0.5, 0);
+            b.min.set(-0.5, -0.5, 0);
+            b.max.set(0.5, 0.5, 0);
             test.ok(a.overlaps(b), 'should detect if aabb is fully inside other aabb');
-            b.lowerBound.set(-1.5, -1.5, 0);
-            b.upperBound.set(1.5, 1.5, 0);
+            b.min.set(-1.5, -1.5, 0);
+            b.max.set(1.5, 1.5, 0);
             test.ok(a.overlaps(b), 'should detect if aabb is fully inside other aabb');
             // Translated
-            b.lowerBound.set(-3, -0.5, 0);
-            b.upperBound.set(-2, 0.5, 0);
+            b.min.set(-3, -0.5, 0);
+            b.max.set(-2, 0.5, 0);
             test.ok(!a.overlaps(b), 'should detect translated');
         });
         QUnit.test("contains", function (test) {
-            var a = new CANNON.AABB(), b = new CANNON.AABB();
-            a.lowerBound.set(-1, -1, -1);
-            a.upperBound.set(1, 1, 1);
-            b.lowerBound.set(-1, -1, -1);
-            b.upperBound.set(1, 1, 1);
+            var a = new CANNON.Box3(), b = new CANNON.Box3();
+            a.min.set(-1, -1, -1);
+            a.max.set(1, 1, 1);
+            b.min.set(-1, -1, -1);
+            b.max.set(1, 1, 1);
             test.ok(a.contains(b));
-            a.lowerBound.set(-2, -2, -2);
-            a.upperBound.set(2, 2, 2);
+            a.min.set(-2, -2, -2);
+            a.max.set(2, 2, 2);
             test.ok(a.contains(b));
-            b.lowerBound.set(-3, -3, -3);
-            b.upperBound.set(3, 3, 3);
+            b.min.set(-3, -3, -3);
+            b.max.set(3, 3, 3);
             test.equal(a.contains(b), false);
-            a.lowerBound.set(0, 0, 0);
-            a.upperBound.set(2, 2, 2);
-            b.lowerBound.set(-1, -1, -1);
-            b.upperBound.set(1, 1, 1);
+            a.min.set(0, 0, 0);
+            a.max.set(2, 2, 2);
+            b.min.set(-1, -1, -1);
+            b.max.set(1, 1, 1);
             test.equal(a.contains(b), false);
         });
         QUnit.test("toLocalFrame", function (test) {
-            var worldAABB = new CANNON.AABB();
-            var localAABB = new CANNON.AABB();
+            var worldAABB = new CANNON.Box3();
+            var localAABB = new CANNON.Box3();
             var frame = new CANNON.Transform();
-            worldAABB.lowerBound.set(-1, -1, -1);
-            worldAABB.upperBound.set(1, 1, 1);
+            worldAABB.min.set(-1, -1, -1);
+            worldAABB.max.set(1, 1, 1);
             // No transform - should stay the same
             worldAABB.toLocalFrame(frame, localAABB);
             test.deepEqual(localAABB, worldAABB);
             // Some translation
             frame.position.set(-1, 0, 0);
             worldAABB.toLocalFrame(frame, localAABB);
-            test.deepEqual(localAABB, new CANNON.AABB(new CANNON.Vector3(0, -1, -1), new CANNON.Vector3(2, 1, 1)));
+            test.deepEqual(localAABB, new CANNON.Box3(new CANNON.Vector3(0, -1, -1), new CANNON.Vector3(2, 1, 1)));
         });
         QUnit.test("toWorldFrame", function (test) {
-            var localAABB = new CANNON.AABB();
-            var worldAABB = new CANNON.AABB();
+            var localAABB = new CANNON.Box3();
+            var worldAABB = new CANNON.Box3();
             var frame = new CANNON.Transform();
-            localAABB.lowerBound.set(-1, -1, -1);
-            localAABB.upperBound.set(1, 1, 1);
+            localAABB.min.set(-1, -1, -1);
+            localAABB.max.set(1, 1, 1);
             // No transform - should stay the same
             localAABB.toLocalFrame(frame, worldAABB);
             test.deepEqual(localAABB, worldAABB);
             // Some translation on the frame
             frame.position.set(1, 0, 0);
             localAABB.toWorldFrame(frame, worldAABB);
-            test.deepEqual(worldAABB, new CANNON.AABB(new CANNON.Vector3(0, -1, -1), new CANNON.Vector3(2, 1, 1)));
+            test.deepEqual(worldAABB, new CANNON.Box3(new CANNON.Vector3(0, -1, -1), new CANNON.Vector3(2, 1, 1)));
         });
     });
 })(CANNON || (CANNON = {}));
@@ -116,16 +116,16 @@ var CANNON;
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Box(new CANNON.Vector3(1, 1, 1)));
             body.computeAABB();
-            test.equal(body.aabb.lowerBound.x, -1);
-            test.equal(body.aabb.lowerBound.y, -1);
-            test.equal(body.aabb.lowerBound.z, -1);
-            test.equal(body.aabb.upperBound.x, 1);
-            test.equal(body.aabb.upperBound.y, 1);
-            test.equal(body.aabb.upperBound.z, 1);
+            test.equal(body.aabb.min.x, -1);
+            test.equal(body.aabb.min.y, -1);
+            test.equal(body.aabb.min.z, -1);
+            test.equal(body.aabb.max.x, 1);
+            test.equal(body.aabb.max.y, 1);
+            test.equal(body.aabb.max.z, 1);
             body.position.x = 1;
             body.computeAABB();
-            test.equal(body.aabb.lowerBound.x, 0);
-            test.equal(body.aabb.upperBound.x, 2);
+            test.equal(body.aabb.min.x, 0);
+            test.equal(body.aabb.max.x, 2);
         });
         QUnit.test("computeAABB boxOffset", function (test) {
             var quaternion = new CANNON.Quaternion();
@@ -133,16 +133,16 @@ var CANNON;
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Box(new CANNON.Vector3(1, 1, 1)), new CANNON.Vector3(1, 1, 1));
             body.computeAABB();
-            test.equal(body.aabb.lowerBound.x, 0);
-            test.equal(body.aabb.lowerBound.y, 0);
-            test.equal(body.aabb.lowerBound.z, 0);
-            test.equal(body.aabb.upperBound.x, 2);
-            test.equal(body.aabb.upperBound.y, 2);
-            test.equal(body.aabb.upperBound.z, 2);
+            test.equal(body.aabb.min.x, 0);
+            test.equal(body.aabb.min.y, 0);
+            test.equal(body.aabb.min.z, 0);
+            test.equal(body.aabb.max.x, 2);
+            test.equal(body.aabb.max.y, 2);
+            test.equal(body.aabb.max.z, 2);
             body.position.x = 1;
             body.computeAABB();
-            test.equal(body.aabb.lowerBound.x, 1);
-            test.equal(body.aabb.upperBound.x, 3);
+            test.equal(body.aabb.min.x, 1);
+            test.equal(body.aabb.max.x, 3);
         });
         QUnit.test("updateInertiaWorld", function (test) {
             var body = new CANNON.Body({ mass: 1 });
@@ -716,13 +716,13 @@ var CANNON;
 (function (CANNON) {
     QUnit.module("Octree", function () {
         QUnit.test("construct", function (test) {
-            var tree = new CANNON.Octree(new CANNON.AABB());
+            var tree = new CANNON.Octree(new CANNON.Box3());
             test.ok(true);
         });
         QUnit.test("insertRoot", function (test) {
-            var aabb = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
+            var aabb = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var tree = new CANNON.Octree(aabb);
-            var nodeAABB = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
+            var nodeAABB = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var nodeData = 123;
             tree.insert(nodeAABB, nodeData);
             // Should end up in root node and not children
@@ -730,11 +730,11 @@ var CANNON;
             test.equal(tree.children.length, 0);
         });
         QUnit.test("insertDeep", function (test) {
-            var aabb = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
+            var aabb = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var tree = new CANNON.Octree(aabb, {
                 maxDepth: 8
             });
-            var nodeAABB = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(-1, -1, -1));
+            var nodeAABB = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(-1, -1, -1));
             var nodeData = 123;
             tree.insert(nodeAABB, nodeData);
             // Should be deep (maxDepth deep) in lower corner
@@ -751,22 +751,22 @@ var CANNON;
             test.equal(tree.data.length, 0);
         });
         QUnit.test("aabbQuery", function (test) {
-            var aabb = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
+            var aabb = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var tree = new CANNON.Octree(aabb);
-            var nodeAABB = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
+            var nodeAABB = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var nodeData = 123;
             tree.insert(nodeAABB, nodeData);
             var result = [];
             tree.aabbQuery(aabb, result);
             test.deepEqual(result, [123]);
-            var nodeAABB2 = new CANNON.AABB(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(-1, -1, -1));
+            var nodeAABB2 = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(-1, -1, -1));
             var nodeData2 = 456;
             tree.insert(nodeAABB2, nodeData2);
             result = [];
             tree.aabbQuery(aabb, result);
             test.deepEqual(result, [123, 456]);
             result = [];
-            tree.aabbQuery(new CANNON.AABB(new CANNON.Vector3(0, 0, 0), new CANNON.Vector3(1, 1, 1)), result);
+            tree.aabbQuery(new CANNON.Box3(new CANNON.Vector3(0, 0, 0), new CANNON.Vector3(1, 1, 1)), result);
             test.deepEqual(result, [123]);
         });
     });
@@ -1199,17 +1199,17 @@ var CANNON;
         });
         QUnit.test("updateAABB", function (test) {
             var mesh = CANNON.Trimesh.createTorus();
-            mesh.aabb.lowerBound.set(1, 2, 3);
+            mesh.aabb.min.set(1, 2, 3);
             mesh.updateAABB();
-            test.ok(mesh.aabb.lowerBound.y !== 2);
+            test.ok(mesh.aabb.min.y !== 2);
         });
         QUnit.test("updateTree scaled", function (test) {
             var mesh = CANNON.Trimesh.createTorus();
             mesh.updateTree();
             var bigMesh = CANNON.Trimesh.createTorus();
             bigMesh.setScale(new CANNON.Vector3(2, 2, 2));
-            test.equal(bigMesh.aabb.upperBound.x, mesh.aabb.upperBound.x * 2, 'AABB does not scale with the mesh!');
-            test.equal(bigMesh.tree.aabb.upperBound.x, mesh.tree.aabb.upperBound.x, 'Octree AABB scales with the mesh, which is wrong!');
+            test.equal(bigMesh.aabb.max.x, mesh.aabb.max.x * 2, 'AABB does not scale with the mesh!');
+            test.equal(bigMesh.tree.aabb.max.x, mesh.tree.aabb.max.x, 'Octree AABB scales with the mesh, which is wrong!');
         });
         QUnit.test("getTrianglesInAABB unscaled", function (test) {
             var mesh = CANNON.Trimesh.createTorus(1, 1, 32, 32);
@@ -1220,8 +1220,8 @@ var CANNON;
             test.equal(result.length, mesh.indices.length / 3);
             // Should get less triangles if we use the half AABB
             result.length = 0;
-            aabb.lowerBound.scaleNumberTo(0.1, aabb.lowerBound);
-            aabb.upperBound.scaleNumberTo(0.1, aabb.upperBound);
+            aabb.min.scaleNumberTo(0.1, aabb.max);
+            aabb.max.scaleNumberTo(0.1, aabb.max);
             mesh.getTrianglesInAABB(aabb, result);
             console.log(result.length, mesh.indices.length / 3);
             test.ok(result.length < mesh.indices.length / 3);
@@ -1235,8 +1235,8 @@ var CANNON;
         //     test.equal(result.length, mesh.indices.length / 3);
         //     // Should get less triangles if we use the half AABB
         //     result.length = 0;
-        //     aabb.lowerBound.scaleNumberTo(0.5, aabb.lowerBound);
-        //     aabb.upperBound.scaleNumberTo(0.5, aabb.upperBound);
+        //     aabb.min.scaleNumberTo(0.5, aabb.lowerBound);
+        //     aabb.max.scaleNumberTo(0.5, aabb.upperBound);
         //     mesh.getTrianglesInAABB(aabb, result);
         //     test.ok(result.length < mesh.indices.length / 3);
         //     test.done();

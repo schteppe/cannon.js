@@ -264,16 +264,16 @@ namespace CANNON
         /**
          * Get the world AABB of the ray.
          */
-        getAABB(result: AABB)
+        getAABB(result: Box3)
         {
             var to = this.to;
             var from = this.from;
-            result.lowerBound.x = Math.min(to.x, from.x);
-            result.lowerBound.y = Math.min(to.y, from.y);
-            result.lowerBound.z = Math.min(to.z, from.z);
-            result.upperBound.x = Math.max(to.x, from.x);
-            result.upperBound.y = Math.max(to.y, from.y);
-            result.upperBound.z = Math.max(to.z, from.z);
+            result.min.x = Math.min(to.x, from.x);
+            result.min.y = Math.min(to.y, from.y);
+            result.min.z = Math.min(to.z, from.z);
+            result.max.x = Math.max(to.x, from.x);
+            result.max.y = Math.max(to.y, from.y);
+            result.max.z = Math.max(to.z, from.z);
         }
 
         private intersectHeightfield(shape: Heightfield, quat: Quaternion, position: Vector3, body: Body, reportedShape: Shape)
@@ -297,13 +297,13 @@ namespace CANNON
             iMinX = iMinY = 0;
             iMaxX = iMaxY = shape.data.length - 1;
 
-            var aabb = new AABB();
+            var aabb = new Box3();
             localRay.getAABB(aabb);
 
-            shape.getIndexOfPosition(aabb.lowerBound.x, aabb.lowerBound.y, index, true);
+            shape.getIndexOfPosition(aabb.min.x, aabb.min.y, index, true);
             iMinX = Math.max(iMinX, index[0]);
             iMinY = Math.max(iMinY, index[1]);
-            shape.getIndexOfPosition(aabb.upperBound.x, aabb.upperBound.y, index, true);
+            shape.getIndexOfPosition(aabb.max.x, aabb.max.y, index, true);
             iMaxX = Math.min(iMaxX, index[0] + 1);
             iMaxY = Math.min(iMaxY, index[1] + 1);
 
@@ -729,7 +729,7 @@ namespace CANNON
 
     }
 
-    var tmpAABB = new AABB();
+    var tmpAABB = new Box3();
     var tmpArray = [];
 
     var v1 = new Vector3();
@@ -761,7 +761,7 @@ namespace CANNON
     var intersectTrimesh_localTo = new Vector3();
     var intersectTrimesh_worldNormal = new Vector3();
     var intersectTrimesh_worldIntersectPoint = new Vector3();
-    var intersectTrimesh_localAABB = new AABB();
+    var intersectTrimesh_localAABB = new Box3();
     var intersectTrimesh_triangles = [];
     var intersectTrimesh_treeTransform = new Transform();
 

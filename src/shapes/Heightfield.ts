@@ -293,17 +293,17 @@ namespace CANNON
          * @param yi
          * @param result
          */
-        getAabbAtIndex(xi: number, yi: number, result: AABB)
+        getAabbAtIndex(xi: number, yi: number, result: Box3)
         {
             var data = this.data;
             var elementSize = this.elementSize;
 
-            result.lowerBound.set(
+            result.min.set(
                 xi * elementSize,
                 yi * elementSize,
                 data[xi][yi]
             );
-            result.upperBound.set(
+            result.max.set(
                 (xi + 1) * elementSize,
                 (yi + 1) * elementSize,
                 data[xi + 1][yi + 1]

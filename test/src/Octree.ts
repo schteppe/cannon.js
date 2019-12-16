@@ -5,16 +5,16 @@ namespace CANNON
 
         QUnit.test("construct", (test) =>
         {
-            var tree = new Octree(new AABB());
+            var tree = new Octree(new Box3());
             test.ok(true);
         })
 
         QUnit.test("insertRoot", (test) =>
         {
-            var aabb = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            var aabb = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var tree = new Octree(aabb);
 
-            var nodeAABB = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            var nodeAABB = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var nodeData = 123;
             tree.insert(nodeAABB, nodeData);
 
@@ -25,12 +25,12 @@ namespace CANNON
 
         QUnit.test("insertDeep", (test) =>
         {
-            var aabb = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            var aabb = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var tree = new Octree(aabb, {
                 maxDepth: 8
             });
 
-            var nodeAABB = new AABB(new Vector3(-1, -1, -1), new Vector3(-1, -1, -1));
+            var nodeAABB = new Box3(new Vector3(-1, -1, -1), new Vector3(-1, -1, -1));
             var nodeData = 123;
 
             tree.insert(nodeAABB, nodeData);
@@ -53,10 +53,10 @@ namespace CANNON
 
         QUnit.test("aabbQuery", (test) =>
         {
-            var aabb = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            var aabb = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var tree = new Octree<number>(aabb);
 
-            var nodeAABB = new AABB(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
+            var nodeAABB = new Box3(new Vector3(-1, -1, -1), new Vector3(1, 1, 1));
             var nodeData = 123;
 
             tree.insert(nodeAABB, nodeData);
@@ -67,7 +67,7 @@ namespace CANNON
             test.deepEqual(result, [123]);
 
 
-            var nodeAABB2 = new AABB(new Vector3(-1, -1, -1), new Vector3(-1, -1, -1));
+            var nodeAABB2 = new Box3(new Vector3(-1, -1, -1), new Vector3(-1, -1, -1));
             var nodeData2 = 456;
             tree.insert(nodeAABB2, nodeData2);
 
@@ -76,7 +76,7 @@ namespace CANNON
             test.deepEqual(result, [123, 456]);
 
             result = [];
-            tree.aabbQuery(new AABB(new Vector3(0, 0, 0), new Vector3(1, 1, 1)), result);
+            tree.aabbQuery(new Box3(new Vector3(0, 0, 0), new Vector3(1, 1, 1)), result);
             test.deepEqual(result, [123]);
 
         });

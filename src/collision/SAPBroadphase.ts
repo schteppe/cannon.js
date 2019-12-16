@@ -85,7 +85,7 @@ namespace CANNON
                 var v = a[i];
                 for (var j = i - 1; j >= 0; j--)
                 {
-                    if (a[j].aabb.lowerBound.x <= v.aabb.lowerBound.x)
+                    if (a[j].aabb.min.x <= v.aabb.min.x)
                     {
                         break;
                     }
@@ -103,7 +103,7 @@ namespace CANNON
                 var v = a[i];
                 for (var j = i - 1; j >= 0; j--)
                 {
-                    if (a[j].aabb.lowerBound.y <= v.aabb.lowerBound.y)
+                    if (a[j].aabb.min.y <= v.aabb.min.y)
                     {
                         break;
                     }
@@ -121,7 +121,7 @@ namespace CANNON
                 var v = a[i];
                 for (var j = i - 1; j >= 0; j--)
                 {
-                    if (a[j].aabb.lowerBound.z <= v.aabb.lowerBound.z)
+                    if (a[j].aabb.min.z <= v.aabb.min.z)
                     {
                         break;
                     }
@@ -300,7 +300,7 @@ namespace CANNON
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: Body[])
+        aabbQuery(world: World, aabb: Box3, result: Body[])
         {
             result = result || [];
 
@@ -315,8 +315,8 @@ namespace CANNON
             if (axisIndex === 2) { axis = 'z'; }
 
             var axisList = this.axisList;
-            var lower = aabb.lowerBound[axis];
-            var upper = aabb.upperBound[axis];
+            var lower = aabb.min[axis];
+            var upper = aabb.max[axis];
             for (var i = 0; i < axisList.length; i++)
             {
                 var b = axisList[i];

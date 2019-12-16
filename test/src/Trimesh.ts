@@ -14,9 +14,9 @@ namespace CANNON
         QUnit.test("updateAABB", (test) =>
         {
             var mesh = Trimesh.createTorus();
-            mesh.aabb.lowerBound.set(1, 2, 3);
+            mesh.aabb.min.set(1, 2, 3);
             mesh.updateAABB();
-            test.ok(mesh.aabb.lowerBound.y !== 2);
+            test.ok(mesh.aabb.min.y !== 2);
         });
 
         QUnit.test("updateTree scaled", (test) =>
@@ -27,9 +27,9 @@ namespace CANNON
             var bigMesh = Trimesh.createTorus();
             bigMesh.setScale(new Vector3(2, 2, 2));
 
-            test.equal(bigMesh.aabb.upperBound.x, mesh.aabb.upperBound.x * 2, 'AABB does not scale with the mesh!');
+            test.equal(bigMesh.aabb.max.x, mesh.aabb.max.x * 2, 'AABB does not scale with the mesh!');
 
-            test.equal(bigMesh.tree.aabb.upperBound.x, mesh.tree.aabb.upperBound.x, 'Octree AABB scales with the mesh, which is wrong!');
+            test.equal(bigMesh.tree.aabb.max.x, mesh.tree.aabb.max.x, 'Octree AABB scales with the mesh, which is wrong!');
 
         });
 
@@ -45,8 +45,8 @@ namespace CANNON
 
             // Should get less triangles if we use the half AABB
             result.length = 0;
-            aabb.lowerBound.scaleNumberTo(0.1, aabb.lowerBound);
-            aabb.upperBound.scaleNumberTo(0.1, aabb.upperBound);
+            aabb.min.scaleNumberTo(0.1, aabb.max);
+            aabb.max.scaleNumberTo(0.1, aabb.max);
             mesh.getTrianglesInAABB(aabb, result);
 
             console.log(result.length, mesh.indices.length / 3)
@@ -66,8 +66,8 @@ namespace CANNON
 
         //     // Should get less triangles if we use the half AABB
         //     result.length = 0;
-        //     aabb.lowerBound.scaleNumberTo(0.5, aabb.lowerBound);
-        //     aabb.upperBound.scaleNumberTo(0.5, aabb.upperBound);
+        //     aabb.min.scaleNumberTo(0.5, aabb.lowerBound);
+        //     aabb.max.scaleNumberTo(0.5, aabb.upperBound);
         //     mesh.getTrianglesInAABB(aabb, result);
         //     test.ok(result.length < mesh.indices.length / 3);
 

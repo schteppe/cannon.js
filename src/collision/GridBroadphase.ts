@@ -200,12 +200,12 @@ namespace CANNON
 						}
 
 						addBoxToBins(
-							bi.aabb.lowerBound.x,
-							bi.aabb.lowerBound.y,
-							bi.aabb.lowerBound.z,
-							bi.aabb.upperBound.x,
-							bi.aabb.upperBound.y,
-							bi.aabb.upperBound.z,
+							bi.aabb.min.x,
+							bi.aabb.min.y,
+							bi.aabb.min.z,
+							bi.aabb.max.x,
+							bi.aabb.max.y,
+							bi.aabb.max.z,
 							bi);
 						break;
 				}

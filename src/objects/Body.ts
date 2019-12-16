@@ -171,7 +171,7 @@ namespace CANNON
         /**
          * World space bounding box of the body and its shapes.
          */
-        aabb: AABB;
+        aabb: Box3;
 
         /**
          * Indicates if the AABB needs to be updated before use.
@@ -302,7 +302,7 @@ namespace CANNON
             {
                 this.angularFactor.copy(options.angularFactor);
             }
-            this.aabb = new AABB();
+            this.aabb = new Box3();
             this.aabbNeedsUpdate = true;
             this.boundingRadius = 0;
 
@@ -572,7 +572,7 @@ namespace CANNON
                 shapeOrientations[i].multTo(bodyQuat, orientation);
 
                 // Get shape AABB
-                shape.calculateWorldAABB(offset, orientation, shapeAABB.lowerBound, shapeAABB.upperBound);
+                shape.calculateWorldAABB(offset, orientation, shapeAABB.min, shapeAABB.max);
 
                 if (i === 0)
                 {
@@ -734,9 +734,9 @@ namespace CANNON
             // Approximate with AABB box
             this.computeAABB();
             halfExtents.set(
-                (this.aabb.upperBound.x - this.aabb.lowerBound.x) / 2,
-                (this.aabb.upperBound.y - this.aabb.lowerBound.y) / 2,
-                (this.aabb.upperBound.z - this.aabb.lowerBound.z) / 2
+                (this.aabb.max.x - this.aabb.min.x) / 2,
+                (this.aabb.max.y - this.aabb.min.y) / 2,
+                (this.aabb.max.z - this.aabb.min.z) / 2
             );
             Box.calculateInertia(halfExtents, this.mass, I);
 
@@ -856,5 +856,5 @@ namespace CANNON
     var uiw_m2 = new Matrix3x3();
     var uiw_m3 = new Matrix3x3();
 
-    var computeAABB_shapeAABB = new AABB();
+    var computeAABB_shapeAABB = new Box3();
 }

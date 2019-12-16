@@ -1,16 +1,16 @@
 namespace CANNON
 {
-    export class AABB
+    export class Box3
     {
         /**
          * The lower bound of the bounding box.
          */
-        lowerBound = new Vector3();
+        min = new Vector3();
 
         /**
          * The upper bound of the bounding box.
          */
-        upperBound = new Vector3();
+        max = new Vector3();
 
         /**
          * 
@@ -20,8 +20,8 @@ namespace CANNON
          */
         constructor(lowerBound = new Vector3(), upperBound = new Vector3())
         {
-            this.lowerBound = lowerBound;
-            this.upperBound = upperBound;
+            this.min = lowerBound;
+            this.max = upperBound;
         }
 
         /**
@@ -32,29 +32,18 @@ namespace CANNON
          * @param skinSize
          * @return The self object
          */
-        setFromPoints(points: Vector3[], position?: Vector3, quaternion?: Quaternion, skinSize?: number)
+        fromPoints(points: Vector3[])
         {
-            var l = this.lowerBound,
-                u = this.upperBound,
-                q = quaternion;
+            var l = this.min,
+                u = this.max;
 
             // Set to the first point
             l.copy(points[0]);
-            if (q)
-            {
-                q.vmult(l, l);
-            }
             u.copy(l);
 
             for (var i = 1; i < points.length; i++)
             {
                 var p = points[i];
-
-                if (q)
-                {
-                    q.vmult(p, tmp);
-                    p = tmp;
-                }
 
                 if (p.x > u.x) { u.x = p.x; }
                 if (p.x < l.x) { l.x = p.x; }
@@ -62,23 +51,6 @@ namespace CANNON
                 if (p.y < l.y) { l.y = p.y; }
                 if (p.z > u.z) { u.z = p.z; }
                 if (p.z < l.z) { l.z = p.z; }
-            }
-
-            // Add offset
-            if (position)
-            {
-                position.addTo(l, l);
-                position.addTo(u, u);
-            }
-
-            if (skinSize)
-            {
-                l.x -= skinSize;
-                l.y -= skinSize;
-                l.z -= skinSize;
-                u.x += skinSize;
-                u.y += skinSize;
-                u.z += skinSize;
             }
 
             return this;
@@ -89,10 +61,10 @@ namespace CANNON
          * @param aabb Source to copy from
          * @return The this object, for chainability
          */
-        copy(aabb: AABB)
+        copy(aabb: Box3)
         {
-            this.lowerBound.copy(aabb.lowerBound);
-            this.upperBound.copy(aabb.upperBound);
+            this.min.copy(aabb.min);
+            this.max.copy(aabb.max);
             return this;
         }
 
@@ -101,33 +73,33 @@ namespace CANNON
          */
         clone()
         {
-            return new AABB().copy(this);
+            return new Box3().copy(this);
         }
 
         /**
          * Extend this AABB so that it covers the given AABB too.
          * @param aabb
          */
-        extend(aabb: AABB)
+        extend(aabb: Box3)
         {
-            this.lowerBound.x = Math.min(this.lowerBound.x, aabb.lowerBound.x);
-            this.upperBound.x = Math.max(this.upperBound.x, aabb.upperBound.x);
-            this.lowerBound.y = Math.min(this.lowerBound.y, aabb.lowerBound.y);
-            this.upperBound.y = Math.max(this.upperBound.y, aabb.upperBound.y);
-            this.lowerBound.z = Math.min(this.lowerBound.z, aabb.lowerBound.z);
-            this.upperBound.z = Math.max(this.upperBound.z, aabb.upperBound.z);
+            this.min.x = Math.min(this.min.x, aabb.min.x);
+            this.max.x = Math.max(this.max.x, aabb.max.x);
+            this.min.y = Math.min(this.min.y, aabb.min.y);
+            this.max.y = Math.max(this.max.y, aabb.max.y);
+            this.min.z = Math.min(this.min.z, aabb.min.z);
+            this.max.z = Math.max(this.max.z, aabb.max.z);
         }
 
         /**
          * Returns true if the given AABB overlaps this AABB.
          * @param aabb
          */
-        overlaps(aabb: AABB)
+        overlaps(aabb: Box3)
         {
-            var l1 = this.lowerBound,
-                u1 = this.upperBound,
-                l2 = aabb.lowerBound,
-                u2 = aabb.upperBound;
+            var l1 = this.min,
+                u1 = this.max,
+                l2 = aabb.min,
+                u2 = aabb.max;
 
             //      l2        u2
             //      |---------|
@@ -146,8 +118,8 @@ namespace CANNON
          */
         volume()
         {
-            var l = this.lowerBound,
-                u = this.upperBound;
+            var l = this.min,
+                u = this.max;
             return (u.x - l.x) * (u.y - l.y) * (u.z - l.z);
         }
 
@@ -156,12 +128,12 @@ namespace CANNON
          * Returns true if the given AABB is fully contained in this AABB.
          * @param aabb
          */
-        contains(aabb: AABB)
+        contains(aabb: Box3)
         {
-            var l1 = this.lowerBound,
-                u1 = this.upperBound,
-                l2 = aabb.lowerBound,
-                u2 = aabb.upperBound;
+            var l1 = this.min,
+                u1 = this.max,
+                l2 = aabb.min,
+                u2 = aabb.max;
 
             //      l2        u2
             //      |---------|
@@ -177,8 +149,8 @@ namespace CANNON
 
         getCorners(a: Vector3, b: Vector3, c: Vector3, d: Vector3, e: Vector3, f: Vector3, g: Vector3, h: Vector3)
         {
-            var l = this.lowerBound,
-                u = this.upperBound;
+            var l = this.min,
+                u = this.max;
 
             a.copy(l);
             b.set(u.x, l.y, l.z);
@@ -196,7 +168,7 @@ namespace CANNON
          * @param target
          * @return The "target" AABB object.
          */
-        toLocalFrame(frame: Transform, target: AABB)
+        toLocalFrame(frame: Transform, target: Box3)
         {
             var corners = transformIntoFrame_corners;
             var a = corners[0];
@@ -218,7 +190,7 @@ namespace CANNON
                 frame.pointToLocal(corner, corner);
             }
 
-            return target.setFromPoints(corners);
+            return target.fromPoints(corners);
         }
 
         /**
@@ -227,7 +199,7 @@ namespace CANNON
          * @param target
          * @return The "target" AABB object.
          */
-        toWorldFrame(frame: Transform, target: AABB)
+        toWorldFrame(frame: Transform, target: Box3)
         {
 
             var corners = transformIntoFrame_corners;
@@ -250,7 +222,7 @@ namespace CANNON
                 frame.pointToWorld(corner, corner);
             }
 
-            return target.setFromPoints(corners);
+            return target.fromPoints(corners);
         }
 
         /**
@@ -266,12 +238,12 @@ namespace CANNON
             var dirFracZ = 1 / ray._direction.z;
 
             // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
-            var t1 = (this.lowerBound.x - ray.from.x) * dirFracX;
-            var t2 = (this.upperBound.x - ray.from.x) * dirFracX;
-            var t3 = (this.lowerBound.y - ray.from.y) * dirFracY;
-            var t4 = (this.upperBound.y - ray.from.y) * dirFracY;
-            var t5 = (this.lowerBound.z - ray.from.z) * dirFracZ;
-            var t6 = (this.upperBound.z - ray.from.z) * dirFracZ;
+            var t1 = (this.min.x - ray.from.x) * dirFracX;
+            var t2 = (this.max.x - ray.from.x) * dirFracX;
+            var t3 = (this.min.y - ray.from.y) * dirFracY;
+            var t4 = (this.max.y - ray.from.y) * dirFracY;
+            var t5 = (this.min.z - ray.from.z) * dirFracZ;
+            var t6 = (this.max.z - ray.from.z) * dirFracZ;
 
             // var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
             // var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));

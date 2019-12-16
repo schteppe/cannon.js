@@ -1072,7 +1072,7 @@ namespace CANNON
 
 
     // Temp stuff
-    var tmpAABB1 = new AABB();
+    var tmpAABB1 = new Box3();
     var tmpArray1 = [];
     var tmpRay = new Ray();
 

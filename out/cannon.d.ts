@@ -798,7 +798,7 @@ declare namespace CANNON {
          * @param yi
          * @param result
          */
-        getAabbAtIndex(xi: number, yi: number, result: AABB): void;
+        getAabbAtIndex(xi: number, yi: number, result: Box3): void;
         /**
          * Get the height in the heightfield at a given position
          *
@@ -895,15 +895,15 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    class AABB {
+    class Box3 {
         /**
          * The lower bound of the bounding box.
          */
-        lowerBound: feng3d.Vector3;
+        min: feng3d.Vector3;
         /**
          * The upper bound of the bounding box.
          */
-        upperBound: feng3d.Vector3;
+        max: feng3d.Vector3;
         /**
          *
          * @param options
@@ -919,27 +919,27 @@ declare namespace CANNON {
          * @param skinSize
          * @return The self object
          */
-        setFromPoints(points: Vector3[], position?: Vector3, quaternion?: Quaternion, skinSize?: number): this;
+        fromPoints(points: Vector3[]): this;
         /**
          * Copy bounds from an AABB to this AABB
          * @param aabb Source to copy from
          * @return The this object, for chainability
          */
-        copy(aabb: AABB): this;
+        copy(aabb: Box3): this;
         /**
          * Clone an AABB
          */
-        clone(): AABB;
+        clone(): Box3;
         /**
          * Extend this AABB so that it covers the given AABB too.
          * @param aabb
          */
-        extend(aabb: AABB): void;
+        extend(aabb: Box3): void;
         /**
          * Returns true if the given AABB overlaps this AABB.
          * @param aabb
          */
-        overlaps(aabb: AABB): boolean;
+        overlaps(aabb: Box3): boolean;
         /**
          * Mostly for debugging
          */
@@ -948,7 +948,7 @@ declare namespace CANNON {
          * Returns true if the given AABB is fully contained in this AABB.
          * @param aabb
          */
-        contains(aabb: AABB): boolean;
+        contains(aabb: Box3): boolean;
         getCorners(a: Vector3, b: Vector3, c: Vector3, d: Vector3, e: Vector3, f: Vector3, g: Vector3, h: Vector3): void;
         /**
          * Get the representation of an AABB in another frame.
@@ -956,14 +956,14 @@ declare namespace CANNON {
          * @param target
          * @return The "target" AABB object.
          */
-        toLocalFrame(frame: Transform, target: AABB): AABB;
+        toLocalFrame(frame: Transform, target: Box3): Box3;
         /**
          * Get the representation of an AABB in the global frame.
          * @param frame
          * @param target
          * @return The "target" AABB object.
          */
-        toWorldFrame(frame: Transform, target: AABB): AABB;
+        toWorldFrame(frame: Transform, target: Box3): Box3;
         /**
          * Check if the AABB is hit by a ray.
          */
@@ -980,7 +980,7 @@ declare namespace CANNON {
         /**
          * The local AABB of the mesh.
          */
-        aabb: AABB;
+        aabb: Box3;
         /**
          * References to vertex pairs, making up all unique edges in the trimesh.
          */
@@ -1017,7 +1017,7 @@ declare namespace CANNON {
          * @param aabb
          * @param result An array of integers, referencing the queried triangles.
          */
-        getTrianglesInAABB(aabb: AABB, result: number[]): number[];
+        getTrianglesInAABB(aabb: Box3, result: number[]): number[];
         /**
          * @param scale
          */
@@ -1109,7 +1109,7 @@ declare namespace CANNON {
          *
          * @param aabb
          */
-        computeLocalAABB(aabb: AABB): void;
+        computeLocalAABB(aabb: Box3): void;
         /**
          * Update the .aabb property
          */
@@ -1146,7 +1146,7 @@ declare namespace CANNON {
         /**
          * Boundary of this node
          */
-        aabb: AABB;
+        aabb: Box3;
         /**
          * Contained data at the current node level.
          * @property {Array} data
@@ -1163,7 +1163,7 @@ declare namespace CANNON {
          */
         constructor(options?: {
             root?: OctreeNode<T>;
-            aabb?: AABB;
+            aabb?: Box3;
         });
         reset(): void;
         /**
@@ -1173,7 +1173,7 @@ declare namespace CANNON {
          * @param elementData
          * @return True if successful, otherwise false
          */
-        insert(aabb: AABB, elementData: T, level?: number): boolean;
+        insert(aabb: Box3, elementData: T, level?: number): boolean;
         /**
          * Create 8 equally sized children nodes and put them in the .children array.
          */
@@ -1185,7 +1185,7 @@ declare namespace CANNON {
          * @param result
          * @return The "result" object
          */
-        aabbQuery(aabb: AABB, result: T[]): T[];
+        aabbQuery(aabb: Box3, result: T[]): T[];
         /**
          * Get all data, potentially intersected by a ray.
          *
@@ -1204,14 +1204,14 @@ declare namespace CANNON {
         maxDepth: number;
         /**
          * @class Octree
-         * @param {AABB} aabb The total AABB of the tree
+         * @param {Box3} aabb The total AABB of the tree
          * @param {object} [options]
          * @param {number} [options.maxDepth=8]
          * @extends OctreeNode
          */
-        constructor(aabb?: AABB, options?: {
+        constructor(aabb?: Box3, options?: {
             root?: OctreeNode<T>;
-            aabb?: AABB;
+            aabb?: Box3;
             maxDepth?: number;
         });
     }
@@ -1421,7 +1421,7 @@ declare namespace CANNON {
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: Body[]): any[];
+        aabbQuery(world: World, aabb: Box3, result: Body[]): any[];
     }
 }
 declare namespace CANNON {
@@ -1475,7 +1475,7 @@ declare namespace CANNON {
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: Body[]): Body[];
+        aabbQuery(world: World, aabb: Box3, result: Body[]): Body[];
     }
 }
 declare namespace CANNON {
@@ -1530,7 +1530,7 @@ declare namespace CANNON {
          * @param aabb
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: Body[]): Body[];
+        aabbQuery(world: World, aabb: Box3, result: Body[]): Body[];
     }
 }
 declare namespace CANNON {
@@ -1614,7 +1614,7 @@ declare namespace CANNON {
         /**
          * Get the world AABB of the ray.
          */
-        getAABB(result: AABB): void;
+        getAABB(result: Box3): void;
         private intersectHeightfield;
         private intersectSphere;
         private intersectConvex;
@@ -1847,7 +1847,7 @@ declare namespace CANNON {
         /**
          * World space bounding box of the body and its shapes.
          */
-        aabb: AABB;
+        aabb: Box3;
         /**
          * Indicates if the AABB needs to be updated before use.
          */

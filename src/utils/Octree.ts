@@ -10,7 +10,7 @@ namespace CANNON
         /**
          * Boundary of this node
          */
-        aabb: AABB;
+        aabb: Box3;
         /**
          * Contained data at the current node level.
          * @property {Array} data
@@ -27,10 +27,10 @@ namespace CANNON
          * 
          * @param options 
          */
-        constructor(options: { root?: OctreeNode<T>, aabb?: AABB } = {})
+        constructor(options: { root?: OctreeNode<T>, aabb?: Box3 } = {})
         {
             this.root = options.root || null;
-            this.aabb = options.aabb ? options.aabb.clone() : new AABB();
+            this.aabb = options.aabb ? options.aabb.clone() : new Box3();
             this.data = [];
             this.children = [];
         }
@@ -47,7 +47,7 @@ namespace CANNON
          * @param elementData
          * @return True if successful, otherwise false
          */
-        insert(aabb: AABB, elementData: T, level = 0)
+        insert(aabb: Box3, elementData: T, level = 0)
         {
             var nodeData = this.data;
 
@@ -97,20 +97,20 @@ namespace CANNON
         subdivide()
         {
             var aabb = this.aabb;
-            var l = aabb.lowerBound;
-            var u = aabb.upperBound;
+            var l = aabb.min;
+            var u = aabb.max;
 
             var children = this.children;
 
             children.push(
-                new OctreeNode({ aabb: new AABB(new Vector3(0, 0, 0)) }),
-                new OctreeNode({ aabb: new AABB(new Vector3(1, 0, 0)) }),
-                new OctreeNode({ aabb: new AABB(new Vector3(1, 1, 0)) }),
-                new OctreeNode({ aabb: new AABB(new Vector3(1, 1, 1)) }),
-                new OctreeNode({ aabb: new AABB(new Vector3(0, 1, 1)) }),
-                new OctreeNode({ aabb: new AABB(new Vector3(0, 0, 1)) }),
-                new OctreeNode({ aabb: new AABB(new Vector3(1, 0, 1)) }),
-                new OctreeNode({ aabb: new AABB(new Vector3(0, 1, 0)) })
+                new OctreeNode({ aabb: new Box3(new Vector3(0, 0, 0)) }),
+                new OctreeNode({ aabb: new Box3(new Vector3(1, 0, 0)) }),
+                new OctreeNode({ aabb: new Box3(new Vector3(1, 1, 0)) }),
+                new OctreeNode({ aabb: new Box3(new Vector3(1, 1, 1)) }),
+                new OctreeNode({ aabb: new Box3(new Vector3(0, 1, 1)) }),
+                new OctreeNode({ aabb: new Box3(new Vector3(0, 0, 1)) }),
+                new OctreeNode({ aabb: new Box3(new Vector3(1, 0, 1)) }),
+                new OctreeNode({ aabb: new Box3(new Vector3(0, 1, 0)) })
             );
 
             u.subTo(l, halfDiagonal);
@@ -126,7 +126,7 @@ namespace CANNON
                 child.root = root;
 
                 // Compute bounds
-                var lowerBound = child.aabb.lowerBound;
+                var lowerBound = child.aabb.min;
                 lowerBound.x *= halfDiagonal.x;
                 lowerBound.y *= halfDiagonal.y;
                 lowerBound.z *= halfDiagonal.z;
@@ -134,7 +134,7 @@ namespace CANNON
                 lowerBound.addTo(l, lowerBound);
 
                 // Upper bound is always lower bound + halfDiagonal
-                lowerBound.addTo(halfDiagonal, child.aabb.upperBound);
+                lowerBound.addTo(halfDiagonal, child.aabb.max);
             }
         }
 
@@ -145,7 +145,7 @@ namespace CANNON
          * @param result
          * @return The "result" object
          */
-        aabbQuery(aabb: AABB, result: T[])
+        aabbQuery(aabb: Box3, result: T[])
         {
             var nodeData = this.data;
 
@@ -227,12 +227,12 @@ namespace CANNON
 
         /**
          * @class Octree
-         * @param {AABB} aabb The total AABB of the tree
+         * @param {Box3} aabb The total AABB of the tree
          * @param {object} [options]
          * @param {number} [options.maxDepth=8]
          * @extends OctreeNode
          */
-        constructor(aabb?: AABB, options: { root?: OctreeNode<T>, aabb?: AABB, maxDepth?: number } = {})
+        constructor(aabb?: Box3, options: { root?: OctreeNode<T>, aabb?: Box3, maxDepth?: number } = {})
         {
             options.root = null;
             options.aabb = aabb;
@@ -244,5 +244,5 @@ namespace CANNON
 
     var halfDiagonal = new Vector3();
 
-    var tmpAABB = new AABB();
+    var tmpAABB = new Box3();
 }

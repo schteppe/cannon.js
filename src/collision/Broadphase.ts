@@ -200,7 +200,7 @@ namespace CANNON
          * @param aabb 
          * @param result An array to store resulting bodies in.
          */
-        aabbQuery(world: World, aabb: AABB, result: Body[])
+        aabbQuery(world: World, aabb: Box3, result: Body[])
         {
             console.warn('.aabbQuery is not implemented in this Broadphase subclass.');
             return [];
