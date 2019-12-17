@@ -67,6 +67,53 @@ namespace CANNON
             return result;
         }
 
+        /**
+         * Get the representation of an AABB in another frame.
+         * @param frame
+         * @param target
+         * @return The "target" AABB object.
+         */
+        toLocalFrameBox3(box3: Box3, target: Box3)
+        {
+            var corners = transformIntoFrame_corners;
+
+            // Get corners in current frame
+            box3.toPoints(corners);
+
+            // Transform them to new local frame
+            for (var i = 0; i !== 8; i++)
+            {
+                var corner = corners[i];
+                this.pointToLocal(corner, corner);
+            }
+
+            return target.fromPoints(corners);
+        }
+
+        /**
+         * Get the representation of an AABB in the global frame.
+         * @param frame
+         * @param target
+         * @return The "target" AABB object.
+         */
+        toWorldFrameBox3(box3: Box3, target: Box3)
+        {
+
+            var corners = transformIntoFrame_corners;
+
+            // Get corners in current frame
+            box3.toPoints(corners);
+
+            // Transform them to new local frame
+            for (var i = 0; i !== 8; i++)
+            {
+                var corner = corners[i];
+                this.pointToWorld(corner, corner);
+            }
+
+            return target.fromPoints(corners);
+        }
+
         static vectorToWorldFrame(quaternion: Quaternion, localVector: Vector3, result: Vector3)
         {
             quaternion.vmult(localVector, result);
@@ -83,4 +130,15 @@ namespace CANNON
     }
 
     var tmpQuat = new Quaternion();
+
+    var transformIntoFrame_corners = [
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3(),
+        new Vector3()
+    ];
 }
