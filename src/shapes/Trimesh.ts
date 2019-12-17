@@ -482,7 +482,7 @@ namespace CANNON
             var result = calculateWorldAABB_aabb;
             frame.position = pos;
             frame.quaternion = quat;
-            this.aabb.toWorldFrame(frame, result);
+            frame.toWorldFrameBox3(this.aabb, result);
             min.copy(result.min);
             max.copy(result.max);
         };

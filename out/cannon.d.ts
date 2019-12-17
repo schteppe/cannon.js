@@ -5,6 +5,8 @@ declare namespace CANNON {
     type Matrix3x3 = feng3d.Matrix3x3;
     var Quaternion: typeof feng3d.Quaternion;
     type Quaternion = feng3d.Quaternion;
+    var Box3: typeof feng3d.Box3;
+    type Box3 = feng3d.Box3;
 }
 declare namespace CANNON {
     class Transform {
@@ -40,6 +42,20 @@ declare namespace CANNON {
          */
         pointToWorld(localPoint: Vector3, result: Vector3): feng3d.Vector3;
         vectorToWorldFrame(localVector: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
+        /**
+         * Get the representation of an AABB in another frame.
+         * @param frame
+         * @param target
+         * @return The "target" AABB object.
+         */
+        toLocalFrameBox3(box3: Box3, target: Box3): feng3d.Box3;
+        /**
+         * Get the representation of an AABB in the global frame.
+         * @param frame
+         * @param target
+         * @return The "target" AABB object.
+         */
+        toWorldFrameBox3(box3: Box3, target: Box3): feng3d.Box3;
         static vectorToWorldFrame(quaternion: Quaternion, localVector: Vector3, result: Vector3): feng3d.Vector3;
         static vectorToLocalFrame(position: Vector3, quaternion: Quaternion, worldVector: Vector3, result?: feng3d.Vector3): feng3d.Vector3;
     }
@@ -892,78 +908,6 @@ declare namespace CANNON {
         volume(): number;
         updateBoundingSphereRadius(): void;
         calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3): void;
-    }
-}
-declare namespace CANNON {
-    class Box3 {
-        /**
-         * The lower bound of the bounding box.
-         */
-        min: feng3d.Vector3;
-        /**
-         * The upper bound of the bounding box.
-         */
-        max: feng3d.Vector3;
-        /**
-         *
-         * @param options
-         *
-         * Axis aligned bounding box class.
-         */
-        constructor(lowerBound?: feng3d.Vector3, upperBound?: feng3d.Vector3);
-        /**
-         * Set the AABB bounds from a set of points.
-         * @param points An array of Vec3's.
-         * @param position
-         * @param quaternion
-         * @param skinSize
-         * @return The self object
-         */
-        fromPoints(points: Vector3[]): this;
-        /**
-         * Copy bounds from an AABB to this AABB
-         * @param aabb Source to copy from
-         * @return The this object, for chainability
-         */
-        copy(aabb: Box3): this;
-        /**
-         * Clone an AABB
-         */
-        clone(): Box3;
-        /**
-         * Extend this AABB so that it covers the given AABB too.
-         * @param aabb
-         */
-        union(aabb: Box3): void;
-        /**
-         * Returns true if the given AABB overlaps this AABB.
-         * @param aabb
-         */
-        overlaps(aabb: Box3): boolean;
-        /**
-         * Mostly for debugging
-         */
-        volume(): number;
-        /**
-         * Returns true if the given AABB is fully contained in this AABB.
-         * @param aabb
-         */
-        contains(aabb: Box3): boolean;
-        toPoints(points?: Vector3[]): feng3d.Vector3[];
-        /**
-         * Get the representation of an AABB in another frame.
-         * @param frame
-         * @param target
-         * @return The "target" AABB object.
-         */
-        toLocalFrame(frame: Transform, target: Box3): Box3;
-        /**
-         * Get the representation of an AABB in the global frame.
-         * @param frame
-         * @param target
-         * @return The "target" AABB object.
-         */
-        toWorldFrame(frame: Transform, target: Box3): Box3;
     }
 }
 declare namespace CANNON {

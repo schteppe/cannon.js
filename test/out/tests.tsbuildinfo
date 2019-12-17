@@ -2,9 +2,9 @@
   "bundle": {
     "commonSourceDirectory": "..",
     "sourceFiles": [
-      "../src/AABB.ts",
       "../src/Body.ts",
       "../src/Box.ts",
+      "../src/Box3.ts",
       "../src/Constraint.ts",
       "../src/ContactEquation.ts",
       "../src/ConvexPolyhedron.ts",
@@ -25,7 +25,7 @@
       "sections": [
         {
           "pos": 0,
-          "end": 74062,
+          "end": 74078,
           "kind": "text"
         }
       ]

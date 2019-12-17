@@ -194,7 +194,7 @@ namespace CANNON
             // Use aabb query for now.
             // @todo implement real ray query which needs less lookups
             ray.getAABB(tmpAABB);
-            tmpAABB.toLocalFrame(treeTransform, tmpAABB);
+            treeTransform.toLocalFrameBox3(tmpAABB, tmpAABB);
             this.aabbQuery(tmpAABB, result);
 
             return result;

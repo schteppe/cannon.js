@@ -1,6 +1,6 @@
 namespace CANNON
 {
-    QUnit.module("AABB", () =>
+    QUnit.module("Box3", () =>
     {
 
         QUnit.test("construct", (test) =>
@@ -124,12 +124,12 @@ namespace CANNON
             worldAABB.max.set(1, 1, 1);
 
             // No transform - should stay the same
-            worldAABB.toLocalFrame(frame, localAABB);
+            frame.toLocalFrameBox3(worldAABB, localAABB);
             test.deepEqual(localAABB, worldAABB);
 
             // Some translation
             frame.position.set(-1, 0, 0);
-            worldAABB.toLocalFrame(frame, localAABB);
+            frame.toLocalFrameBox3(worldAABB, localAABB);
             test.deepEqual(
                 localAABB,
                 new Box3(new Vector3(0, -1, -1), new Vector3(2, 1, 1))
@@ -147,12 +147,12 @@ namespace CANNON
             localAABB.max.set(1, 1, 1);
 
             // No transform - should stay the same
-            localAABB.toLocalFrame(frame, worldAABB);
+            frame.toLocalFrameBox3(localAABB, worldAABB);
             test.deepEqual(localAABB, worldAABB);
 
             // Some translation on the frame
             frame.position.set(1, 0, 0);
-            localAABB.toWorldFrame(frame, worldAABB);
+            frame.toWorldFrameBox3(localAABB, worldAABB);
             test.deepEqual(
                 worldAABB,
                 new Box3(new Vector3(0, -1, -1), new Vector3(2, 1, 1))

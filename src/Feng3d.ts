@@ -8,4 +8,7 @@ namespace CANNON
 
     export var Quaternion = feng3d.Quaternion;
     export type Quaternion = feng3d.Quaternion;
+
+    export var Box3 = feng3d.Box3;
+    export type Box3 = feng3d.Box3;
 }
