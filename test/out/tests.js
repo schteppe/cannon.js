@@ -1520,7 +1520,7 @@ var CANNON;
             test.ok(result.hasHit);
         });
         QUnit.test("collisionMatrix", function (test) {
-            function testCollisionMatrix(CollisionMatrix) {
+            function testCollisionMatrix() {
                 var test_configs = [
                     {
                         positions: [
@@ -1573,8 +1573,8 @@ var CANNON;
                     var test_config = test_configs[config_idx];
                     var world = new CANNON.World();
                     world.broadphase = new CANNON.NaiveBroadphase();
-                    world.collisionMatrix = new CollisionMatrix();
-                    world.collisionMatrixPrevious = new CollisionMatrix();
+                    world.collisionMatrix = {};
+                    world.collisionMatrixPrevious = {};
                     for (var position_idx = 0; position_idx < test_config.positions.length; position_idx++) {
                         var body = new CANNON.Body({ mass: 1 });
                         body.addShape(new CANNON.Sphere(1.1));
@@ -1589,8 +1589,8 @@ var CANNON;
                                 var is_colliding_pair = test_config.colliding[coll_i + '-' + coll_j] === true;
                                 var expected = is_colliding_pair;
                                 var is_colliding = is_first_step ?
-                                    !!world.collisionMatrix.get(world.bodies[coll_i], world.bodies[coll_j]) :
-                                    !!world.collisionMatrixPrevious.get(world.bodies[coll_i], world.bodies[coll_j]);
+                                    !!world.collisionMatrix[world.bodies[coll_i].index + "_" + world.bodies[coll_j].index] :
+                                    !!world.collisionMatrixPrevious[world.bodies[coll_i].index + "_" + world.bodies[coll_j].index];
                                 test.ok(is_colliding === expected, (expected ? "Should be colliding" : "Should not be colliding") +
                                     ': cfg=' + config_idx +
                                     ' is_first_step=' + is_first_step +
@@ -1604,8 +1604,7 @@ var CANNON;
                     }
                 }
             }
-            testCollisionMatrix(CANNON.ArrayCollisionMatrix);
-            testCollisionMatrix(CANNON.ObjectCollisionMatrix);
+            testCollisionMatrix();
             test.ok(true);
         });
     });

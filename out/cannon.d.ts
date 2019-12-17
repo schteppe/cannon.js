@@ -1157,70 +1157,6 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    class ArrayCollisionMatrix {
-        matrix: {};
-        /**
-         * Get an element
-         *
-         * @param i
-         * @param j
-         */
-        get(i0: {
-            index: number;
-        }, j0: {
-            index: number;
-        }): any;
-        /**
-         * Set an element
-         *
-         * @param i0
-         * @param j0
-         * @param value
-         */
-        set(i0: {
-            index: number;
-        }, j0: {
-            index: number;
-        }, value: boolean): void;
-        /**
-         * Sets all elements to zero
-         */
-        reset(): void;
-    }
-}
-declare namespace CANNON {
-    class ObjectCollisionMatrix {
-        /**
-         * The matrix storage
-         */
-        matrix: {};
-        /**
-         * Records what objects are colliding with each other
-         */
-        constructor();
-        get(i0: {
-            id: number;
-        }, j0: {
-            id: number;
-        }): boolean;
-        set(i0: {
-            id: number;
-        }, j0: {
-            id: number;
-        }, value: number): void;
-        /**
-         * Empty the matrix
-         */
-        reset(): void;
-        /**
-         * Set max number of objects
-         *
-         * @param n
-         */
-        setNumObjects(n: number): void;
-    }
-}
-declare namespace CANNON {
     class OverlapKeeper {
         current: number[];
         previous: number[];
@@ -2706,11 +2642,11 @@ declare namespace CANNON {
         solver: Solver;
         constraints: Constraint[];
         narrowphase: Narrowphase;
-        collisionMatrix: ArrayCollisionMatrix;
+        collisionMatrix: {};
         /**
          * CollisionMatrix from the previous step.
          */
-        collisionMatrixPrevious: ArrayCollisionMatrix;
+        collisionMatrixPrevious: {};
         bodyOverlapKeeper: OverlapKeeper;
         shapeOverlapKeeper: OverlapKeeper;
         /**

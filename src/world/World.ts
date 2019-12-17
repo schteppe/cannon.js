@@ -62,12 +62,12 @@ namespace CANNON
 
         narrowphase: Narrowphase;
 
-        collisionMatrix: ArrayCollisionMatrix;
+        collisionMatrix = {};
 
         /**
          * CollisionMatrix from the previous step.
          */
-        collisionMatrixPrevious: ArrayCollisionMatrix;
+        collisionMatrixPrevious = {};
 
         bodyOverlapKeeper: OverlapKeeper;
         shapeOverlapKeeper: OverlapKeeper;
@@ -154,8 +154,8 @@ namespace CANNON
             this.solver = options.solver !== undefined ? options.solver : new GSSolver();
             this.constraints = [];
             this.narrowphase = new Narrowphase(this);
-            this.collisionMatrix = new ArrayCollisionMatrix();
-            this.collisionMatrixPrevious = new ArrayCollisionMatrix();
+            this.collisionMatrix = {};
+            this.collisionMatrixPrevious = {};
 
             this.bodyOverlapKeeper = new OverlapKeeper();
             this.shapeOverlapKeeper = new OverlapKeeper();
@@ -217,7 +217,7 @@ namespace CANNON
             var temp = this.collisionMatrixPrevious;
             this.collisionMatrixPrevious = this.collisionMatrix;
             this.collisionMatrix = temp;
-            this.collisionMatrix.reset();
+            this.collisionMatrix = {};
 
             this.bodyOverlapKeeper.tick();
             this.shapeOverlapKeeper.tick();
@@ -778,9 +778,9 @@ namespace CANNON
                 }
 
                 // Now we know that i and j are in contact. Set collision matrix state
-                this.collisionMatrix.set(bi, bj, true);
+                this.collisionMatrix[bi.index + "_" + bj.index] = true;
 
-                if (!this.collisionMatrixPrevious.get(bi, bj))
+                if (!this.collisionMatrixPrevious[bi.index + "_" + bj.index])
                 {
                     // First contact!
                     // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.

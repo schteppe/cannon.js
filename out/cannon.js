@@ -3099,100 +3099,6 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    var ArrayCollisionMatrix = /** @class */ (function () {
-        function ArrayCollisionMatrix() {
-            this.matrix = {};
-        }
-        /**
-         * Get an element
-         *
-         * @param i
-         * @param j
-         */
-        ArrayCollisionMatrix.prototype.get = function (i0, j0) {
-            var i = i0.index;
-            var j = j0.index;
-            return this.matrix[i + "_" + j];
-        };
-        /**
-         * Set an element
-         *
-         * @param i0
-         * @param j0
-         * @param value
-         */
-        ArrayCollisionMatrix.prototype.set = function (i0, j0, value) {
-            var i = i0.index;
-            var j = j0.index;
-            this.matrix[i + "_" + j] = this.matrix[j + "_" + i] = value ? 1 : 0;
-        };
-        /**
-         * Sets all elements to zero
-         */
-        ArrayCollisionMatrix.prototype.reset = function () {
-            this.matrix = {};
-        };
-        return ArrayCollisionMatrix;
-    }());
-    CANNON.ArrayCollisionMatrix = ArrayCollisionMatrix;
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
-    var ObjectCollisionMatrix = /** @class */ (function () {
-        /**
-         * Records what objects are colliding with each other
-         */
-        function ObjectCollisionMatrix() {
-            /**
-             * The matrix storage
-             */
-            this.matrix = {};
-            this.matrix = {};
-        }
-        ObjectCollisionMatrix.prototype.get = function (i0, j0) {
-            var i = i0.id;
-            var j = j0.id;
-            if (j > i) {
-                var temp = j;
-                j = i;
-                i = temp;
-            }
-            return i + '-' + j in this.matrix;
-        };
-        ObjectCollisionMatrix.prototype.set = function (i0, j0, value) {
-            var i = i0.id;
-            var j = j0.id;
-            if (j > i) {
-                var temp = j;
-                j = i;
-                i = temp;
-            }
-            if (value) {
-                this.matrix[i + '-' + j] = true;
-            }
-            else {
-                delete this.matrix[i + '-' + j];
-            }
-        };
-        /**
-         * Empty the matrix
-         */
-        ObjectCollisionMatrix.prototype.reset = function () {
-            this.matrix = {};
-        };
-        /**
-         * Set max number of objects
-         *
-         * @param n
-         */
-        ObjectCollisionMatrix.prototype.setNumObjects = function (n) {
-        };
-        return ObjectCollisionMatrix;
-    }());
-    CANNON.ObjectCollisionMatrix = ObjectCollisionMatrix;
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
     var OverlapKeeper = /** @class */ (function () {
         function OverlapKeeper() {
             this.current = [];
@@ -6811,6 +6717,11 @@ var CANNON;
         function World(options) {
             if (options === void 0) { options = {}; }
             var _this_1 = _super.call(this) || this;
+            _this_1.collisionMatrix = {};
+            /**
+             * CollisionMatrix from the previous step.
+             */
+            _this_1.collisionMatrixPrevious = {};
             _this_1.profile = {
                 solve: 0,
                 makeContactConstraints: 0,
@@ -6934,8 +6845,8 @@ var CANNON;
             _this_1.solver = options.solver !== undefined ? options.solver : new CANNON.GSSolver();
             _this_1.constraints = [];
             _this_1.narrowphase = new CANNON.Narrowphase(_this_1);
-            _this_1.collisionMatrix = new CANNON.ArrayCollisionMatrix();
-            _this_1.collisionMatrixPrevious = new CANNON.ArrayCollisionMatrix();
+            _this_1.collisionMatrix = {};
+            _this_1.collisionMatrixPrevious = {};
             _this_1.bodyOverlapKeeper = new CANNON.OverlapKeeper();
             _this_1.shapeOverlapKeeper = new CANNON.OverlapKeeper();
             _this_1.materials = [];
@@ -6988,7 +6899,7 @@ var CANNON;
             var temp = this.collisionMatrixPrevious;
             this.collisionMatrixPrevious = this.collisionMatrix;
             this.collisionMatrix = temp;
-            this.collisionMatrix.reset();
+            this.collisionMatrix = {};
             this.bodyOverlapKeeper.tick();
             this.shapeOverlapKeeper.tick();
         };
@@ -7405,8 +7316,8 @@ var CANNON;
                     }
                 }
                 // Now we know that i and j are in contact. Set collision matrix state
-                this.collisionMatrix.set(bi_2, bj, true);
-                if (!this.collisionMatrixPrevious.get(bi_2, bj)) {
+                this.collisionMatrix[bi_2.index + "_" + bj.index] = true;
+                if (!this.collisionMatrixPrevious[bi_2.index + "_" + bj.index]) {
                     // First contact!
                     // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
                     World_step_collideEvent.body = bj;

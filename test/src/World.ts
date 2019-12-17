@@ -240,7 +240,7 @@ namespace CANNON
 
         QUnit.test("collisionMatrix", (test) =>
         {
-            function testCollisionMatrix(CollisionMatrix)
+            function testCollisionMatrix()
             {
                 var test_configs = [
                     {
@@ -297,8 +297,8 @@ namespace CANNON
 
                     var world = new World();
                     world.broadphase = new NaiveBroadphase();
-                    world.collisionMatrix = new CollisionMatrix();
-                    world.collisionMatrixPrevious = new CollisionMatrix();
+                    world.collisionMatrix = {};
+                    world.collisionMatrixPrevious = {};
 
                     for (var position_idx = 0; position_idx < test_config.positions.length; position_idx++)
                     {
@@ -320,8 +320,8 @@ namespace CANNON
                                 var is_colliding_pair = test_config.colliding[coll_i + '-' + coll_j] === true;
                                 var expected = is_colliding_pair;
                                 var is_colliding = is_first_step ?
-                                    !!world.collisionMatrix.get(world.bodies[coll_i], world.bodies[coll_j]) :
-                                    !!world.collisionMatrixPrevious.get(world.bodies[coll_i], world.bodies[coll_j]);
+                                    !!world.collisionMatrix[world.bodies[coll_i].index + "_" + world.bodies[coll_j].index] :
+                                    !!world.collisionMatrixPrevious[world.bodies[coll_i].index + "_" + world.bodies[coll_j].index];
                                 test.ok(is_colliding === expected,
                                     (expected ? "Should be colliding" : "Should not be colliding") +
                                     ': cfg=' + config_idx +
@@ -337,8 +337,7 @@ namespace CANNON
                 }
             }
 
-            testCollisionMatrix(ArrayCollisionMatrix);
-            testCollisionMatrix(ObjectCollisionMatrix);
+            testCollisionMatrix();
 
             test.ok(true);
         });
