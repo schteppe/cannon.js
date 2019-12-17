@@ -707,7 +707,7 @@ namespace CANNON
             this.worldVerticesNeedsUpdate = false;
         }
 
-        computeLocalAABB(aabbmin, aabbmax)
+        computeLocalAABB(aabbmin: Vector3, aabbmax: Vector3)
         {
             var n = this.vertices.length,
                 vertices = this.vertices,

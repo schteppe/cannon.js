@@ -1042,7 +1042,7 @@ namespace CANNON
     /**
      * Dispatched before the world steps forward in time.
      */
-    var World_step_oldContacts = [];// Pools for unused objects
+    var World_step_oldContacts: ContactEquation[] = [];// Pools for unused objects
     var World_step_frictionEquationPool = [];
     var World_step_p1 = []; // Reusable arrays for collision pairs
     var World_step_p2 = [];
