@@ -28,7 +28,6 @@
         "src/math/JacobianElement.ts",
         "src/utils/EventTarget.ts",
         "src/utils/Utils.ts",
-        "src/utils/TupleDictionary.ts",
         "src/constraints/Constraint.ts",
         "src/constraints/DistanceConstraint.ts",
         "src/constraints/PointToPointConstraint.ts",

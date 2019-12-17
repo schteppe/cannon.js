@@ -6765,7 +6765,7 @@ var CANNON;
             _this_1.shapeOverlapKeeper = new CANNON.OverlapKeeper();
             _this_1.materials = [];
             _this_1.contactmaterials = [];
-            _this_1.contactMaterialTable = new CANNON.TupleDictionary();
+            _this_1.contactMaterialTable = {};
             _this_1.defaultMaterial = new CANNON.Material("default");
             _this_1.defaultContactMaterial = new CANNON.ContactMaterial(_this_1.defaultMaterial, _this_1.defaultMaterial, { friction: 0.3, restitution: 0.0 });
             _this_1.doProfiling = false;
@@ -6797,7 +6797,7 @@ var CANNON;
          * @return  The contact material if it was found.
          */
         World.prototype.getContactMaterial = function (m1, m2) {
-            return this.contactMaterialTable.get(m1.id, m2.id); //this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
+            return this.contactMaterialTable[m1.id + "_" + m2.id]; //this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
         };
         /**
          * Get number of objects in the world.
@@ -7026,7 +7026,7 @@ var CANNON;
             // Add contact material
             this.contactmaterials.push(cmat);
             // Add current contact material to the material table
-            this.contactMaterialTable.set(cmat.materials[0].id, cmat.materials[1].id, cmat);
+            this.contactMaterialTable[cmat.materials[0].id + "_" + cmat.materials[1].id] = cmat;
         };
         /**
          * Step the physics world forward in time.

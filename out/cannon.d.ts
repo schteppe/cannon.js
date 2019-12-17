@@ -2613,7 +2613,9 @@ declare namespace CANNON {
         /**
          * Used to look up a ContactMaterial given two instances of Material.
          */
-        contactMaterialTable: TupleDictionary<ContactMaterial>;
+        contactMaterialTable: {
+            [key: string]: ContactMaterial;
+        };
         defaultMaterial: Material;
         /**
          * This contact material is used if no suitable contactmaterial is found for a contact.
