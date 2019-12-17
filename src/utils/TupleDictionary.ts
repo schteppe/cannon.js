@@ -6,9 +6,7 @@ namespace CANNON
         /**
          * The data storage
          */
-        data: {
-            keys: string[];
-        } = { keys: [] };
+        data = {};
 
         /**
          * @param i
@@ -36,24 +34,12 @@ namespace CANNON
             }
             var key = i + '-' + j;
 
-            // Check if key already exists
-            if (!this.get(i, j))
-            {
-                this.data.keys.push(key);
-            }
-
             this.data[key] = value;
         }
 
         reset()
         {
-            var data = this.data,
-                keys = data.keys;
-            while (keys.length > 0)
-            {
-                var key = keys.pop();
-                delete data[key];
-            }
+            this.data = {};
         }
     }
 }

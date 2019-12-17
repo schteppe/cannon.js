@@ -124,39 +124,6 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    /**
-     * For pooling objects that can be reused.
-     */
-    class Pool<T> {
-        /**
-         * The pooled objects
-         */
-        objects: T[];
-        /**
-         * Constructor of the objects
-         */
-        type: Object;
-        constructor();
-        /**
-         * Release an object after use
-         */
-        release(...args: T[]): this;
-        /**
-         * Get an object
-         */
-        get(): T;
-        /**
-         * Construct an object. Should be implmented in each subclass.
-         */
-        constructObject(): T;
-        /**
-         * @param size
-         * @return Self, for chaining
-         */
-        resize(size: number): this;
-    }
-}
-declare namespace CANNON {
     class Utils {
         /**
          * Extend an options object with default values.
@@ -172,9 +139,7 @@ declare namespace CANNON {
         /**
          * The data storage
          */
-        data: {
-            keys: string[];
-        };
+        data: {};
         /**
          * @param i
          * @param j

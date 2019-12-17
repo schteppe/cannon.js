@@ -262,65 +262,6 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    /**
-     * For pooling objects that can be reused.
-     */
-    var Pool = /** @class */ (function () {
-        function Pool() {
-            this.objects = [];
-            this.type = Object;
-        }
-        /**
-         * Release an object after use
-         */
-        Pool.prototype.release = function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
-            var Nargs = arguments.length;
-            for (var i = 0; i !== Nargs; i++) {
-                this.objects.push(arguments[i]);
-            }
-            return this;
-        };
-        /**
-         * Get an object
-         */
-        Pool.prototype.get = function () {
-            if (this.objects.length === 0) {
-                return this.constructObject();
-            }
-            else {
-                return this.objects.pop();
-            }
-        };
-        /**
-         * Construct an object. Should be implmented in each subclass.
-         */
-        Pool.prototype.constructObject = function () {
-            throw new Error("constructObject() not implemented in this Pool subclass yet!");
-        };
-        /**
-         * @param size
-         * @return Self, for chaining
-         */
-        Pool.prototype.resize = function (size) {
-            var objects = this.objects;
-            while (objects.length > size) {
-                objects.pop();
-            }
-            while (objects.length < size) {
-                objects.push(this.constructObject());
-            }
-            return this;
-        };
-        return Pool;
-    }());
-    CANNON.Pool = Pool;
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
     var Utils = /** @class */ (function () {
         function Utils() {
         }
@@ -350,7 +291,7 @@ var CANNON;
             /**
              * The data storage
              */
-            this.data = { keys: [] };
+            this.data = {};
         }
         /**
          * @param i
@@ -372,18 +313,10 @@ var CANNON;
                 i = temp;
             }
             var key = i + '-' + j;
-            // Check if key already exists
-            if (!this.get(i, j)) {
-                this.data.keys.push(key);
-            }
             this.data[key] = value;
         };
         TupleDictionary.prototype.reset = function () {
-            var data = this.data, keys = data.keys;
-            while (keys.length > 0) {
-                var key = keys.pop();
-                delete data[key];
-            }
+            this.data = {};
         };
         return TupleDictionary;
     }());
