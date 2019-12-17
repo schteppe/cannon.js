@@ -248,7 +248,6 @@ namespace CANNON
                 body.initAngularVelocity.copy(body.angularVelocity);
                 body.initQuaternion.copy(body.quaternion);
             }
-            this.collisionMatrix.setNumObjects(this.bodies.length);
             this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
             this.dispatchEvent(this.addBodyEvent);
@@ -279,7 +278,6 @@ namespace CANNON
                 body.initAngularVelocity.copy(body.angularVelocity);
                 body.initQuaternion.copy(body.quaternion);
             }
-            this.collisionMatrix.setNumObjects(this.bodies.length);
             this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
             this.dispatchEvent(this.addBodyEvent);
@@ -407,7 +405,6 @@ namespace CANNON
                     bodies[i].index = i;
                 }
 
-                this.collisionMatrix.setNumObjects(n);
                 this.removeBodyEvent.body = body;
                 delete this.idToBodyMap[body.id];
                 this.dispatchEvent(this.removeBodyEvent);
@@ -434,7 +431,6 @@ namespace CANNON
                     bodies[i].index = i;
                 }
 
-                this.collisionMatrix.setNumObjects(n);
                 this.removeBodyEvent.body = body;
                 delete this.idToBodyMap[body.id];
                 this.dispatchEvent(this.removeBodyEvent);

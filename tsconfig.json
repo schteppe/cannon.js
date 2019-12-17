@@ -45,7 +45,6 @@
         "src/shapes/Particle.ts",
         "src/shapes/Plane.ts",
         "src/shapes/Sphere.ts",
-        "src/collision/AABB.ts",
         "src/shapes/Trimesh.ts",
         "src/utils/Octree.ts",
         "src/collision/ArrayCollisionMatrix.ts",

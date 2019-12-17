@@ -2497,164 +2497,6 @@ var CANNON;
     }(CANNON.Shape));
     CANNON.Sphere = Sphere;
 })(CANNON || (CANNON = {}));
-// namespace CANNON
-// {
-//     export class Box3
-//     {
-//         /**
-//          * The lower bound of the bounding box.
-//          */
-//         min = new Vector3();
-//         /**
-//          * The upper bound of the bounding box.
-//          */
-//         max = new Vector3();
-//         /**
-//          * 
-//          * @param options 
-//          * 
-//          * Axis aligned bounding box class.
-//          */
-//         constructor(lowerBound = new Vector3(), upperBound = new Vector3())
-//         {
-//             this.min = lowerBound;
-//             this.max = upperBound;
-//         }
-//         /**
-//          * Set the AABB bounds from a set of points.
-//          * @param points An array of Vec3's.
-//          * @param position
-//          * @param quaternion
-//          * @param skinSize
-//          * @return The self object
-//          */
-//         fromPoints(points: Vector3[])
-//         {
-//             var l = this.min,
-//                 u = this.max;
-//             // Set to the first point
-//             l.copy(points[0]);
-//             u.copy(l);
-//             for (var i = 1; i < points.length; i++)
-//             {
-//                 var p = points[i];
-//                 if (p.x > u.x) { u.x = p.x; }
-//                 if (p.x < l.x) { l.x = p.x; }
-//                 if (p.y > u.y) { u.y = p.y; }
-//                 if (p.y < l.y) { l.y = p.y; }
-//                 if (p.z > u.z) { u.z = p.z; }
-//                 if (p.z < l.z) { l.z = p.z; }
-//             }
-//             return this;
-//         }
-//         /**
-//          * Copy bounds from an AABB to this AABB
-//          * @param aabb Source to copy from
-//          * @return The this object, for chainability
-//          */
-//         copy(aabb: Box3)
-//         {
-//             this.min.copy(aabb.min);
-//             this.max.copy(aabb.max);
-//             return this;
-//         }
-//         /**
-//          * Clone an AABB
-//          */
-//         clone()
-//         {
-//             return new Box3().copy(this);
-//         }
-//         /**
-//          * Extend this AABB so that it covers the given AABB too.
-//          * @param aabb
-//          */
-//         union(aabb: Box3)
-//         {
-//             this.min.x = Math.min(this.min.x, aabb.min.x);
-//             this.max.x = Math.max(this.max.x, aabb.max.x);
-//             this.min.y = Math.min(this.min.y, aabb.min.y);
-//             this.max.y = Math.max(this.max.y, aabb.max.y);
-//             this.min.z = Math.min(this.min.z, aabb.min.z);
-//             this.max.z = Math.max(this.max.z, aabb.max.z);
-//         }
-//         /**
-//          * Returns true if the given AABB overlaps this AABB.
-//          * @param aabb
-//          */
-//         overlaps(aabb: Box3)
-//         {
-//             var l1 = this.min,
-//                 u1 = this.max,
-//                 l2 = aabb.min,
-//                 u2 = aabb.max;
-//             //      l2        u2
-//             //      |---------|
-//             // |--------|
-//             // l1       u1
-//             var overlapsX = ((l2.x <= u1.x && u1.x <= u2.x) || (l1.x <= u2.x && u2.x <= u1.x));
-//             var overlapsY = ((l2.y <= u1.y && u1.y <= u2.y) || (l1.y <= u2.y && u2.y <= u1.y));
-//             var overlapsZ = ((l2.z <= u1.z && u1.z <= u2.z) || (l1.z <= u2.z && u2.z <= u1.z));
-//             return overlapsX && overlapsY && overlapsZ;
-//         }
-//         /**
-//          * Mostly for debugging
-//          */
-//         volume()
-//         {
-//             var l = this.min,
-//                 u = this.max;
-//             return (u.x - l.x) * (u.y - l.y) * (u.z - l.z);
-//         }
-//         /**
-//          * Returns true if the given AABB is fully contained in this AABB.
-//          * @param aabb
-//          */
-//         contains(aabb: Box3)
-//         {
-//             var l1 = this.min,
-//                 u1 = this.max,
-//                 l2 = aabb.min,
-//                 u2 = aabb.max;
-//             //      l2        u2
-//             //      |---------|
-//             // |---------------|
-//             // l1              u1
-//             return (
-//                 (l1.x <= l2.x && u1.x >= u2.x) &&
-//                 (l1.y <= l2.y && u1.y >= u2.y) &&
-//                 (l1.z <= l2.z && u1.z >= u2.z)
-//             );
-//         }
-//         toPoints(points?: Vector3[])
-//         {
-//             if (!points)
-//             {
-//                 points = [
-//                     new Vector3(),
-//                     new Vector3(),
-//                     new Vector3(),
-//                     new Vector3(),
-//                     new Vector3(),
-//                     new Vector3(),
-//                     new Vector3(),
-//                     new Vector3(),
-//                 ];
-//             }
-//             var min = this.min;
-//             var max = this.max;
-//             points[0].set(min.x, min.y, min.z);
-//             points[1].set(max.x, min.y, min.z);
-//             points[2].set(min.x, max.y, min.z);
-//             points[3].set(min.x, min.y, max.z);
-//             points[4].set(min.x, max.y, max.z);
-//             points[5].set(max.x, min.y, max.z);
-//             points[6].set(max.x, max.y, min.z);
-//             points[7].set(max.x, max.y, max.z);
-//             return points;
-//         }
-//     }
-// }
 var CANNON;
 (function (CANNON) {
     var Trimesh = /** @class */ (function (_super) {
@@ -3258,11 +3100,8 @@ var CANNON;
 var CANNON;
 (function (CANNON) {
     var ArrayCollisionMatrix = /** @class */ (function () {
-        /**
-         * Collision "matrix". It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
-         */
         function ArrayCollisionMatrix() {
-            this.matrix = [];
+            this.matrix = {};
         }
         /**
          * Get an element
@@ -3273,12 +3112,7 @@ var CANNON;
         ArrayCollisionMatrix.prototype.get = function (i0, j0) {
             var i = i0.index;
             var j = j0.index;
-            if (j > i) {
-                var temp = j;
-                j = i;
-                i = temp;
-            }
-            return this.matrix[(i * (i + 1) >> 1) + j - 1];
+            return this.matrix[i + "_" + j];
         };
         /**
          * Set an element
@@ -3290,26 +3124,13 @@ var CANNON;
         ArrayCollisionMatrix.prototype.set = function (i0, j0, value) {
             var i = i0.index;
             var j = j0.index;
-            if (j > i) {
-                var temp = j;
-                j = i;
-                i = temp;
-            }
-            this.matrix[(i * (i + 1) >> 1) + j - 1] = value ? 1 : 0;
+            this.matrix[i + "_" + j] = this.matrix[j + "_" + i] = value ? 1 : 0;
         };
         /**
          * Sets all elements to zero
          */
         ArrayCollisionMatrix.prototype.reset = function () {
-            for (var i = 0, l = this.matrix.length; i !== l; i++) {
-                this.matrix[i] = 0;
-            }
-        };
-        /**
-         * Sets the max number of objects
-         */
-        ArrayCollisionMatrix.prototype.setNumObjects = function (n) {
-            this.matrix.length = n * (n - 1) >> 1;
+            this.matrix = {};
         };
         return ArrayCollisionMatrix;
     }());
@@ -7193,7 +7014,6 @@ var CANNON;
                 body.initAngularVelocity.copy(body.angularVelocity);
                 body.initQuaternion.copy(body.quaternion);
             }
-            this.collisionMatrix.setNumObjects(this.bodies.length);
             this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
             this.dispatchEvent(this.addBodyEvent);
@@ -7220,7 +7040,6 @@ var CANNON;
                 body.initAngularVelocity.copy(body.angularVelocity);
                 body.initQuaternion.copy(body.quaternion);
             }
-            this.collisionMatrix.setNumObjects(this.bodies.length);
             this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
             this.dispatchEvent(this.addBodyEvent);
@@ -7327,7 +7146,6 @@ var CANNON;
                 for (var i = 0; i !== bodies.length; i++) {
                     bodies[i].index = i;
                 }
-                this.collisionMatrix.setNumObjects(n);
                 this.removeBodyEvent.body = body;
                 delete this.idToBodyMap[body.id];
                 this.dispatchEvent(this.removeBodyEvent);
@@ -7346,7 +7164,6 @@ var CANNON;
                 for (var i = 0; i !== bodies.length; i++) {
                     bodies[i].index = i;
                 }
-                this.collisionMatrix.setNumObjects(n);
                 this.removeBodyEvent.body = body;
                 delete this.idToBodyMap[body.id];
                 this.dispatchEvent(this.removeBodyEvent);

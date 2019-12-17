@@ -1158,11 +1158,7 @@ declare namespace CANNON {
 }
 declare namespace CANNON {
     class ArrayCollisionMatrix {
-        matrix: number[];
-        /**
-         * Collision "matrix". It's actually a triangular-shaped array of whether two bodies are touching this step, for reference next step
-         */
-        constructor();
+        matrix: {};
         /**
          * Get an element
          *
@@ -1173,7 +1169,7 @@ declare namespace CANNON {
             index: number;
         }, j0: {
             index: number;
-        }): number;
+        }): any;
         /**
          * Set an element
          *
@@ -1190,10 +1186,6 @@ declare namespace CANNON {
          * Sets all elements to zero
          */
         reset(): void;
-        /**
-         * Sets the max number of objects
-         */
-        setNumObjects(n: number): void;
     }
 }
 declare namespace CANNON {
