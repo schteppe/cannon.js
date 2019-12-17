@@ -318,7 +318,7 @@ namespace CANNON
                     }
 
                     shape.getAabbAtIndex(i, j, aabb);
-                    if (!aabb.overlapsRay(localRay))
+                    if (!localRay.overlapsBox3(aabb))
                     {
                         continue;
                     }
@@ -703,6 +703,48 @@ namespace CANNON
                     result._shouldStop = true;
                     break;
             }
+        }
+
+        /**
+         * Check if the AABB is hit by a ray.
+         */
+        overlapsBox3(box3: Box3)
+        {
+            var t = 0;
+
+            // ray.direction is unit direction vector of ray
+            var dirFracX = 1 / this._direction.x;
+            var dirFracY = 1 / this._direction.y;
+            var dirFracZ = 1 / this._direction.z;
+
+            // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+            var t1 = (box3.min.x - this.from.x) * dirFracX;
+            var t2 = (box3.max.x - this.from.x) * dirFracX;
+            var t3 = (box3.min.y - this.from.y) * dirFracY;
+            var t4 = (box3.max.y - this.from.y) * dirFracY;
+            var t5 = (box3.min.z - this.from.z) * dirFracZ;
+            var t6 = (box3.max.z - this.from.z) * dirFracZ;
+
+            // var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
+            // var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
+            var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
+            var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
+
+            // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
+            if (tmax < 0)
+            {
+                //t = tmax;
+                return false;
+            }
+
+            // if tmin > tmax, ray doesn't intersect AABB
+            if (tmin > tmax)
+            {
+                //t = tmax;
+                return false;
+            }
+
+            return true;
         }
 
         /*

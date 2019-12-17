@@ -147,19 +147,34 @@ namespace CANNON
             );
         }
 
-        getCorners(a: Vector3, b: Vector3, c: Vector3, d: Vector3, e: Vector3, f: Vector3, g: Vector3, h: Vector3)
+        toPoints(points?: Vector3[])
         {
-            var l = this.min,
-                u = this.max;
+            if (!points)
+            {
+                points = [
+                    new Vector3(),
+                    new Vector3(),
+                    new Vector3(),
+                    new Vector3(),
+                    new Vector3(),
+                    new Vector3(),
+                    new Vector3(),
+                    new Vector3(),
+                ];
+            }
 
-            a.copy(l);
-            b.set(u.x, l.y, l.z);
-            c.set(u.x, u.y, l.z);
-            d.set(l.x, u.y, u.z);
-            e.set(u.x, l.y, l.z);
-            f.set(l.x, u.y, l.z);
-            g.set(l.x, l.y, u.z);
-            h.copy(u);
+            var min = this.min;
+            var max = this.max;
+            points[0].set(min.x, min.y, min.z);
+            points[1].set(max.x, min.y, min.z);
+            points[2].set(min.x, max.y, min.z);
+            points[3].set(min.x, min.y, max.z);
+            points[4].set(min.x, max.y, max.z);
+            points[5].set(max.x, min.y, max.z);
+            points[6].set(max.x, max.y, min.z);
+            points[7].set(max.x, max.y, max.z);
+
+            return points;
         }
 
         /**
@@ -171,17 +186,9 @@ namespace CANNON
         toLocalFrame(frame: Transform, target: Box3)
         {
             var corners = transformIntoFrame_corners;
-            var a = corners[0];
-            var b = corners[1];
-            var c = corners[2];
-            var d = corners[3];
-            var e = corners[4];
-            var f = corners[5];
-            var g = corners[6];
-            var h = corners[7];
 
             // Get corners in current frame
-            this.getCorners(a, b, c, d, e, f, g, h);
+            this.toPoints(corners);
 
             // Transform them to new local frame
             for (var i = 0; i !== 8; i++)
@@ -203,17 +210,9 @@ namespace CANNON
         {
 
             var corners = transformIntoFrame_corners;
-            var a = corners[0];
-            var b = corners[1];
-            var c = corners[2];
-            var d = corners[3];
-            var e = corners[4];
-            var f = corners[5];
-            var g = corners[6];
-            var h = corners[7];
 
             // Get corners in current frame
-            this.getCorners(a, b, c, d, e, f, g, h);
+            this.toPoints(corners);
 
             // Transform them to new local frame
             for (var i = 0; i !== 8; i++)
@@ -223,48 +222,6 @@ namespace CANNON
             }
 
             return target.fromPoints(corners);
-        }
-
-        /**
-         * Check if the AABB is hit by a ray.
-         */
-        overlapsRay(ray: Ray)
-        {
-            var t = 0;
-
-            // ray.direction is unit direction vector of ray
-            var dirFracX = 1 / ray._direction.x;
-            var dirFracY = 1 / ray._direction.y;
-            var dirFracZ = 1 / ray._direction.z;
-
-            // this.lowerBound is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
-            var t1 = (this.min.x - ray.from.x) * dirFracX;
-            var t2 = (this.max.x - ray.from.x) * dirFracX;
-            var t3 = (this.min.y - ray.from.y) * dirFracY;
-            var t4 = (this.max.y - ray.from.y) * dirFracY;
-            var t5 = (this.min.z - ray.from.z) * dirFracZ;
-            var t6 = (this.max.z - ray.from.z) * dirFracZ;
-
-            // var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)));
-            // var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)));
-            var tmin = Math.max(Math.max(Math.min(t1, t2), Math.min(t3, t4)), Math.min(t5, t6));
-            var tmax = Math.min(Math.min(Math.max(t1, t2), Math.max(t3, t4)), Math.max(t5, t6));
-
-            // if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
-            if (tmax < 0)
-            {
-                //t = tmax;
-                return false;
-            }
-
-            // if tmin > tmax, ray doesn't intersect AABB
-            if (tmin > tmax)
-            {
-                //t = tmax;
-                return false;
-            }
-
-            return true;
         }
 
     }

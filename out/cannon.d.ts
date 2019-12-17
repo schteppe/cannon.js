@@ -949,7 +949,7 @@ declare namespace CANNON {
          * @param aabb
          */
         contains(aabb: Box3): boolean;
-        getCorners(a: Vector3, b: Vector3, c: Vector3, d: Vector3, e: Vector3, f: Vector3, g: Vector3, h: Vector3): void;
+        toPoints(points?: Vector3[]): feng3d.Vector3[];
         /**
          * Get the representation of an AABB in another frame.
          * @param frame
@@ -964,10 +964,6 @@ declare namespace CANNON {
          * @return The "target" AABB object.
          */
         toWorldFrame(frame: Transform, target: Box3): Box3;
-        /**
-         * Check if the AABB is hit by a ray.
-         */
-        overlapsRay(ray: Ray): boolean;
     }
 }
 declare namespace CANNON {
@@ -1641,6 +1637,10 @@ declare namespace CANNON {
          */
         private intersectTrimesh;
         private reportIntersection;
+        /**
+         * Check if the AABB is hit by a ray.
+         */
+        overlapsBox3(box3: Box3): boolean;
         static pointInTriangle(p: Vector3, a: Vector3, b: Vector3, c: Vector3): boolean;
     }
 }
