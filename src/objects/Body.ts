@@ -1,6 +1,24 @@
 namespace CANNON
 {
-    export class Body extends EventTarget
+    export interface BodyEventMap
+    {
+        wakeup: any
+        sleepy: any
+        sleep: any
+
+        collide: { body: Body, contact: ContactEquation }
+    }
+
+    export interface Body
+    {
+        once<K extends keyof BodyEventMap>(type: K, listener: (event: feng3d.Event<BodyEventMap[K]>) => void, thisObject?: any, priority?: number): void;
+        dispatch<K extends keyof BodyEventMap>(type: K, data?: BodyEventMap[K], bubbles?: boolean): feng3d.Event<BodyEventMap[K]>;
+        has<K extends keyof BodyEventMap>(type: K): boolean;
+        on<K extends keyof BodyEventMap>(type: K, listener: (event: feng3d.Event<BodyEventMap[K]>) => any, thisObject?: any, priority?: number, once?: boolean): void;
+        off<K extends keyof BodyEventMap>(type?: K, listener?: (event: feng3d.Event<BodyEventMap[K]>) => any, thisObject?: any): void;
+    }
+
+    export class Body extends feng3d.EventDispatcher
     {
 
         id: number;
@@ -316,8 +334,6 @@ namespace CANNON
             this.updateMassProperties();
         }
 
-        static COLLIDE_EVENT_NAME = "collide";
-
         /**
          * A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
          */
@@ -342,13 +358,6 @@ namespace CANNON
         static idCounter = 0;
 
         /**
-         * Dispatched after a sleeping body has woken up.
-         */
-        static wakeupEvent = {
-            type: "wakeup"
-        }
-
-        /**
          * Wake the body up.
          */
         wakeUp()
@@ -358,7 +367,7 @@ namespace CANNON
             this._wakeUpAfterNarrowphase = false;
             if (s === Body.SLEEPING)
             {
-                this.dispatchEvent(Body.wakeupEvent);
+                this.dispatch("wakeup");
             }
         }
 
@@ -374,21 +383,6 @@ namespace CANNON
         }
 
         /**
-         * Dispatched after a body has gone in to the sleepy state.
-         */
-        static sleepyEvent = {
-            type: "sleepy"
-        };
-
-        /**
-         * Dispatched after a body has fallen asleep.
-         * @event sleep
-         */
-        static sleepEvent = {
-            type: "sleep"
-        };
-
-        /**
          * Called every timestep to update internal sleep timer and change sleep state if needed.
          */
         sleepTick(time: number)
@@ -402,14 +396,15 @@ namespace CANNON
                 {
                     this.sleepState = Body.SLEEPY; // Sleepy
                     this.timeLastSleepy = time;
-                    this.dispatchEvent(Body.sleepyEvent);
+                    this.dispatch("sleepy");
+
                 } else if (sleepState === Body.SLEEPY && speedSquared > speedLimitSquared)
                 {
                     this.wakeUp(); // Wake up
                 } else if (sleepState === Body.SLEEPY && (time - this.timeLastSleepy) > this.sleepTimeLimit)
                 {
                     this.sleep(); // Sleeping
-                    this.dispatchEvent(Body.sleepEvent);
+                    this.dispatch("sleep");
                 }
             }
         }

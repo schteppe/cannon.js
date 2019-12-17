@@ -172,7 +172,7 @@ namespace CANNON
                 world.addConstraint(constraints[i]);
             }
 
-            world.addEventListener('preStep', this._update.bind(this));
+            world.on('preStep', this._update, this);
         }
 
         private _update()

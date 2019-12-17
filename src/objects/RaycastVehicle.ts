@@ -34,7 +34,6 @@ namespace CANNON
 
         currentVehicleSpeedKmHour: number;
 
-        preStepCallback: Function;
         constraints
 
         /**
@@ -108,15 +107,15 @@ namespace CANNON
          */
         addToWorld(world: World)
         {
-            var constraints = this.constraints;
             world.addBody(this.chassisBody);
-            var that = this;
-            this.preStepCallback = function ()
-            {
-                that.updateVehicle(world.dt);
-            };
-            world.addEventListener('preStep', this.preStepCallback);
+
+            world.on('preStep', this._preStepCallback, this);
             this.world = world;
+        }
+
+        _preStepCallback()
+        {
+            this.updateVehicle(this.world.dt);
         }
 
         /**
@@ -284,9 +283,8 @@ namespace CANNON
          */
         removeFromWorld(world: World)
         {
-            var constraints = this.constraints;
             world.remove(this.chassisBody);
-            world.removeEventListener('preStep', this.preStepCallback);
+            world.off('preStep', this._preStepCallback, this);
             this.world = null;
         }
 

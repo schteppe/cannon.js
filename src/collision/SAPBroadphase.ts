@@ -11,8 +11,18 @@ namespace CANNON
          */
         axisIndex: number;
 
-        private _addBodyHandler: (e: { body: Body }) => void;
-        private _removeBodyHandler: (e: { body: Body }) => void;
+        private _addBodyHandler(event: feng3d.Event<Body>)
+        {
+            this.axisList.push(event.data);
+        }
+        private _removeBodyHandler(event: feng3d.Event<Body>)
+        {
+            var idx = this.axisList.indexOf(event.data);
+            if (idx !== -1)
+            {
+                this.axisList.splice(idx, 1);
+            }
+        }
 
         /**
          * Sweep and prune broadphase along one axis.
@@ -30,20 +40,6 @@ namespace CANNON
             this.axisIndex = 0;
 
             var axisList = this.axisList;
-
-            this._addBodyHandler = function (e)
-            {
-                axisList.push(e.body);
-            };
-
-            this._removeBodyHandler = function (e)
-            {
-                var idx = axisList.indexOf(e.body);
-                if (idx !== -1)
-                {
-                    axisList.splice(idx, 1);
-                }
-            };
 
             if (world)
             {
@@ -67,14 +63,21 @@ namespace CANNON
             }
 
             // Remove old handlers, if any
-            world.removeEventListener("addBody", this._addBodyHandler);
-            world.removeEventListener("removeBody", this._removeBodyHandler);
-
-            // Add handlers to update the list of bodies.
-            world.addEventListener("addBody", this._addBodyHandler);
-            world.addEventListener("removeBody", this._removeBodyHandler);
+            if (this.world)
+            {
+                this.world.off("addBody", this._addBodyHandler, this);
+                this.world.off("removeBody", this._removeBodyHandler, this);
+            }
 
             this.world = world;
+
+            // Add handlers to update the list of bodies.
+            if (this.world)
+            {
+                this.world.on("addBody", this._addBodyHandler, this);
+                this.world.on("removeBody", this._removeBodyHandler, this);
+            }
+
             this.dirty = true;
         }
 

@@ -1,6 +1,35 @@
 namespace CANNON
 {
-    export class World extends EventTarget
+    export interface WorldEventMap
+    {
+        addBody: Body
+        removeBody: Body
+        preStep: any;
+        /**
+         * Dispatched after the world has stepped forward in time.
+         */
+        postStep: any;
+
+        beginContact: { bodyA: Body; bodyB: Body; };
+
+        endContact: { bodyA: Body; bodyB: Body; };
+
+        beginShapeContact: { bodyA: Body; bodyB: Body; shapeA: Shape; shapeB: Shape; }
+
+        endShapeContact: { bodyA: Body; bodyB: Body; shapeA: Shape; shapeB: Shape; }
+
+    }
+
+    export interface World
+    {
+        once<K extends keyof WorldEventMap>(type: K, listener: (event: feng3d.Event<WorldEventMap[K]>) => void, thisObject?: any, priority?: number): void;
+        dispatch<K extends keyof WorldEventMap>(type: K, data?: WorldEventMap[K], bubbles?: boolean): feng3d.Event<WorldEventMap[K]>;
+        has<K extends keyof WorldEventMap>(type: K): boolean;
+        on<K extends keyof WorldEventMap>(type: K, listener: (event: feng3d.Event<WorldEventMap[K]>) => any, thisObject?: any, priority?: number, once?: boolean): void;
+        off<K extends keyof WorldEventMap>(type?: K, listener?: (event: feng3d.Event<WorldEventMap[K]>) => any, thisObject?: any): void;
+    }
+
+    export class World extends feng3d.EventDispatcher
     {
         static worldNormal = new Vector3(0, 0, 1);
 
@@ -108,22 +137,6 @@ namespace CANNON
 
         subsystems: SPHSystem[];
 
-        /**
-         * Dispatched after a body has been added to the world.
-         */
-        addBodyEvent = {
-            type: "addBody",
-            body: null
-        };
-
-        /**
-         * Dispatched after a body has been removed from the world.
-         */
-        removeBodyEvent = {
-            type: "removeBody",
-            body: null
-        };
-
         idToBodyMap: { [id: string]: Body } = {};
 
         /**
@@ -175,14 +188,6 @@ namespace CANNON
             };
             this.accumulator = 0;
             this.subsystems = [];
-            this.addBodyEvent = {
-                type: "addBody",
-                body: null
-            };
-            this.removeBodyEvent = {
-                type: "removeBody",
-                body: null
-            };
 
             this.idToBodyMap = {};
 
@@ -248,9 +253,8 @@ namespace CANNON
                 body.initAngularVelocity.copy(body.angularVelocity);
                 body.initQuaternion.copy(body.quaternion);
             }
-            this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
-            this.dispatchEvent(this.addBodyEvent);
+            this.dispatch("addBody", body);
         }
 
         /**
@@ -278,9 +282,8 @@ namespace CANNON
                 body.initAngularVelocity.copy(body.angularVelocity);
                 body.initQuaternion.copy(body.quaternion);
             }
-            this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
-            this.dispatchEvent(this.addBodyEvent);
+            this.dispatch("addBody", body);
         }
 
         /**
@@ -405,9 +408,8 @@ namespace CANNON
                     bodies[i].index = i;
                 }
 
-                this.removeBodyEvent.body = body;
                 delete this.idToBodyMap[body.id];
-                this.dispatchEvent(this.removeBodyEvent);
+                this.dispatch("removeBody", body);
             }
         }
 
@@ -431,9 +433,8 @@ namespace CANNON
                     bodies[i].index = i;
                 }
 
-                this.removeBodyEvent.body = body;
                 delete this.idToBodyMap[body.id];
-                this.dispatchEvent(this.removeBodyEvent);
+                this.dispatch("removeBody", body);
             }
         }
 
@@ -784,12 +785,8 @@ namespace CANNON
                 {
                     // First contact!
                     // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
-                    World_step_collideEvent.body = bj;
-                    World_step_collideEvent.contact = c;
-                    bi.dispatchEvent(World_step_collideEvent);
-
-                    World_step_collideEvent.body = bi;
-                    bj.dispatchEvent(World_step_collideEvent);
+                    bi.dispatch("collide", { body: bj, contact: c });
+                    bj.dispatch("collide", { body: bi, contact: c });
                 }
 
                 this.bodyOverlapKeeper.set(bi.id, bj.id);
@@ -858,7 +855,7 @@ namespace CANNON
                 }
             }
 
-            this.dispatchEvent(World_step_preStepEvent);
+            this.dispatch("preStep");
 
             // Invoke pre-step callbacks
             for (i = 0; i !== N; i++)
@@ -898,7 +895,7 @@ namespace CANNON
             this.time += dt;
             this.stepnumber += 1;
 
-            this.dispatchEvent(World_step_postStepEvent);
+            this.dispatch("postStep");
 
             // Invoke post-step callbacks
             for (i = 0; i !== N; i++)
@@ -925,56 +922,12 @@ namespace CANNON
         {
             var additions = [];
             var removals = [];
-            var beginContactEvent: {
-                type: 'beginContact';
-                bodyA: Body;
-                bodyB: Body;
-            } = {
-                type: 'beginContact',
-                bodyA: null,
-                bodyB: null
-            };
-            var endContactEvent: {
-                type: 'endContact';
-                bodyA: Body;
-                bodyB: Body;
-            } = {
-                type: 'endContact',
-                bodyA: null,
-                bodyB: null
-            };
-            var beginShapeContactEvent: {
-                type: 'beginShapeContact';
-                bodyA: Body;
-                bodyB: Body;
-                shapeA: Shape;
-                shapeB: Shape;
-            } = {
-                type: 'beginShapeContact',
-                bodyA: null,
-                bodyB: null,
-                shapeA: null,
-                shapeB: null
-            };
-            var endShapeContactEvent: {
-                type: 'endShapeContact';
-                bodyA: Body;
-                bodyB: Body;
-                shapeA: Shape;
-                shapeB: Shape;
-            } = {
-                type: 'endShapeContact',
-                bodyA: null,
-                bodyB: null,
-                shapeA: null,
-                shapeB: null
-            };
             return function ()
             {
                 var _this = <World>this;
 
-                var hasBeginContact = _this.hasAnyEventListener('beginContact');
-                var hasEndContact = _this.hasAnyEventListener('endContact');
+                var hasBeginContact = _this.has('beginContact');
+                var hasEndContact = _this.has('endContact');
 
                 if (hasBeginContact || hasEndContact)
                 {
@@ -985,28 +938,28 @@ namespace CANNON
                 {
                     for (var i = 0, l = additions.length; i < l; i += 2)
                     {
-                        beginContactEvent.bodyA = _this.getBodyById(additions[i]);
-                        beginContactEvent.bodyB = _this.getBodyById(additions[i + 1]);
-                        _this.dispatchEvent(beginContactEvent);
+                        _this.dispatch("beginContact", {
+                            bodyA: _this.getBodyById(additions[i]),
+                            bodyB: _this.getBodyById(additions[i + 1])
+                        });
                     }
-                    beginContactEvent.bodyA = beginContactEvent.bodyB = null;
                 }
 
                 if (hasEndContact)
                 {
                     for (var i = 0, l = removals.length; i < l; i += 2)
                     {
-                        endContactEvent.bodyA = _this.getBodyById(removals[i]);
-                        endContactEvent.bodyB = _this.getBodyById(removals[i + 1]);
-                        _this.dispatchEvent(endContactEvent);
+                        _this.dispatch("endContact", {
+                            bodyA: _this.getBodyById(removals[i]),
+                            bodyB: _this.getBodyById(removals[i + 1])
+                        })
                     }
-                    endContactEvent.bodyA = endContactEvent.bodyB = null;
                 }
 
                 additions.length = removals.length = 0;
 
-                var hasBeginShapeContact = _this.hasAnyEventListener('beginShapeContact');
-                var hasEndShapeContact = _this.hasAnyEventListener('endShapeContact');
+                var hasBeginShapeContact = _this.has('beginShapeContact');
+                var hasEndShapeContact = _this.has('endShapeContact');
 
                 if (hasBeginShapeContact || hasEndShapeContact)
                 {
@@ -1019,13 +972,9 @@ namespace CANNON
                     {
                         var shapeA = _this.getShapeById(additions[i]);
                         var shapeB = _this.getShapeById(additions[i + 1]);
-                        beginShapeContactEvent.shapeA = shapeA;
-                        beginShapeContactEvent.shapeB = shapeB;
-                        beginShapeContactEvent.bodyA = shapeA.body;
-                        beginShapeContactEvent.bodyB = shapeB.body;
-                        _this.dispatchEvent(beginShapeContactEvent);
+
+                        _this.dispatch("beginShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body })
                     }
-                    beginShapeContactEvent.bodyA = beginShapeContactEvent.bodyB = beginShapeContactEvent.shapeA = beginShapeContactEvent.shapeB = null;
                 }
 
                 if (hasEndShapeContact)
@@ -1034,13 +983,9 @@ namespace CANNON
                     {
                         var shapeA = _this.getShapeById(removals[i]);
                         var shapeB = _this.getShapeById(removals[i + 1]);
-                        endShapeContactEvent.shapeA = shapeA;
-                        endShapeContactEvent.shapeB = shapeB;
-                        endShapeContactEvent.bodyA = shapeA.body;
-                        endShapeContactEvent.bodyB = shapeB.body;
-                        _this.dispatchEvent(endShapeContactEvent);
+
+                        _this.dispatch("endShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body });
                     }
-                    endShapeContactEvent.bodyA = endShapeContactEvent.bodyB = endShapeContactEvent.shapeA = endShapeContactEvent.shapeB = null;
                 }
 
             };
@@ -1094,16 +1039,9 @@ namespace CANNON
     }
 
     var step_tmp1 = new Vector3();
-
-    /**
-     * Dispatched after the world has stepped forward in time.
-     */
-    var World_step_postStepEvent = { type: "postStep" }; // Reusable event objects to save memory
     /**
      * Dispatched before the world steps forward in time.
      */
-    var World_step_preStepEvent = { type: "preStep" };
-    var World_step_collideEvent = { type: Body.COLLIDE_EVENT_NAME, body: null, contact: null };
     var World_step_oldContacts = [];// Pools for unused objects
     var World_step_frictionEquationPool = [];
     var World_step_p1 = []; // Reusable arrays for collision pairs

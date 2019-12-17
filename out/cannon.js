@@ -164,102 +164,99 @@ var CANNON;
     }());
     CANNON.JacobianElement = JacobianElement;
 })(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
-    /**
-     * Base class for objects that dispatches events.
-     */
-    var EventTarget = /** @class */ (function () {
-        function EventTarget() {
-        }
-        /**
-         * Add an event listener
-         * @param  type
-         * @param  listener
-         * @return The self object, for chainability.
-         */
-        EventTarget.prototype.addEventListener = function (type, listener) {
-            if (this._listeners === undefined) {
-                this._listeners = {};
-            }
-            var listeners = this._listeners;
-            if (listeners[type] === undefined) {
-                listeners[type] = [];
-            }
-            if (listeners[type].indexOf(listener) === -1) {
-                listeners[type].push(listener);
-            }
-            return this;
-        };
-        /**
-         * Check if an event listener is added
-         * @param type
-         * @param listener
-         */
-        EventTarget.prototype.hasEventListener = function (type, listener) {
-            if (this._listeners === undefined) {
-                return false;
-            }
-            var listeners = this._listeners;
-            if (listeners[type] !== undefined && listeners[type].indexOf(listener) !== -1) {
-                return true;
-            }
-            return false;
-        };
-        /**
-         * Check if any event listener of the given type is added
-         * @param type
-         */
-        EventTarget.prototype.hasAnyEventListener = function (type) {
-            if (this._listeners === undefined) {
-                return false;
-            }
-            var listeners = this._listeners;
-            return (listeners[type] !== undefined);
-        };
-        /**
-         * Remove an event listener
-         * @param type
-         * @param listener
-         * @return The self object, for chainability.
-         */
-        EventTarget.prototype.removeEventListener = function (type, listener) {
-            if (this._listeners === undefined) {
-                return this;
-            }
-            var listeners = this._listeners;
-            if (listeners[type] === undefined) {
-                return this;
-            }
-            var index = listeners[type].indexOf(listener);
-            if (index !== -1) {
-                listeners[type].splice(index, 1);
-            }
-            return this;
-        };
-        /**
-         * Emit an event.
-         * @param event
-         * @return The self object, for chainability.
-         */
-        EventTarget.prototype.dispatchEvent = function (event) {
-            if (this._listeners === undefined) {
-                return this;
-            }
-            var listeners = this._listeners;
-            var listenerArray = listeners[event.type];
-            if (listenerArray !== undefined) {
-                event.target = this;
-                for (var i = 0, l = listenerArray.length; i < l; i++) {
-                    listenerArray[i].call(this, event);
-                }
-            }
-            return this;
-        };
-        return EventTarget;
-    }());
-    CANNON.EventTarget = EventTarget;
-})(CANNON || (CANNON = {}));
+// namespace CANNON
+// {
+//     /**
+//      * Base class for objects that dispatches events.
+//      */
+//     export class EventTarget
+//     {
+//         private _listeners: { [s: string]: Function[] }
+//         /**
+//          * Add an event listener
+//          * @param  type
+//          * @param  listener
+//          * @return The self object, for chainability.
+//          */
+//         addEventListener(type: string, listener: Function)
+//         {
+//             if (this._listeners === undefined) { this._listeners = {}; }
+//             var listeners = this._listeners;
+//             if (listeners[type] === undefined)
+//             {
+//                 listeners[type] = [];
+//             }
+//             if (listeners[type].indexOf(listener) === - 1)
+//             {
+//                 listeners[type].push(listener);
+//             }
+//             return this;
+//         }
+//         /**
+//          * Check if an event listener is added
+//          * @param type
+//          * @param listener
+//          */
+//         hasEventListener(type: string, listener: Function)
+//         {
+//             if (this._listeners === undefined) { return false; }
+//             var listeners = this._listeners;
+//             if (listeners[type] !== undefined && listeners[type].indexOf(listener) !== - 1)
+//             {
+//                 return true;
+//             }
+//             return false;
+//         }
+//         /**
+//          * Check if any event listener of the given type is added
+//          * @param type
+//          */
+//         hasAnyEventListener(type: string)
+//         {
+//             if (this._listeners === undefined) { return false; }
+//             var listeners = this._listeners;
+//             return (listeners[type] !== undefined);
+//         }
+//         /**
+//          * Remove an event listener
+//          * @param type
+//          * @param listener
+//          * @return The self object, for chainability.
+//          */
+//         removeEventListener(type: string, listener: Function)
+//         {
+//             if (this._listeners === undefined) { return this; }
+//             var listeners = this._listeners;
+//             if (listeners[type] === undefined) { return this; }
+//             var index = listeners[type].indexOf(listener);
+//             if (index !== - 1)
+//             {
+//                 listeners[type].splice(index, 1);
+//             }
+//             return this;
+//         }
+//         /**
+//          * Emit an event.
+//          * @param event
+//          * @return The self object, for chainability.
+//          */
+//         dispatchEvent(event: { type: string, target?: EventTarget })
+//         {
+//             if (this._listeners === undefined) { return this; }
+//             var listeners = this._listeners;
+//             var listenerArray = listeners[event.type];
+//             if (listenerArray !== undefined)
+//             {
+//                 event.target = this;
+//                 for (var i = 0, l = listenerArray.length; i < l; i++)
+//                 {
+//                     listenerArray[i].call(this, event);
+//                 }
+//             }
+//             return this;
+//         }
+//     }
+// }
 var CANNON;
 (function (CANNON) {
     var Utils = /** @class */ (function () {
@@ -283,44 +280,6 @@ var CANNON;
         return Utils;
     }());
     CANNON.Utils = Utils;
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
-    var TupleDictionary = /** @class */ (function () {
-        function TupleDictionary() {
-            /**
-             * The data storage
-             */
-            this.data = {};
-        }
-        /**
-         * @param i
-         * @param j
-         */
-        TupleDictionary.prototype.get = function (i, j) {
-            if (i > j) {
-                // swap
-                var temp = j;
-                j = i;
-                i = temp;
-            }
-            return this.data[i + '-' + j];
-        };
-        TupleDictionary.prototype.set = function (i, j, value) {
-            if (i > j) {
-                var temp = j;
-                j = i;
-                i = temp;
-            }
-            var key = i + '-' + j;
-            this.data[key] = value;
-        };
-        TupleDictionary.prototype.reset = function () {
-            this.data = {};
-        };
-        return TupleDictionary;
-    }());
-    CANNON.TupleDictionary = TupleDictionary;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
@@ -3573,20 +3532,20 @@ var CANNON;
             _this.world = null;
             _this.axisIndex = 0;
             var axisList = _this.axisList;
-            _this._addBodyHandler = function (e) {
-                axisList.push(e.body);
-            };
-            _this._removeBodyHandler = function (e) {
-                var idx = axisList.indexOf(e.body);
-                if (idx !== -1) {
-                    axisList.splice(idx, 1);
-                }
-            };
             if (world) {
                 _this.setWorld(world);
             }
             return _this;
         }
+        SAPBroadphase.prototype._addBodyHandler = function (event) {
+            this.axisList.push(event.data);
+        };
+        SAPBroadphase.prototype._removeBodyHandler = function (event) {
+            var idx = this.axisList.indexOf(event.data);
+            if (idx !== -1) {
+                this.axisList.splice(idx, 1);
+            }
+        };
         /**
          * Change the world
          * @param world
@@ -3599,12 +3558,16 @@ var CANNON;
                 this.axisList.push(world.bodies[i]);
             }
             // Remove old handlers, if any
-            world.removeEventListener("addBody", this._addBodyHandler);
-            world.removeEventListener("removeBody", this._removeBodyHandler);
-            // Add handlers to update the list of bodies.
-            world.addEventListener("addBody", this._addBodyHandler);
-            world.addEventListener("removeBody", this._removeBodyHandler);
+            if (this.world) {
+                this.world.off("addBody", this._addBodyHandler, this);
+                this.world.off("removeBody", this._removeBodyHandler, this);
+            }
             this.world = world;
+            // Add handlers to update the list of bodies.
+            if (this.world) {
+                this.world.on("addBody", this._addBodyHandler, this);
+                this.world.on("removeBody", this._removeBodyHandler, this);
+            }
             this.dirty = true;
         };
         SAPBroadphase.insertionSortX = function (a) {
@@ -4526,7 +4489,7 @@ var CANNON;
             this.sleepState = 0;
             this._wakeUpAfterNarrowphase = false;
             if (s === Body.SLEEPING) {
-                this.dispatchEvent(Body.wakeupEvent);
+                this.dispatch("wakeup");
             }
         };
         /**
@@ -4549,14 +4512,14 @@ var CANNON;
                 if (sleepState === Body.AWAKE && speedSquared < speedLimitSquared) {
                     this.sleepState = Body.SLEEPY; // Sleepy
                     this.timeLastSleepy = time;
-                    this.dispatchEvent(Body.sleepyEvent);
+                    this.dispatch("sleepy");
                 }
                 else if (sleepState === Body.SLEEPY && speedSquared > speedLimitSquared) {
                     this.wakeUp(); // Wake up
                 }
                 else if (sleepState === Body.SLEEPY && (time - this.timeLastSleepy) > this.sleepTimeLimit) {
                     this.sleep(); // Sleeping
-                    this.dispatchEvent(Body.sleepEvent);
+                    this.dispatch("sleep");
                 }
             }
         };
@@ -4861,7 +4824,6 @@ var CANNON;
             // Update world inertia
             this.updateInertiaWorld();
         };
-        Body.COLLIDE_EVENT_NAME = "collide";
         /**
          * A dynamic body is fully simulated. Can be moved manually by the user, but normally they move according to forces. A dynamic body can collide with all body types. A dynamic body always has finite, non-zero mass.
          */
@@ -4878,27 +4840,8 @@ var CANNON;
         Body.SLEEPY = 1;
         Body.SLEEPING = 2;
         Body.idCounter = 0;
-        /**
-         * Dispatched after a sleeping body has woken up.
-         */
-        Body.wakeupEvent = {
-            type: "wakeup"
-        };
-        /**
-         * Dispatched after a body has gone in to the sleepy state.
-         */
-        Body.sleepyEvent = {
-            type: "sleepy"
-        };
-        /**
-         * Dispatched after a body has fallen asleep.
-         * @event sleep
-         */
-        Body.sleepEvent = {
-            type: "sleep"
-        };
         return Body;
-    }(CANNON.EventTarget));
+    }(feng3d.EventDispatcher));
     CANNON.Body = Body;
     var tmpVec = new CANNON.Vector3();
     var tmpQuat = new CANNON.Quaternion();
@@ -5201,14 +5144,12 @@ var CANNON;
          * @param world
          */
         RaycastVehicle.prototype.addToWorld = function (world) {
-            var constraints = this.constraints;
             world.addBody(this.chassisBody);
-            var that = this;
-            this.preStepCallback = function () {
-                that.updateVehicle(world.dt);
-            };
-            world.addEventListener('preStep', this.preStepCallback);
+            world.on('preStep', this._preStepCallback, this);
             this.world = world;
+        };
+        RaycastVehicle.prototype._preStepCallback = function () {
+            this.updateVehicle(this.world.dt);
         };
         /**
          * Get one of the wheel axles, world-oriented.
@@ -5326,9 +5267,8 @@ var CANNON;
          * @param world
          */
         RaycastVehicle.prototype.removeFromWorld = function (world) {
-            var constraints = this.constraints;
             world.remove(this.chassisBody);
-            world.removeEventListener('preStep', this.preStepCallback);
+            world.off('preStep', this._preStepCallback, this);
             this.world = null;
         };
         RaycastVehicle.prototype.castRay = function (wheel) {
@@ -5787,7 +5727,7 @@ var CANNON;
             for (var i = 0; i < constraints.length; i++) {
                 world.addConstraint(constraints[i]);
             }
-            world.addEventListener('preStep', this._update.bind(this));
+            world.on('preStep', this._update, this);
         };
         RigidVehicle.prototype._update = function () {
             var wheelForces = this.wheelForces;
@@ -6643,74 +6583,36 @@ var CANNON;
                 integrate: 0,
                 narrowphase: 0,
             };
-            /**
-             * Dispatched after a body has been added to the world.
-             */
-            _this_1.addBodyEvent = {
-                type: "addBody",
-                body: null
-            };
-            /**
-             * Dispatched after a body has been removed from the world.
-             */
-            _this_1.removeBodyEvent = {
-                type: "removeBody",
-                body: null
-            };
             _this_1.idToBodyMap = {};
             _this_1.emitContactEvents = (function () {
                 var additions = [];
                 var removals = [];
-                var beginContactEvent = {
-                    type: 'beginContact',
-                    bodyA: null,
-                    bodyB: null
-                };
-                var endContactEvent = {
-                    type: 'endContact',
-                    bodyA: null,
-                    bodyB: null
-                };
-                var beginShapeContactEvent = {
-                    type: 'beginShapeContact',
-                    bodyA: null,
-                    bodyB: null,
-                    shapeA: null,
-                    shapeB: null
-                };
-                var endShapeContactEvent = {
-                    type: 'endShapeContact',
-                    bodyA: null,
-                    bodyB: null,
-                    shapeA: null,
-                    shapeB: null
-                };
                 return function () {
                     var _this = this;
-                    var hasBeginContact = _this.hasAnyEventListener('beginContact');
-                    var hasEndContact = _this.hasAnyEventListener('endContact');
+                    var hasBeginContact = _this.has('beginContact');
+                    var hasEndContact = _this.has('endContact');
                     if (hasBeginContact || hasEndContact) {
                         _this.bodyOverlapKeeper.getDiff(additions, removals);
                     }
                     if (hasBeginContact) {
                         for (var i = 0, l = additions.length; i < l; i += 2) {
-                            beginContactEvent.bodyA = _this.getBodyById(additions[i]);
-                            beginContactEvent.bodyB = _this.getBodyById(additions[i + 1]);
-                            _this.dispatchEvent(beginContactEvent);
+                            _this.dispatch("beginContact", {
+                                bodyA: _this.getBodyById(additions[i]),
+                                bodyB: _this.getBodyById(additions[i + 1])
+                            });
                         }
-                        beginContactEvent.bodyA = beginContactEvent.bodyB = null;
                     }
                     if (hasEndContact) {
                         for (var i = 0, l = removals.length; i < l; i += 2) {
-                            endContactEvent.bodyA = _this.getBodyById(removals[i]);
-                            endContactEvent.bodyB = _this.getBodyById(removals[i + 1]);
-                            _this.dispatchEvent(endContactEvent);
+                            _this.dispatch("endContact", {
+                                bodyA: _this.getBodyById(removals[i]),
+                                bodyB: _this.getBodyById(removals[i + 1])
+                            });
                         }
-                        endContactEvent.bodyA = endContactEvent.bodyB = null;
                     }
                     additions.length = removals.length = 0;
-                    var hasBeginShapeContact = _this.hasAnyEventListener('beginShapeContact');
-                    var hasEndShapeContact = _this.hasAnyEventListener('endShapeContact');
+                    var hasBeginShapeContact = _this.has('beginShapeContact');
+                    var hasEndShapeContact = _this.has('endShapeContact');
                     if (hasBeginShapeContact || hasEndShapeContact) {
                         _this.shapeOverlapKeeper.getDiff(additions, removals);
                     }
@@ -6718,25 +6620,15 @@ var CANNON;
                         for (var i = 0, l = additions.length; i < l; i += 2) {
                             var shapeA = _this.getShapeById(additions[i]);
                             var shapeB = _this.getShapeById(additions[i + 1]);
-                            beginShapeContactEvent.shapeA = shapeA;
-                            beginShapeContactEvent.shapeB = shapeB;
-                            beginShapeContactEvent.bodyA = shapeA.body;
-                            beginShapeContactEvent.bodyB = shapeB.body;
-                            _this.dispatchEvent(beginShapeContactEvent);
+                            _this.dispatch("beginShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body });
                         }
-                        beginShapeContactEvent.bodyA = beginShapeContactEvent.bodyB = beginShapeContactEvent.shapeA = beginShapeContactEvent.shapeB = null;
                     }
                     if (hasEndShapeContact) {
                         for (var i = 0, l = removals.length; i < l; i += 2) {
                             var shapeA = _this.getShapeById(removals[i]);
                             var shapeB = _this.getShapeById(removals[i + 1]);
-                            endShapeContactEvent.shapeA = shapeA;
-                            endShapeContactEvent.shapeB = shapeB;
-                            endShapeContactEvent.bodyA = shapeA.body;
-                            endShapeContactEvent.bodyB = shapeB.body;
-                            _this.dispatchEvent(endShapeContactEvent);
+                            _this.dispatch("endShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body });
                         }
-                        endShapeContactEvent.bodyA = endShapeContactEvent.bodyB = endShapeContactEvent.shapeA = endShapeContactEvent.shapeB = null;
                     }
                 };
             })();
@@ -6778,14 +6670,6 @@ var CANNON;
             };
             _this_1.accumulator = 0;
             _this_1.subsystems = [];
-            _this_1.addBodyEvent = {
-                type: "addBody",
-                body: null
-            };
-            _this_1.removeBodyEvent = {
-                type: "removeBody",
-                body: null
-            };
             _this_1.idToBodyMap = {};
             _this_1.broadphase.setWorld(_this_1);
             return _this_1;
@@ -6839,9 +6723,8 @@ var CANNON;
                 body.initAngularVelocity.copy(body.angularVelocity);
                 body.initQuaternion.copy(body.quaternion);
             }
-            this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
-            this.dispatchEvent(this.addBodyEvent);
+            this.dispatch("addBody", body);
         };
         /**
          * Add a rigid body to the simulation.
@@ -6865,9 +6748,8 @@ var CANNON;
                 body.initAngularVelocity.copy(body.angularVelocity);
                 body.initQuaternion.copy(body.quaternion);
             }
-            this.addBodyEvent.body = body;
             this.idToBodyMap[body.id] = body;
-            this.dispatchEvent(this.addBodyEvent);
+            this.dispatch("addBody", body);
         };
         /**
          * Add a constraint to the simulation.
@@ -6971,9 +6853,8 @@ var CANNON;
                 for (var i = 0; i !== bodies.length; i++) {
                     bodies[i].index = i;
                 }
-                this.removeBodyEvent.body = body;
                 delete this.idToBodyMap[body.id];
-                this.dispatchEvent(this.removeBodyEvent);
+                this.dispatch("removeBody", body);
             }
         };
         /**
@@ -6989,9 +6870,8 @@ var CANNON;
                 for (var i = 0; i !== bodies.length; i++) {
                     bodies[i].index = i;
                 }
-                this.removeBodyEvent.body = body;
                 delete this.idToBodyMap[body.id];
-                this.dispatchEvent(this.removeBodyEvent);
+                this.dispatch("removeBody", body);
             }
         };
         World.prototype.getBodyById = function (id) {
@@ -7234,11 +7114,8 @@ var CANNON;
                 if (!this.collisionMatrixPrevious[bi_2.index + "_" + bj.index]) {
                     // First contact!
                     // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
-                    World_step_collideEvent.body = bj;
-                    World_step_collideEvent.contact = c_1;
-                    bi_2.dispatchEvent(World_step_collideEvent);
-                    World_step_collideEvent.body = bi_2;
-                    bj.dispatchEvent(World_step_collideEvent);
+                    bi_2.dispatch("collide", { body: bj, contact: c_1 });
+                    bj.dispatch("collide", { body: bi_2, contact: c_1 });
                 }
                 this.bodyOverlapKeeper.set(bi_2.id, bj.id);
                 this.shapeOverlapKeeper.set(si.id, sj.id);
@@ -7288,7 +7165,7 @@ var CANNON;
                     }
                 }
             }
-            this.dispatchEvent(World_step_preStepEvent);
+            this.dispatch("preStep");
             // Invoke pre-step callbacks
             for (i = 0; i !== N; i++) {
                 var bi = bodies[i];
@@ -7316,7 +7193,7 @@ var CANNON;
             // Update world time
             this.time += dt;
             this.stepnumber += 1;
-            this.dispatchEvent(World_step_postStepEvent);
+            this.dispatch("postStep");
             // Invoke post-step callbacks
             for (i = 0; i !== N; i++) {
                 var bi = bodies[i];
@@ -7347,7 +7224,7 @@ var CANNON;
         };
         World.worldNormal = new CANNON.Vector3(0, 0, 1);
         return World;
-    }(CANNON.EventTarget));
+    }(feng3d.EventDispatcher));
     CANNON.World = World;
     // Temp stuff
     var tmpAABB1 = new CANNON.Box3();
@@ -7369,14 +7246,8 @@ var CANNON;
     }
     var step_tmp1 = new CANNON.Vector3();
     /**
-     * Dispatched after the world has stepped forward in time.
-     */
-    var World_step_postStepEvent = { type: "postStep" }; // Reusable event objects to save memory
-    /**
      * Dispatched before the world steps forward in time.
      */
-    var World_step_preStepEvent = { type: "preStep" };
-    var World_step_collideEvent = { type: CANNON.Body.COLLIDE_EVENT_NAME, body: null, contact: null };
     var World_step_oldContacts = []; // Pools for unused objects
     var World_step_frictionEquationPool = [];
     var World_step_p1 = []; // Reusable arrays for collision pairs

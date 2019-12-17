@@ -106,11 +106,11 @@ namespace CANNON
 
             vehicle.addToWorld(world);
             test.ok(world.bodies.indexOf(vehicle.chassisBody) !== -1);
-            test.ok(world.hasEventListener('preStep', vehicle.preStepCallback));
+            test.ok(world.has('preStep'));
 
             vehicle.removeFromWorld(world);
             test.ok(world.bodies.indexOf(vehicle.chassisBody) === -1);
-            test.ok(!world.hasEventListener('preStep', vehicle.preStepCallback));
+            test.ok(!world.has('preStep'));
 
         });
     });

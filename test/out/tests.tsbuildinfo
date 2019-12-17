@@ -18,14 +18,13 @@
       "../src/RaycastVehicle.ts",
       "../src/Sphere.ts",
       "../src/Trimesh.ts",
-      "../src/TupleDictionary.ts",
       "../src/World.ts"
     ],
     "js": {
       "sections": [
         {
           "pos": 0,
-          "end": 69682,
+          "end": 68550,
           "kind": "text"
         }
       ]
@@ -34,7 +33,7 @@
       "sections": [
         {
           "pos": 0,
-          "end": 558,
+          "end": 527,
           "kind": "text"
         }
       ]

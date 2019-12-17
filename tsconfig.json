@@ -26,7 +26,6 @@
         //
         "src/math/Transform.ts",
         "src/math/JacobianElement.ts",
-        "src/utils/EventTarget.ts",
         "src/utils/Utils.ts",
         "src/constraints/Constraint.ts",
         "src/constraints/DistanceConstraint.ts",

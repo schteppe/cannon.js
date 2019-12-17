@@ -1144,10 +1144,10 @@ var CANNON;
             });
             vehicle.addToWorld(world);
             test.ok(world.bodies.indexOf(vehicle.chassisBody) !== -1);
-            test.ok(world.hasEventListener('preStep', vehicle.preStepCallback));
+            test.ok(world.has('preStep'));
             vehicle.removeFromWorld(world);
             test.ok(world.bodies.indexOf(vehicle.chassisBody) === -1);
-            test.ok(!world.hasEventListener('preStep', vehicle.preStepCallback));
+            test.ok(!world.has('preStep'));
         });
     });
     function createVehicle() {
@@ -1324,34 +1324,6 @@ var CANNON;
             world.addBody(planeBody);
             world.step(1 / 60);
             test.ok(true);
-        });
-    });
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
-    QUnit.module("TupleDictionary", function () {
-        QUnit.test("set", function (test) {
-            var t = new CANNON.TupleDictionary();
-            t.set(1, 2, 'lol');
-            test.equal(t.data['1-2'], 'lol');
-            t.set(2, 1, 'lol2');
-            test.equal(t.data['1-2'], 'lol2');
-        });
-        QUnit.test("get", function (test) {
-            var t = new CANNON.TupleDictionary();
-            t.set(1, 2, '1');
-            t.set(3, 2, '2');
-            test.equal(t.data['1-2'], t.get(1, 2));
-            test.equal(t.data['1-2'], t.get(2, 1));
-            test.equal(t.data['2-3'], t.get(2, 3));
-            test.equal(t.data['2-3'], t.get(3, 2));
-        });
-        QUnit.test("reset", function (test) {
-            var t = new CANNON.TupleDictionary(), empty = new CANNON.TupleDictionary();
-            t.reset();
-            t.set(1, 2, '1');
-            t.reset();
-            test.deepEqual(t.data, empty.data);
         });
     });
 })(CANNON || (CANNON = {}));
