@@ -168,15 +168,6 @@ declare namespace CANNON {
     }
 }
 declare namespace CANNON {
-    class Vec3Pool extends Pool<Vector3> {
-        constructor();
-        /**
-         * Construct a vector
-         */
-        constructObject(): feng3d.Vector3;
-    }
-}
-declare namespace CANNON {
     class TupleDictionary<T> {
         /**
          * The data storage
@@ -2875,10 +2866,6 @@ declare namespace CANNON {
         frictionEquationPool: FrictionEquation[];
         result: ContactEquation[];
         frictionResult: FrictionEquation[];
-        /**
-         * Pooled vectors.
-         */
-        v3pool: Vec3Pool;
         world: World;
         currentContactMaterial: ContactMaterial;
         enableFrictionReduction: boolean;

@@ -345,25 +345,6 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    var Vec3Pool = /** @class */ (function (_super) {
-        __extends(Vec3Pool, _super);
-        function Vec3Pool() {
-            var _this = _super.call(this) || this;
-            _this.type = CANNON.Vector3;
-            return _this;
-        }
-        /**
-         * Construct a vector
-         */
-        Vec3Pool.prototype.constructObject = function () {
-            return new CANNON.Vector3();
-        };
-        return Vec3Pool;
-    }(CANNON.Pool));
-    CANNON.Vec3Pool = Vec3Pool;
-})(CANNON || (CANNON = {}));
-var CANNON;
-(function (CANNON) {
     var TupleDictionary = /** @class */ (function () {
         function TupleDictionary() {
             /**
@@ -7497,7 +7478,6 @@ var CANNON;
             this.frictionEquationPool = [];
             this.result = [];
             this.frictionResult = [];
-            this.v3pool = new CANNON.Vec3Pool();
             this.world = world;
             this.currentContactMaterial = null;
             this.enableFrictionReduction = false;
@@ -7928,7 +7908,6 @@ var CANNON;
             }
         };
         Narrowphase.prototype.sphereBox = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
-            var v3pool = this.v3pool;
             // we refer to the box as body j
             var sides = sphereBox_sides;
             xi.subTo(xj, box_to_sphere);
@@ -8004,7 +7983,7 @@ var CANNON;
                 this.createFrictionEquationsFromContact(r_1, this.frictionResult);
             }
             // Check corners
-            var rj = v3pool.get();
+            var rj = new CANNON.Vector3();
             var sphere_to_corner = sphereBox_sphere_to_corner;
             for (var j = 0; j !== 2 && !found; j++) {
                 for (var k = 0; k !== 2 && !found; k++) {
@@ -8053,14 +8032,13 @@ var CANNON;
                     }
                 }
             }
-            v3pool.release(rj);
             rj = null;
             // Check edges
-            var edgeTangent = v3pool.get();
-            var edgeCenter = v3pool.get();
-            var r = v3pool.get(); // r = edge center to sphere center
-            var orthogonal = v3pool.get();
-            var dist1 = v3pool.get();
+            var edgeTangent = new CANNON.Vector3();
+            var edgeCenter = new CANNON.Vector3();
+            var r = new CANNON.Vector3(); // r = edge center to sphere center
+            var orthogonal = new CANNON.Vector3();
+            var dist1 = new CANNON.Vector3();
             var Nsides = sides.length;
             for (var j = 0; j !== Nsides && !found; j++) {
                 for (var k = 0; k !== Nsides && !found; k++) {
@@ -8113,10 +8091,8 @@ var CANNON;
                     }
                 }
             }
-            v3pool.release(edgeTangent, edgeCenter, r, orthogonal, dist1);
         };
         Narrowphase.prototype.sphereConvex = function (si, sj, xi, xj, qi, qj, bi, bj, rsi, rsj, justTest) {
-            var v3pool = this.v3pool;
             xi.subTo(xj, convex_to_sphere);
             var normals = sj.faceNormals;
             var faces = sj.faces;
@@ -8184,7 +8160,7 @@ var CANNON;
                     // Intersects plane. Now check if the sphere is inside the face polygon
                     var faceVerts = []; // Face vertices, in world coords
                     for (var j = 0, Nverts = face.length; j !== Nverts; j++) {
-                        var worldVertex = v3pool.get();
+                        var worldVertex = new CANNON.Vector3();
                         qj.vmult(verts[face[j]], worldVertex);
                         xj.addTo(worldVertex, worldVertex);
                         faceVerts.push(worldVertex);
@@ -8197,9 +8173,9 @@ var CANNON;
                         var r = this.createContactEquation(bi, bj, si, sj, rsi, rsj);
                         worldNormal.scaleNumberTo(-R, r.ri); // Contact offset, from sphere center to contact
                         worldNormal.negateTo(r.ni); // Normal pointing out of sphere
-                        var penetrationVec2 = v3pool.get();
+                        var penetrationVec2 = new CANNON.Vector3();
                         worldNormal.scaleNumberTo(-penetration, penetrationVec2);
-                        var penetrationSpherePoint = v3pool.get();
+                        var penetrationSpherePoint = new CANNON.Vector3();
                         worldNormal.scaleNumberTo(-R, penetrationSpherePoint);
                         //xi.subTo(xj).addTo(penetrationSpherePoint).addTo(penetrationVec2 , r.rj);
                         xi.subTo(xj, r.rj);
@@ -8211,22 +8187,16 @@ var CANNON;
                         // Should be relative to the body.
                         r.ri.addTo(xi, r.ri);
                         r.ri.subTo(bi.position, r.ri);
-                        v3pool.release(penetrationVec2);
-                        v3pool.release(penetrationSpherePoint);
                         this.result.push(r);
                         this.createFrictionEquationsFromContact(r, this.frictionResult);
-                        // Release world vertices
-                        for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
-                            v3pool.release(faceVerts[j]);
-                        }
                         return; // We only expect *one* face contact
                     }
                     else {
                         // Edge?
                         for (var j = 0; j !== face.length; j++) {
                             // Get two world transformed vertices
-                            var v1 = v3pool.get();
-                            var v2 = v3pool.get();
+                            var v1 = new CANNON.Vector3();
+                            var v2 = new CANNON.Vector3();
                             qj.vmult(verts[face[(j + 1) % face.length]], v1);
                             qj.vmult(verts[face[(j + 2) % face.length]], v2);
                             xj.addTo(v1, v1);
@@ -8238,14 +8208,14 @@ var CANNON;
                             var edgeUnit = sphereConvex_edgeUnit;
                             edge.unit(edgeUnit);
                             // p is xi projected onto the edge
-                            var p = v3pool.get();
-                            var v1_to_xi = v3pool.get();
+                            var p = new CANNON.Vector3();
+                            var v1_to_xi = new CANNON.Vector3();
                             xi.subTo(v1, v1_to_xi);
                             var dot = v1_to_xi.dot(edgeUnit);
                             edgeUnit.scaleNumberTo(dot, p);
                             p.addTo(v1, p);
                             // Compute a vector from p to the center of the sphere
-                            var xi_to_p = v3pool.get();
+                            var xi_to_p = new CANNON.Vector3();
                             p.subTo(xi, xi_to_p);
                             // Collision if the edge-sphere distance is less than the radius
                             // AND if p is in between v1 and v2
@@ -8267,27 +8237,9 @@ var CANNON;
                                 r.ri.subTo(bi.position, r.ri);
                                 this.result.push(r);
                                 this.createFrictionEquationsFromContact(r, this.frictionResult);
-                                // Release world vertices
-                                for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
-                                    v3pool.release(faceVerts[j]);
-                                }
-                                v3pool.release(v1);
-                                v3pool.release(v2);
-                                v3pool.release(p);
-                                v3pool.release(xi_to_p);
-                                v3pool.release(v1_to_xi);
                                 return;
                             }
-                            v3pool.release(v1);
-                            v3pool.release(v2);
-                            v3pool.release(p);
-                            v3pool.release(xi_to_p);
-                            v3pool.release(v1_to_xi);
                         }
-                    }
-                    // Release world vertices
-                    for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
-                        v3pool.release(faceVerts[j]);
                     }
                 }
             }

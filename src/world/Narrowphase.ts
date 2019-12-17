@@ -9,10 +9,6 @@ namespace CANNON
         frictionEquationPool: FrictionEquation[];
         result: ContactEquation[];
         frictionResult: FrictionEquation[];
-        /**
-         * Pooled vectors.
-         */
-        v3pool: Vec3Pool;
         world: World;
         currentContactMaterial: ContactMaterial;
         enableFrictionReduction: boolean;
@@ -33,8 +29,6 @@ namespace CANNON
 
             this.result = [];
             this.frictionResult = [];
-
-            this.v3pool = new Vec3Pool();
 
             this.world = world;
             this.currentContactMaterial = null;
@@ -669,8 +663,6 @@ namespace CANNON
 
         sphereBox(si: Sphere, sj: Box, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
-            var v3pool = this.v3pool;
-
             // we refer to the box as body j
             var sides = sphereBox_sides;
             xi.subTo(xj, box_to_sphere);
@@ -761,7 +753,7 @@ namespace CANNON
             }
 
             // Check corners
-            var rj = v3pool.get();
+            var rj = new Vector3();
             var sphere_to_corner = sphereBox_sphere_to_corner;
             for (var j = 0; j !== 2 && !found; j++)
             {
@@ -822,15 +814,14 @@ namespace CANNON
                     }
                 }
             }
-            v3pool.release(rj);
             rj = null;
 
             // Check edges
-            var edgeTangent = v3pool.get();
-            var edgeCenter = v3pool.get();
-            let r = v3pool.get(); // r = edge center to sphere center
-            var orthogonal = v3pool.get();
-            var dist1: Vector3 = v3pool.get();
+            var edgeTangent = new Vector3();
+            var edgeCenter = new Vector3();
+            let r = new Vector3(); // r = edge center to sphere center
+            var orthogonal = new Vector3();
+            var dist1: Vector3 = new Vector3();
             var Nsides = sides.length;
             for (var j = 0; j !== Nsides && !found; j++)
             {
@@ -896,12 +887,10 @@ namespace CANNON
                     }
                 }
             }
-            v3pool.release(edgeTangent, edgeCenter, r, orthogonal, dist1);
         }
 
         sphereConvex(si: Sphere, sj: ConvexPolyhedron, xi: Vector3, xj: Vector3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body, rsi: Shape, rsj: Shape, justTest: boolean)
         {
-            var v3pool = this.v3pool;
             xi.subTo(xj, convex_to_sphere);
             var normals = sj.faceNormals;
             var faces = sj.faces;
@@ -989,7 +978,7 @@ namespace CANNON
                     var faceVerts = []; // Face vertices, in world coords
                     for (var j = 0, Nverts = face.length; j !== Nverts; j++)
                     {
-                        var worldVertex = v3pool.get();
+                        var worldVertex = new Vector3();
                         qj.vmult(<Vector3>verts[face[j]], worldVertex);
                         xj.addTo(worldVertex, worldVertex);
                         faceVerts.push(worldVertex);
@@ -1007,9 +996,9 @@ namespace CANNON
                         worldNormal.scaleNumberTo(-R, r.ri); // Contact offset, from sphere center to contact
                         worldNormal.negateTo(r.ni); // Normal pointing out of sphere
 
-                        var penetrationVec2 = v3pool.get();
+                        var penetrationVec2 = new Vector3();
                         worldNormal.scaleNumberTo(-penetration, penetrationVec2);
-                        var penetrationSpherePoint = v3pool.get();
+                        var penetrationSpherePoint = new Vector3();
                         worldNormal.scaleNumberTo(-R, penetrationSpherePoint);
 
                         //xi.subTo(xj).addTo(penetrationSpherePoint).addTo(penetrationVec2 , r.rj);
@@ -1025,17 +1014,8 @@ namespace CANNON
                         r.ri.addTo(xi, r.ri);
                         r.ri.subTo(bi.position, r.ri);
 
-                        v3pool.release(penetrationVec2);
-                        v3pool.release(penetrationSpherePoint);
-
                         this.result.push(r);
                         this.createFrictionEquationsFromContact(r, this.frictionResult);
-
-                        // Release world vertices
-                        for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++)
-                        {
-                            v3pool.release(faceVerts[j]);
-                        }
 
                         return; // We only expect *one* face contact
                     } else
@@ -1045,8 +1025,8 @@ namespace CANNON
                         {
 
                             // Get two world transformed vertices
-                            var v1 = v3pool.get();
-                            var v2 = v3pool.get();
+                            var v1 = new Vector3();
+                            var v2 = new Vector3();
                             qj.vmult(<Vector3>verts[face[(j + 1) % face.length]], v1);
                             qj.vmult(<Vector3>verts[face[(j + 2) % face.length]], v2);
                             xj.addTo(v1, v1);
@@ -1061,15 +1041,15 @@ namespace CANNON
                             edge.unit(edgeUnit);
 
                             // p is xi projected onto the edge
-                            var p = v3pool.get();
-                            var v1_to_xi = v3pool.get();
+                            var p = new Vector3();
+                            var v1_to_xi = new Vector3();
                             xi.subTo(v1, v1_to_xi);
                             var dot = v1_to_xi.dot(edgeUnit);
                             edgeUnit.scaleNumberTo(dot, p);
                             p.addTo(v1, p);
 
                             // Compute a vector from p to the center of the sphere
-                            var xi_to_p = v3pool.get();
+                            var xi_to_p = new Vector3();
                             p.subTo(xi, xi_to_p);
 
                             // Collision if the edge-sphere distance is less than the radius
@@ -1100,33 +1080,9 @@ namespace CANNON
                                 this.result.push(r);
                                 this.createFrictionEquationsFromContact(r, this.frictionResult);
 
-                                // Release world vertices
-                                for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++)
-                                {
-                                    v3pool.release(faceVerts[j]);
-                                }
-
-                                v3pool.release(v1);
-                                v3pool.release(v2);
-                                v3pool.release(p);
-                                v3pool.release(xi_to_p);
-                                v3pool.release(v1_to_xi);
-
                                 return;
                             }
-
-                            v3pool.release(v1);
-                            v3pool.release(v2);
-                            v3pool.release(p);
-                            v3pool.release(xi_to_p);
-                            v3pool.release(v1_to_xi);
                         }
-                    }
-
-                    // Release world vertices
-                    for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++)
-                    {
-                        v3pool.release(faceVerts[j]);
                     }
                 }
             }
