@@ -314,7 +314,7 @@ declare namespace CANNON {
         material: Material;
         body: Body;
         faces: number[][];
-        indices: Int16Array;
+        indices: number[];
         vertices: Vector3[] | number[];
         faceNormals: Vector3[];
         convexPolyhedronRepresentation: Shape;
@@ -815,7 +815,7 @@ declare namespace CANNON {
         /**
          * The normals data.
          */
-        normals: Float32Array;
+        normals: number[];
         /**
          * The local AABB of the mesh.
          */
@@ -823,7 +823,7 @@ declare namespace CANNON {
         /**
          * References to vertex pairs, making up all unique edges in the trimesh.
          */
-        edges: Int16Array;
+        edges: number[];
         /**
          * Local scaling of the mesh. Use .setScale() to set it.
          */

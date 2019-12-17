@@ -164,99 +164,6 @@ var CANNON;
     }());
     CANNON.JacobianElement = JacobianElement;
 })(CANNON || (CANNON = {}));
-// namespace CANNON
-// {
-//     /**
-//      * Base class for objects that dispatches events.
-//      */
-//     export class EventTarget
-//     {
-//         private _listeners: { [s: string]: Function[] }
-//         /**
-//          * Add an event listener
-//          * @param  type
-//          * @param  listener
-//          * @return The self object, for chainability.
-//          */
-//         addEventListener(type: string, listener: Function)
-//         {
-//             if (this._listeners === undefined) { this._listeners = {}; }
-//             var listeners = this._listeners;
-//             if (listeners[type] === undefined)
-//             {
-//                 listeners[type] = [];
-//             }
-//             if (listeners[type].indexOf(listener) === - 1)
-//             {
-//                 listeners[type].push(listener);
-//             }
-//             return this;
-//         }
-//         /**
-//          * Check if an event listener is added
-//          * @param type
-//          * @param listener
-//          */
-//         hasEventListener(type: string, listener: Function)
-//         {
-//             if (this._listeners === undefined) { return false; }
-//             var listeners = this._listeners;
-//             if (listeners[type] !== undefined && listeners[type].indexOf(listener) !== - 1)
-//             {
-//                 return true;
-//             }
-//             return false;
-//         }
-//         /**
-//          * Check if any event listener of the given type is added
-//          * @param type
-//          */
-//         hasAnyEventListener(type: string)
-//         {
-//             if (this._listeners === undefined) { return false; }
-//             var listeners = this._listeners;
-//             return (listeners[type] !== undefined);
-//         }
-//         /**
-//          * Remove an event listener
-//          * @param type
-//          * @param listener
-//          * @return The self object, for chainability.
-//          */
-//         removeEventListener(type: string, listener: Function)
-//         {
-//             if (this._listeners === undefined) { return this; }
-//             var listeners = this._listeners;
-//             if (listeners[type] === undefined) { return this; }
-//             var index = listeners[type].indexOf(listener);
-//             if (index !== - 1)
-//             {
-//                 listeners[type].splice(index, 1);
-//             }
-//             return this;
-//         }
-//         /**
-//          * Emit an event.
-//          * @param event
-//          * @return The self object, for chainability.
-//          */
-//         dispatchEvent(event: { type: string, target?: EventTarget })
-//         {
-//             if (this._listeners === undefined) { return this; }
-//             var listeners = this._listeners;
-//             var listenerArray = listeners[event.type];
-//             if (listenerArray !== undefined)
-//             {
-//                 event.target = this;
-//                 for (var i = 0, l = listenerArray.length; i < l; i++)
-//                 {
-//                     listenerArray[i].call(this, event);
-//                 }
-//             }
-//             return this;
-//         }
-//     }
-// }
 var CANNON;
 (function (CANNON) {
     var Utils = /** @class */ (function () {
@@ -2394,12 +2301,12 @@ var CANNON;
             var _this = _super.call(this, {
                 type: CANNON.Shape.types.TRIMESH
             }) || this;
-            _this.vertices = new Float32Array(vertices);
+            _this.vertices = vertices.concat();
             /**
              * Array of integers, indicating which vertices each triangle consists of. The length of this array is thus 3 times the number of triangles.
              */
-            _this.indices = new Int16Array(indices);
-            _this.normals = new Float32Array(indices.length);
+            _this.indices = indices.concat();
+            _this.normals = [];
             _this.aabb = new CANNON.Box3();
             _this.edges = null;
             _this.scale = new CANNON.Vector3(1, 1, 1);
@@ -2515,7 +2422,7 @@ var CANNON;
                 add(c, a);
             }
             var keys = Object.keys(edges);
-            this.edges = new Int16Array(keys.length * 2);
+            this.edges = [];
             for (var i = 0; i < keys.length; i++) {
                 var indices = keys[i].split('_');
                 this.edges[2 * i] = parseInt(indices[0], 10);

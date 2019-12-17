@@ -31,7 +31,7 @@ namespace CANNON
         body: Body;
 
         faces: number[][];
-        indices: Int16Array;
+        indices: number[];
         vertices: Vector3[] | number[];
         faceNormals: Vector3[];
 

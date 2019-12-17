@@ -6,7 +6,7 @@ namespace CANNON
         /**
          * The normals data.
          */
-        normals: Float32Array;
+        normals: number[];
         /**
          * The local AABB of the mesh.
          */
@@ -14,7 +14,7 @@ namespace CANNON
         /**
          * References to vertex pairs, making up all unique edges in the trimesh.
          */
-        edges: Int16Array;
+        edges: number[];
         /**
          * Local scaling of the mesh. Use .setScale() to set it.
          */
@@ -47,14 +47,14 @@ namespace CANNON
                 type: Shape.types.TRIMESH
             });
 
-            this.vertices = <any>new Float32Array(vertices);
+            this.vertices = vertices.concat();
 
             /**
              * Array of integers, indicating which vertices each triangle consists of. The length of this array is thus 3 times the number of triangles.
              */
-            this.indices = <any>new Int16Array(indices);
+            this.indices = indices.concat();
 
-            this.normals = new Float32Array(indices.length);
+            this.normals = [];
 
             this.aabb = new Box3();
 
@@ -206,7 +206,7 @@ namespace CANNON
                 add(c, a);
             }
             var keys = Object.keys(edges);
-            this.edges = new Int16Array(keys.length * 2);
+            this.edges = [];
             for (var i = 0; i < keys.length; i++)
             {
                 var indices = keys[i].split('_');
