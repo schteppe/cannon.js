@@ -492,7 +492,7 @@ namespace CANNON
 
                     var distance = intersectPoint.distance(from);
 
-                    if (!(Ray.pointInTriangle(intersectPoint, a, b, c) || Ray.pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance)
+                    if (!(feng3d.Triangle3.containsPoint(a, b, c, intersectPoint) || feng3d.Triangle3.containsPoint(b, a, c, intersectPoint)) || distance > fromToDistance)
                     {
                         continue;
                     }
@@ -621,7 +621,7 @@ namespace CANNON
 
                 var squaredDistance = intersectPoint.distanceSquared(localFrom);
 
-                if (!(Ray.pointInTriangle(intersectPoint, b, a, c) || Ray.pointInTriangle(intersectPoint, a, b, c)) || squaredDistance > fromToDistanceSquared)
+                if (!(feng3d.Triangle3.containsPoint(b, a, c, intersectPoint) || feng3d.Triangle3.containsPoint(a, b, c, intersectPoint)) || squaredDistance > fromToDistanceSquared)
                 {
                     continue;
                 }
@@ -747,28 +747,6 @@ namespace CANNON
             return true;
         }
 
-        /*
-         * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
-         */
-        static pointInTriangle(p: Vector3, a: Vector3, b: Vector3, c: Vector3)
-        {
-            c.subTo(a, v0);
-            b.subTo(a, v1);
-            p.subTo(a, v2);
-
-            var dot00 = v0.dot(v0);
-            var dot01 = v0.dot(v1);
-            var dot02 = v0.dot(v2);
-            var dot11 = v1.dot(v1);
-            var dot12 = v1.dot(v2);
-
-            var u: number, v: number;
-
-            return ((u = dot11 * dot02 - dot01 * dot12) >= 0) &&
-                ((v = dot00 * dot12 - dot01 * dot02) >= 0) &&
-                (u + v < (dot00 * dot11 - dot01 * dot01));
-        }
-
     }
 
     var tmpAABB = new Box3();
@@ -804,7 +782,7 @@ namespace CANNON
     var intersectTrimesh_worldNormal = new Vector3();
     var intersectTrimesh_worldIntersectPoint = new Vector3();
     var intersectTrimesh_localAABB = new Box3();
-    var intersectTrimesh_triangles = [];
+    var intersectTrimesh_triangles: number[] = [];
     var intersectTrimesh_treeTransform = new Transform();
 
     var intersectConvexOptions = {

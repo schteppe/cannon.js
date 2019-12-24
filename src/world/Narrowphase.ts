@@ -595,7 +595,7 @@ namespace CANNON
 
                 // tmp is now the sphere position projected to the triangle plane
                 dist = tmp.distance(localSpherePos);
-                if (Ray.pointInTriangle(tmp, va, vb, vc) && dist < sphereShape.radius)
+                if (feng3d.Triangle3.containsPoint(va, vb, vc, tmp) && dist < sphereShape.radius)
                 {
                     if (justTest)
                     {

@@ -3972,7 +3972,7 @@ var CANNON;
                     x.addTo(b, b);
                     x.addTo(c, c);
                     var distance = intersectPoint.distance(from);
-                    if (!(Ray.pointInTriangle(intersectPoint, a, b, c) || Ray.pointInTriangle(intersectPoint, b, a, c)) || distance > fromToDistance) {
+                    if (!(feng3d.Triangle3.containsPoint(a, b, c, intersectPoint) || feng3d.Triangle3.containsPoint(b, a, c, intersectPoint)) || distance > fromToDistance) {
                         continue;
                     }
                     this.reportIntersection(normal, intersectPoint, reportedShape, body, fi);
@@ -4065,7 +4065,7 @@ var CANNON;
                 mesh.getVertex(indices[trianglesIndex * 3 + 1], b);
                 mesh.getVertex(indices[trianglesIndex * 3 + 2], c);
                 var squaredDistance = intersectPoint.distanceSquared(localFrom);
-                if (!(Ray.pointInTriangle(intersectPoint, b, a, c) || Ray.pointInTriangle(intersectPoint, a, b, c)) || squaredDistance > fromToDistanceSquared) {
+                if (!(feng3d.Triangle3.containsPoint(b, a, c, intersectPoint) || feng3d.Triangle3.containsPoint(a, b, c, intersectPoint)) || squaredDistance > fromToDistanceSquared) {
                     continue;
                 }
                 // transform intersectpoint and normal to world
@@ -4140,23 +4140,6 @@ var CANNON;
                 return false;
             }
             return true;
-        };
-        /*
-         * As per "Barycentric Technique" as named here http://www.blackpawn.com/texts/pointinpoly/default.html But without the division
-         */
-        Ray.pointInTriangle = function (p, a, b, c) {
-            c.subTo(a, v0);
-            b.subTo(a, v1);
-            p.subTo(a, v2);
-            var dot00 = v0.dot(v0);
-            var dot01 = v0.dot(v1);
-            var dot02 = v0.dot(v2);
-            var dot11 = v1.dot(v1);
-            var dot12 = v1.dot(v2);
-            var u, v;
-            return ((u = dot11 * dot02 - dot01 * dot12) >= 0) &&
-                ((v = dot00 * dot12 - dot01 * dot02) >= 0) &&
-                (u + v < (dot00 * dot11 - dot01 * dot01));
         };
         Ray.CLOSEST = 1;
         Ray.ANY = 2;
@@ -7490,7 +7473,7 @@ var CANNON;
                 localSpherePos.subTo(tmp, tmp);
                 // tmp is now the sphere position projected to the triangle plane
                 dist = tmp.distance(localSpherePos);
-                if (CANNON.Ray.pointInTriangle(tmp, va, vb, vc) && dist < sphereShape.radius) {
+                if (feng3d.Triangle3.containsPoint(va, vb, vc, tmp) && dist < sphereShape.radius) {
                     if (justTest) {
                         return true;
                     }

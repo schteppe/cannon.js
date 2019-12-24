@@ -1412,7 +1412,6 @@ declare namespace CANNON {
          * Check if the AABB is hit by a ray.
          */
         overlapsBox3(box3: Box3): boolean;
-        static pointInTriangle(p: Vector3, a: Vector3, b: Vector3, c: Vector3): boolean;
     }
 }
 declare namespace CANNON {
