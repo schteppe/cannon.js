@@ -752,24 +752,14 @@ namespace CANNON
     var tmpAABB = new Box3();
     var tmpArray = [];
 
-    var v1 = new Vector3();
-    var v2 = new Vector3();
-
     var intersectBody_xi = new Vector3();
     var intersectBody_qi = new Quaternion();
 
-
-    var vector = new Vector3();
-    var normal = new Vector3();
     var intersectPoint = new Vector3();
 
     var a = new Vector3();
     var b = new Vector3();
     var c = new Vector3();
-    var d = new Vector3();
-
-    var tmpRaycastResult = new RaycastResult();
-
 
     var v0 = new Vector3();
     var intersect = new Vector3();
@@ -791,7 +781,6 @@ namespace CANNON
     var worldPillarOffset = new Vector3();
     var intersectHeightfield_localRay = new Ray();
     var intersectHeightfield_index = [];
-    var intersectHeightfield_minMax = [];
 
     var Ray_intersectSphere_intersectionPoint = new Vector3();
     var Ray_intersectSphere_normal = new Vector3();
