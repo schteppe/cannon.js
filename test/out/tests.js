@@ -1348,7 +1348,7 @@ var CANNON;
             var from = new CANNON.Vector3(-10, 0, 0);
             var to = new CANNON.Vector3(10, 0, 0);
             var result = new CANNON.RaycastResult();
-            world.rayTest(from, to, result);
+            world.raycastClosest(from, to, {}, result);
             test.equal(result.hasHit, true);
         });
         QUnit.test("rayTestSphere", function (test) {
@@ -1359,7 +1359,7 @@ var CANNON;
             var from = new CANNON.Vector3(-10, 0, 0);
             var to = new CANNON.Vector3(10, 0, 0);
             var result = new CANNON.RaycastResult();
-            world.rayTest(from, to, result);
+            world.raycastClosest(from, to, {}, result);
             test.equal(result.hasHit, true);
         });
         QUnit.test("raycastClosest single", function (test) {

@@ -283,7 +283,7 @@ namespace CANNON
          */
         removeFromWorld(world: World)
         {
-            world.remove(this.chassisBody);
+            world.removeBody(this.chassisBody);
             world.off('preStep', this._preStepCallback, this);
             this.world = null;
         }
@@ -313,7 +313,9 @@ namespace CANNON
             chassisBody.collisionResponse = false;
 
             // Cast ray against world
-            this.world.rayTest(source, target, raycastResult);
+            this.world.raycastClosest(source, target, {
+                skipBackfaces: true
+            }, raycastResult);
             chassisBody.collisionResponse = oldState;
 
             var object = raycastResult.body;

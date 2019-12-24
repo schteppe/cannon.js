@@ -4306,8 +4306,6 @@ var CANNON;
             var _this = _super.call(this) || this;
             _this.id = Body.idCounter++;
             _this.world = null;
-            _this.preStep = null;
-            _this.postStep = null;
             _this.vlambda = new CANNON.Vector3();
             _this.collisionFilterGroup = typeof (options.collisionFilterGroup) === 'number' ? options.collisionFilterGroup : 1;
             _this.collisionFilterMask = typeof (options.collisionFilterMask) === 'number' ? options.collisionFilterMask : -1;
@@ -5174,7 +5172,7 @@ var CANNON;
          * @param world
          */
         RaycastVehicle.prototype.removeFromWorld = function (world) {
-            world.remove(this.chassisBody);
+            world.removeBody(this.chassisBody);
             world.off('preStep', this._preStepCallback, this);
             this.world = null;
         };
@@ -5195,7 +5193,9 @@ var CANNON;
             var oldState = chassisBody.collisionResponse;
             chassisBody.collisionResponse = false;
             // Cast ray against world
-            this.world.rayTest(source, target, raycastResult);
+            this.world.raycastClosest(source, target, {
+                skipBackfaces: true
+            }, raycastResult);
             chassisBody.collisionResponse = oldState;
             var object = raycastResult.body;
             wheel.raycastResult.groundObject = 0; //?
@@ -5650,7 +5650,7 @@ var CANNON;
             var constraints = this.constraints;
             var bodies = this.wheelBodies.concat([this.chassisBody]);
             for (var i = 0; i < bodies.length; i++) {
-                world.remove(bodies[i]);
+                world.removeBody(bodies[i]);
             }
             for (var i = 0; i < constraints.length; i++) {
                 world.removeConstraint(constraints[i]);
@@ -6592,7 +6592,6 @@ var CANNON;
         };
         /**
          * Get number of objects in the world.
-         * @deprecated
          */
         World.prototype.numObjects = function () {
             return this.bodies.length;
@@ -6610,36 +6609,10 @@ var CANNON;
         };
         /**
          * Add a rigid body to the simulation.
-         * @param body
-         *
-         * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
-         * @todo Adding an array of bodies should be possible. This would save some loops too
-         * @deprecated Use .addBody instead
-         */
-        World.prototype.add = function (body) {
-            if (this.bodies.indexOf(body) !== -1) {
-                return;
-            }
-            body.index = this.bodies.length;
-            this.bodies.push(body);
-            body.world = this;
-            body.initPosition.copy(body.position);
-            body.initVelocity.copy(body.velocity);
-            body.timeLastSleepy = this.time;
-            if (body instanceof CANNON.Body) {
-                body.initAngularVelocity.copy(body.angularVelocity);
-                body.initQuaternion.copy(body.quaternion);
-            }
-            this.idToBodyMap[body.id] = body;
-            this.dispatch("addBody", body);
-        };
-        /**
-         * Add a rigid body to the simulation.
          * @method add
          * @param {Body} body
          * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
          * @todo Adding an array of bodies should be possible. This would save some loops too
-         * @deprecated Use .addBody instead
          */
         World.prototype.addBody = function (body) {
             if (this.bodies.indexOf(body) !== -1) {
@@ -6673,27 +6646,6 @@ var CANNON;
             var idx = this.constraints.indexOf(c);
             if (idx !== -1) {
                 this.constraints.splice(idx, 1);
-            }
-        };
-        /**
-         * Raycast test
-         * @param from
-         * @param to
-         * @param result
-         * @deprecated Use .raycastAll, .raycastClosest or .raycastAny instead.
-         */
-        World.prototype.rayTest = function (from, to, result) {
-            if (result instanceof CANNON.RaycastResult) {
-                // Do raycastclosest
-                this.raycastClosest(from, to, {
-                    skipBackfaces: true
-                }, result);
-            }
-            else {
-                // Do raycastAll
-                this.raycastAll(from, to, {
-                    skipBackfaces: true
-                }, result);
             }
         };
         /**
@@ -6745,24 +6697,6 @@ var CANNON;
             options.to = to;
             options.result = result;
             return tmpRay.intersectWorld(this, options);
-        };
-        /**
-         * Remove a rigid body from the simulation.
-         * @param body
-         * @deprecated Use .removeBody instead
-         */
-        World.prototype.remove = function (body) {
-            body.world = null;
-            var n = this.bodies.length - 1, bodies = this.bodies, idx = bodies.indexOf(body);
-            if (idx !== -1) {
-                bodies.splice(idx, 1); // Todo: should use a garbage free method
-                // Recompute index
-                for (var i = 0; i !== bodies.length; i++) {
-                    bodies[i].index = i;
-                }
-                delete this.idToBodyMap[body.id];
-                this.dispatch("removeBody", body);
-            }
         };
         /**
          * Remove a rigid body from the simulation.
@@ -7073,13 +7007,6 @@ var CANNON;
                 }
             }
             this.dispatch("preStep");
-            // Invoke pre-step callbacks
-            for (i = 0; i !== N; i++) {
-                var bi = bodies[i];
-                if (bi.preStep) {
-                    bi.preStep.call(bi);
-                }
-            }
             // Leap frog
             // vnew = v + h*f/m
             // xnew = x + h*vnew
@@ -7101,14 +7028,6 @@ var CANNON;
             this.time += dt;
             this.stepnumber += 1;
             this.dispatch("postStep");
-            // Invoke post-step callbacks
-            for (i = 0; i !== N; i++) {
-                var bi = bodies[i];
-                var postStep = bi.postStep;
-                if (postStep) {
-                    postStep.call(bi);
-                }
-            }
             // Sleeping update
             if (this.allowSleep) {
                 for (i = 0; i !== N; i++) {

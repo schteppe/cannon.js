@@ -1519,16 +1519,6 @@ declare namespace CANNON {
          * Reference to the world the body is living in
          */
         world: World;
-        /**
-         * Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this Body object.
-         * @deprecated Use World events instead
-         */
-        preStep: Function;
-        /**
-         * Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this Body object.
-         * @deprecated Use World events instead
-         */
-        postStep: Function;
         vlambda: Vector3;
         collisionFilterGroup: number;
         collisionFilterMask: number;
@@ -2633,7 +2623,6 @@ declare namespace CANNON {
         getContactMaterial(m1: Material, m2: Material): ContactMaterial;
         /**
          * Get number of objects in the world.
-         * @deprecated
          */
         numObjects(): number;
         /**
@@ -2642,20 +2631,10 @@ declare namespace CANNON {
         collisionMatrixTick(): void;
         /**
          * Add a rigid body to the simulation.
-         * @param body
-         *
-         * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
-         * @todo Adding an array of bodies should be possible. This would save some loops too
-         * @deprecated Use .addBody instead
-         */
-        add(body: Body): void;
-        /**
-         * Add a rigid body to the simulation.
          * @method add
          * @param {Body} body
          * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
          * @todo Adding an array of bodies should be possible. This would save some loops too
-         * @deprecated Use .addBody instead
          */
         addBody(body: Body): void;
         /**
@@ -2668,14 +2647,6 @@ declare namespace CANNON {
          * @param c
          */
         removeConstraint(c: Constraint): void;
-        /**
-         * Raycast test
-         * @param from
-         * @param to
-         * @param result
-         * @deprecated Use .raycastAll, .raycastClosest or .raycastAny instead.
-         */
-        rayTest(from: Vector3, to: Vector3, result: RaycastResult): void;
         /**
          * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
          * @param from
@@ -2736,12 +2707,6 @@ declare namespace CANNON {
             callback?: Function;
             result?: RaycastResult;
         }, result: RaycastResult): boolean;
-        /**
-         * Remove a rigid body from the simulation.
-         * @param body
-         * @deprecated Use .removeBody instead
-         */
-        remove(body: Body): void;
         /**
          * Remove a rigid body from the simulation.
          * @param body

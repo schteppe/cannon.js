@@ -30,7 +30,7 @@ namespace CANNON
             var to = new Vector3(10, 0, 0);
 
             var result = new RaycastResult();
-            world.rayTest(from, to, result);
+            world.raycastClosest(from, to, {}, result);
 
             test.equal(result.hasHit, true);
 
@@ -48,7 +48,7 @@ namespace CANNON
             var to = new Vector3(10, 0, 0);
 
             var result = new RaycastResult();
-            world.rayTest(from, to, result);
+            world.raycastClosest(from, to, {}, result);
 
             test.equal(result.hasHit, true);
 

@@ -28,18 +28,6 @@ namespace CANNON
          */
         world: World;
 
-        /**
-         * Callback function that is used BEFORE stepping the system. Use it to apply forces, for example. Inside the function, "this" will refer to this Body object.
-         * @deprecated Use World events instead
-         */
-        preStep: Function;
-
-        /**
-         * Callback function that is used AFTER stepping the system. Inside the function, "this" will refer to this Body object.
-         * @deprecated Use World events instead
-         */
-        postStep: Function;
-
         vlambda: Vector3;
 
         collisionFilterGroup: number;
@@ -232,8 +220,6 @@ namespace CANNON
 
             this.id = Body.idCounter++;
             this.world = null;
-            this.preStep = null;
-            this.postStep = null;
             this.vlambda = new Vector3();
             this.collisionFilterGroup = typeof (options.collisionFilterGroup) === 'number' ? options.collisionFilterGroup : 1;
             this.collisionFilterMask = typeof (options.collisionFilterMask) === 'number' ? options.collisionFilterMask : -1;

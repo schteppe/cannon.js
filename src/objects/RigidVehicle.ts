@@ -195,7 +195,7 @@ namespace CANNON
 
             for (var i = 0; i < bodies.length; i++)
             {
-                world.remove(bodies[i]);
+                world.removeBody(bodies[i]);
             }
 
             for (var i = 0; i < constraints.length; i++)

@@ -207,7 +207,6 @@ namespace CANNON
 
         /**
          * Get number of objects in the world.
-         * @deprecated
          */
         numObjects()
         {
@@ -230,40 +229,10 @@ namespace CANNON
 
         /**
          * Add a rigid body to the simulation.
-         * @param body
-         * 
-         * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
-         * @todo Adding an array of bodies should be possible. This would save some loops too
-         * @deprecated Use .addBody instead
-         */
-        add(body: Body)
-        {
-            if (this.bodies.indexOf(body) !== -1)
-            {
-                return;
-            }
-            body.index = this.bodies.length;
-            this.bodies.push(body);
-            body.world = this;
-            body.initPosition.copy(body.position);
-            body.initVelocity.copy(body.velocity);
-            body.timeLastSleepy = this.time;
-            if (body instanceof Body)
-            {
-                body.initAngularVelocity.copy(body.angularVelocity);
-                body.initQuaternion.copy(body.quaternion);
-            }
-            this.idToBodyMap[body.id] = body;
-            this.dispatch("addBody", body);
-        }
-
-        /**
-         * Add a rigid body to the simulation.
          * @method add
          * @param {Body} body
          * @todo If the simulation has not yet started, why recrete and copy arrays for each body? Accumulate in dynamic arrays in this case.
          * @todo Adding an array of bodies should be possible. This would save some loops too
-         * @deprecated Use .addBody instead
          */
         addBody(body: Body)
         {
@@ -305,30 +274,6 @@ namespace CANNON
             if (idx !== -1)
             {
                 this.constraints.splice(idx, 1);
-            }
-        }
-
-        /**
-         * Raycast test
-         * @param from
-         * @param to
-         * @param result
-         * @deprecated Use .raycastAll, .raycastClosest or .raycastAny instead.
-         */
-        rayTest(from: Vector3, to: Vector3, result: RaycastResult)
-        {
-            if (result instanceof RaycastResult)
-            {
-                // Do raycastclosest
-                this.raycastClosest(from, to, {
-                    skipBackfaces: true
-                }, result);
-            } else
-            {
-                // Do raycastAll
-                this.raycastAll(from, to, {
-                    skipBackfaces: true
-                }, result);
             }
         }
 
@@ -385,32 +330,6 @@ namespace CANNON
             options.to = to;
             options.result = result;
             return tmpRay.intersectWorld(this, options);
-        }
-
-        /**
-         * Remove a rigid body from the simulation.
-         * @param body
-         * @deprecated Use .removeBody instead
-         */
-        remove(body: Body)
-        {
-            body.world = null;
-            var n = this.bodies.length - 1,
-                bodies = this.bodies,
-                idx = bodies.indexOf(body);
-            if (idx !== -1)
-            {
-                bodies.splice(idx, 1); // Todo: should use a garbage free method
-
-                // Recompute index
-                for (var i = 0; i !== bodies.length; i++)
-                {
-                    bodies[i].index = i;
-                }
-
-                delete this.idToBodyMap[body.id];
-                this.dispatch("removeBody", body);
-            }
         }
 
         /**
@@ -857,16 +776,6 @@ namespace CANNON
 
             this.dispatch("preStep");
 
-            // Invoke pre-step callbacks
-            for (i = 0; i !== N; i++)
-            {
-                var bi = bodies[i];
-                if (bi.preStep)
-                {
-                    bi.preStep.call(bi);
-                }
-            }
-
             // Leap frog
             // vnew = v + h*f/m
             // xnew = x + h*vnew
@@ -896,17 +805,6 @@ namespace CANNON
             this.stepnumber += 1;
 
             this.dispatch("postStep");
-
-            // Invoke post-step callbacks
-            for (i = 0; i !== N; i++)
-            {
-                var bi = bodies[i];
-                var postStep = bi.postStep;
-                if (postStep)
-                {
-                    postStep.call(bi);
-                }
-            }
 
             // Sleeping update
             if (this.allowSleep)
