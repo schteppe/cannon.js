@@ -8,7 +8,7 @@
 export class Material {
   constructor(options) {
     super()
-    
+
     let name = ''
     options = options || {}
 

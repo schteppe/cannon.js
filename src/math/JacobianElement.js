@@ -8,7 +8,7 @@ import { Vec3 } from './Vec3'
 export class JacobianElement {
   constructor() {
     super()
-    
+
     /**
      * @property {Vec3} spatial
      */

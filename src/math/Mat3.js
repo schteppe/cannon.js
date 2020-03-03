@@ -10,7 +10,7 @@ import { Vec3 } from './Vec3'
 export class Mat3 {
   constructor(elements) {
     super()
-    
+
     /**
      * A vector of length 9, containing all matrix elements
      * @property {Array} elements

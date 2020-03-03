@@ -5,7 +5,7 @@
 export class TupleDictionary {
   constructor() {
     super()
-    
+
     /**
      * The data storage
      * @property data

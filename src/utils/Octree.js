@@ -214,7 +214,7 @@ class OctreeNode {
 export class Octree extends OctreeNode {
   constructor(aabb, options = {}) {
     super()
-    
+
     options.root = null
     options.aabb = aabb
     super(options)
