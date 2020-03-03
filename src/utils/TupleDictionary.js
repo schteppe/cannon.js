@@ -1,65 +1,64 @@
-module.exports = TupleDictionary;
-
 /**
  * @class TupleDictionary
  * @constructor
  */
-function TupleDictionary() {
-
+export class TupleDictionary {
+  constructor() {
     /**
      * The data storage
      * @property data
      * @type {Object}
      */
-    this.data = { keys:[] };
-}
+    this.data = { keys: [] }
+  }
 
-/**
- * @method get
- * @param  {Number} i
- * @param  {Number} j
- * @return {Number}
- */
-TupleDictionary.prototype.get = function(i, j) {
+  /**
+   * @method get
+   * @param  {Number} i
+   * @param  {Number} j
+   * @return {Number}
+   */
+  get(i, j) {
     if (i > j) {
-        // swap
-        var temp = j;
-        j = i;
-        i = temp;
+      // swap
+      const temp = j
+      j = i
+      i = temp
     }
-    return this.data[i+'-'+j];
-};
+    return this.data[`${i}-${j}`]
+  }
 
-/**
- * @method set
- * @param  {Number} i
- * @param  {Number} j
- * @param {Number} value
- */
-TupleDictionary.prototype.set = function(i, j, value) {
+  /**
+   * @method set
+   * @param  {Number} i
+   * @param  {Number} j
+   * @param {Number} value
+   */
+  set(i, j, value) {
     if (i > j) {
-        var temp = j;
-        j = i;
-        i = temp;
+      const temp = j
+      j = i
+      i = temp
     }
-    var key = i+'-'+j;
+    const key = `${i}-${j}`
 
     // Check if key already exists
-    if(!this.get(i,j)){
-        this.data.keys.push(key);
+    if (!this.get(i, j)) {
+      this.data.keys.push(key)
     }
 
-    this.data[key] = value;
-};
+    this.data[key] = value
+  }
 
-/**
- * @method reset
- */
-TupleDictionary.prototype.reset = function() {
-    var data = this.data,
-        keys = data.keys;
-    while(keys.length > 0){
-        var key = keys.pop();
-        delete data[key];
+  /**
+   * @method reset
+   */
+  reset() {
+    const data = this.data
+    const keys = data.keys
+    while (keys.length > 0) {
+      const key = keys.pop()
+      delete data[key]
     }
-};
+  }
+}

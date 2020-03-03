@@ -1,12 +1,17 @@
-# Python compiled files
-*.pyc
-
-# Temp files
-*~
-*#
-
-# Node Modules
-node_modules/*
-
-# File system
+node_modules/
+coverage/
+dist/
+types/
+yarn-error.log
+.size-snapshot.json
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 .DS_Store
+.vscode
+.docz/
+package-lock.json
+coverage/
+.idea
+.rpt2_cache/

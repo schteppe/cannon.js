@@ -1,7 +1,5 @@
-module.exports = Particle;
-
-var Shape = require('./Shape');
-var Vec3 = require('../math/Vec3');
+import { Shape } from './Shape'
+import { Vec3 } from '../math/Vec3'
 
 /**
  * Particle shape.
@@ -10,36 +8,35 @@ var Vec3 = require('../math/Vec3');
  * @author schteppe
  * @extends Shape
  */
-function Particle(){
-    Shape.call(this, {
-        type: Shape.types.PARTICLE
-    });
-}
-Particle.prototype = new Shape();
-Particle.prototype.constructor = Particle;
+export class Particle extends Shape {
+  constructor() {
+    super({
+      type: Shape.types.PARTICLE,
+    })
+  }
 
-/**
- * @method calculateLocalInertia
- * @param  {Number} mass
- * @param  {Vec3} target
- * @return {Vec3}
- */
-Particle.prototype.calculateLocalInertia = function(mass,target){
-    target = target || new Vec3();
-    target.set(0, 0, 0);
-    return target;
-};
+  /**
+   * @method calculateLocalInertia
+   * @param  {Number} mass
+   * @param  {Vec3} target
+   * @return {Vec3}
+   */
+  calculateLocalInertia(mass, target = new Vec3()) {
+    target.set(0, 0, 0)
+    return target
+  }
 
-Particle.prototype.volume = function(){
-    return 0;
-};
+  volume() {
+    return 0
+  }
 
-Particle.prototype.updateBoundingSphereRadius = function(){
-    this.boundingSphereRadius = 0;
-};
+  updateBoundingSphereRadius() {
+    this.boundingSphereRadius = 0
+  }
 
-Particle.prototype.calculateWorldAABB = function(pos,quat,min,max){
+  calculateWorldAABB(pos, quat, min, max) {
     // Get each axis max
-    min.copy(pos);
-    max.copy(pos);
-};
+    min.copy(pos)
+    max.copy(pos)
+  }
+}

@@ -1,8 +1,6 @@
-module.exports = PointToPointConstraint;
-
-var Constraint = require('./Constraint');
-var ContactEquation = require('../equations/ContactEquation');
-var Vec3 = require('../math/Vec3');
+import { Constraint } from './Constraint'
+import { ContactEquation } from '../equations/ContactEquation'
+import { Vec3 } from '../math/Vec3'
 
 /**
  * Connects two bodies at given offset points.
@@ -29,64 +27,65 @@ var Vec3 = require('../math/Vec3');
  *     var constraint = new PointToPointConstraint(bodyA, localPivotA, bodyB, localPivotB);
  *     world.addConstraint(constraint);
  */
-function PointToPointConstraint(bodyA,pivotA,bodyB,pivotB,maxForce){
-    Constraint.call(this,bodyA,bodyB);
+export class PointToPointConstraint extends Constraint {
+  constructor(bodyA, pivotA, bodyB, pivotB, maxForce) {
+    super(bodyA, bodyB)
 
-    maxForce = typeof(maxForce) !== 'undefined' ? maxForce : 1e6;
+    maxForce = typeof maxForce !== 'undefined' ? maxForce : 1e6
 
     /**
      * Pivot, defined locally in bodyA.
      * @property {Vec3} pivotA
      */
-    this.pivotA = pivotA ? pivotA.clone() : new Vec3();
+    this.pivotA = pivotA ? pivotA.clone() : new Vec3()
 
     /**
      * Pivot, defined locally in bodyB.
      * @property {Vec3} pivotB
      */
-    this.pivotB = pivotB ? pivotB.clone() : new Vec3();
+    this.pivotB = pivotB ? pivotB.clone() : new Vec3()
 
     /**
      * @property {ContactEquation} equationX
      */
-    var x = this.equationX = new ContactEquation(bodyA,bodyB);
+    const x = (this.equationX = new ContactEquation(bodyA, bodyB))
 
     /**
      * @property {ContactEquation} equationY
      */
-    var y = this.equationY = new ContactEquation(bodyA,bodyB);
+    const y = (this.equationY = new ContactEquation(bodyA, bodyB))
 
     /**
      * @property {ContactEquation} equationZ
      */
-    var z = this.equationZ = new ContactEquation(bodyA,bodyB);
+    const z = (this.equationZ = new ContactEquation(bodyA, bodyB))
 
     // Equations to be fed to the solver
-    this.equations.push(x, y, z);
+    this.equations.push(x, y, z)
 
     // Make the equations bidirectional
-    x.minForce = y.minForce = z.minForce = -maxForce;
-    x.maxForce = y.maxForce = z.maxForce =  maxForce;
+    x.minForce = y.minForce = z.minForce = -maxForce
+    x.maxForce = y.maxForce = z.maxForce = maxForce
 
-    x.ni.set(1, 0, 0);
-    y.ni.set(0, 1, 0);
-    z.ni.set(0, 0, 1);
-}
-PointToPointConstraint.prototype = new Constraint();
+    x.ni.set(1, 0, 0)
+    y.ni.set(0, 1, 0)
+    z.ni.set(0, 0, 1)
+  }
 
-PointToPointConstraint.prototype.update = function(){
-    var bodyA = this.bodyA;
-    var bodyB = this.bodyB;
-    var x = this.equationX;
-    var y = this.equationY;
-    var z = this.equationZ;
+  update() {
+    const bodyA = this.bodyA
+    const bodyB = this.bodyB
+    const x = this.equationX
+    const y = this.equationY
+    const z = this.equationZ
 
     // Rotate the pivots to world space
-    bodyA.quaternion.vmult(this.pivotA,x.ri);
-    bodyB.quaternion.vmult(this.pivotB,x.rj);
+    bodyA.quaternion.vmult(this.pivotA, x.ri)
+    bodyB.quaternion.vmult(this.pivotB, x.rj)
 
-    y.ri.copy(x.ri);
-    y.rj.copy(x.rj);
-    z.ri.copy(x.ri);
-    z.rj.copy(x.rj);
-};
+    y.ri.copy(x.ri)
+    y.rj.copy(x.rj)
+    z.ri.copy(x.ri)
+    z.rj.copy(x.rj)
+  }
+}

@@ -1,8 +1,5 @@
-module.exports = FrictionEquation;
-
-var Equation = require('./Equation');
-var Vec3 = require('../math/Vec3');
-var Mat3 = require('../math/Mat3');
+import { Equation } from './Equation'
+import { Vec3 } from '../math/Vec3'
 
 /**
  * Constrains the slipping in a contact along a tangent
@@ -14,46 +11,47 @@ var Mat3 = require('../math/Mat3');
  * @param {Number} slipForce should be +-F_friction = +-mu * F_normal = +-mu * m * g
  * @extends Equation
  */
-function FrictionEquation(bodyA, bodyB, slipForce){
-    Equation.call(this,bodyA, bodyB, -slipForce, slipForce);
-    this.ri = new Vec3();
-    this.rj = new Vec3();
-    this.t = new Vec3(); // tangent
-}
+export class FrictionEquation extends Equation {
+  constructor(bodyA, bodyB, slipForce) {
+    super(bodyA, bodyB, -slipForce, slipForce)
+    this.ri = new Vec3()
+    this.rj = new Vec3()
+    this.t = new Vec3() // tangent
+  }
 
-FrictionEquation.prototype = new Equation();
-FrictionEquation.prototype.constructor = FrictionEquation;
-
-var FrictionEquation_computeB_temp1 = new Vec3();
-var FrictionEquation_computeB_temp2 = new Vec3();
-FrictionEquation.prototype.computeB = function(h){
-    var a = this.a,
-        b = this.b,
-        bi = this.bi,
-        bj = this.bj,
-        ri = this.ri,
-        rj = this.rj,
-        rixt = FrictionEquation_computeB_temp1,
-        rjxt = FrictionEquation_computeB_temp2,
-        t = this.t;
+  computeB(h) {
+    const a = this.a
+    const b = this.b
+    const bi = this.bi
+    const bj = this.bj
+    const ri = this.ri
+    const rj = this.rj
+    const rixt = FrictionEquation_computeB_temp1
+    const rjxt = FrictionEquation_computeB_temp2
+    const t = this.t
 
     // Caluclate cross products
-    ri.cross(t,rixt);
-    rj.cross(t,rjxt);
+    ri.cross(t, rixt)
+    rj.cross(t, rjxt)
 
     // G = [-t -rixt t rjxt]
     // And remember, this is a pure velocity constraint, g is always zero!
-    var GA = this.jacobianElementA,
-        GB = this.jacobianElementB;
-    t.negate(GA.spatial);
-    rixt.negate(GA.rotational);
-    GB.spatial.copy(t);
-    GB.rotational.copy(rjxt);
+    const GA = this.jacobianElementA
 
-    var GW = this.computeGW();
-    var GiMf = this.computeGiMf();
+    const GB = this.jacobianElementB
+    t.negate(GA.spatial)
+    rixt.negate(GA.rotational)
+    GB.spatial.copy(t)
+    GB.rotational.copy(rjxt)
 
-    var B = - GW * b - h * GiMf;
+    const GW = this.computeGW()
+    const GiMf = this.computeGiMf()
 
-    return B;
-};
+    const B = -GW * b - h * GiMf
+
+    return B
+  }
+}
+
+const FrictionEquation_computeB_temp1 = new Vec3()
+const FrictionEquation_computeB_temp2 = new Vec3()

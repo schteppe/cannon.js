@@ -1,33 +1,59 @@
-var Vec3 = require('./Vec3');
-var Quaternion = require('./Quaternion');
-
-module.exports = Transform;
+import { Vec3 } from './Vec3'
+import { Quaternion } from './Quaternion'
 
 /**
  * @class Transform
  * @constructor
  */
-function Transform(options) {
-    options = options || {};
-
-	/**
-	 * @property {Vec3} position
-	 */
-	this.position = new Vec3();
-    if(options.position){
-        this.position.copy(options.position);
+export class Transform {
+  constructor(options = {}) {
+    /**
+     * @property {Vec3} position
+     */
+    this.position = new Vec3()
+    if (options.position) {
+      this.position.copy(options.position)
     }
 
-	/**
-	 * @property {Quaternion} quaternion
-	 */
-	this.quaternion = new Quaternion();
-    if(options.quaternion){
-        this.quaternion.copy(options.quaternion);
+    /**
+     * @property {Quaternion} quaternion
+     */
+    this.quaternion = new Quaternion()
+    if (options.quaternion) {
+      this.quaternion.copy(options.quaternion)
     }
+  }
+
+  /**
+   * Get a global point in local transform coordinates.
+   * @method pointToLocal
+   * @param  {Vec3} point
+   * @param  {Vec3} result
+   * @return {Vec3} The "result" vector object
+   */
+  pointToLocal(worldPoint, result) {
+    return Transform.pointToLocalFrame(this.position, this.quaternion, worldPoint, result)
+  }
+
+  /**
+   * Get a local point in global transform coordinates.
+   * @method pointToWorld
+   * @param  {Vec3} point
+   * @param  {Vec3} result
+   * @return {Vec3} The "result" vector object
+   */
+  pointToWorld(localPoint, result) {
+    return Transform.pointToWorldFrame(this.position, this.quaternion, localPoint, result)
+  }
+
+  vectorToWorldFrame(localVector, result) {
+    var result = result || new Vec3()
+    this.quaternion.vmult(localVector, result)
+    return result
+  }
 }
 
-var tmpQuat = new Quaternion();
+const tmpQuat = new Quaternion()
 
 /**
  * @static
@@ -37,24 +63,13 @@ var tmpQuat = new Quaternion();
  * @param {Vec3} worldPoint
  * @param {Vec3} result
  */
-Transform.pointToLocalFrame = function(position, quaternion, worldPoint, result){
-    var result = result || new Vec3();
-    worldPoint.vsub(position, result);
-    quaternion.conjugate(tmpQuat);
-    tmpQuat.vmult(result, result);
-    return result;
-};
-
-/**
- * Get a global point in local transform coordinates.
- * @method pointToLocal
- * @param  {Vec3} point
- * @param  {Vec3} result
- * @return {Vec3} The "result" vector object
- */
-Transform.prototype.pointToLocal = function(worldPoint, result){
-    return Transform.pointToLocalFrame(this.position, this.quaternion, worldPoint, result);
-};
+Transform.pointToLocalFrame = (position, quaternion, worldPoint, result) => {
+  var result = result || new Vec3()
+  worldPoint.vsub(position, result)
+  quaternion.conjugate(tmpQuat)
+  tmpQuat.vmult(result, result)
+  return result
+}
 
 /**
  * @static
@@ -64,40 +79,22 @@ Transform.prototype.pointToLocal = function(worldPoint, result){
  * @param {Vec3} localPoint
  * @param {Vec3} result
  */
-Transform.pointToWorldFrame = function(position, quaternion, localPoint, result){
-    var result = result || new Vec3();
-    quaternion.vmult(localPoint, result);
-    result.vadd(position, result);
-    return result;
-};
+Transform.pointToWorldFrame = (position, quaternion, localPoint, result) => {
+  var result = result || new Vec3()
+  quaternion.vmult(localPoint, result)
+  result.vadd(position, result)
+  return result
+}
 
-/**
- * Get a local point in global transform coordinates.
- * @method pointToWorld
- * @param  {Vec3} point
- * @param  {Vec3} result
- * @return {Vec3} The "result" vector object
- */
-Transform.prototype.pointToWorld = function(localPoint, result){
-    return Transform.pointToWorldFrame(this.position, this.quaternion, localPoint, result);
-};
+Transform.vectorToWorldFrame = (quaternion, localVector, result) => {
+  quaternion.vmult(localVector, result)
+  return result
+}
 
-
-Transform.prototype.vectorToWorldFrame = function(localVector, result){
-    var result = result || new Vec3();
-    this.quaternion.vmult(localVector, result);
-    return result;
-};
-
-Transform.vectorToWorldFrame = function(quaternion, localVector, result){
-    quaternion.vmult(localVector, result);
-    return result;
-};
-
-Transform.vectorToLocalFrame = function(position, quaternion, worldVector, result){
-    var result = result || new Vec3();
-    quaternion.w *= -1;
-    quaternion.vmult(worldVector, result);
-    quaternion.w *= -1;
-    return result;
-};
+Transform.vectorToLocalFrame = (position, quaternion, worldVector, result) => {
+  var result = result || new Vec3()
+  quaternion.w *= -1
+  quaternion.vmult(worldVector, result)
+  quaternion.w *= -1
+  return result
+}
