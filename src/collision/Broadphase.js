@@ -12,7 +12,6 @@ import { Plane } from '../shapes/Plane'
  */
 export class Broadphase {
   constructor() {
-    super()
 
     /**
      * The world to search for collisions in.

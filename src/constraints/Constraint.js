@@ -13,7 +13,6 @@ import { Utils } from '../utils/Utils'
  */
 export class Constraint {
   constructor(bodyA, bodyB, options) {
-    super()
 
     options = Utils.defaults(options, {
       collideConnected: true,

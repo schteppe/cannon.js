@@ -12,7 +12,6 @@ import { Vec3 } from './Vec3'
  */
 export class Quaternion {
   constructor(x, y, z, w) {
-    super()
 
     /**
      * @property {Number} x

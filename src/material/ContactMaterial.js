@@ -16,7 +16,6 @@ import { Utils } from '../utils/Utils'
  */
 export class ContactMaterial {
   constructor(m1, m2, options) {
-    super()
 
     options = Utils.defaults(options, {
       friction: 0.3,

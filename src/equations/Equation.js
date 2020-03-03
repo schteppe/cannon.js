@@ -13,7 +13,6 @@ import { Vec3 } from '../math/Vec3'
  */
 export class Equation {
   constructor(bi, bj, minForce, maxForce) {
-    super()
 
     this.id = Equation.id++
 

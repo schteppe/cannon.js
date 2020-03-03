@@ -9,7 +9,6 @@ import { Vec3 } from '../math/Vec3'
  */
 class OctreeNode {
   constructor(options = {}) {
-    super()
 
     /**
      * The root node

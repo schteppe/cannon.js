@@ -5,7 +5,6 @@
  */
 export class ObjectCollisionMatrix {
   constructor() {
-    super()
 
     /**
      * The matrix storage

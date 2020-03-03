@@ -6,7 +6,6 @@
  */
 export class Solver {
   constructor() {
-    super()
 
     /**
      * All equations to be solved

@@ -5,7 +5,6 @@
  */
 export class Pool {
   constructor() {
-    super()
 
     /**
      * The pooled objects
