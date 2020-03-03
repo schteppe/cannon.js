@@ -5,7 +5,6 @@
  */
 export class Pool {
   constructor() {
-
     /**
      * The pooled objects
      * @property {Array} objects

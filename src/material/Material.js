@@ -7,7 +7,6 @@
  */
 export class Material {
   constructor(options) {
-
     let name = ''
     options = options || {}
 

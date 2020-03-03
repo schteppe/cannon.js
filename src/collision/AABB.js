@@ -11,7 +11,6 @@ import { Utils } from '../utils/Utils'
  */
 export class AABB {
   constructor(options = {}) {
-
     /**
      * The lower bound of the bounding box.
      * @property lowerBound

@@ -13,7 +13,6 @@ import { Vec3 } from '../math/Vec3'
  */
 export class Shape {
   constructor(options = {}) {
-
     /**
      * Identifyer of the Shape.
      * @property {number} id

@@ -4,7 +4,6 @@
  */
 export class OverlapKeeper {
   constructor() {
-
     this.current = []
     this.previous = []
   }

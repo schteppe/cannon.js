@@ -14,7 +14,6 @@ import { Mat3 } from './Mat3'
  */
 export class Vec3 {
   constructor(x, y, z) {
-
     /**
      * @property x
      * @type {Number}

@@ -6,7 +6,6 @@
  */
 export class Solver {
   constructor() {
-
     /**
      * All equations to be solved
      * @property {Array} equations

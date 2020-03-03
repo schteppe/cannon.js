@@ -4,7 +4,6 @@
  */
 export class TupleDictionary {
   constructor() {
-
     /**
      * The data storage
      * @property data

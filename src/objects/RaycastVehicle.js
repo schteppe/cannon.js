@@ -16,7 +16,6 @@ import { WheelInfo } from '../objects/WheelInfo'
  */
 export class RaycastVehicle {
   constructor({ chassisBody, indexRightAxis, indexForwardAxis, indexUpAxis }) {
-
     /**
      * @property {Body} chassisBody
      */

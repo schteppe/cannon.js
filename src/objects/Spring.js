@@ -18,7 +18,6 @@ import { Vec3 } from '../math/Vec3'
  */
 export class Spring {
   constructor(bodyA, bodyB, options = {}) {
-
     /**
      * Rest length of the spring.
      * @property restLength
