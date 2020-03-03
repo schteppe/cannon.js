@@ -37,6 +37,8 @@ import { Utils } from '../utils/Utils'
  */
 export class WheelInfo {
   constructor(options) {
+    super()
+    
     options = Utils.defaults(options, {
       chassisConnectionPointLocal: new Vec3(),
       chassisConnectionPointWorld: new Vec3(),

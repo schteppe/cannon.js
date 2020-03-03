@@ -8,6 +8,8 @@ import { Body } from '../objects/Body'
  */
 export class SPHSystem {
   constructor() {
+    super()
+    
     this.particles = []
 
     /**

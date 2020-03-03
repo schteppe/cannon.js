@@ -11,6 +11,7 @@ import { Body } from '../objects/Body'
 export class SplitSolver extends Solver {
   constructor(subsolver) {
     super()
+    
     this.iterations = 10
     this.tolerance = 1e-7
     this.subsolver = subsolver

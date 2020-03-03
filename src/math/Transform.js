@@ -7,6 +7,8 @@ import { Quaternion } from './Quaternion'
  */
 export class Transform {
   constructor(options = {}) {
+    super()
+    
     /**
      * @property {Vec3} position
      */

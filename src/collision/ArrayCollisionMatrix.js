@@ -5,6 +5,8 @@
  */
 export class ArrayCollisionMatrix {
   constructor() {
+    super()
+
     /**
      * The matrix storage
      * @property matrix

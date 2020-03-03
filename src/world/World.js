@@ -28,7 +28,7 @@ import { NaiveBroadphase } from '../collision/NaiveBroadphase'
  */
 export class World extends EventTarget {
   constructor(options = {}) {
-    EventTarget.apply(this)
+    super()
 
     /**
      * Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is "fresh" inside event callbacks.

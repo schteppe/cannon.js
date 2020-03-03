@@ -7,6 +7,8 @@ import { Vec3 } from '../math/Vec3'
  */
 export class RaycastResult {
   constructor() {
+    super()
+
     /**
      * @property {Vec3} rayFromWorld
      */

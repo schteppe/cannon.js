@@ -14,6 +14,8 @@ import { AABB } from '../collision/AABB'
  */
 export class Ray {
   constructor(from, to) {
+    super()
+
     /**
      * @property {Vec3} from
      */

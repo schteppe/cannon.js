@@ -12,6 +12,8 @@ import { HingeConstraint } from '../constraints/HingeConstraint'
  */
 export class RigidVehicle {
   constructor({ coordinateSystem, chassisBody }) {
+    super()
+    
     this.wheelBodies = []
 
     /**

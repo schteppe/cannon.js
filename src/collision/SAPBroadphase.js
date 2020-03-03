@@ -11,7 +11,7 @@ import { Broadphase } from '../collision/Broadphase'
  */
 export class SAPBroadphase extends Broadphase {
   constructor(world) {
-    Broadphase.apply(this)
+    super()
 
     /**
      * List of bodies currently in the broadphase.

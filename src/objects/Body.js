@@ -41,7 +41,7 @@ import { Box } from '../shapes/Box'
  */
 export class Body extends EventTarget {
   constructor(options = {}) {
-    EventTarget.apply(this)
+    super()
 
     this.id = Body.idCounter++
 

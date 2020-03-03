@@ -10,7 +10,7 @@ import { AABB } from './AABB'
  */
 export class NaiveBroadphase extends Broadphase {
   constructor() {
-    Broadphase.apply(this)
+    super()
   }
 
   /**

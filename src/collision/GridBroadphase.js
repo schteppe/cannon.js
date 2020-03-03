@@ -16,7 +16,8 @@ import { Shape } from '../shapes/Shape'
  */
 export class GridBroadphase extends Broadphase {
   constructor(aabbMin, aabbMax, nx, ny, nz) {
-    Broadphase.apply(this)
+    super()
+
     this.nx = nx || 10
     this.ny = ny || 10
     this.nz = nz || 10

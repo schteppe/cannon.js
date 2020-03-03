@@ -19,6 +19,8 @@ import { Vec3 } from '../math/Vec3'
  */
 export class ConeTwistConstraint extends PointToPointConstraint {
   constructor(bodyA, bodyB, options = {}) {
+    super()
+
     const maxForce = typeof options.maxForce !== 'undefined' ? options.maxForce : 1e6
 
     // Set pivot point in between

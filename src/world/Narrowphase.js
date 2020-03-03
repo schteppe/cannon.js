@@ -19,6 +19,8 @@ import { FrictionEquation } from '../equations/FrictionEquation'
  */
 export class Narrowphase {
   constructor(world) {
+    super()
+
     /**
      * Internal storage of pooled contact points.
      * @property {Array} contactPointPool
