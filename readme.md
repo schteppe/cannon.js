@@ -1,4 +1,4 @@
-This is a forked esm version of https://github.com/schteppe/cannon.js for easier handling in module environments and tree shaking. Visit the original project for documentation and such.
+This is a forked esm, flatbundled version of https://github.com/schteppe/cannon.js for easier handling in module environments and tree shaking. Visit the original project for documentations and examples.
 
     yarn add cannon-es
 
