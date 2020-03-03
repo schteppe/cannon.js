@@ -11,8 +11,8 @@
     "engine",
     "3d"
   ],
-  "main": "./dist/web.cjs.js",
-  "module": "./dist/web.js",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.js",
   "sideEffects": false,
   "scripts": {
     "prebuild": "rimraf dist && rollup",
