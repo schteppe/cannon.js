@@ -306,7 +306,7 @@ Narrowphase.prototype[Shape.types.BOX | Shape.types.BOX] = Narrowphase.prototype
   bj,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   si.convexPolyhedronRepresentation.material = si.material
   sj.convexPolyhedronRepresentation.material = sj.material
@@ -323,7 +323,7 @@ Narrowphase.prototype[Shape.types.BOX | Shape.types.BOX] = Narrowphase.prototype
     bj,
     si,
     sj,
-    justTest,
+    justTest
   )
 }
 
@@ -338,7 +338,7 @@ Narrowphase.prototype[Shape.types.BOX | Shape.types.CONVEXPOLYHEDRON] = Narrowph
   bj,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   si.convexPolyhedronRepresentation.material = si.material
   si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse
@@ -356,7 +356,7 @@ Narrowphase.prototype[Shape.types.BOX | Shape.types.PARTICLE] = Narrowphase.prot
   bj,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   si.convexPolyhedronRepresentation.material = si.material
   si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse
@@ -385,7 +385,7 @@ Narrowphase.prototype[Shape.types.SPHERE] = Narrowphase.prototype.sphereSphere =
   bj,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   if (justTest) {
     return xi.distanceSquared(xj) < (si.radius + sj.radius) ** 2
@@ -440,7 +440,7 @@ Narrowphase.prototype[Shape.types.PLANE | Shape.types.TRIMESH] = Narrowphase.pro
   trimeshBody,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   // Make contacts!
   const v = new Vec3()
@@ -529,7 +529,7 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] = Narrowphase.pr
   trimeshBody,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   const edgeVertexA = sphereTrimesh_edgeVertexA
   const edgeVertexB = sphereTrimesh_edgeVertexB
@@ -550,12 +550,12 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] = Narrowphase.pr
   localSphereAABB.lowerBound.set(
     localSpherePos.x - sphereRadius,
     localSpherePos.y - sphereRadius,
-    localSpherePos.z - sphereRadius,
+    localSpherePos.z - sphereRadius
   )
   localSphereAABB.upperBound.set(
     localSpherePos.x + sphereRadius,
     localSpherePos.y + sphereRadius,
-    localSpherePos.z + sphereRadius,
+    localSpherePos.z + sphereRadius
   )
 
   trimeshShape.getTrianglesInAABB(localSphereAABB, triangles)
@@ -717,7 +717,7 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.PLANE] = Narrowphase.prot
   bj,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   // We will have one contact in this case
   const r = this.createContactEquation(bi, bj, si, sj, rsi, rsj)
@@ -827,7 +827,7 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.BOX] = Narrowphase.protot
   bj,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   const v3pool = this.v3pool
 
@@ -1304,7 +1304,7 @@ Narrowphase.prototype[Shape.types.PLANE | Shape.types.BOX] = Narrowphase.prototy
   bj,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   sj.convexPolyhedronRepresentation.material = sj.material
   sj.convexPolyhedronRepresentation.collisionResponse = sj.collisionResponse
@@ -1339,7 +1339,7 @@ Narrowphase.prototype[Shape.types.PLANE | Shape.types.CONVEXPOLYHEDRON] = Narrow
   convexBody,
   si,
   sj,
-  justTest,
+  justTest
 ) {
   // Simply return the points behind the plane.
   const worldVertex = planeConvex_v
@@ -1422,7 +1422,7 @@ Narrowphase.prototype[Shape.types.CONVEXPOLYHEDRON] = Narrowphase.prototype.conv
   rsj,
   justTest,
   faceListA,
-  faceListB,
+  faceListB
 ) {
   const sepAxis = convexConvex_sepAxis
 
@@ -1577,7 +1577,7 @@ Narrowphase.prototype[Shape.types.PLANE | Shape.types.PARTICLE] = Narrowphase.pr
   bi,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   const normal = particlePlane_normal
   normal.set(0, 0, 1)
@@ -1633,7 +1633,7 @@ Narrowphase.prototype[Shape.types.PARTICLE | Shape.types.SPHERE] = Narrowphase.p
   bi,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   // The normal is the unit vector from sphere center to particle center
   const normal = particleSphere_normal
@@ -1766,7 +1766,7 @@ Narrowphase.prototype[Shape.types.BOX | Shape.types.HEIGHTFIELD] = Narrowphase.p
   bj,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   si.convexPolyhedronRepresentation.material = si.material
   si.convexPolyhedronRepresentation.collisionResponse = si.collisionResponse
@@ -1793,7 +1793,7 @@ Narrowphase.prototype[
   hfBody,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   const data = hfShape.data
   const w = hfShape.elementSize
@@ -1877,7 +1877,7 @@ Narrowphase.prototype[
           null,
           justTest,
           faceList,
-          null,
+          null
         )
       }
 
@@ -1905,7 +1905,7 @@ Narrowphase.prototype[
           null,
           justTest,
           faceList,
-          null,
+          null
         )
       }
 
@@ -1935,7 +1935,7 @@ Narrowphase.prototype[
   hfBody,
   rsi,
   rsj,
-  justTest,
+  justTest
 ) {
   const data = hfShape.data
   const radius = sphereShape.radius
@@ -2019,7 +2019,7 @@ Narrowphase.prototype[
           hfBody,
           sphereShape,
           hfShape,
-          justTest,
+          justTest
         )
       }
 
@@ -2045,7 +2045,7 @@ Narrowphase.prototype[
           hfBody,
           sphereShape,
           hfShape,
-          justTest,
+          justTest
         )
       }
 

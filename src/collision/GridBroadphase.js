@@ -197,7 +197,7 @@ export class GridBroadphase extends Broadphase {
             bi.aabb.upperBound.x,
             bi.aabb.upperBound.y,
             bi.aabb.upperBound.z,
-            bi,
+            bi
           )
           break
       }

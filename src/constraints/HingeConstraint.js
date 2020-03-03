@@ -60,7 +60,7 @@ export class HingeConstraint extends PointToPointConstraint {
     this.equations.push(
       r1, // rotational1
       r2, // rotational2
-      motor,
+      motor
     )
   }
 

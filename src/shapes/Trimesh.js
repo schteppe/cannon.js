@@ -331,7 +331,7 @@ export class Trimesh extends Shape {
     return target.set(
       (1.0 / 12.0) * mass * (2 * y * 2 * y + 2 * z * 2 * z),
       (1.0 / 12.0) * mass * (2 * x * 2 * x + 2 * z * 2 * z),
-      (1.0 / 12.0) * mass * (2 * y * 2 * y + 2 * x * 2 * x),
+      (1.0 / 12.0) * mass * (2 * y * 2 * y + 2 * x * 2 * x)
     )
   }
 

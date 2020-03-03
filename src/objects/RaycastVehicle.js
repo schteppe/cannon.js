@@ -460,7 +460,7 @@ export class RaycastVehicle {
           wheel.raycastResult.hitPointWorld,
           groundObject,
           wheel.raycastResult.hitPointWorld,
-          axlei,
+          axlei
         )
 
         wheel.sideImpulse *= sideFrictionStiffness2
@@ -489,7 +489,7 @@ export class RaycastVehicle {
           groundObject,
           wheel.raycastResult.hitPointWorld,
           forwardWS[i],
-          maxImpulse,
+          maxImpulse
         )
 
         rollingFriction += wheel.engineForce * timeStep

@@ -414,7 +414,7 @@ export class Heightfield extends Shape {
       offsetResult.set(
         (xi + 0.25) * elementSize, // sort of center of a triangle
         (yi + 0.25) * elementSize,
-        h, // vertical center
+        h // vertical center
       )
 
       // Top triangle verts
@@ -459,7 +459,7 @@ export class Heightfield extends Shape {
       offsetResult.set(
         (xi + 0.75) * elementSize, // sort of center of a triangle
         (yi + 0.75) * elementSize,
-        h, // vertical center
+        h // vertical center
       )
 
       // Top triangle verts
@@ -534,7 +534,7 @@ export class Heightfield extends Shape {
     this.boundingSphereRadius = new Vec3(
       data.length * s,
       data[0].length * s,
-      Math.max(Math.abs(this.maxValue), Math.abs(this.minValue)),
+      Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))
     ).norm()
   }
 
