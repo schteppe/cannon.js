@@ -658,7 +658,7 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] = Narrowphase.pr
   const vb = sphereTrimesh_vb
   const vc = sphereTrimesh_vc
   const normal = sphereTrimesh_normal
-  for (const i = 0, N = triangles.length; i !== N; i++) {
+  for (let i = 0, N = triangles.length; i !== N; i++) {
     trimeshShape.getTriangleVertices(triangles[i], va, vb, vc)
     trimeshShape.getNormal(triangles[i], normal)
     localSpherePos.vsub(va, tmp)
@@ -1111,7 +1111,7 @@ Narrowphase.prototype[
 
   // Check side (plane) intersections
   var found = false
-  for (const i = 0, nfaces = faces.length; i !== nfaces && found === false; i++) {
+  for (let i = 0, nfaces = faces.length; i !== nfaces && found === false; i++) {
     const normal = normals[i]
     const face = faces[i]
 
