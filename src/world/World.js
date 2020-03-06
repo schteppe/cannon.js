@@ -537,7 +537,7 @@ export class World extends EventTarget {
     }
 
     // Update subsystems
-    for (const i = 0, Nsubsystems = this.subsystems.length; i !== Nsubsystems; i++) {
+    for (let i = 0, Nsubsystems = this.subsystems.length; i !== Nsubsystems; i++) {
       this.subsystems[i].update()
     }
 
@@ -761,7 +761,7 @@ export class World extends EventTarget {
     for (i = 0; i !== Nconstraints; i++) {
       var c = constraints[i]
       c.update()
-      for (const j = 0, Neq = c.equations.length; j !== Neq; j++) {
+      for (let j = 0, Neq = c.equations.length; j !== Neq; j++) {
         const eq = c.equations[j]
         solver.addEquation(eq)
       }
