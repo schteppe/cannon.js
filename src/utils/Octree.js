@@ -189,15 +189,11 @@ class OctreeNode {
    * @method removeEmptyNodes
    */
   removeEmptyNodes() {
-    const queue = [this]
-    while (queue.length) {
-      const node = queue.pop()
-      for (let i = node.children.length - 1; i >= 0; i--) {
-        if (!node.children[i].data.length) {
-          node.children.splice(i, 1)
-        }
+    for (let i = this.children.length - 1; i >= 0; i--) {
+      this.children[i].removeEmptyNodes();
+      if (!this.children[i].children.length && !this.children[i].data.length) {
+        this.children.splice(i, 1);
       }
-      Array.prototype.push.apply(queue, node.children)
     }
   }
 }

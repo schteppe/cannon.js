@@ -564,8 +564,8 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] = Narrowphase.pr
   // Vertices
   const v = sphereTrimesh_v
   const radiusSquared = sphereShape.radius * sphereShape.radius
-  for (var i = 0; i < triangles.length; i++) {
-    for (var j = 0; j < 3; j++) {
+  for (let i = 0; i < triangles.length; i++) {
+    for (let j = 0; j < 3; j++) {
       trimeshShape.getVertex(trimeshShape.indices[triangles[i] * 3 + j], v)
 
       // Check vertex overlap in sphere
@@ -582,7 +582,7 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] = Narrowphase.pr
           return true
         }
 
-        var r = this.createContactEquation(sphereBody, trimeshBody, sphereShape, trimeshShape, rsi, rsj)
+        let r = this.createContactEquation(sphereBody, trimeshBody, sphereShape, trimeshShape, rsi, rsj)
         r.ni.copy(relpos)
         r.ni.normalize()
 
@@ -603,8 +603,8 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] = Narrowphase.pr
   }
 
   // Check all edges
-  for (var i = 0; i < triangles.length; i++) {
-    for (var j = 0; j < 3; j++) {
+  for (let i = 0; i < triangles.length; i++) {
+    for (let j = 0; j < 3; j++) {
       trimeshShape.getVertex(trimeshShape.indices[triangles[i] * 3 + j], edgeVertexA)
       trimeshShape.getVertex(trimeshShape.indices[triangles[i] * 3 + ((j + 1) % 3)], edgeVertexB)
       edgeVertexB.vsub(edgeVertexA, edgeVector)
@@ -639,6 +639,8 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] = Narrowphase.pr
           tmp.vsub(localSpherePos, r.ni)
           r.ni.normalize()
           r.ni.scale(sphereShape.radius, r.ri)
+          r.ri.vadd(spherePos, r.ri)
+          r.ri.vsub(sphereBody.position, r.ri)
 
           Transform.pointToWorldFrame(trimeshPos, trimeshQuat, tmp, tmp)
           tmp.vsub(trimeshBody.position, r.rj)
@@ -672,11 +674,13 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.TRIMESH] = Narrowphase.pr
       if (justTest) {
         return true
       }
-      var r = this.createContactEquation(sphereBody, trimeshBody, sphereShape, trimeshShape, rsi, rsj)
+      let r = this.createContactEquation(sphereBody, trimeshBody, sphereShape, trimeshShape, rsi, rsj)
 
       tmp.vsub(localSpherePos, r.ni)
       r.ni.normalize()
       r.ni.scale(sphereShape.radius, r.ri)
+      r.ri.vadd(spherePos, r.ri)
+      r.ri.vsub(sphereBody.position, r.ri)
 
       Transform.pointToWorldFrame(trimeshPos, trimeshQuat, tmp, tmp)
       tmp.vsub(trimeshBody.position, r.rj)
@@ -917,9 +921,9 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.BOX] = Narrowphase.protot
   // Check corners
   let rj = v3pool.get()
   const sphere_to_corner = sphereBox_sphere_to_corner
-  for (var j = 0; j !== 2 && !found; j++) {
-    for (var k = 0; k !== 2 && !found; k++) {
-      for (var l = 0; l !== 2 && !found; l++) {
+  for (let j = 0; j !== 2 && !found; j++) {
+    for (let k = 0; k !== 2 && !found; k++) {
+      for (let l = 0; l !== 2 && !found; l++) {
         rj.set(0, 0, 0)
         if (j) {
           rj.vadd(sides[0], rj)
@@ -975,8 +979,8 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.BOX] = Narrowphase.protot
   const orthogonal = v3pool.get()
   var dist = v3pool.get()
   const Nsides = sides.length
-  for (var j = 0; j !== Nsides && !found; j++) {
-    for (var k = 0; k !== Nsides && !found; k++) {
+  for (let j = 0; j !== Nsides && !found; j++) {
+    for (let k = 0; k !== Nsides && !found; k++) {
       if (j % 3 !== k % 3) {
         // Get edge tangent
         sides[k].cross(sides[j], edgeTangent)
@@ -989,7 +993,7 @@ Narrowphase.prototype[Shape.types.SPHERE | Shape.types.BOX] = Narrowphase.protot
         edgeTangent.mult(orthonorm, orthogonal) // Vector from edge center to sphere center in the tangent direction
 
         // Find the third side orthogonal to this one
-        var l = 0
+        let l = 0
         while (l === j % 3 || l === k % 3) {
           l++
         }
@@ -1074,7 +1078,7 @@ Narrowphase.prototype[
   // }
 
   // Check corners
-  for (var i = 0; i !== verts.length; i++) {
+  for (let i = 0; i !== verts.length; i++) {
     const v = verts[i]
 
     // World position of corner
@@ -1142,7 +1146,7 @@ Narrowphase.prototype[
     if (penetration < 0 && worldPointToSphere.dot(worldNormal) > 0) {
       // Intersects plane. Now check if the sphere is inside the face polygon
       const faceVerts = [] // Face vertices, in world coords
-      for (var j = 0, Nverts = face.length; j !== Nverts; j++) {
+      for (let j = 0, Nverts = face.length; j !== Nverts; j++) {
         const worldVertex = v3pool.get()
         qj.vmult(verts[face[j]], worldVertex)
         xj.vadd(worldVertex, worldVertex)
