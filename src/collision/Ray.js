@@ -29,7 +29,6 @@ export class Ray {
      * @property {Vec3} _direction
      */
     this._direction = new Vec3()
-
     /**
      * The precision of the ray. Used when checking parallelity etc.
      * @property {Number} precision
@@ -98,6 +97,7 @@ export class Ray {
     this.skipBackfaces = !!options.skipBackfaces
     this.collisionFilterMask = typeof options.collisionFilterMask !== 'undefined' ? options.collisionFilterMask : -1
     this.collisionFilterGroup = typeof options.collisionFilterGroup !== 'undefined' ? options.collisionFilterGroup : -1
+    this.checkCollisionResponse = typeof (options.checkCollisionResponse) !== 'undefined' ? options.checkCollisionResponse : true;
     if (options.from) {
       this.from.copy(options.from)
     }
