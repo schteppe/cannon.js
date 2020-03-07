@@ -662,19 +662,25 @@ export class ConvexPolyhedron extends Shape {
       const v = tempWorldVertex
       if (v.x < minx || minx === undefined) {
         minx = v.x
-      } else if (v.x > maxx || maxx === undefined) {
+      }
+
+      if (v.x > maxx || maxx === undefined) {
         maxx = v.x
       }
 
       if (v.y < miny || miny === undefined) {
         miny = v.y
-      } else if (v.y > maxy || maxy === undefined) {
+      }
+
+      if (v.y > maxy || maxy === undefined) {
         maxy = v.y
       }
 
       if (v.z < minz || minz === undefined) {
         minz = v.z
-      } else if (v.z > maxz || maxz === undefined) {
+      }
+
+      if (v.z > maxz || maxz === undefined) {
         maxz = v.z
       }
     }
