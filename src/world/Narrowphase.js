@@ -15,7 +15,7 @@ import { FrictionEquation } from '../equations/FrictionEquation'
  * @constructor
  * @todo Sphere-ConvexPolyhedron contacts
  * @todo Contact reduction
- * @todo  should move methods to prototype
+ * @todo should move methods to prototype
  */
 export class Narrowphase {
   constructor(world) {
@@ -285,13 +285,9 @@ const tmpQuat2 = new Quaternion()
 let numWarnings = 0
 const maxWarnings = 10
 
-function warn(msg) {
-  if (numWarnings > maxWarnings) {
-    return
-  }
-
+function warn (msg) {
+  if (numWarnings > maxWarnings) { return }
   numWarnings++
-
   console.warn(msg)
 }
 
@@ -1189,14 +1185,14 @@ Narrowphase.prototype[
         this.createFrictionEquationsFromContact(r, this.frictionResult)
 
         // Release world vertices
-        for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
+        for (let j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
           v3pool.release(faceVerts[j])
         }
 
         return // We only expect *one* face contact
       } else {
         // Edge?
-        for (var j = 0; j !== face.length; j++) {
+        for (let j = 0; j !== face.length; j++) {
           // Get two world transformed vertices
           const v1 = v3pool.get()
           const v2 = v3pool.get()
@@ -1253,7 +1249,7 @@ Narrowphase.prototype[
             this.createFrictionEquationsFromContact(r, this.frictionResult)
 
             // Release world vertices
-            for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
+            for (let j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
               v3pool.release(faceVerts[j])
             }
 
@@ -1275,7 +1271,7 @@ Narrowphase.prototype[
       }
 
       // Release world vertices
-      for (var j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
+      for (let j = 0, Nfaceverts = faceVerts.length; j !== Nfaceverts; j++) {
         v3pool.release(faceVerts[j])
       }
     }
@@ -1958,7 +1954,7 @@ Narrowphase.prototype[
   let iMaxY = Math.ceil((localSpherePos.y + radius) / w) + 1
 
   // Bail out if we are out of the terrain
-  if (iMaxX < 0 || iMaxY < 0 || iMinX > data.length || iMaxY > data[0].length) {
+  if (iMaxX < 0 || iMaxY < 0 || iMinX > data.length || iMinY > data[0].length) {
     return
   }
 
@@ -1993,7 +1989,7 @@ Narrowphase.prototype[
   const min = minMax[0]
   const max = minMax[1]
 
-  // Bail out if we're cant touch the bounding height box
+  // Bail out if we can't touch the bounding height box
   if (localSpherePos.z - radius > max || localSpherePos.z + radius < min) {
     return
   }
