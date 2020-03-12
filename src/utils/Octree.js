@@ -190,9 +190,9 @@ class OctreeNode {
    */
   removeEmptyNodes() {
     for (let i = this.children.length - 1; i >= 0; i--) {
-      this.children[i].removeEmptyNodes();
+      this.children[i].removeEmptyNodes()
       if (!this.children[i].children.length && !this.children[i].data.length) {
-        this.children.splice(i, 1);
+        this.children.splice(i, 1)
       }
     }
   }
@@ -207,11 +207,10 @@ class OctreeNode {
  */
 export class Octree extends OctreeNode {
   constructor(aabb, options = {}) {
-    super()
+    super(options)
 
     options.root = null
     options.aabb = aabb
-    super(options)
 
     /**
      * Maximum subdivision depth
