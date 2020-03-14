@@ -17,52 +17,52 @@ import { Transform } from '../math/Transform'
  * @author qiao / https://github.com/qiao (original author, see https://github.com/qiao/three.js/commit/85026f0c769e4000148a67d45a9e9b9c5108836f)
  * @author schteppe / https://github.com/schteppe
  * @see http://www.altdevblogaday.com/2011/05/13/contact-generation-between-3d-convex-meshes/
- * @see http://bullet.googlecode.com/svn/trunk/src/BulletCollision/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
  *
  * @todo Move the clipping functions to ContactGenerator?
  * @todo Automatically merge coplanar polygons in constructor.
+ * @todo Test importing facenormals from THREE.Geometry
  */
 
 export class ConvexPolyhedron extends Shape {
-  constructor(points, faces, uniqueAxes) {
+  constructor(points, faces, uniqueAxes, precomputedGeometry = null) {
     super({
       type: Shape.types.CONVEXPOLYHEDRON,
     })
 
-    /**
-     * Array of Vec3
-     * @property vertices
-     * @type {Array}
-     */
-    this.vertices = points || []
+    if (precomputedGeometry) {
+      // assume valid THREE.Geometry structure and data
+      this.vertices = precomputedGeometry.vertices.map(v => new Vec3(v.x, v.y, v.z))
+      this.faces = precomputedGeometry.faces.map(f => [f.a, f.b, f.c])
+      this.faceNormals = precomputedGeometry.faces.map(f => new Vec3(f.normal.x, f.normal.y, f.normal.z))
+      this.boundingSphereRadius = precomputedGeometry.boundingSphere.radius
+      console.log('Constructor received data:', precomputedGeometry)
+    } else {
+      /**
+       * Array of Vec3
+       * @property vertices
+       * @type {Array}
+       */
+      this.vertices = points || []
+      /**
+       * Array of integer arrays, indicating which vertices each face consists of
+       * @property faces
+       * @type {Array}
+       */
+      this.faces = faces || []
+      /**
+       * Array of Vec3
+       * @property faceNormals
+       * @type {Array}
+       */
+      this.faceNormals = []
+      this.computeNormals()
+      this.updateBoundingSphereRadius()
+    }
 
     this.worldVertices = [] // World transformed version of .vertices
     this.worldVerticesNeedsUpdate = true
-
-    /**
-     * Array of integer arrays, indicating which vertices each face consists of
-     * @property faces
-     * @type {Array}
-     */
-    this.faces = faces || []
-
-    /**
-     * Array of Vec3
-     * @property faceNormals
-     * @type {Array}
-     */
-    this.faceNormals = []
-    this.computeNormals()
-
-    this.worldFaceNormalsNeedsUpdate = true
     this.worldFaceNormals = [] // World transformed version of .faceNormals
-
-    /**
-     * Array of Vec3
-     * @property uniqueEdges
-     * @type {Array}
-     */
-    this.uniqueEdges = []
+    this.worldFaceNormalsNeedsUpdate = true
 
     /**
      * If given, these locally defined, normalized axes are the only ones being checked when doing separating axis check.
@@ -70,8 +70,13 @@ export class ConvexPolyhedron extends Shape {
      */
     this.uniqueAxes = uniqueAxes ? uniqueAxes.slice() : null
 
+    /**
+     * Array of Vec3
+     * @property uniqueEdges
+     * @type {Array}
+     */
+    this.uniqueEdges = []
     this.computeEdges()
-    this.updateBoundingSphereRadius()
   }
 
   /**
@@ -119,7 +124,7 @@ export class ConvexPolyhedron extends Shape {
     // Generate normals
     for (let i = 0; i < this.faces.length; i++) {
       // Check so all vertices exists for this face
-      for (var j = 0; j < this.faces[i].length; j++) {
+      for (let j = 0; j < this.faces[i].length; j++) {
         if (!this.vertices[this.faces[i][j]]) {
           throw new Error(`Vertex ${this.faces[i][j]} not found!`)
         }
@@ -134,7 +139,7 @@ export class ConvexPolyhedron extends Shape {
         console.error(
           `.faceNormals[${i}] = Vec3(${n.toString()}) looks like it points into the shape? The vertices follow. Make sure they are ordered CCW around the normal, using the right hand rule.`
         )
-        for (var j = 0; j < this.faces[i].length; j++) {
+        for (let j = 0; j < this.faces[i].length; j++) {
           console.warn(`.vertices[${this.faces[i][j]}] = Vec3(${this.vertices[this.faces[i][j]].toString()})`)
         }
       }
@@ -198,13 +203,24 @@ export class ConvexPolyhedron extends Shape {
     }
   }
 
+  /**
+   * Find the separating axis between this hull and another
+   * @method findSeparatingAxis
+   * @param {ConvexPolyhedron} hullB
+   * @param {Vec3} posA
+   * @param {Quaternion} quatA
+   * @param {Vec3} posB
+   * @param {Quaternion} quatB
+   * @param {Vec3} target The target vector to save the axis in
+   * @return {bool} Returns false if a separation is found, else true
+   */
   findSeparatingAxis(hullB, posA, quatA, posB, quatB, target, faceListA, faceListB) {
-    const faceANormalWS3 = fsa_faceANormalWS3
-    const Worldnormal1 = fsa_Worldnormal1
-    const deltaC = fsa_deltaC
-    const worldEdge0 = fsa_worldEdge0
-    const worldEdge1 = fsa_worldEdge1
-    const Cross = fsa_Cross
+    const faceANormalWS3 = new Vec3()
+    const Worldnormal1 = new Vec3()
+    const deltaC = new Vec3()
+    const worldEdge0 = new Vec3()
+    const worldEdge1 = new Vec3()
+    const Cross = new Vec3()
 
     let dmin = Number.MAX_VALUE
     const hullA = this
@@ -354,10 +370,12 @@ export class ConvexPolyhedron extends Shape {
   calculateLocalInertia(mass, target) {
     // Approximate with box inertia
     // Exact inertia calculation is overkill, but see http://geometrictools.com/Documentation/PolyhedralMassProperties.pdf for the correct way to do it
-    this.computeLocalAABB(cli_aabbmin, cli_aabbmax)
-    const x = cli_aabbmax.x - cli_aabbmin.x
-    const y = cli_aabbmax.y - cli_aabbmin.y
-    const z = cli_aabbmax.z - cli_aabbmin.z
+    const aabbmax = new Vec3()
+    const aabbmin = new Vec3()
+    this.computeLocalAABB(aabbmin, aabbmax)
+    const x = aabbmax.x - aabbmin.x
+    const y = aabbmax.y - aabbmin.y
+    const z = aabbmax.z - aabbmin.z
     target.x = (1.0 / 12.0) * mass * (2 * y * 2 * y + 2 * z * 2 * z)
     target.y = (1.0 / 12.0) * mass * (2 * x * 2 * x + 2 * z * 2 * z)
     target.z = (1.0 / 12.0) * mass * (2 * y * 2 * y + 2 * x * 2 * x)
@@ -556,14 +574,13 @@ export class ConvexPolyhedron extends Shape {
 
   // Updates .worldVertices and sets .worldVerticesNeedsUpdate to false.
   computeWorldVertices(position, quat) {
-    const N = this.vertices.length
-    while (this.worldVertices.length < N) {
+    while (this.worldVertices.length < this.vertices.length) {
       this.worldVertices.push(new Vec3())
     }
 
     const verts = this.vertices
     const worldVerts = this.worldVertices
-    for (let i = 0; i !== N; i++) {
+    for (let i = 0; i !== this.vertices.length; i++) {
       quat.vmult(verts[i], worldVerts[i])
       position.vadd(worldVerts[i], worldVerts[i])
     }
@@ -572,14 +589,12 @@ export class ConvexPolyhedron extends Shape {
   }
 
   computeLocalAABB(aabbmin, aabbmax) {
-    const n = this.vertices.length
     const vertices = this.vertices
-    const worldVert = computeLocalAABB_worldVert
 
     aabbmin.set(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE)
     aabbmax.set(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE)
 
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < this.vertices.length; i++) {
       const v = vertices[i]
       if (v.x < aabbmin.x) {
         aabbmin.x = v.x
@@ -626,7 +641,7 @@ export class ConvexPolyhedron extends Shape {
     // Assume points are distributed with local (0,0,0) as center
     let max2 = 0
     const verts = this.vertices
-    for (let i = 0, N = verts.length; i !== N; i++) {
+    for (let i = 0; i !== verts.length; i++) {
       const norm2 = verts[i].norm2()
       if (norm2 > max2) {
         max2 = norm2
@@ -643,7 +658,6 @@ export class ConvexPolyhedron extends Shape {
    * @param {Vec3}        max
    */
   calculateWorldAABB(pos, quat, min, max) {
-    const n = this.vertices.length
     const verts = this.vertices
     let minx
     let miny
@@ -651,7 +665,8 @@ export class ConvexPolyhedron extends Shape {
     let maxx
     let maxy
     let maxz
-    for (let i = 0; i < n; i++) {
+    let tempWorldVertex = new Vec3()
+    for (let i = 0; i < verts.length; i++) {
       tempWorldVertex.copy(verts[i])
       quat.vmult(tempWorldVertex, tempWorldVertex)
       pos.vadd(tempWorldVertex, tempWorldVertex)
@@ -700,12 +715,11 @@ export class ConvexPolyhedron extends Shape {
    * @return {Vec3}
    */
   getAveragePointLocal(target = new Vec3()) {
-    const n = this.vertices.length
     const verts = this.vertices
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < verts.length; i++) {
       target.vadd(verts[i], target)
     }
-    target.mult(1 / n, target)
+    target.mult(1 / verts.length, target)
     return target
   }
 
@@ -788,7 +802,7 @@ export class ConvexPolyhedron extends Shape {
 /**
  * Get face normal given 3 vertices
  * @static
- * @method getFaceNormal
+ * @method computeNormal
  * @param {Vec3} va
  * @param {Vec3} vb
  * @param {Vec3} vc
@@ -805,32 +819,9 @@ ConvexPolyhedron.computeNormal = (va, vb, vc, target) => {
   }
 }
 
-/**
- * Find the separating axis between this hull and another
- * @method findSeparatingAxis
- * @param {ConvexPolyhedron} hullB
- * @param {Vec3} posA
- * @param {Quaternion} quatA
- * @param {Vec3} posB
- * @param {Quaternion} quatB
- * @param {Vec3} target The target vector to save the axis in
- * @return {bool} Returns false if a separation is found, else true
- */
-const fsa_faceANormalWS3 = new Vec3()
 
-const fsa_Worldnormal1 = new Vec3()
-const fsa_deltaC = new Vec3()
-const fsa_worldEdge0 = new Vec3()
-const fsa_worldEdge1 = new Vec3()
-const fsa_Cross = new Vec3()
 const maxminA = []
 const maxminB = []
-const cli_aabbmin = new Vec3()
-const cli_aabbmax = new Vec3()
-
-const computeLocalAABB_worldVert = new Vec3()
-
-const tempWorldVertex = new Vec3()
 
 /**
  * Get max and min dot product of a convex hull at position (pos,quat) projected onto an axis.
