@@ -13,23 +13,18 @@ import { Mat3 } from './Mat3'
  *     console.log('x=' + v.x); // x=1
  */
 export class Vec3 {
-  constructor(x, y, z) {
-    /**
-     * @property x
-     * @type {Number}
-     */
+  x: number
+  y: number
+  z: number
+
+  static ZERO = new Vec3(0, 0, 0)
+  static UNIT_X = new Vec3(1, 0, 0)
+  static UNIT_Y = new Vec3(0, 1, 0)
+  static UNIT_Z = new Vec3(0, 0, 1)
+
+  constructor(x = 0, y = 0, z = 0) {
     this.x = x || 0.0
-
-    /**
-     * @property y
-     * @type {Number}
-     */
     this.y = y || 0.0
-
-    /**
-     * @property z
-     * @type {Number}
-     */
     this.z = z || 0.0
   }
 
@@ -40,15 +35,14 @@ export class Vec3 {
    * @param {Vec3} target Optional. Target to save in.
    * @return {Vec3}
    */
-  cross(v, target) {
+  cross(v: Vec3, target = new Vec3()): Vec3 {
     const vx = v.x
     const vy = v.y
     const vz = v.z
     const x = this.x
     const y = this.y
     const z = this.z
-    target = target || new Vec3()
-
+    
     target.x = y * vz - z * vy
     target.y = z * vx - x * vz
     target.z = x * vy - y * vx
@@ -64,7 +58,7 @@ export class Vec3 {
    * @param {Number} z
    * @return Vec3
    */
-  set(x, y, z) {
+  set(x: number, y: number, z: number): Vec3 {
     this.x = x
     this.y = y
     this.z = z
@@ -75,7 +69,7 @@ export class Vec3 {
    * Set all components of the vector to zero.
    * @method setZero
    */
-  setZero() {
+  setZero(): void {
     this.x = this.y = this.z = 0
   }
 
@@ -86,7 +80,9 @@ export class Vec3 {
    * @param {Vec3} target Optional.
    * @return {Vec3}
    */
-  vadd({ x, y, z }, target) {
+  vadd({ x, y, z }: Vec3): Vec3
+  vadd({ x, y, z }: Vec3, target: Vec3): void
+  vadd({ x, y, z }: Vec3, target?: Vec3): Vec3 | void {
     if (target) {
       target.x = x + this.x
       target.y = y + this.y
@@ -103,7 +99,9 @@ export class Vec3 {
    * @param {Vec3} target Optional. Target to save in.
    * @return {Vec3}
    */
-  vsub({ x, y, z }, target) {
+  vsub({ x, y, z }: Vec3): Vec3
+  vsub({ x, y, z }: Vec3, target: Vec3): void
+  vsub({ x, y, z }: Vec3, target?: Vec3): Vec3 | void {
     if (target) {
       target.x = this.x - x
       target.y = this.y - y
@@ -119,7 +117,7 @@ export class Vec3 {
    * @see http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/Lecture6.pdf
    * @return {Mat3}
    */
-  crossmat() {
+  crossmat(): Mat3 {
     return new Mat3([0, -this.z, this.y, this.z, 0, -this.x, -this.y, this.x, 0])
   }
 
@@ -128,7 +126,7 @@ export class Vec3 {
    * @method normalize
    * @return {Number} Returns the norm of the vector
    */
-  normalize() {
+  normalize(): number {
     const x = this.x
     const y = this.y
     const z = this.z
@@ -153,7 +151,7 @@ export class Vec3 {
    * @param {Vec3} target Optional target to save in
    * @return {Vec3} Returns the unit vector
    */
-  unit(target = new Vec3()) {
+  unit(target = new Vec3()): Vec3 {
     const x = this.x
     const y = this.y
     const z = this.z
@@ -177,11 +175,20 @@ export class Vec3 {
    * @return {Number}
    * @deprecated Use .length() instead
    */
-  norm() {
+  norm(): number {
     const x = this.x
     const y = this.y
     const z = this.z
     return Math.sqrt(x * x + y * y + z * z)
+  }
+
+  /**
+   * Get the length of the vector
+   * @method length
+   * @return {Number}
+   */
+  length(): number {
+    return this.norm()
   }
 
   /**
@@ -190,7 +197,16 @@ export class Vec3 {
    * @return {Number}
    * @deprecated Use .lengthSquared() instead.
    */
-  norm2() {
+  norm2(): number {
+    return this.dot(this)
+  }
+
+  /**
+   * Get the squared length of the vector.
+   * @method lengthSquared
+   * @return {Number}
+   */
+  lengthSquared(): number {
     return this.dot(this)
   }
 
@@ -200,7 +216,7 @@ export class Vec3 {
    * @param  {Vec3} p
    * @return {Number}
    */
-  distanceTo(p) {
+  distanceTo(p: Vec3): number {
     const x = this.x
     const y = this.y
     const z = this.z
@@ -216,7 +232,7 @@ export class Vec3 {
    * @param  {Vec3} p
    * @return {Number}
    */
-  distanceSquared(p) {
+  distanceSquared(p: Vec3): number {
     const x = this.x
     const y = this.y
     const z = this.z
@@ -235,7 +251,7 @@ export class Vec3 {
    * @return {Vec3}
    * @deprecated Use .scale() instead
    */
-  mult(scalar, target = new Vec3()) {
+  mult(scalar: number, target = new Vec3()): Vec3 {
     const x = this.x
     const y = this.y
     const z = this.z
@@ -246,13 +262,24 @@ export class Vec3 {
   }
 
   /**
+   * Multiply the vector with a scalar.
+   * @method scale
+   * @param {Number} scalar
+   * @param {Vec3} target
+   * @return {Vec3}
+   */
+  scale(scalar: number, target = new Vec3()): Vec3 {
+    return this.mult(scalar, target)
+  }
+
+  /**
    * Multiply the vector with an other vector, component-wise.
-   * @method mult
+   * @method vmult
    * @param {Number} vector
    * @param {Vec3} target The vector to save the result in.
    * @return {Vec3}
    */
-  vmul({ x, y, z }, target = new Vec3()) {
+  vmul({ x, y, z }: Vec3, target = new Vec3()): Vec3 {
     target.x = x * this.x
     target.y = y * this.y
     target.z = z * this.z
@@ -267,7 +294,7 @@ export class Vec3 {
    * @param {Vec3} target The vector to save the result in.
    * @return {Vec3}
    */
-  addScaledVector(scalar, { x, y, z }, target = new Vec3()) {
+  addScaledVector(scalar: number, { x, y, z }: Vec3, target = new Vec3()): Vec3 {
     target.x = this.x + scalar * x
     target.y = this.y + scalar * y
     target.z = this.z + scalar * z
@@ -280,7 +307,7 @@ export class Vec3 {
    * @param {Vec3} v
    * @return {Number}
    */
-  dot({ x, y, z }) {
+  dot({ x, y, z }: Vec3): number {
     return this.x * x + this.y * y + this.z * z
   }
 
@@ -288,7 +315,7 @@ export class Vec3 {
    * @method isZero
    * @return bool
    */
-  isZero() {
+  isZero(): boolean {
     return this.x === 0 && this.y === 0 && this.z === 0
   }
 
@@ -298,14 +325,14 @@ export class Vec3 {
    * @param {Vec3} target Optional target to save in
    * @return {Vec3}
    */
-  negate(target = new Vec3()) {
+  negate(target = new Vec3()): Vec3 {
     target.x = -this.x
     target.y = -this.y
     target.z = -this.z
     return target
   }
 
-  tangents(t1, t2) {
+  tangents(t1: Vec3, t2: Vec3): void {
     const norm = this.norm()
     if (norm > 0.0) {
       const n = Vec3_tangents_n
@@ -332,7 +359,7 @@ export class Vec3 {
    * @method toString
    * @return string
    */
-  toString() {
+  toString(): string {
     return `${this.x},${this.y},${this.z}`
   }
 
@@ -341,7 +368,7 @@ export class Vec3 {
    * @method toArray
    * @return Array
    */
-  toArray() {
+  toArray(): [number, number, number] {
     return [this.x, this.y, this.z]
   }
 
@@ -351,7 +378,7 @@ export class Vec3 {
    * @param {Vec3} source
    * @return {Vec3} this
    */
-  copy({ x, y, z }) {
+  copy({ x, y, z }: Vec3): Vec3 {
     this.x = x
     this.y = y
     this.z = z
@@ -365,7 +392,7 @@ export class Vec3 {
    * @param {Number} t A number between 0 and 1. 0 will make this function return u, and 1 will make it return v. Numbers in between will generate a vector in between them.
    * @param {Vec3} target
    */
-  lerp(v, t, target) {
+  lerp(v: Vec3, t: number, target: Vec3): void {
     const x = this.x
     const y = this.y
     const z = this.z
@@ -381,7 +408,7 @@ export class Vec3 {
    * @param {Number} precision
    * @return bool
    */
-  almostEquals({ x, y, z }, precision) {
+  almostEquals({ x, y, z }: Vec3, precision: number): boolean {
     if (precision === undefined) {
       precision = 1e-6
     }
@@ -396,7 +423,7 @@ export class Vec3 {
    * @method almostZero
    * @param {Number} precision
    */
-  almostZero(precision) {
+  almostZero(precision: number): boolean {
     if (precision === undefined) {
       precision = 1e-6
     }
@@ -413,7 +440,7 @@ export class Vec3 {
    * @param  {Number}  precision Set to zero for exact comparisons
    * @return {Boolean}
    */
-  isAntiparallelTo(v, precision) {
+  isAntiparallelTo(v: Vec3, precision: number): boolean {
     this.negate(antip_neg)
     return antip_neg.almostEquals(v, precision)
   }
@@ -423,57 +450,11 @@ export class Vec3 {
    * @method clone
    * @return {Vec3}
    */
-  clone() {
+  clone(): Vec3 {
     return new Vec3(this.x, this.y, this.z)
   }
 }
 
-/**
- * @static
- * @property {Vec3} ZERO
- */
-Vec3.ZERO = new Vec3(0, 0, 0)
-
-/**
- * @static
- * @property {Vec3} UNIT_X
- */
-Vec3.UNIT_X = new Vec3(1, 0, 0)
-
-/**
- * @static
- * @property {Vec3} UNIT_Y
- */
-Vec3.UNIT_Y = new Vec3(0, 1, 0)
-
-/**
- * @static
- * @property {Vec3} UNIT_Z
- */
-Vec3.UNIT_Z = new Vec3(0, 0, 1)
-
-/**
- * Get the length of the vector
- * @method length
- * @return {Number}
- */
-Vec3.prototype.length = Vec3.prototype.norm
-
-/**
- * Get the squared length of the vector.
- * @method lengthSquared
- * @return {Number}
- */
-Vec3.prototype.lengthSquared = Vec3.prototype.norm2
-
-/**
- * Multiply the vector with a scalar.
- * @method scale
- * @param {Number} scalar
- * @param {Vec3} target
- * @return {Vec3}
- */
-Vec3.prototype.scale = Vec3.prototype.mult
 
 /**
  * Compute two artificial tangents to the vector
