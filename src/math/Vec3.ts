@@ -17,10 +17,10 @@ export class Vec3 {
   y: number
   z: number
 
-  static ZERO = new Vec3(0, 0, 0)
-  static UNIT_X = new Vec3(1, 0, 0)
-  static UNIT_Y = new Vec3(0, 1, 0)
-  static UNIT_Z = new Vec3(0, 0, 1)
+  static ZERO: Vec3
+  static UNIT_X: Vec3
+  static UNIT_Y: Vec3
+  static UNIT_Z: Vec3
 
   constructor(x = 0, y = 0, z = 0) {
     this.x = x || 0.0
@@ -42,7 +42,7 @@ export class Vec3 {
     const x = this.x
     const y = this.y
     const z = this.z
-    
+
     target.x = y * vz - z * vy
     target.y = z * vx - x * vz
     target.z = x * vy - y * vx
@@ -455,6 +455,10 @@ export class Vec3 {
   }
 }
 
+Vec3.ZERO = new Vec3(0, 0, 0)
+Vec3.UNIT_X = new Vec3(1, 0, 0)
+Vec3.UNIT_Y = new Vec3(0, 1, 0)
+Vec3.UNIT_Z = new Vec3(0, 0, 1)
 
 /**
  * Compute two artificial tangents to the vector
