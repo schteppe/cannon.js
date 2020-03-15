@@ -20,7 +20,6 @@ import { Transform } from '../math/Transform'
  *
  * @todo Move the clipping functions to ContactGenerator?
  * @todo Automatically merge coplanar polygons in constructor.
- * @todo Test importing facenormals from THREE.Geometry
  */
 
 export class ConvexPolyhedron extends Shape {
@@ -34,8 +33,10 @@ export class ConvexPolyhedron extends Shape {
       this.vertices = precomputedGeometry.vertices.map(v => new Vec3(v.x, v.y, v.z))
       this.faces = precomputedGeometry.faces.map(f => [f.a, f.b, f.c])
       this.faceNormals = precomputedGeometry.faces.map(f => new Vec3(f.normal.x, f.normal.y, f.normal.z))
-      this.boundingSphereRadius = precomputedGeometry.boundingSphere.radius
-      console.log('Constructor received data:', precomputedGeometry)
+      // THREE.ConeGeometry does not provide a boundingSphere, for example
+      this.boundingSphereRadius = precomputedGeometry.boundingSphere
+        ? precomputedGeometry.boundingSphere.radius
+        : this.updateBoundingSphereRadius()
     } else {
       /**
        * Array of Vec3
@@ -230,7 +231,7 @@ export class ConvexPolyhedron extends Shape {
       const numFacesA = faceListA ? faceListA.length : hullA.faces.length
 
       // Test face normals from hullA
-      for (var i = 0; i < numFacesA; i++) {
+      for (let i = 0; i < numFacesA; i++) {
         var fi = faceListA ? faceListA[i] : i
 
         // Get world face normal
@@ -249,7 +250,7 @@ export class ConvexPolyhedron extends Shape {
       }
     } else {
       // Test unique axes
-      for (var i = 0; i !== hullA.uniqueAxes.length; i++) {
+      for (let i = 0; i !== hullA.uniqueAxes.length; i++) {
         // Get world axis
         quatA.vmult(hullA.uniqueAxes[i], faceANormalWS3)
 
@@ -268,7 +269,7 @@ export class ConvexPolyhedron extends Shape {
     if (!hullB.uniqueAxes) {
       // Test face normals from hullB
       const numFacesB = faceListB ? faceListB.length : hullB.faces.length
-      for (var i = 0; i < numFacesB; i++) {
+      for (let i = 0; i < numFacesB; i++) {
         var fi = faceListB ? faceListB[i] : i
 
         Worldnormal1.copy(hullB.faceNormals[fi])
@@ -286,7 +287,7 @@ export class ConvexPolyhedron extends Shape {
       }
     } else {
       // Test unique axes in B
-      for (var i = 0; i !== hullB.uniqueAxes.length; i++) {
+      for (let i = 0; i !== hullB.uniqueAxes.length; i++) {
         quatB.vmult(hullB.uniqueAxes[i], Worldnormal1)
 
         curPlaneTests++
@@ -414,15 +415,15 @@ export class ConvexPolyhedron extends Shape {
     const worldA1 = new Vec3()
     const localPlaneNormal = new Vec3()
     const planeNormalWS = new Vec3()
-
     const hullA = this
     const worldVertsB2 = []
     const pVtxIn = worldVertsB1
     const pVtxOut = worldVertsB2
-    // Find the face with normal closest to the separating axis
+
     let closestFaceA = -1
     let dmin = Number.MAX_VALUE
 
+    // Find the face with normal closest to the separating axis
     for (let face = 0; face < hullA.faces.length; face++) {
       faceANormalWS.copy(hullA.faceNormals[face])
       quatA.vmult(faceANormalWS, faceANormalWS)
@@ -439,19 +440,23 @@ export class ConvexPolyhedron extends Shape {
     // Get the face and construct connected faces
     const polyA = hullA.faces[closestFaceA]
     polyA.connectedFaces = []
-    for (var i = 0; i < hullA.faces.length; i++) {
+    for (let i = 0; i < hullA.faces.length; i++) {
       for (let j = 0; j < hullA.faces[i].length; j++) {
         if (
-          polyA.includes(hullA.faces[i][j]) &&
-          i !== closestFaceA /* Not the one we are looking for connections from */ &&
-          !polyA.connectedFaces.includes(i) /* Not already added */
+          /* Sharing a vertex*/
+          polyA.indexOf(hullA.faces[i][j]) !== -1 &&
+          /* Not the one we are looking for connections from */
+          i !== closestFaceA &&
+          /* Not already added */
+          polyA.connectedFaces.indexOf(i) === -1
         ) {
           polyA.connectedFaces.push(i)
         }
       }
     }
 
-    // Clip the polygon to the back of the planes of all faces of hull A, that are adjacent to the witness face
+    // Clip the polygon to the back of the planes of all faces of hull A,
+    // that are adjacent to the witness face
     const numVerticesA = polyA.length
     for (let i = 0; i < numVerticesA; i++) {
       const a = hullA.vertices[polyA[i]]
@@ -469,14 +474,22 @@ export class ConvexPolyhedron extends Shape {
       quatA.vmult(worldA1, worldA1)
       posA.vadd(worldA1, worldA1)
 
-      const otherFace = polyA.connectedFaces[i]
-      localPlaneNormal.copy(this.faceNormals[otherFace])
-      const localPlaneEq = this.getPlaneConstantOfFace(otherFace)
+      let planeEqWS1 = -worldA1.dot(planeNormalWS1)
+      let planeEqWS
+      let otherFace = polyA.connectedFaces[i]
 
-      planeNormalWS.copy(localPlaneNormal)
-      quatA.vmult(planeNormalWS, planeNormalWS)
+      if (otherFace != null) {
+        localPlaneNormal.copy(this.faceNormals[otherFace])
+        const localPlaneEq = this.getPlaneConstantOfFace(otherFace)
 
-      const planeEqWS = localPlaneEq - planeNormalWS.dot(posA)
+        planeNormalWS.copy(localPlaneNormal)
+        quatA.vmult(planeNormalWS, planeNormalWS)
+        posA.vadd(planeNormalWS, planeNormalWS)
+        planeEqWS = localPlaneEq - planeNormalWS.dot(posA)
+      } else {
+        planeNormalWS.copy(planeNormalWS1)
+        planeEqWS = planeEqWS1
+      }
 
       // Clip face against our constructed plane
       this.clipFaceAgainstPlane(pVtxIn, pVtxOut, planeNormalWS, planeEqWS)
@@ -508,7 +521,7 @@ export class ConvexPolyhedron extends Shape {
 
       if (depth <= maxDist) {
         const point = pVtxIn[i]
-        if (depth <= 0) {
+        if (depth <= 1e-6) {
           const p = {
             point,
             normal: planeNormalWS,
@@ -736,18 +749,18 @@ export class ConvexPolyhedron extends Shape {
     // Apply rotation
     if (quat) {
       // Rotate vertices
-      for (var i = 0; i < n; i++) {
+      for (let i = 0; i < n; i++) {
         var v = verts[i]
         quat.vmult(v, v)
       }
       // Rotate face normals
-      for (var i = 0; i < this.faceNormals.length; i++) {
+      for (let i = 0; i < this.faceNormals.length; i++) {
         var v = this.faceNormals[i]
         quat.vmult(v, v)
       }
       /*
             // Rotate edges
-            for(var i=0; i<this.uniqueEdges.length; i++){
+            for(let i=0; i<this.uniqueEdges.length; i++){
                 var v = this.uniqueEdges[i];
                 quat.vmult(v,v);
             }*/
@@ -755,7 +768,7 @@ export class ConvexPolyhedron extends Shape {
 
     // Apply offset
     if (offset) {
-      for (var i = 0; i < n; i++) {
+      for (let i = 0; i < n; i++) {
         var v = verts[i]
         v.vadd(offset, v)
       }
@@ -763,7 +776,9 @@ export class ConvexPolyhedron extends Shape {
   }
 
   /**
-   * Checks whether p is inside the polyhedra. Must be in local coords. The point lies outside of the convex hull of the other points if and only if the direction of all the vectors from it to those other points are on less than one half of a sphere around it.
+   * Checks whether p is inside the polyhedra. Must be in local coords.
+   * The point lies outside of the convex hull of the other points if and only if the direction
+   * of all the vectors from it to those other points are on less than one half of a sphere around it.
    * @method pointIsInside
    * @param  {Vec3} p      A point given in local coordinates
    * @return {Boolean}
@@ -818,7 +833,6 @@ ConvexPolyhedron.computeNormal = (va, vb, vc, target) => {
     target.normalize()
   }
 }
-
 
 const maxminA = []
 const maxminB = []
