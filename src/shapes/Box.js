@@ -65,7 +65,7 @@ export class Box extends Shape {
 
     const axes = [new V(0, 0, 1), new V(0, 1, 0), new V(1, 0, 0)]
 
-    const h = new ConvexPolyhedron(vertices, indices)
+    const h = new ConvexPolyhedron(vertices, indices, axes)
     this.convexPolyhedronRepresentation = h
     h.material = this.material
   }
