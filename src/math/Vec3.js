@@ -13,24 +13,10 @@ import { Mat3 } from './Mat3'
  *     console.log('x=' + v.x); // x=1
  */
 export class Vec3 {
-  constructor(x, y, z) {
-    /**
-     * @property x
-     * @type {Number}
-     */
-    this.x = x || 0.0
-
-    /**
-     * @property y
-     * @type {Number}
-     */
-    this.y = y || 0.0
-
-    /**
-     * @property z
-     * @type {Number}
-     */
-    this.z = z || 0.0
+  constructor(x = 0.0, y = 0.0, z = 0.0) {
+    this.x = x
+    this.y = y
+    this.z = z
   }
 
   /**
@@ -40,14 +26,13 @@ export class Vec3 {
    * @param {Vec3} target Optional. Target to save in.
    * @return {Vec3}
    */
-  cross(v, target) {
+  cross(v, target = new Vec3()) {
     const vx = v.x
     const vy = v.y
     const vz = v.z
     const x = this.x
     const y = this.y
     const z = this.z
-    target = target || new Vec3()
 
     target.x = y * vz - z * vy
     target.y = z * vx - x * vz
@@ -305,13 +290,19 @@ export class Vec3 {
     return target
   }
 
+  /**
+   * Compute two artificial tangents to the vector
+   * @method tangents
+   * @param {Vec3} t1 Vector object to save the first tangent in
+   * @param {Vec3} t2 Vector object to save the second tangent in
+   */
   tangents(t1, t2) {
     const norm = this.norm()
     if (norm > 0.0) {
-      const n = Vec3_tangents_n
+      const n = new Vec3()
       const inorm = 1 / norm
       n.set(this.x * inorm, this.y * inorm, this.z * inorm)
-      const randVec = Vec3_tangents_randVec
+      const randVec = new Vec3()
       if (Math.abs(n.x) < 0.9) {
         randVec.set(1, 0, 0)
         n.cross(randVec, t1)
@@ -381,10 +372,7 @@ export class Vec3 {
    * @param {Number} precision
    * @return bool
    */
-  almostEquals({ x, y, z }, precision) {
-    if (precision === undefined) {
-      precision = 1e-6
-    }
+  almostEquals({ x, y, z }, precision = 1e-6) {
     if (Math.abs(this.x - x) > precision || Math.abs(this.y - y) > precision || Math.abs(this.z - z) > precision) {
       return false
     }
@@ -396,10 +384,7 @@ export class Vec3 {
    * @method almostZero
    * @param {Number} precision
    */
-  almostZero(precision) {
-    if (precision === undefined) {
-      precision = 1e-6
-    }
+  almostZero(precision = 1e-6) {
     if (Math.abs(this.x) > precision || Math.abs(this.y) > precision || Math.abs(this.z) > precision) {
       return false
     }
@@ -415,7 +400,7 @@ export class Vec3 {
    */
   isAntiparallelTo(v, precision) {
     this.negate(antip_neg)
-    return antip_neg.almostEquals(v, precision)
+    return new Vec3().almostEquals(v, precision)
   }
 
   /**
@@ -474,14 +459,3 @@ Vec3.prototype.lengthSquared = Vec3.prototype.norm2
  * @return {Vec3}
  */
 Vec3.prototype.scale = Vec3.prototype.mult
-
-/**
- * Compute two artificial tangents to the vector
- * @method tangents
- * @param {Vec3} t1 Vector object to save the first tangent in
- * @param {Vec3} t2 Vector object to save the second tangent in
- */
-const Vec3_tangents_n = new Vec3()
-const Vec3_tangents_randVec = new Vec3()
-
-const antip_neg = new Vec3()
