@@ -6,15 +6,11 @@ import { Vec3 } from './Vec3'
  * @constructor
  */
 export class JacobianElement {
-  constructor() {
-    /**
-     * @property {Vec3} spatial
-     */
-    this.spatial = new Vec3()
+  spatial: Vec3
+  rotational: Vec3
 
-    /**
-     * @property {Vec3} rotational
-     */
+  constructor() {
+    this.spatial = new Vec3()
     this.rotational = new Vec3()
   }
 
@@ -24,7 +20,7 @@ export class JacobianElement {
    * @param  {JacobianElement} element
    * @return {Number}
    */
-  multiplyElement({ spatial, rotational }) {
+  multiplyElement({ spatial, rotational }: JacobianElement): number {
     return spatial.dot(this.spatial) + rotational.dot(this.rotational)
   }
 
@@ -35,7 +31,7 @@ export class JacobianElement {
    * @param  {Vec3} rotational
    * @return {Number}
    */
-  multiplyVectors(spatial, rotational) {
+  multiplyVectors(spatial: Vec3, rotational: Vec3): number {
     return spatial.dot(this.spatial) + rotational.dot(this.rotational)
   }
 }

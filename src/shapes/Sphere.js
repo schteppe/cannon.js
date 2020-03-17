@@ -36,7 +36,7 @@ export class Sphere extends Shape {
   }
 
   volume() {
-    return 4.0 * Math.PI * Math.pow(this.radius, 3) / 3.0
+    return (4.0 * Math.PI * Math.pow(this.radius, 3)) / 3.0
   }
 
   updateBoundingSphereRadius() {
