@@ -332,6 +332,12 @@ export class Vec3 {
     return target
   }
 
+  /**
+   * Compute two artificial tangents to the vector
+   * @method tangents
+   * @param {Vec3} t1 Vector object to save the first tangent in
+   * @param {Vec3} t2 Vector object to save the second tangent in
+   */
   tangents(t1: Vec3, t2: Vec3): void {
     const norm = this.norm()
     if (norm > 0.0) {
@@ -408,7 +414,7 @@ export class Vec3 {
    * @param {Number} precision
    * @return bool
    */
-  almostEquals({ x, y, z }: Vec3, precision: number = 1e-6): boolean {
+  almostEquals({ x, y, z }: Vec3, precision = 1e-6): boolean {
     if (Math.abs(this.x - x) > precision || Math.abs(this.y - y) > precision || Math.abs(this.z - z) > precision) {
       return false
     }
@@ -420,7 +426,7 @@ export class Vec3 {
    * @method almostZero
    * @param {Number} precision
    */
-  almostZero(precision: number = 1e-6): boolean {
+  almostZero(precision = 1e-6): boolean {
     if (Math.abs(this.x) > precision || Math.abs(this.y) > precision || Math.abs(this.z) > precision) {
       return false
     }
