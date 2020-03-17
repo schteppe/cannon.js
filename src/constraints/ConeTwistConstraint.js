@@ -24,10 +24,11 @@ export class ConeTwistConstraint extends PointToPointConstraint {
     // Set pivot point in between
     const pivotA = options.pivotA ? options.pivotA.clone() : new Vec3()
     const pivotB = options.pivotB ? options.pivotB.clone() : new Vec3()
-    this.axisA = options.axisA ? options.axisA.clone() : new Vec3()
-    this.axisB = options.axisB ? options.axisB.clone() : new Vec3()
 
     super(bodyA, pivotA, bodyB, pivotB, maxForce)
+
+    this.axisA = options.axisA ? options.axisA.clone() : new Vec3()
+    this.axisB = options.axisB ? options.axisB.clone() : new Vec3()
 
     this.collideConnected = !!options.collideConnected
 
