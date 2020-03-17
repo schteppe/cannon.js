@@ -7,3 +7,9 @@ import { World } from 'cannon-es'
 
 // ...
 ```
+
+
+#### TO DO:
+* Finish TS conversion
+* Revisit math/Transform.ts types
+* Standardize JSDoc comments
