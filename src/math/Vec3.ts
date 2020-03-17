@@ -22,10 +22,10 @@ export class Vec3 {
   static UNIT_Y: Vec3
   static UNIT_Z: Vec3
 
-  constructor(x = 0, y = 0, z = 0) {
-    this.x = x || 0.0
-    this.y = y || 0.0
-    this.z = z || 0.0
+  constructor(x = 0.0, y = 0.0, z = 0.0) {
+    this.x = x
+    this.y = y
+    this.z = z
   }
 
   /**
@@ -408,10 +408,7 @@ export class Vec3 {
    * @param {Number} precision
    * @return bool
    */
-  almostEquals({ x, y, z }: Vec3, precision: number): boolean {
-    if (precision === undefined) {
-      precision = 1e-6
-    }
+  almostEquals({ x, y, z }: Vec3, precision: number = 1e-6): boolean {
     if (Math.abs(this.x - x) > precision || Math.abs(this.y - y) > precision || Math.abs(this.z - z) > precision) {
       return false
     }
@@ -423,10 +420,7 @@ export class Vec3 {
    * @method almostZero
    * @param {Number} precision
    */
-  almostZero(precision: number): boolean {
-    if (precision === undefined) {
-      precision = 1e-6
-    }
+  almostZero(precision: number = 1e-6): boolean {
     if (Math.abs(this.x) > precision || Math.abs(this.y) > precision || Math.abs(this.z) > precision) {
       return false
     }
@@ -440,7 +434,7 @@ export class Vec3 {
    * @param  {Number}  precision Set to zero for exact comparisons
    * @return {Boolean}
    */
-  isAntiparallelTo(v: Vec3, precision: number): boolean {
+  isAntiparallelTo(v: Vec3, precision?: number): boolean {
     this.negate(antip_neg)
     return antip_neg.almostEquals(v, precision)
   }

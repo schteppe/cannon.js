@@ -1,23 +1,18 @@
 import { Vec3 } from './Vec3'
+import { Quaternion } from './Quaternion'
 
 /**
  * A 3x3 matrix.
  * @class Mat3
  * @constructor
- * @param array elements Array of nine elements. Optional.
+ * @param {Array} elements A vector of length 9, containing all matrix elements. Optional.
  * @author schteppe / http://github.com/schteppe
  */
 export class Mat3 {
-  constructor(elements) {
-    /**
-     * A vector of length 9, containing all matrix elements
-     * @property {Array} elements
-     */
-    if (elements) {
-      this.elements = elements
-    } else {
-      this.elements = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-    }
+  elements: number[]
+
+  constructor(elements = [0, 0, 0, 0, 0, 0, 0, 0, 0]) {
+    this.elements = elements
   }
 
   /**
@@ -26,7 +21,7 @@ export class Mat3 {
    * @todo Should perhaps be renamed to setIdentity() to be more clear.
    * @todo Create another function that immediately creates an identity matrix eg. eye()
    */
-  identity() {
+  identity(): void {
     const e = this.elements
     e[0] = 1
     e[1] = 0
@@ -45,7 +40,7 @@ export class Mat3 {
    * Set all elements to zero
    * @method setZero
    */
-  setZero() {
+  setZero(): void {
     const e = this.elements
     e[0] = 0
     e[1] = 0
@@ -63,7 +58,7 @@ export class Mat3 {
    * @method setTrace
    * @param {Vec3} vec3
    */
-  setTrace({ x, y, z }) {
+  setTrace({ x, y, z }: Vec3): void {
     const e = this.elements
     e[0] = x
     e[4] = y
@@ -75,8 +70,7 @@ export class Mat3 {
    * @method getTrace
    * @return {Vec3}
    */
-  getTrace(target) {
-    var target = target || new Vec3()
+  getTrace(target = new Vec3()): void {
     const e = this.elements
     target.x = e[0]
     target.y = e[4]
@@ -89,7 +83,7 @@ export class Mat3 {
    * @param {Vec3} v The vector to multiply with
    * @param {Vec3} target Optional, target to save the result in.
    */
-  vmult(v, target = new Vec3()) {
+  vmult(v: Vec3, target = new Vec3()): Vec3 {
     const e = this.elements
     const x = v.x
     const y = v.y
@@ -106,7 +100,7 @@ export class Mat3 {
    * @method smult
    * @param {Number} s
    */
-  smult(s) {
+  smult(s: number): void {
     for (let i = 0; i < this.elements.length; i++) {
       this.elements[i] *= s
     }
@@ -118,18 +112,17 @@ export class Mat3 {
    * @param {Mat3} m Matrix to multiply with from left side.
    * @return {Mat3} The result.
    */
-  mmult({ elements }, target) {
-    const r = target || new Mat3()
+  mmult({ elements }: Mat3, target = new Mat3()): Mat3 {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         let sum = 0.0
         for (let k = 0; k < 3; k++) {
           sum += elements[i + k * 3] * this.elements[k + j * 3]
         }
-        r.elements[i + j * 3] = sum
+        target.elements[i + j * 3] = sum
       }
     }
-    return r
+    return target
   }
 
   /**
@@ -138,7 +131,7 @@ export class Mat3 {
    * @param {Vec3} v
    * @return {Mat3} The result.
    */
-  scale({ x, y, z }, target = new Mat3()) {
+  scale({ x, y, z }: Vec3, target = new Mat3()): Mat3 {
     const e = this.elements
     const t = target.elements
     for (let i = 0; i !== 3; i++) {
@@ -157,16 +150,16 @@ export class Mat3 {
    * @return {Vec3} The solution x
    * @todo should reuse arrays
    */
-  solve(b, target = new Vec3()) {
+  solve(b: Vec3, target = new Vec3()): Vec3 {
     // Construct equations
     const nr = 3 // num rows
     const nc = 4 // num cols
     const eqns = []
-    for (var i = 0; i < nr * nc; i++) {
+    let i: number
+    let j: number
+    for (i = 0; i < nr * nc; i++) {
       eqns.push(0)
     }
-    var i
-    let j
     for (i = 0; i < 3; i++) {
       for (j = 0; j < 3; j++) {
         eqns[i + nc * j] = this.elements[i + 3 * j]
@@ -183,7 +176,6 @@ export class Mat3 {
     let np
     const kp = 4 // num rows
     let p
-    let els
     do {
       i = k - n
       if (eqns[i + nc * i] === 0) {
@@ -202,7 +194,7 @@ export class Mat3 {
       }
       if (eqns[i + nc * i] !== 0) {
         for (j = i + 1; j < k; j++) {
-          const multiplier = eqns[i + nc * j] / eqns[i + nc * i]
+          const multiplier: number = eqns[i + nc * j] / eqns[i + nc * i]
           np = kp
           do {
             // do ligne( k ) = ligne( k ) - multiplier * ligne( i )
@@ -240,7 +232,9 @@ export class Mat3 {
    * @param {Number} value Optional. If provided, the matrix element will be set to this value.
    * @return {Number}
    */
-  e(row, column, value) {
+  e(row: number, column: number): number
+  e(row: number, column: number, value: number): void
+  e(row: number, column: number, value?: number): number | void {
     if (value === undefined) {
       return this.elements[column + 3 * row]
     } else {
@@ -255,7 +249,7 @@ export class Mat3 {
    * @param {Mat3} source
    * @return {Mat3} this
    */
-  copy({ elements }) {
+  copy({ elements }: Mat3): Mat3 {
     for (let i = 0; i < elements.length; i++) {
       this.elements[i] = elements[i]
     }
@@ -267,7 +261,7 @@ export class Mat3 {
    * @method toString
    * @return string
    */
-  toString() {
+  toString(): string {
     let r = ''
     const sep = ','
     for (let i = 0; i < 9; i++) {
@@ -282,16 +276,16 @@ export class Mat3 {
    * @param {Mat3} target Optional. Target matrix to save in.
    * @return {Mat3} The solution x
    */
-  reverse(target = new Mat3()) {
+  reverse(target = new Mat3()): Mat3 {
     // Construct equations
     const nr = 3 // num rows
     const nc = 6 // num cols
     const eqns = []
-    for (var i = 0; i < nr * nc; i++) {
+    let i: number
+    let j: number
+    for (i = 0; i < nr * nc; i++) {
       eqns.push(0)
     }
-    var i
-    let j
     for (i = 0; i < 3; i++) {
       for (j = 0; j < 3; j++) {
         eqns[i + nc * j] = this.elements[i + 3 * j]
@@ -332,7 +326,7 @@ export class Mat3 {
       }
       if (eqns[i + nc * i] !== 0) {
         for (j = i + 1; j < k; j++) {
-          var multiplier = eqns[i + nc * j] / eqns[i + nc * i]
+          const multiplier: number = eqns[i + nc * j] / eqns[i + nc * i]
           np = kp
           do {
             // do line( k ) = line( k ) - multiplier * line( i )
@@ -348,7 +342,7 @@ export class Mat3 {
     do {
       j = i - 1
       do {
-        var multiplier = eqns[i + nc * j] / eqns[i + nc * i]
+        const multiplier: number = eqns[i + nc * j] / eqns[i + nc * i]
         np = nc
         do {
           p = nc - np
@@ -360,7 +354,7 @@ export class Mat3 {
     // operations on the diagonal
     i = 2
     do {
-      var multiplier = 1 / eqns[i + nc * i]
+      const multiplier: number = 1 / eqns[i + nc * i]
       np = nc
       do {
         p = nc - np
@@ -388,7 +382,7 @@ export class Mat3 {
    * @method setRotationFromQuaternion
    * @param {Quaternion} q
    */
-  setRotationFromQuaternion(q) {
+  setRotationFromQuaternion(q: Quaternion) {
     const x = q.x
     const y = q.y
     const z = q.z
@@ -425,10 +419,10 @@ export class Mat3 {
   /**
    * Transpose the matrix
    * @method transpose
-   * @param  {Mat3} target Where to store the result.
+   * @param  {Mat3} target Optional. Where to store the result.
    * @return {Mat3} The target Mat3, or a new Mat3 if target was omitted.
    */
-  transpose(target = new Mat3()) {
+  transpose(target = new Mat3()): Mat3 {
     const Mt = target.elements
     const M = this.elements
 

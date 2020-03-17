@@ -11,27 +11,16 @@ import { Vec3 } from './Vec3'
  * @see http://en.wikipedia.org/wiki/Quaternion
  */
 export class Quaternion {
-  constructor(x, y, z, w) {
-    /**
-     * @property {Number} x
-     */
-    this.x = x !== undefined ? x : 0
+  x: number
+  y: number
+  z: number
+  w: number
 
-    /**
-     * @property {Number} y
-     */
-    this.y = y !== undefined ? y : 0
-
-    /**
-     * @property {Number} z
-     */
-    this.z = z !== undefined ? z : 0
-
-    /**
-     * The multiplier of the real quaternion basis vector.
-     * @property {Number} w
-     */
-    this.w = w !== undefined ? w : 1
+  constructor(x = 0, y = 0, z = 0, w = 1) {
+    this.x = x
+    this.y = y
+    this.z = z
+    this.w = w
   }
 
   /**
@@ -41,8 +30,9 @@ export class Quaternion {
    * @param {Number} y
    * @param {Number} z
    * @param {Number} w
+   * @return {Quaternion} this
    */
-  set(x, y, z, w) {
+  set(x: number, y: number, z: number, w: number): Quaternion {
     this.x = x
     this.y = y
     this.z = z
@@ -53,18 +43,18 @@ export class Quaternion {
   /**
    * Convert to a readable format
    * @method toString
-   * @return string
+   * @return {String} "x,y,z,w"
    */
-  toString() {
+  toString(): string {
     return `${this.x},${this.y},${this.z},${this.w}`
   }
 
   /**
    * Convert to an Array
    * @method toArray
-   * @return Array
+   * @return {Array} [x, y, z, w]
    */
-  toArray() {
+  toArray(): [number, number, number, number] {
     return [this.x, this.y, this.z, this.w]
   }
 
@@ -73,8 +63,9 @@ export class Quaternion {
    * @method setFromAxisAngle
    * @param {Vec3} axis
    * @param {Number} angle in radians
+   * @return {Quaternion} this
    */
-  setFromAxisAngle({ x, y, z }, angle) {
+  setFromAxisAngle({ x, y, z }: Vec3, angle: number): Quaternion {
     const s = Math.sin(angle * 0.5)
     this.x = x * s
     this.y = y * s
@@ -87,9 +78,9 @@ export class Quaternion {
    * Converts the quaternion to axis/angle representation.
    * @method toAxisAngle
    * @param {Vec3} [targetAxis] A vector object to reuse for storing the axis.
-   * @return {Array} An array, first elemnt is the axis and the second is the angle in radians.
+   * @return {Array} An array, first element is the axis and the second is the angle in radians.
    */
-  toAxisAngle(targetAxis = new Vec3()) {
+  toAxisAngle(targetAxis = new Vec3()): [Vec3, number] {
     this.normalize() // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
     const angle = 2 * Math.acos(this.w)
     const s = Math.sqrt(1 - this.w * this.w) // assuming quaternion normalised then w is less than 1, so term always positive.
@@ -112,8 +103,9 @@ export class Quaternion {
    * @method setFromVectors
    * @param {Vec3} u
    * @param {Vec3} v
+   * @return {Quaternion} this
    */
-  setFromVectors(u, v) {
+  setFromVectors(u: Vec3, v: Vec3): Quaternion {
     if (u.isAntiparallelTo(v)) {
       const t1 = sfv_t1
       const t2 = sfv_t2
@@ -131,7 +123,7 @@ export class Quaternion {
     return this
   }
 
-  mult({ x, y, z, w }, target = new Quaternion()) {
+  mult({ x, y, z, w }: Quaternion, target = new Quaternion()): Quaternion {
     const ax = this.x
     const ay = this.y
     const az = this.z
@@ -152,15 +144,14 @@ export class Quaternion {
   /**
    * Get the inverse quaternion rotation.
    * @method inverse
-   * @param {Quaternion} target
+   * @param {Quaternion} target Optional.
    * @return {Quaternion}
    */
-  inverse(target) {
+  inverse(target = new Quaternion()): Quaternion {
     const x = this.x
     const y = this.y
     const z = this.z
     const w = this.w
-    target = target || new Quaternion()
 
     this.conjugate(target)
     const inorm2 = 1 / (x * x + y * y + z * z + w * w)
@@ -175,10 +166,10 @@ export class Quaternion {
   /**
    * Get the quaternion conjugate
    * @method conjugate
-   * @param {Quaternion} target
+   * @param {Quaternion} target Optional.
    * @return {Quaternion}
    */
-  conjugate(target = new Quaternion()) {
+  conjugate(target = new Quaternion()): Quaternion {
     target.x = -this.x
     target.y = -this.y
     target.z = -this.z
@@ -191,7 +182,7 @@ export class Quaternion {
    * Normalize the quaternion. Note that this changes the values of the quaternion.
    * @method normalize
    */
-  normalize() {
+  normalize(): Quaternion {
     let l = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w)
     if (l === 0) {
       this.x = 0
@@ -214,7 +205,7 @@ export class Quaternion {
    * @see http://jsperf.com/fast-quaternion-normalization
    * @author unphased, https://github.com/unphased
    */
-  normalizeFast() {
+  normalizeFast(): Quaternion {
     const f = (3.0 - (this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w)) / 2.0
     if (f === 0) {
       this.x = 0
@@ -237,7 +228,7 @@ export class Quaternion {
    * @param {Vec3} target Optional
    * @return {Vec3}
    */
-  vmult(v, target = new Vec3()) {
+  vmult(v: Vec3, target = new Vec3()): Vec3 {
     const x = v.x
     const y = v.y
     const z = v.z
@@ -266,7 +257,7 @@ export class Quaternion {
    * @param {Quaternion} source
    * @return {Quaternion} this
    */
-  copy({ x, y, z, w }) {
+  copy({ x, y, z, w }: Quaternion): Quaternion {
     this.x = x
     this.y = y
     this.z = z
@@ -278,9 +269,9 @@ export class Quaternion {
    * Convert the quaternion to euler angle representation. Order: YZX, as this page describes: http://www.euclideanspace.com/maths/standards/index.htm
    * @method toEuler
    * @param {Vec3} target
-   * @param string order Three-character string e.g. "YZX", which also is default.
+   * @param {String} order Three-character string e.g. "YZX", which also is default.
    */
-  toEuler(target, order = 'YZX') {
+  toEuler(target: Vec3, order = 'YZX'): void {
     let heading
     let attitude
     let bank
@@ -304,7 +295,7 @@ export class Quaternion {
           attitude = -Math.PI / 2
           bank = 0
         }
-        if (isNaN(heading)) {
+        if (heading === undefined) {
           const sqx = x * x
           const sqy = y * y
           const sqz = z * z
@@ -318,8 +309,8 @@ export class Quaternion {
     }
 
     target.y = heading
-    target.z = attitude
-    target.x = bank
+    target.z = attitude as number
+    target.x = bank as number
   }
 
   /**
@@ -330,7 +321,7 @@ export class Quaternion {
    * @param {Number} z
    * @param {String} order The order to apply angles: 'XYZ' or 'YXZ' or any other combination
    */
-  setFromEuler(x, y, z, order = 'XYZ') {
+  setFromEuler(x: number, y: number, z: number, order = 'XYZ'): Quaternion {
     const c1 = Math.cos(x / 2)
     const c2 = Math.cos(y / 2)
     const c3 = Math.cos(z / 2)
@@ -377,7 +368,7 @@ export class Quaternion {
    * @method clone
    * @return {Quaternion}
    */
-  clone() {
+  clone(): Quaternion {
     return new Quaternion(this.x, this.y, this.z, this.w)
   }
 
@@ -390,7 +381,7 @@ export class Quaternion {
    * @param {Quaternion} [target] A quaternion to store the result in. If not provided, a new one will be created.
    * @returns {Quaternion} The "target" object
    */
-  slerp({ x, y, z, w }, t, target = new Quaternion()) {
+  slerp({ x, y, z, w }: Quaternion, t: number, target = new Quaternion()): Quaternion {
     const ax = this.x
     const ay = this.y
     const az = this.z
@@ -445,12 +436,10 @@ export class Quaternion {
    * @param  {Vec3} angularVelocity
    * @param  {number} dt
    * @param  {Vec3} angularFactor
-   * @param  {Quaternion} target
+   * @param  {Quaternion} target Optional.
    * @return {Quaternion} The "target" object
    */
-  integrate(angularVelocity, dt, angularFactor, target) {
-    target = target || new Quaternion()
-
+  integrate(angularVelocity: Vec3, dt: number, angularFactor: Vec3, target = new Quaternion()): Quaternion {
     const ax = angularVelocity.x * angularFactor.x,
       ay = angularVelocity.y * angularFactor.y,
       az = angularVelocity.z * angularFactor.z,
