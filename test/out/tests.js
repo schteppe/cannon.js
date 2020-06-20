@@ -1,7 +1,7 @@
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Body", function () {
-        QUnit.test("computeAABB box", function (test) {
+    QUnit.module("Body", () => {
+        QUnit.test("computeAABB box", (test) => {
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Box(new CANNON.Vector3(1, 1, 1)));
             body.computeAABB();
@@ -16,7 +16,7 @@ var CANNON;
             test.equal(body.aabb.min.x, 0);
             test.equal(body.aabb.max.x, 2);
         });
-        QUnit.test("computeAABB boxOffset", function (test) {
+        QUnit.test("computeAABB boxOffset", (test) => {
             var quaternion = new CANNON.Quaternion();
             quaternion.fromAxisAngle(new CANNON.Vector3(0, 0, 1), Math.PI / 2);
             var body = new CANNON.Body({ mass: 1 });
@@ -33,28 +33,28 @@ var CANNON;
             test.equal(body.aabb.min.x, 1);
             test.equal(body.aabb.max.x, 3);
         });
-        QUnit.test("updateInertiaWorld", function (test) {
+        QUnit.test("updateInertiaWorld", (test) => {
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Box(new CANNON.Vector3(1, 1, 1)));
             body.quaternion.setFromEuler(Math.PI / 2, 0, 0);
             body.updateInertiaWorld();
             test.ok(true);
         });
-        QUnit.test("pointToLocalFrame", function (test) {
+        QUnit.test("pointToLocalFrame", (test) => {
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Sphere(1));
             body.position.set(1, 2, 2);
             var localPoint = body.pointToLocalFrame(new CANNON.Vector3(1, 2, 3));
             test.ok(localPoint.equals(new CANNON.Vector3(0, 0, 1)));
         });
-        QUnit.test("pointToWorldFrame", function (test) {
+        QUnit.test("pointToWorldFrame", (test) => {
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Sphere(1));
             body.position.set(1, 2, 2);
             var worldPoint = body.pointToWorldFrame(new CANNON.Vector3(1, 0, 0));
             test.ok(worldPoint.equals(new CANNON.Vector3(2, 2, 2)));
         });
-        QUnit.test("addShape", function (test) {
+        QUnit.test("addShape", (test) => {
             var sphereShape = new CANNON.Sphere(1);
             var bodyA = new CANNON.Body({
                 mass: 1,
@@ -67,7 +67,7 @@ var CANNON;
             test.deepEqual(bodyA.shapes, bodyB.shapes, 'Adding shape via options did not work.');
             test.deepEqual(bodyA.inertia, bodyB.inertia);
         });
-        QUnit.test("applyForce", function (test) {
+        QUnit.test("applyForce", (test) => {
             var sphereShape = new CANNON.Sphere(1);
             var body = new CANNON.Body({
                 mass: 1,
@@ -79,7 +79,7 @@ var CANNON;
             test.deepEqual(body.force, forceVector);
             test.deepEqual(body.torque, new CANNON.Vector3(0, 0, 1));
         });
-        QUnit.test("applyLocalForce", function (test) {
+        QUnit.test("applyLocalForce", (test) => {
             var sphereShape = new CANNON.Sphere(1);
             var body = new CANNON.Body({
                 mass: 1,
@@ -91,7 +91,7 @@ var CANNON;
             body.applyLocalForce(localForceVector, localPoint);
             test.ok(body.force.equals(new CANNON.Vector3(0, 0, 1))); // The force is rotated to world space
         });
-        QUnit.test("applyImpulse", function (test) {
+        QUnit.test("applyImpulse", (test) => {
             var sphereShape = new CANNON.Sphere(1);
             var body = new CANNON.Body({
                 mass: 1,
@@ -104,7 +104,7 @@ var CANNON;
             body.applyImpulse(impulse, worldPoint);
             test.ok(body.velocity.equals(new CANNON.Vector3(f * dt, 0, 0)));
         });
-        QUnit.test("applyLocalImpulse", function (test) {
+        QUnit.test("applyLocalImpulse", (test) => {
             var sphereShape = new CANNON.Sphere(1);
             var body = new CANNON.Body({
                 mass: 1,
@@ -122,8 +122,8 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Box", function () {
-        QUnit.test("forEachWOrldCorner", function (test) {
+    QUnit.module("Box", () => {
+        QUnit.test("forEachWOrldCorner", (test) => {
             var box = new CANNON.Box(new CANNON.Vector3(1, 1, 1));
             var pos = new CANNON.Vector3();
             var quat = new CANNON.Quaternion();
@@ -140,7 +140,7 @@ var CANNON;
             });
             test.equal(numCorners, 8);
         });
-        QUnit.test("calculateWorldAABB", function (test) {
+        QUnit.test("calculateWorldAABB", (test) => {
             var box = new CANNON.Box(new CANNON.Vector3(1, 1, 1));
             var min = new CANNON.Vector3();
             var max = new CANNON.Vector3();
@@ -154,24 +154,24 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Box3", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("Box3", () => {
+        QUnit.test("construct", (test) => {
             new CANNON.Box3();
             test.ok(true);
         });
-        QUnit.test("copy", function (test) {
+        QUnit.test("copy", (test) => {
             var a = new CANNON.Box3(), b = new CANNON.Box3();
             a.max.set(1, 2, 3);
             b.copy(a);
             test.deepEqual(a, b);
         });
-        QUnit.test("clone", function (test) {
+        QUnit.test("clone", (test) => {
             var a = new CANNON.Box3(new CANNON.Vector3(-1, -2, -3), new CANNON.Vector3(1, 2, 3));
             var b = a.clone();
             test.deepEqual(a, b);
             test.equal(a === b, false);
         });
-        QUnit.test("extend", function (test) {
+        QUnit.test("extend", (test) => {
             var a = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var b = new CANNON.Box3(new CANNON.Vector3(-2, -2, -2), new CANNON.Vector3(2, 2, 2));
             a.union(b);
@@ -187,7 +187,7 @@ var CANNON;
             test.deepEqual(a.min, new CANNON.Vector3(-2, -1, -1));
             test.deepEqual(a.max, new CANNON.Vector3(2, 1, 1));
         });
-        QUnit.test("extend", function (test) {
+        QUnit.test("extend", (test) => {
             var a = new CANNON.Box3(), b = new CANNON.Box3();
             // Same aabb
             a.min.set(-1, -1, 0);
@@ -214,7 +214,7 @@ var CANNON;
             b.max.set(-2, 0.5, 0);
             test.ok(!a.overlaps(b), 'should detect translated');
         });
-        QUnit.test("contains", function (test) {
+        QUnit.test("contains", (test) => {
             var a = new CANNON.Box3(), b = new CANNON.Box3();
             a.min.set(-1, -1, -1);
             a.max.set(1, 1, 1);
@@ -233,7 +233,7 @@ var CANNON;
             b.max.set(1, 1, 1);
             test.equal(a.contains(b), false);
         });
-        QUnit.test("toLocalFrame", function (test) {
+        QUnit.test("toLocalFrame", (test) => {
             var worldAABB = new CANNON.Box3();
             var localAABB = new CANNON.Box3();
             var frame = new CANNON.Transform();
@@ -247,7 +247,7 @@ var CANNON;
             frame.toLocalFrameBox3(worldAABB, localAABB);
             test.deepEqual(localAABB, new CANNON.Box3(new CANNON.Vector3(0, -1, -1), new CANNON.Vector3(2, 1, 1)));
         });
-        QUnit.test("toWorldFrame", function (test) {
+        QUnit.test("toWorldFrame", (test) => {
             var localAABB = new CANNON.Box3();
             var worldAABB = new CANNON.Box3();
             var frame = new CANNON.Transform();
@@ -265,14 +265,14 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Constraint", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("Constraint", () => {
+        QUnit.test("construct", (test) => {
             var bodyA = new CANNON.Body();
             var bodyB = new CANNON.Body();
             new CANNON.Constraint(bodyA, bodyB);
             test.ok(true);
         });
-        QUnit.test("enable", function (test) {
+        QUnit.test("enable", (test) => {
             var bodyA = new CANNON.Body();
             var bodyB = new CANNON.Body();
             var c = new CANNON.Constraint(bodyA, bodyB);
@@ -287,14 +287,14 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("ContactEquation", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("ContactEquation", () => {
+        QUnit.test("construct", (test) => {
             var bodyA = new CANNON.Body();
             var bodyB = new CANNON.Body();
             new CANNON.ContactEquation(bodyA, bodyB);
             test.ok(true);
         });
-        QUnit.test("getImpactVelocityAlongNormal", function (test) {
+        QUnit.test("getImpactVelocityAlongNormal", (test) => {
             var bodyA = new CANNON.Body({
                 position: new CANNON.Vector3(1, 0, 0),
                 velocity: new CANNON.Vector3(-10, 0, 0)
@@ -324,8 +324,8 @@ var CANNON;
         var box = new CANNON.Box(new CANNON.Vector3(sx, sy, sz));
         return box.convexPolyhedronRepresentation;
     }
-    QUnit.module("ConvexPolyhedron", function () {
-        QUnit.test("calculateWorldAABB", function (test) {
+    QUnit.module("ConvexPolyhedron", () => {
+        QUnit.test("calculateWorldAABB", (test) => {
             var poly = createPolyBox(1, 1, 1);
             var min = new CANNON.Vector3();
             var max = new CANNON.Vector3();
@@ -336,7 +336,7 @@ var CANNON;
             test.equal(min.y, -1);
             test.equal(max.y, 1);
         });
-        QUnit.test("clipFaceAgainstPlane", function (test) {
+        QUnit.test("clipFaceAgainstPlane", (test) => {
             var h = createBoxHull();
             // Four points 1 unit below the plane z=0 - we assume to get back 4
             var inverts = [new CANNON.Vector3(-0.2, -0.2, -1),
@@ -361,7 +361,7 @@ var CANNON;
             h.clipFaceAgainstPlane(inverts2, outverts, new CANNON.Vector3(0, 0, 1), 0.0);
             test.equal(outverts.length, 4, "Expected 4 points back from clipping a quad with plane, got " + outverts.length);
         });
-        QUnit.test("clipFaceAgainstHull", function (test) {
+        QUnit.test("clipFaceAgainstHull", (test) => {
             // Create box
             var hullA = createBoxHull(0.5);
             var res = [];
@@ -380,7 +380,7 @@ var CANNON;
             hullA.clipFaceAgainstHull(sepNormal, posA, quatA, worldVertsB, -100, 100, res);
             test.ok(true);
         });
-        QUnit.test("clipAgainstHull", function (test) {
+        QUnit.test("clipAgainstHull", (test) => {
             var hullA = createBoxHull(0.6), posA = new CANNON.Vector3(-0.5, 0, 0), quatA = new CANNON.Quaternion();
             var hullB = createBoxHull(0.5), posB = new CANNON.Vector3(0.5, 0, 0), quatB = new CANNON.Quaternion();
             var sepaxis = new CANNON.Vector3();
@@ -394,7 +394,7 @@ var CANNON;
             //console.log("done....");
             test.ok(true);
         });
-        QUnit.test("testSepAxis", function (test) {
+        QUnit.test("testSepAxis", (test) => {
             test.expect(3);
             var hullA = createBoxHull(0.5), posA = new CANNON.Vector3(-0.2, 0, 0), quatA = new CANNON.Quaternion();
             var hullB = createBoxHull(), posB = new CANNON.Vector3(0.2, 0, 0), quatB = new CANNON.Quaternion();
@@ -411,7 +411,7 @@ var CANNON;
             var found3 = hullA.testSepAxis(sepAxis, hullB, posA, quatA, posB, quatB);
             test.ok(typeof (found3), "number" + " Did not fetch");
         });
-        QUnit.test("findSepAxis", function (test) {
+        QUnit.test("findSepAxis", (test) => {
             var hullA = createBoxHull(), posA = new CANNON.Vector3(-0.2, 0, 0), quatA = new CANNON.Quaternion();
             var hullB = createBoxHull(), posB = new CANNON.Vector3(0.2, 0, 0), quatB = new CANNON.Quaternion();
             var sepaxis = new CANNON.Vector3();
@@ -422,7 +422,7 @@ var CANNON;
             //console.log("SepAxis found:",found2,", the axis:",sepaxis.toString());
             test.ok(true);
         });
-        QUnit.test("project", function (test) {
+        QUnit.test("project", (test) => {
             var convex = createBoxHull(0.5), pos = new CANNON.Vector3(0, 0, 0), quat = new CANNON.Quaternion();
             var axis = new CANNON.Vector3(1, 0, 0);
             var result = [];
@@ -450,8 +450,8 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Heightfield", function () {
-        QUnit.test("calculateWorldAABB", function (test) {
+    QUnit.module("Heightfield", () => {
+        QUnit.test("calculateWorldAABB", (test) => {
             var hfShape = createHeightfield({
                 elementSize: 1,
                 minValue: 0
@@ -464,7 +464,7 @@ var CANNON;
             test.equal(min.y, -Number.MAX_VALUE);
             test.equal(max.y, Number.MAX_VALUE);
         });
-        QUnit.test("getConvexTrianglePillar", function (test) {
+        QUnit.test("getConvexTrianglePillar", (test) => {
             var hfShape = createHeightfield({
                 elementSize: 1,
                 minValue: 0,
@@ -497,7 +497,7 @@ var CANNON;
                 hfShape.getConvexTrianglePillar(-1, 0, false);
             }, Error);
         });
-        QUnit.test("getTriangle", function (test) {
+        QUnit.test("getTriangle", (test) => {
             var hfShape = createHeightfield({
                 elementSize: 1,
                 minValue: 0,
@@ -515,13 +515,13 @@ var CANNON;
             test.deepEqual(b, new CANNON.Vector3(0, 1, 1));
             test.deepEqual(c, new CANNON.Vector3(1, 0, 1));
         });
-        QUnit.test("getRectMinMax", function (test) {
+        QUnit.test("getRectMinMax", (test) => {
             var hfShape = createHeightfield();
             var minMax = [];
             hfShape.getRectMinMax(0, 0, 1, 1, minMax);
             test.deepEqual(minMax, [1, 1]);
         });
-        QUnit.test("getHeightAt", function (test) {
+        QUnit.test("getHeightAt", (test) => {
             var hfShape = createHeightfield({
                 size: 2,
                 elementSize: 1,
@@ -536,29 +536,29 @@ var CANNON;
             test.ok(h1 < h2);
             test.ok(h2 < h3);
         });
-        QUnit.test("update", function (test) {
+        QUnit.test("update", (test) => {
             var hfShape = createHeightfield();
             hfShape.update();
             test.ok(true);
         });
-        QUnit.test("updateMaxValue", function (test) {
+        QUnit.test("updateMaxValue", (test) => {
             var hfShape = createHeightfield();
             hfShape.data[0][0] = 10;
             hfShape.updateMaxValue();
             test.equal(hfShape.maxValue, 10);
         });
-        QUnit.test("updateMinValue", function (test) {
+        QUnit.test("updateMinValue", (test) => {
             var hfShape = createHeightfield();
             hfShape.data[0][0] = -10;
             hfShape.updateMinValue();
             test.equal(hfShape.minValue, -10);
         });
-        QUnit.test("setHeightValueAtIndex", function (test) {
+        QUnit.test("setHeightValueAtIndex", (test) => {
             var hfShape = createHeightfield();
             hfShape.setHeightValueAtIndex(0, 0, 10);
             test.equal(hfShape.data[0][0], 10);
         });
-        QUnit.test("getIndexOfPosition", function (test) {
+        QUnit.test("getIndexOfPosition", (test) => {
             var hfShape = createHeightfield();
             var result = [];
             hfShape.getIndexOfPosition(0, 0, result);
@@ -586,8 +586,8 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("HingeConstraint", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("HingeConstraint", () => {
+        QUnit.test("construct", (test) => {
             var bodyA = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(1, 0, 0) });
             var bodyB = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(-1, 0, 0) });
             var c = new CANNON.HingeConstraint(bodyA, bodyB, { maxForce: 123 });
@@ -605,14 +605,14 @@ var CANNON;
             test.equal(c.equations[4].minForce, -123);
             test.equal(c.equations[5].minForce, -123);
         });
-        QUnit.test("update", function (test) {
+        QUnit.test("update", (test) => {
             var bodyA = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(1, 0, 0) });
             var bodyB = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(-1, 0, 0) });
             var c = new CANNON.HingeConstraint(bodyA, bodyB, { maxForce: 123 });
             c.update();
             test.ok(true);
         });
-        QUnit.test("enableDisableMotor", function (test) {
+        QUnit.test("enableDisableMotor", (test) => {
             var bodyA = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(1, 0, 0) });
             var bodyB = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(-1, 0, 0) });
             var c = new CANNON.HingeConstraint(bodyA, bodyB);
@@ -621,14 +621,14 @@ var CANNON;
             c.disableMotor();
             test.equal(c.motorEquation.enabled, false);
         });
-        QUnit.test("setMotorSpeed", function (test) {
+        QUnit.test("setMotorSpeed", (test) => {
             var bodyA = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(1, 0, 0) });
             var bodyB = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(-1, 0, 0) });
             var c = new CANNON.HingeConstraint(bodyA, bodyB);
             c.setMotorSpeed(5);
             test.equal(c.motorEquation.targetVelocity, 5);
         });
-        QUnit.test("setMotorMaxForce", function (test) {
+        QUnit.test("setMotorMaxForce", (test) => {
             var bodyA = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(1, 0, 0) });
             var bodyB = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(-1, 0, 0) });
             var c = new CANNON.HingeConstraint(bodyA, bodyB);
@@ -639,8 +639,8 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("LockConstraint", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("LockConstraint", () => {
+        QUnit.test("construct", (test) => {
             var bodyA = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(1, 0, 0) });
             var bodyB = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(-1, 0, 0) });
             var c = new CANNON.LockConstraint(bodyA, bodyB, { maxForce: 123 });
@@ -658,7 +658,7 @@ var CANNON;
             test.equal(c.equations[4].minForce, -123);
             test.equal(c.equations[5].minForce, -123);
         });
-        QUnit.test("update", function (test) {
+        QUnit.test("update", (test) => {
             var bodyA = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(1, 0, 0) });
             var bodyB = new CANNON.Body({ mass: 1, position: new CANNON.Vector3(-1, 0, 0) });
             var c = new CANNON.LockConstraint(bodyA, bodyB, { maxForce: 123 });
@@ -669,8 +669,8 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Narrowphase", function () {
-        QUnit.test("sphereSphere", function (test) {
+    QUnit.module("Narrowphase", () => {
+        QUnit.test("sphereSphere", (test) => {
             var world = new CANNON.World();
             var cg = new CANNON.Narrowphase(world);
             var result = [];
@@ -684,7 +684,7 @@ var CANNON;
             cg.sphereSphere(sphereShape, sphereShape, new CANNON.Vector3(0.5, 0, 0), new CANNON.Vector3(-0.5, 0, 0), new CANNON.Quaternion(), new CANNON.Quaternion(), bodyA, bodyB);
             test.equal(result.length, 1);
         });
-        QUnit.test("sphereHeightfield", function (test) {
+        QUnit.test("sphereHeightfield", (test) => {
             var world = new CANNON.World();
             var cg = new CANNON.Narrowphase(world);
             var result = [];
@@ -714,12 +714,12 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Octree", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("Octree", () => {
+        QUnit.test("construct", (test) => {
             var tree = new CANNON.Octree(new CANNON.Box3());
             test.ok(true);
         });
-        QUnit.test("insertRoot", function (test) {
+        QUnit.test("insertRoot", (test) => {
             var aabb = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var tree = new CANNON.Octree(aabb);
             var nodeAABB = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
@@ -729,7 +729,7 @@ var CANNON;
             test.equal(tree.data.length, 1);
             test.equal(tree.children.length, 0);
         });
-        QUnit.test("insertDeep", function (test) {
+        QUnit.test("insertDeep", (test) => {
             var aabb = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var tree = new CANNON.Octree(aabb, {
                 maxDepth: 8
@@ -750,7 +750,7 @@ var CANNON;
             );
             test.equal(tree.data.length, 0);
         });
-        QUnit.test("aabbQuery", function (test) {
+        QUnit.test("aabbQuery", (test) => {
             var aabb = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
             var tree = new CANNON.Octree(aabb);
             var nodeAABB = new CANNON.Box3(new CANNON.Vector3(-1, -1, -1), new CANNON.Vector3(1, 1, 1));
@@ -773,12 +773,12 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("OverlapKeeper", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("OverlapKeeper", () => {
+        QUnit.test("construct", (test) => {
             new CANNON.OverlapKeeper();
             test.ok(true);
         });
-        QUnit.test("set", function (test) {
+        QUnit.test("set", (test) => {
             var keeper = new CANNON.OverlapKeeper();
             keeper.set(1, 2);
             test.deepEqual(keeper.current, [keeper.getKey(1, 2)]);
@@ -787,7 +787,7 @@ var CANNON;
             keeper.set(3, 1);
             test.deepEqual(keeper.current, [keeper.getKey(1, 2), keeper.getKey(1, 3), keeper.getKey(3, 2)]);
         });
-        QUnit.test("getDiff", function (test) {
+        QUnit.test("getDiff", (test) => {
             var keeper = new CANNON.OverlapKeeper();
             keeper.set(1, 2);
             keeper.set(3, 2);
@@ -833,12 +833,12 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Ray", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("Ray", () => {
+        QUnit.test("construct", (test) => {
             var r = new CANNON.Ray(new CANNON.Vector3(), new CANNON.Vector3(1, 0, 0));
             test.ok(true);
         });
-        QUnit.test("intersectBody", function (test) {
+        QUnit.test("intersectBody", (test) => {
             var r = new CANNON.Ray(new CANNON.Vector3(5, 0, 0), new CANNON.Vector3(-5, 0, 0));
             r.skipBackfaces = true;
             var shape = createPolyhedron(0.5);
@@ -868,7 +868,7 @@ var CANNON;
             test.equal(result.hasHit, false);
             test.ok(true);
         });
-        QUnit.test("intersectBodies", function (test) {
+        QUnit.test("intersectBodies", (test) => {
             var r = new CANNON.Ray(new CANNON.Vector3(5, 0, 0), new CANNON.Vector3(-5, 0, 0));
             r.skipBackfaces = true;
             var shape = createPolyhedron(0.5);
@@ -882,7 +882,7 @@ var CANNON;
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(0.5, 0, 0)));
         });
-        QUnit.test("box", function (test) {
+        QUnit.test("box", (test) => {
             var r = new CANNON.Ray(new CANNON.Vector3(5, 0, 0), new CANNON.Vector3(-5, 0, 0));
             r.skipBackfaces = true;
             var shape = new CANNON.Box(new CANNON.Vector3(0.5, 0.5, 0.5));
@@ -908,7 +908,7 @@ var CANNON;
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(0.5, 0, 0)));
         });
-        QUnit.test("sphere", function (test) {
+        QUnit.test("sphere", (test) => {
             var r = new CANNON.Ray(new CANNON.Vector3(5, 0, 0), new CANNON.Vector3(-5, 0, 0));
             r.skipBackfaces = true;
             var shape = new CANNON.Sphere(1);
@@ -935,7 +935,7 @@ var CANNON;
             test.equal(result.hasHit, true);
             test.ok(result.hitPointWorld.equals(new CANNON.Vector3(2, 0, 0)));
         });
-        QUnit.test("heightfield", function (test) {
+        QUnit.test("heightfield", (test) => {
             var r = new CANNON.Ray(new CANNON.Vector3(0, 0, 10), new CANNON.Vector3(0, 0, -10));
             r.skipBackfaces = true;
             var data = [
@@ -980,7 +980,7 @@ var CANNON;
             }
             test.ok(true);
         });
-        QUnit.test("plane", function (test) {
+        QUnit.test("plane", (test) => {
             var r = new CANNON.Ray(new CANNON.Vector3(0, 0, 5), new CANNON.Vector3(0, 0, -5));
             r.skipBackfaces = true;
             var shape = new CANNON.Plane();
@@ -1031,7 +1031,7 @@ var CANNON;
             test.equal(distance1, distance2);
             test.ok(true);
         });
-        QUnit.test("trimesh", function (test) {
+        QUnit.test("trimesh", (test) => {
             var r = new CANNON.Ray(new CANNON.Vector3(0.5, 0.5, 10), new CANNON.Vector3(0.5, 0.5, -10));
             r.skipBackfaces = true;
             var vertices = [
@@ -1068,21 +1068,21 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("RaycastVehicle", function () {
-        QUnit.test("construct", function (test) {
+    QUnit.module("RaycastVehicle", () => {
+        QUnit.test("construct", (test) => {
             var vehicle = new CANNON.RaycastVehicle({
                 chassisBody: new CANNON.Body()
             });
             test.ok(true);
         });
-        QUnit.test("addWheel", function (test) {
+        QUnit.test("addWheel", (test) => {
             var vehicle = new CANNON.RaycastVehicle({
                 chassisBody: new CANNON.Body()
             });
             vehicle.addWheel({});
             test.equal(vehicle.wheelInfos.length, 1);
         });
-        QUnit.test("addWheel1", function (test) {
+        QUnit.test("addWheel1", (test) => {
             var vehicle = new CANNON.RaycastVehicle({
                 chassisBody: new CANNON.Body()
             });
@@ -1091,42 +1091,42 @@ var CANNON;
             vehicle.addWheel({});
             test.equal(vehicle.wheelInfos.length, 2);
         });
-        QUnit.test("setSteeringValue", function (test) {
+        QUnit.test("setSteeringValue", (test) => {
             var vehicle = createVehicle();
             vehicle.setSteeringValue(Math.PI / 4, 0);
             test.ok(true);
         });
-        QUnit.test("applyEngineForce", function (test) {
+        QUnit.test("applyEngineForce", (test) => {
             var vehicle = createVehicle();
             vehicle.applyEngineForce(1000, 0);
             test.ok(true);
         });
-        QUnit.test("setBrake", function (test) {
+        QUnit.test("setBrake", (test) => {
             var vehicle = createVehicle();
             vehicle.applyEngineForce(1000, 0);
             test.ok(true);
         });
-        QUnit.test("updateSuspension", function (test) {
+        QUnit.test("updateSuspension", (test) => {
             var vehicle = createVehicle();
             vehicle.updateSuspension(1 / 60);
             test.ok(true);
         });
-        QUnit.test("updateFriction", function (test) {
+        QUnit.test("updateFriction", (test) => {
             var vehicle = createVehicle();
             vehicle.updateFriction(1 / 60);
             test.ok(true);
         });
-        QUnit.test("updateWheelTransform", function (test) {
+        QUnit.test("updateWheelTransform", (test) => {
             var vehicle = createVehicle();
             vehicle.updateWheelTransform(0);
             test.ok(true);
         });
-        QUnit.test("updateVehicle", function (test) {
+        QUnit.test("updateVehicle", (test) => {
             var vehicle = createVehicle();
             vehicle.updateVehicle(1 / 60);
             test.ok(true);
         });
-        QUnit.test("getVehicleAxisWorld", function (test) {
+        QUnit.test("getVehicleAxisWorld", (test) => {
             var vehicle = createVehicle();
             var v = new CANNON.Vector3();
             vehicle.getVehicleAxisWorld(0, v);
@@ -1137,7 +1137,7 @@ var CANNON;
             test.deepEqual(v, new CANNON.Vector3(0, 0, 1));
             test.ok(true);
         });
-        QUnit.test("removeFromWorld", function (test) {
+        QUnit.test("removeFromWorld", (test) => {
             var world = new CANNON.World();
             var vehicle = new CANNON.RaycastVehicle({
                 chassisBody: new CANNON.Body({ mass: 1 })
@@ -1176,8 +1176,8 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Sphere", function () {
-        QUnit.test("throwOnWrongRadius", function (test) {
+    QUnit.module("Sphere", () => {
+        QUnit.test("throwOnWrongRadius", (test) => {
             // These should be all right
             new CANNON.Sphere(1);
             new CANNON.Sphere(0);
@@ -1190,20 +1190,20 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("Trimesh", function () {
-        QUnit.test("updateNormals", function (test) {
+    QUnit.module("Trimesh", () => {
+        QUnit.test("updateNormals", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             mesh.normals[0] = 1;
             mesh.updateNormals();
             test.ok(mesh.normals[0] !== 1);
         });
-        QUnit.test("updateAABB", function (test) {
+        QUnit.test("updateAABB", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             mesh.aabb.min.set(1, 2, 3);
             mesh.updateAABB();
             test.ok(mesh.aabb.min.y !== 2);
         });
-        QUnit.test("updateTree scaled", function (test) {
+        QUnit.test("updateTree scaled", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             mesh.updateTree();
             var bigMesh = CANNON.Trimesh.createTorus();
@@ -1211,7 +1211,7 @@ var CANNON;
             test.equal(bigMesh.aabb.max.x, mesh.aabb.max.x * 2, 'AABB does not scale with the mesh!');
             test.equal(bigMesh.tree.aabb.max.x, mesh.tree.aabb.max.x, 'Octree AABB scales with the mesh, which is wrong!');
         });
-        QUnit.test("getTrianglesInAABB unscaled", function (test) {
+        QUnit.test("getTrianglesInAABB unscaled", (test) => {
             var mesh = CANNON.Trimesh.createTorus(1, 1, 32, 32);
             var result = [];
             // Should get all triangles if we use the full AABB
@@ -1241,26 +1241,26 @@ var CANNON;
         //     test.ok(result.length < mesh.indices.length / 3);
         //     test.done();
         // }
-        QUnit.test("getVertex unscaled", function (test) {
+        QUnit.test("getVertex unscaled", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             var vertex = new CANNON.Vector3();
             mesh.getVertex(0, vertex);
             test.deepEqual(vertex, new CANNON.Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
         });
-        QUnit.test("getVertex scaled", function (test) {
+        QUnit.test("getVertex scaled", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             mesh.setScale(new CANNON.Vector3(1, 2, 3));
             var vertex = new CANNON.Vector3();
             mesh.getVertex(0, vertex);
             test.deepEqual(vertex, new CANNON.Vector3(1 * mesh.vertices[0], 2 * mesh.vertices[1], 3 * mesh.vertices[2]));
         });
-        QUnit.test("getWorldVertex", function (test) {
+        QUnit.test("getWorldVertex", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             var vertex = new CANNON.Vector3();
             mesh.getWorldVertex(0, new CANNON.Vector3(), new CANNON.Quaternion(), vertex);
             test.deepEqual(vertex, new CANNON.Vector3(mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]));
         });
-        QUnit.test("getTriangleVertices", function (test) {
+        QUnit.test("getTriangleVertices", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             var va = new CANNON.Vector3();
             var vb = new CANNON.Vector3();
@@ -1276,27 +1276,27 @@ var CANNON;
             test.deepEqual(vb, vb1);
             test.deepEqual(vc, vc1);
         });
-        QUnit.test("getNormal", function (test) {
+        QUnit.test("getNormal", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             var normal = new CANNON.Vector3();
             mesh.getNormal(0, normal);
             test.deepEqual(new CANNON.Vector3(mesh.normals[0], mesh.normals[1], mesh.normals[2]), normal);
         });
-        QUnit.test("calculateLocalInertia", function (test) {
+        QUnit.test("calculateLocalInertia", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             var inertia = new CANNON.Vector3();
             mesh.calculateLocalInertia(1, inertia);
             test.ok(true);
         });
-        QUnit.test("computeLocalAABB", function (test) {
+        QUnit.test("computeLocalAABB", (test) => {
             console.log('Trimesh::computeLocalAABB is todo');
             test.ok(true);
         });
-        QUnit.test("updateBoundingSphereRadius", function (test) {
+        QUnit.test("updateBoundingSphereRadius", (test) => {
             console.log('Trimesh::updateBoundingSphereRadius is todo');
             test.ok(true);
         });
-        QUnit.test("calculateWorldAABB", function (test) {
+        QUnit.test("calculateWorldAABB", (test) => {
             var poly = CANNON.Trimesh.createTorus();
             var min = new CANNON.Vector3();
             var max = new CANNON.Vector3();
@@ -1305,11 +1305,11 @@ var CANNON;
             test.ok(!isNaN(min.x));
             test.ok(!isNaN(max.x));
         });
-        QUnit.test("volume", function (test) {
+        QUnit.test("volume", (test) => {
             var mesh = CANNON.Trimesh.createTorus();
             test.ok(mesh.volume() > 0);
         });
-        QUnit.test("narrowphaseAgainstPlane", function (test) {
+        QUnit.test("narrowphaseAgainstPlane", (test) => {
             var world = new CANNON.World();
             var torusShape = CANNON.Trimesh.createTorus();
             var torusBody = new CANNON.Body({
@@ -1329,8 +1329,8 @@ var CANNON;
 })(CANNON || (CANNON = {}));
 var CANNON;
 (function (CANNON) {
-    QUnit.module("World", function () {
-        QUnit.test("clearForces", function (test) {
+    QUnit.module("World", () => {
+        QUnit.test("clearForces", (test) => {
             var world = new CANNON.World();
             var body = new CANNON.Body();
             world.addBody(body);
@@ -1340,7 +1340,7 @@ var CANNON;
             test.ok(body.force.equals(new CANNON.Vector3(0, 0, 0)));
             test.ok(body.torque.equals(new CANNON.Vector3(0, 0, 0)));
         });
-        QUnit.test("rayTestBox", function (test) {
+        QUnit.test("rayTestBox", (test) => {
             var world = new CANNON.World();
             var body = new CANNON.Body();
             body.addShape(new CANNON.Box(new CANNON.Vector3(1, 1, 1)));
@@ -1351,7 +1351,7 @@ var CANNON;
             world.raycastClosest(from, to, {}, result);
             test.equal(result.hasHit, true);
         });
-        QUnit.test("rayTestSphere", function (test) {
+        QUnit.test("rayTestSphere", (test) => {
             var world = new CANNON.World();
             var body = new CANNON.Body();
             body.addShape(new CANNON.Sphere(1));
@@ -1362,7 +1362,7 @@ var CANNON;
             world.raycastClosest(from, to, {}, result);
             test.equal(result.hasHit, true);
         });
-        QUnit.test("raycastClosest single", function (test) {
+        QUnit.test("raycastClosest single", (test) => {
             var world = new CANNON.World();
             var body = new CANNON.Body({
                 shape: new CANNON.Sphere(1)
@@ -1376,7 +1376,7 @@ var CANNON;
             test.equal(result.body, body);
             test.equal(result.shape, body.shapes[0]);
         });
-        QUnit.test("raycastClosest order", function (test) {
+        QUnit.test("raycastClosest order", (test) => {
             var world = new CANNON.World();
             var bodyA = new CANNON.Body({ shape: new CANNON.Sphere(1), position: new CANNON.Vector3(-1, 0, 0) });
             var bodyB = new CANNON.Body({ shape: new CANNON.Sphere(1), position: new CANNON.Vector3(1, 0, 0) });
@@ -1397,7 +1397,7 @@ var CANNON;
             test.equal(result.body, bodyB);
             test.equal(result.shape, bodyB.shapes[0]);
         });
-        QUnit.test("raycastAll simple", function (test) {
+        QUnit.test("raycastAll simple", (test) => {
             var world = new CANNON.World();
             var body = new CANNON.Body({ shape: new CANNON.Sphere(1) });
             world.addBody(body);
@@ -1419,7 +1419,7 @@ var CANNON;
             test.equal(numResults, 2);
             test.equal(resultShape, resultBody.shapes[0]);
         });
-        QUnit.test("raycastAll twoSpheres", function (test) {
+        QUnit.test("raycastAll twoSpheres", (test) => {
             var world = new CANNON.World();
             var body = new CANNON.Body({ shape: new CANNON.Sphere(1) });
             world.addBody(body);
@@ -1440,7 +1440,7 @@ var CANNON;
             test.equal(hasHit, true);
             test.equal(numResults, 4);
         });
-        QUnit.test("raycastAll skipBackFaces", function (test) {
+        QUnit.test("raycastAll skipBackFaces", (test) => {
             var world = new CANNON.World();
             var body = new CANNON.Body({ shape: new CANNON.Sphere(1) });
             world.addBody(body);
@@ -1457,7 +1457,7 @@ var CANNON;
             test.equal(hasHit, true);
             test.equal(numResults, 1);
         });
-        QUnit.test("raycastAll collisionFilters", function (test) {
+        QUnit.test("raycastAll collisionFilters", (test) => {
             var world = new CANNON.World();
             var body = new CANNON.Body({
                 shape: new CANNON.Sphere(1)
@@ -1482,7 +1482,7 @@ var CANNON;
             });
             test.equal(numResults, 0, 'should use collision groups!');
         });
-        QUnit.test("raycastAny", function (test) {
+        QUnit.test("raycastAny", (test) => {
             var world = new CANNON.World();
             world.addBody(new CANNON.Body({ shape: new CANNON.Sphere(1) }));
             var from = new CANNON.Vector3(-10, 0, 0);
