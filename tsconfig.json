@@ -17,7 +17,7 @@
     },
     "references": [
         {
-            "path": "../feng3d",
+            "path": "../../feng3d",
         },
     ],
     "files": [ 
