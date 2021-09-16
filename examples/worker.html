@@ -32,11 +32,16 @@
     </div>
     <script src="../libs/Three.js"></script>
     <script src="../libs/Detector.js"></script>
-    <script src="../libs/TrackballControls.js"></script>
+    <!-- <script src="../libs/TrackballControls.js"></script> -->
 
     <!-- Worker script, will be run in separate thread -->
-    <script id="worker1" type="javascript/worker">
-        var world;
+    <!-- <script id="worker1" type="javascript/worker">
+       
+    </script> -->
+
+    <script>
+
+var world;
         self.onmessage = function(e) {
 
             if (e.data.cannonUrl && !world) {
@@ -92,9 +97,6 @@
             }, [positions.buffer,
                 quaternions.buffer]);
         };
-    </script>
-
-    <script>
         // Parameters
         var dt = 1/60, N=40;
 
@@ -167,21 +169,26 @@
 
             // camera
             camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 0.5, 10000 );
-            camera.position.set(Math.cos( Math.PI/5 ) * 30,
-                                5,
-                                Math.sin( Math.PI/5 ) * 30);
+            // init camera position and point the camera to the center of the scene
+            camera.position.x = -30;
+            camera.position.y = 40;
+            camera.position.z = 30;
+            camera.lookAt(scene.position);
+
+            //camera.zoom = 200;
+            camera.updateProjectionMatrix();
             scene.add( camera );
 
-            // Controls
-            controls = new THREE.TrackballControls( camera );
-            controls.rotateSpeed = 1.0;
-            controls.zoomSpeed = 1.2;
-            controls.panSpeed = 0.8;
-            controls.noZoom = false;
-            controls.noPan = false;
-            controls.staticMoving = true;
-            controls.dynamicDampingFactor = 0.3;
-            controls.keys = [ 65, 83, 68 ];
+            // // Controls
+            // controls = new THREE.TrackballControls( camera );
+            // controls.rotateSpeed = 1.0;
+            // controls.zoomSpeed = 1.2;
+            // controls.panSpeed = 0.8;
+            // controls.noZoom = false;
+            // controls.noPan = false;
+            // controls.staticMoving = true;
+            // controls.dynamicDampingFactor = 0.3;
+            // controls.keys = [ 65, 83, 68 ];
 
             // lights
             var light, materials;
@@ -241,23 +248,179 @@
             renderer.shadowMapEnabled = true;
 
             window.addEventListener( 'resize', onWindowResize, false );
+            window.addEventListener("mousemove", onMouseMove, false );
+            window.addEventListener("mousedown", onMouseDown, false );
+            window.addEventListener("mouseup", onMouseUp, false );
+        }
+//define markerMaterial, clickMarker, gplane, projector (make these global?)
+
+markerMaterial = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
+var clickMarker=false;
+var gplane=false;
+var projector = new THREE.Projector();
+
+
+        function setClickMarker(x,y,z) {
+            if(!clickMarker){
+                var shape = new THREE.SphereGeometry(0.2, 8, 8);
+                clickMarker = new THREE.Mesh(shape, markerMaterial);
+                scene.add(clickMarker);
+            }
+            clickMarker.visible = true;
+            clickMarker.position.set(x,y,z);
+        }
+
+        function removeClickMarker(){
+          clickMarker.visible = false;
+        }
+
+        function onMouseMove(e){
+            // Move and project on the plane
+            if (gplane && mouseConstraint) {
+                var pos = projectOntoPlane(e.clientX,e.clientY,gplane,camera);
+                if(pos){
+                    setClickMarker(pos.x,pos.y,pos.z,scene);
+                    moveJointToPoint(pos.x,pos.y,pos.z);
+                }
+            }
+        }
+
+        function onMouseDown(e){
+            // Find mesh from a ray, need to change this to target specifically one box
+            var entity = findNearestIntersectingObject(e.clientX,e.clientY,camera,meshes);
+            var pos = entity.point;
+            if(pos && entity.object.geometry instanceof THREE.BoxGeometry){
+                constraintDown = true;
+                // Set marker on contact point
+                setClickMarker(pos.x,pos.y,pos.z,scene);
+
+                // Set the movement plane
+                setScreenPerpCenter(pos,camera);
+
+                var idx = meshes.indexOf(entity.object);
+                if(idx !== -1){
+                    addMouseConstraint(pos.x,pos.y,pos.z,bodies[idx]);
+                }
+            }
+        }
+
+        // This function creates a virtual movement plane for the mouseJoint to move in
+        function setScreenPerpCenter(point, camera) {
+            // If it does not exist, create a new one
+            if(!gplane) {
+              var planeGeo = new THREE.PlaneGeometry(100,100);
+              var plane = gplane = new THREE.Mesh(planeGeo,material);
+              plane.visible = false; // Hide it..
+              scene.add(gplane);
+            }
+
+            // Center at mouse position
+            gplane.position.copy(point);
+
+            // Make it face toward the camera
+            gplane.quaternion.copy(camera.quaternion);
+        }
+
+        function onMouseUp(e) {
+          constraintDown = false;
+          // remove the marker
+          removeClickMarker();
+
+          // Send the remove mouse joint to server
+          removeJointConstraint();
+        }
+
+        var lastx,lasty,last;
+        function projectOntoPlane(screenX,screenY,thePlane,camera) {
+            var x = screenX;
+            var y = screenY;
+            var now = new Date().getTime();
+            // project mouse to that plane
+            var hit = findNearestIntersectingObject(screenX,screenY,camera,[thePlane]);
+            lastx = x;
+            lasty = y;
+            last = now;
+            if(hit)
+                return hit.point;
+            return false;
+        }
+        function findNearestIntersectingObject(clientX,clientY,camera,objects) {
+            // Get the picking ray from the point
+            var raycaster = getRayCasterFromScreenCoord(clientX, clientY, camera, projector);
+
+            // Find the closest intersecting object
+            // Now, cast the ray all render objects in the scene to see if they collide. Take the closest one.
+            var hits = raycaster.intersectObjects(objects);
+            var closest = false;
+            if (hits.length > 0) {
+                closest = hits[0];
+            }
+
+            return closest;
+        }
+
+        // Function that returns a raycaster to use to find intersecting objects
+        // in a scene given screen pos and a camera, and a projector
+        function getRayCasterFromScreenCoord (screenX, screenY, camera, projector) {
+            var mouse3D = new THREE.Vector3();
+            // Get 3D point form the client x y
+            mouse3D.x = (screenX / window.innerWidth) * 2 - 1;
+            mouse3D.y = -(screenY / window.innerHeight) * 2 + 1;
+            mouse3D.z = 0.5;
+            return projector.pickingRay(mouse3D, camera);
+
         }
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-            controls.handleResize();
+            //controls.handleResize();
             renderer.setSize( window.innerWidth, window.innerHeight );
         }
 
         function animate() {
             requestAnimationFrame( animate );
-            controls.update();
+            //controls.update();
             render();
         }
 
         function render() {
             renderer.render( scene, camera );
+        }
+
+        function addMouseConstraint(x,y,z,body) {
+          // The cannon body constrained by the mouse joint
+          constrainedBody = body;
+
+          // Vector to the clicked point, relative to the body
+          var v1 = new CANNON.Vec3(x,y,z).vsub(constrainedBody.position);
+
+          // Apply anti-quaternion to vector to tranform it into the local body coordinate system
+          var antiRot = constrainedBody.quaternion.inverse();
+          pivot = antiRot.vmult(v1); // pivot is not in local body coordinates
+
+          // Move the cannon click marker particle to the click position
+          jointBody.position.set(x,y,z);
+
+          // Create a new constraint
+          // The pivot for the jointBody is zero
+          mouseConstraint = new CANNON.PointToPointConstraint(constrainedBody, pivot, jointBody, new CANNON.Vec3(0,0,0));
+
+          // Add the constriant to world
+          world.addConstraint(mouseConstraint);
+        }
+
+        // This functions moves the transparent joint body to a new postion in space
+        function moveJointToPoint(x,y,z) {
+            // Move the joint body to a new position
+            jointBody.position.set(x,y,z);
+            mouseConstraint.update();
+        }
+
+        function removeJointConstraint(){
+          // Remove constriant from world
+          world.removeConstraint(mouseConstraint);
+          mouseConstraint = false;
         }
 
         // Start the worker!
