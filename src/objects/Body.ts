@@ -12,13 +12,13 @@ namespace CANNON
     export interface Body
     {
         once<K extends keyof BodyEventMap>(type: K, listener: (event: feng3d.Event<BodyEventMap[K]>) => void, thisObject?: any, priority?: number): void;
-        dispatch<K extends keyof BodyEventMap>(type: K, data?: BodyEventMap[K], bubbles?: boolean): feng3d.Event<BodyEventMap[K]>;
+        emit<K extends keyof BodyEventMap>(type: K, data?: BodyEventMap[K], bubbles?: boolean): feng3d.Event<BodyEventMap[K]>;
         has<K extends keyof BodyEventMap>(type: K): boolean;
         on<K extends keyof BodyEventMap>(type: K, listener: (event: feng3d.Event<BodyEventMap[K]>) => any, thisObject?: any, priority?: number, once?: boolean): void;
         off<K extends keyof BodyEventMap>(type?: K, listener?: (event: feng3d.Event<BodyEventMap[K]>) => any, thisObject?: any): void;
     }
 
-    export class Body extends feng3d.EventDispatcher
+    export class Body extends feng3d.EventEmitter
     {
 
         id: number;
@@ -353,7 +353,7 @@ namespace CANNON
             this._wakeUpAfterNarrowphase = false;
             if (s === Body.SLEEPING)
             {
-                this.dispatch("wakeup");
+                this.emit("wakeup");
             }
         }
 
@@ -382,7 +382,7 @@ namespace CANNON
                 {
                     this.sleepState = Body.SLEEPY; // Sleepy
                     this.timeLastSleepy = time;
-                    this.dispatch("sleepy");
+                    this.emit("sleepy");
 
                 } else if (sleepState === Body.SLEEPY && speedSquared > speedLimitSquared)
                 {
@@ -390,7 +390,7 @@ namespace CANNON
                 } else if (sleepState === Body.SLEEPY && (time - this.timeLastSleepy) > this.sleepTimeLimit)
                 {
                     this.sleep(); // Sleeping
-                    this.dispatch("sleep");
+                    this.emit("sleep");
                 }
             }
         }
