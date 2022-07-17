@@ -11,11 +11,11 @@ namespace CANNON
 
     export interface Body
     {
-        once<K extends keyof BodyEventMap>(type: K, listener: (event: feng3d.Event<BodyEventMap[K]>) => void, thisObject?: any, priority?: number): void;
-        emit<K extends keyof BodyEventMap>(type: K, data?: BodyEventMap[K], bubbles?: boolean): feng3d.Event<BodyEventMap[K]>;
+        once<K extends keyof BodyEventMap>(type: K, listener: (event: feng3d.IEvent<BodyEventMap[K]>) => void, thisObject?: any, priority?: number): void;
+        emit<K extends keyof BodyEventMap>(type: K, data?: BodyEventMap[K], bubbles?: boolean): feng3d.IEvent<BodyEventMap[K]>;
         has<K extends keyof BodyEventMap>(type: K): boolean;
-        on<K extends keyof BodyEventMap>(type: K, listener: (event: feng3d.Event<BodyEventMap[K]>) => any, thisObject?: any, priority?: number, once?: boolean): void;
-        off<K extends keyof BodyEventMap>(type?: K, listener?: (event: feng3d.Event<BodyEventMap[K]>) => any, thisObject?: any): void;
+        on<K extends keyof BodyEventMap>(type: K, listener: (event: feng3d.IEvent<BodyEventMap[K]>) => any, thisObject?: any, priority?: number, once?: boolean): void;
+        off<K extends keyof BodyEventMap>(type?: K, listener?: (event: feng3d.IEvent<BodyEventMap[K]>) => any, thisObject?: any): void;
     }
 
     export class Body extends feng3d.EventEmitter
