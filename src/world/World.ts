@@ -20,16 +20,7 @@ namespace CANNON
 
     }
 
-    export interface World
-    {
-        once<K extends keyof WorldEventMap>(type: K, listener: (event: feng3d.IEvent<WorldEventMap[K]>) => void, thisObject?: any, priority?: number): void;
-        emit<K extends keyof WorldEventMap>(type: K, data?: WorldEventMap[K], bubbles?: boolean): feng3d.IEvent<WorldEventMap[K]>;
-        has<K extends keyof WorldEventMap>(type: K): boolean;
-        on<K extends keyof WorldEventMap>(type: K, listener: (event: feng3d.IEvent<WorldEventMap[K]>) => any, thisObject?: any, priority?: number, once?: boolean): void;
-        off<K extends keyof WorldEventMap>(type?: K, listener?: (event: feng3d.IEvent<WorldEventMap[K]>) => any, thisObject?: any): void;
-    }
-
-    export class World extends feng3d.EventEmitter
+    export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.EventEmitter<T>
     {
         static worldNormal = new Vector3(0, 0, 1);
 
