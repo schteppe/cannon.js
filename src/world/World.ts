@@ -20,16 +20,7 @@ namespace CANNON
 
     }
 
-    export interface World
-    {
-        once<K extends keyof WorldEventMap>(type: K, listener: (event: feng3d.Event<WorldEventMap[K]>) => void, thisObject?: any, priority?: number): void;
-        dispatch<K extends keyof WorldEventMap>(type: K, data?: WorldEventMap[K], bubbles?: boolean): feng3d.Event<WorldEventMap[K]>;
-        has<K extends keyof WorldEventMap>(type: K): boolean;
-        on<K extends keyof WorldEventMap>(type: K, listener: (event: feng3d.Event<WorldEventMap[K]>) => any, thisObject?: any, priority?: number, once?: boolean): void;
-        off<K extends keyof WorldEventMap>(type?: K, listener?: (event: feng3d.Event<WorldEventMap[K]>) => any, thisObject?: any): void;
-    }
-
-    export class World extends feng3d.EventDispatcher
+    export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.EventEmitter<T>
     {
         static worldNormal = new Vector3(0, 0, 1);
 
@@ -252,7 +243,7 @@ namespace CANNON
                 body.initQuaternion.copy(body.quaternion);
             }
             this.idToBodyMap[body.id] = body;
-            this.dispatch("addBody", body);
+            this.emit("addBody", body);
         }
 
         /**
@@ -353,7 +344,7 @@ namespace CANNON
                 }
 
                 delete this.idToBodyMap[body.id];
-                this.dispatch("removeBody", body);
+                this.emit("removeBody", body);
             }
         }
 
@@ -704,8 +695,8 @@ namespace CANNON
                 {
                     // First contact!
                     // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
-                    bi.dispatch("collide", { body: bj, contact: c });
-                    bj.dispatch("collide", { body: bi, contact: c });
+                    bi.emit("collide", { body: bj, contact: c });
+                    bj.emit("collide", { body: bi, contact: c });
                 }
 
                 this.bodyOverlapKeeper.set(bi.id, bj.id);
@@ -774,7 +765,7 @@ namespace CANNON
                 }
             }
 
-            this.dispatch("preStep");
+            this.emit("preStep");
 
             // Leap frog
             // vnew = v + h*f/m
@@ -804,7 +795,7 @@ namespace CANNON
             this.time += dt;
             this.stepnumber += 1;
 
-            this.dispatch("postStep");
+            this.emit("postStep");
 
             // Sleeping update
             if (this.allowSleep)
@@ -836,7 +827,7 @@ namespace CANNON
                 {
                     for (var i = 0, l = additions.length; i < l; i += 2)
                     {
-                        _this.dispatch("beginContact", {
+                        _this.emit("beginContact", {
                             bodyA: _this.getBodyById(additions[i]),
                             bodyB: _this.getBodyById(additions[i + 1])
                         });
@@ -847,7 +838,7 @@ namespace CANNON
                 {
                     for (var i = 0, l = removals.length; i < l; i += 2)
                     {
-                        _this.dispatch("endContact", {
+                        _this.emit("endContact", {
                             bodyA: _this.getBodyById(removals[i]),
                             bodyB: _this.getBodyById(removals[i + 1])
                         })
@@ -871,7 +862,7 @@ namespace CANNON
                         var shapeA = _this.getShapeById(additions[i]);
                         var shapeB = _this.getShapeById(additions[i + 1]);
 
-                        _this.dispatch("beginShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body })
+                        _this.emit("beginShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body })
                     }
                 }
 
@@ -882,7 +873,7 @@ namespace CANNON
                         var shapeA = _this.getShapeById(removals[i]);
                         var shapeB = _this.getShapeById(removals[i + 1]);
 
-                        _this.dispatch("endShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body });
+                        _this.emit("endShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body });
                     }
                 }
 

@@ -11,11 +11,11 @@ namespace CANNON
          */
         axisIndex: number;
 
-        private _addBodyHandler(event: feng3d.Event<Body>)
+        private _addBodyHandler(event: feng3d.IEvent<Body>)
         {
             this.axisList.push(event.data);
         }
-        private _removeBodyHandler(event: feng3d.Event<Body>)
+        private _removeBodyHandler(event: feng3d.IEvent<Body>)
         {
             var idx = this.axisList.indexOf(event.data);
             if (idx !== -1)
