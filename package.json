@@ -31,6 +31,9 @@
       "type": "MIT"
     }
   ],
+  "dependencies": {
+    "feng3d": "0.1.3"
+  },
   "devDependencies": {
     "typescript": "^4.7.4"
   }
