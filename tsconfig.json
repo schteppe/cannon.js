@@ -18,9 +18,6 @@
     },
     "references": [
         {
-            "path": "../feng3d/packages/event",
-        },
-        {
             "path": "../feng3d/packages/bezier",
         },
         {
@@ -73,6 +70,8 @@
         },
     ],
     "files": [
+        //
+        "../feng3d/packages/event/index.d.ts",
         //
         "src/Feng3d.ts",
         //
