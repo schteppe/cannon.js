@@ -16,62 +16,9 @@
         "outFile": "dist/index.js"
         // "outDir": "debug"
     },
-    "references": [
-        {
-            "path": "../feng3d/packages/bezier",
-        },
-        {
-            "path": "../feng3d/packages/objectview",
-        },
-        {
-            "path": "../feng3d/packages/polyfill",
-        },
-        {
-            "path": "../feng3d/packages/task",
-        },
-        {
-            "path": "../feng3d/packages/watcher",
-        },
-        {
-            "path": "../feng3d/packages/serialization",
-        },
-        {
-            "path": "../feng3d/packages/math",
-        },
-        {
-            "path": "../feng3d/packages/filesystem",
-        },
-        {
-            "path": "../feng3d/packages/shortcut",
-        },
-        {
-            "path": "../feng3d/packages/renderer",
-        },
-        {
-            "path": "../feng3d/packages/core",
-        },
-        {
-            "path": "../feng3d/packages/terrain",
-        },
-        {
-            "path": "../feng3d/packages/particlesystem",
-        },
-        {
-            "path": "../feng3d/packages/assets",
-        },
-        {
-            "path": "../feng3d/packages/parsers",
-        },
-        {
-            "path": "../feng3d/packages/ui",
-        },
-        {
-            "path": "../feng3d",
-        },
-    ],
     "files": [
         //
-        "../feng3d/packages/event/index.d.ts",
+        "../feng3d/index.d.ts",
         //
         "src/Feng3d.ts",
         //
