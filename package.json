@@ -1,5 +1,5 @@
 {
-  "name": "@feng3d/connon",
+  "name": "@feng3d/cannon",
   "version": "0.4.1",
   "description": "3d物理引擎",
   "main": "lib/index.js",
@@ -36,7 +36,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/feng3d/connon.git"
+    "url": "https://gitlab.com/feng3d/cannon.git"
   },
   "publishConfig": {
     "access": "public"

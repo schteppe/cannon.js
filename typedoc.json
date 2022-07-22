@@ -1,8 +1,8 @@
 {
-    "name": "@feng3d/connon",
+    "name": "@feng3d/cannon",
     "entryPoints": [
         "src/index.ts"
     ],
-    "sourcefile-url-prefix": "https://gitlab.com/feng3d/connon/tree/master/src/",
+    "sourcefile-url-prefix": "https://gitlab.com/feng3d/cannon/tree/master/src/",
     "out": "public"
 }
