@@ -1,5 +1,7 @@
-*.tsbuildinfo
-/node_modules
-/package-lock.json
-/out
-/dist
+node_modules
+yarn.lock
+dist
+lib
+public
+out
+package-lock.json

@@ -1,0 +1,2 @@
+//把js文件识别为ts文件
+*.js linguist-language=TypeScript
