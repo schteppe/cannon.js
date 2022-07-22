@@ -1,6 +1,9 @@
+import { Quaternion, Vector3 } from '@feng3d/math';
+import { ConvexPolyhedron } from './ConvexPolyhedron';
+import { Shape } from './Shape';
+
 export class Box extends Shape
 {
-
     halfExtents: Vector3;
 
     /**
@@ -31,12 +34,12 @@ export class Box extends Shape
      */
     updateConvexPolyhedronRepresentation()
     {
-        var sx = this.halfExtents.x;
-        var sy = this.halfExtents.y;
-        var sz = this.halfExtents.z;
-        var V = Vector3;
+        const sx = this.halfExtents.x;
+        const sy = this.halfExtents.y;
+        const sz = this.halfExtents.z;
+        const V = Vector3;
 
-        var vertices = [
+        const vertices = [
             new V(-sx, -sy, -sz),
             new V(sx, -sy, -sz),
             new V(sx, sy, -sz),
@@ -47,7 +50,7 @@ export class Box extends Shape
             new V(-sx, sy, sz)
         ];
 
-        var indices = [
+        const indices = [
             [3, 2, 1, 0], // -z
             [4, 5, 6, 7], // +z
             [5, 4, 0, 1], // -y
@@ -56,13 +59,14 @@ export class Box extends Shape
             [1, 2, 6, 5], // +x
         ];
 
-        var axes = [
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const axes = [
             new V(0, 0, 1),
             new V(0, 1, 0),
             new V(1, 0, 0)
         ];
 
-        var h = new ConvexPolyhedron(vertices, indices);
+        const h = new ConvexPolyhedron(vertices, indices);
         this.convexPolyhedronRepresentation = h;
         h.material = this.material;
     }
@@ -70,12 +74,13 @@ export class Box extends Shape
     calculateLocalInertia(mass: number, target = new Vector3())
     {
         Box.calculateInertia(this.halfExtents, mass, target);
+
         return target;
     }
 
     static calculateInertia(halfExtents: Vector3, mass: number, target: Vector3)
     {
-        var e = halfExtents;
+        const e = halfExtents;
         target.x = 1.0 / 12.0 * mass * (2 * e.y * 2 * e.y + 2 * e.z * 2 * e.z);
         target.y = 1.0 / 12.0 * mass * (2 * e.x * 2 * e.x + 2 * e.z * 2 * e.z);
         target.z = 1.0 / 12.0 * mass * (2 * e.y * 2 * e.y + 2 * e.x * 2 * e.x);
@@ -88,8 +93,8 @@ export class Box extends Shape
      */
     getSideNormals(sixTargetVectors: Vector3[], quat: Quaternion)
     {
-        var sides = sixTargetVectors;
-        var ex = this.halfExtents;
+        const sides = sixTargetVectors;
+        const ex = this.halfExtents;
         sides[0].set(ex.x, 0, 0);
         sides[1].set(0, ex.y, 0);
         sides[2].set(0, 0, ex.z);
@@ -99,7 +104,7 @@ export class Box extends Shape
 
         if (quat !== undefined)
         {
-            for (var i = 0; i !== sides.length; i++)
+            for (let i = 0; i !== sides.length; i++)
             {
                 quat.vmult(sides[i], sides[i]);
             }
@@ -120,8 +125,8 @@ export class Box extends Shape
 
     forEachWorldCorner(pos: Vector3, quat: Quaternion, callback: Function)
     {
-        var e = this.halfExtents;
-        var corners = [[e.x, e.y, e.z],
+        const e = this.halfExtents;
+        const corners = [[e.x, e.y, e.z],
         [-e.x, e.y, e.z],
         [-e.x, -e.y, e.z],
         [-e.x, -e.y, -e.z],
@@ -129,7 +134,7 @@ export class Box extends Shape
         [e.x, e.y, -e.z],
         [-e.x, e.y, -e.z],
         [e.x, -e.y, e.z]];
-        for (var i = 0; i < corners.length; i++)
+        for (let i = 0; i < corners.length; i++)
         {
             worldCornerTempPos.set(corners[i][0], corners[i][1], corners[i][2]);
             quat.vmult(worldCornerTempPos, worldCornerTempPos);
@@ -142,7 +147,7 @@ export class Box extends Shape
 
     calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3)
     {
-        var e = this.halfExtents;
+        const e = this.halfExtents;
         worldCornersTemp[0].set(e.x, e.y, e.z);
         worldCornersTemp[1].set(-e.x, e.y, e.z);
         worldCornersTemp[2].set(-e.x, -e.y, e.z);
@@ -152,19 +157,19 @@ export class Box extends Shape
         worldCornersTemp[6].set(-e.x, e.y, -e.z);
         worldCornersTemp[7].set(e.x, -e.y, e.z);
 
-        var wc = worldCornersTemp[0];
+        let wc = worldCornersTemp[0];
         quat.vmult(wc, wc);
         pos.addTo(wc, wc);
         max.copy(wc);
         min.copy(wc);
-        for (var i = 1; i < 8; i++)
+        for (let i = 1; i < 8; i++)
         {
-            var wc = worldCornersTemp[i];
+            wc = worldCornersTemp[i];
             quat.vmult(wc, wc);
             pos.addTo(wc, wc);
-            var x = wc.x;
-            var y = wc.y;
-            var z = wc.z;
+            const x = wc.x;
+            const y = wc.y;
+            const z = wc.z;
             if (x > max.x)
             {
                 max.x = x;
@@ -219,11 +224,10 @@ export class Box extends Shape
     }
 }
 
+const worldCornerTempPos = new Vector3();
+// const worldCornerTempNeg = new Vector3();
 
-var worldCornerTempPos = new Vector3();
-var worldCornerTempNeg = new Vector3();
-
-var worldCornersTemp = [
+const worldCornersTemp = [
     new Vector3(),
     new Vector3(),
     new Vector3(),

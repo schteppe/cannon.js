@@ -1,6 +1,10 @@
+import { Vector3 } from '@feng3d/math';
+import { RaycastResult } from '../collision/RaycastResult';
+import { Transform } from '../math/Transform';
+import { Utils } from '../utils/Utils';
+
 export class WheelInfo
 {
-
     /**
      * Max travel distance of the suspension, in meters.
      */
@@ -95,8 +99,8 @@ export class WheelInfo
     slipInfo: number;
 
     /**
-     * 
-     * @param options 
+     *
+     * @param options
      */
     constructor(options: {
         maxSuspensionTravel?: number, customSlidingRotationalSpeed?: number, useCustomSlidingRotationalSpeed?: boolean,
@@ -175,26 +179,27 @@ export class WheelInfo
 
     updateWheel(chassis: Body)
     {
-        var raycastResult = this.raycastResult;
+        const raycastResult = this.raycastResult;
 
         if (this.isInContact)
         {
-            var project = raycastResult.hitNormalWorld.dot(raycastResult.directionWorld);
+            const project = raycastResult.hitNormalWorld.dot(raycastResult.directionWorld);
             raycastResult.hitPointWorld.subTo(chassis.position, relpos);
-            chassis.getVelocityAtWorldPoint(relpos, chassis_velocity_at_contactPoint);
-            var projVel = raycastResult.hitNormalWorld.dot(chassis_velocity_at_contactPoint);
+            chassis.getVelocityAtWorldPoint(relpos, chassisVelocityAtContactPoint);
+            const projVel = raycastResult.hitNormalWorld.dot(chassisVelocityAtContactPoint);
             if (project >= -0.1)
             {
                 this.suspensionRelativeVelocity = 0.0;
                 this.clippedInvContactDotSuspension = 1.0 / 0.1;
-            } else
+            }
+            else
             {
-                var inv = -1 / project;
+                const inv = -1 / project;
                 this.suspensionRelativeVelocity = projVel * inv;
                 this.clippedInvContactDotSuspension = inv;
             }
-
-        } else
+        }
+        else
         {
             // Not in contact : position wheel in a nice (rest length) position
             raycastResult.suspensionLength = this.suspensionRestLength;
@@ -205,6 +210,5 @@ export class WheelInfo
     }
 }
 
-var chassis_velocity_at_contactPoint = new Vector3();
-var relpos = new Vector3();
-var chassis_velocity_at_contactPoint = new Vector3();
+const chassisVelocityAtContactPoint = new Vector3();
+const relpos = new Vector3();

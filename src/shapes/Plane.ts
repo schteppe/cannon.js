@@ -1,3 +1,7 @@
+import { Quaternion, Vector3 } from '@feng3d/math';
+import { World } from '../world/World';
+import { Shape } from './Shape';
+
 export class Plane extends Shape
 {
     worldNormal: Vector3;
@@ -5,7 +9,7 @@ export class Plane extends Shape
 
     /**
      * A plane, facing in the Z direction. The plane has its surface at z=0 and everything below z=0 is assumed to be solid plane. To make the plane face in some other direction than z, you must put it inside a Body and rotate that body. See the demos.
-     * 
+     *
      * @author schteppe
      */
     constructor()
@@ -23,7 +27,7 @@ export class Plane extends Shape
 
     computeWorldNormal(quat: Quaternion)
     {
-        var n = this.worldNormal;
+        const n = this.worldNormal;
         n.copy(World.worldNormal);
         quat.vmult(n, n);
         this.worldNormalNeedsUpdate = false;
@@ -44,7 +48,7 @@ export class Plane extends Shape
         // The plane AABB is infinite, except if the normal is pointing along any axis
         tempNormal.copy(World.worldNormal); // Default plane normal is z
         quat.vmult(tempNormal, tempNormal);
-        var maxVal = Number.MAX_VALUE;
+        const maxVal = Number.MAX_VALUE;
         min.set(-maxVal, -maxVal, -maxVal);
         max.set(maxVal, maxVal, maxVal);
 
@@ -63,5 +67,5 @@ export class Plane extends Shape
     }
 }
 
-var tempNormal = new Vector3();
+const tempNormal = new Vector3();
 

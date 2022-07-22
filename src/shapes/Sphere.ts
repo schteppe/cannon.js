@@ -1,10 +1,13 @@
+import { Quaternion, Vector3 } from '@feng3d/math';
+import { Shape } from './Shape';
+
 export class Sphere extends Shape
 {
     radius: number;
 
     /**
      * Spherical shape
-     * 
+     *
      * @param radius The radius of the sphere, a non-negative number.
      * @author schteppe / http://github.com/schteppe
      */
@@ -26,10 +29,11 @@ export class Sphere extends Shape
 
     calculateLocalInertia(mass: number, target = new Vector3())
     {
-        var I = 2.0 * mass * this.radius * this.radius / 5.0;
+        const I = 2.0 * mass * this.radius * this.radius / 5.0;
         target.x = I;
         target.y = I;
         target.z = I;
+
         return target;
     }
 
@@ -45,14 +49,13 @@ export class Sphere extends Shape
 
     calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3)
     {
-        var r = this.radius;
-        var axes = ['x', 'y', 'z'];
-        for (var i = 0; i < axes.length; i++)
+        const r = this.radius;
+        const axes = ['x', 'y', 'z'];
+        for (let i = 0; i < axes.length; i++)
         {
-            var ax = axes[i];
+            const ax = axes[i];
             min[ax] = pos[ax] - r;
             max[ax] = pos[ax] + r;
         }
     }
-
 }

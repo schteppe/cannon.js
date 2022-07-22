@@ -1,3 +1,6 @@
+import { Vector3 } from '@feng3d/math';
+import { Equation } from './Equation';
+
 export class ConeEquation extends Equation
 {
     axisA: Vector3;
@@ -5,15 +8,15 @@ export class ConeEquation extends Equation
     /**
      * The cone angle to keep
      */
-    angle: number
+    angle: number;
 
     /**
      * Cone equation. Works to keep the given body world vectors aligned, or tilted within a given angle from each other.
-     * 
-     * @param bodyA 
-     * @param bodyB 
-     * @param options 
-     * 
+     *
+     * @param bodyA
+     * @param bodyB
+     * @param options
+     *
      * @author schteppe
      */
     constructor(bodyA: Body, bodyB: Body, options: { maxForce?: number, axisA?: Vector3, axisB?: Vector3, angle?: number } = {})
@@ -28,17 +31,17 @@ export class ConeEquation extends Equation
 
     computeB(h: number)
     {
-        var a = this.a,
-            b = this.b,
+        const a = this.a;
+            const b = this.b;
 
-            ni = this.axisA,
-            nj = this.axisB,
+            const ni = this.axisA;
+            const nj = this.axisB;
 
-            nixnj = tmpVec1,
-            njxni = tmpVec2,
+            const nixnj = tmpVec1;
+            const njxni = tmpVec2;
 
-            GA = this.jacobianElementA,
-            GB = this.jacobianElementB;
+            const GA = this.jacobianElementA;
+            const GB = this.jacobianElementB;
 
         // Caluclate cross products
         ni.crossTo(nj, nixnj);
@@ -54,16 +57,15 @@ export class ConeEquation extends Equation
         GA.rotational.copy(njxni);
         GB.rotational.copy(nixnj);
 
-        var g = Math.cos(this.angle) - ni.dot(nj),
-            GW = this.computeGW(),
-            GiMf = this.computeGiMf();
+        const g = Math.cos(this.angle) - ni.dot(nj);
+            const GW = this.computeGW();
+            const GiMf = this.computeGiMf();
 
-        var B = - g * a - GW * b - h * GiMf;
+        const B = -g * a - GW * b - h * GiMf;
 
         return B;
     }
-
 }
 
-var tmpVec1 = new Vector3();
-var tmpVec2 = new Vector3();
+const tmpVec1 = new Vector3();
+const tmpVec2 = new Vector3();

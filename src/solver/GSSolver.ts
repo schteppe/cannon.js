@@ -1,6 +1,8 @@
+import { World } from '../world/World';
+import { Solver } from './Solver';
+
 export class GSSolver extends Solver
 {
-
     /**
      * Constraint equation Gauss-Seidel solver.
      * @todo The spook parameters should be specified for each constraint, not globally.
@@ -17,35 +19,37 @@ export class GSSolver extends Solver
 
     solve(dt: number, world: World)
     {
-        var iter = 0,
-            maxIter = this.iterations,
-            tolSquared = this.tolerance * this.tolerance,
-            equations = this.equations,
-            Neq = equations.length,
-            bodies = world.bodies,
-            Nbodies = bodies.length,
-            h = dt,
-            q, B, invC, deltalambda, deltalambdaTot, GWlambda, lambdaj;
+        let iter = 0;
+        const maxIter = this.iterations;
+        const tolSquared = this.tolerance * this.tolerance;
+        const equations = this.equations;
+        const Neq = equations.length;
+        const bodies = world.bodies;
+        const Nbodies = bodies.length;
+        const h = dt;
+        // let q: any;
+        let B: number; let invC: number; let deltalambda: number; let deltalambdaTot: number; let GWlambda: number;
+        let lambdaj: number;
 
         // Update solve mass
         if (Neq !== 0)
         {
-            for (var i = 0; i !== Nbodies; i++)
+            for (let i = 0; i !== Nbodies; i++)
             {
                 bodies[i].updateSolveMassProperties();
             }
         }
 
         // Things that does not change during iteration can be computed once
-        var invCs = GSSolver_solve_invCs,
-            Bs = GSSolver_solve_Bs,
-            lambda = GSSolver_solve_lambda;
+        const invCs = GSSolverSolveInvCs;
+        const Bs = GSSolverSolveBs;
+        const lambda = GSSolverSolveLambda;
         invCs.length = Neq;
         Bs.length = Neq;
         lambda.length = Neq;
-        for (var i = 0; i !== Neq; i++)
+        for (let i = 0; i !== Neq; i++)
         {
-            var c = equations[i];
+            const c = equations[i];
             lambda[i] = 0.0;
             Bs[i] = c.computeB(h, 0, 0);
             invCs[i] = 1.0 / c.computeC();
@@ -53,13 +57,12 @@ export class GSSolver extends Solver
 
         if (Neq !== 0)
         {
-
             // Reset vlambda
-            for (var i = 0; i !== Nbodies; i++)
+            for (let i = 0; i !== Nbodies; i++)
             {
-                var b = bodies[i],
-                    vlambda = b.vlambda,
-                    wlambda = b.wlambda;
+                const b = bodies[i];
+                const vlambda = b.vlambda;
+                const wlambda = b.wlambda;
                 vlambda.set(0, 0, 0);
                 wlambda.set(0, 0, 0);
             }
@@ -67,14 +70,12 @@ export class GSSolver extends Solver
             // Iterate over equations
             for (iter = 0; iter !== maxIter; iter++)
             {
-
                 // Accumulate the total error for each iteration.
                 deltalambdaTot = 0.0;
 
-                for (var j = 0; j !== Neq; j++)
+                for (let j = 0; j !== Neq; j++)
                 {
-
-                    var c = equations[j];
+                    const c = equations[j];
 
                     // Compute iteration
                     B = Bs[j];
@@ -87,7 +88,8 @@ export class GSSolver extends Solver
                     if (lambdaj + deltalambda < c.minForce)
                     {
                         deltalambda = c.minForce - lambdaj;
-                    } else if (lambdaj + deltalambda > c.maxForce)
+                    }
+                    else if (lambdaj + deltalambda > c.maxForce)
                     {
                         deltalambda = c.maxForce - lambdaj;
                     }
@@ -106,11 +108,11 @@ export class GSSolver extends Solver
             }
 
             // Add result to velocity
-            for (var i = 0; i !== Nbodies; i++)
+            for (let i = 0; i !== Nbodies; i++)
             {
-                var b = bodies[i],
-                    v = b.velocity,
-                    w = b.angularVelocity;
+                const b = bodies[i];
+                const v = b.velocity;
+                const w = b.angularVelocity;
 
                 b.vlambda.scaleTo(b.linearFactor, b.vlambda);
                 v.addTo(b.vlambda, v);
@@ -120,8 +122,8 @@ export class GSSolver extends Solver
             }
 
             // Set the .multiplier property of each equation
-            var l = equations.length;
-            var invDt = 1 / h;
+            let l = equations.length;
+            const invDt = 1 / h;
             while (l--)
             {
                 equations[l].multiplier = lambda[l] * invDt;
@@ -130,9 +132,8 @@ export class GSSolver extends Solver
 
         return iter;
     }
-
 }
 
-var GSSolver_solve_lambda = []; // Just temporary number holders that we want to reuse each solve.
-var GSSolver_solve_invCs = [];
-var GSSolver_solve_Bs = [];
+const GSSolverSolveLambda = []; // Just temporary number holders that we want to reuse each solve.
+const GSSolverSolveInvCs = [];
+const GSSolverSolveBs = [];

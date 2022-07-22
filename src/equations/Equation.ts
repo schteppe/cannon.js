@@ -1,6 +1,8 @@
+import { Vector3 } from '@feng3d/math';
+import { JacobianElement } from '../math/JacobianElement';
+
 export class Equation
 {
-
     id: number;
 
     minForce: number;
@@ -69,9 +71,9 @@ export class Equation
      */
     setSpookParams(stiffness: number, relaxation: number, timeStep: number)
     {
-        var d = relaxation,
-            k = stiffness,
-            h = timeStep;
+        const d = relaxation;
+        const k = stiffness;
+        const h = timeStep;
         this.a = 4.0 / (h * (1 + 4 * d));
         this.b = (4.0 * d) / (1 + 4 * d);
         this.eps = 4.0 / (h * h * k * (1 + 4 * d));
@@ -82,10 +84,11 @@ export class Equation
      */
     computeB(a: number, b: number, h: number)
     {
-        var GW = this.computeGW(),
-            Gq = this.computeGq(),
-            GiMf = this.computeGiMf();
-        return - Gq * a - GW * b - GiMf * h;
+        const GW = this.computeGW();
+        const Gq = this.computeGq();
+        const GiMf = this.computeGiMf();
+
+        return -Gq * a - GW * b - GiMf * h;
     }
 
     /**
@@ -93,46 +96,47 @@ export class Equation
      */
     computeGq()
     {
-        var GA = this.jacobianElementA,
-            GB = this.jacobianElementB,
-            bi = this.bi,
-            bj = this.bj,
-            xi = bi.position,
-            xj = bj.position;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
+        const bi = this.bi;
+        const bj = this.bj;
+        const xi = bi.position;
+        const xj = bj.position;
+
         return GA.spatial.dot(xi) + GB.spatial.dot(xj);
     }
-
 
     /**
      * Computes G*W, where W are the body velocities
      */
     computeGW()
     {
-        var GA = this.jacobianElementA,
-            GB = this.jacobianElementB,
-            bi = this.bi,
-            bj = this.bj,
-            vi = bi.velocity,
-            vj = bj.velocity,
-            wi = bi.angularVelocity,
-            wj = bj.angularVelocity;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
+        const bi = this.bi;
+        const bj = this.bj;
+        const vi = bi.velocity;
+        const vj = bj.velocity;
+        const wi = bi.angularVelocity;
+        const wj = bj.angularVelocity;
+
         return GA.multiplyVectors(vi, wi) + GB.multiplyVectors(vj, wj);
     }
-
 
     /**
      * Computes G*Wlambda, where W are the body velocities
      */
     computeGWlambda()
     {
-        var GA = this.jacobianElementA,
-            GB = this.jacobianElementB,
-            bi = this.bi,
-            bj = this.bj,
-            vi = bi.vlambda,
-            vj = bj.vlambda,
-            wi = bi.wlambda,
-            wj = bj.wlambda;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
+        const bi = this.bi;
+        const bj = this.bj;
+        const vi = bi.vlambda;
+        const vj = bj.vlambda;
+        const wi = bi.wlambda;
+        const wj = bj.wlambda;
+
         return GA.multiplyVectors(vi, wi) + GB.multiplyVectors(vj, wj);
     }
 
@@ -141,24 +145,24 @@ export class Equation
      */
     computeGiMf()
     {
-        var GA = this.jacobianElementA,
-            GB = this.jacobianElementB,
-            bi = this.bi,
-            bj = this.bj,
-            fi = bi.force,
-            ti = bi.torque,
-            fj = bj.force,
-            tj = bj.torque,
-            invMassi = bi.invMassSolve,
-            invMassj = bj.invMassSolve;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
+        const bi = this.bi;
+        const bj = this.bj;
+        const fi = bi.force;
+        const ti = bi.torque;
+        const fj = bj.force;
+        const tj = bj.torque;
+        const invMassi = bi.invMassSolve;
+        const invMassj = bj.invMassSolve;
 
         fi.scaleNumberTo(invMassi, iMfi);
         fj.scaleNumberTo(invMassj, iMfj);
 
-        bi.invInertiaWorldSolve.vmult(ti, invIi_vmult_taui);
-        bj.invInertiaWorldSolve.vmult(tj, invIj_vmult_tauj);
+        bi.invInertiaWorldSolve.vmult(ti, invIiVmultTaui);
+        bj.invInertiaWorldSolve.vmult(tj, invIjVmultTauj);
 
-        return GA.multiplyVectors(iMfi, invIi_vmult_taui) + GB.multiplyVectors(iMfj, invIj_vmult_tauj);
+        return GA.multiplyVectors(iMfi, invIiVmultTaui) + GB.multiplyVectors(iMfj, invIjVmultTauj);
     }
 
     /**
@@ -166,15 +170,15 @@ export class Equation
      */
     computeGiMGt()
     {
-        var GA = this.jacobianElementA,
-            GB = this.jacobianElementB,
-            bi = this.bi,
-            bj = this.bj,
-            invMassi = bi.invMassSolve,
-            invMassj = bj.invMassSolve,
-            invIi = bi.invInertiaWorldSolve,
-            invIj = bj.invInertiaWorldSolve,
-            result = invMassi + invMassj;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
+        const bi = this.bi;
+        const bj = this.bj;
+        const invMassi = bi.invMassSolve;
+        const invMassj = bj.invMassSolve;
+        const invIi = bi.invInertiaWorldSolve;
+        const invIj = bj.invInertiaWorldSolve;
+        let result = invMassi + invMassj;
 
         invIi.vmult(GA.rotational, tmp);
         result += tmp.dot(GA.rotational);
@@ -190,11 +194,11 @@ export class Equation
      */
     addToWlambda(deltalambda: number)
     {
-        var GA = this.jacobianElementA,
-            GB = this.jacobianElementB,
-            bi = this.bi,
-            bj = this.bj,
-            temp = addToWlambda_temp;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
+        const bi = this.bi;
+        const bj = this.bj;
+        const temp = addToWlambdaTemp;
 
         // Add to linear velocity
         // v_lambda += inv(M) * delta_lamba * G
@@ -218,17 +222,16 @@ export class Equation
     }
 }
 
-var zero = new Vector3();
-var iMfi = new Vector3();
-var iMfj = new Vector3();
-var invIi_vmult_taui = new Vector3();
-var invIj_vmult_tauj = new Vector3();
-var tmp = new Vector3();
+// const zero = new Vector3();
+const iMfi = new Vector3();
+const iMfj = new Vector3();
+const invIiVmultTaui = new Vector3();
+const invIjVmultTauj = new Vector3();
+const tmp = new Vector3();
 
-
-var addToWlambda_temp = new Vector3();
-var addToWlambda_Gi = new Vector3();
-var addToWlambda_Gj = new Vector3();
-var addToWlambda_ri = new Vector3();
-var addToWlambda_rj = new Vector3();
-var addToWlambda_Mdiag = new Vector3();
+const addToWlambdaTemp = new Vector3();
+// const addToWlambda_Gi = new Vector3();
+// const addToWlambda_Gj = new Vector3();
+// const addToWlambda_ri = new Vector3();
+// const addToWlambda_rj = new Vector3();
+// const addToWlambda_Mdiag = new Vector3();

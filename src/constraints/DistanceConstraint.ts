@@ -1,3 +1,6 @@
+import { ContactEquation } from '../equations/ContactEquation';
+import { Constraint } from './Constraint';
+
 export class DistanceConstraint extends Constraint
 {
     distance: number;
@@ -6,25 +9,25 @@ export class DistanceConstraint extends Constraint
 
     /**
      * Constrains two bodies to be at a constant distance from each others center of mass.
-     * 
-     * @param bodyA 
-     * @param bodyB 
+     *
+     * @param bodyA
+     * @param bodyB
      * @param distance The distance to keep. If undefined, it will be set to the current distance between bodyA and bodyB
-     * @param maxForce 
-     * @param number 
-     * 
+     * @param maxForce
+     * @param number
+     *
      * @author schteppe
      */
     constructor(bodyA: Body, bodyB: Body, distance?: number, maxForce?: number)
     {
         super(bodyA, bodyB);
 
-        if (typeof (distance) === "undefined")
+        if (typeof (distance) === 'undefined')
         {
             distance = bodyA.position.distance(bodyB.position);
         }
 
-        if (typeof (maxForce) === "undefined")
+        if (typeof (maxForce) === 'undefined')
         {
             maxForce = 1e6;
         }
@@ -34,7 +37,7 @@ export class DistanceConstraint extends Constraint
         /**
          * @property {ContactEquation} distanceEquation
          */
-        var eq = this.distanceEquation = new ContactEquation(bodyA, bodyB);
+        const eq = this.distanceEquation = new ContactEquation(bodyA, bodyB);
         this.equations.push(eq);
 
         // Make it bidirectional
@@ -44,11 +47,11 @@ export class DistanceConstraint extends Constraint
 
     update()
     {
-        var bodyA = this.bodyA;
-        var bodyB = this.bodyB;
-        var eq = this.distanceEquation;
-        var halfDist = this.distance * 0.5;
-        var normal = eq.ni;
+        const bodyA = this.bodyA;
+        const bodyB = this.bodyB;
+        const eq = this.distanceEquation;
+        const halfDist = this.distance * 0.5;
+        const normal = eq.ni;
 
         bodyB.position.subTo(bodyA.position, normal);
         normal.normalize();

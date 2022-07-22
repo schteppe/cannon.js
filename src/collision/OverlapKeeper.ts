@@ -1,6 +1,5 @@
 export class OverlapKeeper
 {
-
     current: number[] = [];
     previous: number[] = [];
 
@@ -14,19 +13,20 @@ export class OverlapKeeper
     {
         if (j < i)
         {
-            var temp = j;
+            const temp = j;
             j = i;
             i = temp;
         }
+
         return (i << 16) | j;
     }
 
     set(i: number, j: number)
     {
         // Insertion sort. This way the diff will have linear complexity.
-        var key = this.getKey(i, j);
-        var current = this.current;
-        var index = 0;
+        const key = this.getKey(i, j);
+        const current = this.current;
+        let index = 0;
         while (key > current[index])
         {
             index++;
@@ -35,7 +35,7 @@ export class OverlapKeeper
         {
             return; // Pair was already added
         }
-        for (var j = current.length - 1; j >= index; j--)
+        for (let j = current.length - 1; j >= index; j--)
         {
             current[j + 1] = current[j];
         }
@@ -44,7 +44,7 @@ export class OverlapKeeper
 
     tick()
     {
-        var tmp = this.current;
+        const tmp = this.current;
         this.current = this.previous;
         this.previous = tmp;
         this.current.length = 0;
@@ -57,16 +57,16 @@ export class OverlapKeeper
 
     getDiff(additions: number[], removals: number[])
     {
-        var a = this.current;
-        var b = this.previous;
-        var al = a.length;
-        var bl = b.length;
+        const a = this.current;
+        const b = this.previous;
+        const al = a.length;
+        const bl = b.length;
 
-        var j = 0;
-        for (var i = 0; i < al; i++)
+        let j = 0;
+        for (let i = 0; i < al; i++)
         {
-            var found = false;
-            var keyA = a[i];
+            let found = false;
+            const keyA = a[i];
             while (keyA > b[j])
             {
                 j++;
@@ -79,10 +79,10 @@ export class OverlapKeeper
             }
         }
         j = 0;
-        for (var i = 0; i < bl; i++)
+        for (let i = 0; i < bl; i++)
         {
-            var found = false;
-            var keyB = b[i];
+            let found = false;
+            const keyB = b[i];
             while (keyB > a[j])
             {
                 j++;

@@ -1,6 +1,8 @@
+import { Utils } from '../utils/Utils';
+import { Material } from './Material';
+
 export class ContactMaterial
 {
-
     /**
      * Identifier of this material
      */
@@ -44,10 +46,10 @@ export class ContactMaterial
 
     /**
      * Defines what happens when two materials meet.
-     * 
-     * @param m1 
-     * @param m2 
-     * @param options 
+     *
+     * @param m1
+     * @param m2
+     * @param options
      */
     constructor(m1?: Material, m2?: Material, options: {
         friction?: number, restitution?: number,

@@ -1,6 +1,7 @@
+import { Equation } from '../equations/Equation';
+
 export class Solver
 {
-
     /**
      * The number of solver iterations determines quality of the constraints in the world. The more iterations, the more correct simulation. More iterations need more computations though. If you have a large gravity force in your world, you will need more iterations.
      * @todo write more about solver and iterations in the wiki
@@ -28,10 +29,10 @@ export class Solver
 
     /**
      * Should be implemented in subclasses!
-     * @param dt
-     * @param world
+     * @param _dt
+     * @param _world
      */
-    solve(dt: number, world: { bodies: Body[] })
+    solve(_dt: number, _world: { bodies: Body[] })
     {
         // Should return the number of iterations done!
         return 0;
@@ -55,8 +56,8 @@ export class Solver
      */
     removeEquation(eq: Equation)
     {
-        var eqs = this.equations;
-        var i = eqs.indexOf(eq);
+        const eqs = this.equations;
+        const i = eqs.indexOf(eq);
         if (i !== -1)
         {
             eqs.splice(i, 1);
@@ -70,5 +71,4 @@ export class Solver
     {
         this.equations.length = 0;
     }
-
 }

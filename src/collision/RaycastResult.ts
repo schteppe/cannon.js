@@ -1,3 +1,6 @@
+import { Vector3 } from '@feng3d/math';
+import { Shape } from '../shapes/Shape';
+
 export class RaycastResult
 {
 	rayFromWorld = new Vector3();

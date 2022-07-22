@@ -1,3 +1,5 @@
+import { Vector3 } from '@feng3d/math';
+
 export class JacobianElement
 {
     spatial: Vector3;

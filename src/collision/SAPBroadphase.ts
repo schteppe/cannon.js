@@ -1,3 +1,8 @@
+import { IEvent } from '@feng3d/event';
+import { Box3 } from '@feng3d/math';
+import { World } from '../world/World';
+import { Broadphase } from './Broadphase';
+
 export class SAPBroadphase extends Broadphase
 {
     /**
@@ -9,13 +14,13 @@ export class SAPBroadphase extends Broadphase
      */
     axisIndex: number;
 
-    private _addBodyHandler(event: feng3d.IEvent<Body>)
+    private _addBodyHandler(event: IEvent<Body>)
     {
         this.axisList.push(event.data);
     }
-    private _removeBodyHandler(event: feng3d.IEvent<Body>)
+    private _removeBodyHandler(event: IEvent<Body>)
     {
-        var idx = this.axisList.indexOf(event.data);
+        const idx = this.axisList.indexOf(event.data);
         if (idx !== -1)
         {
             this.axisList.splice(idx, 1);
@@ -37,7 +42,7 @@ export class SAPBroadphase extends Broadphase
 
         this.axisIndex = 0;
 
-        var axisList = this.axisList;
+        // const axisList = this.axisList;
 
         if (world)
         {
@@ -55,7 +60,7 @@ export class SAPBroadphase extends Broadphase
         this.axisList.length = 0;
 
         // Add all bodies from the new world
-        for (var i = 0; i < world.bodies.length; i++)
+        for (let i = 0; i < world.bodies.length; i++)
         {
             this.axisList.push(world.bodies[i]);
         }
@@ -63,8 +68,8 @@ export class SAPBroadphase extends Broadphase
         // Remove old handlers, if any
         if (this.world)
         {
-            this.world.off("addBody", this._addBodyHandler, this);
-            this.world.off("removeBody", this._removeBodyHandler, this);
+            this.world.off('addBody', this._addBodyHandler, this);
+            this.world.off('removeBody', this._removeBodyHandler, this);
         }
 
         this.world = world;
@@ -72,8 +77,8 @@ export class SAPBroadphase extends Broadphase
         // Add handlers to update the list of bodies.
         if (this.world)
         {
-            this.world.on("addBody", this._addBodyHandler, this);
-            this.world.on("removeBody", this._removeBodyHandler, this);
+            this.world.on('addBody', this._addBodyHandler, this);
+            this.world.on('removeBody', this._removeBodyHandler, this);
         }
 
         this.dirty = true;
@@ -81,10 +86,10 @@ export class SAPBroadphase extends Broadphase
 
     static insertionSortX(a: Body[])
     {
-        for (var i = 1, l = a.length; i < l; i++)
+        for (let i = 1, l = a.length; i < l; i++)
         {
-            var v = a[i];
-            for (var j = i - 1; j >= 0; j--)
+            const v = a[i];
+            for (let j = i - 1; j >= 0; j--)
             {
                 if (a[j].aabb.min.x <= v.aabb.min.x)
                 {
@@ -94,15 +99,17 @@ export class SAPBroadphase extends Broadphase
             }
             a[j + 1] = v;
         }
+
         return a;
     }
 
     static insertionSortY(a: Body[])
     {
-        for (var i = 1, l = a.length; i < l; i++)
+        for (let i = 1, l = a.length; i < l; i++)
         {
-            var v = a[i];
-            for (var j = i - 1; j >= 0; j--)
+            const v = a[i];
+            let j = i - 1;
+            for (; j >= 0; j--)
             {
                 if (a[j].aabb.min.y <= v.aabb.min.y)
                 {
@@ -112,15 +119,17 @@ export class SAPBroadphase extends Broadphase
             }
             a[j + 1] = v;
         }
+
         return a;
     }
 
     static insertionSortZ(a: Body[])
     {
-        for (var i = 1, l = a.length; i < l; i++)
+        for (let i = 1, l = a.length; i < l; i++)
         {
-            var v = a[i];
-            for (var j = i - 1; j >= 0; j--)
+            const v = a[i];
+            let j = i - 1;
+            for (; j >= 0; j--)
             {
                 if (a[j].aabb.min.z <= v.aabb.min.z)
                 {
@@ -130,21 +139,23 @@ export class SAPBroadphase extends Broadphase
             }
             a[j + 1] = v;
         }
+
         return a;
     }
 
     /**
      * Collect all collision pairs
-     * @param world
+     * @param _world
      * @param p1
      * @param p2
      */
-    collisionPairs(world: World, p1: Body[], p2: Body[])
+    collisionPairs(_world: World, p1: Body[], p2: Body[])
     {
-        var bodies = this.axisList,
-            N = bodies.length,
-            axisIndex = this.axisIndex,
-            i: number, j: number;
+        const bodies = this.axisList;
+        const N = bodies.length;
+        const axisIndex = this.axisIndex;
+        let i: number; let
+            j: number;
 
         if (this.dirty)
         {
@@ -155,11 +166,11 @@ export class SAPBroadphase extends Broadphase
         // Look through the list
         for (i = 0; i !== N; i++)
         {
-            var bi = bodies[i];
+            const bi = bodies[i];
 
             for (j = i + 1; j < N; j++)
             {
-                var bj = bodies[j];
+                const bj = bodies[j];
 
                 if (!this.needBroadphaseCollision(bi, bj))
                 {
@@ -178,14 +189,14 @@ export class SAPBroadphase extends Broadphase
 
     sortList()
     {
-        var axisList = this.axisList;
-        var axisIndex = this.axisIndex;
-        var N = axisList.length;
+        const axisList = this.axisList;
+        const axisIndex = this.axisIndex;
+        const N = axisList.length;
 
         // Update AABBs
-        for (var i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
-            var bi = axisList[i];
+            const bi = axisList[i];
             if (bi.aabbNeedsUpdate)
             {
                 bi.computeAABB();
@@ -196,10 +207,12 @@ export class SAPBroadphase extends Broadphase
         if (axisIndex === 0)
         {
             SAPBroadphase.insertionSortX(axisList);
-        } else if (axisIndex === 1)
+        }
+        else if (axisIndex === 1)
         {
             SAPBroadphase.insertionSortY(axisList);
-        } else if (axisIndex === 2)
+        }
+        else if (axisIndex === 2)
         {
             SAPBroadphase.insertionSortZ(axisList);
         }
@@ -213,29 +226,31 @@ export class SAPBroadphase extends Broadphase
      */
     static checkBounds(bi: Body, bj: Body, axisIndex: number)
     {
-        var biPos: number;
-        var bjPos: number;
+        let biPos: number;
+        let bjPos: number;
 
         if (axisIndex === 0)
         {
             biPos = bi.position.x;
             bjPos = bj.position.x;
-        } else if (axisIndex === 1)
+        }
+        else if (axisIndex === 1)
         {
             biPos = bi.position.y;
             bjPos = bj.position.y;
-        } else if (axisIndex === 2)
+        }
+        else if (axisIndex === 2)
         {
             biPos = bi.position.z;
             bjPos = bj.position.z;
         }
 
-        var ri = bi.boundingRadius,
-            rj = bj.boundingRadius,
-            boundA1 = biPos - ri,
-            boundA2 = biPos + ri,
-            boundB1 = bjPos - rj,
-            boundB2 = bjPos + rj;
+        const ri = bi.boundingRadius;
+        const rj = bj.boundingRadius;
+        const boundA1 = biPos - ri;
+        const boundA2 = biPos + ri;
+        const boundB1 = bjPos - rj;
+        const boundB2 = bjPos + rj;
 
         return boundB1 < boundA2;
     }
@@ -246,50 +261,53 @@ export class SAPBroadphase extends Broadphase
      */
     autoDetectAxis()
     {
-        var sumX = 0,
-            sumX2 = 0,
-            sumY = 0,
-            sumY2 = 0,
-            sumZ = 0,
-            sumZ2 = 0,
-            bodies = this.axisList,
-            N = bodies.length,
-            invN = 1 / N;
+        let sumX = 0;
+        let sumX2 = 0;
+        let sumY = 0;
+        let sumY2 = 0;
+        let sumZ = 0;
+        let sumZ2 = 0;
+        const bodies = this.axisList;
+        const N = bodies.length;
+        const invN = 1 / N;
 
-        for (var i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
-            var b = bodies[i];
+            const b = bodies[i];
 
-            var centerX = b.position.x;
+            const centerX = b.position.x;
             sumX += centerX;
             sumX2 += centerX * centerX;
 
-            var centerY = b.position.y;
+            const centerY = b.position.y;
             sumY += centerY;
             sumY2 += centerY * centerY;
 
-            var centerZ = b.position.z;
+            const centerZ = b.position.z;
             sumZ += centerZ;
             sumZ2 += centerZ * centerZ;
         }
 
-        var varianceX = sumX2 - sumX * sumX * invN,
-            varianceY = sumY2 - sumY * sumY * invN,
-            varianceZ = sumZ2 - sumZ * sumZ * invN;
+        const varianceX = sumX2 - sumX * sumX * invN;
+        const varianceY = sumY2 - sumY * sumY * invN;
+        const varianceZ = sumZ2 - sumZ * sumZ * invN;
 
         if (varianceX > varianceY)
         {
             if (varianceX > varianceZ)
             {
                 this.axisIndex = 0;
-            } else
+            }
+            else
             {
                 this.axisIndex = 2;
             }
-        } else if (varianceY > varianceZ)
+        }
+        else if (varianceY > varianceZ)
         {
             this.axisIndex = 1;
-        } else
+        }
+        else
         {
             this.axisIndex = 2;
         }
@@ -297,11 +315,11 @@ export class SAPBroadphase extends Broadphase
 
     /**
      * Returns all the bodies within an AABB.
-     * @param world
+     * @param _world
      * @param aabb
      * @param result An array to store resulting bodies in.
      */
-    aabbQuery(world: World, aabb: Box3, result: Body[])
+    aabbQuery(_world: World, aabb: Box3, result: Body[])
     {
         result = result || [];
 
@@ -311,16 +329,17 @@ export class SAPBroadphase extends Broadphase
             this.dirty = false;
         }
 
-        var axisIndex = this.axisIndex, axis = 'x';
+        const axisIndex = this.axisIndex; let
+            axis = 'x';
         if (axisIndex === 1) { axis = 'y'; }
         if (axisIndex === 2) { axis = 'z'; }
 
-        var axisList = this.axisList;
-        var lower = aabb.min[axis];
-        var upper = aabb.max[axis];
-        for (var i = 0; i < axisList.length; i++)
+        const axisList = this.axisList;
+        // const lower = aabb.min[axis];
+        // const upper = aabb.max[axis];
+        for (let i = 0; i < axisList.length; i++)
         {
-            var b = axisList[i];
+            const b = axisList[i];
 
             if (b.aabbNeedsUpdate)
             {

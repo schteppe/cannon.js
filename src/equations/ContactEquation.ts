@@ -1,6 +1,9 @@
+import { Vector3 } from '@feng3d/math';
+import { Shape } from '../shapes/Shape';
+import { Equation } from './Equation';
+
 export class ContactEquation extends Equation
 {
-
     restitution: number; // "bounciness": u1 = -e*u0
 
     /**
@@ -23,10 +26,10 @@ export class ContactEquation extends Equation
 
     /**
      * Contact/non-penetration constraint equation
-     * 
+     *
      * @param bodyA
      * @param bodyB
-     * 
+     *
      * @author schteppe
      */
     constructor(bodyA: Body, bodyB: Body, maxForce?: number)
@@ -41,31 +44,31 @@ export class ContactEquation extends Equation
 
     computeB(h: number)
     {
-        var a = this.a,
-            b = this.b,
-            bi = this.bi,
-            bj = this.bj,
-            ri = this.ri,
-            rj = this.rj,
-            rixn = ContactEquation_computeB_temp1,
-            rjxn = ContactEquation_computeB_temp2,
+        const a = this.a;
+        const b = this.b;
+        const bi = this.bi;
+        const bj = this.bj;
+        const ri = this.ri;
+        const rj = this.rj;
+        const rixn = ContactEquationComputeBTemp1;
+        const rjxn = ContactEquationComputeBTemp2;
 
-            vi = bi.velocity,
-            wi = bi.angularVelocity,
-            fi = bi.force,
-            taui = bi.torque,
+        const vi = bi.velocity;
+        const wi = bi.angularVelocity;
+        // const fi = bi.force;
+        // const taui = bi.torque;
 
-            vj = bj.velocity,
-            wj = bj.angularVelocity,
-            fj = bj.force,
-            tauj = bj.torque,
+        const vj = bj.velocity;
+        const wj = bj.angularVelocity;
+        // const fj = bj.force;
+        // const tauj = bj.torque;
 
-            penetrationVec = ContactEquation_computeB_temp3,
+        const penetrationVec = ContactEquationComputeBTemp3;
 
-            GA = this.jacobianElementA,
-            GB = this.jacobianElementB,
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
 
-            n = this.ni;
+        const n = this.ni;
 
         // Caluclate cross products
         ri.crossTo(n, rixn);
@@ -84,14 +87,14 @@ export class ContactEquation extends Equation
         penetrationVec.subTo(bi.position, penetrationVec);
         penetrationVec.subTo(ri, penetrationVec);
 
-        var g = n.dot(penetrationVec);
+        const g = n.dot(penetrationVec);
 
         // Compute iteration
-        var ePlusOne = this.restitution + 1;
-        var GW = ePlusOne * vj.dot(n) - ePlusOne * vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
-        var GiMf = this.computeGiMf();
+        const ePlusOne = this.restitution + 1;
+        const GW = ePlusOne * vj.dot(n) - ePlusOne * vi.dot(n) + wj.dot(rjxn) - wi.dot(rixn);
+        const GiMf = this.computeGiMf();
 
-        var B = - g * a - GW * b - h * GiMf;
+        const B = -g * a - GW * b - h * GiMf;
 
         return B;
     }
@@ -101,11 +104,11 @@ export class ContactEquation extends Equation
      */
     getImpactVelocityAlongNormal()
     {
-        var vi = ContactEquation_getImpactVelocityAlongNormal_vi;
-        var vj = ContactEquation_getImpactVelocityAlongNormal_vj;
-        var xi = ContactEquation_getImpactVelocityAlongNormal_xi;
-        var xj = ContactEquation_getImpactVelocityAlongNormal_xj;
-        var relVel = ContactEquation_getImpactVelocityAlongNormal_relVel;
+        const vi = ContactEquationGetImpactVelocityAlongNormalVi;
+        const vj = ContactEquationGetImpactVelocityAlongNormalVj;
+        const xi = ContactEquationGetImpactVelocityAlongNormalXi;
+        const xj = ContactEquationGetImpactVelocityAlongNormalXj;
+        const relVel = ContactEquationGetImpactVelocityAlongNormalRelVel;
 
         this.bi.position.addTo(this.ri, xi);
         this.bj.position.addTo(this.rj, xj);
@@ -117,16 +120,14 @@ export class ContactEquation extends Equation
 
         return this.ni.dot(relVel);
     }
-
 }
 
-var ContactEquation_computeB_temp1 = new Vector3(); // Temp vectors
-var ContactEquation_computeB_temp2 = new Vector3();
-var ContactEquation_computeB_temp3 = new Vector3();
+const ContactEquationComputeBTemp1 = new Vector3(); // Temp vectors
+const ContactEquationComputeBTemp2 = new Vector3();
+const ContactEquationComputeBTemp3 = new Vector3();
 
-
-var ContactEquation_getImpactVelocityAlongNormal_vi = new Vector3();
-var ContactEquation_getImpactVelocityAlongNormal_vj = new Vector3();
-var ContactEquation_getImpactVelocityAlongNormal_xi = new Vector3();
-var ContactEquation_getImpactVelocityAlongNormal_xj = new Vector3();
-var ContactEquation_getImpactVelocityAlongNormal_relVel = new Vector3();
+const ContactEquationGetImpactVelocityAlongNormalVi = new Vector3();
+const ContactEquationGetImpactVelocityAlongNormalVj = new Vector3();
+const ContactEquationGetImpactVelocityAlongNormalXi = new Vector3();
+const ContactEquationGetImpactVelocityAlongNormalXj = new Vector3();
+const ContactEquationGetImpactVelocityAlongNormalRelVel = new Vector3();

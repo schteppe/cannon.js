@@ -1,6 +1,9 @@
+import { Box3 } from '@feng3d/math';
+import { World } from '../world/World';
+import { Broadphase } from './Broadphase';
+
 export class NaiveBroadphase extends Broadphase
 {
-
     /**
      * Naive broadphase implementation, used in lack of better ones.
      * @description The naive broadphase looks at all possible pairs without restriction, therefore it has complexity N^2 (which is bad)
@@ -18,16 +21,16 @@ export class NaiveBroadphase extends Broadphase
      */
     collisionPairs(world: World, pairs1: Body[], pairs2: Body[])
     {
-        var bodies = world.bodies,
-            n = bodies.length,
-            i: number, j: number, bi: Body, bj: Body;
+        const bodies = world.bodies;
+        const n = bodies.length;
+        let i: number; let j: number; let bi: Body;
+        let bj: Body;
 
         // Naive N^2 ftw!
         for (i = 0; i !== n; i++)
         {
             for (j = 0; j !== i; j++)
             {
-
                 bi = bodies[i];
                 bj = bodies[j];
 
@@ -51,9 +54,9 @@ export class NaiveBroadphase extends Broadphase
     {
         result = result || [];
 
-        for (var i = 0; i < world.bodies.length; i++)
+        for (let i = 0; i < world.bodies.length; i++)
         {
-            var b = world.bodies[i];
+            const b = world.bodies[i];
 
             if (b.aabbNeedsUpdate)
             {
@@ -71,4 +74,4 @@ export class NaiveBroadphase extends Broadphase
     }
 }
 
-var tmpAABB = new Box3();
+// const tmpAABB = new Box3();

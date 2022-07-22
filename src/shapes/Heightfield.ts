@@ -1,3 +1,8 @@
+import { Box3, Quaternion, Vector3 } from '@feng3d/math';
+import { Utils } from '../utils/Utils';
+import { ConvexPolyhedron } from './ConvexPolyhedron';
+import { Shape } from './Shape';
+
 export class Heightfield extends Shape
 {
     /**
@@ -25,7 +30,7 @@ export class Heightfield extends Shape
 
     /**
      * Heightfield shape class. Height data is given as an array. These data points are spread out evenly with a given distance.
-     * 
+     *
      * @param data An array of Y values that will be used to construct the terrain.
      * @param options
      * @param options.minValue] Minimum value of the data points in the data array. Will be computed automatically if not given.
@@ -36,24 +41,24 @@ export class Heightfield extends Shape
      *
      * @example
      *     // Generate some height data (y-values).
-     *     var data = [];
-     *     for(var i = 0; i < 1000; i++){
-     *         var y = 0.5 * Math.cos(0.2 * i);
+     *     let data = [];
+     *     for(let i = 0; i < 1000; i++){
+     *         let y = 0.5 * Math.cos(0.2 * i);
      *         data.push(y);
      *     }
      *
      *     // Create the heightfield shape
-     *     var heightfieldShape = new Heightfield(data, {
+     *     let heightfieldShape = new Heightfield(data, {
      *         elementSize: 1 // Distance between the data points in X and Y directions
      *     });
-     *     var heightfieldBody = new Body();
+     *     let heightfieldBody = new Body();
      *     heightfieldBody.addShape(heightfieldShape);
      *     world.addBody(heightfieldBody);
      */
     /**
-     * 
-     * @param data 
-     * @param options 
+     *
+     * @param data
+     * @param options
      */
     constructor(data: number[][], options: { maxValue?: number, minValue?: number, elementSize?: number } = {})
     {
@@ -111,13 +116,13 @@ export class Heightfield extends Shape
      */
     updateMinValue()
     {
-        var data = this.data;
-        var minValue = data[0][0];
-        for (var i = 0; i !== data.length; i++)
+        const data = this.data;
+        let minValue = data[0][0];
+        for (let i = 0; i !== data.length; i++)
         {
-            for (var j = 0; j !== data[i].length; j++)
+            for (let j = 0; j !== data[i].length; j++)
             {
-                var v = data[i][j];
+                const v = data[i][j];
                 if (v < minValue)
                 {
                     minValue = v;
@@ -132,13 +137,13 @@ export class Heightfield extends Shape
      */
     updateMaxValue()
     {
-        var data = this.data;
-        var maxValue = data[0][0];
-        for (var i = 0; i !== data.length; i++)
+        const data = this.data;
+        let maxValue = data[0][0];
+        for (let i = 0; i !== data.length; i++)
         {
-            for (var j = 0; j !== data[i].length; j++)
+            for (let j = 0; j !== data[i].length; j++)
             {
-                var v = data[i][j];
+                const v = data[i][j];
                 if (v > maxValue)
                 {
                     maxValue = v;
@@ -150,14 +155,14 @@ export class Heightfield extends Shape
 
     /**
      * Set the height value at an index. Don't forget to update maxValue and minValue after you're done.
-     * 
+     *
      * @param xi
      * @param yi
      * @param value
      */
     setHeightValueAtIndex(xi: number, yi: number, value: number)
     {
-        var data = this.data;
+        const data = this.data;
         data[xi][yi] = value;
 
         // Invalidate cache
@@ -180,7 +185,7 @@ export class Heightfield extends Shape
 
     /**
      * Get max/min in a rectangle in the matrix data
-     * 
+     *
      * @param iMinX
      * @param iMinY
      * @param iMaxX
@@ -193,13 +198,13 @@ export class Heightfield extends Shape
         result = result || [];
 
         // Get max and min of the data
-        var data = this.data,
-            max = this.minValue; // Set first value
-        for (var i = iMinX; i <= iMaxX; i++)
+        const data = this.data;
+        let max = this.minValue; // Set first value
+        for (let i = iMinX; i <= iMaxX; i++)
         {
-            for (var j = iMinY; j <= iMaxY; j++)
+            for (let j = iMinY; j <= iMaxY; j++)
             {
-                var height = data[i][j];
+                const height = data[i][j];
                 if (height > max)
                 {
                     max = height;
@@ -213,7 +218,7 @@ export class Heightfield extends Shape
 
     /**
      * Get the index of a local position on the heightfield. The indexes indicate the rectangles, so if your terrain is made of N x N height data points, you will have rectangle indexes ranging from 0 to N-1.
-     * 
+     *
      * @param x
      * @param y
      * @param result Two-element array
@@ -222,10 +227,10 @@ export class Heightfield extends Shape
     getIndexOfPosition(x: number, y: number, result: number[], clamp?: boolean)
     {
         // Get the index of the data points to test against
-        var w = this.elementSize;
-        var data = this.data;
-        var xi = Math.floor(x / w);
-        var yi = Math.floor(y / w);
+        const w = this.elementSize;
+        const data = this.data;
+        let xi = Math.floor(x / w);
+        let yi = Math.floor(y / w);
 
         result[0] = xi;
         result[1] = yi;
@@ -250,33 +255,34 @@ export class Heightfield extends Shape
 
     getTriangleAt(x: number, y: number, edgeClamp: boolean, a: Vector3, b: Vector3, c: Vector3)
     {
-        var idx = getHeightAt_idx;
+        const idx = getHeightAtIdx;
         this.getIndexOfPosition(x, y, idx, edgeClamp);
-        var xi = idx[0];
-        var yi = idx[1];
+        let xi = idx[0];
+        let yi = idx[1];
 
-        var data = this.data;
+        const data = this.data;
         if (edgeClamp)
         {
             xi = Math.min(data.length - 2, Math.max(0, xi));
             yi = Math.min(data[0].length - 2, Math.max(0, yi));
         }
 
-        var elementSize = this.elementSize;
-        var lowerDist2 = Math.pow(x / elementSize - xi, 2) + Math.pow(y / elementSize - yi, 2);
-        var upperDist2 = Math.pow(x / elementSize - (xi + 1), 2) + Math.pow(y / elementSize - (yi + 1), 2);
-        var upper = lowerDist2 > upperDist2;
+        const elementSize = this.elementSize;
+        const lowerDist2 = Math.pow(x / elementSize - xi, 2) + Math.pow(y / elementSize - yi, 2);
+        const upperDist2 = Math.pow(x / elementSize - (xi + 1), 2) + Math.pow(y / elementSize - (yi + 1), 2);
+        const upper = lowerDist2 > upperDist2;
         this.getTriangle(xi, yi, upper, a, b, c);
+
         return upper;
     }
 
     getNormalAt(x: number, y: number, edgeClamp: boolean, result: Vector3)
     {
-        var a = getNormalAt_a;
-        var b = getNormalAt_b;
-        var c = getNormalAt_c;
-        var e0 = getNormalAt_e0;
-        var e1 = getNormalAt_e1;
+        const a = getNormalAtA;
+        const b = getNormalAtB;
+        const c = getNormalAtC;
+        const e0 = getNormalAtE0;
+        const e1 = getNormalAtE1;
         this.getTriangleAt(x, y, edgeClamp, a, b, c);
         b.subTo(a, e0);
         c.subTo(a, e1);
@@ -286,15 +292,15 @@ export class Heightfield extends Shape
 
     /**
      * Get an AABB of a square in the heightfield
-     * 
+     *
      * @param xi
      * @param yi
      * @param result
      */
     getAabbAtIndex(xi: number, yi: number, result: Box3)
     {
-        var data = this.data;
-        var elementSize = this.elementSize;
+        const data = this.data;
+        const elementSize = this.elementSize;
 
         result.min.set(
             xi * elementSize,
@@ -310,49 +316,45 @@ export class Heightfield extends Shape
 
     /**
      * Get the height in the heightfield at a given position
-     * 
+     *
      * @param x
      * @param y
      * @param edgeClamp
      */
     getHeightAt(x: number, y: number, edgeClamp?: boolean)
     {
-        var data = this.data;
-        var a = getHeightAt_a;
-        var b = getHeightAt_b;
-        var c = getHeightAt_c;
-        var idx = getHeightAt_idx;
+        const data = this.data;
+        const a = getHeightAtA;
+        const b = getHeightAtB;
+        const c = getHeightAtC;
+        const idx = getHeightAtIdx;
 
         this.getIndexOfPosition(x, y, idx, edgeClamp);
-        var xi = idx[0];
-        var yi = idx[1];
+        let xi = idx[0];
+        let yi = idx[1];
         if (edgeClamp)
         {
             xi = Math.min(data.length - 2, Math.max(0, xi));
             yi = Math.min(data[0].length - 2, Math.max(0, yi));
         }
-        var upper = this.getTriangleAt(x, y, edgeClamp, a, b, c);
-        barycentricWeights(x, y, a.x, a.y, b.x, b.y, c.x, c.y, getHeightAt_weights);
+        const upper = this.getTriangleAt(x, y, edgeClamp, a, b, c);
+        barycentricWeights(x, y, a.x, a.y, b.x, b.y, c.x, c.y, getHeightAtWeights);
 
-        var w = getHeightAt_weights;
+        const w = getHeightAtWeights;
 
         if (upper)
         {
-
             // Top triangle verts
             return data[xi + 1][yi + 1] * w.x + data[xi][yi + 1] * w.y + data[xi + 1][yi] * w.z;
-
-        } else
-        {
-
-            // Top triangle verts
-            return data[xi][yi] * w.x + data[xi + 1][yi] * w.y + data[xi][yi + 1] * w.z;
         }
+
+        // Top triangle verts
+        return data[xi][yi] * w.x + data[xi + 1][yi] * w.y + data[xi][yi + 1] * w.z;
     }
 
     getCacheConvexTrianglePillarKey(xi: number, yi: number, getUpperTriangle: boolean)
     {
-        return xi + '_' + yi + '_' + (getUpperTriangle ? 1 : 0);
+        return `${xi}_${yi}_${getUpperTriangle ? 1 : 0}`;
     }
 
     getCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean)
@@ -363,8 +365,8 @@ export class Heightfield extends Shape
     setCachedConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean, convex: ConvexPolyhedron, offset: Vector3)
     {
         this._cachedPillars[this.getCacheConvexTrianglePillarKey(xi, yi, getUpperTriangle)] = {
-            convex: convex,
-            offset: offset
+            convex,
+            offset
         };
     }
 
@@ -375,7 +377,7 @@ export class Heightfield extends Shape
 
     /**
      * Get a triangle from the heightfield
-     * 
+     *
      * @param xi
      * @param yi
      * @param upper
@@ -385,12 +387,11 @@ export class Heightfield extends Shape
      */
     getTriangle(xi: number, yi: number, upper: boolean, a: Vector3, b: Vector3, c: Vector3)
     {
-        var data = this.data;
-        var elementSize = this.elementSize;
+        const data = this.data;
+        const elementSize = this.elementSize;
 
         if (upper)
         {
-
             // Top triangle verts
             a.set(
                 (xi + 1) * elementSize,
@@ -407,10 +408,9 @@ export class Heightfield extends Shape
                 yi * elementSize,
                 data[xi + 1][yi]
             );
-
-        } else
+        }
+        else
         {
-
             // Top triangle verts
             a.set(
                 xi * elementSize,
@@ -428,27 +428,28 @@ export class Heightfield extends Shape
                 data[xi][yi + 1]
             );
         }
-    };
+    }
 
     /**
      * Get a triangle in the terrain in the form of a triangular convex shape.
-     * 
+     *
      * @param i
      * @param j
      * @param getUpperTriangle
      */
     getConvexTrianglePillar(xi: number, yi: number, getUpperTriangle: boolean)
     {
-        var result = this.pillarConvex;
-        var offsetResult = this.pillarOffset;
+        let result = this.pillarConvex;
+        let offsetResult = this.pillarOffset;
 
         if (this.cacheEnabled)
         {
-            var data0 = this.getCachedConvexTrianglePillar(xi, yi, getUpperTriangle);
+            const data0 = this.getCachedConvexTrianglePillar(xi, yi, getUpperTriangle);
             if (data0)
             {
                 this.pillarConvex = data0.convex;
                 this.pillarOffset = data0.offset;
+
                 return;
             }
 
@@ -459,13 +460,13 @@ export class Heightfield extends Shape
             this.pillarOffset = offsetResult;
         }
 
-        var data = this.data;
-        var elementSize = this.elementSize;
-        var faces = result.faces;
+        const data = this.data;
+        const elementSize = this.elementSize;
+        const faces = result.faces;
 
         // Reuse verts if possible
         result.vertices.length = 6;
-        for (var i = 0; i < 6; i++)
+        for (let i = 0; i < 6; i++)
         {
             if (!result.vertices[i])
             {
@@ -475,7 +476,7 @@ export class Heightfield extends Shape
 
         // Reuse faces if possible
         faces.length = 5;
-        for (var i = 0; i < 5; i++)
+        for (let i = 0; i < 5; i++)
         {
             if (!faces[i])
             {
@@ -483,9 +484,9 @@ export class Heightfield extends Shape
             }
         }
 
-        var verts = result.vertices;
+        const verts = result.vertices;
 
-        var h = (Math.min(
+        const h = (Math.min(
             data[xi][yi],
             data[xi + 1][yi],
             data[xi][yi + 1],
@@ -494,7 +495,6 @@ export class Heightfield extends Shape
 
         if (!getUpperTriangle)
         {
-
             // Center of the triangle pillar - all polygons are given relative to this one
             offsetResult.set(
                 (xi + 0.25) * elementSize, // sort of center of a triangle
@@ -563,11 +563,9 @@ export class Heightfield extends Shape
             faces[4][1] = 5;
             faces[4][2] = 2;
             faces[4][3] = 1;
-
-
-        } else
+        }
+        else
         {
-
             // Center of the triangle pillar - all polygons are given relative to this one
             offsetResult.set(
                 (xi + 0.75) * elementSize, // sort of center of a triangle
@@ -596,17 +594,17 @@ export class Heightfield extends Shape
             verts[3].set(
                 0.25 * elementSize,
                 0.25 * elementSize,
-                - h - 1
+                -h - 1
             );
             verts[4].set(
                 -0.75 * elementSize,
                 0.25 * elementSize,
-                - h - 1
+                -h - 1
             );
             verts[5].set(
                 0.25 * elementSize,
                 -0.75 * elementSize,
-                - h - 1
+                -h - 1
             );
 
             // Top triangle
@@ -643,11 +641,12 @@ export class Heightfield extends Shape
         result.updateBoundingSphereRadius();
 
         this.setCachedConvexTrianglePillar(xi, yi, getUpperTriangle, result, offsetResult);
-    };
+    }
 
     calculateLocalInertia(mass: number, target = new Vector3())
     {
         target.set(0, 0, 0);
+
         return target;
     }
 
@@ -666,42 +665,43 @@ export class Heightfield extends Shape
     updateBoundingSphereRadius()
     {
         // Use the bounding box of the min/max values
-        var data = this.data,
-            s = this.elementSize;
+        const data = this.data;
+        const s = this.elementSize;
         this.boundingSphereRadius = new Vector3(data.length * s, data[0].length * s, Math.max(Math.abs(this.maxValue), Math.abs(this.minValue))).length;
     }
 
     /**
      * Sets the height values from an image. Currently only supported in browser.
-     * 
+     *
      * @param image
      * @param scale
      */
     setHeightsFromImage(image: HTMLImageElement, scale: Vector3)
     {
-        var canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas');
         canvas.width = image.width;
         canvas.height = image.height;
-        var context = canvas.getContext('2d');
+        const context = canvas.getContext('2d');
         context.drawImage(image, 0, 0);
-        var imageData = context.getImageData(0, 0, image.width, image.height);
+        const imageData = context.getImageData(0, 0, image.width, image.height);
 
-        var matrix = this.data;
+        const matrix = this.data;
         matrix.length = 0;
         this.elementSize = Math.abs(scale.x) / imageData.width;
-        for (var i = 0; i < imageData.height; i++)
+        for (let i = 0; i < imageData.height; i++)
         {
-            var row = [];
-            for (var j = 0; j < imageData.width; j++)
+            const row = [];
+            for (let j = 0; j < imageData.width; j++)
             {
-                var a = imageData.data[(i * imageData.height + j) * 4];
-                var b = imageData.data[(i * imageData.height + j) * 4 + 1];
-                var c = imageData.data[(i * imageData.height + j) * 4 + 2];
-                var height = (a + b + c) / 4 / 255 * scale.z;
+                const a = imageData.data[(i * imageData.height + j) * 4];
+                const b = imageData.data[(i * imageData.height + j) * 4 + 1];
+                const c = imageData.data[(i * imageData.height + j) * 4 + 2];
+                const height = (a + b + c) / 4 / 255 * scale.z;
                 if (scale.x < 0)
                 {
                     row.push(height);
-                } else
+                }
+                else
                 {
                     row.unshift(height);
                 }
@@ -709,7 +709,8 @@ export class Heightfield extends Shape
             if (scale.y < 0)
             {
                 matrix.unshift(row);
-            } else
+            }
+            else
             {
                 matrix.push(row);
             }
@@ -720,22 +721,20 @@ export class Heightfield extends Shape
     }
 }
 
-var getHeightAt_idx = [];
-var getHeightAt_weights = new Vector3();
-var getHeightAt_a = new Vector3();
-var getHeightAt_b = new Vector3();
-var getHeightAt_c = new Vector3();
+const getHeightAtIdx = [];
+const getHeightAtWeights = new Vector3();
+const getHeightAtA = new Vector3();
+const getHeightAtB = new Vector3();
+const getHeightAtC = new Vector3();
 
-
-var getNormalAt_a = new Vector3();
-var getNormalAt_b = new Vector3();
-var getNormalAt_c = new Vector3();
-var getNormalAt_e0 = new Vector3();
-var getNormalAt_e1 = new Vector3();
-
+const getNormalAtA = new Vector3();
+const getNormalAtB = new Vector3();
+const getNormalAtC = new Vector3();
+const getNormalAtE0 = new Vector3();
+const getNormalAtE1 = new Vector3();
 
 // from https://en.wikipedia.org/wiki/Barycentric_coordinate_system
-function barycentricWeights(x, y, ax, ay, bx, by, cx, cy, result)
+function barycentricWeights(x: number, y: number, ax: number, ay: number, bx: number, by: number, cx: number, cy: number, result: Vector3)
 {
     result.x = ((by - cy) * (x - cx) + (cx - bx) * (y - cy)) / ((by - cy) * (ax - cx) + (cx - bx) * (ay - cy));
     result.y = ((cy - ay) * (x - cx) + (ax - cx) * (y - cy)) / ((by - cy) * (ax - cx) + (cx - bx) * (ay - cy));

@@ -1,6 +1,5 @@
 export class Utils
 {
-
     /**
      * Extend an options object with default values.
      * @param  options The options object. May be falsy: in this case, a new object is created and returned.
@@ -10,7 +9,7 @@ export class Utils
     static defaults(options: Object, defaults: Object)
     {
         options = options || {};
-        for (var key in defaults)
+        for (const key in defaults)
         {
             if (!(key in options))
             {

@@ -1,3 +1,8 @@
+import { Vector3 } from '@feng3d/math';
+import { ConeEquation } from '../equations/ConeEquation';
+import { RotationalEquation } from '../equations/RotationalEquation';
+import { PointToPointConstraint } from './PointToPointConstraint';
+
 export class ConeTwistConstraint extends PointToPointConstraint
 {
     axisA: Vector3;
@@ -9,11 +14,11 @@ export class ConeTwistConstraint extends PointToPointConstraint
 
     /**
      * @class ConeTwistConstraint
-     * 
-     * @param bodyA 
-     * @param bodyB 
-     * @param options 
-     * 
+     *
+     * @param bodyA
+     * @param bodyB
+     * @param options
+     *
      * @author schteppe
      */
     constructor(bodyA: Body, bodyB: Body, options: {
@@ -27,7 +32,7 @@ export class ConeTwistConstraint extends PointToPointConstraint
         this.axisA = options.axisA ? options.axisA.clone() : new Vector3();
         this.axisB = options.axisB ? options.axisB.clone() : new Vector3();
 
-        var maxForce = typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6;
+        const maxForce = typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6;
 
         this.collideConnected = !!options.collideConnected;
 
@@ -36,12 +41,12 @@ export class ConeTwistConstraint extends PointToPointConstraint
         /**
          * @property {ConeEquation} coneEquation
          */
-        var c = this.coneEquation = new ConeEquation(bodyA, bodyB, options);
+        const c = this.coneEquation = new ConeEquation(bodyA, bodyB, options);
 
         /**
          * @property {RotationalEquation} twistEquation
          */
-        var t = this.twistEquation = new RotationalEquation(bodyA, bodyB, options);
+        const t = this.twistEquation = new RotationalEquation(bodyA, bodyB, options);
         this.twistAngle = typeof (options.twistAngle) !== 'undefined' ? options.twistAngle : 0;
 
         // Make the cone equation push the bodies toward the cone axis, not outward
@@ -57,10 +62,10 @@ export class ConeTwistConstraint extends PointToPointConstraint
 
     update()
     {
-        var bodyA = this.bodyA,
-            bodyB = this.bodyB,
-            cone = this.coneEquation,
-            twist = this.twistEquation;
+        const bodyA = this.bodyA;
+        const bodyB = this.bodyB;
+        const cone = this.coneEquation;
+        const twist = this.twistEquation;
 
         super.update();
 
@@ -78,9 +83,8 @@ export class ConeTwistConstraint extends PointToPointConstraint
         cone.angle = this.angle;
         twist.maxAngle = this.twistAngle;
     }
-
 }
 
-var ConeTwistConstraint_update_tmpVec1 = new Vector3();
-var ConeTwistConstraint_update_tmpVec2 = new Vector3();
+// var ConeTwistConstraint_update_tmpVec1 = new Vector3();
+// var ConeTwistConstraint_update_tmpVec2 = new Vector3();
 

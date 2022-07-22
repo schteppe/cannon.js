@@ -1,3 +1,7 @@
+import { Vector3 } from '@feng3d/math';
+import { ContactEquation } from '../equations/ContactEquation';
+import { Constraint } from './Constraint';
+
 export class PointToPointConstraint extends Constraint
 {
     /**
@@ -14,7 +18,7 @@ export class PointToPointConstraint extends Constraint
 
     /**
      * Connects two bodies at given offset points.
-     * 
+     *
      * @param bodyA
      * @param pivotA The point relative to the center of mass of bodyA which bodyA is constrained to.
      * @param bodyB Body that will be constrained in a similar way to the same point as bodyA. We will therefore get a link between bodyA and bodyB. If not specified, bodyA will be constrained to a static point.
@@ -45,11 +49,11 @@ export class PointToPointConstraint extends Constraint
 
         this.pivotB = pivotB ? pivotB.clone() : new Vector3();
 
-        var x = this.equationX = new ContactEquation(bodyA, bodyB);
+        const x = this.equationX = new ContactEquation(bodyA, bodyB);
 
-        var y = this.equationY = new ContactEquation(bodyA, bodyB);
+        const y = this.equationY = new ContactEquation(bodyA, bodyB);
 
-        var z = this.equationZ = new ContactEquation(bodyA, bodyB);
+        const z = this.equationZ = new ContactEquation(bodyA, bodyB);
 
         // Equations to be fed to the solver
         this.equations.push(x, y, z);
@@ -65,11 +69,11 @@ export class PointToPointConstraint extends Constraint
 
     update()
     {
-        var bodyA = this.bodyA;
-        var bodyB = this.bodyB;
-        var x = this.equationX;
-        var y = this.equationY;
-        var z = this.equationZ;
+        const bodyA = this.bodyA;
+        const bodyB = this.bodyB;
+        const x = this.equationX;
+        const y = this.equationY;
+        const z = this.equationZ;
 
         // Rotate the pivots to world space
         bodyA.quaternion.vmult(this.pivotA, x.ri);

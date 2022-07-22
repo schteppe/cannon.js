@@ -1,3 +1,6 @@
+import { Vector3 } from '@feng3d/math';
+import { Equation } from './Equation';
+
 export class FrictionEquation extends Equation
 {
     ri: Vector3;
@@ -24,15 +27,15 @@ export class FrictionEquation extends Equation
 
     computeB(h: number)
     {
-        var a = this.a,
-            b = this.b,
-            bi = this.bi,
-            bj = this.bj,
-            ri = this.ri,
-            rj = this.rj,
-            rixt = FrictionEquation_computeB_temp1,
-            rjxt = FrictionEquation_computeB_temp2,
-            t = this.t;
+        // const a = this.a;
+        const b = this.b;
+        // const bi = this.bi;
+        // const bj = this.bj;
+        const ri = this.ri;
+        const rj = this.rj;
+        const rixt = FrictionEquationComputeBTemp1;
+        const rjxt = FrictionEquationComputeBTemp2;
+        const t = this.t;
 
         // Caluclate cross products
         ri.crossTo(t, rixt);
@@ -40,21 +43,21 @@ export class FrictionEquation extends Equation
 
         // G = [-t -rixt t rjxt]
         // And remember, this is a pure velocity constraint, g is always zero!
-        var GA = this.jacobianElementA,
-            GB = this.jacobianElementB;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
         t.negateTo(GA.spatial);
         rixt.negateTo(GA.rotational);
         GB.spatial.copy(t);
         GB.rotational.copy(rjxt);
 
-        var GW = this.computeGW();
-        var GiMf = this.computeGiMf();
+        const GW = this.computeGW();
+        const GiMf = this.computeGiMf();
 
-        var B = - GW * b - h * GiMf;
+        const B = -GW * b - h * GiMf;
 
         return B;
     }
 }
 
-var FrictionEquation_computeB_temp1 = new Vector3();
-var FrictionEquation_computeB_temp2 = new Vector3();
+const FrictionEquationComputeBTemp1 = new Vector3();
+const FrictionEquationComputeBTemp2 = new Vector3();

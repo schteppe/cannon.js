@@ -1,6 +1,8 @@
+import { Vector3 } from '@feng3d/math';
+import { Equation } from './Equation';
+
 export class RotationalMotorEquation extends Equation
 {
-
     /**
      * World oriented rotational axis
      */
@@ -18,11 +20,11 @@ export class RotationalMotorEquation extends Equation
 
     /**
      * Rotational motor constraint. Tries to keep the relative angular velocity of the bodies to a given value.
-     * 
-     * @param bodyA 
-     * @param bodyB 
-     * @param maxForce 
-     * 
+     *
+     * @param bodyA
+     * @param bodyB
+     * @param maxForce
+     *
      * @author schteppe
      */
     constructor(bodyA: Body, bodyB: Body, maxForce: number)
@@ -36,16 +38,16 @@ export class RotationalMotorEquation extends Equation
 
     computeB(h: number)
     {
-        var a = this.a,
-            b = this.b,
-            bi = this.bi,
-            bj = this.bj,
+        // const a = this.a;
+        const b = this.b;
+        // const bi = this.bi;
+        // const bj = this.bj;
 
-            axisA = this.axisA,
-            axisB = this.axisB,
+        const axisA = this.axisA;
+        const axisB = this.axisB;
 
-            GA = this.jacobianElementA,
-            GB = this.jacobianElementB;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
 
         // g = 0
         // gdot = axisA * wi - axisB * wj
@@ -56,10 +58,10 @@ export class RotationalMotorEquation extends Equation
         GA.rotational.copy(axisA);
         axisB.negateTo(GB.rotational);
 
-        var GW = this.computeGW() - this.targetVelocity,
-            GiMf = this.computeGiMf();
+        const GW = this.computeGW() - this.targetVelocity;
+        const GiMf = this.computeGiMf();
 
-        var B = - GW * b - h * GiMf;
+        const B = -GW * b - h * GiMf;
 
         return B;
     }

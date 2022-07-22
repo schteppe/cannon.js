@@ -1,3 +1,22 @@
+import { EventEmitter } from '@feng3d/event';
+import { Vector3 } from '@feng3d/math';
+import { Broadphase } from '../collision/Broadphase';
+import { NaiveBroadphase } from '../collision/NaiveBroadphase';
+import { OverlapKeeper } from '../collision/OverlapKeeper';
+import { Ray } from '../collision/Ray';
+import { RaycastResult } from '../collision/RaycastResult';
+import { Constraint } from '../constraints/Constraint';
+import { ContactEquation } from '../equations/ContactEquation';
+import { FrictionEquation } from '../equations/FrictionEquation';
+import { ContactMaterial } from '../material/ContactMaterial';
+import { Material } from '../material/Material';
+import { Body } from '../objects/Body';
+import { SPHSystem } from '../objects/SPHSystem';
+import { Shape } from '../shapes/Shape';
+import { GSSolver } from '../solver/GSSolver';
+import { Solver } from '../solver/Solver';
+import { Narrowphase } from './Narrowphase';
+
 export interface WorldEventMap
 {
     addBody: Body
@@ -18,7 +37,7 @@ export interface WorldEventMap
 
 }
 
-export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.EventEmitter<T>
+export class World<T extends WorldEventMap = WorldEventMap> extends EventEmitter<T>
 {
     static worldNormal = new Vector3(0, 0, 1);
 
@@ -58,7 +77,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
      */
     stepnumber: number;
 
-    /// Default and last timestep sizes
+    // / Default and last timestep sizes
     default_dt: number;
 
     nextId: number;
@@ -130,7 +149,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
 
     /**
      * The physics world
-     * @param options 
+     * @param options
      */
     constructor(options: { gravity?: Vector3, allowSleep?: boolean, broadphase?: Broadphase, solver?: Solver, quatNormalizeFast?: boolean, quatNormalizeSkip?: number } = {})
     {
@@ -165,7 +184,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         this.contactmaterials = [];
         this.contactMaterialTable = {};
 
-        this.defaultMaterial = new Material("default");
+        this.defaultMaterial = new Material('default');
         this.defaultContactMaterial = new ContactMaterial(this.defaultMaterial, this.defaultMaterial, { friction: 0.3, restitution: 0.0 });
         this.doProfiling = false;
         this.profile = {
@@ -191,7 +210,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
      */
     getContactMaterial(m1: Material, m2: Material)
     {
-        return this.contactMaterialTable[m1.id + "_" + m2.id]; //this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
+        return this.contactMaterialTable[`${m1.id}_${m2.id}`]; // this.contactmaterials[this.mats2cmat[i+j*this.materials.length]];
     }
 
     /**
@@ -207,7 +226,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
      */
     collisionMatrixTick()
     {
-        var temp = this.collisionMatrixPrevious;
+        const temp = this.collisionMatrixPrevious;
         this.collisionMatrixPrevious = this.collisionMatrix;
         this.collisionMatrix = temp;
         this.collisionMatrix = {};
@@ -241,7 +260,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
             body.initQuaternion.copy(body.quaternion);
         }
         this.idToBodyMap[body.id] = body;
-        this.emit("addBody", body);
+        this.emit('addBody', body);
     }
 
     /**
@@ -259,7 +278,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
      */
     removeConstraint(c: Constraint)
     {
-        var idx = this.constraints.indexOf(c);
+        const idx = this.constraints.indexOf(c);
         if (idx !== -1)
         {
             this.constraints.splice(idx, 1);
@@ -268,10 +287,10 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
 
     /**
      * Ray cast against all bodies. The provided callback will be executed for each hit with a RaycastResult as single argument.
-     * @param from 
-     * @param to 
-     * @param options 
-     * @param callback 
+     * @param from
+     * @param to
+     * @param options
+     * @param callback
      * @return True if any body was hit.
      */
     raycastAll(from: Vector3, to: Vector3, options: { collisionFilterMask?: number, collisionFilterGroup?: number, skipBackfaces?: boolean, checkCollisionResponse?: boolean, mode?: number, from?: Vector3, to?: Vector3, callback?: Function } = {}, callback: Function)
@@ -280,17 +299,18 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         options.from = from;
         options.to = to;
         options.callback = callback;
+
         return tmpRay.intersectWorld(this, options);
     }
 
     /**
      * Ray cast, and stop at the first result. Note that the order is random - but the method is fast.
-     * 
-     * @param from 
-     * @param to 
-     * @param options 
-     * @param result 
-     * 
+     *
+     * @param from
+     * @param to
+     * @param options
+     * @param result
+     *
      * @return True if any body was hit.
      */
     raycastAny(from: Vector3, to: Vector3, options: { collisionFilterMask?: number, collisionFilterGroup?: number, skipBackfaces?: boolean, checkCollisionResponse?: boolean, mode?: number, from?: Vector3, to?: Vector3, callback?: Function, result?: RaycastResult }, result: RaycastResult)
@@ -299,17 +319,18 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         options.from = from;
         options.to = to;
         options.result = result;
+
         return tmpRay.intersectWorld(this, options);
     }
 
     /**
      * Ray cast, and return information of the closest hit.
-     * 
-     * @param from 
-     * @param to 
-     * @param options 
-     * @param result 
-     * 
+     *
+     * @param from
+     * @param to
+     * @param options
+     * @param result
+     *
      * @return True if any body was hit.
      */
     raycastClosest(from: Vector3, to: Vector3, options: { collisionFilterMask?: number, collisionFilterGroup?: number, skipBackfaces?: boolean, checkCollisionResponse?: boolean, mode?: number, from?: Vector3, to?: Vector3, callback?: Function, result?: RaycastResult }, result: RaycastResult)
@@ -318,6 +339,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         options.from = from;
         options.to = to;
         options.result = result;
+
         return tmpRay.intersectWorld(this, options);
     }
 
@@ -328,24 +350,23 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
     removeBody(body: Body)
     {
         body.world = null;
-        var n = this.bodies.length - 1,
-            bodies = this.bodies,
-            idx = bodies.indexOf(body);
+        // const n = this.bodies.length - 1;
+        const bodies = this.bodies;
+        const idx = bodies.indexOf(body);
         if (idx !== -1)
         {
             bodies.splice(idx, 1); // Todo: should use a garbage free method
 
             // Recompute index
-            for (var i = 0; i !== bodies.length; i++)
+            for (let i = 0; i !== bodies.length; i++)
             {
                 bodies[i].index = i;
             }
 
             delete this.idToBodyMap[body.id];
-            this.emit("removeBody", body);
+            this.emit('removeBody', body);
         }
     }
-
 
     getBodyById(id: number)
     {
@@ -355,13 +376,13 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
     // TODO Make a faster map
     getShapeById(id: number)
     {
-        var bodies = this.bodies;
-        for (var i = 0, bl = bodies.length; i < bl; i++)
+        const bodies = this.bodies;
+        for (let i = 0, bl = bodies.length; i < bl; i++)
         {
-            var shapes = bodies[i].shapes;
-            for (var j = 0, sl = shapes.length; j < sl; j++)
+            const shapes = bodies[i].shapes;
+            for (let j = 0, sl = shapes.length; j < sl; j++)
             {
-                var shape = shapes[j];
+                const shape = shapes[j];
                 if (shape.id === id)
                 {
                     return shape;
@@ -386,12 +407,11 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
      */
     addContactMaterial(cmat: ContactMaterial)
     {
-
         // Add contact material
         this.contactmaterials.push(cmat);
 
         // Add current contact material to the material table
-        this.contactMaterialTable[cmat.materials[0].id + "_" + cmat.materials[1].id] = cmat;
+        this.contactMaterialTable[`${cmat.materials[0].id}_${cmat.materials[1].id}`] = cmat;
     }
 
     /**
@@ -413,17 +433,15 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
     {
         if (timeSinceLastCalled === 0)
         { // Fixed, simple stepping
-
             this.internalStep(dt);
 
             // Increment time
             this.time += dt;
-
-        } else
+        }
+        else
         {
-
             this.accumulator += timeSinceLastCalled;
-            var substeps = 0;
+            let substeps = 0;
             while (this.accumulator >= dt && substeps < maxSubSteps)
             {
                 // Do fixed steps to catch up
@@ -432,10 +450,10 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
                 substeps++;
             }
 
-            var t = (this.accumulator % dt) / dt;
-            for (var j = 0; j !== this.bodies.length; j++)
+            const t = (this.accumulator % dt) / dt;
+            for (let j = 0; j !== this.bodies.length; j++)
             {
-                var b = this.bodies[j];
+                const b = this.bodies[j];
                 b.previousPosition.lerpNumberTo(b.position, t, b.interpolatedPosition);
                 b.previousQuaternion.slerpTo(b.quaternion, t, b.interpolatedQuaternion);
                 b.previousQuaternion.normalize();
@@ -448,26 +466,25 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
     {
         this.dt = dt;
 
-        var world = this,
-            that = this,
-            contacts = this.contacts,
-            p1 = World_step_p1,
-            p2 = World_step_p2,
-            N = this.numObjects(),
-            bodies = this.bodies,
-            solver = this.solver,
-            gravity = this.gravity,
-            doProfiling = this.doProfiling,
-            profile = this.profile,
-            DYNAMIC = Body.DYNAMIC,
-            profilingStart,
-            constraints = this.constraints,
-            frictionEquationPool = World_step_frictionEquationPool,
-            gnorm = gravity.length,
-            gx = gravity.x,
-            gy = gravity.y,
-            gz = gravity.z,
-            i = 0;
+        // const world = this;
+        // const that = this;
+        const contacts = this.contacts;
+        const p1 = WorldStepP1;
+        const p2 = WorldStepP2;
+        const N = this.numObjects();
+        const bodies = this.bodies;
+        const solver = this.solver;
+        const gravity = this.gravity;
+        const doProfiling = this.doProfiling;
+        const profile = this.profile;
+        const DYNAMIC = Body.DYNAMIC;
+        let profilingStart;
+        const constraints = this.constraints;
+        const frictionEquationPool = WorldStepFrictionEquationPool;
+        // const gnorm = gravity.length;
+        const gx = gravity.x;
+        const gy = gravity.y;
+        const gz = gravity.z;
 
         if (doProfiling)
         {
@@ -475,12 +492,13 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         }
 
         // Add gravity to all objects
-        for (i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
-            var bi = bodies[i];
+            const bi = bodies[i];
             if (bi.type === DYNAMIC)
             { // Only for dynamic bodies
-                var f = bi.force, m = bi.mass;
+                const f = bi.force; const
+                    m = bi.mass;
                 f.x += m * gx;
                 f.y += m * gy;
                 f.z += m * gz;
@@ -488,7 +506,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         }
 
         // Update subsystems
-        for (var i = 0, Nsubsystems = this.subsystems.length; i !== Nsubsystems; i++)
+        for (let i = 0, Nsubsystems = this.subsystems.length; i !== Nsubsystems; i++)
         {
             this.subsystems[i].update();
         }
@@ -501,16 +519,16 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         if (doProfiling) { profile.broadphase = performance.now() - profilingStart; }
 
         // Remove constrained pairs with collideConnected == false
-        var Nconstraints = constraints.length;
-        for (i = 0; i !== Nconstraints; i++)
+        const Nconstraints = constraints.length;
+        for (let i = 0; i !== Nconstraints; i++)
         {
-            var c = constraints[i];
+            const c = constraints[i];
             if (!c.collideConnected)
             {
-                for (var j = p1.length - 1; j >= 0; j -= 1)
+                for (let j = p1.length - 1; j >= 0; j -= 1)
                 {
-                    if ((c.bodyA === p1[j] && c.bodyB === p2[j]) ||
-                        (c.bodyB === p1[j] && c.bodyA === p2[j]))
+                    if ((c.bodyA === p1[j] && c.bodyB === p2[j])
+                        || (c.bodyB === p1[j] && c.bodyA === p2[j]))
                     {
                         p1.splice(j, 1);
                         p2.splice(j, 1);
@@ -523,18 +541,18 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
 
         // Generate contacts
         if (doProfiling) { profilingStart = performance.now(); }
-        var oldcontacts = World_step_oldContacts;
-        var NoldContacts = contacts.length;
+        const oldcontacts = WorldStepOldContacts;
+        const NoldContacts = contacts.length;
 
-        for (i = 0; i !== NoldContacts; i++)
+        for (let i = 0; i !== NoldContacts; i++)
         {
             oldcontacts.push(contacts[i]);
         }
         contacts.length = 0;
 
         // Transfer FrictionEquation from current list to the pool for reuse
-        var NoldFrictionEquations = this.frictionEquations.length;
-        for (i = 0; i !== NoldFrictionEquations; i++)
+        const NoldFrictionEquations = this.frictionEquations.length;
+        for (let i = 0; i !== NoldFrictionEquations; i++)
         {
             frictionEquationPool.push(this.frictionEquations[i]);
         }
@@ -562,37 +580,37 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         }
 
         // Add all friction eqs
-        for (var i = 0; i < this.frictionEquations.length; i++)
+        for (let i = 0; i < this.frictionEquations.length; i++)
         {
             solver.addEquation(this.frictionEquations[i]);
         }
 
-        var ncontacts = contacts.length;
-        for (var k = 0; k !== ncontacts; k++)
+        const ncontacts = contacts.length;
+        for (let k = 0; k !== ncontacts; k++)
         {
-
             // Current contact
-            let c = contacts[k];
+            const c = contacts[k];
 
             // Get current collision indeces
-            let bi = c.bi,
-                bj = c.bj,
-                si = c.si,
-                sj = c.sj;
+            const bi = c.bi;
+            const bj = c.bj;
+            const si = c.si;
+            const sj = c.sj;
 
             // Get collision properties
-            var cm: ContactMaterial;
+            let cm: ContactMaterial;
             if (bi.material && bj.material)
             {
                 cm = this.getContactMaterial(bi.material, bj.material) || this.defaultContactMaterial;
-            } else
+            }
+            else
             {
                 cm = this.defaultContactMaterial;
             }
 
             // c.enabled = bi.collisionResponse && bj.collisionResponse && si.collisionResponse && sj.collisionResponse;
 
-            var mu = cm.friction;
+            let mu = cm.friction;
             // c.restitution = cm.restitution;
 
             // If friction or restitution were specified in the material, use them
@@ -621,14 +639,14 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
             // if(mu > 0){
 
             // 	// Create 2 tangent equations
-            // 	var mug = mu * gnorm;
-            // 	var reducedMass = (bi.invMass + bj.invMass);
+            // 	let mug = mu * gnorm;
+            // 	let reducedMass = (bi.invMass + bj.invMass);
             // 	if(reducedMass > 0){
             // 		reducedMass = 1/reducedMass;
             // 	}
-            // 	var pool = frictionEquationPool;
-            // 	var c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
-            // 	var c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+            // 	let pool = frictionEquationPool;
+            // 	let c1 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
+            // 	let c2 = pool.length ? pool.pop() : new FrictionEquation(bi,bj,mug*reducedMass);
             // 	this.frictionEquations.push(c1, c2);
 
             // 	c1.bi = c2.bi = bi;
@@ -656,30 +674,30 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
             // 	solver.addEquation(c2);
             // }
 
-            if (bi.allowSleep &&
-                bi.type === Body.DYNAMIC &&
-                bi.sleepState === Body.SLEEPING &&
-                bj.sleepState === Body.AWAKE &&
-                bj.type !== Body.STATIC
+            if (bi.allowSleep
+                && bi.type === Body.DYNAMIC
+                && bi.sleepState === Body.SLEEPING
+                && bj.sleepState === Body.AWAKE
+                && bj.type !== Body.STATIC
             )
             {
-                var speedSquaredB = bj.velocity.lengthSquared + bj.angularVelocity.lengthSquared;
-                var speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit, 2);
+                const speedSquaredB = bj.velocity.lengthSquared + bj.angularVelocity.lengthSquared;
+                const speedLimitSquaredB = Math.pow(bj.sleepSpeedLimit, 2);
                 if (speedSquaredB >= speedLimitSquaredB * 2)
                 {
                     bi._wakeUpAfterNarrowphase = true;
                 }
             }
 
-            if (bj.allowSleep &&
-                bj.type === Body.DYNAMIC &&
-                bj.sleepState === Body.SLEEPING &&
-                bi.sleepState === Body.AWAKE &&
-                bi.type !== Body.STATIC
+            if (bj.allowSleep
+                && bj.type === Body.DYNAMIC
+                && bj.sleepState === Body.SLEEPING
+                && bi.sleepState === Body.AWAKE
+                && bi.type !== Body.STATIC
             )
             {
-                var speedSquaredA = bi.velocity.lengthSquared + bi.angularVelocity.lengthSquared;
-                var speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit, 2);
+                const speedSquaredA = bi.velocity.lengthSquared + bi.angularVelocity.lengthSquared;
+                const speedLimitSquaredA = Math.pow(bi.sleepSpeedLimit, 2);
                 if (speedSquaredA >= speedLimitSquaredA * 2)
                 {
                     bj._wakeUpAfterNarrowphase = true;
@@ -687,14 +705,14 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
             }
 
             // Now we know that i and j are in contact. Set collision matrix state
-            this.collisionMatrix[bi.index + "_" + bj.index] = true;
+            this.collisionMatrix[`${bi.index}_${bj.index}`] = true;
 
-            if (!this.collisionMatrixPrevious[bi.index + "_" + bj.index])
+            if (!this.collisionMatrixPrevious[`${bi.index}_${bj.index}`])
             {
                 // First contact!
                 // We reuse the collideEvent object, otherwise we will end up creating new objects for each new contact, even if there's no event listener attached.
-                bi.emit("collide", { body: bj, contact: c });
-                bj.emit("collide", { body: bi, contact: c });
+                bi.emit('collide', { body: bj, contact: c });
+                bj.emit('collide', { body: bi, contact: c });
             }
 
             this.bodyOverlapKeeper.set(bi.id, bj.id);
@@ -710,9 +728,9 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         }
 
         // Wake up bodies
-        for (i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
-            var bi = bodies[i];
+            const bi = bodies[i];
             if (bi._wakeUpAfterNarrowphase)
             {
                 bi.wakeUp();
@@ -721,14 +739,14 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         }
 
         // Add user-added constraints
-        var Nconstraints = constraints.length;
-        for (i = 0; i !== Nconstraints; i++)
+        const Nconstraints1 = constraints.length;
+        for (let i = 0; i !== Nconstraints1; i++)
         {
-            var c = constraints[i];
+            const c = constraints[i];
             c.update();
-            for (var j = 0, Neq = c.equations.length; j !== Neq; j++)
+            for (let j = 0, Neq = c.equations.length; j !== Neq; j++)
             {
-                var eq = c.equations[j];
+                const eq = c.equations[j];
                 solver.addEquation(eq);
             }
         }
@@ -745,25 +763,25 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         solver.removeAllEquations();
 
         // Apply damping, see http://code.google.com/p/bullet/issues/detail?id=74 for details
-        var pow = Math.pow;
-        for (i = 0; i !== N; i++)
+        const pow = Math.pow;
+        for (let i = 0; i !== N; i++)
         {
-            var bi = bodies[i];
+            const bi = bodies[i];
             if (bi.type & DYNAMIC)
             { // Only for dynamic bodies
-                var ld = pow(1.0 - bi.linearDamping, dt);
-                var v = bi.velocity;
+                const ld = pow(1.0 - bi.linearDamping, dt);
+                const v = bi.velocity;
                 v.scaleNumberTo(ld, v);
-                var av = bi.angularVelocity;
+                const av = bi.angularVelocity;
                 if (av)
                 {
-                    var ad = pow(1.0 - bi.angularDamping, dt);
+                    const ad = pow(1.0 - bi.angularDamping, dt);
                     av.scaleNumberTo(ad, av);
                 }
             }
         }
 
-        this.emit("preStep");
+        this.emit('preStep');
 
         // Leap frog
         // vnew = v + h*f/m
@@ -772,11 +790,11 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         {
             profilingStart = performance.now();
         }
-        var stepnumber = this.stepnumber;
-        var quatNormalize = stepnumber % (this.quatNormalizeSkip + 1) === 0;
-        var quatNormalizeFast = this.quatNormalizeFast;
+        const stepnumber = this.stepnumber;
+        const quatNormalize = stepnumber % (this.quatNormalizeSkip + 1) === 0;
+        const quatNormalizeFast = this.quatNormalizeFast;
 
-        for (i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
             bodies[i].integrate(dt, quatNormalize, quatNormalizeFast);
         }
@@ -793,12 +811,12 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
         this.time += dt;
         this.stepnumber += 1;
 
-        this.emit("postStep");
+        this.emit('postStep');
 
         // Sleeping update
         if (this.allowSleep)
         {
-            for (i = 0; i !== N; i++)
+            for (let i = 0; i !== N; i++)
             {
                 bodies[i].sleepTick(this.time);
             }
@@ -807,14 +825,15 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
 
     emitContactEvents = (function ()
     {
-        var additions = [];
-        var removals = [];
+        const additions = [];
+        const removals = [];
+
         return function ()
         {
-            var _this = <World>this;
+            const _this = <World>this;
 
-            var hasBeginContact = _this.has('beginContact');
-            var hasEndContact = _this.has('endContact');
+            const hasBeginContact = _this.has('beginContact');
+            const hasEndContact = _this.has('endContact');
 
             if (hasBeginContact || hasEndContact)
             {
@@ -823,9 +842,9 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
 
             if (hasBeginContact)
             {
-                for (var i = 0, l = additions.length; i < l; i += 2)
+                for (let i = 0, l = additions.length; i < l; i += 2)
                 {
-                    _this.emit("beginContact", {
+                    _this.emit('beginContact', {
                         bodyA: _this.getBodyById(additions[i]),
                         bodyB: _this.getBodyById(additions[i + 1])
                     });
@@ -834,19 +853,19 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
 
             if (hasEndContact)
             {
-                for (var i = 0, l = removals.length; i < l; i += 2)
+                for (let i = 0, l = removals.length; i < l; i += 2)
                 {
-                    _this.emit("endContact", {
+                    _this.emit('endContact', {
                         bodyA: _this.getBodyById(removals[i]),
                         bodyB: _this.getBodyById(removals[i + 1])
-                    })
+                    });
                 }
             }
 
             additions.length = removals.length = 0;
 
-            var hasBeginShapeContact = _this.has('beginShapeContact');
-            var hasEndShapeContact = _this.has('endShapeContact');
+            const hasBeginShapeContact = _this.has('beginShapeContact');
+            const hasEndShapeContact = _this.has('endShapeContact');
 
             if (hasBeginShapeContact || hasEndShapeContact)
             {
@@ -855,26 +874,25 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
 
             if (hasBeginShapeContact)
             {
-                for (var i = 0, l = additions.length; i < l; i += 2)
+                for (let i = 0, l = additions.length; i < l; i += 2)
                 {
-                    var shapeA = _this.getShapeById(additions[i]);
-                    var shapeB = _this.getShapeById(additions[i + 1]);
+                    const shapeA = _this.getShapeById(additions[i]);
+                    const shapeB = _this.getShapeById(additions[i + 1]);
 
-                    _this.emit("beginShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body })
+                    _this.emit('beginShapeContact', { shapeA, shapeB, bodyA: shapeA.body, bodyB: shapeB.body });
                 }
             }
 
             if (hasEndShapeContact)
             {
-                for (var i = 0, l = removals.length; i < l; i += 2)
+                for (let i = 0, l = removals.length; i < l; i += 2)
                 {
-                    var shapeA = _this.getShapeById(removals[i]);
-                    var shapeB = _this.getShapeById(removals[i + 1]);
+                    const shapeA = _this.getShapeById(removals[i]);
+                    const shapeB = _this.getShapeById(removals[i + 1]);
 
-                    _this.emit("endShapeContact", { shapeA: shapeA, shapeB: shapeB, bodyA: shapeA.body, bodyB: shapeB.body });
+                    _this.emit('endShapeContact', { shapeA, shapeB, bodyA: shapeA.body, bodyB: shapeB.body });
                 }
             }
-
         };
     })();
 
@@ -884,13 +902,13 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
      */
     clearForces()
     {
-        var bodies = this.bodies;
-        var N = bodies.length;
-        for (var i = 0; i !== N; i++)
+        const bodies = this.bodies;
+        const N = bodies.length;
+        for (let i = 0; i !== N; i++)
         {
-            var b = bodies[i],
-                force = b.force,
-                tau = b.torque;
+            const b = bodies[i];
+            // const force = b.force;
+            // const tau = b.torque;
 
             b.force.set(0, 0, 0);
             b.torque.set(0, 0, 0);
@@ -898,23 +916,21 @@ export class World<T extends WorldEventMap = WorldEventMap> extends feng3d.Event
     }
 }
 
-
 // Temp stuff
-var tmpAABB1 = new Box3();
-var tmpArray1 = [];
-var tmpRay = new Ray();
-
+// const tmpAABB1 = new Box3();
+// const tmpArray1 = [];
+const tmpRay = new Ray();
 
 // performance.now()
 if (typeof performance === 'undefined')
 {
-    throw "performance"
+    throw 'performance';
 
     // performance = {};
 }
 if (!performance.now)
 {
-    var nowOffset = Date.now();
+    let nowOffset = Date.now();
     if (performance.timing && performance.timing.navigationStart)
     {
         nowOffset = performance.timing.navigationStart;
@@ -925,24 +941,24 @@ if (!performance.now)
     };
 }
 
-var step_tmp1 = new Vector3();
+// const step_tmp1 = new Vector3();
 /**
  * Dispatched before the world steps forward in time.
  */
-var World_step_oldContacts: ContactEquation[] = [];// Pools for unused objects
-var World_step_frictionEquationPool = [];
-var World_step_p1 = []; // Reusable arrays for collision pairs
-var World_step_p2 = [];
-var World_step_gvec = new Vector3(); // Temporary vectors and quats
-var World_step_vi = new Vector3();
-var World_step_vj = new Vector3();
-var World_step_wi = new Vector3();
-var World_step_wj = new Vector3();
-var World_step_t1 = new Vector3();
-var World_step_t2 = new Vector3();
-var World_step_rixn = new Vector3();
-var World_step_rjxn = new Vector3();
-var World_step_step_q = new Quaternion();
-var World_step_step_w = new Quaternion();
-var World_step_step_wq = new Quaternion();
-var invI_tau_dt = new Vector3();
+const WorldStepOldContacts: ContactEquation[] = [];// Pools for unused objects
+const WorldStepFrictionEquationPool = [];
+const WorldStepP1 = []; // Reusable arrays for collision pairs
+const WorldStepP2 = [];
+// const World_step_gvec = new Vector3(); // Temporary vectors and quats
+// const World_step_vi = new Vector3();
+// const World_step_vj = new Vector3();
+// const World_step_wi = new Vector3();
+// const World_step_wj = new Vector3();
+// const World_step_t1 = new Vector3();
+// const World_step_t2 = new Vector3();
+// const World_step_rixn = new Vector3();
+// const World_step_rjxn = new Vector3();
+// const World_step_step_q = new Quaternion();
+// const World_step_step_w = new Quaternion();
+// const World_step_step_wq = new Quaternion();
+// const invI_tau_dt = new Vector3();

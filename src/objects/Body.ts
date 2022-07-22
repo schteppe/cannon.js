@@ -1,3 +1,11 @@
+import { EventEmitter } from '@feng3d/event';
+import { Box3, Matrix3x3, Quaternion, Vector3 } from '@feng3d/math';
+import { ContactEquation } from '../equations/ContactEquation';
+import { Material } from '../material/Material';
+import { Box } from '../shapes/Box';
+import { Shape } from '../shapes/Shape';
+import { World } from '../world/World';
+
 export interface BodyEventMap
 {
     wakeup: any
@@ -7,9 +15,8 @@ export interface BodyEventMap
     collide: { body: Body, contact: ContactEquation }
 }
 
-export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmitter<T>
+export class Body<T extends BodyEventMap = BodyEventMap> extends EventEmitter<T>
 {
-
     id: number;
 
     /**
@@ -113,12 +120,10 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
      */
     interpolatedQuaternion: Quaternion;
 
-
     /**
      * Angular velocity of the body, in world space. Think of the angular velocity as a vector, which the body rotates around. The length of this vector determines how fast (in radians per second) the body rotates.
      */
     angularVelocity: Vector3;
-
 
     initAngularVelocity: Vector3;
 
@@ -186,15 +191,15 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
 
     /**
      * Base class for all body types.
-     * 
-     * @param options 
-     * @param a 
-     * 
+     *
+     * @param options
+     * @param a
+     *
      * @example
-     *     var body = new Body({
+     *     let body = new Body({
      *         mass: 1
      *     });
-     *     var shape = new Sphere(1);
+     *     let shape = new Sphere(1);
      *     body.addShape(shape);
      *     world.addBody(body);
      */
@@ -235,7 +240,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
         this.initVelocity = new Vector3();
         this.force = new Vector3();
 
-        var mass = typeof (options.mass) === 'number' ? options.mass : 0;
+        const mass = typeof (options.mass) === 'number' ? options.mass : 0;
         this.mass = mass;
         this.invMass = mass > 0 ? 1.0 / mass : 0;
         this.material = options.material || null;
@@ -283,7 +288,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
         this.invMassSolve = 0;
         this.invInertiaSolve = new Vector3();
         this.invInertiaWorldSolve = new Matrix3x3();
-        this.fixedRotation = typeof (options.fixedRotation) !== "undefined" ? options.fixedRotation : false;
+        this.fixedRotation = typeof (options.fixedRotation) !== 'undefined' ? options.fixedRotation : false;
         this.angularDamping = typeof (options.angularDamping) !== 'undefined' ? options.angularDamping : 0.01;
         this.linearFactor = new Vector3(1, 1, 1);
         if (options.linearFactor)
@@ -337,12 +342,12 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
      */
     wakeUp()
     {
-        var s = this.sleepState;
+        const s = this.sleepState;
         this.sleepState = 0;
         this._wakeUpAfterNarrowphase = false;
         if (s === Body.SLEEPING)
         {
-            this.emit("wakeup");
+            this.emit('wakeup');
         }
     }
 
@@ -364,22 +369,23 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
     {
         if (this.allowSleep)
         {
-            var sleepState = this.sleepState;
-            var speedSquared = this.velocity.lengthSquared + this.angularVelocity.lengthSquared;
-            var speedLimitSquared = Math.pow(this.sleepSpeedLimit, 2);
+            const sleepState = this.sleepState;
+            const speedSquared = this.velocity.lengthSquared + this.angularVelocity.lengthSquared;
+            const speedLimitSquared = Math.pow(this.sleepSpeedLimit, 2);
             if (sleepState === Body.AWAKE && speedSquared < speedLimitSquared)
             {
                 this.sleepState = Body.SLEEPY; // Sleepy
                 this.timeLastSleepy = time;
-                this.emit("sleepy");
-
-            } else if (sleepState === Body.SLEEPY && speedSquared > speedLimitSquared)
+                this.emit('sleepy');
+            }
+            else if (sleepState === Body.SLEEPY && speedSquared > speedLimitSquared)
             {
                 this.wakeUp(); // Wake up
-            } else if (sleepState === Body.SLEEPY && (time - this.timeLastSleepy) > this.sleepTimeLimit)
+            }
+            else if (sleepState === Body.SLEEPY && (time - this.timeLastSleepy) > this.sleepTimeLimit)
             {
                 this.sleep(); // Sleeping
-                this.emit("sleep");
+                this.emit('sleep');
             }
         }
     }
@@ -394,7 +400,8 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
             this.invMassSolve = 0;
             this.invInertiaSolve.setZero();
             this.invInertiaWorldSolve.setZero();
-        } else
+        }
+        else
         {
             this.invMassSolve = this.invMass;
             this.invInertiaSolve.copy(this.invInertia);
@@ -404,7 +411,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
 
     /**
      * Convert a world point to local body frame.
-     * 
+     *
      * @param worldPoint
      * @param result
      */
@@ -412,24 +419,26 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
     {
         worldPoint.subTo(this.position, result);
         this.quaternion.inverseTo().vmult(result, result);
+
         return result;
     }
 
     /**
      * Convert a world vector to local body frame.
-     * 
+     *
      * @param worldPoint
      * @param result
      */
     vectorToLocalFrame(worldVector, result = new Vector3())
     {
         this.quaternion.inverseTo().vmult(worldVector, result);
+
         return result;
     }
 
     /**
      * Convert a local body point to world frame.
-     * 
+     *
      * @param localPoint
      * @param result
      */
@@ -437,24 +446,26 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
     {
         this.quaternion.vmult(localPoint, result);
         result.addTo(this.position, result);
+
         return result;
     }
 
     /**
      * Convert a local body point to world frame.
-     * 
+     *
      * @param localVector
      * @param result
      */
     vectorToWorldFrame(localVector: Vector3, result = new Vector3())
     {
         this.quaternion.vmult(localVector, result);
+
         return result;
     }
 
     /**
      * Add a shape to the body with a local offset and orientation.
-     * 
+     *
      * @param shape
      * @param _offset
      * @param_orientation
@@ -462,8 +473,8 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
      */
     addShape(shape: Shape, _offset?: Vector3, _orientation?: Quaternion)
     {
-        var offset = new Vector3();
-        var orientation = new Quaternion();
+        const offset = new Vector3();
+        const orientation = new Quaternion();
 
         if (_offset)
         {
@@ -492,17 +503,17 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
      */
     updateBoundingRadius()
     {
-        var shapes = this.shapes,
-            shapeOffsets = this.shapeOffsets,
-            N = shapes.length,
-            radius = 0;
+        const shapes = this.shapes;
+        const shapeOffsets = this.shapeOffsets;
+        const N = shapes.length;
+        let radius = 0;
 
-        for (var i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
-            var shape = shapes[i];
+            const shape = shapes[i];
             shape.updateBoundingSphereRadius();
-            var offset = shapeOffsets[i].length,
-                r = shape.boundingSphereRadius;
+            const offset = shapeOffsets[i].length;
+            const r = shape.boundingSphereRadius;
             if (offset + r > radius)
             {
                 radius = offset + r;
@@ -512,27 +523,26 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
         this.boundingRadius = radius;
     }
 
-
     /**
      * Updates the .aabb
-     * 
+     *
      * @todo rename to updateAABB()
      */
     computeAABB()
     {
-        var shapes = this.shapes,
-            shapeOffsets = this.shapeOffsets,
-            shapeOrientations = this.shapeOrientations,
-            N = shapes.length,
-            offset = tmpVec,
-            orientation = tmpQuat,
-            bodyQuat = this.quaternion,
-            aabb = this.aabb,
-            shapeAABB = computeAABB_shapeAABB;
+        const shapes = this.shapes;
+        const shapeOffsets = this.shapeOffsets;
+        const shapeOrientations = this.shapeOrientations;
+        const N = shapes.length;
+        const offset = tmpVec;
+        const orientation = tmpQuat;
+        const bodyQuat = this.quaternion;
+        const aabb = this.aabb;
+        const shapeAABB = computeAABB$shapeAABB;
 
-        for (var i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
-            var shape = shapes[i];
+            const shape = shapes[i];
 
             // Get shape world position
             bodyQuat.vmult(shapeOffsets[i], offset);
@@ -547,7 +557,8 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
             if (i === 0)
             {
                 aabb.copy(shapeAABB);
-            } else
+            }
+            else
             {
                 aabb.union(shapeAABB);
             }
@@ -561,7 +572,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
      */
     updateInertiaWorld(force?)
     {
-        var I = this.invInertia;
+        const I = this.invInertia;
         if (I.x === I.y && I.y === I.z && !force)
         {
             // If inertia M = s*I, where I is identity and s a scalar, then
@@ -569,11 +580,12 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
             // where R is the rotation matrix.
             // In other words, we don't have to transform the inertia if all
             // inertia diagonal entries are equal.
-        } else
+        }
+        else
         {
-            var m1 = uiw_m1,
-                m2 = uiw_m2,
-                m3 = uiw_m3;
+            const m1 = uiw$m1;
+            const m2 = uiw$m2;
+            // const m3 = uiw$m3;
             m1.setRotationFromQuaternion(this.quaternion);
             m1.transposeTo(m2);
             m1.scale(I, m1);
@@ -583,7 +595,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
 
     /**
      * Apply force to a world point. This could for example be a point on the Body surface. Applying force this way will add to Body.force and Body.torque.
-     * 
+     *
      * @param force The amount of force to add.
      * @param relativePoint A point relative to the center of mass to apply the force on.
      */
@@ -595,7 +607,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
         }
 
         // Compute produced rotational force
-        var rotForce = Body_applyForce_rotForce;
+        const rotForce = Body$applyForce$rotForce;
         relativePoint.crossTo(force, rotForce);
 
         // Add linear force
@@ -607,7 +619,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
 
     /**
      * Apply force to a local point in the body.
-     * 
+     *
      * @param force The force vector to apply, defined locally in the body frame.
      * @param localPoint A local point in the body to apply the force on.
      */
@@ -618,8 +630,8 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
             return;
         }
 
-        var worldForce = Body_applyLocalForce_worldForce;
-        var relativePointWorld = Body_applyLocalForce_relativePointWorld;
+        const worldForce = Body$applyLocalForce$worldForce;
+        const relativePointWorld = Body$applyLocalForce$relativePointWorld;
 
         // Transform the force vector to world space
         this.vectorToWorldFrame(localForce, worldForce);
@@ -630,7 +642,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
 
     /**
      * Apply impulse to a world point. This could for example be a point on the Body surface. An impulse is a force added to a body during a short period of time (impulse = force * time). Impulses will be added to Body.velocity and Body.angularVelocity.
-     * 
+     *
      * @param impulse The amount of impulse to add.
      * @param relativePoint A point relative to the center of mass to apply the force on.
      */
@@ -642,10 +654,10 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
         }
 
         // Compute point position relative to the body center
-        var r = relativePoint;
+        const r = relativePoint;
 
         // Compute produced central impulse velocity
-        var velo = Body_applyImpulse_velo;
+        const velo = Body$applyImpulse$velo;
         velo.copy(impulse);
         velo.scaleNumberTo(this.invMass, velo);
 
@@ -653,7 +665,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
         this.velocity.addTo(velo, this.velocity);
 
         // Compute produced rotational impulse velocity
-        var rotVelo = Body_applyImpulse_rotVelo;
+        const rotVelo = Body$applyImpulse$rotVelo;
         r.crossTo(impulse, rotVelo);
 
         /*
@@ -669,7 +681,7 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
 
     /**
      * Apply locally-defined impulse to a local point in the body.
-     * 
+     *
      * @param force The force vector to apply, defined locally in the body frame.
      * @param localPoint A local point in the body to apply the force on.
      */
@@ -680,8 +692,8 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
             return;
         }
 
-        var worldImpulse = Body_applyLocalImpulse_worldImpulse;
-        var relativePointWorld = Body_applyLocalImpulse_relativePoint;
+        const worldImpulse = Body$applyLocalImpulse$worldImpulse;
+        const relativePointWorld = Body$applyLocalImpulse$relativePoint;
 
         // Transform the force vector to world space
         this.vectorToWorldFrame(localImpulse, worldImpulse);
@@ -695,11 +707,11 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
      */
     updateMassProperties()
     {
-        var halfExtents = Body_updateMassProperties_halfExtents;
+        const halfExtents = BodyUpdateMassPropertiesHalfExtents;
 
         this.invMass = this.mass > 0 ? 1.0 / this.mass : 0;
-        var I = this.inertia;
-        var fixed = this.fixedRotation;
+        const I = this.inertia;
+        const fixed = this.fixedRotation;
 
         // Approximate with AABB box
         this.computeAABB();
@@ -727,10 +739,11 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
      */
     getVelocityAtWorldPoint(worldPoint: Vector3, result: Vector3)
     {
-        var r = new Vector3();
+        const r = new Vector3();
         worldPoint.subTo(this.position, r);
         this.angularVelocity.crossTo(r, result);
         this.velocity.addTo(result, result);
+
         return result;
     }
 
@@ -751,26 +764,26 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
             return;
         }
 
-        var velo = this.velocity,
-            angularVelo = this.angularVelocity,
-            pos = this.position,
-            force = this.force,
-            torque = this.torque,
-            quat = this.quaternion,
-            invMass = this.invMass,
-            invInertia = this.invInertiaWorld,
-            linearFactor = this.linearFactor;
+        const velo = this.velocity;
+        const angularVelo = this.angularVelocity;
+        const pos = this.position;
+        const force = this.force;
+        const torque = this.torque;
+        const quat = this.quaternion;
+        const invMass = this.invMass;
+        const invInertia = this.invInertiaWorld;
+        const linearFactor = this.linearFactor;
 
-        var iMdt = invMass * dt;
+        const iMdt = invMass * dt;
         velo.x += force.x * iMdt * linearFactor.x;
         velo.y += force.y * iMdt * linearFactor.y;
         velo.z += force.z * iMdt * linearFactor.z;
 
-        var e = invInertia.elements;
-        var angularFactor = this.angularFactor;
-        var tx = torque.x * angularFactor.x;
-        var ty = torque.y * angularFactor.y;
-        var tz = torque.z * angularFactor.z;
+        const e = invInertia.elements;
+        const angularFactor = this.angularFactor;
+        const tx = torque.x * angularFactor.x;
+        const ty = torque.y * angularFactor.y;
+        const tz = torque.z * angularFactor.z;
         angularVelo.x += dt * (e[0] * tx + e[1] * ty + e[2] * tz);
         angularVelo.y += dt * (e[3] * tx + e[4] * ty + e[5] * tz);
         angularVelo.z += dt * (e[6] * tx + e[7] * ty + e[8] * tz);
@@ -787,7 +800,8 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
             if (quatNormalizeFast)
             {
                 quat.normalizeFast();
-            } else
+            }
+            else
             {
                 quat.normalize();
             }
@@ -800,30 +814,28 @@ export class Body<T extends BodyEventMap = BodyEventMap> extends feng3d.EventEmi
     }
 }
 
-var tmpVec = new Vector3();
-var tmpQuat = new Quaternion();
+const tmpVec = new Vector3();
+const tmpQuat = new Quaternion();
 
-var torque = new Vector3();
-var invI_tau_dt = new Vector3();
-var w = new Quaternion();
-var wq = new Quaternion();
+// const torque = new Vector3();
+// const invI_tau_dt = new Vector3();
+// const w = new Quaternion();
+// const wq = new Quaternion();
 
+const BodyUpdateMassPropertiesHalfExtents = new Vector3();
 
-var Body_updateMassProperties_halfExtents = new Vector3();
+// const Body_applyForce_r = new Vector3();
+const Body$applyForce$rotForce = new Vector3();
+const Body$applyLocalForce$worldForce = new Vector3();
+const Body$applyLocalForce$relativePointWorld = new Vector3();
+// const Body_applyImpulse_r = new Vector3();
+const Body$applyImpulse$velo = new Vector3();
+const Body$applyImpulse$rotVelo = new Vector3();
+const Body$applyLocalImpulse$worldImpulse = new Vector3();
+const Body$applyLocalImpulse$relativePoint = new Vector3();
 
+const uiw$m1 = new Matrix3x3();
+const uiw$m2 = new Matrix3x3();
+// const uiw$m3 = new Matrix3x3();
 
-var Body_applyForce_r = new Vector3();
-var Body_applyForce_rotForce = new Vector3();
-var Body_applyLocalForce_worldForce = new Vector3();
-var Body_applyLocalForce_relativePointWorld = new Vector3();
-var Body_applyImpulse_r = new Vector3();
-var Body_applyImpulse_velo = new Vector3();
-var Body_applyImpulse_rotVelo = new Vector3();
-var Body_applyLocalImpulse_worldImpulse = new Vector3();
-var Body_applyLocalImpulse_relativePoint = new Vector3();
-
-var uiw_m1 = new Matrix3x3();
-var uiw_m2 = new Matrix3x3();
-var uiw_m3 = new Matrix3x3();
-
-var computeAABB_shapeAABB = new Box3();
+const computeAABB$shapeAABB = new Box3();

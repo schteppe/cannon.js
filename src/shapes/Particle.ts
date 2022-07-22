@@ -1,9 +1,11 @@
+import { Vector3, Quaternion } from '@feng3d/math';
+import { Shape } from './Shape';
+
 export class Particle extends Shape
 {
-
     /**
      * Particle shape.
-     * 
+     *
      * @author schteppe
      */
     constructor()
@@ -21,6 +23,7 @@ export class Particle extends Shape
     {
         target = target || new Vector3();
         target.set(0, 0, 0);
+
         return target;
     }
 

@@ -1,3 +1,7 @@
+import { Box3, Vector3 } from '@feng3d/math';
+import { Ray } from '../collision/Ray';
+import { Transform } from '../math/Transform';
+
 export class OctreeNode<T>
 {
     /**
@@ -22,8 +26,8 @@ export class OctreeNode<T>
     maxDepth: number;
 
     /**
-     * 
-     * @param options 
+     *
+     * @param options
      */
     constructor(options: { root?: OctreeNode<T>, aabb?: Box3 } = {})
     {
@@ -40,14 +44,14 @@ export class OctreeNode<T>
 
     /**
      * Insert data into this node
-     * 
+     *
      * @param aabb
      * @param elementData
      * @return True if successful, otherwise false
      */
     insert(aabb: Box3, elementData: T, level = 0)
     {
-        var nodeData = this.data;
+        const nodeData = this.data;
 
         // Ignore objects that do not belong in this node
         if (!this.aabb.contains(aabb))
@@ -55,12 +59,12 @@ export class OctreeNode<T>
             return false; // object cannot be added
         }
 
-        var children = this.children;
+        const children = this.children;
 
         if (level < (this.maxDepth || this.root.maxDepth))
         {
             // Subdivide if there are no children yet
-            var subdivided = false;
+            let subdivided = false;
             if (!children.length)
             {
                 this.subdivide();
@@ -68,7 +72,7 @@ export class OctreeNode<T>
             }
 
             // add to whichever node will accept it
-            for (var i = 0; i !== 8; i++)
+            for (let i = 0; i !== 8; i++)
             {
                 if (children[i].insert(aabb, elementData, level + 1))
                 {
@@ -94,11 +98,11 @@ export class OctreeNode<T>
      */
     subdivide()
     {
-        var aabb = this.aabb;
-        var l = aabb.min;
-        var u = aabb.max;
+        const aabb = this.aabb;
+        const l = aabb.min;
+        const u = aabb.max;
 
-        var children = this.children;
+        const children = this.children;
 
         children.push(
             new OctreeNode({ aabb: new Box3(new Vector3(0, 0, 0)) }),
@@ -114,17 +118,17 @@ export class OctreeNode<T>
         u.subTo(l, halfDiagonal);
         halfDiagonal.scaleNumberTo(0.5, halfDiagonal);
 
-        var root = this.root || this;
+        const root = this.root || this;
 
-        for (var i = 0; i !== 8; i++)
+        for (let i = 0; i !== 8; i++)
         {
-            var child = children[i];
+            const child = children[i];
 
             // Set current node as root
             child.root = root;
 
             // Compute bounds
-            var lowerBound = child.aabb.min;
+            const lowerBound = child.aabb.min;
             lowerBound.x *= halfDiagonal.x;
             lowerBound.y *= halfDiagonal.y;
             lowerBound.z *= halfDiagonal.z;
@@ -138,14 +142,14 @@ export class OctreeNode<T>
 
     /**
      * Get all data, potentially within an AABB
-     * 
+     *
      * @param aabb
      * @param result
      * @return The "result" object
      */
     aabbQuery(aabb: Box3, result: T[])
     {
-        var nodeData = this.data;
+        // const nodeData = this.data;
 
         // abort if the range does not intersect this node
         // if (!this.aabb.overlaps(aabb)){
@@ -157,17 +161,16 @@ export class OctreeNode<T>
 
         // Add child data
         // @todo unwrap recursion into a queue / loop, that's faster in JS
-        var children = this.children;
-
+        // const children = this.children;
 
         // for (var i = 0, N = this.children.length; i !== N; i++) {
         //     children[i].aabbQuery(aabb, result);
         // }
 
-        var queue = [this];
+        const queue = [this];
         while (queue.length)
         {
-            var node = queue.pop();
+            const node = queue.pop();
             if (node.aabb.overlaps(aabb))
             {
                 Array.prototype.push.apply(result, node.data);
@@ -180,7 +183,7 @@ export class OctreeNode<T>
 
     /**
      * Get all data, potentially intersected by a ray.
-     * 
+     *
      * @param ray
      * @param treeTransform
      * @param result
@@ -188,7 +191,6 @@ export class OctreeNode<T>
      */
     rayQuery(ray: Ray, treeTransform: Transform, result: T[])
     {
-
         // Use aabb query for now.
         // @todo implement real ray query which needs less lookups
         ray.getAABB(tmpAABB);
@@ -200,11 +202,11 @@ export class OctreeNode<T>
 
     removeEmptyNodes()
     {
-        var queue = [this];
+        const queue = [this];
         while (queue.length)
         {
-            var node = queue.pop();
-            for (var i = node.children.length - 1; i >= 0; i--)
+            const node = queue.pop();
+            for (let i = node.children.length - 1; i >= 0; i--)
             {
                 if (!node.children[i].data.length)
                 {
@@ -240,6 +242,6 @@ export class Octree<T> extends OctreeNode<T>
     }
 }
 
-var halfDiagonal = new Vector3();
+const halfDiagonal = new Vector3();
 
-var tmpAABB = new Box3();
+const tmpAABB = new Box3();

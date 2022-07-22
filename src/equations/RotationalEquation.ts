@@ -1,3 +1,6 @@
+import { Vector3 } from '@feng3d/math';
+import { Equation } from './Equation';
+
 export class RotationalEquation extends Equation
 {
     axisA: Vector3;
@@ -7,11 +10,11 @@ export class RotationalEquation extends Equation
 
     /**
      * Rotational constraint. Works to keep the local vectors orthogonal to each other in world space.
-     * 
-     * @param bodyA 
-     * @param bodyB 
-     * @param options 
-     * 
+     *
+     * @param bodyA
+     * @param bodyB
+     * @param options
+     *
      * @author schteppe
      */
     constructor(bodyA: Body, bodyB: Body, options: { axisA?: Vector3, axisB?: Vector3, maxForce?: number } = {})
@@ -26,17 +29,17 @@ export class RotationalEquation extends Equation
 
     computeB(h: number)
     {
-        var a = this.a,
-            b = this.b,
+        const a = this.a;
+        const b = this.b;
 
-            ni = this.axisA,
-            nj = this.axisB,
+        const ni = this.axisA;
+        const nj = this.axisB;
 
-            nixnj = tmpVec1,
-            njxni = tmpVec2,
+        const nixnj = tmpVec1;
+        const njxni = tmpVec2;
 
-            GA = this.jacobianElementA,
-            GB = this.jacobianElementB;
+        const GA = this.jacobianElementA;
+        const GB = this.jacobianElementB;
 
         // Caluclate cross products
         ni.crossTo(nj, nixnj);
@@ -49,16 +52,15 @@ export class RotationalEquation extends Equation
         GA.rotational.copy(njxni);
         GB.rotational.copy(nixnj);
 
-        var g = Math.cos(this.maxAngle) - ni.dot(nj),
-            GW = this.computeGW(),
-            GiMf = this.computeGiMf();
+        const g = Math.cos(this.maxAngle) - ni.dot(nj);
+        const GW = this.computeGW();
+        const GiMf = this.computeGiMf();
 
-        var B = - g * a - GW * b - h * GiMf;
+        const B = -g * a - GW * b - h * GiMf;
 
         return B;
     }
-
 }
 
-var tmpVec1 = new Vector3();
-var tmpVec2 = new Vector3();
+const tmpVec1 = new Vector3();
+const tmpVec2 = new Vector3();

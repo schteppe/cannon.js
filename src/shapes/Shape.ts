@@ -1,3 +1,6 @@
+import { Quaternion, Vector3 } from '@feng3d/math';
+import { Material } from '../material/Material';
+
 export class Shape
 {
     /**
@@ -38,8 +41,8 @@ export class Shape
 
     /**
      * Base class for shapes
-     * 
-     * @param options 
+     *
+     * @param options
      * @author schteppe
      */
     constructor(options: { type?: number, collisionFilterGroup?: number, collisionFilterMask?: number, collisionResponse?: boolean, material?: Material } = {})
@@ -63,7 +66,7 @@ export class Shape
      */
     updateBoundingSphereRadius()
     {
-        throw "computeBoundingSphereRadius() not implemented for shape type " + this.type;
+        throw `computeBoundingSphereRadius() not implemented for shape type ${this.type}`;
     }
 
     /**
@@ -71,23 +74,23 @@ export class Shape
      */
     volume()
     {
-        throw "volume() not implemented for shape type " + this.type;
+        throw `volume() not implemented for shape type ${this.type}`;
     }
 
     /**
      * Calculates the inertia in the local frame for this shape.
-     * @param mass
-     * @param target
+     * @param _mass
+     * @param _target
      * @see http://en.wikipedia.org/wiki/List_of_moments_of_inertia
      */
-    calculateLocalInertia(mass: number, target: Vector3)
+    calculateLocalInertia(_mass: number, _target: Vector3)
     {
-        throw "calculateLocalInertia() not implemented for shape type " + this.type;
+        throw `calculateLocalInertia() not implemented for shape type ${this.type}`;
     }
 
-    calculateWorldAABB(pos: Vector3, quat: Quaternion, min: Vector3, max: Vector3)
+    calculateWorldAABB(_pos: Vector3, _quat: Quaternion, _min: Vector3, _max: Vector3)
     {
-        throw "未实现";
+        throw '未实现';
     }
 
     static idCounter = 0;

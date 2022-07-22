@@ -1,3 +1,6 @@
+import { Equation } from '../equations/Equation';
+import { Utils } from '../utils/Utils';
+
 export class Constraint
 {
     /**
@@ -14,11 +17,11 @@ export class Constraint
 
     /**
      * Constraint base class
-     * 
-     * @param bodyA 
-     * @param bodyB 
-     * @param options 
-     * 
+     *
+     * @param bodyA
+     * @param bodyB
+     * @param options
+     *
      * @author schteppe
      */
     constructor(bodyA: Body, bodyB: Body, options: { collideConnected?: boolean, wakeUpBodies?: boolean } = {})
@@ -56,7 +59,7 @@ export class Constraint
      */
     update()
     {
-        throw new Error("method update() not implmemented in this Constraint subclass!");
+        throw new Error('method update() not implmemented in this Constraint subclass!');
     }
 
     /**
@@ -64,8 +67,8 @@ export class Constraint
      */
     enable()
     {
-        var eqs = this.equations;
-        for (var i = 0; i < eqs.length; i++)
+        const eqs = this.equations;
+        for (let i = 0; i < eqs.length; i++)
         {
             eqs[i].enabled = true;
         }
@@ -76,8 +79,8 @@ export class Constraint
      */
     disable()
     {
-        var eqs = this.equations;
-        for (var i = 0; i < eqs.length; i++)
+        const eqs = this.equations;
+        for (let i = 0; i < eqs.length; i++)
         {
             eqs[i].enabled = false;
         }

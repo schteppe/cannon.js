@@ -1,6 +1,5 @@
 export class Material
 {
-
     name: string;
 
     /**
@@ -20,20 +19,21 @@ export class Material
 
     /**
      * Defines a physics material.
-     * 
-     * @param options 
+     *
+     * @param options
      * @author schteppe
      */
     constructor(options: { friction?: number, restitution?: number } | string = {})
     {
-        var name = '';
+        let name = '';
 
         // Backwards compatibility fix
         if (typeof (options) === 'string')
         {
             name = options;
             options = {};
-        } else if (typeof (options) === 'object')
+        }
+        else if (typeof (options) === 'object')
         {
             name = '';
         }
@@ -45,5 +45,4 @@ export class Material
     }
 
     static idCounter = 0;
-
 }

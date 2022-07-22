@@ -1,3 +1,6 @@
+import { Vector3 } from '@feng3d/math';
+import { ConvexPolyhedron } from './ConvexPolyhedron';
+
 export class Cylinder extends ConvexPolyhedron
 {
     /**
@@ -5,19 +8,19 @@ export class Cylinder extends ConvexPolyhedron
      * @param radiusBottom
      * @param height
      * @param numSegments The number of segments to build the cylinder out of
-     * 
+     *
      * @author schteppe / https://github.com/schteppe
      */
     constructor(radiusTop: number, radiusBottom: number, height: number, numSegments: number)
     {
-        var N = numSegments,
-            verts = [],
-            axes = [],
-            faces = [],
-            bottomface = [],
-            topface = [],
-            cos = Math.cos,
-            sin = Math.sin;
+        const N = numSegments;
+        const verts = [];
+        const axes = [];
+        const faces = [];
+        const bottomface = [];
+        const topface = [];
+        const cos = Math.cos;
+        const sin = Math.sin;
 
         // First bottom point
         verts.push(new Vector3(radiusBottom * cos(0),
@@ -31,10 +34,10 @@ export class Cylinder extends ConvexPolyhedron
             height * 0.5));
         topface.push(1);
 
-        for (var i = 0; i < N; i++)
+        for (let i = 0; i < N; i++)
         {
-            var theta = 2 * Math.PI / N * (i + 1);
-            var thetaN = 2 * Math.PI / N * (i + 0.5);
+            const theta = 2 * Math.PI / N * (i + 1);
+            const thetaN = 2 * Math.PI / N * (i + 0.5);
             if (i < N - 1)
             {
                 // Bottom
@@ -50,7 +53,8 @@ export class Cylinder extends ConvexPolyhedron
 
                 // Face
                 faces.push([2 * i + 2, 2 * i + 3, 2 * i + 1, 2 * i]);
-            } else
+            }
+            else
             {
                 faces.push([0, 1, 2 * i + 1, 2 * i]); // Connect
             }
@@ -65,8 +69,8 @@ export class Cylinder extends ConvexPolyhedron
         axes.push(new Vector3(0, 0, 1));
 
         // Reorder bottom face
-        var temp = [];
-        for (var i = 0; i < bottomface.length; i++)
+        const temp = [];
+        for (let i = 0; i < bottomface.length; i++)
         {
             temp.push(bottomface[bottomface.length - i - 1]);
         }
@@ -74,5 +78,4 @@ export class Cylinder extends ConvexPolyhedron
 
         super(verts, faces, axes);
     }
-
 }

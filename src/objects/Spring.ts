@@ -1,6 +1,7 @@
+import { Vector3 } from '@feng3d/math';
+
 export class Spring
 {
-
     /**
      * Rest length of the spring.
      */
@@ -38,14 +39,14 @@ export class Spring
 
     /**
      * A spring, connecting two bodies.
-     * 
-     * @param bodyA 
-     * @param bodyB 
-     * @param options 
+     *
+     * @param bodyA
+     * @param bodyB
+     * @param options
      */
     constructor(bodyA: Body, bodyB: Body, options: { restLength?: number, stiffness?: number, damping?: number, localAnchorA?: Vector3, localAnchorB?: Vector3, worldAnchorA?: Vector3, worldAnchorB?: Vector3 } = {})
     {
-        this.restLength = typeof (options.restLength) === "number" ? options.restLength : 1;
+        this.restLength = typeof (options.restLength) === 'number' ? options.restLength : 1;
 
         this.stiffness = options.stiffness || 100;
 
@@ -117,23 +118,23 @@ export class Spring
      */
     applyForce()
     {
-        var k = this.stiffness,
-            d = this.damping,
-            l = this.restLength,
-            bodyA = this.bodyA,
-            bodyB = this.bodyB,
-            r = applyForce_r,
-            r_unit = applyForce_r_unit,
-            u = applyForce_u,
-            f = applyForce_f,
-            tmp = applyForce_tmp;
+        const k = this.stiffness;
+        const d = this.damping;
+        const l = this.restLength;
+        const bodyA = this.bodyA;
+        const bodyB = this.bodyB;
+        const r = applyForceR;
+        const rUnit = applyForceRUnit;
+        const u = applyForceU;
+        const f = applyForceF;
+        const tmp = applyForceTmp;
 
-        var worldAnchorA = applyForce_worldAnchorA,
-            worldAnchorB = applyForce_worldAnchorB,
-            ri = applyForce_ri,
-            rj = applyForce_rj,
-            ri_x_f = applyForce_ri_x_f,
-            rj_x_f = applyForce_rj_x_f;
+        const worldAnchorA = applyForceWorldAnchorA;
+        const worldAnchorB = applyForceWorldAnchorB;
+        const ri = applyForceRi;
+        const rj = applyForceRj;
+        const riXF = applyForceRiXF;
+        const rjXF = applyForceRjXF;
 
         // Get world anchors
         this.getWorldAnchorA(worldAnchorA);
@@ -145,9 +146,9 @@ export class Spring
 
         // Compute distance vector between world anchor points
         worldAnchorB.subTo(worldAnchorA, r);
-        var rlen = r.length;
-        r_unit.copy(r);
-        r_unit.normalize();
+        const rlen = r.length;
+        rUnit.copy(r);
+        rUnit.normalize();
 
         // Compute relative velocity of the anchor points, u
         bodyB.velocity.subTo(bodyA.velocity, u);
@@ -159,30 +160,28 @@ export class Spring
         u.subTo(tmp, u);
 
         // F = - k * ( x - L ) - D * ( u )
-        r_unit.scaleNumberTo(-k * (rlen - l) - d * u.dot(r_unit), f);
+        rUnit.scaleNumberTo(-k * (rlen - l) - d * u.dot(rUnit), f);
 
         // Add forces to bodies
         bodyA.force.subTo(f, bodyA.force);
         bodyB.force.addTo(f, bodyB.force);
 
         // Angular force
-        ri.crossTo(f, ri_x_f);
-        rj.crossTo(f, rj_x_f);
-        bodyA.torque.subTo(ri_x_f, bodyA.torque);
-        bodyB.torque.addTo(rj_x_f, bodyB.torque);
+        ri.crossTo(f, riXF);
+        rj.crossTo(f, rjXF);
+        bodyA.torque.subTo(riXF, bodyA.torque);
+        bodyB.torque.addTo(rjXF, bodyB.torque);
     }
-
 }
 
-var applyForce_r = new Vector3();
-var applyForce_r_unit = new Vector3();
-var applyForce_u = new Vector3();
-var applyForce_f = new Vector3();
-var applyForce_worldAnchorA = new Vector3();
-var applyForce_worldAnchorB = new Vector3();
-var applyForce_ri = new Vector3();
-var applyForce_rj = new Vector3();
-var applyForce_ri_x_f = new Vector3();
-var applyForce_rj_x_f = new Vector3();
-var applyForce_tmp = new Vector3();
-
+const applyForceR = new Vector3();
+const applyForceRUnit = new Vector3();
+const applyForceU = new Vector3();
+const applyForceF = new Vector3();
+const applyForceWorldAnchorA = new Vector3();
+const applyForceWorldAnchorB = new Vector3();
+const applyForceRi = new Vector3();
+const applyForceRj = new Vector3();
+const applyForceRiXF = new Vector3();
+const applyForceRjXF = new Vector3();
+const applyForceTmp = new Vector3();

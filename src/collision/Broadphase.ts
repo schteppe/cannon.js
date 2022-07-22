@@ -1,9 +1,9 @@
-import { Body } from "../objects/Body";
-import { World } from "../world/World";
+import { Box3, Vector3 } from '@feng3d/math';
+import { Body } from '../objects/Body';
+import { World } from '../world/World';
 
 export class Broadphase
 {
-
     /**
     * The world to search for collisions in.
     */
@@ -21,7 +21,7 @@ export class Broadphase
 
     /**
      * Base class for broadphase implementations
-     * 
+     *
      * @author schteppe
      */
     constructor()
@@ -33,19 +33,19 @@ export class Broadphase
 
     /**
      * Get the collision pairs from the world
-     * 
-     * @param world The world to search in
-     * @param p1 Empty array to be filled with body objects
-     * @param p2 Empty array to be filled with body objects
+     *
+     * @param _world The world to search in
+     * @param _p1 Empty array to be filled with body objects
+     * @param _p2 Empty array to be filled with body objects
      */
-    collisionPairs(world: World, p1: Body[], p2: Body[])
+    collisionPairs(_world: World, _p1: Body[], _p2: Body[])
     {
-        throw new Error("collisionPairs not implemented for this BroadPhase class!");
+        throw new Error('collisionPairs not implemented for this BroadPhase class!');
     }
 
     /**
      * Check if a body pair needs to be intersection tested at all.
-     * 
+     *
      * @param bodyA
      * @param bodyB
      */
@@ -58,8 +58,8 @@ export class Broadphase
         }
 
         // Check types
-        if (((bodyA.type & Body.STATIC) !== 0 || bodyA.sleepState === Body.SLEEPING) &&
-            ((bodyB.type & Body.STATIC) !== 0 || bodyB.sleepState === Body.SLEEPING))
+        if (((bodyA.type & Body.STATIC) !== 0 || bodyA.sleepState === Body.SLEEPING)
+            && ((bodyB.type & Body.STATIC) !== 0 || bodyB.sleepState === Body.SLEEPING))
         {
             // Both bodies are static or sleeping. Skip.
             return false;
@@ -70,18 +70,19 @@ export class Broadphase
 
     /**
      * Check if the bounding volumes of two bodies intersect.
-      * 
-      * @param bodyA 
-      * @param bodyB 
-      * @param pairs1 
-      * @param pairs2 
+      *
+      * @param bodyA
+      * @param bodyB
+      * @param pairs1
+      * @param pairs2
       */
     intersectionTest(bodyA: Body, bodyB: Body, pairs1: Body[], pairs2: Body[])
     {
         if (this.useBoundingBoxes)
         {
             this.doBoundingBoxBroadphase(bodyA, bodyB, pairs1, pairs2);
-        } else
+        }
+        else
         {
             this.doBoundingSphereBroadphase(bodyA, bodyB, pairs1, pairs2);
         }
@@ -96,10 +97,10 @@ export class Broadphase
      */
     doBoundingSphereBroadphase(bodyA: Body, bodyB: Body, pairs1: Body[], pairs2: Body[])
     {
-        var r = Broadphase_collisionPairs_r;
+        const r = BroadphaseCollisionPairsR;
         bodyB.position.subTo(bodyA.position, r);
-        var boundingRadiusSum2 = Math.pow(bodyA.boundingRadius + bodyB.boundingRadius, 2);
-        var norm2 = r.lengthSquared;
+        const boundingRadiusSum2 = Math.pow(bodyA.boundingRadius + bodyB.boundingRadius, 2);
+        const norm2 = r.lengthSquared;
         if (norm2 < boundingRadiusSum2)
         {
             pairs1.push(bodyA);
@@ -140,12 +141,12 @@ export class Broadphase
      */
     makePairsUnique(pairs1: Body[], pairs2: Body[])
     {
-        var t = Broadphase_makePairsUnique_temp,
-            p1 = Broadphase_makePairsUnique_p1,
-            p2 = Broadphase_makePairsUnique_p2,
-            N = pairs1.length;
+        const t = BroadphaseMakePairsUniqueTemp;
+        const p1 = BroadphaseMakePairsUniqueP1;
+        const p2 = BroadphaseMakePairsUniqueP2;
+        const N = pairs1.length;
 
-        for (var i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
             p1[i] = pairs1[i];
             p2[i] = pairs2[i];
@@ -154,19 +155,19 @@ export class Broadphase
         pairs1.length = 0;
         pairs2.length = 0;
 
-        for (var i = 0; i !== N; i++)
+        for (let i = 0; i !== N; i++)
         {
-            var id1 = p1[i].id,
-                id2 = p2[i].id;
-            var key = id1 < id2 ? id1 + "," + id2 : id2 + "," + id1;
+            const id1 = p1[i].id;
+            const id2 = p2[i].id;
+            const key = id1 < id2 ? `${id1},${id2}` : `${id2},${id1}`;
             t[key] = i;
             t.keys.push(key);
         }
 
-        for (var i = 0; i !== t.keys.length; i++)
+        for (let i = 0; i !== t.keys.length; i++)
         {
-            var key = t.keys.pop();
-            var pairIndex = t[key];
+            const key = t.keys.pop();
+            const pairIndex = t[key];
             pairs1.push(p1[pairIndex]);
             pairs2.push(p2[pairIndex]);
             delete t[key];
@@ -176,9 +177,9 @@ export class Broadphase
     /**
      * To be implemented by subcasses
      * @method setWorld
-     * @param {World} world
+     * @param {World} _world
      */
-    setWorld(world: World)
+    setWorld(_world: World)
     {
     }
 
@@ -189,34 +190,34 @@ export class Broadphase
      */
     static boundingSphereCheck(bodyA: Body, bodyB: Body)
     {
-        var dist = bsc_dist;
+        const dist = bscDist;
         bodyA.position.subTo(bodyB.position, dist);
+
         return Math.pow(bodyA.shape.boundingSphereRadius + bodyB.shape.boundingSphereRadius, 2) > dist.lengthSquared;
     }
 
     /**
      * Returns all the bodies within the AABB.
-     * 
-     * @param world 
-     * @param aabb 
-     * @param result An array to store resulting bodies in.
+     *
+     * @param _world
+     * @param _aabb
+     * @param _result An array to store resulting bodies in.
      */
-    aabbQuery(world: World, aabb: Box3, result: Body[])
+    aabbQuery(_world: World, _aabb: Box3, _result: Body[])
     {
         console.warn('.aabbQuery is not implemented in this Broadphase subclass.');
+
         return [];
     }
-
 }
 
-var Broadphase_collisionPairs_r = new Vector3();// Temp objects
-var Broadphase_collisionPairs_normal = new Vector3();
-var Broadphase_collisionPairs_quat = new Quaternion();
-var Broadphase_collisionPairs_relpos = new Vector3();
+const BroadphaseCollisionPairsR = new Vector3();// Temp objects
+// const Broadphase_collisionPairs_normal = new Vector3();
+// const Broadphase_collisionPairs_quat = new Quaternion();
+// const Broadphase_collisionPairs_relpos = new Vector3();
 
+const BroadphaseMakePairsUniqueTemp: { keys: string[] } = { keys: [] };
+const BroadphaseMakePairsUniqueP1: Body[] = [];
+const BroadphaseMakePairsUniqueP2: Body[] = [];
 
-var Broadphase_makePairsUnique_temp: { keys: string[] } = { keys: [] };
-var Broadphase_makePairsUnique_p1: Body[] = [];
-var Broadphase_makePairsUnique_p2: Body[] = [];
-
-var bsc_dist = new Vector3();
+const bscDist = new Vector3();

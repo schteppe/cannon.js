@@ -1,6 +1,7 @@
+import { Box3, Quaternion, Vector3 } from '@feng3d/math';
+
 export class Transform
 {
-
     position: Vector3;
     quaternion: Quaternion;
 
@@ -21,6 +22,7 @@ export class Transform
         worldPoint.subTo(position, result);
         quaternion.inverseTo(tmpQuat);
         tmpQuat.vmult(result, result);
+
         return result;
     }
 
@@ -45,6 +47,7 @@ export class Transform
     {
         quaternion.vmult(localPoint, result);
         result.addTo(position, result);
+
         return result;
     }
 
@@ -62,6 +65,7 @@ export class Transform
     vectorToWorldFrame(localVector: Vector3, result = new Vector3())
     {
         this.quaternion.vmult(localVector, result);
+
         return result;
     }
 
@@ -73,15 +77,15 @@ export class Transform
      */
     toLocalFrameBox3(box3: Box3, target: Box3)
     {
-        var corners = transformIntoFrame_corners;
+        const corners = transformIntoFrameCorners;
 
         // Get corners in current frame
         box3.toPoints(corners);
 
         // Transform them to new local frame
-        for (var i = 0; i !== 8; i++)
+        for (let i = 0; i !== 8; i++)
         {
-            var corner = corners[i];
+            const corner = corners[i];
             this.pointToLocal(corner, corner);
         }
 
@@ -96,16 +100,15 @@ export class Transform
      */
     toWorldFrameBox3(box3: Box3, target: Box3)
     {
-
-        var corners = transformIntoFrame_corners;
+        const corners = transformIntoFrameCorners;
 
         // Get corners in current frame
         box3.toPoints(corners);
 
         // Transform them to new local frame
-        for (var i = 0; i !== 8; i++)
+        for (let i = 0; i !== 8; i++)
         {
-            var corner = corners[i];
+            const corner = corners[i];
             this.pointToWorld(corner, corner);
         }
 
@@ -115,6 +118,7 @@ export class Transform
     static vectorToWorldFrame(quaternion: Quaternion, localVector: Vector3, result: Vector3)
     {
         quaternion.vmult(localVector, result);
+
         return result;
     }
 
@@ -123,13 +127,14 @@ export class Transform
         quaternion.w *= -1;
         quaternion.vmult(worldVector, result);
         quaternion.w *= -1;
+
         return result;
     }
 }
 
-var tmpQuat = new Quaternion();
+const tmpQuat = new Quaternion();
 
-var transformIntoFrame_corners = [
+const transformIntoFrameCorners = [
     new Vector3(),
     new Vector3(),
     new Vector3(),
