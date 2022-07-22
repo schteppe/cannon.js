@@ -1,6 +1,6 @@
 {
   "name": "@feng3d/cannon",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "3d物理引擎",
   "main": "lib/index.js",
   "module": "lib/index.es.js",
@@ -71,7 +71,7 @@
     "typescript": "4.3.5"
   },
   "dependencies": {
-    "@feng3d/event": "0.4.2",
-    "@feng3d/math": "0.4.1"
+    "@feng3d/event": "^0.5.0",
+    "@feng3d/math": "^0.5.0"
   }
 }
