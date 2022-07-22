@@ -36,7 +36,7 @@ var CANNON;
         QUnit.test("updateInertiaWorld", function (test) {
             var body = new CANNON.Body({ mass: 1 });
             body.addShape(new CANNON.Box(new CANNON.Vector3(1, 1, 1)));
-            body.quaternion.setFromEuler(Math.PI / 2, 0, 0);
+            body.quaternion.fromEuler(Math.PI / 2, 0, 0);
             body.updateInertiaWorld();
             test.ok(true);
         });
