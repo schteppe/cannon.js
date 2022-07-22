@@ -71,7 +71,7 @@
     "typescript": "4.3.5"
   },
   "dependencies": {
-    "@feng3d/event": "^0.4.2",
-    "@feng3d/math": "^0.4.1"
+    "@feng3d/event": "0.4.2",
+    "@feng3d/math": "0.4.1"
   }
 }
