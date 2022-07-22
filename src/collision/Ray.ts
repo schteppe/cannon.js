@@ -1,4 +1,5 @@
 import { Box3, Quaternion, Sphere, Triangle3, Vector3 } from '@feng3d/math';
+import { worldNormal } from '../common';
 import { Transform } from '../math/Transform';
 import { Body } from '../objects/Body';
 import { Heightfield } from '../shapes/Heightfield';
@@ -228,14 +229,14 @@ export class Ray
         const direction = this._direction;
 
         // Get plane normal
-        const worldNormal = World.worldNormal.clone();
-        quat.vmult(worldNormal, worldNormal);
+        const worldNormal1 = worldNormal.clone();
+        quat.vmult(worldNormal1, worldNormal1);
 
         const len = new Vector3();
         from.subTo(position, len);
-        const planeToFrom = len.dot(worldNormal);
+        const planeToFrom = len.dot(worldNormal1);
         to.subTo(position, len);
-        const planeToTo = len.dot(worldNormal);
+        const planeToTo = len.dot(worldNormal1);
 
         if (planeToFrom * planeToTo > 0)
         {
@@ -248,7 +249,7 @@ export class Ray
             return;
         }
 
-        const nDotDir = worldNormal.dot(direction);
+        const nDotDir = worldNormal1.dot(direction);
 
         if (Math.abs(nDotDir) < this.precision)
         {
@@ -261,11 +262,11 @@ export class Ray
         const hitPointWorld = new Vector3();
 
         from.subTo(position, planePointToFrom);
-        const t = -worldNormal.dot(planePointToFrom) / nDotDir;
+        const t = -worldNormal1.dot(planePointToFrom) / nDotDir;
         direction.scaleNumberTo(t, dirScaledWithT);
         from.addTo(dirScaledWithT, hitPointWorld);
 
-        this.reportIntersection(worldNormal, hitPointWorld, reportedShape, body, -1);
+        this.reportIntersection(worldNormal1, hitPointWorld, reportedShape, body, -1);
     }
 
     /**

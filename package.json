@@ -6,9 +6,9 @@
   "module": "lib/index.es.js",
   "bundle": "dist/index.js",
   "types": "dist/index.d.ts",
+  "namespace": "CANNON",
   "author": "feng",
   "license": "MIT",
-  "standalone": true,
   "old": {
     "name": "0.4.1",
     "version": "0.6.2",

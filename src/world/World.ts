@@ -5,6 +5,7 @@ import { NaiveBroadphase } from '../collision/NaiveBroadphase';
 import { OverlapKeeper } from '../collision/OverlapKeeper';
 import { Ray } from '../collision/Ray';
 import { RaycastResult } from '../collision/RaycastResult';
+import { worldNormal } from '../common';
 import { Constraint } from '../constraints/Constraint';
 import { ContactEquation } from '../equations/ContactEquation';
 import { FrictionEquation } from '../equations/FrictionEquation';
@@ -39,7 +40,15 @@ export interface WorldEventMap
 
 export class World<T extends WorldEventMap = WorldEventMap> extends EventEmitter<T>
 {
-    static worldNormal = new Vector3(0, 0, 1);
+    // static worldNormal = new Vector3(0, 0, 1);
+    static get worldNormal()
+    {
+        return worldNormal;
+    }
+    static set worldNormal(v)
+    {
+        worldNormal.copy(v);
+    }
 
     /**
      * Currently / last used timestep. Is set to -1 if not available. This value is updated before each internal step, which means that it is "fresh" inside event callbacks.

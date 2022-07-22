@@ -21,7 +21,7 @@ export class HingeConstraint extends PointToPointConstraint
     /**
      * Equations to be fed to the solver
      */
-    equations: Equation[];
+    declare equations: Equation[];
     motorTargetVelocity: number;
 
     /**

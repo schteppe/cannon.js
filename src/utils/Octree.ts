@@ -223,7 +223,7 @@ export class Octree<T> extends OctreeNode<T>
     /**
      * Maximum subdivision depth
      */
-    maxDepth: number;
+    declare maxDepth: number;
 
     /**
      * @class Octree

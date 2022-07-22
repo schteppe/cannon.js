@@ -5,7 +5,7 @@ import { Shape } from './Shape';
 
 export class Trimesh extends Shape
 {
-    vertices: number[];
+    declare vertices: number[];
     /**
      * The normals data.
      */

@@ -4,7 +4,7 @@ import { Shape } from './Shape';
 
 export class ConvexPolyhedron extends Shape
 {
-    vertices: Vector3[];
+    declare vertices: Vector3[];
 
     worldVertices: Vector3[];
     worldVerticesNeedsUpdate: boolean;
@@ -12,9 +12,9 @@ export class ConvexPolyhedron extends Shape
     /**
      * Array of integer arrays, indicating which vertices each face consists of
      */
-    faces: ({ connectedFaces: number[] } & (number[]))[];
+    declare faces: ({ connectedFaces: number[] } & (number[]))[];
 
-    faceNormals: Vector3[];
+    declare faceNormals: Vector3[];
 
     worldFaceNormalsNeedsUpdate: boolean;
     worldFaceNormals: Vector3[];

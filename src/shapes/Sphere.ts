@@ -3,7 +3,7 @@ import { Shape } from './Shape';
 
 export class Sphere extends Shape
 {
-    radius: number;
+    declare radius: number;
 
     /**
      * Spherical shape
