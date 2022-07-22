@@ -1,89 +1,86 @@
-namespace CANNON
+export class ConeTwistConstraint extends PointToPointConstraint
 {
-    export class ConeTwistConstraint extends PointToPointConstraint
+    axisA: Vector3;
+    axisB: Vector3;
+    angle: number;
+    coneEquation: ConeEquation;
+    twistEquation: RotationalEquation;
+    twistAngle: number;
+
+    /**
+     * @class ConeTwistConstraint
+     * 
+     * @param bodyA 
+     * @param bodyB 
+     * @param options 
+     * 
+     * @author schteppe
+     */
+    constructor(bodyA: Body, bodyB: Body, options: {
+        pivotA?: Vector3, pivotB?: Vector3, maxForce?: number, axisA?: Vector3, axisB?: Vector3,
+        collideConnected?: boolean, angle?: number, twistAngle?: number
+    } = {})
     {
-        axisA: Vector3;
-        axisB: Vector3;
-        angle: number;
-        coneEquation: ConeEquation;
-        twistEquation: RotationalEquation;
-        twistAngle: number;
+        super(bodyA, options.pivotA ? options.pivotA.clone() : new Vector3(), bodyB, options.pivotB ? options.pivotB.clone() : new Vector3(),
+            typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6);
+
+        this.axisA = options.axisA ? options.axisA.clone() : new Vector3();
+        this.axisB = options.axisB ? options.axisB.clone() : new Vector3();
+
+        var maxForce = typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6;
+
+        this.collideConnected = !!options.collideConnected;
+
+        this.angle = typeof (options.angle) !== 'undefined' ? options.angle : 0;
 
         /**
-         * @class ConeTwistConstraint
-         * 
-         * @param bodyA 
-         * @param bodyB 
-         * @param options 
-         * 
-         * @author schteppe
+         * @property {ConeEquation} coneEquation
          */
-        constructor(bodyA: Body, bodyB: Body, options: {
-            pivotA?: Vector3, pivotB?: Vector3, maxForce?: number, axisA?: Vector3, axisB?: Vector3,
-            collideConnected?: boolean, angle?: number, twistAngle?: number
-        } = {})
-        {
-            super(bodyA, options.pivotA ? options.pivotA.clone() : new Vector3(), bodyB, options.pivotB ? options.pivotB.clone() : new Vector3(),
-                typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6);
+        var c = this.coneEquation = new ConeEquation(bodyA, bodyB, options);
 
-            this.axisA = options.axisA ? options.axisA.clone() : new Vector3();
-            this.axisB = options.axisB ? options.axisB.clone() : new Vector3();
+        /**
+         * @property {RotationalEquation} twistEquation
+         */
+        var t = this.twistEquation = new RotationalEquation(bodyA, bodyB, options);
+        this.twistAngle = typeof (options.twistAngle) !== 'undefined' ? options.twistAngle : 0;
 
-            var maxForce = typeof (options.maxForce) !== 'undefined' ? options.maxForce : 1e6;
+        // Make the cone equation push the bodies toward the cone axis, not outward
+        c.maxForce = 0;
+        c.minForce = -maxForce;
 
-            this.collideConnected = !!options.collideConnected;
+        // Make the twist equation add torque toward the initial position
+        t.maxForce = 0;
+        t.minForce = -maxForce;
 
-            this.angle = typeof (options.angle) !== 'undefined' ? options.angle : 0;
-
-            /**
-             * @property {ConeEquation} coneEquation
-             */
-            var c = this.coneEquation = new ConeEquation(bodyA, bodyB, options);
-
-            /**
-             * @property {RotationalEquation} twistEquation
-             */
-            var t = this.twistEquation = new RotationalEquation(bodyA, bodyB, options);
-            this.twistAngle = typeof (options.twistAngle) !== 'undefined' ? options.twistAngle : 0;
-
-            // Make the cone equation push the bodies toward the cone axis, not outward
-            c.maxForce = 0;
-            c.minForce = -maxForce;
-
-            // Make the twist equation add torque toward the initial position
-            t.maxForce = 0;
-            t.minForce = -maxForce;
-
-            this.equations.push(c, t);
-        }
-
-        update()
-        {
-            var bodyA = this.bodyA,
-                bodyB = this.bodyB,
-                cone = this.coneEquation,
-                twist = this.twistEquation;
-
-            super.update();
-
-            // Update the axes to the cone constraint
-            bodyA.vectorToWorldFrame(this.axisA, cone.axisA);
-            bodyB.vectorToWorldFrame(this.axisB, cone.axisB);
-
-            // Update the world axes in the twist constraint
-            this.axisA.tangents(twist.axisA, twist.axisA);
-            bodyA.vectorToWorldFrame(twist.axisA, twist.axisA);
-
-            this.axisB.tangents(twist.axisB, twist.axisB);
-            bodyB.vectorToWorldFrame(twist.axisB, twist.axisB);
-
-            cone.angle = this.angle;
-            twist.maxAngle = this.twistAngle;
-        }
-
+        this.equations.push(c, t);
     }
 
-    var ConeTwistConstraint_update_tmpVec1 = new Vector3();
-    var ConeTwistConstraint_update_tmpVec2 = new Vector3();
+    update()
+    {
+        var bodyA = this.bodyA,
+            bodyB = this.bodyB,
+            cone = this.coneEquation,
+            twist = this.twistEquation;
+
+        super.update();
+
+        // Update the axes to the cone constraint
+        bodyA.vectorToWorldFrame(this.axisA, cone.axisA);
+        bodyB.vectorToWorldFrame(this.axisB, cone.axisB);
+
+        // Update the world axes in the twist constraint
+        this.axisA.tangents(twist.axisA, twist.axisA);
+        bodyA.vectorToWorldFrame(twist.axisA, twist.axisA);
+
+        this.axisB.tangents(twist.axisB, twist.axisB);
+        bodyB.vectorToWorldFrame(twist.axisB, twist.axisB);
+
+        cone.angle = this.angle;
+        twist.maxAngle = this.twistAngle;
+    }
 
 }
+
+var ConeTwistConstraint_update_tmpVec1 = new Vector3();
+var ConeTwistConstraint_update_tmpVec2 = new Vector3();
+
