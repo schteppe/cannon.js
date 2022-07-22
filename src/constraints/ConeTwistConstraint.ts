@@ -1,6 +1,7 @@
 import { Vector3 } from '@feng3d/math';
 import { ConeEquation } from '../equations/ConeEquation';
 import { RotationalEquation } from '../equations/RotationalEquation';
+import { Body } from '../objects/Body';
 import { PointToPointConstraint } from './PointToPointConstraint';
 
 export class ConeTwistConstraint extends PointToPointConstraint

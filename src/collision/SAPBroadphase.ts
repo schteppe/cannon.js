@@ -1,5 +1,6 @@
 import { IEvent } from '@feng3d/event';
 import { Box3 } from '@feng3d/math';
+import { Body } from '../objects/Body';
 import { World } from '../world/World';
 import { Broadphase } from './Broadphase';
 
@@ -89,7 +90,8 @@ export class SAPBroadphase extends Broadphase
         for (let i = 1, l = a.length; i < l; i++)
         {
             const v = a[i];
-            for (let j = i - 1; j >= 0; j--)
+            let j = i - 1;
+            for (; j >= 0; j--)
             {
                 if (a[j].aabb.min.x <= v.aabb.min.x)
                 {
@@ -247,10 +249,10 @@ export class SAPBroadphase extends Broadphase
 
         const ri = bi.boundingRadius;
         const rj = bj.boundingRadius;
-        const boundA1 = biPos - ri;
+        // const boundA1 = biPos - ri;
         const boundA2 = biPos + ri;
         const boundB1 = bjPos - rj;
-        const boundB2 = bjPos + rj;
+        // const boundB2 = bjPos + rj;
 
         return boundB1 < boundA2;
     }
@@ -329,10 +331,10 @@ export class SAPBroadphase extends Broadphase
             this.dirty = false;
         }
 
-        const axisIndex = this.axisIndex; let
-            axis = 'x';
-        if (axisIndex === 1) { axis = 'y'; }
-        if (axisIndex === 2) { axis = 'z'; }
+        // const axisIndex = this.axisIndex; let
+        //     axis = 'x';
+        // if (axisIndex === 1) { axis = 'y'; }
+        // if (axisIndex === 2) { axis = 'z'; }
 
         const axisList = this.axisList;
         // const lower = aabb.min[axis];

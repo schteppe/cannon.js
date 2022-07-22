@@ -1,5 +1,6 @@
 import { Vector3 } from '@feng3d/math';
 import { JacobianElement } from '../math/JacobianElement';
+import { Body } from '../objects/Body';
 
 export class Equation
 {

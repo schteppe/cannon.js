@@ -1,4 +1,5 @@
 import { Quaternion, Vector3 } from '@feng3d/math';
+import { Body } from '../objects/Body';
 import { World } from '../world/World';
 import { WheelInfo } from './WheelInfo';
 

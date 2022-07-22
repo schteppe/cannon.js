@@ -1,5 +1,6 @@
 import { Quaternion, Vector3 } from '@feng3d/math';
 import { Material } from '../material/Material';
+import { Body } from '../objects/Body';
 
 export class Shape
 {

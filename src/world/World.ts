@@ -618,6 +618,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends EventEmitter
             {
                 if (bi.material.friction >= 0 && bj.material.friction >= 0)
                 {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     mu = bi.material.friction * bj.material.friction;
                 }
 

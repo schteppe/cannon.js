@@ -1,4 +1,5 @@
 import { ContactEquation } from '../equations/ContactEquation';
+import { Body } from '../objects/Body';
 import { Constraint } from './Constraint';
 
 export class DistanceConstraint extends Constraint

@@ -2,6 +2,7 @@ import { Vector3 } from '@feng3d/math';
 import { Equation } from '../equations/Equation';
 import { RotationalEquation } from '../equations/RotationalEquation';
 import { RotationalMotorEquation } from '../equations/RotationalMotorEquation';
+import { Body } from '../objects/Body';
 import { PointToPointConstraint } from './PointToPointConstraint';
 
 export class HingeConstraint extends PointToPointConstraint

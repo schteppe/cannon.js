@@ -1,5 +1,6 @@
 import { Vector3 } from '@feng3d/math';
 import { HingeConstraint } from '../constraints/HingeConstraint';
+import { Body } from '../objects/Body';
 import { World } from '../world/World';
 
 export class RigidVehicle

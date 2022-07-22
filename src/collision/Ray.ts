@@ -1,5 +1,6 @@
 import { Box3, Quaternion, Sphere, Triangle3, Vector3 } from '@feng3d/math';
 import { Transform } from '../math/Transform';
+import { Body } from '../objects/Body';
 import { Heightfield } from '../shapes/Heightfield';
 import { Shape } from '../shapes/Shape';
 import { Trimesh } from '../shapes/Trimesh';
@@ -414,10 +415,10 @@ export class Ray
         options: { faceList?: number[] } = {}
     )
     {
-        const minDistNormal = intersectConvexMinDistNormal;
+        // const minDistNormal = intersectConvexMinDistNormal;
         const normal = intersectConvexNormal;
         const vector = intersectConvexVector;
-        const minDistIntersect = intersectConvexMinDistIntersect;
+        // const minDistIntersect = intersectConvexMinDistIntersect;
         const faceList = (options && options.faceList) || null;
 
         // Checking faces
@@ -430,7 +431,7 @@ export class Ray
         const to = this.to;
         const fromToDistance = from.distance(to);
 
-        const minDist = -1;
+        // const minDist = -1;
         const Nfaces = faceList ? faceList.length : faces.length;
         const result = this.result;
 
@@ -789,8 +790,8 @@ const RayIntersectSphereIntersectionPoint = new Vector3();
 const RayIntersectSphereNormal = new Vector3();
 
 const intersectConvexNormal = new Vector3();
-const intersectConvexMinDistNormal = new Vector3();
-const intersectConvexMinDistIntersect = new Vector3();
+// const intersectConvexMinDistNormal = new Vector3();
+// const intersectConvexMinDistIntersect = new Vector3();
 const intersectConvexVector = new Vector3();
 
 Ray.prototype[Shape.types.BOX] = Ray.prototype['intersectBox'];

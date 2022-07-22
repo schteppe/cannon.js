@@ -1,4 +1,5 @@
 import { Vector3 } from '@feng3d/math';
+import { Body } from '../objects/Body';
 
 export class Spring
 {

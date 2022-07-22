@@ -1,4 +1,6 @@
-import { Vector3, Plane } from '@feng3d/math';
+import { Vector3 } from '@feng3d/math';
+import { Body } from '../objects/Body';
+import { Plane } from '../shapes/Plane';
 import { Shape } from '../shapes/Shape';
 import { World } from '../world/World';
 import { Broadphase } from './Broadphase';
@@ -183,7 +185,7 @@ export class GridBroadphase extends Broadphase
 					const yreset = ymin + binsizeY * 0.5 - bi.position.y;
 					const zreset = zmin + binsizeZ * 0.5 - bi.position.z;
 
-					let d = GridBroadphaseCollisionPairsD;
+					const d = GridBroadphaseCollisionPairsD;
 					d.set(xreset, yreset, zreset);
 
 					for (let xi = 0, xoff = 0; xi !== nx; xi++, xoff += xstep, d.y = yreset, d.x += binsizeX)

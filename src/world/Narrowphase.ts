@@ -1,5 +1,5 @@
 /* eslint-disable max-params */
-import { Box3, Plane, Quaternion, Sphere, Vector3 } from '@feng3d/math';
+import { Box3, Quaternion, Vector3 } from '@feng3d/math';
 import { ContactEquation } from '../equations/ContactEquation';
 import { FrictionEquation } from '../equations/FrictionEquation';
 import { ContactMaterial } from '../material/ContactMaterial';
@@ -9,7 +9,9 @@ import { Box } from '../shapes/Box';
 import { ConvexPolyhedron } from '../shapes/ConvexPolyhedron';
 import { Heightfield } from '../shapes/Heightfield';
 import { Particle } from '../shapes/Particle';
+import { Plane } from '../shapes/Plane';
 import { Shape } from '../shapes/Shape';
+import { Sphere } from '../shapes/Sphere';
 import { Trimesh } from '../shapes/Trimesh';
 import { World } from './World';
 import feng3d = require('@feng3d/math');
@@ -1425,6 +1427,7 @@ export class Narrowphase
                     minPenetration = penetration;
                     penetratedFaceIndex = i;
                     penetratedFaceNormal.copy(normal);
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     numDetectedFaces++;
                 }
             }

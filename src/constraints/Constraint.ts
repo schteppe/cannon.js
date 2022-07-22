@@ -1,4 +1,5 @@
 import { Equation } from '../equations/Equation';
+import { Body } from '../objects/Body';
 import { Utils } from '../utils/Utils';
 
 export class Constraint

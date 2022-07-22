@@ -1,6 +1,7 @@
 import { Vector3 } from '@feng3d/math';
 import { RaycastResult } from '../collision/RaycastResult';
 import { Transform } from '../math/Transform';
+import { Body } from '../objects/Body';
 import { Utils } from '../utils/Utils';
 
 export class WheelInfo
