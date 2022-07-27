@@ -1,125 +1,25 @@
 {
     "compilerOptions": {
         "target": "ES5",
+        "module": "CommonJS",
         "noImplicitAny": false,
         "sourceMap": true,
         "declarationMap": true,
         "declaration": true,
-        "composite": true,
-        // "strict": true,
-        "skipLibCheck": true,
         "experimentalDecorators": true,
         "lib": [
             "ES2015",
-            "dom"
+            "DOM",
         ],
-        "outFile": "dist/index.js"
-        // "outDir": "debug"
+        "outDir": "lib"
     },
-    "references": [
-        {
-            "path": "../feng3d/packages/event",
-        },
-        {
-            "path": "../feng3d/packages/bezier",
-        },
-        {
-            "path": "../feng3d/packages/objectview",
-        },
-        {
-            "path": "../feng3d/packages/polyfill",
-        },
-        {
-            "path": "../feng3d/packages/task",
-        },
-        {
-            "path": "../feng3d/packages/watcher",
-        },
-        {
-            "path": "../feng3d/packages/serialization",
-        },
-        {
-            "path": "../feng3d/packages/math",
-        },
-        {
-            "path": "../feng3d/packages/filesystem",
-        },
-        {
-            "path": "../feng3d/packages/shortcut",
-        },
-        {
-            "path": "../feng3d/packages/renderer",
-        },
-        {
-            "path": "../feng3d/packages/core",
-        },
-        {
-            "path": "../feng3d/packages/terrain",
-        },
-        {
-            "path": "../feng3d/packages/particlesystem",
-        },
-        {
-            "path": "../feng3d/packages/assets",
-        },
-        {
-            "path": "../feng3d/packages/parsers",
-        },
-        {
-            "path": "../feng3d/packages/ui",
-        },
-        {
-            "path": "../feng3d",
-        },
+    "include": [
+        "src/**/*.ts"
     ],
-    "files": [
-        //
-        "src/Feng3d.ts",
-        //
-        "src/math/Transform.ts",
-        "src/math/JacobianElement.ts",
-        "src/utils/Utils.ts",
-        "src/constraints/Constraint.ts",
-        "src/constraints/DistanceConstraint.ts",
-        "src/constraints/PointToPointConstraint.ts",
-        "src/constraints/ConeTwistConstraint.ts",
-        "src/constraints/HingeConstraint.ts",
-        "src/constraints/LockConstraint.ts",
-        "src/shapes/Shape.ts",
-        "src/shapes/ConvexPolyhedron.ts",
-        "src/shapes/Box.ts",
-        "src/shapes/Cylinder.ts",
-        "src/shapes/Heightfield.ts",
-        "src/shapes/Particle.ts",
-        "src/shapes/Plane.ts",
-        "src/shapes/Sphere.ts",
-        "src/shapes/Trimesh.ts",
-        "src/utils/Octree.ts",
-        "src/collision/OverlapKeeper.ts",
-        "src/collision/RaycastResult.ts",
-        "src/collision/Broadphase.ts",
-        "src/collision/GridBroadphase.ts",
-        "src/collision/NaiveBroadphase.ts",
-        "src/collision/SAPBroadphase.ts",
-        "src/collision/Ray.ts",
-        "src/material/Material.ts",
-        "src/material/ContactMaterial.ts",
-        "src/objects/Body.ts",
-        "src/objects/Spring.ts",
-        "src/objects/WheelInfo.ts",
-        "src/objects/RaycastVehicle.ts",
-        "src/objects/RigidVehicle.ts",
-        "src/objects/SPHSystem.ts",
-        "src/equations/Equation.ts",
-        "src/equations/ConeEquation.ts",
-        "src/equations/ContactEquation.ts",
-        "src/equations/FrictionEquation.ts",
-        "src/equations/RotationalEquation.ts",
-        "src/equations/RotationalMotorEquation.ts",
-        "src/solver/Solver.ts",
-        "src/solver/GSSolver.ts",
-        "src/solver/SplitSolver.ts",
-        "src/world/World.ts",
-        "src/world/Narrowphase.ts"
-    ]
+    "ts-node": {
+        "files": true,
+        "compilerOptions": {
+            "esModuleInterop": true
+        }
+    }
 }

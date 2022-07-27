@@ -48,7 +48,7 @@ namespace CANNON
         {
             var body = new Body({ mass: 1 });
             body.addShape(new Box(new Vector3(1, 1, 1)));
-            body.quaternion.setFromEuler(Math.PI / 2, 0, 0);
+            body.quaternion.fromEuler(Math.PI / 2, 0, 0);
             body.updateInertiaWorld();
             test.ok(true);
         });

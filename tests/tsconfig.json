@@ -14,15 +14,10 @@
         // "outDir": "./debug"
         "outFile": "./out/tests.js"
     },
-    "references": [
-        {
-            "path": "../../../feng3d",
-        },
-        {
-            "path": "../",
-        },
-    ],
     "include": [
+        //
+        "../../feng3d/index.d.ts",
+        "../dist/index.d.ts",
         //
         "libs/qunit/qunit.d.ts",
         //

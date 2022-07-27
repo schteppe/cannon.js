@@ -1,12 +1,32 @@
 {
-  "name": "cannon",
-  "version": "0.6.2",
-  "description": "A lightweight 3D physics engine written in JavaScript.",
-  "homepage": "https://github.com/schteppe/cannon.js",
-  "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)",
+  "name": "@feng3d/cannon",
+  "version": "0.5.0",
+  "description": "3d物理引擎",
+  "main": "lib/index.js",
+  "module": "lib/index.es.js",
+  "bundle": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "namespace": "CANNON",
+  "author": "feng",
+  "license": "MIT",
+  "origin": {
+    "name": "0.4.1",
+    "version": "0.6.2",
+    "description": "A lightweight 3D physics engine written in JavaScript.",
+    "homepage": "https://github.com/schteppe/cannon.js",
+    "author": "Stefan Hedman <schteppe@gmail.com> (http://steffe.se)"
+  },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w"
+    "start": "npm run watch",
+    "clean": "rimraf \"{lib,dist}\"",
+    "build": "npm run clean && rollup -c",
+    "build:prod": "npm run clean && cross-env NODE_ENV=production rollup -c",
+    "watch": "rollup -cw",
+    "test": "mocha",
+    "lint": "eslint --ext .js --ext .ts src test rollup.config.js --ignore-path .gitignore --max-warnings 0",
+    "lintfix": "npm run lint -- --fix",
+    "docs": "typedoc",
+    "release": "npm run build:prod && npm publish"
   },
   "keywords": [
     "cannon.js",
@@ -15,26 +35,46 @@
     "engine",
     "3d"
   ],
-  "main": "./src/Cannon.js",
-  "engines": {
-    "node": "*"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/schteppe/cannon.js.git"
+    "url": "https://gitlab.com/feng3d/cannon.git"
   },
-  "bugs": {
-    "url": "https://github.com/schteppe/cannon.js/issues"
+  "publishConfig": {
+    "access": "public"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
+  "files": [
+    "dist/",
+    "lib",
+    "src"
   ],
-  "dependencies": {
-    "feng3d": "0.1.3"
-  },
   "devDependencies": {
-    "typescript": "^4.7.4"
+    "@types/node": "^18.6.1",
+    "@types/mocha": "9.1.0",
+    "@typescript-eslint/eslint-plugin": "5.17.0",
+    "@typescript-eslint/parser": "5.17.0",
+    "tslib": "^2.4.0",
+    "cross-env": "7.0.3",
+    "eslint": "8.12.0",
+    "mocha": "9.2.2",
+    "rimraf": "3.0.2",
+    "rollup": "2.70.1",
+    "rollup-plugin-buble": "0.19.8",
+    "rollup-plugin-commonjs": "10.1.0",
+    "rollup-plugin-dts": "4.2.0",
+    "rollup-plugin-json": "4.0.0",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "rollup-plugin-replace": "2.2.0",
+    "rollup-plugin-sourcemaps": "0.6.3",
+    "rollup-plugin-string": "3.0.0",
+    "rollup-plugin-terser": "7.0.2",
+    "rollup-plugin-typescript": "1.0.1",
+    "ts-node": "10.7.0",
+    "typedoc": "0.21.4",
+    "typedoc-plugin-sourcefile-url": "1.0.6",
+    "typescript": "4.3.5"
+  },
+  "dependencies": {
+    "@feng3d/event": "^0.5.0",
+    "@feng3d/math": "^0.5.0"
   }
 }

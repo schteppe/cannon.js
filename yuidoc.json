@@ -1,6 +1,0 @@
-{
-    "options": {
-        "outdir" : "docs",
-        "paths" : ["./src/"]
-    }
-}
