@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>cannon.js - collisionfilter demo</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  </head>
-  <body>
-    <script src="../build/cannon.js"></script>
+</head>
+
+<body>
+    <script src="../../feng3d/out/feng3d.js"></script>
+    <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
@@ -35,9 +38,10 @@
         var GROUP2 = 2;
         var GROUP3 = 4;
 
-        demo.addScene("filter",function(){
+        demo.addScene("filter", function ()
+        {
             var world = demo.getWorld();
-            world.gravity.set(0,0,0); // no gravity
+            world.gravity.set(0, 0, 0); // no gravity
             world.broadphase = new CANNON.NaiveBroadphase();
             world.solver.iterations = 5;
 
@@ -45,8 +49,8 @@
             var sphereShape = new CANNON.Sphere(size);
             var sphereBody = new CANNON.Body({
                 mass: mass,
-                position: new CANNON.Vec3(5,0,0),
-                velocity: new CANNON.Vec3(-5,0,0),
+                position: new CANNON.Vector3(5, 0, 0),
+                velocity: new CANNON.Vector3(-5, 0, 0),
                 collisionFilterGroup: GROUP1, // Put the sphere in group 1
                 collisionFilterMask: GROUP2 | GROUP3, // It can only collide with group 2 and 3
                 shape: sphereShape
@@ -55,19 +59,19 @@
             // Box
             var boxBody = new CANNON.Body({
                 mass: mass,
-                shape: new CANNON.Box(new CANNON.Vec3(size,size,size)),
+                shape: new CANNON.Box(new CANNON.Vector3(size, size, size)),
                 collisionFilterGroup: GROUP2, // Put the box in group 2
-                collisionFilterMask:  GROUP1 // It can only collide with group 1 (the sphere)
+                collisionFilterMask: GROUP1 // It can only collide with group 1 (the sphere)
             });
 
             // Cylinder
-            var cylinderShape = new CANNON.Cylinder(size,size,size*2.2,10);
+            var cylinderShape = new CANNON.Cylinder(size, size, size * 2.2, 10);
             var cylinderBody = new CANNON.Body({
                 mass: mass,
                 shape: cylinderShape,
-                position: new CANNON.Vec3(-5,0,0),
+                position: new CANNON.Vector3(-5, 0, 0),
                 collisionFilterGroup: GROUP3, // Put the cylinder in group 3
-                collisionFilterMask:  GROUP1 // It can only collide with group 1 (the sphere)
+                collisionFilterMask: GROUP1 // It can only collide with group 1 (the sphere)
             });
 
             // Add everything to the world and demo
@@ -82,5 +86,6 @@
         demo.start();
 
     </script>
-  </body>
+</body>
+
 </html>

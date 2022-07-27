@@ -1045,9 +1045,9 @@ CANNON.Demo.prototype.shape2mesh = function(body){
         case CANNON.Shape.types.HEIGHTFIELD:
             var geometry = new THREE.Geometry();
 
-            var v0 = new CANNON.Vec3();
-            var v1 = new CANNON.Vec3();
-            var v2 = new CANNON.Vec3();
+            var v0 = new CANNON.Vector3();
+            var v1 = new CANNON.Vector3();
+            var v2 = new CANNON.Vector3();
             for (var xi = 0; xi < shape.data.length - 1; xi++) {
                 for (var yi = 0; yi < shape.data[xi].length - 1; yi++) {
                     for (var k = 0; k < 2; k++) {
@@ -1076,9 +1076,9 @@ CANNON.Demo.prototype.shape2mesh = function(body){
         case CANNON.Shape.types.TRIMESH:
             var geometry = new THREE.Geometry();
 
-            var v0 = new CANNON.Vec3();
-            var v1 = new CANNON.Vec3();
-            var v2 = new CANNON.Vec3();
+            var v0 = new CANNON.Vector3();
+            var v1 = new CANNON.Vector3();
+            var v2 = new CANNON.Vector3();
             for (var i = 0; i < shape.indices.length / 3; i++) {
                 shape.getTriangleVertices(i, v0, v1, v2);
                 geometry.vertices.push(

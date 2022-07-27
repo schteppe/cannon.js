@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "composite": true,
+        // "declaration": true,
+        // "strict": true,
+        "experimentalDecorators": true,
+        "lib": [
+            "ES2015",
+            "dom"
+        ],
+        // "outDir": "./debug"
+        "outFile": "./out/tests.js"
+    },
+    "include": [
+        //
+        "../../feng3d/index.d.ts",
+        "../dist/index.d.ts",
+        //
+        "libs/qunit/qunit.d.ts",
+        //
+        "src/**/*.ts"
+    ]
+}

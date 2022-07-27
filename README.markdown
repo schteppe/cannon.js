@@ -41,7 +41,7 @@ world.gravity.set(0, 0, -9.82); // m/s²
 var radius = 1; // m
 var sphereBody = new CANNON.Body({
    mass: 5, // kg
-   position: new CANNON.Vec3(0, 0, 10), // m
+   position: new CANNON.Vector3(0, 0, 10), // m
    shape: new CANNON.Sphere(radius)
 });
 world.addBody(sphereBody);

@@ -1,0 +1,9 @@
+// 将设置放入此文件中以覆盖默认值和用户设置。
+{
+    // 定义函数的左大括号是否放置在新的一行。
+    "typescript.format.placeOpenBraceOnNewLineForFunctions": true,
+    // 定义控制块的左括号是否放置在新的一行。
+    "typescript.format.placeOpenBraceOnNewLineForControlBlocks": true,
+    "javascript.format.placeOpenBraceOnNewLineForFunctions": true,
+    "javascript.format.placeOpenBraceOnNewLineForControlBlocks": true,
+}

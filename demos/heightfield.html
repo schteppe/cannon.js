@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>cannon.js - Heightfield demo</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  </head>
-  <body>
-    <script src="../build/cannon.js"></script>
+</head>
+
+<body>
+    <script src="../../feng3d/out/feng3d.js"></script>
+    <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
@@ -19,7 +22,8 @@
 
         var demo = new CANNON.Demo();
 
-        demo.addScene("Heightfield", function () {
+        demo.addScene("Heightfield", function ()
+        {
 
             // Init world
             var world = demo.getWorld();
@@ -30,11 +34,13 @@
             var matrix = [];
             var sizeX = 15,
                 sizeY = 15;
-            for (var i = 0; i < sizeX; i++) {
+            for (var i = 0; i < sizeX; i++)
+            {
                 matrix.push([]);
-                for (var j = 0; j < sizeY; j++) {
-                    var height = Math.cos(i/sizeX * Math.PI * 2)*Math.cos(j/sizeY * Math.PI * 2) + 2;
-                    if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
+                for (var j = 0; j < sizeY; j++)
+                {
+                    var height = Math.cos(i / sizeX * Math.PI * 2) * Math.cos(j / sizeY * Math.PI * 2) + 2;
+                    if (i === 0 || i === sizeX - 1 || j === 0 || j === sizeY - 1)
                         height = 3;
                     matrix[i].push(height);
                 }
@@ -52,9 +58,11 @@
 
             // Add spheres
             var mass = 1;
-            for(var i=0; i<sizeX - 1; i++){
-                for (var j = 0; j < sizeY - 1; j++) {
-                    if(i===0 || i >= sizeX-2 || j===0 || j >= sizeY-2)
+            for (var i = 0; i < sizeX - 1; i++)
+            {
+                for (var j = 0; j < sizeY - 1; j++)
+                {
+                    if (i === 0 || i >= sizeX - 2 || j === 0 || j >= sizeY - 2)
                         continue;
                     var sphereShape = new CANNON.Sphere(0.1);
                     var sphereBody = new CANNON.Body({ mass: mass });
@@ -67,8 +75,9 @@
             }
         });
 
-      demo.start();
+        demo.start();
 
     </script>
-  </body>
+</body>
+
 </html>

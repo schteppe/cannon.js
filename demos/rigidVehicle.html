@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>cannon.js - RigidVehicle</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  </head>
-  <body>
-    <script src="../build/cannon.js"></script>
+</head>
+
+<body>
+    <script src="../../feng3d/out/feng3d.js"></script>
+    <script src="../out/cannon.js"></script>
     <script src="../build/cannon.demo.js"></script>
     <script src="../libs/dat.gui.js"></script>
     <script src="../libs/Three.js"></script>
@@ -21,7 +24,8 @@
         var mass = 1;
         var vehicle;
 
-        demo.addScene("car",function(){
+        demo.addScene("car", function ()
+        {
             var world = demo.getWorld();
             world.gravity.set(0, 0, -30);
             world.broadphase = new CANNON.SAPBroadphase(world);
@@ -39,8 +43,8 @@
             world.addContactMaterial(wheelGroundContactMaterial);
 
             var chassisShape;
-            var centerOfMassAdjust = new CANNON.Vec3(0, 0, -1);
-            chassisShape = new CANNON.Box(new CANNON.Vec3(5, 2, 0.5));
+            var centerOfMassAdjust = new CANNON.Vector3(0, 0, -1);
+            chassisShape = new CANNON.Box(new CANNON.Vector3(5, 2, 0.5));
             var chassisBody = new CANNON.Body({ mass: 1 });
             chassisBody.addShape(chassisShape, centerOfMassAdjust);
             chassisBody.position.set(0, 0, 0);
@@ -52,14 +56,14 @@
 
             var axisWidth = 7;
             var wheelShape = new CANNON.Sphere(1.5);
-            var down = new CANNON.Vec3(0, 0, -1);
+            var down = new CANNON.Vector3(0, 0, -1);
 
             var wheelBody = new CANNON.Body({ mass: mass, material: wheelMaterial });
             wheelBody.addShape(wheelShape);
             vehicle.addWheel({
                 body: wheelBody,
-                position: new CANNON.Vec3(5, axisWidth/2, 0).vadd(centerOfMassAdjust),
-                axis: new CANNON.Vec3(0, 1, 0),
+                position: new CANNON.Vector3(5, axisWidth / 2, 0).vadd(centerOfMassAdjust),
+                axis: new CANNON.Vector3(0, 1, 0),
                 direction: down
             });
 
@@ -67,8 +71,8 @@
             wheelBody.addShape(wheelShape);
             vehicle.addWheel({
                 body: wheelBody,
-                position: new CANNON.Vec3(5, -axisWidth/2, 0).vadd(centerOfMassAdjust),
-                axis: new CANNON.Vec3(0, -1, 0),
+                position: new CANNON.Vector3(5, -axisWidth / 2, 0).vadd(centerOfMassAdjust),
+                axis: new CANNON.Vector3(0, -1, 0),
                 direction: down
             });
 
@@ -76,8 +80,8 @@
             wheelBody.addShape(wheelShape);
             vehicle.addWheel({
                 body: wheelBody,
-                position: new CANNON.Vec3(-5, axisWidth/2, 0).vadd(centerOfMassAdjust),
-                axis: new CANNON.Vec3(0, 1, 0),
+                position: new CANNON.Vector3(-5, axisWidth / 2, 0).vadd(centerOfMassAdjust),
+                axis: new CANNON.Vector3(0, 1, 0),
                 direction: down
             });
 
@@ -85,13 +89,14 @@
             wheelBody.addShape(wheelShape);
             vehicle.addWheel({
                 body: wheelBody,
-                position: new CANNON.Vec3(-5, -axisWidth/2, 0).vadd(centerOfMassAdjust),
-                axis: new CANNON.Vec3(0, -1, 0),
+                position: new CANNON.Vector3(-5, -axisWidth / 2, 0).vadd(centerOfMassAdjust),
+                axis: new CANNON.Vector3(0, -1, 0),
                 direction: down
             });
 
             // Some damping to not spin wheels too fast
-            for(var i=0; i<vehicle.wheelBodies.length; i++){
+            for (var i = 0; i < vehicle.wheelBodies.length; i++)
+            {
                 vehicle.wheelBodies[i].angularDamping = 0.4;
             }
 
@@ -100,13 +105,15 @@
 
             // Add visuals
             demo.addVisual(vehicle.chassisBody);
-            for(var i=0; i<vehicle.wheelBodies.length; i++){
+            for (var i = 0; i < vehicle.wheelBodies.length; i++)
+            {
                 demo.addVisual(vehicle.wheelBodies[i]);
             }
 
             vehicle.addToWorld(world);
 
-            if(false){
+            if (false)
+            {
                 // Ground
                 var groundShape = new CANNON.Plane();
                 var ground = new CANNON.Body({ mass: 0, material: groundMaterial });
@@ -114,17 +121,20 @@
                 ground.position.z = -3;
                 world.addBody(ground);
                 demo.addVisual(ground);
-            } else {
+            } else
+            {
                 var mock = false;
                 var matrix = [];
                 var sizeX = 64,
                     sizeY = sizeX;
 
-                for (var i = 0; i < sizeX; i++) {
+                for (var i = 0; i < sizeX; i++)
+                {
                     matrix.push([]);
-                    for (var j = 0; j < sizeY; j++) {
+                    for (var j = 0; j < sizeY; j++)
+                    {
                         var height = Math.sin(i / sizeX * Math.PI * 8) * Math.sin(j / sizeY * Math.PI * 8) * 8 + 8;
-                        if(i===0 || i === sizeX-1 || j===0 || j === sizeY-1)
+                        if (i === 0 || i === sizeX - 1 || j === 0 || j === sizeY - 1)
                             height = 10;
 
                         matrix[i].push(height);
@@ -137,23 +147,28 @@
                 var hfBody;
 
                 var quat = new CANNON.Quaternion();
-                var pos = new CANNON.Vec3(-sizeX * hfShape.elementSize / 2, -20, -20);
+                var pos = new CANNON.Vector3(-sizeX * hfShape.elementSize / 2, -20, -20);
 
                 // Use normal
                 hfBody = new CANNON.Body({ mass: 0, material: groundMaterial });
-                hfBody.addShape(hfShape, new CANNON.Vec3(0,0,-1), new CANNON.Quaternion());
+                hfBody.addShape(hfShape, new CANNON.Vector3(0, 0, -1), new CANNON.Quaternion());
                 hfBody.position.copy(pos);
                 hfBody.quaternion.copy(quat);
 
-                if(!mock){
+                if (!mock)
+                {
                     world.addBody(hfBody);
                     demo.addVisual(hfBody);
                 }
 
-                if(mock){
-                    for(var i=0; i<sizeX - 1; i++){
-                        for (var j = 0; j < sizeY - 1; j++) {
-                            for (var k = 0; k < 2; k++) {
+                if (mock)
+                {
+                    for (var i = 0; i < sizeX - 1; i++)
+                    {
+                        for (var j = 0; j < sizeY - 1; j++)
+                        {
+                            for (var k = 0; k < 2; k++)
+                            {
                                 hfShape.getConvexTrianglePillar(i, j, !!k);
                                 var convexBody = new CANNON.Body({ mass: 0, material: groundMaterial });
                                 convexBody.addShape(hfShape.pillarConvex);
@@ -175,37 +190,40 @@
         var maxSteerVal = Math.PI / 8;
         var maxSpeed = 10;
         var maxForce = 100;
-        function handler(event){
+        function handler(event)
+        {
             var up = (event.type == 'keyup');
 
-            if(!up && event.type !== 'keydown')
+            if (!up && event.type !== 'keydown')
                 return;
 
-            switch(event.keyCode){
+            switch (event.keyCode)
+            {
 
-            case 38: // forward
-                vehicle.setWheelForce(up ? 0 : maxForce, 2);
-                vehicle.setWheelForce(up ? 0 : -maxForce, 3);
-                break;
+                case 38: // forward
+                    vehicle.setWheelForce(up ? 0 : maxForce, 2);
+                    vehicle.setWheelForce(up ? 0 : -maxForce, 3);
+                    break;
 
-            case 40: // backward
-                vehicle.setWheelForce(up ? 0 : -maxForce/2, 2);
-                vehicle.setWheelForce(up ? 0 : maxForce/2, 3);
-                break;
+                case 40: // backward
+                    vehicle.setWheelForce(up ? 0 : -maxForce / 2, 2);
+                    vehicle.setWheelForce(up ? 0 : maxForce / 2, 3);
+                    break;
 
-            case 39: // right
-                vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 0);
-                vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 1);
-                break;
+                case 39: // right
+                    vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 0);
+                    vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 1);
+                    break;
 
-            case 37: // left
-                vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0);
-                vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1);
-                break;
+                case 37: // left
+                    vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0);
+                    vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1);
+                    break;
 
             }
         }
 
     </script>
-  </body>
+</body>
+
 </html>

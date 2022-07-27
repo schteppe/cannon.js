@@ -1,66 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>cannon.js - single body on plane demo</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="css/style.css" type="text/css"/>
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  </head>
-  <body>
-    <script src="../build/cannon.js"></script>
-    <script src="../build/cannon.demo.js"></script>
-    <script src="../libs/dat.gui.js"></script>
-    <script src="../libs/Three.js"></script>
-    <script src="../libs/TrackballControls.js"></script>
-    <script src="../libs/Detector.js"></script>
-    <script src="../libs/Stats.js"></script>
-    <script src="../libs/smoothie.js"></script>
-    <script>
 
-      var demo = new CANNON.Demo();
-      var size = 2;
+<head>
+  <title>cannon.js - single body on plane demo</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
 
-      demo.addScene("Sphere",function(){
-          var sphereShape = new CANNON.Sphere(size);
-          createBodyOnPlane(demo,sphereShape);
-        });
+<body>
+  <script src="../../feng3d/out/feng3d.js"></script>
+  <script src="../out/cannon.js"></script>
+  <script src="../build/cannon.demo.js"></script>
+  <script src="../libs/dat.gui.js"></script>
+  <script src="../libs/Three.js"></script>
+  <script src="../libs/TrackballControls.js"></script>
+  <script src="../libs/Detector.js"></script>
+  <script src="../libs/Stats.js"></script>
+  <script src="../libs/smoothie.js"></script>
+  <script>
 
-      demo.addScene("Box",function(){
-          var boxShape = new CANNON.Box(new CANNON.Vec3(size,size,size));
-          createBodyOnPlane(demo,boxShape);
-        });
+    var demo = new CANNON.Demo();
+    var size = 2;
 
-      demo.start();
+    demo.addScene("Sphere", function ()
+    {
+      var sphereShape = new CANNON.Sphere(size);
+      createBodyOnPlane(demo, sphereShape);
+    });
 
-      function createBodyOnPlane(demo,shape){
+    demo.addScene("Box", function ()
+    {
+      var boxShape = new CANNON.Box(new CANNON.Vector3(size, size, size));
+      createBodyOnPlane(demo, boxShape);
+    });
 
-        // Create world
-        var world = demo.getWorld();
-        world.gravity.set(0,0,-10);
-        world.broadphase = new CANNON.NaiveBroadphase();
-        world.solver.iterations = 10;
+    demo.start();
 
-        world.defaultContactMaterial.contactEquationStiffness = 1e7;
-        world.defaultContactMaterial.contactEquationRelaxation = 4;
+    function createBodyOnPlane(demo, shape)
+    {
 
-        // ground plane
-        var groundShape = new CANNON.Plane();
-        var groundBody = new CANNON.Body({ mass: 0 });
-        groundBody.addShape(groundShape);
-        world.addBody(groundBody);
-        demo.addVisual(groundBody);
+      // Create world
+      var world = demo.getWorld();
+      world.gravity.set(0, 0, -10);
+      world.broadphase = new CANNON.NaiveBroadphase();
+      world.solver.iterations = 10;
 
-        // Shape on plane
-        var shapeBody = new CANNON.Body({ mass: 30 });
-        shapeBody.addShape(shape);
-        var pos = new CANNON.Vec3(0,0,size);
-        shapeBody.position.set(0,size,size*2);
-        shapeBody.velocity.set(0,0,0);
-        shapeBody.angularVelocity.set(0,0,0);
-        world.addBody(shapeBody);
-        demo.addVisual(shapeBody);
-      }
+      world.defaultContactMaterial.contactEquationStiffness = 1e7;
+      world.defaultContactMaterial.contactEquationRelaxation = 4;
 
-    </script>
-  </body>
+      // ground plane
+      var groundShape = new CANNON.Plane();
+      var groundBody = new CANNON.Body({ mass: 0 });
+      groundBody.addShape(groundShape);
+      world.addBody(groundBody);
+      demo.addVisual(groundBody);
+
+      // Shape on plane
+      var shapeBody = new CANNON.Body({ mass: 30 });
+      shapeBody.addShape(shape);
+      var pos = new CANNON.Vector3(0, 0, size);
+      shapeBody.position.set(0, size, size * 2);
+      shapeBody.velocity.set(0, 0, 0);
+      shapeBody.angularVelocity.set(0, 0, 0);
+      world.addBody(shapeBody);
+      demo.addVisual(shapeBody);
+    }
+
+  </script>
+</body>
+
 </html>

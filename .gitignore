@@ -1,12 +1,7 @@
-# Python compiled files
-*.pyc
-
-# Temp files
-*~
-*#
-
-# Node Modules
-node_modules/*
-
-# File system
-.DS_Store
+node_modules
+yarn.lock
+dist
+lib
+public
+out
+package-lock.json

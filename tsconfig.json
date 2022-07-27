@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "module": "CommonJS",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "declarationMap": true,
+        "declaration": true,
+        "experimentalDecorators": true,
+        "lib": [
+            "ES2015",
+            "DOM",
+        ],
+        "outDir": "lib"
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "ts-node": {
+        "files": true,
+        "compilerOptions": {
+            "esModuleInterop": true
+        }
+    }
+}
