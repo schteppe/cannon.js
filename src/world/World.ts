@@ -840,7 +840,7 @@ export class World<T extends WorldEventMap = WorldEventMap> extends EventEmitter
 
         return function ()
         {
-            const _this = <World>this;
+            const _this = this as World;
 
             const hasBeginContact = _this.has('beginContact');
             const hasEndContact = _this.has('endContact');

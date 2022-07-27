@@ -9,7 +9,7 @@
   "namespace": "CANNON",
   "author": "feng",
   "license": "MIT",
-  "old": {
+  "origin": {
     "name": "0.4.1",
     "version": "0.6.2",
     "description": "A lightweight 3D physics engine written in JavaScript.",
@@ -19,13 +19,14 @@
   "scripts": {
     "start": "npm run watch",
     "clean": "rimraf \"{lib,dist}\"",
-    "build": "rollup -c",
-    "build:prod": "cross-env NODE_ENV=production rollup -c",
+    "build": "npm run clean && rollup -c",
+    "build:prod": "npm run clean && cross-env NODE_ENV=production rollup -c",
     "watch": "rollup -cw",
     "test": "mocha",
     "lint": "eslint --ext .js --ext .ts src test rollup.config.js --ignore-path .gitignore --max-warnings 0",
     "lintfix": "npm run lint -- --fix",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "release": "npm run build:prod && npm publish"
   },
   "keywords": [
     "cannon.js",
@@ -47,9 +48,11 @@
     "src"
   ],
   "devDependencies": {
+    "@types/node": "^18.6.1",
     "@types/mocha": "9.1.0",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
+    "tslib": "^2.4.0",
     "cross-env": "7.0.3",
     "eslint": "8.12.0",
     "mocha": "9.2.2",
