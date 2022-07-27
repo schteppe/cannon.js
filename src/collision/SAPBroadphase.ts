@@ -1,5 +1,5 @@
-import { IEvent } from '@feng3d/event';
-import { Box3 } from '@feng3d/math';
+import { IEvent } from 'feng3d';
+import { Box3 } from 'feng3d';
 import { Body } from '../objects/Body';
 import { World } from '../world/World';
 import { Broadphase } from './Broadphase';

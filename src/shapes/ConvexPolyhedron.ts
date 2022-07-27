@@ -1,4 +1,4 @@
-import { Quaternion, Vector3 } from '@feng3d/math';
+import { Quaternion, Vector3 } from 'feng3d';
 import { Transform } from '../math/Transform';
 import { Shape } from './Shape';
 

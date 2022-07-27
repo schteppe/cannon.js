@@ -1,14 +1,13 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@feng3d/event': ^0.5.0
-  '@feng3d/math': ^0.5.0
   '@types/mocha': 9.1.0
   '@types/node': ^18.6.1
   '@typescript-eslint/eslint-plugin': 5.17.0
   '@typescript-eslint/parser': 5.17.0
   cross-env: 7.0.3
   eslint: 8.12.0
+  feng3d: ^0.5.0
   mocha: 9.2.2
   rimraf: 3.0.2
   rollup: 2.70.1
@@ -29,8 +28,7 @@ specifiers:
   typescript: 4.3.5
 
 dependencies:
-  '@feng3d/event': 0.5.0
-  '@feng3d/math': 0.5.0
+  feng3d: 0.5.0
 
 devDependencies:
   '@types/mocha': 9.1.0
@@ -110,12 +108,46 @@ packages:
       - supports-color
     dev: true
 
+  /@feng3d/assets/0.5.0:
+    resolution: {integrity: sha512-H5qm47A6mgaxsE7XK/PaYHBM3CCjr+7C2UXXVVck8CBzYvdF68MU5OqtpEboQ128/rEWdfQ8B3lTwV6Yy4FiUQ==}
+    dependencies:
+      '@feng3d/core': 0.5.0
+      '@feng3d/event': 0.5.0
+      '@feng3d/objectview': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/serialization': 0.5.0
+      '@feng3d/watcher': 0.5.0
+    dev: false
+
   /@feng3d/bezier/0.5.0:
     resolution: {integrity: sha512-aIf+qa8TT+Kh5pJkHzR1BSTzv7dCQs09jwV4eADWVUIa612i8ZLhCQY4bl4qztZahIUVfK4YERR548Ztcu2N2w==}
     dev: false
 
+  /@feng3d/core/0.5.0:
+    resolution: {integrity: sha512-l/oYjLBkf20IzdiEq7w/bAm7KP93A+Mqw6fPtfEFYa1YSB+OPBuBsJwUAdwV1Yx0JL3Ku68LQutYeByh0aavpQ==}
+    dependencies:
+      '@feng3d/event': 0.5.0
+      '@feng3d/filesystem': 0.5.0
+      '@feng3d/math': 0.5.0
+      '@feng3d/objectview': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/renderer': 0.5.0
+      '@feng3d/serialization': 0.5.0
+      '@feng3d/shortcut': 0.5.0
+      '@feng3d/task': 0.5.0
+      '@feng3d/watcher': 0.5.0
+    dev: false
+
   /@feng3d/event/0.5.0:
     resolution: {integrity: sha512-PUXQpd4+zcps5LWzBTgudTxEQxDGa4jiSMi1rYT3M8V7yLMmyMDP761lCeqyxKX+Qsh2jNnrgiyR6yFkZDlJWg==}
+    dev: false
+
+  /@feng3d/filesystem/0.5.0:
+    resolution: {integrity: sha512-FoCEmgiYioORbt0hP2Wpx5VKO0FPs+9J7y11JjuC085kJGSgRx+CeqUx0BarYE76IjagVr1ZU/zhlxMH5BIIlQ==}
+    dependencies:
+      '@feng3d/event': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/task': 0.5.0
     dev: false
 
   /@feng3d/math/0.5.0:
@@ -131,14 +163,92 @@ packages:
     resolution: {integrity: sha512-bZqSudINlflR5XslN3bMrJEkKdySWValsYuE1oXQnWrd98bY+x1LoCP7pQsNvN4u8HwrWeMHgAn38r5UJFQibA==}
     dev: false
 
+  /@feng3d/parsers/0.5.0:
+    resolution: {integrity: sha512-waLVEe8gABSBqfXaqI5rZrX62Skwfl2zUBPPri2wHZPvVff3QzlocXoEvBrckM7YYt3FFnpTqmgBsCl18Z2uaw==}
+    dependencies:
+      '@feng3d/core': 0.5.0
+      '@feng3d/event': 0.5.0
+      '@feng3d/filesystem': 0.5.0
+      '@feng3d/math': 0.5.0
+      '@feng3d/objectview': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/renderer': 0.5.0
+      '@feng3d/serialization': 0.5.0
+      '@feng3d/watcher': 0.5.0
+    dev: false
+
+  /@feng3d/particlesystem/0.5.0:
+    resolution: {integrity: sha512-DpGpjoM4IllMg6P7IFVIpDQd5EGt31D+2BQomq2YmDm37SIDaEdLai7eNyDhhLRN/DFtl8s/Q3XvbcUCKxCvAQ==}
+    dependencies:
+      '@feng3d/core': 0.5.0
+      '@feng3d/event': 0.5.0
+      '@feng3d/filesystem': 0.5.0
+      '@feng3d/math': 0.5.0
+      '@feng3d/objectview': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/renderer': 0.5.0
+      '@feng3d/serialization': 0.5.0
+      '@feng3d/watcher': 0.5.0
+    dev: false
+
   /@feng3d/polyfill/0.5.0:
     resolution: {integrity: sha512-kOJgU1t5ibVIUO2Xqa39Gq0I5yCXCMjuVYfXWZn4w0fv3zmdVSTDW7Zfodgszaz25/0XxmONHeZJkVnAaryP2Q==}
+    dev: false
+
+  /@feng3d/renderer/0.5.0:
+    resolution: {integrity: sha512-heNIxB5vZq+ekcggeDyX6pu2lP85SQhkCKSX7vHbUsEaQgJfkLmrkYxTIRQlhoBpvvFFSJQmI3H6LjV+g7zAcA==}
+    dependencies:
+      '@feng3d/objectview': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/serialization': 0.5.0
+      '@feng3d/watcher': 0.5.0
     dev: false
 
   /@feng3d/serialization/0.5.0:
     resolution: {integrity: sha512-DUrx+EbuaikehKyd644WUWRbQKe3weXWSmbqQbLmGCl4NxyEzF/XPemrTP6b9+OStucHKeXVNTrS0FIyEDxppA==}
     dependencies:
       '@feng3d/polyfill': 0.5.0
+    dev: false
+
+  /@feng3d/shortcut/0.5.0:
+    resolution: {integrity: sha512-C5QchoDHAirGjit9lfXQC7KgoiTxGk6Vt28BMTL5JHVdEIgky5cgHXobIP4p/N7XupX3K62Ik6eSfinVnNaZtg==}
+    dependencies:
+      '@feng3d/event': 0.5.0
+    dev: false
+
+  /@feng3d/task/0.5.0:
+    resolution: {integrity: sha512-zYJdCwIDyi8PruDUI5DvD/PTFvXjSqp/2PnodxSmlMqzrMd0Uk+EtO2ux0e9Yl8tN5D0r4i4gDvtDPLvlBfjdg==}
+    dev: false
+
+  /@feng3d/terrain/0.5.0:
+    resolution: {integrity: sha512-XmKx9CgNdIcoIIyMMkIE9s2PT7IscDIEkK12jqRriwaH/y8f+YnS9Dj0ZJ7uQ1IJBNsd/gVYdorm7Zygi5Kaig==}
+    dependencies:
+      '@feng3d/core': 0.5.0
+      '@feng3d/event': 0.5.0
+      '@feng3d/math': 0.5.0
+      '@feng3d/objectview': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/renderer': 0.5.0
+      '@feng3d/serialization': 0.5.0
+      '@feng3d/watcher': 0.5.0
+    dev: false
+
+  /@feng3d/ui/0.5.0:
+    resolution: {integrity: sha512-kHKu2f/VODPoxIIeUACw7Rc9nKF2S5B0v/bloNiMx8Een7zW+dxNMJ6CIvs3O4eXK4vIULPZ586pM/rTcKnNKw==}
+    dependencies:
+      '@feng3d/core': 0.5.0
+      '@feng3d/event': 0.5.0
+      '@feng3d/filesystem': 0.5.0
+      '@feng3d/math': 0.5.0
+      '@feng3d/objectview': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/renderer': 0.5.0
+      '@feng3d/serialization': 0.5.0
+      '@feng3d/watcher': 0.5.0
+    dev: false
+
+  /@feng3d/watcher/0.5.0:
+    resolution: {integrity: sha512-BOBWWP/gbczyVeFnIaS4rCOA3lRdzGCmFU+abKWeQHC//o5K75bt92d6PKk9cqpULT/xW2NZsYNLkbkNIXmfHA==}
     dev: false
 
   /@humanwhocodes/config-array/0.9.5:
@@ -885,6 +995,28 @@ packages:
     dependencies:
       reusify: 1.0.4
     dev: true
+
+  /feng3d/0.5.0:
+    resolution: {integrity: sha512-2SRuXbZdTYdqtqgfOpkF5nXKTO5DjGJIIAaxq7IwDwdPYbtdUWeqvzx8mbe019ALDns/jaVFZ34opkG6uToi1g==}
+    dependencies:
+      '@feng3d/assets': 0.5.0
+      '@feng3d/bezier': 0.5.0
+      '@feng3d/core': 0.5.0
+      '@feng3d/event': 0.5.0
+      '@feng3d/filesystem': 0.5.0
+      '@feng3d/math': 0.5.0
+      '@feng3d/objectview': 0.5.0
+      '@feng3d/parsers': 0.5.0
+      '@feng3d/particlesystem': 0.5.0
+      '@feng3d/polyfill': 0.5.0
+      '@feng3d/renderer': 0.5.0
+      '@feng3d/serialization': 0.5.0
+      '@feng3d/shortcut': 0.5.0
+      '@feng3d/task': 0.5.0
+      '@feng3d/terrain': 0.5.0
+      '@feng3d/ui': 0.5.0
+      '@feng3d/watcher': 0.5.0
+    dev: false
 
   /file-entry-cache/6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}

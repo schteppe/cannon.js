@@ -1,4 +1,4 @@
-import { Box3, Quaternion, Vector3 } from '@feng3d/math';
+import { Box3, Quaternion, Vector3 } from 'feng3d';
 import { Utils } from '../utils/Utils';
 import { ConvexPolyhedron } from './ConvexPolyhedron';
 import { Shape } from './Shape';

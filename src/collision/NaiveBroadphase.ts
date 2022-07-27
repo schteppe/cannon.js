@@ -1,4 +1,4 @@
-import { Box3 } from '@feng3d/math';
+import { Box3 } from 'feng3d';
 import { Body } from '../objects/Body';
 import { World } from '../world/World';
 import { Broadphase } from './Broadphase';

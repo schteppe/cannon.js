@@ -1,4 +1,4 @@
-import { Vector3 } from '@feng3d/math';
+import { Vector3 } from 'feng3d';
 import { Body } from '../objects/Body';
 import { Plane } from '../shapes/Plane';
 import { Shape } from '../shapes/Shape';

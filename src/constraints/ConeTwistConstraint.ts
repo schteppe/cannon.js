@@ -1,4 +1,4 @@
-import { Vector3 } from '@feng3d/math';
+import { Vector3 } from 'feng3d';
 import { ConeEquation } from '../equations/ConeEquation';
 import { RotationalEquation } from '../equations/RotationalEquation';
 import { Body } from '../objects/Body';

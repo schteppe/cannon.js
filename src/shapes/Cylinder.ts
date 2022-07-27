@@ -1,4 +1,4 @@
-import { Vector3 } from '@feng3d/math';
+import { Vector3 } from 'feng3d';
 import { ConvexPolyhedron } from './ConvexPolyhedron';
 
 export class Cylinder extends ConvexPolyhedron

@@ -1,5 +1,5 @@
-import { EventEmitter } from '@feng3d/event';
-import { Vector3 } from '@feng3d/math';
+import { EventEmitter } from 'feng3d';
+import { Vector3 } from 'feng3d';
 import { Broadphase } from '../collision/Broadphase';
 import { NaiveBroadphase } from '../collision/NaiveBroadphase';
 import { OverlapKeeper } from '../collision/OverlapKeeper';

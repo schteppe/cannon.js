@@ -1,5 +1,5 @@
-import { EventEmitter } from '@feng3d/event';
-import { Box3, Matrix3x3, Quaternion, Vector3 } from '@feng3d/math';
+import { EventEmitter } from 'feng3d';
+import { Box3, Matrix3x3, Quaternion, Vector3 } from 'feng3d';
 import { ContactEquation } from '../equations/ContactEquation';
 import { Material } from '../material/Material';
 import { Box } from '../shapes/Box';

@@ -1,4 +1,4 @@
-import { Box3, Quaternion, Sphere, Triangle3, Vector3 } from '@feng3d/math';
+import { Box3, Quaternion, Sphere, Triangle3, Vector3 } from 'feng3d';
 import { worldNormal } from '../common';
 import { Transform } from '../math/Transform';
 import { Body } from '../objects/Body';

@@ -1,4 +1,4 @@
-import { Vector3 } from '@feng3d/math';
+import { Vector3 } from 'feng3d';
 
 export class JacobianElement
 {

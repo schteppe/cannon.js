@@ -1,5 +1,5 @@
 /* eslint-disable max-params */
-import { Box3, Quaternion, Vector3 } from '@feng3d/math';
+import { Box3, Quaternion, Vector3 } from 'feng3d';
 import { ContactEquation } from '../equations/ContactEquation';
 import { FrictionEquation } from '../equations/FrictionEquation';
 import { ContactMaterial } from '../material/ContactMaterial';
@@ -14,7 +14,7 @@ import { Shape } from '../shapes/Shape';
 import { Sphere } from '../shapes/Sphere';
 import { Trimesh } from '../shapes/Trimesh';
 import { World } from './World';
-import feng3d = require('@feng3d/math');
+import feng3d = require('feng3d');
 
 export class Narrowphase
 {

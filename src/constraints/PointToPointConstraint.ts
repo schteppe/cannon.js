@@ -1,4 +1,4 @@
-import { Vector3 } from '@feng3d/math';
+import { Vector3 } from 'feng3d';
 import { ContactEquation } from '../equations/ContactEquation';
 import { Body } from '../objects/Body';
 import { Constraint } from './Constraint';

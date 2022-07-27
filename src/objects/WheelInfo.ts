@@ -1,4 +1,4 @@
-import { Vector3 } from '@feng3d/math';
+import { Vector3 } from 'feng3d';
 import { RaycastResult } from '../collision/RaycastResult';
 import { Transform } from '../math/Transform';
 import { Body } from '../objects/Body';

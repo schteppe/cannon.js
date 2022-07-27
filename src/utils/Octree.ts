@@ -1,4 +1,4 @@
-import { Box3, Vector3 } from '@feng3d/math';
+import { Box3, Vector3 } from 'feng3d';
 import { Ray } from '../collision/Ray';
 import { Transform } from '../math/Transform';
 

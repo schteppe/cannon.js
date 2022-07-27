@@ -1,4 +1,4 @@
-import { Box3, Quaternion, Vector3 } from '@feng3d/math';
+import { Box3, Quaternion, Vector3 } from 'feng3d';
 
 export class Transform
 {

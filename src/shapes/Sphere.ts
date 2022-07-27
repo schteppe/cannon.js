@@ -1,4 +1,4 @@
-import { Quaternion, Vector3 } from '@feng3d/math';
+import { Quaternion, Vector3 } from 'feng3d';
 import { Shape } from './Shape';
 
 export class Sphere extends Shape
