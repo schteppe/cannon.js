@@ -4,7 +4,7 @@
 Inspired by [three.js](https://github.com/mrdoob/three.js) and [ammo.js](https://github.com/kripken/ammo.js), and driven by the fact that the web lacks a physics engine, here comes cannon.js.
 The rigid body physics engine includes simple collision detection, various body shapes, contacts, friction and constraints.
 
-[Demos](http://schteppe.github.com/cannon.js) - [Documentation](http://schteppe.github.com/cannon.js/docs) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon) - [CDN](https://cdnjs.com/libraries/cannon.js)
+[Demos](https://schteppe.github.io/cannon.js) - [Documentation](https://schteppe.github.io/cannon.js/docs) - [Rendering hints](https://github.com/schteppe/cannon.js/tree/master/examples) - [NPM package](https://npmjs.org/package/cannon) - [CDN](https://cdnjs.com/libraries/cannon.js)
 
 ### Browser install
 
@@ -30,7 +30,7 @@ npm install --save schteppe/cannon.js
 
 ### Example
 
-The sample code below creates a sphere on a plane, steps the simulation, and prints the sphere simulation to the console. Note that Cannon.js uses [SI units](http://en.wikipedia.org/wiki/International_System_of_Units) (metre, kilogram, second, etc.).
+The sample code below creates a sphere on a plane, steps the simulation, and prints the sphere simulation to the console. Note that Cannon.js uses [SI units](https://en.wikipedia.org/wiki/International_System_of_Units) (metre, kilogram, second, etc.).
 
 ```javascript
 // Setup our world
@@ -88,7 +88,7 @@ If you want to know how to use cannon.js with a rendering engine, for example Th
 * Experimental SPH / fluid support
 * Various shapes and collision algorithms (see table below)
 
-|             | [Sphere](http://schteppe.github.io/cannon.js/docs/classes/Sphere.html) | [Plane](http://schteppe.github.io/cannon.js/docs/classes/Plane.html) | [Box](http://schteppe.github.io/cannon.js/docs/classes/Box.html) | [Convex](http://schteppe.github.io/cannon.js/docs/classes/ConvexPolyhedron.html) | [Particle](http://schteppe.github.io/cannon.js/docs/classes/Particle.html) | [Heightfield](http://schteppe.github.io/cannon.js/docs/classes/Heightfield.html) | [Trimesh](http://schteppe.github.io/cannon.js/docs/classes/Trimesh.html) |
+|             | [Sphere](https://schteppe.github.io/cannon.js/docs/classes/Sphere.html) | [Plane](https://schteppe.github.io/cannon.js/docs/classes/Plane.html) | [Box](https://schteppe.github.io/cannon.js/docs/classes/Box.html) | [Convex](https://schteppe.github.io/cannon.js/docs/classes/ConvexPolyhedron.html) | [Particle](https://schteppe.github.io/cannon.js/docs/classes/Particle.html) | [Heightfield](https://schteppe.github.io/cannon.js/docs/classes/Heightfield.html) | [Trimesh](https://schteppe.github.io/cannon.js/docs/classes/Trimesh.html) |
 | :-----------|:------:|:-----:|:---:|:------:|:--------:|:-----------:|:-------:|
 | Sphere      | Yes    | Yes   | Yes | Yes    | Yes      | Yes         | Yes     |
 | Plane       | -      | -     | Yes | Yes    | Yes      | -           | Yes     |
