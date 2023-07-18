@@ -108,28 +108,50 @@ Quaternion.prototype.toAxisAngle = function(targetAxis){
     return [targetAxis,angle];
 };
 
-var sfv_t1 = new Vec3(),
-    sfv_t2 = new Vec3();
 
 /**
  * Set the quaternion value given two vectors. The resulting rotation will be the needed rotation to rotate u to v.
  * @method setFromVectors
  * @param {Vec3} u
  * @param {Vec3} v
+ * @author Robert Eisele, https://github.com/rawify
  */
 Quaternion.prototype.setFromVectors = function(u,v){
-    if(u.isAntiparallelTo(v)){
-        var t1 = sfv_t1;
-        var t2 = sfv_t2;
 
-        u.tangents(t1,t2);
-        this.setFromAxisAngle(t1,Math.PI);
+    // Implements https://raw.org/proof/quaternion-from-two-vectors/
+
+    var ux = u.x;
+    var uy = u.y;
+    var uz = u.z;
+
+    var vx = v.x;
+    var vy = v.y;
+    var vz = v.z;
+
+    var uLen = u.norm();
+    var vLen = v.norm();
+
+    if (uLen > 0) ux /= uLen, uy /= uLen, uz /= uLen;
+    if (vLen > 0) vx /= vLen, vy /= vLen, vz /= vLen;
+
+    var dot = ux * vx + uy * vy + uz * vz;
+
+    // Parallel check
+    if (dot > 0.999999) {
+      this.x = 0;
+      this.y = 0;
+      this.z = 0;
+      this.w = 1;
+    } else 
+
+    // Close to PI - antiparallel check
+    if (dot < -0.999999) {
+        this.setFromAxisAngle(Math.abs(ux) > Math.abs(uz) ? new Vec3(-uy, ux, 0) : new Vec3(0, -uz, uy), Math.PI);
     } else {
-        var a = u.cross(v);
-        this.x = a.x;
-        this.y = a.y;
-        this.z = a.z;
-        this.w = Math.sqrt(Math.pow(u.norm(),2) * Math.pow(v.norm(),2)) + u.dot(v);
+        this.x = uy * vz - uz * vy;
+        this.y = uz * vx - ux * vz;
+        this.z = ux * vy - uy * vx;
+        this.w = 1 + dot;
         this.normalize();
     }
     return this;
@@ -142,9 +164,6 @@ Quaternion.prototype.setFromVectors = function(u,v){
  * @param {Quaternion} target Optional.
  * @return {Quaternion}
  */
-var Quaternion_mult_va = new Vec3();
-var Quaternion_mult_vb = new Vec3();
-var Quaternion_mult_vaxvb = new Vec3();
 Quaternion.prototype.mult = function(q,target){
     target = target || new Quaternion();
 
@@ -220,22 +239,19 @@ Quaternion.prototype.normalize = function(){
 /**
  * Approximation of quaternion normalization. Works best when quat is already almost-normalized.
  * @method normalizeFast
- * @see http://jsperf.com/fast-quaternion-normalization
  * @author unphased, https://github.com/unphased
  */
 Quaternion.prototype.normalizeFast = function () {
-    var f = (3.0-(this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w))/2.0;
-    if ( f === 0 ) {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
-        this.w = 0;
-    } else {
-        this.x *= f;
-        this.y *= f;
-        this.z *= f;
-        this.w *= f;
-    }
+
+    // Makes use of two steps of a Taylor expansion of 1/sqrt(x) ~ 1 - (x - 1) / 2 = (3 - x) / 2
+
+    var f = (3 - (this.x*this.x+this.y*this.y+this.z*this.z+this.w*this.w)) / 2;
+
+    this.x *= f;
+    this.y *= f;
+    this.z *= f;
+    this.w *= f;
+
     return this;
 };
 
